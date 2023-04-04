@@ -1,0 +1,7 @@
+syntax = "proto3";
+package structs.structs;
+
+option go_package = "structs/x/structs/types";
+
+// Msg defines the Msg service.
+service Msg {}

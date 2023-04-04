@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package structs.structs;
+
+import "gogoproto/gogo.proto";
+import "structs/structs/params.proto";
+
+option go_package = "structs/x/structs/types";
+
+// GenesisState defines the structs module's genesis state.
+message GenesisState {
+  Params params  = 1 [(gogoproto.nullable) = false];
+  string port_id = 2;
+}
+
