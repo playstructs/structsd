@@ -14,6 +14,42 @@ func TestGenesis(t *testing.T) {
 	genesisState := types.GenesisState{
 		Params: types.DefaultParams(),
 		PortId: types.PortID,
+		ReactorList: []types.Reactor{
+			{
+				Id: 0,
+			},
+			{
+				Id: 1,
+			},
+		},
+		ReactorCount: 2,
+		SubstationList: []types.Substation{
+			{
+				Id: 0,
+			},
+			{
+				Id: 1,
+			},
+		},
+		SubstationCount: 2,
+		AllocationList: []types.Allocation{
+			{
+				Id: 0,
+			},
+			{
+				Id: 1,
+			},
+		},
+		AllocationCount: 2,
+		AllocationProposalList: []types.AllocationProposal{
+			{
+				Id: 0,
+			},
+			{
+				Id: 1,
+			},
+		},
+		AllocationProposalCount: 2,
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -27,5 +63,13 @@ func TestGenesis(t *testing.T) {
 
 	require.Equal(t, genesisState.PortId, got.PortId)
 
+	require.ElementsMatch(t, genesisState.ReactorList, got.ReactorList)
+	require.Equal(t, genesisState.ReactorCount, got.ReactorCount)
+	require.ElementsMatch(t, genesisState.SubstationList, got.SubstationList)
+	require.Equal(t, genesisState.SubstationCount, got.SubstationCount)
+	require.ElementsMatch(t, genesisState.AllocationList, got.AllocationList)
+	require.Equal(t, genesisState.AllocationCount, got.AllocationCount)
+	require.ElementsMatch(t, genesisState.AllocationProposalList, got.AllocationProposalList)
+	require.Equal(t, genesisState.AllocationProposalCount, got.AllocationProposalCount)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

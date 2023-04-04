@@ -1,0 +1,11 @@
+syntax = "proto3";
+package structs.structs;
+
+option go_package = "structs/x/structs/types";
+
+message Substation {
+  uint64 id = 1;
+  uint64 power = 2; 
+  uint64 load = 3; 
+  
+}

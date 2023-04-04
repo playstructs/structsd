@@ -4,12 +4,24 @@ package structs.structs;
 
 import "gogoproto/gogo.proto";
 import "structs/structs/params.proto";
+import "structs/structs/reactor.proto";
+import "structs/structs/substation.proto";
+import "structs/structs/allocation.proto";
+import "structs/structs/allocation_proposal.proto";
 
 option go_package = "structs/x/structs/types";
 
 // GenesisState defines the structs module's genesis state.
 message GenesisState {
-  Params params  = 1 [(gogoproto.nullable) = false];
-  string port_id = 2;
+           Params             params                  =  1 [(gogoproto.nullable) = false];
+           string             port_id                 =  2;
+  repeated Reactor            reactorList             =  3 [(gogoproto.nullable) = false];
+           uint64             reactorCount            =  4;
+  repeated Substation         substationList          =  5 [(gogoproto.nullable) = false];
+           uint64             substationCount         =  6;
+  repeated Allocation         allocationList          =  7 [(gogoproto.nullable) = false];
+           uint64             allocationCount         =  8;
+  repeated AllocationProposal allocationProposalList  =  9 [(gogoproto.nullable) = false];
+           uint64             allocationProposalCount = 10;
 }
 

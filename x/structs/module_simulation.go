@@ -24,7 +24,47 @@ var (
 )
 
 const (
-// this line is used by starport scaffolding # simapp/module/const
+	opWeightMsgReactorSetup = "op_weight_msg_reactor_setup"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgReactorSetup int = 100
+
+	opWeightMsgReactorAllocationActivate = "op_weight_msg_reactor_allocation_activate"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgReactorAllocationActivate int = 100
+
+	opWeightMsgReactorDelete = "op_weight_msg_reactor_delete"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgReactorDelete int = 100
+
+	opWeightMsgSubstationCreate = "op_weight_msg_substation_create"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgSubstationCreate int = 100
+
+	opWeightMsgSubstationDelete = "op_weight_msg_substation_delete"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgSubstationDelete int = 100
+
+	opWeightMsgSubstationAllocationPropose = "op_weight_msg_substation_allocation_propose"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgSubstationAllocationPropose int = 100
+
+	opWeightMsgSubstationAllocationActivate = "op_weight_msg_substation_allocation_activate"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgSubstationAllocationActivate int = 100
+
+	opWeightMsgSubstationAllocationDisconnect = "op_weight_msg_substation_allocation_disconnect"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgSubstationAllocationDisconnect int = 100
+
+	opWeightMsgSubstationPlayerConnect = "op_weight_msg_substation_player_connect"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgSubstationPlayerConnect int = 100
+
+	opWeightMsgSubstationPlayerDisconnect = "op_weight_msg_substation_player_disconnect"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgSubstationPlayerDisconnect int = 100
+
+	// this line is used by starport scaffolding # simapp/module/const
 )
 
 // GenerateGenesisState creates a randomized GenState of the module
@@ -58,6 +98,116 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 // WeightedOperations returns the all the gov module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
+
+	var weightMsgReactorSetup int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgReactorSetup, &weightMsgReactorSetup, nil,
+		func(_ *rand.Rand) {
+			weightMsgReactorSetup = defaultWeightMsgReactorSetup
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgReactorSetup,
+		structssimulation.SimulateMsgReactorSetup(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgReactorAllocationActivate int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgReactorAllocationActivate, &weightMsgReactorAllocationActivate, nil,
+		func(_ *rand.Rand) {
+			weightMsgReactorAllocationActivate = defaultWeightMsgReactorAllocationActivate
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgReactorAllocationActivate,
+		structssimulation.SimulateMsgReactorAllocationActivate(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgReactorDelete int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgReactorDelete, &weightMsgReactorDelete, nil,
+		func(_ *rand.Rand) {
+			weightMsgReactorDelete = defaultWeightMsgReactorDelete
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgReactorDelete,
+		structssimulation.SimulateMsgReactorDelete(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgSubstationCreate int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSubstationCreate, &weightMsgSubstationCreate, nil,
+		func(_ *rand.Rand) {
+			weightMsgSubstationCreate = defaultWeightMsgSubstationCreate
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgSubstationCreate,
+		structssimulation.SimulateMsgSubstationCreate(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgSubstationDelete int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSubstationDelete, &weightMsgSubstationDelete, nil,
+		func(_ *rand.Rand) {
+			weightMsgSubstationDelete = defaultWeightMsgSubstationDelete
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgSubstationDelete,
+		structssimulation.SimulateMsgSubstationDelete(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgSubstationAllocationPropose int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSubstationAllocationPropose, &weightMsgSubstationAllocationPropose, nil,
+		func(_ *rand.Rand) {
+			weightMsgSubstationAllocationPropose = defaultWeightMsgSubstationAllocationPropose
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgSubstationAllocationPropose,
+		structssimulation.SimulateMsgSubstationAllocationPropose(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgSubstationAllocationActivate int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSubstationAllocationActivate, &weightMsgSubstationAllocationActivate, nil,
+		func(_ *rand.Rand) {
+			weightMsgSubstationAllocationActivate = defaultWeightMsgSubstationAllocationActivate
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgSubstationAllocationActivate,
+		structssimulation.SimulateMsgSubstationAllocationActivate(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgSubstationAllocationDisconnect int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSubstationAllocationDisconnect, &weightMsgSubstationAllocationDisconnect, nil,
+		func(_ *rand.Rand) {
+			weightMsgSubstationAllocationDisconnect = defaultWeightMsgSubstationAllocationDisconnect
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgSubstationAllocationDisconnect,
+		structssimulation.SimulateMsgSubstationAllocationDisconnect(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgSubstationPlayerConnect int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSubstationPlayerConnect, &weightMsgSubstationPlayerConnect, nil,
+		func(_ *rand.Rand) {
+			weightMsgSubstationPlayerConnect = defaultWeightMsgSubstationPlayerConnect
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgSubstationPlayerConnect,
+		structssimulation.SimulateMsgSubstationPlayerConnect(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgSubstationPlayerDisconnect int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSubstationPlayerDisconnect, &weightMsgSubstationPlayerDisconnect, nil,
+		func(_ *rand.Rand) {
+			weightMsgSubstationPlayerDisconnect = defaultWeightMsgSubstationPlayerDisconnect
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgSubstationPlayerDisconnect,
+		structssimulation.SimulateMsgSubstationPlayerDisconnect(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
 
 	// this line is used by starport scaffolding # simapp/module/operation
 

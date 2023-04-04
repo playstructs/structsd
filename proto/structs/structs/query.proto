@@ -1,26 +1,142 @@
 syntax = "proto3";
+
 package structs.structs;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "structs/structs/params.proto";
+import "structs/structs/reactor.proto";
+import "structs/structs/substation.proto";
+import "structs/structs/allocation.proto";
+import "structs/structs/allocation_proposal.proto";
 
 option go_package = "structs/x/structs/types";
 
 // Query defines the gRPC querier service.
 service Query {
+  
   // Parameters queries the parameters of the module.
-  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+  rpc Params (QueryParamsRequest) returns (QueryParamsResponse) {
     option (google.api.http).get = "/structs/structs/params";
+  
+  }
+  
+  // Queries a list of Reactor items.
+  rpc Reactor    (QueryGetReactorRequest) returns (QueryGetReactorResponse) {
+    option (google.api.http).get = "/structs/structs/reactor/{id}";
+  
+  }
+  rpc ReactorAll (QueryAllReactorRequest) returns (QueryAllReactorResponse) {
+    option (google.api.http).get = "/structs/structs/reactor";
+  
+  }
+  
+  // Queries a list of Substation items.
+  rpc Substation    (QueryGetSubstationRequest) returns (QueryGetSubstationResponse) {
+    option (google.api.http).get = "/structs/structs/substation/{id}";
+  
+  }
+  rpc SubstationAll (QueryAllSubstationRequest) returns (QueryAllSubstationResponse) {
+    option (google.api.http).get = "/structs/structs/substation";
+  
+  }
+  
+  // Queries a list of Allocation items.
+  rpc Allocation    (QueryGetAllocationRequest) returns (QueryGetAllocationResponse) {
+    option (google.api.http).get = "/structs/structs/allocation/{id}";
+  
+  }
+  rpc AllocationAll (QueryAllAllocationRequest) returns (QueryAllAllocationResponse) {
+    option (google.api.http).get = "/structs/structs/allocation";
+  
+  }
+  
+  // Queries a list of AllocationProposal items.
+  rpc AllocationProposal    (QueryGetAllocationProposalRequest) returns (QueryGetAllocationProposalResponse) {
+    option (google.api.http).get = "/structs/structs/allocation_proposal/{id}";
+  
+  }
+  rpc AllocationProposalAll (QueryAllAllocationProposalRequest) returns (QueryAllAllocationProposalResponse) {
+    option (google.api.http).get = "/structs/structs/allocation_proposal";
+  
   }
 }
-
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
 
 // QueryParamsResponse is response type for the Query/Params RPC method.
 message QueryParamsResponse {
+  
   // params holds all the parameters of this module.
   Params params = 1 [(gogoproto.nullable) = false];
 }
+
+message QueryGetReactorRequest {
+  uint64 id = 1;
+}
+
+message QueryGetReactorResponse {
+  Reactor Reactor = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllReactorRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllReactorResponse {
+  repeated Reactor                                Reactor    = 1 [(gogoproto.nullable) = false];
+           cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetSubstationRequest {
+  uint64 id = 1;
+}
+
+message QueryGetSubstationResponse {
+  Substation Substation = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllSubstationRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllSubstationResponse {
+  repeated Substation                             Substation = 1 [(gogoproto.nullable) = false];
+           cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetAllocationRequest {
+  uint64 id = 1;
+}
+
+message QueryGetAllocationResponse {
+  Allocation Allocation = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllAllocationRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAllocationResponse {
+  repeated Allocation                             Allocation = 1 [(gogoproto.nullable) = false];
+           cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetAllocationProposalRequest {
+  uint64 id = 1;
+}
+
+message QueryGetAllocationProposalResponse {
+  AllocationProposal AllocationProposal = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllAllocationProposalRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAllocationProposalResponse {
+  repeated AllocationProposal                     AllocationProposal = 1 [(gogoproto.nullable) = false];
+           cosmos.base.query.v1beta1.PageResponse pagination         = 2;
+}
+

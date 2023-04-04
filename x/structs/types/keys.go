@@ -28,3 +28,23 @@ var (
 func KeyPrefix(p string) []byte {
 	return []byte(p)
 }
+
+const (
+	ReactorKey      = "Reactor/value/"
+	ReactorCountKey = "Reactor/count/"
+)
+
+const (
+	SubstationKey      = "Substation/value/"
+	SubstationCountKey = "Substation/count/"
+)
+
+const (
+	AllocationKey      = "Allocation/value/"
+	AllocationCountKey = "Allocation/count/"
+)
+
+const (
+	AllocationProposalKey      = "AllocationProposal/value/"
+	AllocationProposalCountKey = "AllocationProposal/count/"
+)

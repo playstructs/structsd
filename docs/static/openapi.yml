@@ -45259,6 +45259,384 @@ paths:
                         }
       tags:
         - Query
+  /structs/structs/allocation:
+    get:
+      operationId: StructsStructsAllocationAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Allocation:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    sourceType:
+                      type: string
+                    sourceId:
+                      type: string
+                      format: uint64
+                    destinationId:
+                      type: string
+                      format: uint64
+                    power:
+                      type: string
+                      format: uint64
+                    transmissionLoss:
+                      type: string
+                      format: uint64
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /structs/structs/allocation/{id}:
+    get:
+      summary: Queries a list of Allocation items.
+      operationId: StructsStructsAllocation
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Allocation:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uint64
+                  sourceType:
+                    type: string
+                  sourceId:
+                    type: string
+                    format: uint64
+                  destinationId:
+                    type: string
+                    format: uint64
+                  power:
+                    type: string
+                    format: uint64
+                  transmissionLoss:
+                    type: string
+                    format: uint64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
+  /structs/structs/allocation_proposal:
+    get:
+      operationId: StructsStructsAllocationProposalAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              AllocationProposal:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    sourceType:
+                      type: string
+                    sourceId:
+                      type: string
+                      format: uint64
+                    destinationId:
+                      type: string
+                      format: uint64
+                    power:
+                      type: string
+                      format: uint64
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /structs/structs/allocation_proposal/{id}:
+    get:
+      summary: Queries a list of AllocationProposal items.
+      operationId: StructsStructsAllocationProposal
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              AllocationProposal:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uint64
+                  sourceType:
+                    type: string
+                  sourceId:
+                    type: string
+                    format: uint64
+                  destinationId:
+                    type: string
+                    format: uint64
+                  power:
+                    type: string
+                    format: uint64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
   /structs/structs/params:
     get:
       summary: Parameters queries the parameters of the module.
@@ -45293,6 +45671,356 @@ paths:
                     '@type':
                       type: string
                   additionalProperties: {}
+      tags:
+        - Query
+  /structs/structs/reactor:
+    get:
+      operationId: StructsStructsReactorAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Reactor:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    validator:
+                      type: string
+                    power:
+                      type: string
+                      format: uint64
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /structs/structs/reactor/{id}:
+    get:
+      summary: Queries a list of Reactor items.
+      operationId: StructsStructsReactor
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Reactor:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uint64
+                  validator:
+                    type: string
+                  power:
+                    type: string
+                    format: uint64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: uint64
+      tags:
+        - Query
+  /structs/structs/substation:
+    get:
+      operationId: StructsStructsSubstationAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Substation:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      format: uint64
+                    power:
+                      type: string
+                      format: uint64
+                    load:
+                      type: string
+                      format: uint64
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /structs/structs/substation/{id}:
+    get:
+      summary: Queries a list of Substation items.
+      operationId: StructsStructsSubstation
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              Substation:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uint64
+                  power:
+                    type: string
+                    format: uint64
+                  load:
+                    type: string
+                    format: uint64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+          format: uint64
       tags:
         - Query
 definitions:
@@ -74934,9 +75662,322 @@ definitions:
     description: |-
       Version defines the versioning scheme used to negotiate the IBC verison in
       the connection handshake.
+  structs.structs.Allocation:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+      sourceType:
+        type: string
+      sourceId:
+        type: string
+        format: uint64
+      destinationId:
+        type: string
+        format: uint64
+      power:
+        type: string
+        format: uint64
+      transmissionLoss:
+        type: string
+        format: uint64
+  structs.structs.AllocationProposal:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+      sourceType:
+        type: string
+      sourceId:
+        type: string
+        format: uint64
+      destinationId:
+        type: string
+        format: uint64
+      power:
+        type: string
+        format: uint64
+  structs.structs.MsgReactorAllocationActivateResponse:
+    type: object
+  structs.structs.MsgReactorDeleteResponse:
+    type: object
+  structs.structs.MsgReactorSetupResponse:
+    type: object
+  structs.structs.MsgSubstationAllocationActivateResponse:
+    type: object
+  structs.structs.MsgSubstationAllocationDisconnectResponse:
+    type: object
+  structs.structs.MsgSubstationAllocationProposeResponse:
+    type: object
+  structs.structs.MsgSubstationCreateResponse:
+    type: object
+  structs.structs.MsgSubstationDeleteResponse:
+    type: object
+  structs.structs.MsgSubstationPlayerConnectResponse:
+    type: object
+  structs.structs.MsgSubstationPlayerDisconnectResponse:
+    type: object
   structs.structs.Params:
     type: object
     description: Params defines the parameters for the module.
+  structs.structs.QueryAllAllocationProposalResponse:
+    type: object
+    properties:
+      AllocationProposal:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            sourceType:
+              type: string
+            sourceId:
+              type: string
+              format: uint64
+            destinationId:
+              type: string
+              format: uint64
+            power:
+              type: string
+              format: uint64
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  structs.structs.QueryAllAllocationResponse:
+    type: object
+    properties:
+      Allocation:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            sourceType:
+              type: string
+            sourceId:
+              type: string
+              format: uint64
+            destinationId:
+              type: string
+              format: uint64
+            power:
+              type: string
+              format: uint64
+            transmissionLoss:
+              type: string
+              format: uint64
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  structs.structs.QueryAllReactorResponse:
+    type: object
+    properties:
+      Reactor:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            validator:
+              type: string
+            power:
+              type: string
+              format: uint64
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  structs.structs.QueryAllSubstationResponse:
+    type: object
+    properties:
+      Substation:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+              format: uint64
+            power:
+              type: string
+              format: uint64
+            load:
+              type: string
+              format: uint64
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  structs.structs.QueryGetAllocationProposalResponse:
+    type: object
+    properties:
+      AllocationProposal:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uint64
+          sourceType:
+            type: string
+          sourceId:
+            type: string
+            format: uint64
+          destinationId:
+            type: string
+            format: uint64
+          power:
+            type: string
+            format: uint64
+  structs.structs.QueryGetAllocationResponse:
+    type: object
+    properties:
+      Allocation:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uint64
+          sourceType:
+            type: string
+          sourceId:
+            type: string
+            format: uint64
+          destinationId:
+            type: string
+            format: uint64
+          power:
+            type: string
+            format: uint64
+          transmissionLoss:
+            type: string
+            format: uint64
+  structs.structs.QueryGetReactorResponse:
+    type: object
+    properties:
+      Reactor:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uint64
+          validator:
+            type: string
+          power:
+            type: string
+            format: uint64
+  structs.structs.QueryGetSubstationResponse:
+    type: object
+    properties:
+      Substation:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uint64
+          power:
+            type: string
+            format: uint64
+          load:
+            type: string
+            format: uint64
   structs.structs.QueryParamsResponse:
     type: object
     properties:
@@ -74944,3 +75985,26 @@ definitions:
         description: params holds all the parameters of this module.
         type: object
     description: QueryParamsResponse is response type for the Query/Params RPC method.
+  structs.structs.Reactor:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+      validator:
+        type: string
+      power:
+        type: string
+        format: uint64
+  structs.structs.Substation:
+    type: object
+    properties:
+      id:
+        type: string
+        format: uint64
+      power:
+        type: string
+        format: uint64
+      load:
+        type: string
+        format: uint64

@@ -345,7 +345,6 @@ func New(
 		app.GetSubspace(stakingtypes.ModuleName),
 	)
 
-
 	app.SlashingKeeper = slashingkeeper.NewKeeper(
 		appCodec,
 		keys[slashingtypes.StoreKey],

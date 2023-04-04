@@ -126,8 +126,8 @@ func (app *App) prepForZeroHeightGenesis(ctx sdk.Context, jailAllowedAddrs []str
 			panic(err)
 		}
 	}
-*/
-    height := ctx.BlockHeight()
+	*/
+	height := ctx.BlockHeight()
 	// reset context height
 	ctx = ctx.WithBlockHeight(height)
 

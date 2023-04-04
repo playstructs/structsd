@@ -25,8 +25,16 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // GenesisState defines the structs module's genesis state.
 type GenesisState struct {
-	Params Params `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
-	PortId string `protobuf:"bytes,2,opt,name=port_id,json=portId,proto3" json:"port_id,omitempty"`
+	Params                  Params               `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
+	PortId                  string               `protobuf:"bytes,2,opt,name=port_id,json=portId,proto3" json:"port_id,omitempty"`
+	ReactorList             []Reactor            `protobuf:"bytes,3,rep,name=reactorList,proto3" json:"reactorList"`
+	ReactorCount            uint64               `protobuf:"varint,4,opt,name=reactorCount,proto3" json:"reactorCount,omitempty"`
+	SubstationList          []Substation         `protobuf:"bytes,5,rep,name=substationList,proto3" json:"substationList"`
+	SubstationCount         uint64               `protobuf:"varint,6,opt,name=substationCount,proto3" json:"substationCount,omitempty"`
+	AllocationList          []Allocation         `protobuf:"bytes,7,rep,name=allocationList,proto3" json:"allocationList"`
+	AllocationCount         uint64               `protobuf:"varint,8,opt,name=allocationCount,proto3" json:"allocationCount,omitempty"`
+	AllocationProposalList  []AllocationProposal `protobuf:"bytes,9,rep,name=allocationProposalList,proto3" json:"allocationProposalList"`
+	AllocationProposalCount uint64               `protobuf:"varint,10,opt,name=allocationProposalCount,proto3" json:"allocationProposalCount,omitempty"`
 }
 
 func (m *GenesisState) Reset()         { *m = GenesisState{} }
@@ -76,6 +84,62 @@ func (m *GenesisState) GetPortId() string {
 	return ""
 }
 
+func (m *GenesisState) GetReactorList() []Reactor {
+	if m != nil {
+		return m.ReactorList
+	}
+	return nil
+}
+
+func (m *GenesisState) GetReactorCount() uint64 {
+	if m != nil {
+		return m.ReactorCount
+	}
+	return 0
+}
+
+func (m *GenesisState) GetSubstationList() []Substation {
+	if m != nil {
+		return m.SubstationList
+	}
+	return nil
+}
+
+func (m *GenesisState) GetSubstationCount() uint64 {
+	if m != nil {
+		return m.SubstationCount
+	}
+	return 0
+}
+
+func (m *GenesisState) GetAllocationList() []Allocation {
+	if m != nil {
+		return m.AllocationList
+	}
+	return nil
+}
+
+func (m *GenesisState) GetAllocationCount() uint64 {
+	if m != nil {
+		return m.AllocationCount
+	}
+	return 0
+}
+
+func (m *GenesisState) GetAllocationProposalList() []AllocationProposal {
+	if m != nil {
+		return m.AllocationProposalList
+	}
+	return nil
+}
+
+func (m *GenesisState) GetAllocationProposalCount() uint64 {
+	if m != nil {
+		return m.AllocationProposalCount
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*GenesisState)(nil), "structs.structs.GenesisState")
 }
@@ -83,19 +147,31 @@ func init() {
 func init() { proto.RegisterFile("structs/structs/genesis.proto", fileDescriptor_39407fc37d8c4705) }
 
 var fileDescriptor_39407fc37d8c4705 = []byte{
-	// 190 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x2d, 0x2e, 0x29, 0x2a,
-	0x4d, 0x2e, 0x29, 0xd6, 0x87, 0xd1, 0xe9, 0xa9, 0x79, 0xa9, 0xc5, 0x99, 0xc5, 0x7a, 0x05, 0x45,
-	0xf9, 0x25, 0xf9, 0x42, 0xfc, 0x50, 0x61, 0x3d, 0x28, 0x2d, 0x25, 0x92, 0x9e, 0x9f, 0x9e, 0x0f,
-	0x96, 0xd3, 0x07, 0xb1, 0x20, 0xca, 0xa4, 0x64, 0xd0, 0x4d, 0x29, 0x48, 0x2c, 0x4a, 0xcc, 0x85,
-	0x1a, 0xa2, 0x14, 0xc7, 0xc5, 0xe3, 0x0e, 0x31, 0x35, 0xb8, 0x24, 0xb1, 0x24, 0x55, 0xc8, 0x94,
-	0x8b, 0x0d, 0x22, 0x2f, 0xc1, 0xa8, 0xc0, 0xa8, 0xc1, 0x6d, 0x24, 0xae, 0x87, 0x66, 0x8b, 0x5e,
-	0x00, 0x58, 0xda, 0x89, 0xe5, 0xc4, 0x3d, 0x79, 0x86, 0x20, 0xa8, 0x62, 0x21, 0x71, 0x2e, 0xf6,
-	0x82, 0xfc, 0xa2, 0x92, 0xf8, 0xcc, 0x14, 0x09, 0x26, 0x05, 0x46, 0x0d, 0xce, 0x20, 0x36, 0x10,
-	0xd7, 0x33, 0xc5, 0xc9, 0xf0, 0xc4, 0x23, 0x39, 0xc6, 0x0b, 0x8f, 0xe4, 0x18, 0x1f, 0x3c, 0x92,
-	0x63, 0x9c, 0xf0, 0x58, 0x8e, 0xe1, 0xc2, 0x63, 0x39, 0x86, 0x1b, 0x8f, 0xe5, 0x18, 0xa2, 0xc4,
-	0x61, 0xee, 0xa9, 0x80, 0xbb, 0xac, 0xa4, 0xb2, 0x20, 0xb5, 0x38, 0x89, 0x0d, 0xec, 0x32, 0x63,
-	0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0xe1, 0x86, 0xff, 0xa8, 0xff, 0x00, 0x00, 0x00,
+	// 381 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x92, 0x41, 0x4b, 0xc3, 0x30,
+	0x18, 0x86, 0x1b, 0x57, 0x3b, 0x97, 0x0d, 0x07, 0x41, 0x6c, 0x99, 0x5a, 0xcb, 0xbc, 0xd4, 0x4b,
+	0x87, 0x13, 0xc1, 0xa3, 0xce, 0x83, 0x0c, 0x3c, 0x8c, 0xee, 0xe6, 0x65, 0x64, 0x5b, 0x19, 0x85,
+	0xb9, 0x94, 0x24, 0x03, 0xfd, 0x17, 0xfe, 0xac, 0x81, 0x97, 0x1d, 0x3d, 0x89, 0x6c, 0x7f, 0x44,
+	0x9a, 0xa4, 0xed, 0xd6, 0x52, 0x4f, 0x69, 0xde, 0xf7, 0xcd, 0xf7, 0x7c, 0x49, 0x3f, 0x78, 0xc1,
+	0x38, 0x5d, 0x4e, 0x38, 0xeb, 0x24, 0xeb, 0x2c, 0x58, 0x04, 0x2c, 0x64, 0x5e, 0x44, 0x09, 0x27,
+	0xa8, 0xa9, 0x64, 0x4f, 0xad, 0xad, 0x93, 0x19, 0x99, 0x11, 0xe1, 0x75, 0xe2, 0x2f, 0x19, 0x6b,
+	0x9d, 0xe7, 0xab, 0x44, 0x98, 0xe2, 0x37, 0x55, 0xa4, 0x55, 0x60, 0xd0, 0x00, 0x4f, 0x38, 0xa1,
+	0xca, 0x76, 0xf2, 0x36, 0x5b, 0x8e, 0x19, 0xc7, 0x3c, 0x24, 0x8b, 0xb2, 0x04, 0x9e, 0xcf, 0xc9,
+	0x64, 0x37, 0x71, 0x5d, 0x9e, 0x18, 0x45, 0x94, 0x44, 0x84, 0xe1, 0xb9, 0x8c, 0xb6, 0xbf, 0x74,
+	0xd8, 0x78, 0x96, 0x97, 0x1c, 0x72, 0xcc, 0x03, 0x74, 0x07, 0x0d, 0xd9, 0xae, 0x05, 0x1c, 0xe0,
+	0xd6, 0xbb, 0xa6, 0x97, 0xbb, 0xb4, 0x37, 0x10, 0x76, 0x4f, 0x5f, 0xfd, 0x5c, 0x6a, 0xbe, 0x0a,
+	0x23, 0x13, 0x56, 0x23, 0x42, 0xf9, 0x28, 0x9c, 0x5a, 0x07, 0x0e, 0x70, 0x6b, 0xbe, 0x11, 0x6f,
+	0xfb, 0x53, 0xf4, 0x00, 0xeb, 0xea, 0x82, 0x2f, 0x21, 0xe3, 0x56, 0xc5, 0xa9, 0xb8, 0xf5, 0xae,
+	0x55, 0x28, 0xea, 0xcb, 0x8c, 0xaa, 0xba, 0x7b, 0x04, 0xb5, 0x61, 0x43, 0x6d, 0x9f, 0xc8, 0x72,
+	0xc1, 0x2d, 0xdd, 0x01, 0xae, 0xee, 0xef, 0x69, 0xa8, 0x0f, 0x8f, 0xb3, 0x77, 0x12, 0xa0, 0x43,
+	0x01, 0x3a, 0x2b, 0x80, 0x86, 0x69, 0x4c, 0xb1, 0x72, 0x07, 0x91, 0x0b, 0x9b, 0x99, 0x22, 0x89,
+	0x86, 0x20, 0xe6, 0xe5, 0x18, 0x9a, 0x3d, 0xac, 0x80, 0x56, 0x4b, 0xa0, 0x8f, 0x69, 0x2c, 0x81,
+	0xee, 0x1f, 0x8c, 0xa1, 0x99, 0x22, 0xa1, 0x47, 0x12, 0x9a, 0x93, 0x11, 0x86, 0xa7, 0x99, 0x34,
+	0x50, 0x3f, 0x53, 0xc0, 0x6b, 0x02, 0x7e, 0xf5, 0x0f, 0x3c, 0x89, 0xab, 0x26, 0x4a, 0x0a, 0xa1,
+	0x7b, 0x68, 0x16, 0x1d, 0xd9, 0x14, 0x14, 0x4d, 0x95, 0xd9, 0xbd, 0x9b, 0xd5, 0xc6, 0x06, 0xeb,
+	0x8d, 0x0d, 0x7e, 0x37, 0x36, 0xf8, 0xdc, 0xda, 0xda, 0x7a, 0x6b, 0x6b, 0xdf, 0x5b, 0x5b, 0x7b,
+	0x35, 0x93, 0x51, 0x7c, 0x4f, 0x87, 0x92, 0x7f, 0x44, 0x01, 0x1b, 0x1b, 0x62, 0x0e, 0x6f, 0xff,
+	0x02, 0x00, 0x00, 0xff, 0xff, 0xf9, 0x5d, 0xe9, 0x78, 0x7b, 0x03, 0x00, 0x00,
 }
 
 func (m *GenesisState) Marshal() (dAtA []byte, err error) {
@@ -118,6 +194,82 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if m.AllocationProposalCount != 0 {
+		i = encodeVarintGenesis(dAtA, i, uint64(m.AllocationProposalCount))
+		i--
+		dAtA[i] = 0x50
+	}
+	if len(m.AllocationProposalList) > 0 {
+		for iNdEx := len(m.AllocationProposalList) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AllocationProposalList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x4a
+		}
+	}
+	if m.AllocationCount != 0 {
+		i = encodeVarintGenesis(dAtA, i, uint64(m.AllocationCount))
+		i--
+		dAtA[i] = 0x40
+	}
+	if len(m.AllocationList) > 0 {
+		for iNdEx := len(m.AllocationList) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AllocationList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x3a
+		}
+	}
+	if m.SubstationCount != 0 {
+		i = encodeVarintGenesis(dAtA, i, uint64(m.SubstationCount))
+		i--
+		dAtA[i] = 0x30
+	}
+	if len(m.SubstationList) > 0 {
+		for iNdEx := len(m.SubstationList) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.SubstationList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x2a
+		}
+	}
+	if m.ReactorCount != 0 {
+		i = encodeVarintGenesis(dAtA, i, uint64(m.ReactorCount))
+		i--
+		dAtA[i] = 0x20
+	}
+	if len(m.ReactorList) > 0 {
+		for iNdEx := len(m.ReactorList) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.ReactorList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
 	if len(m.PortId) > 0 {
 		i -= len(m.PortId)
 		copy(dAtA[i:], m.PortId)
@@ -160,6 +312,42 @@ func (m *GenesisState) Size() (n int) {
 	l = len(m.PortId)
 	if l > 0 {
 		n += 1 + l + sovGenesis(uint64(l))
+	}
+	if len(m.ReactorList) > 0 {
+		for _, e := range m.ReactorList {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if m.ReactorCount != 0 {
+		n += 1 + sovGenesis(uint64(m.ReactorCount))
+	}
+	if len(m.SubstationList) > 0 {
+		for _, e := range m.SubstationList {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if m.SubstationCount != 0 {
+		n += 1 + sovGenesis(uint64(m.SubstationCount))
+	}
+	if len(m.AllocationList) > 0 {
+		for _, e := range m.AllocationList {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if m.AllocationCount != 0 {
+		n += 1 + sovGenesis(uint64(m.AllocationCount))
+	}
+	if len(m.AllocationProposalList) > 0 {
+		for _, e := range m.AllocationProposalList {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if m.AllocationProposalCount != 0 {
+		n += 1 + sovGenesis(uint64(m.AllocationProposalCount))
 	}
 	return n
 }
@@ -264,6 +452,218 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 			}
 			m.PortId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReactorList", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ReactorList = append(m.ReactorList, Reactor{})
+			if err := m.ReactorList[len(m.ReactorList)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReactorCount", wireType)
+			}
+			m.ReactorCount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ReactorCount |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubstationList", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubstationList = append(m.SubstationList, Substation{})
+			if err := m.SubstationList[len(m.SubstationList)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubstationCount", wireType)
+			}
+			m.SubstationCount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SubstationCount |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 7:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AllocationList", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AllocationList = append(m.AllocationList, Allocation{})
+			if err := m.AllocationList[len(m.AllocationList)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 8:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AllocationCount", wireType)
+			}
+			m.AllocationCount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AllocationCount |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AllocationProposalList", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AllocationProposalList = append(m.AllocationProposalList, AllocationProposal{})
+			if err := m.AllocationProposalList[len(m.AllocationProposalList)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 10:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AllocationProposalCount", wireType)
+			}
+			m.AllocationProposalCount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AllocationProposalCount |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipGenesis(dAtA[iNdEx:])

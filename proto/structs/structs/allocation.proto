@@ -1,0 +1,14 @@
+syntax = "proto3";
+package structs.structs;
+
+option go_package = "structs/x/structs/types";
+
+message Allocation {
+  uint64 id = 1;
+  string sourceType = 2; 
+  uint64 sourceId = 3; 
+  uint64 destinationId = 4; 
+  uint64 power = 5; 
+  uint64 transmissionLoss = 6; 
+  
+}
