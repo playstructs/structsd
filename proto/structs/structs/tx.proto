@@ -2,6 +2,10 @@ syntax = "proto3";
 
 package structs.structs;
 
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+import "structs/structs/keys.proto";
+
 option go_package = "structs/x/structs/types";
 
 // Msg defines the Msg service.
@@ -40,12 +44,20 @@ message MsgSubstationDelete {
 
 message MsgSubstationDeleteResponse {}
 
+
+
+
 message MsgSubstationAllocationPropose {
   string creator    = 1;
   uint64 id         = 2;
-  string sourceType = 3;
+  objectType sourceType = 3;
   uint64 sourceId   = 4;
-  string power      = 5;
+  string power = 5 [
+   (cosmos_proto.scalar)  = "cosmos.Int",
+   (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+   (gogoproto.nullable)   = false
+  ];
+
 }
 
 message MsgSubstationAllocationProposeResponse {}

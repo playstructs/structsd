@@ -2,6 +2,7 @@ package cli
 
 import (
 	"strconv"
+	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -9,6 +10,8 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
+
+	math "cosmossdk.io/math"
 )
 
 var _ = strconv.Itoa(0)
@@ -23,7 +26,9 @@ func CmdSubstationAllocationPropose() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			argSourceType := args[1]
+
+			argSourceType := types.ObjectType_enum[strings.ToLower(args[1])]
+
 			argSourceId, err := cast.ToUint64E(args[2])
 			if err != nil {
 				return err
@@ -35,12 +40,15 @@ func CmdSubstationAllocationPropose() *cobra.Command {
 				return err
 			}
 
+
+            power, _  := math.NewIntFromString(argPower)
+
 			msg := types.NewMsgSubstationAllocationPropose(
 				clientCtx.GetFromAddress().String(),
 				argId,
 				argSourceType,
 				argSourceId,
-				argPower,
+				power,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

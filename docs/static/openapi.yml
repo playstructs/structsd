@@ -45278,6 +45278,14 @@ paths:
                       format: uint64
                     sourceType:
                       type: string
+                      enum:
+                        - faction
+                        - player
+                        - planet
+                        - reactor
+                        - substation
+                        - struct
+                      default: faction
                     sourceId:
                       type: string
                       format: uint64
@@ -45286,10 +45294,8 @@ paths:
                       format: uint64
                     power:
                       type: string
-                      format: uint64
                     transmissionLoss:
                       type: string
-                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -45413,6 +45419,14 @@ paths:
                     format: uint64
                   sourceType:
                     type: string
+                    enum:
+                      - faction
+                      - player
+                      - planet
+                      - reactor
+                      - substation
+                      - struct
+                    default: faction
                   sourceId:
                     type: string
                     format: uint64
@@ -45421,10 +45435,8 @@ paths:
                     format: uint64
                   power:
                     type: string
-                    format: uint64
                   transmissionLoss:
                     type: string
-                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -45470,6 +45482,14 @@ paths:
                       format: uint64
                     sourceType:
                       type: string
+                      enum:
+                        - faction
+                        - player
+                        - planet
+                        - reactor
+                        - substation
+                        - struct
+                      default: faction
                     sourceId:
                       type: string
                       format: uint64
@@ -45478,7 +45498,6 @@ paths:
                       format: uint64
                     power:
                       type: string
-                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -45602,6 +45621,14 @@ paths:
                     format: uint64
                   sourceType:
                     type: string
+                    enum:
+                      - faction
+                      - player
+                      - planet
+                      - reactor
+                      - substation
+                      - struct
+                    default: faction
                   sourceId:
                     type: string
                     format: uint64
@@ -45610,7 +45637,6 @@ paths:
                     format: uint64
                   power:
                     type: string
-                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -75684,6 +75710,14 @@ definitions:
         format: uint64
       sourceType:
         type: string
+        enum:
+          - faction
+          - player
+          - planet
+          - reactor
+          - substation
+          - struct
+        default: faction
       sourceId:
         type: string
         format: uint64
@@ -75692,10 +75726,8 @@ definitions:
         format: uint64
       power:
         type: string
-        format: uint64
       transmissionLoss:
         type: string
-        format: uint64
   structs.structs.AllocationProposal:
     type: object
     properties:
@@ -75704,6 +75736,14 @@ definitions:
         format: uint64
       sourceType:
         type: string
+        enum:
+          - faction
+          - player
+          - planet
+          - reactor
+          - substation
+          - struct
+        default: faction
       sourceId:
         type: string
         format: uint64
@@ -75712,7 +75752,6 @@ definitions:
         format: uint64
       power:
         type: string
-        format: uint64
   structs.structs.MsgReactorAllocationActivateResponse:
     type: object
   structs.structs.MsgSubstationAllocationActivateResponse:
@@ -75745,6 +75784,14 @@ definitions:
               format: uint64
             sourceType:
               type: string
+              enum:
+                - faction
+                - player
+                - planet
+                - reactor
+                - substation
+                - struct
+              default: faction
             sourceId:
               type: string
               format: uint64
@@ -75753,7 +75800,6 @@ definitions:
               format: uint64
             power:
               type: string
-              format: uint64
       pagination:
         type: object
         properties:
@@ -75793,6 +75839,14 @@ definitions:
               format: uint64
             sourceType:
               type: string
+              enum:
+                - faction
+                - player
+                - planet
+                - reactor
+                - substation
+                - struct
+              default: faction
             sourceId:
               type: string
               format: uint64
@@ -75801,10 +75855,8 @@ definitions:
               format: uint64
             power:
               type: string
-              format: uint64
             transmissionLoss:
               type: string
-              format: uint64
       pagination:
         type: object
         properties:
@@ -75934,6 +75986,14 @@ definitions:
             format: uint64
           sourceType:
             type: string
+            enum:
+              - faction
+              - player
+              - planet
+              - reactor
+              - substation
+              - struct
+            default: faction
           sourceId:
             type: string
             format: uint64
@@ -75942,7 +76002,6 @@ definitions:
             format: uint64
           power:
             type: string
-            format: uint64
   structs.structs.QueryGetAllocationResponse:
     type: object
     properties:
@@ -75954,6 +76013,14 @@ definitions:
             format: uint64
           sourceType:
             type: string
+            enum:
+              - faction
+              - player
+              - planet
+              - reactor
+              - substation
+              - struct
+            default: faction
           sourceId:
             type: string
             format: uint64
@@ -75962,10 +76029,8 @@ definitions:
             format: uint64
           power:
             type: string
-            format: uint64
           transmissionLoss:
             type: string
-            format: uint64
   structs.structs.QueryGetReactorResponse:
     type: object
     properties:
@@ -76047,3 +76112,13 @@ definitions:
         type: string
       load:
         type: string
+  structs.structs.objectType:
+    type: string
+    enum:
+      - faction
+      - player
+      - planet
+      - reactor
+      - substation
+      - struct
+    default: faction

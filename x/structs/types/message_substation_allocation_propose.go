@@ -9,7 +9,7 @@ const TypeMsgSubstationAllocationPropose = "substation_allocation_propose"
 
 var _ sdk.Msg = &MsgSubstationAllocationPropose{}
 
-func NewMsgSubstationAllocationPropose(creator string, id uint64, sourceType string, sourceId uint64, power string) *MsgSubstationAllocationPropose {
+func NewMsgSubstationAllocationPropose(creator string, id uint64, sourceType ObjectType, sourceId uint64, power sdk.Int) *MsgSubstationAllocationPropose {
 	return &MsgSubstationAllocationPropose{
 		Creator:    creator,
 		Id:         id,
@@ -45,5 +45,10 @@ func (msg *MsgSubstationAllocationPropose) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
+
+    if (!IsValidAllocationConnectionType(msg.SourceType)){
+        return sdkerrors.Wrapf(ErrAllocationSourceType, "invalid source type (%s) for allocating power from", msg.SourceType.String())
+    }
+
 	return nil
 }

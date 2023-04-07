@@ -12,3 +12,8 @@ var (
 	ErrInvalidPacketTimeout = sdkerrors.Register(ModuleName, 1500, "invalid packet timeout")
 	ErrInvalidVersion       = sdkerrors.Register(ModuleName, 1501, "invalid version")
 )
+
+
+var (
+    ErrAllocationSourceType       = sdkerrors.Register(ModuleName, 1510, "invalid source type")
+)

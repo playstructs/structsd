@@ -49,3 +49,19 @@ const (
 	AllocationProposalKey      = "AllocationProposal/value/"
 	AllocationProposalCountKey = "AllocationProposal/count/"
 )
+
+
+/*
+ * Additional code needed for ObjectType enumeration that the proto
+ * file doesn't seem to generate in keys.pb.go
+ *
+ * So this seems like as good a place as any for it.
+ */
+var ObjectType_enum = map[string]ObjectType{
+	"faction":    ObjectType_faction,
+	"player":     ObjectType_player,
+	"planet":     ObjectType_planet,
+	"reactor":    ObjectType_reactor,
+	"substation": ObjectType_substation,
+	"struct":     ObjectType_struct,
+}

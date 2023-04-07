@@ -1,0 +1,19 @@
+syntax = "proto3";
+package structs.structs;
+
+import "gogoproto/gogo.proto";
+import "cosmos_proto/cosmos.proto";
+
+option go_package = "structs/x/structs/types";
+
+
+
+enum objectType {
+    faction        = 0;
+    player         = 7;
+    planet         = 24;
+    reactor        = 32;
+    substation     = 64;
+    struct         = 128;
+}
+
