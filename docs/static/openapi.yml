@@ -45884,10 +45884,8 @@ paths:
                       format: uint64
                     power:
                       type: string
-                      format: uint64
                     load:
                       type: string
-                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -46011,10 +46009,8 @@ paths:
                     format: uint64
                   power:
                     type: string
-                    format: uint64
                   load:
                     type: string
-                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -75899,10 +75895,8 @@ definitions:
               format: uint64
             power:
               type: string
-              format: uint64
             load:
               type: string
-              format: uint64
       pagination:
         type: object
         properties:
@@ -76006,10 +76000,8 @@ definitions:
             format: uint64
           power:
             type: string
-            format: uint64
           load:
             type: string
-            format: uint64
   structs.structs.QueryParamsResponse:
     type: object
     properties:
@@ -76053,7 +76045,5 @@ definitions:
         format: uint64
       power:
         type: string
-        format: uint64
       load:
         type: string
-        format: uint64

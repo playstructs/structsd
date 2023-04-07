@@ -1,11 +1,24 @@
 syntax = "proto3";
 package structs.structs;
 
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+
 option go_package = "structs/x/structs/types";
 
 message Substation {
   uint64 id = 1;
-  uint64 power = 2; 
-  uint64 load = 3; 
+  string power = 2 [
+   (cosmos_proto.scalar)  = "cosmos.Int",
+   (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+   (gogoproto.nullable)   = false
+  ];
+
+  string load = 3 [
+   (cosmos_proto.scalar)  = "cosmos.Int",
+   (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+   (gogoproto.nullable)   = false
+  ];
+
   
 }

@@ -8,6 +8,7 @@ import (
 	"structs/x/structs/types"
 )
 
+
 // GetSubstationCount get the total number of substation
 func (k Keeper) GetSubstationCount(ctx sdk.Context) uint64 {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
