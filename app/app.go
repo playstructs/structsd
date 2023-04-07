@@ -501,6 +501,7 @@ func New(
 		stakingtypes.NewMultiStakingHooks(
 			// insert staking hooks receivers here
 			app.SlashingKeeper.Hooks(),
+			app.StructsKeeper.Hooks(),
 		),
 	)
 

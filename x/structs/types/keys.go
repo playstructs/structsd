@@ -30,8 +30,9 @@ func KeyPrefix(p string) []byte {
 }
 
 const (
-	ReactorKey      = "Reactor/value/"
-	ReactorCountKey = "Reactor/count/"
+	ReactorKey          = "Reactor/value/"
+	ReactorCountKey     = "Reactor/count/"
+	ReactorValidatorKey = "Reactor/validator/"
 )
 
 const (

@@ -27,94 +27,6 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type MsgReactorSetup struct {
-	Creator   string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Validator string `protobuf:"bytes,2,opt,name=validator,proto3" json:"validator,omitempty"`
-}
-
-func (m *MsgReactorSetup) Reset()         { *m = MsgReactorSetup{} }
-func (m *MsgReactorSetup) String() string { return proto.CompactTextString(m) }
-func (*MsgReactorSetup) ProtoMessage()    {}
-func (*MsgReactorSetup) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{0}
-}
-func (m *MsgReactorSetup) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgReactorSetup) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgReactorSetup.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgReactorSetup) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgReactorSetup.Merge(m, src)
-}
-func (m *MsgReactorSetup) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgReactorSetup) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgReactorSetup.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgReactorSetup proto.InternalMessageInfo
-
-func (m *MsgReactorSetup) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgReactorSetup) GetValidator() string {
-	if m != nil {
-		return m.Validator
-	}
-	return ""
-}
-
-type MsgReactorSetupResponse struct {
-}
-
-func (m *MsgReactorSetupResponse) Reset()         { *m = MsgReactorSetupResponse{} }
-func (m *MsgReactorSetupResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgReactorSetupResponse) ProtoMessage()    {}
-func (*MsgReactorSetupResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{1}
-}
-func (m *MsgReactorSetupResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgReactorSetupResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgReactorSetupResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgReactorSetupResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgReactorSetupResponse.Merge(m, src)
-}
-func (m *MsgReactorSetupResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgReactorSetupResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgReactorSetupResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgReactorSetupResponse proto.InternalMessageInfo
-
 type MsgReactorAllocationActivate struct {
 	Creator      string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	AllocationId uint64 `protobuf:"varint,2,opt,name=allocationId,proto3" json:"allocationId,omitempty"`
@@ -125,7 +37,7 @@ func (m *MsgReactorAllocationActivate) Reset()         { *m = MsgReactorAllocati
 func (m *MsgReactorAllocationActivate) String() string { return proto.CompactTextString(m) }
 func (*MsgReactorAllocationActivate) ProtoMessage()    {}
 func (*MsgReactorAllocationActivate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{2}
+	return fileDescriptor_38fd6c203bede659, []int{0}
 }
 func (m *MsgReactorAllocationActivate) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -182,7 +94,7 @@ func (m *MsgReactorAllocationActivateResponse) Reset()         { *m = MsgReactor
 func (m *MsgReactorAllocationActivateResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgReactorAllocationActivateResponse) ProtoMessage()    {}
 func (*MsgReactorAllocationActivateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{3}
+	return fileDescriptor_38fd6c203bede659, []int{1}
 }
 func (m *MsgReactorAllocationActivateResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -211,94 +123,6 @@ func (m *MsgReactorAllocationActivateResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgReactorAllocationActivateResponse proto.InternalMessageInfo
 
-type MsgReactorDelete struct {
-	Creator   string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	ReactorId uint64 `protobuf:"varint,2,opt,name=reactorId,proto3" json:"reactorId,omitempty"`
-}
-
-func (m *MsgReactorDelete) Reset()         { *m = MsgReactorDelete{} }
-func (m *MsgReactorDelete) String() string { return proto.CompactTextString(m) }
-func (*MsgReactorDelete) ProtoMessage()    {}
-func (*MsgReactorDelete) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{4}
-}
-func (m *MsgReactorDelete) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgReactorDelete) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgReactorDelete.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgReactorDelete) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgReactorDelete.Merge(m, src)
-}
-func (m *MsgReactorDelete) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgReactorDelete) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgReactorDelete.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgReactorDelete proto.InternalMessageInfo
-
-func (m *MsgReactorDelete) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgReactorDelete) GetReactorId() uint64 {
-	if m != nil {
-		return m.ReactorId
-	}
-	return 0
-}
-
-type MsgReactorDeleteResponse struct {
-}
-
-func (m *MsgReactorDeleteResponse) Reset()         { *m = MsgReactorDeleteResponse{} }
-func (m *MsgReactorDeleteResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgReactorDeleteResponse) ProtoMessage()    {}
-func (*MsgReactorDeleteResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{5}
-}
-func (m *MsgReactorDeleteResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgReactorDeleteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgReactorDeleteResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgReactorDeleteResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgReactorDeleteResponse.Merge(m, src)
-}
-func (m *MsgReactorDeleteResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgReactorDeleteResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgReactorDeleteResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgReactorDeleteResponse proto.InternalMessageInfo
-
 type MsgSubstationCreate struct {
 	Creator             string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	PermissionsOverride string `protobuf:"bytes,2,opt,name=permissionsOverride,proto3" json:"permissionsOverride,omitempty"`
@@ -309,7 +133,7 @@ func (m *MsgSubstationCreate) Reset()         { *m = MsgSubstationCreate{} }
 func (m *MsgSubstationCreate) String() string { return proto.CompactTextString(m) }
 func (*MsgSubstationCreate) ProtoMessage()    {}
 func (*MsgSubstationCreate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{6}
+	return fileDescriptor_38fd6c203bede659, []int{2}
 }
 func (m *MsgSubstationCreate) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -366,7 +190,7 @@ func (m *MsgSubstationCreateResponse) Reset()         { *m = MsgSubstationCreate
 func (m *MsgSubstationCreateResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgSubstationCreateResponse) ProtoMessage()    {}
 func (*MsgSubstationCreateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{7}
+	return fileDescriptor_38fd6c203bede659, []int{3}
 }
 func (m *MsgSubstationCreateResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -404,7 +228,7 @@ func (m *MsgSubstationDelete) Reset()         { *m = MsgSubstationDelete{} }
 func (m *MsgSubstationDelete) String() string { return proto.CompactTextString(m) }
 func (*MsgSubstationDelete) ProtoMessage()    {}
 func (*MsgSubstationDelete) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{8}
+	return fileDescriptor_38fd6c203bede659, []int{4}
 }
 func (m *MsgSubstationDelete) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -454,7 +278,7 @@ func (m *MsgSubstationDeleteResponse) Reset()         { *m = MsgSubstationDelete
 func (m *MsgSubstationDeleteResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgSubstationDeleteResponse) ProtoMessage()    {}
 func (*MsgSubstationDeleteResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{9}
+	return fileDescriptor_38fd6c203bede659, []int{5}
 }
 func (m *MsgSubstationDeleteResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -495,7 +319,7 @@ func (m *MsgSubstationAllocationPropose) Reset()         { *m = MsgSubstationAll
 func (m *MsgSubstationAllocationPropose) String() string { return proto.CompactTextString(m) }
 func (*MsgSubstationAllocationPropose) ProtoMessage()    {}
 func (*MsgSubstationAllocationPropose) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{10}
+	return fileDescriptor_38fd6c203bede659, []int{6}
 }
 func (m *MsgSubstationAllocationPropose) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -568,7 +392,7 @@ func (m *MsgSubstationAllocationProposeResponse) Reset() {
 func (m *MsgSubstationAllocationProposeResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgSubstationAllocationProposeResponse) ProtoMessage()    {}
 func (*MsgSubstationAllocationProposeResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{11}
+	return fileDescriptor_38fd6c203bede659, []int{7}
 }
 func (m *MsgSubstationAllocationProposeResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -607,7 +431,7 @@ func (m *MsgSubstationAllocationActivate) Reset()         { *m = MsgSubstationAl
 func (m *MsgSubstationAllocationActivate) String() string { return proto.CompactTextString(m) }
 func (*MsgSubstationAllocationActivate) ProtoMessage()    {}
 func (*MsgSubstationAllocationActivate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{12}
+	return fileDescriptor_38fd6c203bede659, []int{8}
 }
 func (m *MsgSubstationAllocationActivate) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -666,7 +490,7 @@ func (m *MsgSubstationAllocationActivateResponse) Reset() {
 func (m *MsgSubstationAllocationActivateResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgSubstationAllocationActivateResponse) ProtoMessage()    {}
 func (*MsgSubstationAllocationActivateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{13}
+	return fileDescriptor_38fd6c203bede659, []int{9}
 }
 func (m *MsgSubstationAllocationActivateResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -704,7 +528,7 @@ func (m *MsgSubstationAllocationDisconnect) Reset()         { *m = MsgSubstation
 func (m *MsgSubstationAllocationDisconnect) String() string { return proto.CompactTextString(m) }
 func (*MsgSubstationAllocationDisconnect) ProtoMessage()    {}
 func (*MsgSubstationAllocationDisconnect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{14}
+	return fileDescriptor_38fd6c203bede659, []int{10}
 }
 func (m *MsgSubstationAllocationDisconnect) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -758,7 +582,7 @@ func (m *MsgSubstationAllocationDisconnectResponse) String() string {
 }
 func (*MsgSubstationAllocationDisconnectResponse) ProtoMessage() {}
 func (*MsgSubstationAllocationDisconnectResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{15}
+	return fileDescriptor_38fd6c203bede659, []int{11}
 }
 func (m *MsgSubstationAllocationDisconnectResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -797,7 +621,7 @@ func (m *MsgSubstationPlayerConnect) Reset()         { *m = MsgSubstationPlayerC
 func (m *MsgSubstationPlayerConnect) String() string { return proto.CompactTextString(m) }
 func (*MsgSubstationPlayerConnect) ProtoMessage()    {}
 func (*MsgSubstationPlayerConnect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{16}
+	return fileDescriptor_38fd6c203bede659, []int{12}
 }
 func (m *MsgSubstationPlayerConnect) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -854,7 +678,7 @@ func (m *MsgSubstationPlayerConnectResponse) Reset()         { *m = MsgSubstatio
 func (m *MsgSubstationPlayerConnectResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgSubstationPlayerConnectResponse) ProtoMessage()    {}
 func (*MsgSubstationPlayerConnectResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{17}
+	return fileDescriptor_38fd6c203bede659, []int{13}
 }
 func (m *MsgSubstationPlayerConnectResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -893,7 +717,7 @@ func (m *MsgSubstationPlayerDisconnect) Reset()         { *m = MsgSubstationPlay
 func (m *MsgSubstationPlayerDisconnect) String() string { return proto.CompactTextString(m) }
 func (*MsgSubstationPlayerDisconnect) ProtoMessage()    {}
 func (*MsgSubstationPlayerDisconnect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{18}
+	return fileDescriptor_38fd6c203bede659, []int{14}
 }
 func (m *MsgSubstationPlayerDisconnect) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -950,7 +774,7 @@ func (m *MsgSubstationPlayerDisconnectResponse) Reset()         { *m = MsgSubsta
 func (m *MsgSubstationPlayerDisconnectResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgSubstationPlayerDisconnectResponse) ProtoMessage()    {}
 func (*MsgSubstationPlayerDisconnectResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{19}
+	return fileDescriptor_38fd6c203bede659, []int{15}
 }
 func (m *MsgSubstationPlayerDisconnectResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -980,12 +804,8 @@ func (m *MsgSubstationPlayerDisconnectResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgSubstationPlayerDisconnectResponse proto.InternalMessageInfo
 
 func init() {
-	proto.RegisterType((*MsgReactorSetup)(nil), "structs.structs.MsgReactorSetup")
-	proto.RegisterType((*MsgReactorSetupResponse)(nil), "structs.structs.MsgReactorSetupResponse")
 	proto.RegisterType((*MsgReactorAllocationActivate)(nil), "structs.structs.MsgReactorAllocationActivate")
 	proto.RegisterType((*MsgReactorAllocationActivateResponse)(nil), "structs.structs.MsgReactorAllocationActivateResponse")
-	proto.RegisterType((*MsgReactorDelete)(nil), "structs.structs.MsgReactorDelete")
-	proto.RegisterType((*MsgReactorDeleteResponse)(nil), "structs.structs.MsgReactorDeleteResponse")
 	proto.RegisterType((*MsgSubstationCreate)(nil), "structs.structs.MsgSubstationCreate")
 	proto.RegisterType((*MsgSubstationCreateResponse)(nil), "structs.structs.MsgSubstationCreateResponse")
 	proto.RegisterType((*MsgSubstationDelete)(nil), "structs.structs.MsgSubstationDelete")
@@ -1005,50 +825,45 @@ func init() {
 func init() { proto.RegisterFile("structs/structs/tx.proto", fileDescriptor_38fd6c203bede659) }
 
 var fileDescriptor_38fd6c203bede659 = []byte{
-	// 685 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x56, 0x4d, 0x4f, 0xdb, 0x40,
-	0x10, 0x65, 0xf9, 0x68, 0xc9, 0x88, 0x16, 0x64, 0x2a, 0x61, 0x4c, 0x70, 0x61, 0x45, 0x21, 0x08,
-	0x1a, 0x28, 0xa8, 0x1f, 0xea, 0x8d, 0xc2, 0x25, 0x95, 0x50, 0x91, 0xe9, 0x09, 0xa9, 0x07, 0x63,
-	0x6f, 0x91, 0xa5, 0x34, 0x6b, 0xed, 0x6e, 0x52, 0x22, 0x4e, 0x95, 0x2a, 0x55, 0xea, 0x89, 0x1f,
-	0xd0, 0x5f, 0xd3, 0x53, 0x8f, 0x1c, 0x7b, 0xac, 0x92, 0x3f, 0x52, 0xc5, 0xb1, 0xd7, 0xb1, 0x93,
-	0xac, 0x6d, 0x55, 0x3d, 0x59, 0x33, 0xfb, 0xe6, 0xbd, 0xb7, 0xe3, 0xd1, 0x68, 0x41, 0xe7, 0x82,
-	0x35, 0x1d, 0xc1, 0xf7, 0xa2, 0xaf, 0xb8, 0xae, 0xfa, 0x8c, 0x0a, 0xaa, 0xcd, 0x87, 0x99, 0x6a,
-	0xf8, 0xc5, 0x35, 0x98, 0x3f, 0xe5, 0x57, 0x16, 0xb1, 0x1d, 0x41, 0xd9, 0x39, 0x11, 0x4d, 0x5f,
-	0xd3, 0xe1, 0xbe, 0xc3, 0x88, 0x2d, 0x28, 0xd3, 0xd1, 0x1a, 0xaa, 0x94, 0xac, 0x28, 0xd4, 0xca,
-	0x50, 0x6a, 0xd9, 0x75, 0xcf, 0x0d, 0xce, 0x26, 0x83, 0xb3, 0x38, 0x81, 0x97, 0x61, 0x29, 0x45,
-	0x65, 0x11, 0xee, 0xd3, 0x06, 0x27, 0xf8, 0x1a, 0xca, 0xf1, 0xd1, 0x51, 0xbd, 0x4e, 0x1d, 0x5b,
-	0x78, 0xb4, 0x71, 0xe4, 0x08, 0xaf, 0x65, 0x0b, 0xa2, 0x90, 0xc4, 0x30, 0x67, 0x4b, 0x7c, 0xcd,
-	0x0d, 0x54, 0xa7, 0xad, 0x44, 0x4e, 0x33, 0x60, 0xd6, 0x25, 0x8e, 0xc7, 0x3d, 0xda, 0xd0, 0xa7,
-	0xd6, 0x50, 0x65, 0xd6, 0x92, 0x31, 0xde, 0x84, 0x0d, 0x95, 0xb2, 0x74, 0xf8, 0x16, 0x16, 0x62,
-	0xdc, 0x09, 0xa9, 0x13, 0xa5, 0xab, 0x32, 0x94, 0x58, 0x1f, 0x2a, 0x2d, 0xc5, 0x09, 0x6c, 0x80,
-	0x9e, 0xe6, 0x92, 0x3a, 0x37, 0xb0, 0x78, 0xca, 0xaf, 0xce, 0x9b, 0x97, 0x5c, 0x04, 0x46, 0x8e,
-	0x7b, 0x8c, 0x2a, 0xa9, 0x7d, 0x58, 0xf4, 0x09, 0xfb, 0xe4, 0xf1, 0xde, 0x75, 0xf8, 0xbb, 0x16,
-	0x61, 0xcc, 0x73, 0x49, 0xd8, 0xfd, 0x51, 0x47, 0x01, 0x17, 0x6d, 0x34, 0x88, 0x23, 0x82, 0x6e,
-	0xf4, 0xb8, 0xfa, 0x21, 0x5e, 0x85, 0x95, 0x11, 0xe2, 0xd2, 0xdb, 0x79, 0xca, 0x5b, 0x66, 0x1b,
-	0x30, 0xcc, 0x71, 0x89, 0x8e, 0x7f, 0xce, 0x60, 0x6e, 0x48, 0x33, 0xd5, 0x8f, 0x1f, 0x08, 0xcc,
-	0xc4, 0x79, 0xfc, 0x8f, 0xce, 0x18, 0xf5, 0x29, 0x57, 0xe9, 0x3f, 0x84, 0x49, 0x2f, 0x52, 0x9d,
-	0xf4, 0x5c, 0xcd, 0x04, 0xe0, 0xb4, 0xc9, 0x1c, 0xf2, 0xbe, 0xed, 0x93, 0xf0, 0xf2, 0x03, 0x99,
-	0xde, 0xa0, 0xf4, 0xa3, 0x9a, 0xab, 0x4f, 0x07, 0x55, 0x32, 0xd6, 0x1e, 0xc1, 0x8c, 0x4f, 0x3f,
-	0x13, 0xa6, 0xcf, 0x04, 0x65, 0xfd, 0x00, 0x57, 0x60, 0x53, 0xed, 0x6e, 0xe0, 0xc7, 0x3e, 0x1e,
-	0x83, 0xfc, 0x4f, 0x53, 0x5e, 0x1a, 0x98, 0xf2, 0x6d, 0xd8, 0xca, 0x10, 0x97, 0x3e, 0x6d, 0x58,
-	0x1f, 0x03, 0x3d, 0xf1, 0x78, 0x38, 0x28, 0xff, 0xe6, 0x14, 0xef, 0xc0, 0x76, 0xa6, 0x84, 0xf4,
-	0xd3, 0x02, 0x23, 0x01, 0x3e, 0xab, 0xdb, 0x6d, 0xc2, 0x8e, 0xf3, 0x18, 0xc9, 0x9a, 0xbd, 0x5e,
-	0xcb, 0xfc, 0x80, 0xae, 0xe6, 0x06, 0x2d, 0x9b, 0xb6, 0x64, 0x8c, 0x37, 0x00, 0x8f, 0xd7, 0x95,
-	0xee, 0x08, 0xac, 0x8e, 0x40, 0xe5, 0xea, 0x54, 0x7a, 0x38, 0x55, 0x66, 0xb6, 0xe0, 0x89, 0x52,
-	0x26, 0xf2, 0x73, 0xf0, 0xb3, 0x04, 0x53, 0xa7, 0xfc, 0x4a, 0xbb, 0x80, 0xb9, 0xc4, 0xce, 0x5e,
-	0xab, 0xa6, 0x16, 0x7b, 0x35, 0xb5, 0x8a, 0x8d, 0x4a, 0x16, 0x22, 0xd2, 0xd0, 0xbe, 0x20, 0x58,
-	0x1e, 0xbf, 0xaa, 0x9f, 0x2a, 0x78, 0x86, 0xe1, 0xc6, 0xf3, 0x42, 0x70, 0xe9, 0xe1, 0x03, 0x3c,
-	0x48, 0xee, 0xe2, 0x75, 0x05, 0x4f, 0x1f, 0x62, 0x6c, 0x67, 0x42, 0x24, 0xfd, 0x47, 0x58, 0x18,
-	0x5a, 0xc1, 0x1b, 0xa3, 0xca, 0xd3, 0x28, 0x63, 0x37, 0x0f, 0x6a, 0xb4, 0x4e, 0x78, 0x93, 0x0c,
-	0x9d, 0xf0, 0x32, 0xbb, 0x79, 0x50, 0x52, 0xe7, 0x1b, 0x82, 0x15, 0xd5, 0x0a, 0xdd, 0x53, 0xb3,
-	0x0d, 0x15, 0x18, 0x2f, 0x0b, 0x16, 0x48, 0x27, 0xdf, 0x11, 0x94, 0x95, 0x4b, 0x70, 0x3f, 0x2f,
-	0xb3, 0x1c, 0xa1, 0x57, 0x45, 0x2b, 0xa4, 0x99, 0x5b, 0x04, 0x66, 0xc6, 0xa6, 0x3b, 0xc8, 0x4b,
-	0x1e, 0xd7, 0x18, 0xaf, 0x8b, 0xd7, 0x48, 0x4b, 0x37, 0xb0, 0x34, 0x6e, 0xd7, 0xed, 0xa8, 0x69,
-	0x13, 0x60, 0xe3, 0xb0, 0x00, 0x58, 0x8a, 0x7f, 0x45, 0x60, 0x28, 0x76, 0x59, 0x35, 0x0f, 0xe7,
-	0x40, 0x1f, 0x5e, 0x14, 0xc3, 0x47, 0x36, 0xde, 0x3c, 0xfb, 0xd5, 0x31, 0xd1, 0x5d, 0xc7, 0x44,
-	0x7f, 0x3a, 0x26, 0xba, 0xed, 0x9a, 0x13, 0x77, 0x5d, 0x73, 0xe2, 0x77, 0xd7, 0x9c, 0xb8, 0x58,
-	0x8a, 0x1e, 0xac, 0xd7, 0xf1, 0xd3, 0xb5, 0xed, 0x13, 0x7e, 0x79, 0x2f, 0x78, 0xbe, 0x1e, 0xfe,
-	0x0d, 0x00, 0x00, 0xff, 0xff, 0x55, 0x9a, 0x53, 0x91, 0xda, 0x0a, 0x00, 0x00,
+	// 604 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x56, 0x4d, 0x6f, 0xd3, 0x40,
+	0x10, 0xed, 0xa6, 0x29, 0x24, 0x23, 0x04, 0xc8, 0x45, 0xaa, 0x71, 0x5b, 0x13, 0xac, 0xd0, 0xa6,
+	0x2a, 0xa4, 0xa5, 0x15, 0x1f, 0xe2, 0x56, 0xda, 0x4b, 0x0e, 0x11, 0x95, 0xcb, 0x89, 0x9b, 0x6b,
+	0x2f, 0x91, 0xa5, 0x90, 0xb5, 0x76, 0x37, 0x21, 0x51, 0x4f, 0x48, 0x48, 0x95, 0x38, 0xf5, 0x07,
+	0xf0, 0x83, 0x38, 0xf6, 0xc8, 0x11, 0x25, 0x7f, 0x04, 0xc5, 0xb1, 0x37, 0x76, 0x62, 0xaf, 0x6d,
+	0x21, 0x4e, 0xd1, 0xac, 0xdf, 0xbc, 0xf7, 0x32, 0x3b, 0x7a, 0x5a, 0x50, 0x19, 0xa7, 0x7d, 0x9b,
+	0xb3, 0x83, 0xf0, 0x97, 0x0f, 0x9b, 0x1e, 0x25, 0x9c, 0x28, 0x0f, 0x82, 0x93, 0x66, 0xf0, 0x6b,
+	0x0c, 0x61, 0xab, 0xcd, 0x3a, 0x26, 0xb6, 0x6c, 0x4e, 0xe8, 0x49, 0xb7, 0x4b, 0x6c, 0x8b, 0xbb,
+	0xa4, 0x77, 0x62, 0x73, 0x77, 0x60, 0x71, 0xac, 0xa8, 0x70, 0xd7, 0xa6, 0xd8, 0xe2, 0x84, 0xaa,
+	0xa8, 0x86, 0x1a, 0x55, 0x33, 0x2c, 0x15, 0x03, 0xee, 0x59, 0x02, 0xdf, 0x72, 0xd4, 0x52, 0x0d,
+	0x35, 0xca, 0x66, 0xec, 0x4c, 0xd1, 0xa0, 0xe2, 0x60, 0xdb, 0x65, 0x2e, 0xe9, 0xa9, 0xab, 0x35,
+	0xd4, 0xa8, 0x98, 0xa2, 0x36, 0x76, 0xa0, 0x2e, 0x53, 0x36, 0x31, 0xf3, 0x48, 0x8f, 0x61, 0xe3,
+	0x0a, 0xd6, 0xdb, 0xac, 0x73, 0xd1, 0xbf, 0x64, 0xdc, 0x07, 0x9c, 0x4e, 0xf5, 0x65, 0xc6, 0x0e,
+	0x61, 0xdd, 0xc3, 0xf4, 0x8b, 0xcb, 0xa6, 0x32, 0xec, 0xc3, 0x00, 0x53, 0xea, 0x3a, 0xd8, 0xf7,
+	0x57, 0x35, 0x93, 0x3e, 0xf9, 0x5c, 0xa4, 0xd7, 0xc3, 0x36, 0xf7, 0x5d, 0x4e, 0xb9, 0x66, 0xa5,
+	0xb1, 0x0d, 0x9b, 0x09, 0xe2, 0xc2, 0xdb, 0xc5, 0x82, 0xb7, 0x33, 0xdc, 0xc5, 0x59, 0x43, 0x63,
+	0x02, 0x3d, 0x1f, 0x5a, 0xf4, 0x6c, 0x49, 0x73, 0x46, 0x2a, 0x34, 0x7f, 0x22, 0xd0, 0x63, 0xdf,
+	0xe7, 0xb3, 0x3b, 0xa7, 0xc4, 0x23, 0x4c, 0xa6, 0x7f, 0x1f, 0x4a, 0x6e, 0xa8, 0x5a, 0x72, 0x1d,
+	0x45, 0x07, 0x60, 0xa4, 0x4f, 0x6d, 0xfc, 0x71, 0xe4, 0xe1, 0xe0, 0xcf, 0x47, 0x4e, 0xa6, 0x17,
+	0x38, 0xab, 0x5a, 0x8e, 0x5a, 0xf6, 0xbb, 0x44, 0xad, 0x3c, 0x82, 0x35, 0x8f, 0x7c, 0xc5, 0x54,
+	0x5d, 0xf3, 0xdb, 0x66, 0x85, 0xd1, 0x80, 0x1d, 0xb9, 0xbb, 0xc8, 0xc5, 0x3e, 0x49, 0x41, 0xfe,
+	0xa7, 0xed, 0xab, 0x46, 0xb6, 0x6f, 0x0f, 0x76, 0x33, 0xc4, 0x85, 0x4f, 0x0b, 0x9e, 0xa6, 0x40,
+	0xcf, 0x5c, 0x16, 0x2c, 0xca, 0xbf, 0x39, 0x35, 0xf6, 0x61, 0x2f, 0x53, 0x42, 0xf8, 0x19, 0x80,
+	0x16, 0x03, 0x9f, 0x77, 0xad, 0x11, 0xa6, 0xa7, 0x79, 0x8c, 0x64, 0xed, 0xde, 0x74, 0x64, 0x9e,
+	0x4f, 0xd7, 0x72, 0xfc, 0x91, 0x95, 0x4d, 0x51, 0x1b, 0x75, 0x30, 0xd2, 0x75, 0x85, 0x3b, 0x0c,
+	0xdb, 0x09, 0xa8, 0x5c, 0x93, 0x5a, 0x5c, 0x4e, 0x99, 0x99, 0x5d, 0x78, 0x26, 0x95, 0x09, 0xfd,
+	0x1c, 0x5d, 0x57, 0x60, 0xb5, 0xcd, 0x3a, 0xca, 0x37, 0x04, 0x8f, 0xd3, 0x63, 0xee, 0x45, 0x73,
+	0x21, 0x18, 0x9b, 0xb2, 0x6c, 0xd2, 0x5e, 0x15, 0x82, 0x87, 0x5e, 0x94, 0xcf, 0xf0, 0x70, 0x29,
+	0xc7, 0xea, 0x49, 0x54, 0x8b, 0x28, 0xed, 0x79, 0x1e, 0x54, 0xb2, 0x4e, 0x90, 0x49, 0x19, 0x3a,
+	0x33, 0x54, 0x96, 0x4e, 0x3c, 0x8a, 0x94, 0x6b, 0x04, 0x9b, 0xb2, 0x1c, 0x3a, 0x90, 0xb3, 0x2d,
+	0x35, 0x68, 0x6f, 0x0a, 0x36, 0x08, 0x27, 0x3f, 0x10, 0x6c, 0x49, 0x93, 0xe4, 0x30, 0x2f, 0xb3,
+	0xb8, 0xe3, 0xb7, 0x45, 0x3b, 0x84, 0x99, 0x1b, 0x04, 0x7a, 0x46, 0x5c, 0x1c, 0xe5, 0x25, 0x9f,
+	0xf7, 0x68, 0xef, 0x8a, 0xf7, 0x08, 0x4b, 0x57, 0xb0, 0x91, 0x16, 0x18, 0xfb, 0x72, 0xda, 0x18,
+	0x58, 0x3b, 0x2e, 0x00, 0x16, 0xe2, 0xdf, 0x11, 0x68, 0x92, 0x40, 0x68, 0xe6, 0xe1, 0x8c, 0xcc,
+	0xe1, 0x75, 0x31, 0x7c, 0x68, 0xe3, 0xfd, 0xcb, 0x5f, 0x63, 0x1d, 0xdd, 0x8e, 0x75, 0xf4, 0x67,
+	0xac, 0xa3, 0x9b, 0x89, 0xbe, 0x72, 0x3b, 0xd1, 0x57, 0x7e, 0x4f, 0xf4, 0x95, 0x4f, 0x1b, 0xe1,
+	0x3b, 0x69, 0x38, 0x7f, 0x31, 0x8d, 0x3c, 0xcc, 0x2e, 0xef, 0xf8, 0xaf, 0xa6, 0xe3, 0xbf, 0x01,
+	0x00, 0x00, 0xff, 0xff, 0x47, 0xd1, 0x4c, 0x72, 0x51, 0x09, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1063,9 +878,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
-	ReactorSetup(ctx context.Context, in *MsgReactorSetup, opts ...grpc.CallOption) (*MsgReactorSetupResponse, error)
 	ReactorAllocationActivate(ctx context.Context, in *MsgReactorAllocationActivate, opts ...grpc.CallOption) (*MsgReactorAllocationActivateResponse, error)
-	ReactorDelete(ctx context.Context, in *MsgReactorDelete, opts ...grpc.CallOption) (*MsgReactorDeleteResponse, error)
 	SubstationCreate(ctx context.Context, in *MsgSubstationCreate, opts ...grpc.CallOption) (*MsgSubstationCreateResponse, error)
 	SubstationDelete(ctx context.Context, in *MsgSubstationDelete, opts ...grpc.CallOption) (*MsgSubstationDeleteResponse, error)
 	SubstationAllocationPropose(ctx context.Context, in *MsgSubstationAllocationPropose, opts ...grpc.CallOption) (*MsgSubstationAllocationProposeResponse, error)
@@ -1083,27 +896,9 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) ReactorSetup(ctx context.Context, in *MsgReactorSetup, opts ...grpc.CallOption) (*MsgReactorSetupResponse, error) {
-	out := new(MsgReactorSetupResponse)
-	err := c.cc.Invoke(ctx, "/structs.structs.Msg/ReactorSetup", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *msgClient) ReactorAllocationActivate(ctx context.Context, in *MsgReactorAllocationActivate, opts ...grpc.CallOption) (*MsgReactorAllocationActivateResponse, error) {
 	out := new(MsgReactorAllocationActivateResponse)
 	err := c.cc.Invoke(ctx, "/structs.structs.Msg/ReactorAllocationActivate", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) ReactorDelete(ctx context.Context, in *MsgReactorDelete, opts ...grpc.CallOption) (*MsgReactorDeleteResponse, error) {
-	out := new(MsgReactorDeleteResponse)
-	err := c.cc.Invoke(ctx, "/structs.structs.Msg/ReactorDelete", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1175,9 +970,7 @@ func (c *msgClient) SubstationPlayerDisconnect(ctx context.Context, in *MsgSubst
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
-	ReactorSetup(context.Context, *MsgReactorSetup) (*MsgReactorSetupResponse, error)
 	ReactorAllocationActivate(context.Context, *MsgReactorAllocationActivate) (*MsgReactorAllocationActivateResponse, error)
-	ReactorDelete(context.Context, *MsgReactorDelete) (*MsgReactorDeleteResponse, error)
 	SubstationCreate(context.Context, *MsgSubstationCreate) (*MsgSubstationCreateResponse, error)
 	SubstationDelete(context.Context, *MsgSubstationDelete) (*MsgSubstationDeleteResponse, error)
 	SubstationAllocationPropose(context.Context, *MsgSubstationAllocationPropose) (*MsgSubstationAllocationProposeResponse, error)
@@ -1191,14 +984,8 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
-func (*UnimplementedMsgServer) ReactorSetup(ctx context.Context, req *MsgReactorSetup) (*MsgReactorSetupResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReactorSetup not implemented")
-}
 func (*UnimplementedMsgServer) ReactorAllocationActivate(ctx context.Context, req *MsgReactorAllocationActivate) (*MsgReactorAllocationActivateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReactorAllocationActivate not implemented")
-}
-func (*UnimplementedMsgServer) ReactorDelete(ctx context.Context, req *MsgReactorDelete) (*MsgReactorDeleteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ReactorDelete not implemented")
 }
 func (*UnimplementedMsgServer) SubstationCreate(ctx context.Context, req *MsgSubstationCreate) (*MsgSubstationCreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubstationCreate not implemented")
@@ -1226,24 +1013,6 @@ func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
 }
 
-func _Msg_ReactorSetup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgReactorSetup)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).ReactorSetup(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.structs.Msg/ReactorSetup",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).ReactorSetup(ctx, req.(*MsgReactorSetup))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Msg_ReactorAllocationActivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgReactorAllocationActivate)
 	if err := dec(in); err != nil {
@@ -1258,24 +1027,6 @@ func _Msg_ReactorAllocationActivate_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).ReactorAllocationActivate(ctx, req.(*MsgReactorAllocationActivate))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_ReactorDelete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgReactorDelete)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).ReactorDelete(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.structs.Msg/ReactorDelete",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).ReactorDelete(ctx, req.(*MsgReactorDelete))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1411,16 +1162,8 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ReactorSetup",
-			Handler:    _Msg_ReactorSetup_Handler,
-		},
-		{
 			MethodName: "ReactorAllocationActivate",
 			Handler:    _Msg_ReactorAllocationActivate_Handler,
-		},
-		{
-			MethodName: "ReactorDelete",
-			Handler:    _Msg_ReactorDelete_Handler,
 		},
 		{
 			MethodName: "SubstationCreate",
@@ -1453,66 +1196,6 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "structs/structs/tx.proto",
-}
-
-func (m *MsgReactorSetup) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgReactorSetup) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgReactorSetup) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Validator) > 0 {
-		i -= len(m.Validator)
-		copy(dAtA[i:], m.Validator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Validator)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgReactorSetupResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgReactorSetupResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgReactorSetupResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
 }
 
 func (m *MsgReactorAllocationActivate) Marshal() (dAtA []byte, err error) {
@@ -1576,64 +1259,6 @@ func (m *MsgReactorAllocationActivateResponse) MarshalTo(dAtA []byte) (int, erro
 }
 
 func (m *MsgReactorAllocationActivateResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgReactorDelete) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgReactorDelete) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgReactorDelete) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.ReactorId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.ReactorId))
-		i--
-		dAtA[i] = 0x10
-	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgReactorDeleteResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgReactorDeleteResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgReactorDeleteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -2103,32 +1728,6 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgReactorSetup) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Creator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.Validator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	return n
-}
-
-func (m *MsgReactorSetupResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
 func (m *MsgReactorAllocationActivate) Size() (n int) {
 	if m == nil {
 		return 0
@@ -2149,31 +1748,6 @@ func (m *MsgReactorAllocationActivate) Size() (n int) {
 }
 
 func (m *MsgReactorAllocationActivateResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MsgReactorDelete) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Creator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	if m.ReactorId != 0 {
-		n += 1 + sovTx(uint64(m.ReactorId))
-	}
-	return n
-}
-
-func (m *MsgReactorDeleteResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2389,170 +1963,6 @@ func sovTx(x uint64) (n int) {
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgReactorSetup) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgReactorSetup: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgReactorSetup: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Validator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Validator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgReactorSetupResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgReactorSetupResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgReactorSetupResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
 func (m *MsgReactorAllocationActivate) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -2701,157 +2111,6 @@ func (m *MsgReactorAllocationActivateResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgReactorAllocationActivateResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgReactorDelete) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgReactorDelete: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgReactorDelete: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ReactorId", wireType)
-			}
-			m.ReactorId = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ReactorId |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgReactorDeleteResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgReactorDeleteResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgReactorDeleteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

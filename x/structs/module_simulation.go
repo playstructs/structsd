@@ -24,17 +24,10 @@ var (
 )
 
 const (
-	opWeightMsgReactorSetup = "op_weight_msg_reactor_setup"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgReactorSetup int = 100
 
 	opWeightMsgReactorAllocationActivate = "op_weight_msg_reactor_allocation_activate"
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgReactorAllocationActivate int = 100
-
-	opWeightMsgReactorDelete = "op_weight_msg_reactor_delete"
-	// TODO: Determine the simulation weight value
-	defaultWeightMsgReactorDelete int = 100
 
 	opWeightMsgSubstationCreate = "op_weight_msg_substation_create"
 	// TODO: Determine the simulation weight value
@@ -99,17 +92,6 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
-	var weightMsgReactorSetup int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgReactorSetup, &weightMsgReactorSetup, nil,
-		func(_ *rand.Rand) {
-			weightMsgReactorSetup = defaultWeightMsgReactorSetup
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgReactorSetup,
-		structssimulation.SimulateMsgReactorSetup(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
 	var weightMsgReactorAllocationActivate int
 	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgReactorAllocationActivate, &weightMsgReactorAllocationActivate, nil,
 		func(_ *rand.Rand) {
@@ -119,17 +101,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgReactorAllocationActivate,
 		structssimulation.SimulateMsgReactorAllocationActivate(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
-	var weightMsgReactorDelete int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgReactorDelete, &weightMsgReactorDelete, nil,
-		func(_ *rand.Rand) {
-			weightMsgReactorDelete = defaultWeightMsgReactorDelete
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgReactorDelete,
-		structssimulation.SimulateMsgReactorDelete(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	var weightMsgSubstationCreate int

@@ -8,9 +8,7 @@ import (
 )
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
-	cdc.RegisterConcrete(&MsgReactorSetup{}, "structs/ReactorSetup", nil)
 	cdc.RegisterConcrete(&MsgReactorAllocationActivate{}, "structs/ReactorAllocationActivate", nil)
-	cdc.RegisterConcrete(&MsgReactorDelete{}, "structs/ReactorDelete", nil)
 	cdc.RegisterConcrete(&MsgSubstationCreate{}, "structs/SubstationCreate", nil)
 	cdc.RegisterConcrete(&MsgSubstationDelete{}, "structs/SubstationDelete", nil)
 	cdc.RegisterConcrete(&MsgSubstationAllocationPropose{}, "structs/SubstationAllocationPropose", nil)
@@ -23,13 +21,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgReactorSetup{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgReactorAllocationActivate{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgReactorDelete{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgSubstationCreate{},

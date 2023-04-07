@@ -30,9 +30,7 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand(CmdReactorSetup())
 	cmd.AddCommand(CmdReactorAllocationActivate())
-	cmd.AddCommand(CmdReactorDelete())
 	cmd.AddCommand(CmdSubstationCreate())
 	cmd.AddCommand(CmdSubstationDelete())
 	cmd.AddCommand(CmdSubstationAllocationPropose())

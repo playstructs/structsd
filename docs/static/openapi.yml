@@ -45694,7 +45694,16 @@ paths:
                       type: string
                     power:
                       type: string
-                      format: uint64
+                    load:
+                      type: string
+                    status:
+                      type: string
+                      enum:
+                        - ONLINE
+                        - OFFLINE
+                        - DECOMMISSIONED
+                        - OVERLOAD
+                      default: ONLINE
               pagination:
                 type: object
                 properties:
@@ -45820,7 +45829,16 @@ paths:
                     type: string
                   power:
                     type: string
-                    format: uint64
+                  load:
+                    type: string
+                  status:
+                    type: string
+                    enum:
+                      - ONLINE
+                      - OFFLINE
+                      - DECOMMISSIONED
+                      - OVERLOAD
+                    default: ONLINE
         default:
           description: An unexpected error response.
           schema:
@@ -75701,10 +75719,6 @@ definitions:
         format: uint64
   structs.structs.MsgReactorAllocationActivateResponse:
     type: object
-  structs.structs.MsgReactorDeleteResponse:
-    type: object
-  structs.structs.MsgReactorSetupResponse:
-    type: object
   structs.structs.MsgSubstationAllocationActivateResponse:
     type: object
   structs.structs.MsgSubstationAllocationDisconnectResponse:
@@ -75836,7 +75850,16 @@ definitions:
               type: string
             power:
               type: string
-              format: uint64
+            load:
+              type: string
+            status:
+              type: string
+              enum:
+                - ONLINE
+                - OFFLINE
+                - DECOMMISSIONED
+                - OVERLOAD
+              default: ONLINE
       pagination:
         type: object
         properties:
@@ -75962,7 +75985,16 @@ definitions:
             type: string
           power:
             type: string
-            format: uint64
+          load:
+            type: string
+          status:
+            type: string
+            enum:
+              - ONLINE
+              - OFFLINE
+              - DECOMMISSIONED
+              - OVERLOAD
+            default: ONLINE
   structs.structs.QueryGetSubstationResponse:
     type: object
     properties:
@@ -75995,7 +76027,24 @@ definitions:
         type: string
       power:
         type: string
-        format: uint64
+      load:
+        type: string
+      status:
+        type: string
+        enum:
+          - ONLINE
+          - OFFLINE
+          - DECOMMISSIONED
+          - OVERLOAD
+        default: ONLINE
+  structs.structs.Reactor.Status:
+    type: string
+    enum:
+      - ONLINE
+      - OFFLINE
+      - DECOMMISSIONED
+      - OVERLOAD
+    default: ONLINE
   structs.structs.Substation:
     type: object
     properties:

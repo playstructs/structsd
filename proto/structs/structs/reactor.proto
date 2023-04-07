@@ -3,9 +3,37 @@ package structs.structs;
 
 option go_package = "structs/x/structs/types";
 
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "cosmos_proto/cosmos.proto";
+
+
 message Reactor {
   uint64 id = 1;
-  string validator = 2; 
-  uint64 power = 3; 
+
+  string validator = 2;
+
+  string power = 3 [
+   (cosmos_proto.scalar)  = "cosmos.Int",
+   (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+   (gogoproto.nullable)   = false
+  ];
+
+  string load = 4 [
+   (cosmos_proto.scalar)  = "cosmos.Int",
+   (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
+   (gogoproto.nullable)   = false
+  ];
+
+
+  enum Status {
+    ONLINE          = 0;
+    OFFLINE         = 7;
+    DECOMMISSIONED  = 24;
+  	OVERLOAD        = 32;
+  }
+
+  Status status = 5 ;
+
   
 }
