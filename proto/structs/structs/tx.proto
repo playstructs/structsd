@@ -49,7 +49,7 @@ message MsgSubstationDeleteResponse {}
 
 message MsgSubstationAllocationPropose {
   string creator    = 1;
-  uint64 id         = 2;
+  uint64 DestinationId   = 2;
   objectType sourceType = 3;
   uint64 sourceId   = 4;
   string power = 5 [
@@ -57,6 +57,7 @@ message MsgSubstationAllocationPropose {
    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
    (gogoproto.nullable)   = false
   ];
+
 
 }
 

@@ -27,7 +27,10 @@ func (k msgServer) SubstationAllocationPropose(goCtx context.Context, msg *types
 	}
 
 	proposal := types.AllocationProposal{
-
+        SourceType: msg.SourceType,
+        SourceId: msg.SourceId,
+        DestinationId: msg.DestinationId,
+        Power: msg.Power,
 
 	}
 

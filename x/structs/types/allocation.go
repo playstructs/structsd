@@ -1,8 +1,22 @@
 package types
 
 import (
+    math "cosmossdk.io/math"
+    sdk "github.com/cosmos/cosmos-sdk/types"
 
 )
+
+
+func (a *Allocation) SetPower(ctx sdk.Context, proposal AllocationProposal) (error) {
+
+    a.Power = proposal.Power
+
+    //TODO: Change into a parameter
+    transmissionLossBase, _ := math.NewIntFromString("4");
+    a.TransmissionLoss = proposal.Power.Quo(transmissionLossBase)
+
+    return nil
+}
 
 /*
  * Currently, only Reactors, Structs (Power Plants), and Substations can have

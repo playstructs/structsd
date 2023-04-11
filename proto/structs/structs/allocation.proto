@@ -20,7 +20,6 @@ message Allocation {
    (gogoproto.nullable)   = false
   ];
 
-
   string transmissionLoss = 6 [
    (cosmos_proto.scalar)  = "cosmos.Int",
    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",

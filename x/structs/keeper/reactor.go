@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"encoding/binary"
-
+    math "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
@@ -26,6 +26,9 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
     } else {
         /* Build the initial Reactor object */
         reactor.Validator = validator.OperatorAddress
+        reactor.Power, _ = math.NewIntFromString("0")
+        reactor.Load, _  = math.NewIntFromString("0")
+        reactor.Status = types.Reactor_OFFLINE
     }
 
     /* Bring the Reactor ONLINE
@@ -33,7 +36,7 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
      * It's possible we'll want this to start in a different
      * but it should be fine for now.
     */
-	_ = reactor.SetStatusOnline(ctx)
+	_ = reactor.SetStatusOverload()
 
     /* TODO: Permissions
      *
@@ -48,7 +51,7 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
      * Set the initial power level of the Reactor based on the
      * tokens staked to the validator
      */
-	_ = reactor.SetEnergy(ctx, validator)
+	_ = reactor.SetEnergy(validator)
 
 
 
@@ -79,6 +82,9 @@ func (k Keeper) ReactorUpdateEnergy(ctx sdk.Context, validatorAddress sdk.ValAdd
     } else {
         /* Build the initial Reactor object */
         reactor.Validator = validator.OperatorAddress
+        reactor.Power, _ = math.NewIntFromString("0")
+        reactor.Load, _  = math.NewIntFromString("0")
+        reactor.Status = types.Reactor_OFFLINE
     }
 
     /* Sync Energy Levels
@@ -86,15 +92,22 @@ func (k Keeper) ReactorUpdateEnergy(ctx sdk.Context, validatorAddress sdk.ValAdd
      * Set the initial power level of the Reactor based on the
      * tokens staked to the validator
      */
-	_ = reactor.SetEnergy(ctx, validator)
+	_ = reactor.SetEnergy(validator)
 
 
     /* Check on the Status of the Reactor
     */
-    if (reactor.Load.GT(reactor.Power)) {
-        _ = reactor.SetStatusOverload(ctx)
+
+    var load math.Int
+    var power math.Int
+
+    load = reactor.Load
+    power = reactor.Power
+
+    if (load.GT(power)) {
+        reactor.SetStatusOverload()
     } else {
-        _ = reactor.SetStatusOnline(ctx)
+        reactor.SetStatusOnline()
     }
 
     /* TODO: Permissions
@@ -128,21 +141,24 @@ func (k Keeper) ReactorUpdateFromValidator(ctx sdk.Context, validatorAddress sdk
     } else {
         /* Build the initial Reactor object */
         reactor.Validator = validator.OperatorAddress
+        reactor.Power, _ = math.NewIntFromString("0")
+        reactor.Load, _  = math.NewIntFromString("0")
+        reactor.Status = types.Reactor_OFFLINE
     }
 
     /* Sync Energy Levels
      *
      * May as well update power levels while we are here
      */
-	_ = reactor.SetEnergy(ctx, validator)
+	_ = reactor.SetEnergy(validator)
 
 
     /* Check on the Status of the Reactor
     */
     if (reactor.Load.GT(reactor.Power)) {
-        _ = reactor.SetStatusOverload(ctx)
+        _ = reactor.SetStatusOverload()
     } else {
-        _ = reactor.SetStatusOnline(ctx)
+        _ = reactor.SetStatusOnline()
     }
 
 

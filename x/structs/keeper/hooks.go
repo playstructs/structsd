@@ -61,8 +61,8 @@ func (h Hooks) BeforeDelegationCreated(_ sdk.Context, _ sdk.AccAddress, _ sdk.Va
 	return nil
 }
 
-func (h Hooks) BeforeDelegationSharesModified(_ sdk.Context, _ sdk.AccAddress, _ sdk.ValAddress) error {
-
+func (h Hooks) BeforeDelegationSharesModified(ctx sdk.Context, _ sdk.AccAddress, valAddr sdk.ValAddress) error {
+    _ = h.k.ReactorUpdateEnergy(ctx, valAddr);
 	return nil
 }
 

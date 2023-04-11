@@ -18,11 +18,11 @@ var _ = strconv.Itoa(0)
 
 func CmdSubstationAllocationPropose() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "substation-allocation-propose [id] [source-type] [source-id] [power]",
+		Use:   "substation-allocation-propose [destiantion-id] [source-type] [source-id] [power]",
 		Short: "Broadcast message substation-allocation-propose",
 		Args:  cobra.ExactArgs(4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argId, err := cast.ToUint64E(args[0])
+			argDestinationId, err := cast.ToUint64E(args[0])
 			if err != nil {
 				return err
 			}
@@ -33,6 +33,7 @@ func CmdSubstationAllocationPropose() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
 			argPower := args[3]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
@@ -45,9 +46,9 @@ func CmdSubstationAllocationPropose() *cobra.Command {
 
 			msg := types.NewMsgSubstationAllocationPropose(
 				clientCtx.GetFromAddress().String(),
-				argId,
 				argSourceType,
 				argSourceId,
+				argDestinationId,
 				power,
 			)
 			if err := msg.ValidateBasic(); err != nil {
