@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
+
 )
 
 
@@ -36,7 +37,7 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
      * It's possible we'll want this to start in a different
      * but it should be fine for now.
     */
-	_ = reactor.SetStatusOverload()
+	_ = reactor.SetStatusOnline()
 
     /* TODO: Permissions
      *
@@ -97,17 +98,10 @@ func (k Keeper) ReactorUpdateEnergy(ctx sdk.Context, validatorAddress sdk.ValAdd
 
     /* Check on the Status of the Reactor
     */
-
-    var load math.Int
-    var power math.Int
-
-    load = reactor.Load
-    power = reactor.Power
-
-    if (load.GT(power)) {
-        reactor.SetStatusOverload()
+    if (reactor.Load.GT(reactor.Power)) {
+        _ = reactor.SetStatusOverload()
     } else {
-        reactor.SetStatusOnline()
+        _ = reactor.SetStatusOnline()
     }
 
     /* TODO: Permissions

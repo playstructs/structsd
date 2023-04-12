@@ -19,3 +19,8 @@ func (r *Reactor) SetStatusOverload() (error) {
     r.Status = Reactor_OVERLOAD
     return nil
 }
+
+func (r *Reactor) ApplyAllocation(allocation Allocation) (error) {
+    r.Load = r.Load.Add(allocation.Power.Add(allocation.TransmissionLoss))
+    return nil;
+}

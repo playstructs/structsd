@@ -5,6 +5,8 @@ import (
     math "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
+    "strconv"
+    sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 func (k msgServer) ReactorAllocationActivate(goCtx context.Context, msg *types.MsgReactorAllocationActivate) (*types.MsgReactorAllocationActivateResponse, error) {
@@ -21,8 +23,11 @@ func (k msgServer) ReactorAllocationActivate(goCtx context.Context, msg *types.M
         return &types.MsgReactorAllocationActivateResponse{}, nil
     }
 
-	proposal, _  := k.GetAllocationProposal(ctx, msg.AllocationId)
-
+	proposal, AllocationProposalFound  := k.GetAllocationProposal(ctx, msg.AllocationId)
+    if (!AllocationProposalFound){
+        allocationProposalId := strconv.FormatUint(msg.AllocationId, 10)
+        return &types.MsgReactorAllocationActivateResponse{}, sdkerrors.Wrapf(types.ErrAllocationNotFound, "allocation proposal (%s) not found", allocationProposalId)
+    }
 
 	allocation := types.Allocation{
 	    SourceType: types.ObjectType_reactor,
@@ -33,11 +38,19 @@ func (k msgServer) ReactorAllocationActivate(goCtx context.Context, msg *types.M
 
 	}
 
+    sourceReactor, sourceReactorFound := k.GetReactor(ctx, proposal.SourceId)
+    if (!sourceReactorFound){
+        sourceId := strconv.FormatUint(allocation.SourceId, 10)
+        return &types.MsgReactorAllocationActivateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceNotFound, "source (%s) used for allocation not found", allocation.SourceType.String() + "-" + sourceId)
+    }
 
-    // Failing ://
+
 	allocation.SetPower(ctx, proposal)
+    sourceReactor.ApplyAllocation(allocation)
+
 
     _ = k.AppendAllocation(ctx, allocation)
+    k.SetReactor(ctx, sourceReactor)
     k.RemoveAllocationProposal(ctx, msg.AllocationId)
 
 	return &types.MsgReactorAllocationActivateResponse{}, nil
