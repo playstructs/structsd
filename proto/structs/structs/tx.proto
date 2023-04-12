@@ -66,7 +66,7 @@ message MsgSubstationAllocationProposeResponse {}
 message MsgSubstationAllocationActivate {
   string creator      = 1;
   uint64 allocationId = 2;
-  string decision     = 3;
+  bool decision     = 3;
 }
 
 message MsgSubstationAllocationActivateResponse {}

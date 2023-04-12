@@ -29,12 +29,17 @@ func (k msgServer) ReactorAllocationActivate(goCtx context.Context, msg *types.M
         return &types.MsgReactorAllocationActivateResponse{}, sdkerrors.Wrapf(types.ErrAllocationNotFound, "allocation proposal (%s) not found", allocationProposalId)
     }
 
+    if (proposal.SourceType != types.ObjectType_reactor) {
+        return &types.MsgReactorAllocationActivateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceTypeMismatch, "allocation proposal type (%s) does not match reactor", proposal.SourceType.String())
+    }
+
+
 	allocation := types.Allocation{
 	    SourceType: types.ObjectType_reactor,
 	    SourceId: proposal.SourceId,
 	    DestinationId: proposal.DestinationId,
-	    Power: math.NewIntFromUint64(0),
-	    TransmissionLoss: math.NewIntFromUint64(0),
+	    Power: math.ZeroInt(),
+	    TransmissionLoss: math.ZeroInt(),
 
 	}
 

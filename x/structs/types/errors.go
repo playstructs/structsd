@@ -15,9 +15,10 @@ var (
 
 
 var (
-    ErrAllocationNotFound         = sdkerrors.Register(ModuleName, 1510, "allocation not found")
-    ErrAllocationSourceType       = sdkerrors.Register(ModuleName, 1511, "invalid source type")
-    ErrAllocationSourceNotFound   = sdkerrors.Register(ModuleName, 1512, "source not found")
+    ErrAllocationNotFound               = sdkerrors.Register(ModuleName, 1510, "allocation not found")
+    ErrAllocationSourceType             = sdkerrors.Register(ModuleName, 1511, "invalid source type")
+    ErrAllocationSourceTypeMismatch     = sdkerrors.Register(ModuleName, 1512, "source type mismatch")
+    ErrAllocationSourceNotFound         = sdkerrors.Register(ModuleName, 1513, "source not found")
 
-    ErrSubstationNotFound         = sdkerrors.Register(ModuleName, 1550, "substation not found")
+    ErrSubstationNotFound               = sdkerrors.Register(ModuleName, 1550, "substation not found")
 )

@@ -23,7 +23,11 @@ func CmdSubstationAllocationActivate() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			argDecision := args[1]
+
+            argDecision, err := cast.ToBoolE(args[1])
+            if err != nil {
+                return err
+            }
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

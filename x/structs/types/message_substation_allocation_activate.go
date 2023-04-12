@@ -9,7 +9,7 @@ const TypeMsgSubstationAllocationActivate = "substation_allocation_activate"
 
 var _ sdk.Msg = &MsgSubstationAllocationActivate{}
 
-func NewMsgSubstationAllocationActivate(creator string, allocationId uint64, decision string) *MsgSubstationAllocationActivate {
+func NewMsgSubstationAllocationActivate(creator string, allocationId uint64, decision bool) *MsgSubstationAllocationActivate {
 	return &MsgSubstationAllocationActivate{
 		Creator:      creator,
 		AllocationId: allocationId,
@@ -43,5 +43,6 @@ func (msg *MsgSubstationAllocationActivate) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
+
 	return nil
 }
