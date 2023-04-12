@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"encoding/binary"
-    math "cosmossdk.io/math"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
@@ -26,10 +25,8 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
          reactor, _  = k.GetReactorByBytes(ctx, reactorBytes)
     } else {
         /* Build the initial Reactor object */
-        reactor.Validator = validator.OperatorAddress
-        reactor.Power, _ = math.NewIntFromString("0")
-        reactor.Load, _  = math.NewIntFromString("0")
-        reactor.Status = types.Reactor_OFFLINE
+        reactor = types.CreateEmptyReactor()
+        reactor.SetValidator(validator)
     }
 
     /* Bring the Reactor ONLINE
@@ -82,10 +79,8 @@ func (k Keeper) ReactorUpdateEnergy(ctx sdk.Context, validatorAddress sdk.ValAdd
          reactor, _  = k.GetReactorByBytes(ctx, reactorBytes)
     } else {
         /* Build the initial Reactor object */
-        reactor.Validator = validator.OperatorAddress
-        reactor.Power, _ = math.NewIntFromString("0")
-        reactor.Load, _  = math.NewIntFromString("0")
-        reactor.Status = types.Reactor_OFFLINE
+        reactor = types.CreateEmptyReactor()
+        reactor.SetValidator(validator)
     }
 
     /* Sync Energy Levels
@@ -134,10 +129,8 @@ func (k Keeper) ReactorUpdateFromValidator(ctx sdk.Context, validatorAddress sdk
          reactor, _  = k.GetReactorByBytes(ctx, reactorBytes)
     } else {
         /* Build the initial Reactor object */
-        reactor.Validator = validator.OperatorAddress
-        reactor.Power, _ = math.NewIntFromString("0")
-        reactor.Load, _  = math.NewIntFromString("0")
-        reactor.Status = types.Reactor_OFFLINE
+        reactor = types.CreateEmptyReactor()
+        reactor.SetValidator(validator)
     }
 
     /* Sync Energy Levels
