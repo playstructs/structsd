@@ -40,17 +40,26 @@ func (k msgServer) ReactorAllocationActivate(goCtx context.Context, msg *types.M
 
     sourceReactor, sourceReactorFound := k.GetReactor(ctx, proposal.SourceId)
     if (!sourceReactorFound){
-        sourceId := strconv.FormatUint(allocation.SourceId, 10)
+        sourceId := strconv.FormatUint(proposal.SourceId, 10)
         return &types.MsgReactorAllocationActivateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceNotFound, "source (%s) used for allocation not found", allocation.SourceType.String() + "-" + sourceId)
     }
 
+    destinationSubstation, destinationSubstationFound := k.GetSubstation(ctx, proposal.DestinationId)
+    if (!destinationSubstationFound){
+        destinationId := strconv.FormatUint(proposal.DestinationId, 10)
+        return &types.MsgReactorAllocationActivateResponse{}, sdkerrors.Wrapf(types.ErrSubstationNotFound, "destination substation (%s) used for allocation not found", destinationId)
+    }
+
+
 
 	allocation.SetPower(ctx, proposal)
-    sourceReactor.ApplyAllocation(allocation)
+    sourceReactor.ApplyAllocationSource(allocation)
+    destinationSubstation.ApplyAllocationDestination(allocation)
 
 
     _ = k.AppendAllocation(ctx, allocation)
     k.SetReactor(ctx, sourceReactor)
+    k.SetSubstation(ctx, destinationSubstation)
     k.RemoveAllocationProposal(ctx, msg.AllocationId)
 
 	return &types.MsgReactorAllocationActivateResponse{}, nil

@@ -25,7 +25,7 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
 		return nil, err
 	}
 
-	substation := types.Substation{}
+	substation := types.CreateEmptySubstation()
 
     k.AppendSubstation(ctx, substation)
 

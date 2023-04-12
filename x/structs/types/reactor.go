@@ -20,7 +20,7 @@ func (r *Reactor) SetStatusOverload() (error) {
     return nil
 }
 
-func (r *Reactor) ApplyAllocation(allocation Allocation) (error) {
+func (r *Reactor) ApplyAllocationSource(allocation Allocation) (error) {
     r.Load = r.Load.Add(allocation.Power.Add(allocation.TransmissionLoss))
     return nil;
 }
