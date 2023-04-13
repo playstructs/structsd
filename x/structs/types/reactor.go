@@ -14,27 +14,32 @@ func CreateEmptyReactor() (Reactor) {
     }
 }
 
-func (r *Reactor) SetValidator(validator types.Validator) (error) {
-	r.Validator =  validator.OperatorAddress
+func (reactor *Reactor) SetValidator(validator types.Validator) (error) {
+	reactor.Validator =  validator.OperatorAddress
 	return nil
 }
 
-func (r *Reactor) SetEnergy(validator types.Validator) (error) {
-	r.Power =  validator.Tokens
+func (reactor *Reactor) SetEnergy(validator types.Validator) (error) {
+	reactor.Power =  validator.Tokens
 	return nil
 }
 
-func (r *Reactor) SetStatusOnline() (error) {
-    r.Status = Reactor_ONLINE
+func (reactor *Reactor) SetStatusOnline() (error) {
+    reactor.Status = Reactor_ONLINE
     return nil
 }
 
-func (r *Reactor) SetStatusOverload() (error) {
-    r.Status = Reactor_OVERLOAD
+func (reactor *Reactor) SetStatusOverload() (error) {
+    reactor.Status = Reactor_OVERLOAD
     return nil
 }
 
-func (r *Reactor) ApplyAllocationSource(allocation Allocation) (error) {
-    r.Load = r.Load.Add(allocation.Power.Add(allocation.TransmissionLoss))
+func (reactor *Reactor) ApplyAllocationSource(allocation Allocation) (error) {
+    reactor.Load = reactor.Load.Add(allocation.Power.Add(allocation.TransmissionLoss))
+    return nil;
+}
+
+func (reactor *Reactor) RemoveAllocationSource(allocation Allocation) (error) {
+    reactor.Load = reactor.Load.Sub(allocation.Power.Add(allocation.TransmissionLoss))
     return nil;
 }

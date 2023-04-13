@@ -39,7 +39,6 @@ func (k msgServer) SubstationAllocationActivate(goCtx context.Context, msg *type
 	    DestinationId: proposal.DestinationId,
 	    Power: math.ZeroInt(),
 	    TransmissionLoss: math.ZeroInt(),
-
 	}
 
     sourceSubstation, sourceSubstationFound := k.GetSubstation(ctx, proposal.SourceId)
