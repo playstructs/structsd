@@ -45912,6 +45912,28 @@ paths:
                       type: string
                     load:
                       type: string
+                    depth:
+                      type: string
+                      format: uint64
+                    parent:
+                      type: string
+                      format: uint64
+                    children:
+                      type: array
+                      items:
+                        type: string
+                        format: uint64
+                    path:
+                      type: array
+                      items:
+                        type: string
+                        format: uint64
+                    sources:
+                      type: array
+                      items:
+                        type: string
+                        format: uint64
+                      description: How do we deal with source power...
               pagination:
                 type: object
                 properties:
@@ -46037,6 +46059,28 @@ paths:
                     type: string
                   load:
                     type: string
+                  depth:
+                    type: string
+                    format: uint64
+                  parent:
+                    type: string
+                    format: uint64
+                  children:
+                    type: array
+                    items:
+                      type: string
+                      format: uint64
+                  path:
+                    type: array
+                    items:
+                      type: string
+                      format: uint64
+                  sources:
+                    type: array
+                    items:
+                      type: string
+                      format: uint64
+                    description: How do we deal with source power...
         default:
           description: An unexpected error response.
           schema:
@@ -75949,6 +75993,28 @@ definitions:
               type: string
             load:
               type: string
+            depth:
+              type: string
+              format: uint64
+            parent:
+              type: string
+              format: uint64
+            children:
+              type: array
+              items:
+                type: string
+                format: uint64
+            path:
+              type: array
+              items:
+                type: string
+                format: uint64
+            sources:
+              type: array
+              items:
+                type: string
+                format: uint64
+              description: How do we deal with source power...
       pagination:
         type: object
         properties:
@@ -76067,6 +76133,28 @@ definitions:
             type: string
           load:
             type: string
+          depth:
+            type: string
+            format: uint64
+          parent:
+            type: string
+            format: uint64
+          children:
+            type: array
+            items:
+              type: string
+              format: uint64
+          path:
+            type: array
+            items:
+              type: string
+              format: uint64
+          sources:
+            type: array
+            items:
+              type: string
+              format: uint64
+            description: How do we deal with source power...
   structs.structs.QueryParamsResponse:
     type: object
     properties:
@@ -76112,6 +76200,28 @@ definitions:
         type: string
       load:
         type: string
+      depth:
+        type: string
+        format: uint64
+      parent:
+        type: string
+        format: uint64
+      children:
+        type: array
+        items:
+          type: string
+          format: uint64
+      path:
+        type: array
+        items:
+          type: string
+          format: uint64
+      sources:
+        type: array
+        items:
+          type: string
+          format: uint64
+        description: How do we deal with source power...
   structs.structs.objectType:
     type: string
     enum:

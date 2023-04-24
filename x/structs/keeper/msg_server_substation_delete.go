@@ -15,6 +15,12 @@ func (k msgServer) SubstationDelete(goCtx context.Context, msg *types.MsgSubstat
 		return nil, err
 	}
 
+
+    /*
+     * This is going to start out very inefficient. We'll need to tackle
+     * ways to improve these types of graph traversal
+     */
+
 	// Need all allocations in
 
 

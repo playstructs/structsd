@@ -26,9 +26,14 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type Substation struct {
-	Id    uint64                                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Power github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=power,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"power"`
-	Load  github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=load,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"load"`
+	Id       uint64                                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Power    github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,2,opt,name=power,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"power"`
+	Load     github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=load,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"load"`
+	Depth    uint64                                 `protobuf:"varint,4,opt,name=depth,proto3" json:"depth,omitempty"`
+	Parent   uint64                                 `protobuf:"varint,5,opt,name=parent,proto3" json:"parent,omitempty"`
+	Children []uint64                               `protobuf:"varint,6,rep,packed,name=children,proto3" json:"children,omitempty"`
+	Path     []uint64                               `protobuf:"varint,7,rep,packed,name=path,proto3" json:"path,omitempty"`
+	Sources  []uint64                               `protobuf:"varint,8,rep,packed,name=sources,proto3" json:"sources,omitempty"`
 }
 
 func (m *Substation) Reset()         { *m = Substation{} }
@@ -71,6 +76,41 @@ func (m *Substation) GetId() uint64 {
 	return 0
 }
 
+func (m *Substation) GetDepth() uint64 {
+	if m != nil {
+		return m.Depth
+	}
+	return 0
+}
+
+func (m *Substation) GetParent() uint64 {
+	if m != nil {
+		return m.Parent
+	}
+	return 0
+}
+
+func (m *Substation) GetChildren() []uint64 {
+	if m != nil {
+		return m.Children
+	}
+	return nil
+}
+
+func (m *Substation) GetPath() []uint64 {
+	if m != nil {
+		return m.Path
+	}
+	return nil
+}
+
+func (m *Substation) GetSources() []uint64 {
+	if m != nil {
+		return m.Sources
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterType((*Substation)(nil), "structs.structs.Substation")
 }
@@ -78,22 +118,27 @@ func init() {
 func init() { proto.RegisterFile("structs/structs/substation.proto", fileDescriptor_1dfac9318fba59fb) }
 
 var fileDescriptor_1dfac9318fba59fb = []byte{
-	// 232 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x28, 0x2e, 0x29, 0x2a,
-	0x4d, 0x2e, 0x29, 0xd6, 0x87, 0xd3, 0xa5, 0x49, 0xc5, 0x25, 0x89, 0x25, 0x99, 0xf9, 0x79, 0x7a,
-	0x05, 0x45, 0xf9, 0x25, 0xf9, 0x42, 0xfc, 0x50, 0x19, 0x3d, 0x28, 0x2d, 0x25, 0x99, 0x9c, 0x5f,
-	0x9c, 0x9b, 0x5f, 0x1c, 0x0f, 0x96, 0xd6, 0x87, 0x70, 0x20, 0x6a, 0xa5, 0x44, 0xd2, 0xf3, 0xd3,
-	0xf3, 0x21, 0xe2, 0x20, 0x16, 0x44, 0x54, 0xe9, 0x10, 0x23, 0x17, 0x57, 0x30, 0xdc, 0x58, 0x21,
-	0x3e, 0x2e, 0xa6, 0xcc, 0x14, 0x09, 0x46, 0x05, 0x46, 0x0d, 0x96, 0x20, 0xa6, 0xcc, 0x14, 0xa1,
-	0x20, 0x2e, 0xd6, 0x82, 0xfc, 0xf2, 0xd4, 0x22, 0x09, 0x26, 0x05, 0x46, 0x0d, 0x4e, 0x27, 0x9b,
-	0x13, 0xf7, 0xe4, 0x19, 0x6e, 0xdd, 0x93, 0x57, 0x4b, 0xcf, 0x2c, 0xc9, 0x28, 0x4d, 0xd2, 0x4b,
-	0xce, 0xcf, 0x85, 0x5a, 0x02, 0xa5, 0x74, 0x8b, 0x53, 0xb2, 0xf5, 0x4b, 0x2a, 0x0b, 0x52, 0x8b,
-	0xf5, 0x3c, 0xf3, 0x4a, 0x2e, 0x6d, 0xd1, 0xe5, 0x82, 0xba, 0xc1, 0x33, 0xaf, 0x24, 0x08, 0x62,
-	0x94, 0x50, 0x00, 0x17, 0x4b, 0x4e, 0x7e, 0x62, 0x8a, 0x04, 0x33, 0x15, 0x8c, 0x04, 0x9b, 0xe4,
-	0x64, 0x78, 0xe2, 0x91, 0x1c, 0xe3, 0x85, 0x47, 0x72, 0x8c, 0x0f, 0x1e, 0xc9, 0x31, 0x4e, 0x78,
-	0x2c, 0xc7, 0x70, 0xe1, 0xb1, 0x1c, 0xc3, 0x8d, 0xc7, 0x72, 0x0c, 0x51, 0xe2, 0xb0, 0xa0, 0xab,
-	0x80, 0x07, 0x22, 0xd8, 0xa8, 0x24, 0x36, 0xb0, 0xf7, 0x8d, 0x01, 0x01, 0x00, 0x00, 0xff, 0xff,
-	0xfa, 0x7c, 0xc6, 0x3a, 0x64, 0x01, 0x00, 0x00,
+	// 310 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x91, 0xbf, 0x4e, 0xf3, 0x30,
+	0x14, 0xc5, 0x93, 0x34, 0xfd, 0xf3, 0xdd, 0xe1, 0x43, 0xb2, 0x2a, 0x30, 0x1d, 0xd2, 0x88, 0x01,
+	0x75, 0x69, 0x2a, 0xc4, 0xca, 0xd4, 0xad, 0x1b, 0x0a, 0x1b, 0x0b, 0x4a, 0x63, 0xab, 0x89, 0x68,
+	0x63, 0xcb, 0xbe, 0x11, 0xf0, 0x16, 0x3c, 0x0c, 0x13, 0x4f, 0xd0, 0xb1, 0x62, 0x42, 0x0c, 0x15,
+	0x6a, 0x5e, 0x04, 0x61, 0xbb, 0x79, 0x02, 0xa6, 0x73, 0xcf, 0xef, 0x5a, 0xc7, 0xd7, 0xbe, 0x10,
+	0x6b, 0x54, 0x75, 0x8e, 0x7a, 0xd6, 0x6a, 0xbd, 0xd4, 0x98, 0x61, 0x29, 0xaa, 0x44, 0x2a, 0x81,
+	0x82, 0x9c, 0xb8, 0x4e, 0xe2, 0x74, 0x74, 0x9e, 0x0b, 0xbd, 0x11, 0xfa, 0xc1, 0xb4, 0x67, 0xd6,
+	0xd8, 0xb3, 0xa3, 0xe1, 0x4a, 0xac, 0x84, 0xe5, 0xbf, 0x95, 0xa5, 0x17, 0xef, 0x01, 0xc0, 0x5d,
+	0x1b, 0x4b, 0xfe, 0x43, 0x50, 0x32, 0xea, 0xc7, 0xfe, 0x24, 0x4c, 0x83, 0x92, 0x91, 0x14, 0xba,
+	0x52, 0x3c, 0x71, 0x45, 0x83, 0xd8, 0x9f, 0xfc, 0x9b, 0xdf, 0x6c, 0xf7, 0x63, 0xef, 0x6b, 0x3f,
+	0xbe, 0x5c, 0x95, 0x58, 0xd4, 0xcb, 0x24, 0x17, 0x1b, 0x77, 0x89, 0x93, 0xa9, 0x66, 0x8f, 0x33,
+	0x7c, 0x91, 0x5c, 0x27, 0x8b, 0x0a, 0x3f, 0xde, 0xa6, 0xe0, 0x66, 0x58, 0x54, 0x98, 0xda, 0x28,
+	0x72, 0x0b, 0xe1, 0x5a, 0x64, 0x8c, 0x76, 0xfe, 0x20, 0xd2, 0x24, 0x91, 0x21, 0x74, 0x19, 0x97,
+	0x58, 0xd0, 0xd0, 0x0c, 0x6e, 0x0d, 0x39, 0x85, 0x9e, 0xcc, 0x14, 0xaf, 0x90, 0x76, 0x0d, 0x76,
+	0x8e, 0x8c, 0x60, 0x90, 0x17, 0xe5, 0x9a, 0x29, 0x5e, 0xd1, 0x5e, 0xdc, 0x99, 0x84, 0x69, 0xeb,
+	0x09, 0x81, 0x50, 0x66, 0x58, 0xd0, 0xbe, 0xe1, 0xa6, 0x26, 0x14, 0xfa, 0x5a, 0xd4, 0x2a, 0xe7,
+	0x9a, 0x0e, 0x0c, 0x3e, 0xda, 0xf9, 0xd5, 0xf6, 0x10, 0xf9, 0xbb, 0x43, 0xe4, 0x7f, 0x1f, 0x22,
+	0xff, 0xb5, 0x89, 0xbc, 0x5d, 0x13, 0x79, 0x9f, 0x4d, 0xe4, 0xdd, 0x9f, 0x1d, 0x57, 0xf6, 0xdc,
+	0x2e, 0xcf, 0x3c, 0x61, 0xd9, 0x33, 0xdf, 0x7e, 0xfd, 0x13, 0x00, 0x00, 0xff, 0xff, 0x7d, 0xe1,
+	0x3f, 0xa8, 0xdc, 0x01, 0x00, 0x00,
 }
 
 func (m *Substation) Marshal() (dAtA []byte, err error) {
@@ -116,6 +161,70 @@ func (m *Substation) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
+	if len(m.Sources) > 0 {
+		dAtA2 := make([]byte, len(m.Sources)*10)
+		var j1 int
+		for _, num := range m.Sources {
+			for num >= 1<<7 {
+				dAtA2[j1] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j1++
+			}
+			dAtA2[j1] = uint8(num)
+			j1++
+		}
+		i -= j1
+		copy(dAtA[i:], dAtA2[:j1])
+		i = encodeVarintSubstation(dAtA, i, uint64(j1))
+		i--
+		dAtA[i] = 0x42
+	}
+	if len(m.Path) > 0 {
+		dAtA4 := make([]byte, len(m.Path)*10)
+		var j3 int
+		for _, num := range m.Path {
+			for num >= 1<<7 {
+				dAtA4[j3] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j3++
+			}
+			dAtA4[j3] = uint8(num)
+			j3++
+		}
+		i -= j3
+		copy(dAtA[i:], dAtA4[:j3])
+		i = encodeVarintSubstation(dAtA, i, uint64(j3))
+		i--
+		dAtA[i] = 0x3a
+	}
+	if len(m.Children) > 0 {
+		dAtA6 := make([]byte, len(m.Children)*10)
+		var j5 int
+		for _, num := range m.Children {
+			for num >= 1<<7 {
+				dAtA6[j5] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j5++
+			}
+			dAtA6[j5] = uint8(num)
+			j5++
+		}
+		i -= j5
+		copy(dAtA[i:], dAtA6[:j5])
+		i = encodeVarintSubstation(dAtA, i, uint64(j5))
+		i--
+		dAtA[i] = 0x32
+	}
+	if m.Parent != 0 {
+		i = encodeVarintSubstation(dAtA, i, uint64(m.Parent))
+		i--
+		dAtA[i] = 0x28
+	}
+	if m.Depth != 0 {
+		i = encodeVarintSubstation(dAtA, i, uint64(m.Depth))
+		i--
+		dAtA[i] = 0x20
+	}
 	{
 		size := m.Load.Size()
 		i -= size
@@ -168,6 +277,33 @@ func (m *Substation) Size() (n int) {
 	n += 1 + l + sovSubstation(uint64(l))
 	l = m.Load.Size()
 	n += 1 + l + sovSubstation(uint64(l))
+	if m.Depth != 0 {
+		n += 1 + sovSubstation(uint64(m.Depth))
+	}
+	if m.Parent != 0 {
+		n += 1 + sovSubstation(uint64(m.Parent))
+	}
+	if len(m.Children) > 0 {
+		l = 0
+		for _, e := range m.Children {
+			l += sovSubstation(uint64(e))
+		}
+		n += 1 + sovSubstation(uint64(l)) + l
+	}
+	if len(m.Path) > 0 {
+		l = 0
+		for _, e := range m.Path {
+			l += sovSubstation(uint64(e))
+		}
+		n += 1 + sovSubstation(uint64(l)) + l
+	}
+	if len(m.Sources) > 0 {
+		l = 0
+		for _, e := range m.Sources {
+			l += sovSubstation(uint64(e))
+		}
+		n += 1 + sovSubstation(uint64(l)) + l
+	}
 	return n
 }
 
@@ -293,6 +429,272 @@ func (m *Substation) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Depth", wireType)
+			}
+			m.Depth = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSubstation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Depth |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Parent", wireType)
+			}
+			m.Parent = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowSubstation
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Parent |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowSubstation
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.Children = append(m.Children, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowSubstation
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthSubstation
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthSubstation
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.Children) == 0 {
+					m.Children = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowSubstation
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.Children = append(m.Children, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field Children", wireType)
+			}
+		case 7:
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowSubstation
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.Path = append(m.Path, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowSubstation
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthSubstation
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthSubstation
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.Path) == 0 {
+					m.Path = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowSubstation
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.Path = append(m.Path, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field Path", wireType)
+			}
+		case 8:
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowSubstation
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.Sources = append(m.Sources, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowSubstation
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthSubstation
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthSubstation
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.Sources) == 0 {
+					m.Sources = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowSubstation
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.Sources = append(m.Sources, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field Sources", wireType)
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipSubstation(dAtA[iNdEx:])
