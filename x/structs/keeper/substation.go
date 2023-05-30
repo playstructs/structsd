@@ -109,27 +109,24 @@ func GetSubstationIDFromBytes(bz []byte) uint64 {
 
 
 // UpdateSubstationByReactorCascade(substationId, status)
-func (k Keeper) UpdateSubstationByReactorCascade(ctx sdk.Context, substationId uint64, reactor types.Reactor) {
-    substation, found := k.GetSubstation(ctx, substationId)
+func (k Keeper) UpdateSubstationByReactorCascade(ctx sdk.Context, reactor types.Reactor, allocation types.Allocation) {
+    substation, found := k.GetSubstation(ctx, allocation.DestinationId)
+
     if (found) {
-        allocations := k.GetAllSubstationAllocationIn(ctx, substationId)
-        for _, allocation := range allocations {
-            if (allocation.SourceId == reactor.Id) {
 
-                if (reactor.Status == types.Reactor_ONLINE) {
-                    substation.ApplyAllocationSource(allocation)
+        if (reactor.Status == types.Reactor_ONLINE) {
+            substation.ApplyAllocationSource(allocation)
 
-                } else if (reactor.Status == types.Reactor_OFFLINE) {
-                    substation.RemoveAllocationSource(allocation)
+        } else if (reactor.Status == types.Reactor_OFFLINE) {
+            substation.RemoveAllocationSource(allocation)
 
-                } else if (reactor.Status == types.Reactor_OVERLOAD) {
-                    substation.RemoveAllocationSource(allocation)
-                }
-
-                substation.Status = substation.CheckStatus()
-                k.SetSubstation(ctx, substation)
-            }
+        } else if (reactor.Status == types.Reactor_OVERLOAD) {
+            substation.RemoveAllocationSource(allocation)
         }
+
+        substation.Status = substation.CheckStatus()
+        k.SetSubstation(ctx, substation)
+
     }
 
 }

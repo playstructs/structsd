@@ -9,6 +9,7 @@ func CreateEmptyReactor() (Reactor) {
     return Reactor{
         Power: 0,
         Load: 0,
+        PreviousStatus: Reactor_ONLINE,
         Status: Reactor_OFFLINE,
     }
 }
@@ -24,11 +25,13 @@ func (reactor *Reactor) SetEnergy(validator types.Validator) (error) {
 }
 
 func (reactor *Reactor) SetStatusOnline() (error) {
+    reactor.PreviousStatus = reactor.Status
     reactor.Status = Reactor_ONLINE
     return nil
 }
 
 func (reactor *Reactor) SetStatusOverload() (error) {
+    reactor.PreviousStatus = reactor.Status
     reactor.Status = Reactor_OVERLOAD
     return nil
 }

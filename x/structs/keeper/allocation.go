@@ -115,6 +115,25 @@ func (k Keeper) GetAllSubstationAllocationIn(ctx sdk.Context, substationId uint6
 
 
 
+// GetAllReactorAllocations returns all allocation relating to a reactor
+func (k Keeper) GetAllReactorAllocations(ctx sdk.Context, reactorId uint64) (list []types.Allocation) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AllocationKey))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.Allocation
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+
+		if (val.SourceId == reactorId) {
+		    list = append(list, val)
+		}
+	}
+
+	return
+}
+
 
 
 // GetAllocationIDBytes returns the byte representation of the ID
