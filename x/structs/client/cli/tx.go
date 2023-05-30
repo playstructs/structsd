@@ -34,7 +34,6 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(CmdSubstationCreate())
 	cmd.AddCommand(CmdSubstationDelete())
 	cmd.AddCommand(CmdSubstationAllocationPropose())
-	cmd.AddCommand(CmdSubstationAllocationActivate())
 	cmd.AddCommand(CmdSubstationAllocationDisconnect())
 	cmd.AddCommand(CmdSubstationPlayerConnect())
 	cmd.AddCommand(CmdSubstationPlayerDisconnect())

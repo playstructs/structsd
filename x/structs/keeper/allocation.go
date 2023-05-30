@@ -93,6 +93,30 @@ func (k Keeper) GetAllAllocation(ctx sdk.Context) (list []types.Allocation) {
 	return
 }
 
+
+// GetAllSubstationAllocationIn returns all allocation
+func (k Keeper) GetAllSubstationAllocationIn(ctx sdk.Context, substationId uint64) (list []types.Allocation) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AllocationKey))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.Allocation
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+
+		if (val.DestinationId == substationId) {
+		    list = append(list, val)
+		}
+	}
+
+	return
+}
+
+
+
+
+
 // GetAllocationIDBytes returns the byte representation of the ID
 func GetAllocationIDBytes(id uint64) []byte {
 	bz := make([]byte, 8)

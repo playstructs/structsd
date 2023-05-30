@@ -136,17 +136,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		structssimulation.SimulateMsgSubstationAllocationPropose(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgSubstationAllocationActivate int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSubstationAllocationActivate, &weightMsgSubstationAllocationActivate, nil,
-		func(_ *rand.Rand) {
-			weightMsgSubstationAllocationActivate = defaultWeightMsgSubstationAllocationActivate
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgSubstationAllocationActivate,
-		structssimulation.SimulateMsgSubstationAllocationActivate(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
-
 	var weightMsgSubstationAllocationDisconnect int
 	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSubstationAllocationDisconnect, &weightMsgSubstationAllocationDisconnect, nil,
 		func(_ *rand.Rand) {

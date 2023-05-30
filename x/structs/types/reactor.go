@@ -2,14 +2,13 @@ package types
 
 import (
 	"github.com/cosmos/cosmos-sdk/x/staking/types"
-	math "cosmossdk.io/math"
 )
 
 
 func CreateEmptyReactor() (Reactor) {
     return Reactor{
-        Power: math.ZeroInt(),
-        Load: math.ZeroInt(),
+        Power: 0,
+        Load: 0,
         Status: Reactor_OFFLINE,
     }
 }
@@ -20,7 +19,7 @@ func (reactor *Reactor) SetValidator(validator types.Validator) (error) {
 }
 
 func (reactor *Reactor) SetEnergy(validator types.Validator) (error) {
-	reactor.Power =  validator.Tokens
+	reactor.Power =  validator.Tokens.Uint64()
 	return nil
 }
 
@@ -35,11 +34,11 @@ func (reactor *Reactor) SetStatusOverload() (error) {
 }
 
 func (reactor *Reactor) ApplyAllocationSource(allocation Allocation) (error) {
-    reactor.Load = reactor.Load.Add(allocation.Power.Add(allocation.TransmissionLoss))
+    reactor.Load = reactor.Load + (allocation.Power +  allocation.TransmissionLoss)
     return nil;
 }
 
 func (reactor *Reactor) RemoveAllocationSource(allocation Allocation) (error) {
-    reactor.Load = reactor.Load.Sub(allocation.Power.Add(allocation.TransmissionLoss))
+    reactor.Load = reactor.Load - (allocation.Power + allocation.TransmissionLoss)
     return nil;
 }

@@ -7,7 +7,6 @@ import (
 	context "context"
 	fmt "fmt"
 	_ "github.com/cosmos/cosmos-proto"
-	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	grpc1 "github.com/gogo/protobuf/grpc"
 	proto "github.com/gogo/protobuf/proto"
@@ -311,11 +310,11 @@ func (m *MsgSubstationDeleteResponse) XXX_DiscardUnknown() {
 var xxx_messageInfo_MsgSubstationDeleteResponse proto.InternalMessageInfo
 
 type MsgSubstationAllocationPropose struct {
-	Creator       string                                 `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	DestinationId uint64                                 `protobuf:"varint,2,opt,name=DestinationId,proto3" json:"DestinationId,omitempty"`
-	SourceType    ObjectType                             `protobuf:"varint,3,opt,name=sourceType,proto3,enum=structs.structs.ObjectType" json:"sourceType,omitempty"`
-	SourceId      uint64                                 `protobuf:"varint,4,opt,name=sourceId,proto3" json:"sourceId,omitempty"`
-	Power         github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,5,opt,name=power,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"power"`
+	Creator       string     `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	DestinationId uint64     `protobuf:"varint,2,opt,name=DestinationId,proto3" json:"DestinationId,omitempty"`
+	SourceType    ObjectType `protobuf:"varint,3,opt,name=sourceType,proto3,enum=structs.structs.ObjectType" json:"sourceType,omitempty"`
+	SourceId      uint64     `protobuf:"varint,4,opt,name=sourceId,proto3" json:"sourceId,omitempty"`
+	Power         uint64     `protobuf:"varint,5,opt,name=power,proto3" json:"power,omitempty"`
 }
 
 func (m *MsgSubstationAllocationPropose) Reset()         { *m = MsgSubstationAllocationPropose{} }
@@ -379,6 +378,13 @@ func (m *MsgSubstationAllocationPropose) GetSourceId() uint64 {
 	return 0
 }
 
+func (m *MsgSubstationAllocationPropose) GetPower() uint64 {
+	if m != nil {
+		return m.Power
+	}
+	return 0
+}
+
 type MsgSubstationAllocationProposeResponse struct {
 }
 
@@ -417,104 +423,6 @@ func (m *MsgSubstationAllocationProposeResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgSubstationAllocationProposeResponse proto.InternalMessageInfo
 
-type MsgSubstationAllocationActivate struct {
-	Creator      string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	AllocationId uint64 `protobuf:"varint,2,opt,name=allocationId,proto3" json:"allocationId,omitempty"`
-	Decision     bool   `protobuf:"varint,3,opt,name=decision,proto3" json:"decision,omitempty"`
-}
-
-func (m *MsgSubstationAllocationActivate) Reset()         { *m = MsgSubstationAllocationActivate{} }
-func (m *MsgSubstationAllocationActivate) String() string { return proto.CompactTextString(m) }
-func (*MsgSubstationAllocationActivate) ProtoMessage()    {}
-func (*MsgSubstationAllocationActivate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{8}
-}
-func (m *MsgSubstationAllocationActivate) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgSubstationAllocationActivate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgSubstationAllocationActivate.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgSubstationAllocationActivate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSubstationAllocationActivate.Merge(m, src)
-}
-func (m *MsgSubstationAllocationActivate) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgSubstationAllocationActivate) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSubstationAllocationActivate.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgSubstationAllocationActivate proto.InternalMessageInfo
-
-func (m *MsgSubstationAllocationActivate) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgSubstationAllocationActivate) GetAllocationId() uint64 {
-	if m != nil {
-		return m.AllocationId
-	}
-	return 0
-}
-
-func (m *MsgSubstationAllocationActivate) GetDecision() bool {
-	if m != nil {
-		return m.Decision
-	}
-	return false
-}
-
-type MsgSubstationAllocationActivateResponse struct {
-}
-
-func (m *MsgSubstationAllocationActivateResponse) Reset() {
-	*m = MsgSubstationAllocationActivateResponse{}
-}
-func (m *MsgSubstationAllocationActivateResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgSubstationAllocationActivateResponse) ProtoMessage()    {}
-func (*MsgSubstationAllocationActivateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{9}
-}
-func (m *MsgSubstationAllocationActivateResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgSubstationAllocationActivateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgSubstationAllocationActivateResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgSubstationAllocationActivateResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSubstationAllocationActivateResponse.Merge(m, src)
-}
-func (m *MsgSubstationAllocationActivateResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgSubstationAllocationActivateResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSubstationAllocationActivateResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgSubstationAllocationActivateResponse proto.InternalMessageInfo
-
 type MsgSubstationAllocationDisconnect struct {
 	Creator      string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	AllocationId uint64 `protobuf:"varint,2,opt,name=allocationId,proto3" json:"allocationId,omitempty"`
@@ -524,7 +432,7 @@ func (m *MsgSubstationAllocationDisconnect) Reset()         { *m = MsgSubstation
 func (m *MsgSubstationAllocationDisconnect) String() string { return proto.CompactTextString(m) }
 func (*MsgSubstationAllocationDisconnect) ProtoMessage()    {}
 func (*MsgSubstationAllocationDisconnect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{10}
+	return fileDescriptor_38fd6c203bede659, []int{8}
 }
 func (m *MsgSubstationAllocationDisconnect) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -578,7 +486,7 @@ func (m *MsgSubstationAllocationDisconnectResponse) String() string {
 }
 func (*MsgSubstationAllocationDisconnectResponse) ProtoMessage() {}
 func (*MsgSubstationAllocationDisconnectResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{11}
+	return fileDescriptor_38fd6c203bede659, []int{9}
 }
 func (m *MsgSubstationAllocationDisconnectResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -617,7 +525,7 @@ func (m *MsgSubstationPlayerConnect) Reset()         { *m = MsgSubstationPlayerC
 func (m *MsgSubstationPlayerConnect) String() string { return proto.CompactTextString(m) }
 func (*MsgSubstationPlayerConnect) ProtoMessage()    {}
 func (*MsgSubstationPlayerConnect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{12}
+	return fileDescriptor_38fd6c203bede659, []int{10}
 }
 func (m *MsgSubstationPlayerConnect) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -674,7 +582,7 @@ func (m *MsgSubstationPlayerConnectResponse) Reset()         { *m = MsgSubstatio
 func (m *MsgSubstationPlayerConnectResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgSubstationPlayerConnectResponse) ProtoMessage()    {}
 func (*MsgSubstationPlayerConnectResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{13}
+	return fileDescriptor_38fd6c203bede659, []int{11}
 }
 func (m *MsgSubstationPlayerConnectResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -713,7 +621,7 @@ func (m *MsgSubstationPlayerDisconnect) Reset()         { *m = MsgSubstationPlay
 func (m *MsgSubstationPlayerDisconnect) String() string { return proto.CompactTextString(m) }
 func (*MsgSubstationPlayerDisconnect) ProtoMessage()    {}
 func (*MsgSubstationPlayerDisconnect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{14}
+	return fileDescriptor_38fd6c203bede659, []int{12}
 }
 func (m *MsgSubstationPlayerDisconnect) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -770,7 +678,7 @@ func (m *MsgSubstationPlayerDisconnectResponse) Reset()         { *m = MsgSubsta
 func (m *MsgSubstationPlayerDisconnectResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgSubstationPlayerDisconnectResponse) ProtoMessage()    {}
 func (*MsgSubstationPlayerDisconnectResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{15}
+	return fileDescriptor_38fd6c203bede659, []int{13}
 }
 func (m *MsgSubstationPlayerDisconnectResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -808,8 +716,6 @@ func init() {
 	proto.RegisterType((*MsgSubstationDeleteResponse)(nil), "structs.structs.MsgSubstationDeleteResponse")
 	proto.RegisterType((*MsgSubstationAllocationPropose)(nil), "structs.structs.MsgSubstationAllocationPropose")
 	proto.RegisterType((*MsgSubstationAllocationProposeResponse)(nil), "structs.structs.MsgSubstationAllocationProposeResponse")
-	proto.RegisterType((*MsgSubstationAllocationActivate)(nil), "structs.structs.MsgSubstationAllocationActivate")
-	proto.RegisterType((*MsgSubstationAllocationActivateResponse)(nil), "structs.structs.MsgSubstationAllocationActivateResponse")
 	proto.RegisterType((*MsgSubstationAllocationDisconnect)(nil), "structs.structs.MsgSubstationAllocationDisconnect")
 	proto.RegisterType((*MsgSubstationAllocationDisconnectResponse)(nil), "structs.structs.MsgSubstationAllocationDisconnectResponse")
 	proto.RegisterType((*MsgSubstationPlayerConnect)(nil), "structs.structs.MsgSubstationPlayerConnect")
@@ -821,51 +727,46 @@ func init() {
 func init() { proto.RegisterFile("structs/structs/tx.proto", fileDescriptor_38fd6c203bede659) }
 
 var fileDescriptor_38fd6c203bede659 = []byte{
-	// 700 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x56, 0x5b, 0x4f, 0x13, 0x41,
-	0x14, 0xee, 0x14, 0x50, 0x38, 0x51, 0x34, 0x8b, 0x09, 0xcb, 0x02, 0x0b, 0x6e, 0x2a, 0x94, 0x20,
-	0x5b, 0x84, 0x78, 0x89, 0xfa, 0xc2, 0xe5, 0xa5, 0x0f, 0x44, 0xb2, 0xf8, 0xe4, 0x8b, 0xd9, 0x6e,
-	0xc7, 0xba, 0x52, 0x76, 0x36, 0x33, 0x53, 0xa4, 0xe1, 0xc9, 0xc4, 0x84, 0xc4, 0xc4, 0x84, 0x1f,
-	0xe3, 0x8f, 0xe0, 0x91, 0xf8, 0x64, 0x7c, 0x20, 0x06, 0xfe, 0x88, 0xd9, 0xdb, 0xb4, 0xdb, 0xcb,
-	0x6c, 0x1b, 0x13, 0x9f, 0x86, 0x33, 0xe7, 0x3b, 0xdf, 0xf7, 0xe5, 0xec, 0xe1, 0x74, 0x40, 0x65,
-	0x9c, 0x36, 0x1c, 0xce, 0x4a, 0xc9, 0xc9, 0x4f, 0x4c, 0x9f, 0x12, 0x4e, 0x94, 0x7b, 0xf1, 0x8d,
-	0x19, 0x9f, 0xda, 0x83, 0x1a, 0xa9, 0x91, 0x30, 0x57, 0x0a, 0xfe, 0x8a, 0x60, 0xda, 0x8c, 0x43,
-	0xd8, 0x11, 0x61, 0xef, 0xa3, 0x44, 0x14, 0xc4, 0x29, 0xad, 0x93, 0xfb, 0x10, 0x37, 0xe3, 0x9c,
-	0x71, 0x02, 0x73, 0x7b, 0xac, 0x66, 0x61, 0xdb, 0xe1, 0x84, 0x6e, 0xd5, 0xeb, 0xc4, 0xb1, 0xb9,
-	0x4b, 0xbc, 0x2d, 0x87, 0xbb, 0xc7, 0x36, 0xc7, 0x8a, 0x0a, 0xb7, 0x1d, 0x8a, 0x6d, 0x4e, 0xa8,
-	0x8a, 0x16, 0x51, 0x71, 0xc2, 0x4a, 0x42, 0xc5, 0x80, 0x3b, 0xb6, 0xc0, 0x97, 0xab, 0x6a, 0x7e,
-	0x11, 0x15, 0x47, 0xad, 0xd4, 0x9d, 0xa2, 0xc1, 0x78, 0x15, 0x3b, 0x2e, 0x73, 0x89, 0xa7, 0x8e,
-	0x2c, 0xa2, 0xe2, 0xb8, 0x25, 0x62, 0x63, 0x09, 0x0a, 0x32, 0x65, 0x0b, 0x33, 0x9f, 0x78, 0x0c,
-	0x1b, 0xa7, 0x30, 0xb5, 0xc7, 0x6a, 0x07, 0x8d, 0x0a, 0xe3, 0x21, 0x60, 0x27, 0xd0, 0x97, 0x19,
-	0x5b, 0x87, 0x29, 0x1f, 0xd3, 0x23, 0x97, 0x05, 0x32, 0xec, 0xcd, 0x31, 0xa6, 0xd4, 0xad, 0xe2,
-	0xd0, 0xdf, 0x84, 0xd5, 0x2b, 0x15, 0x72, 0x11, 0xcf, 0xc3, 0x0e, 0x0f, 0x5d, 0x06, 0x5c, 0x51,
-	0x68, 0xcc, 0xc3, 0x6c, 0x0f, 0x71, 0xe1, 0xed, 0xa0, 0xc3, 0xdb, 0x2e, 0xae, 0xe3, 0xac, 0xa6,
-	0x31, 0x81, 0x6e, 0x35, 0xad, 0xfd, 0xae, 0x4b, 0x33, 0x22, 0x15, 0x9a, 0xdf, 0xf3, 0xa0, 0xa7,
-	0xf2, 0xad, 0xde, 0xed, 0x53, 0xe2, 0x13, 0x26, 0xd3, 0x2f, 0xc0, 0xdd, 0x5d, 0xcc, 0xb8, 0xeb,
-	0xa5, 0x0d, 0xa4, 0x2f, 0x95, 0x57, 0x00, 0x8c, 0x34, 0xa8, 0x83, 0xdf, 0x36, 0x7d, 0x1c, 0xb6,
-	0x64, 0x72, 0x63, 0xd6, 0xec, 0x98, 0x43, 0x93, 0x54, 0x3e, 0x61, 0x87, 0x07, 0x10, 0xab, 0x0d,
-	0x1e, 0x7c, 0xf3, 0x28, 0x2a, 0x57, 0xd5, 0xd1, 0x90, 0x5d, 0xc4, 0x8a, 0x05, 0x63, 0x3e, 0xf9,
-	0x8c, 0xa9, 0x3a, 0x16, 0xd8, 0xda, 0x7e, 0x7d, 0x71, 0xb5, 0x90, 0xfb, 0x7d, 0xb5, 0xb0, 0x54,
-	0x73, 0xf9, 0xc7, 0x46, 0xc5, 0x74, 0xc8, 0x51, 0x3c, 0xb9, 0xf1, 0xb1, 0xc6, 0xaa, 0x87, 0x25,
-	0xde, 0xf4, 0x31, 0x33, 0xcb, 0x1e, 0xff, 0xf9, 0x63, 0x0d, 0xe2, 0xc1, 0x2e, 0x7b, 0xdc, 0x8a,
-	0xa8, 0x8c, 0x22, 0x2c, 0xc9, 0xdb, 0xd1, 0x36, 0x49, 0x0b, 0x7d, 0x90, 0xff, 0x61, 0xdc, 0x57,
-	0x60, 0x39, 0x43, 0x5c, 0xf8, 0xb4, 0xe1, 0x61, 0x1f, 0xe8, 0xae, 0xcb, 0xe2, 0xc9, 0xfc, 0x37,
-	0xa7, 0xc6, 0x2a, 0xac, 0x64, 0x4a, 0x08, 0x3f, 0xc7, 0xa0, 0xa5, 0xc0, 0xfb, 0x75, 0xbb, 0x89,
-	0xe9, 0xce, 0x20, 0x46, 0xb2, 0x86, 0x3d, 0x68, 0x99, 0x1f, 0xd2, 0x95, 0xab, 0x61, 0xcb, 0x46,
-	0x2d, 0x11, 0x1b, 0x05, 0x30, 0xfa, 0xeb, 0x0a, 0x77, 0x18, 0xe6, 0x7b, 0xa0, 0x06, 0xea, 0xd4,
-	0x24, 0xe4, 0xdd, 0xc4, 0x56, 0xde, 0x95, 0x9b, 0x59, 0x86, 0x47, 0x52, 0x99, 0xc4, 0xcf, 0xc6,
-	0xd9, 0x38, 0x8c, 0xec, 0xb1, 0x9a, 0xf2, 0x05, 0xc1, 0x4c, 0xff, 0xbd, 0xba, 0xd6, 0xf5, 0xef,
-	0x24, 0x5b, 0x86, 0xda, 0xd3, 0xa1, 0xe0, 0x89, 0x17, 0xe5, 0x03, 0xdc, 0xef, 0x5a, 0x9c, 0x85,
-	0x5e, 0x54, 0x9d, 0x28, 0xed, 0xf1, 0x20, 0xa8, 0xde, 0x3a, 0xf1, 0x12, 0xcc, 0xd0, 0x89, 0x50,
-	0x59, 0x3a, 0xe9, 0xdd, 0xa7, 0x9c, 0x21, 0x98, 0x95, 0x2d, 0xbe, 0x92, 0x9c, 0xad, 0xab, 0x40,
-	0x7b, 0x3e, 0x64, 0x81, 0x70, 0xf2, 0x0d, 0xc1, 0x9c, 0x74, 0x93, 0xac, 0x0f, 0xca, 0x2c, 0xbe,
-	0xf1, 0x8b, 0x61, 0x2b, 0x84, 0x99, 0x73, 0x04, 0x7a, 0xc6, 0xba, 0xd8, 0x18, 0x94, 0xbc, 0x55,
-	0xa3, 0xbd, 0x1c, 0xbe, 0x46, 0x58, 0x3a, 0x85, 0xe9, 0x7e, 0x0b, 0x63, 0x55, 0x4e, 0x9b, 0x02,
-	0x6b, 0x9b, 0x43, 0x80, 0x85, 0xf8, 0x57, 0x04, 0x9a, 0x64, 0x21, 0x98, 0x83, 0x70, 0xb6, 0xf5,
-	0xe1, 0xd9, 0x70, 0xf8, 0xc4, 0xc6, 0xf6, 0x93, 0x8b, 0x6b, 0x1d, 0x5d, 0x5e, 0xeb, 0xe8, 0xcf,
-	0xb5, 0x8e, 0xce, 0x6f, 0xf4, 0xdc, 0xe5, 0x8d, 0x9e, 0xfb, 0x75, 0xa3, 0xe7, 0xde, 0x4d, 0x27,
-	0x2f, 0xb1, 0x93, 0xd6, 0x7b, 0x2f, 0xf8, 0x95, 0xab, 0xdc, 0x0a, 0x5f, 0x65, 0x9b, 0x7f, 0x03,
-	0x00, 0x00, 0xff, 0xff, 0xc5, 0x8f, 0x66, 0xdd, 0x0f, 0x0a, 0x00, 0x00,
+	// 621 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x56, 0xcf, 0x6f, 0xd3, 0x30,
+	0x14, 0x9e, 0xf7, 0x8b, 0xed, 0x09, 0x06, 0xca, 0x26, 0x2d, 0x4b, 0x59, 0x54, 0xa2, 0x32, 0x8a,
+	0x06, 0x2d, 0x74, 0x02, 0x24, 0x38, 0x8d, 0xf5, 0xd2, 0x43, 0xc5, 0x94, 0x71, 0xe2, 0x82, 0xd2,
+	0xd4, 0x54, 0x81, 0x2e, 0x8e, 0x6c, 0xb7, 0xb4, 0xda, 0x09, 0x09, 0x89, 0xeb, 0xfe, 0x2c, 0x6e,
+	0xec, 0xc8, 0x11, 0xb5, 0xff, 0x05, 0x27, 0x14, 0x27, 0x71, 0x9b, 0xfe, 0x70, 0x5a, 0x71, 0x4a,
+	0x9e, 0xdf, 0xe7, 0xef, 0xfb, 0xfc, 0x6c, 0x3f, 0x19, 0x74, 0xc6, 0x69, 0xc7, 0xe5, 0xac, 0x9c,
+	0x7c, 0x79, 0xaf, 0x14, 0x50, 0xc2, 0x89, 0x76, 0x37, 0x1e, 0x29, 0xc5, 0x5f, 0x63, 0xaf, 0x45,
+	0x5a, 0x44, 0xe4, 0xca, 0xe1, 0x5f, 0x04, 0x33, 0x0e, 0x5c, 0xc2, 0x2e, 0x09, 0xfb, 0x18, 0x25,
+	0xa2, 0x20, 0x4e, 0x19, 0x93, 0xdc, 0x5f, 0x70, 0x3f, 0xce, 0x59, 0x3d, 0xb8, 0x5f, 0x67, 0x2d,
+	0x1b, 0x3b, 0x2e, 0x27, 0xf4, 0xb4, 0xdd, 0x26, 0xae, 0xc3, 0x3d, 0xe2, 0x9f, 0xba, 0xdc, 0xeb,
+	0x3a, 0x1c, 0x6b, 0x3a, 0xdc, 0x72, 0x29, 0x76, 0x38, 0xa1, 0x3a, 0xca, 0xa3, 0xe2, 0xb6, 0x9d,
+	0x84, 0x9a, 0x05, 0xb7, 0x1d, 0x89, 0xaf, 0x35, 0xf5, 0xd5, 0x3c, 0x2a, 0xae, 0xdb, 0xa9, 0x31,
+	0xcd, 0x80, 0xad, 0x26, 0x76, 0x3d, 0xe6, 0x11, 0x5f, 0x5f, 0xcb, 0xa3, 0xe2, 0x96, 0x2d, 0x63,
+	0xeb, 0x08, 0x0a, 0x2a, 0x65, 0x1b, 0xb3, 0x80, 0xf8, 0x0c, 0x5b, 0x57, 0xb0, 0x5b, 0x67, 0xad,
+	0x8b, 0x4e, 0x83, 0x71, 0x01, 0x38, 0x0b, 0xf5, 0x55, 0xc6, 0x9e, 0xc1, 0x6e, 0x80, 0xe9, 0xa5,
+	0xc7, 0x42, 0x19, 0xf6, 0xae, 0x8b, 0x29, 0xf5, 0x9a, 0x58, 0xf8, 0xdb, 0xb6, 0x67, 0xa5, 0x04,
+	0x17, 0xf1, 0x7d, 0xec, 0x72, 0xe1, 0x32, 0xe4, 0x8a, 0x42, 0xeb, 0x10, 0x72, 0x33, 0xc4, 0xa5,
+	0xb7, 0x8b, 0x09, 0x6f, 0x55, 0xdc, 0xc6, 0x59, 0x45, 0x63, 0x12, 0x3d, 0x2a, 0xda, 0xf8, 0xd8,
+	0x94, 0x66, 0x44, 0x2a, 0x35, 0x7f, 0x21, 0x30, 0x53, 0xf9, 0x51, 0xed, 0xce, 0x29, 0x09, 0x08,
+	0x53, 0xe9, 0x17, 0xe0, 0x4e, 0x15, 0x33, 0xee, 0xf9, 0x69, 0x03, 0xe9, 0x41, 0xed, 0x0d, 0x00,
+	0x23, 0x1d, 0xea, 0xe2, 0xf7, 0xfd, 0x00, 0x8b, 0x92, 0xec, 0x54, 0x72, 0xa5, 0x89, 0x73, 0x58,
+	0x22, 0x8d, 0xcf, 0xd8, 0xe5, 0x21, 0xc4, 0x1e, 0x83, 0x87, 0x7b, 0x1e, 0x45, 0xb5, 0xa6, 0xbe,
+	0x2e, 0xd8, 0x65, 0xac, 0xed, 0xc1, 0x46, 0x40, 0xbe, 0x62, 0xaa, 0x6f, 0x88, 0x44, 0x14, 0x58,
+	0x45, 0x38, 0x52, 0x2f, 0x48, 0xae, 0xdd, 0x81, 0x07, 0x73, 0x90, 0x55, 0x8f, 0xc5, 0x7b, 0xf6,
+	0x7f, 0x47, 0xd6, 0x3a, 0x86, 0xc7, 0x99, 0x12, 0xd2, 0x4f, 0x17, 0x8c, 0x14, 0xf8, 0xbc, 0xed,
+	0xf4, 0x31, 0x3d, 0x5b, 0xc4, 0x48, 0xd6, 0x31, 0x08, 0xeb, 0x18, 0x08, 0xba, 0x5a, 0x53, 0x6c,
+	0xc1, 0xba, 0x2d, 0x63, 0xab, 0x00, 0xd6, 0x7c, 0x5d, 0xe9, 0x0e, 0xc3, 0xe1, 0x0c, 0xd4, 0x42,
+	0x95, 0xda, 0x81, 0x55, 0x2f, 0xb1, 0xb5, 0xea, 0xa9, 0xcd, 0x3c, 0x82, 0x87, 0x4a, 0x99, 0xc4,
+	0x4f, 0xe5, 0xef, 0x26, 0xac, 0xd5, 0x59, 0x4b, 0xfb, 0x86, 0xe0, 0x60, 0x7e, 0xc7, 0x79, 0x3a,
+	0x75, 0xd0, 0x54, 0x6d, 0xc2, 0x78, 0xb1, 0x14, 0x3c, 0xf1, 0xa2, 0x7d, 0x82, 0x7b, 0x53, 0x2d,
+	0xa5, 0x30, 0x8b, 0x6a, 0x12, 0x65, 0x3c, 0x59, 0x04, 0x35, 0x5b, 0x27, 0x6e, 0x0f, 0x19, 0x3a,
+	0x11, 0x2a, 0x4b, 0x27, 0xdd, 0x15, 0xb4, 0x1f, 0x08, 0x72, 0xaa, 0x96, 0x50, 0x56, 0xb3, 0x4d,
+	0x4d, 0x30, 0x5e, 0x2d, 0x39, 0x41, 0x3a, 0xb9, 0x46, 0x60, 0x66, 0xdc, 0xd0, 0xca, 0xa2, 0xdc,
+	0xa3, 0x39, 0xc6, 0xeb, 0xe5, 0xe7, 0x48, 0x4b, 0x57, 0xb0, 0x3f, 0xef, 0x8e, 0x1e, 0xab, 0x69,
+	0x53, 0x60, 0xe3, 0x64, 0x09, 0xb0, 0x14, 0xff, 0x8e, 0xc0, 0x50, 0xdc, 0xc1, 0xd2, 0x22, 0x9c,
+	0x63, 0x75, 0x78, 0xb9, 0x1c, 0x3e, 0xb1, 0xf1, 0xf6, 0xf9, 0xcf, 0x81, 0x89, 0x6e, 0x06, 0x26,
+	0xfa, 0x33, 0x30, 0xd1, 0xf5, 0xd0, 0x5c, 0xb9, 0x19, 0x9a, 0x2b, 0xbf, 0x87, 0xe6, 0xca, 0x87,
+	0xfd, 0xe4, 0x59, 0xd0, 0x1b, 0x3d, 0x3e, 0xfa, 0x01, 0x66, 0x8d, 0x4d, 0xf1, 0x44, 0x38, 0xf9,
+	0x17, 0x00, 0x00, 0xff, 0xff, 0x3b, 0xc0, 0xec, 0x39, 0x9c, 0x08, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -884,7 +785,6 @@ type MsgClient interface {
 	SubstationCreate(ctx context.Context, in *MsgSubstationCreate, opts ...grpc.CallOption) (*MsgSubstationCreateResponse, error)
 	SubstationDelete(ctx context.Context, in *MsgSubstationDelete, opts ...grpc.CallOption) (*MsgSubstationDeleteResponse, error)
 	SubstationAllocationPropose(ctx context.Context, in *MsgSubstationAllocationPropose, opts ...grpc.CallOption) (*MsgSubstationAllocationProposeResponse, error)
-	SubstationAllocationActivate(ctx context.Context, in *MsgSubstationAllocationActivate, opts ...grpc.CallOption) (*MsgSubstationAllocationActivateResponse, error)
 	SubstationAllocationDisconnect(ctx context.Context, in *MsgSubstationAllocationDisconnect, opts ...grpc.CallOption) (*MsgSubstationAllocationDisconnectResponse, error)
 	SubstationPlayerConnect(ctx context.Context, in *MsgSubstationPlayerConnect, opts ...grpc.CallOption) (*MsgSubstationPlayerConnectResponse, error)
 	SubstationPlayerDisconnect(ctx context.Context, in *MsgSubstationPlayerDisconnect, opts ...grpc.CallOption) (*MsgSubstationPlayerDisconnectResponse, error)
@@ -934,15 +834,6 @@ func (c *msgClient) SubstationAllocationPropose(ctx context.Context, in *MsgSubs
 	return out, nil
 }
 
-func (c *msgClient) SubstationAllocationActivate(ctx context.Context, in *MsgSubstationAllocationActivate, opts ...grpc.CallOption) (*MsgSubstationAllocationActivateResponse, error) {
-	out := new(MsgSubstationAllocationActivateResponse)
-	err := c.cc.Invoke(ctx, "/structs.structs.Msg/SubstationAllocationActivate", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *msgClient) SubstationAllocationDisconnect(ctx context.Context, in *MsgSubstationAllocationDisconnect, opts ...grpc.CallOption) (*MsgSubstationAllocationDisconnectResponse, error) {
 	out := new(MsgSubstationAllocationDisconnectResponse)
 	err := c.cc.Invoke(ctx, "/structs.structs.Msg/SubstationAllocationDisconnect", in, out, opts...)
@@ -976,7 +867,6 @@ type MsgServer interface {
 	SubstationCreate(context.Context, *MsgSubstationCreate) (*MsgSubstationCreateResponse, error)
 	SubstationDelete(context.Context, *MsgSubstationDelete) (*MsgSubstationDeleteResponse, error)
 	SubstationAllocationPropose(context.Context, *MsgSubstationAllocationPropose) (*MsgSubstationAllocationProposeResponse, error)
-	SubstationAllocationActivate(context.Context, *MsgSubstationAllocationActivate) (*MsgSubstationAllocationActivateResponse, error)
 	SubstationAllocationDisconnect(context.Context, *MsgSubstationAllocationDisconnect) (*MsgSubstationAllocationDisconnectResponse, error)
 	SubstationPlayerConnect(context.Context, *MsgSubstationPlayerConnect) (*MsgSubstationPlayerConnectResponse, error)
 	SubstationPlayerDisconnect(context.Context, *MsgSubstationPlayerDisconnect) (*MsgSubstationPlayerDisconnectResponse, error)
@@ -997,9 +887,6 @@ func (*UnimplementedMsgServer) SubstationDelete(ctx context.Context, req *MsgSub
 }
 func (*UnimplementedMsgServer) SubstationAllocationPropose(ctx context.Context, req *MsgSubstationAllocationPropose) (*MsgSubstationAllocationProposeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubstationAllocationPropose not implemented")
-}
-func (*UnimplementedMsgServer) SubstationAllocationActivate(ctx context.Context, req *MsgSubstationAllocationActivate) (*MsgSubstationAllocationActivateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubstationAllocationActivate not implemented")
 }
 func (*UnimplementedMsgServer) SubstationAllocationDisconnect(ctx context.Context, req *MsgSubstationAllocationDisconnect) (*MsgSubstationAllocationDisconnectResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubstationAllocationDisconnect not implemented")
@@ -1087,24 +974,6 @@ func _Msg_SubstationAllocationPropose_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_SubstationAllocationActivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSubstationAllocationActivate)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).SubstationAllocationActivate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.structs.Msg/SubstationAllocationActivate",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SubstationAllocationActivate(ctx, req.(*MsgSubstationAllocationActivate))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Msg_SubstationAllocationDisconnect_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgSubstationAllocationDisconnect)
 	if err := dec(in); err != nil {
@@ -1178,10 +1047,6 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SubstationAllocationPropose",
 			Handler:    _Msg_SubstationAllocationPropose_Handler,
-		},
-		{
-			MethodName: "SubstationAllocationActivate",
-			Handler:    _Msg_SubstationAllocationActivate_Handler,
 		},
 		{
 			MethodName: "SubstationAllocationDisconnect",
@@ -1413,16 +1278,11 @@ func (m *MsgSubstationAllocationPropose) MarshalToSizedBuffer(dAtA []byte) (int,
 	_ = i
 	var l int
 	_ = l
-	{
-		size := m.Power.Size()
-		i -= size
-		if _, err := m.Power.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintTx(dAtA, i, uint64(size))
+	if m.Power != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.Power))
+		i--
+		dAtA[i] = 0x28
 	}
-	i--
-	dAtA[i] = 0x2a
 	if m.SourceId != 0 {
 		i = encodeVarintTx(dAtA, i, uint64(m.SourceId))
 		i--
@@ -1464,74 +1324,6 @@ func (m *MsgSubstationAllocationProposeResponse) MarshalTo(dAtA []byte) (int, er
 }
 
 func (m *MsgSubstationAllocationProposeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgSubstationAllocationActivate) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgSubstationAllocationActivate) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgSubstationAllocationActivate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Decision {
-		i--
-		if m.Decision {
-			dAtA[i] = 1
-		} else {
-			dAtA[i] = 0
-		}
-		i--
-		dAtA[i] = 0x18
-	}
-	if m.AllocationId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.AllocationId))
-		i--
-		dAtA[i] = 0x10
-	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgSubstationAllocationActivateResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgSubstationAllocationActivateResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgSubstationAllocationActivateResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1836,40 +1628,13 @@ func (m *MsgSubstationAllocationPropose) Size() (n int) {
 	if m.SourceId != 0 {
 		n += 1 + sovTx(uint64(m.SourceId))
 	}
-	l = m.Power.Size()
-	n += 1 + l + sovTx(uint64(l))
+	if m.Power != 0 {
+		n += 1 + sovTx(uint64(m.Power))
+	}
 	return n
 }
 
 func (m *MsgSubstationAllocationProposeResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MsgSubstationAllocationActivate) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Creator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	if m.AllocationId != 0 {
-		n += 1 + sovTx(uint64(m.AllocationId))
-	}
-	if m.Decision {
-		n += 2
-	}
-	return n
-}
-
-func (m *MsgSubstationAllocationActivateResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -2602,10 +2367,10 @@ func (m *MsgSubstationAllocationPropose) Unmarshal(dAtA []byte) error {
 				}
 			}
 		case 5:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Power", wireType)
 			}
-			var stringLen uint64
+			m.Power = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -2615,26 +2380,11 @@ func (m *MsgSubstationAllocationPropose) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.Power |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Power.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -2683,177 +2433,6 @@ func (m *MsgSubstationAllocationProposeResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgSubstationAllocationProposeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgSubstationAllocationActivate) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSubstationAllocationActivate: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSubstationAllocationActivate: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AllocationId", wireType)
-			}
-			m.AllocationId = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.AllocationId |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Decision", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				v |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.Decision = bool(v != 0)
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgSubstationAllocationActivateResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSubstationAllocationActivateResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSubstationAllocationActivateResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

@@ -9,7 +9,7 @@ const TypeMsgSubstationAllocationPropose = "substation_allocation_propose"
 
 var _ sdk.Msg = &MsgSubstationAllocationPropose{}
 
-func NewMsgSubstationAllocationPropose(creator string, sourceType ObjectType, sourceId uint64, destinationId uint64, power sdk.Int) *MsgSubstationAllocationPropose {
+func NewMsgSubstationAllocationPropose(creator string, sourceType ObjectType, sourceId uint64, destinationId uint64, power uint64) *MsgSubstationAllocationPropose {
 	return &MsgSubstationAllocationPropose{
 		Creator:    creator,
 		SourceType: sourceType,

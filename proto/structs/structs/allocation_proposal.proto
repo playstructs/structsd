@@ -16,10 +16,6 @@ message AllocationProposal {
   uint64 sourceId = 3;
   uint64 destinationId = 4;
 
-  string power = 5 [
-   (cosmos_proto.scalar)  = "cosmos.Int",
-   (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-   (gogoproto.nullable)   = false
-  ];
+  uint64 power = 5;
 
 }

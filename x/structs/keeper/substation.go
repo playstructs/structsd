@@ -69,6 +69,7 @@ func (k Keeper) GetSubstation(ctx sdk.Context, id uint64) (val types.Substation,
 		return val, false
 	}
 	k.cdc.MustUnmarshal(b, &val)
+
 	return val, true
 }
 
@@ -104,4 +105,31 @@ func GetSubstationIDBytes(id uint64) []byte {
 // GetSubstationIDFromBytes returns ID in uint64 format from a byte array
 func GetSubstationIDFromBytes(bz []byte) uint64 {
 	return binary.BigEndian.Uint64(bz)
+}
+
+
+// UpdateSubstationByReactorCascade(substationId, status)
+func (k Keeper) UpdateSubstationByReactorCascade(ctx sdk.Context, substationId uint64, reactor types.Reactor) {
+    substation, found := k.GetSubstation(ctx, substationId)
+    if (found) {
+        allocations := k.GetAllSubstationAllocationIn(ctx, substationId)
+        for _, allocation := range allocations {
+            if (allocation.SourceId == reactor.Id) {
+
+                if (reactor.Status == types.Reactor_ONLINE) {
+                    substation.ApplyAllocationSource(allocation)
+
+                } else if (reactor.Status == types.Reactor_OFFLINE) {
+                    substation.RemoveAllocationSource(allocation)
+
+                } else if (reactor.Status == types.Reactor_OVERLOAD) {
+                    substation.RemoveAllocationSource(allocation)
+                }
+
+                substation.Status = substation.CheckStatus()
+                k.SetSubstation(ctx, substation)
+            }
+        }
+    }
+
 }

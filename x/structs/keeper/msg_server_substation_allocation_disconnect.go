@@ -32,6 +32,7 @@ func (k msgServer) SubstationAllocationDisconnect(goCtx context.Context, msg *ty
      */
     switch allocation.SourceType {
         case types.ObjectType_substation:
+            // Not currently used as substation to substation connections are blocked
             source, sourceFound := k.GetSubstation(ctx, allocation.SourceId)
 
             if (!sourceFound){

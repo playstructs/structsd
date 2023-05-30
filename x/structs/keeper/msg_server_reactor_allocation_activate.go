@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-    math "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
     "strconv"
@@ -38,8 +37,8 @@ func (k msgServer) ReactorAllocationActivate(goCtx context.Context, msg *types.M
 	    SourceType: types.ObjectType_reactor,
 	    SourceId: proposal.SourceId,
 	    DestinationId: proposal.DestinationId,
-	    Power: math.ZeroInt(),
-	    TransmissionLoss: math.ZeroInt(),
+	    Power: 0,
+	    TransmissionLoss: 0,
 
 	}
 

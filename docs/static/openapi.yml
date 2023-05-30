@@ -45294,8 +45294,10 @@ paths:
                       format: uint64
                     power:
                       type: string
+                      format: uint64
                     transmissionLoss:
                       type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -45435,8 +45437,10 @@ paths:
                     format: uint64
                   power:
                     type: string
+                    format: uint64
                   transmissionLoss:
                     type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -45498,6 +45502,7 @@ paths:
                       format: uint64
                     power:
                       type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -45637,6 +45642,7 @@ paths:
                     format: uint64
                   power:
                     type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -45720,8 +45726,18 @@ paths:
                       type: string
                     power:
                       type: string
+                      format: uint64
                     load:
                       type: string
+                      format: uint64
+                    previous_status:
+                      type: string
+                      enum:
+                        - ONLINE
+                        - OFFLINE
+                        - DECOMMISSIONED
+                        - OVERLOAD
+                      default: ONLINE
                     status:
                       type: string
                       enum:
@@ -45855,8 +45871,18 @@ paths:
                     type: string
                   power:
                     type: string
+                    format: uint64
                   load:
                     type: string
+                    format: uint64
+                  previous_status:
+                    type: string
+                    enum:
+                      - ONLINE
+                      - OFFLINE
+                      - DECOMMISSIONED
+                      - OVERLOAD
+                    default: ONLINE
                   status:
                     type: string
                     enum:
@@ -45910,30 +45936,18 @@ paths:
                       format: uint64
                     power:
                       type: string
+                      format: uint64
                     load:
                       type: string
-                    depth:
-                      type: string
                       format: uint64
-                    parent:
+                    status:
                       type: string
-                      format: uint64
-                    children:
-                      type: array
-                      items:
-                        type: string
-                        format: uint64
-                    path:
-                      type: array
-                      items:
-                        type: string
-                        format: uint64
-                    sources:
-                      type: array
-                      items:
-                        type: string
-                        format: uint64
-                      description: How do we deal with source power...
+                      enum:
+                        - ONLINE
+                        - OFFLINE
+                        - DECOMMISSIONED
+                        - OVERLOAD
+                      default: ONLINE
               pagination:
                 type: object
                 properties:
@@ -46057,30 +46071,18 @@ paths:
                     format: uint64
                   power:
                     type: string
+                    format: uint64
                   load:
                     type: string
-                  depth:
-                    type: string
                     format: uint64
-                  parent:
+                  status:
                     type: string
-                    format: uint64
-                  children:
-                    type: array
-                    items:
-                      type: string
-                      format: uint64
-                  path:
-                    type: array
-                    items:
-                      type: string
-                      format: uint64
-                  sources:
-                    type: array
-                    items:
-                      type: string
-                      format: uint64
-                    description: How do we deal with source power...
+                    enum:
+                      - ONLINE
+                      - OFFLINE
+                      - DECOMMISSIONED
+                      - OVERLOAD
+                    default: ONLINE
         default:
           description: An unexpected error response.
           schema:
@@ -75770,8 +75772,10 @@ definitions:
         format: uint64
       power:
         type: string
+        format: uint64
       transmissionLoss:
         type: string
+        format: uint64
   structs.structs.AllocationProposal:
     type: object
     properties:
@@ -75796,9 +75800,8 @@ definitions:
         format: uint64
       power:
         type: string
+        format: uint64
   structs.structs.MsgReactorAllocationActivateResponse:
-    type: object
-  structs.structs.MsgSubstationAllocationActivateResponse:
     type: object
   structs.structs.MsgSubstationAllocationDisconnectResponse:
     type: object
@@ -75844,6 +75847,7 @@ definitions:
               format: uint64
             power:
               type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -75899,8 +75903,10 @@ definitions:
               format: uint64
             power:
               type: string
+              format: uint64
             transmissionLoss:
               type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -75942,8 +75948,18 @@ definitions:
               type: string
             power:
               type: string
+              format: uint64
             load:
               type: string
+              format: uint64
+            previous_status:
+              type: string
+              enum:
+                - ONLINE
+                - OFFLINE
+                - DECOMMISSIONED
+                - OVERLOAD
+              default: ONLINE
             status:
               type: string
               enum:
@@ -75991,30 +76007,18 @@ definitions:
               format: uint64
             power:
               type: string
+              format: uint64
             load:
               type: string
-            depth:
-              type: string
               format: uint64
-            parent:
+            status:
               type: string
-              format: uint64
-            children:
-              type: array
-              items:
-                type: string
-                format: uint64
-            path:
-              type: array
-              items:
-                type: string
-                format: uint64
-            sources:
-              type: array
-              items:
-                type: string
-                format: uint64
-              description: How do we deal with source power...
+              enum:
+                - ONLINE
+                - OFFLINE
+                - DECOMMISSIONED
+                - OVERLOAD
+              default: ONLINE
       pagination:
         type: object
         properties:
@@ -76068,6 +76072,7 @@ definitions:
             format: uint64
           power:
             type: string
+            format: uint64
   structs.structs.QueryGetAllocationResponse:
     type: object
     properties:
@@ -76095,8 +76100,10 @@ definitions:
             format: uint64
           power:
             type: string
+            format: uint64
           transmissionLoss:
             type: string
+            format: uint64
   structs.structs.QueryGetReactorResponse:
     type: object
     properties:
@@ -76110,8 +76117,18 @@ definitions:
             type: string
           power:
             type: string
+            format: uint64
           load:
             type: string
+            format: uint64
+          previous_status:
+            type: string
+            enum:
+              - ONLINE
+              - OFFLINE
+              - DECOMMISSIONED
+              - OVERLOAD
+            default: ONLINE
           status:
             type: string
             enum:
@@ -76131,30 +76148,18 @@ definitions:
             format: uint64
           power:
             type: string
+            format: uint64
           load:
             type: string
-          depth:
-            type: string
             format: uint64
-          parent:
+          status:
             type: string
-            format: uint64
-          children:
-            type: array
-            items:
-              type: string
-              format: uint64
-          path:
-            type: array
-            items:
-              type: string
-              format: uint64
-          sources:
-            type: array
-            items:
-              type: string
-              format: uint64
-            description: How do we deal with source power...
+            enum:
+              - ONLINE
+              - OFFLINE
+              - DECOMMISSIONED
+              - OVERLOAD
+            default: ONLINE
   structs.structs.QueryParamsResponse:
     type: object
     properties:
@@ -76172,8 +76177,18 @@ definitions:
         type: string
       power:
         type: string
+        format: uint64
       load:
         type: string
+        format: uint64
+      previous_status:
+        type: string
+        enum:
+          - ONLINE
+          - OFFLINE
+          - DECOMMISSIONED
+          - OVERLOAD
+        default: ONLINE
       status:
         type: string
         enum:
@@ -76198,30 +76213,26 @@ definitions:
         format: uint64
       power:
         type: string
+        format: uint64
       load:
         type: string
-      depth:
-        type: string
         format: uint64
-      parent:
+      status:
         type: string
-        format: uint64
-      children:
-        type: array
-        items:
-          type: string
-          format: uint64
-      path:
-        type: array
-        items:
-          type: string
-          format: uint64
-      sources:
-        type: array
-        items:
-          type: string
-          format: uint64
-        description: How do we deal with source power...
+        enum:
+          - ONLINE
+          - OFFLINE
+          - DECOMMISSIONED
+          - OVERLOAD
+        default: ONLINE
+  structs.structs.Substation.Status:
+    type: string
+    enum:
+      - ONLINE
+      - OFFLINE
+      - DECOMMISSIONED
+      - OVERLOAD
+    default: ONLINE
   structs.structs.objectType:
     type: string
     enum:

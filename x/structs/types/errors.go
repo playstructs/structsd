@@ -21,4 +21,5 @@ var (
     ErrAllocationSourceNotFound         = sdkerrors.Register(ModuleName, 1513, "source not found")
 
     ErrSubstationNotFound               = sdkerrors.Register(ModuleName, 1550, "substation not found")
+    ErrSubstationHasNoPowerSource       = sdkerrors.Register(ModuleName, 1551, "substation has no power source")
 )

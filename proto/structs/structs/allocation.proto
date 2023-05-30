@@ -2,7 +2,6 @@ syntax = "proto3";
 package structs.structs;
 
 import "gogoproto/gogo.proto";
-import "cosmos_proto/cosmos.proto";
 import "structs/structs/keys.proto";
 option go_package = "structs/x/structs/types";
 
@@ -14,17 +13,9 @@ message Allocation {
   uint64 sourceId = 3; 
   uint64 destinationId = 4;
 
-  string power = 5 [
-   (cosmos_proto.scalar)  = "cosmos.Int",
-   (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-   (gogoproto.nullable)   = false
-  ];
+  uint64 power = 5;
 
-  string transmissionLoss = 6 [
-   (cosmos_proto.scalar)  = "cosmos.Int",
-   (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-   (gogoproto.nullable)   = false
-  ];
+  uint64 transmissionLoss = 6 ;
 
 
 

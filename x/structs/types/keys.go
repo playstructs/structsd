@@ -30,14 +30,22 @@ func KeyPrefix(p string) []byte {
 }
 
 const (
-	ReactorKey          = "Reactor/value/"
-	ReactorCountKey     = "Reactor/count/"
-	ReactorValidatorKey = "Reactor/validator/"
+	ReactorKey              = "Reactor/value/"
+	ReactorCountKey         = "Reactor/count/"
+	ReactorValidatorKey     = "Reactor/validator/"
+	ReactorAllocationsKey   = "Reactor/allocations/"
+	ReactorSubstationsKey   = "Reactor/substations/"
+    ReactorLoadKey          = "Reactor/load/"
+	ReactorPowerKey         = "Reactor/power/"
 )
 
 const (
-	SubstationKey      = "Substation/value/"
-	SubstationCountKey = "Substation/count/"
+	SubstationKey               = "Substation/value/"
+	SubstationCountKey          = "Substation/count/"
+	SubstationStatusKey         = "Substation/status/"
+	SubstationLoadKey           = "Substation/load/"
+	SubstationPowerKey          = "Substation/power/"
+	SubstationAllocationsKey    = "Substation/allocations/"
 )
 
 const (

@@ -4,8 +4,7 @@ package structs.structs;
 option go_package = "structs/x/structs/types";
 
 import "gogoproto/gogo.proto";
-//import "cosmos/base/v1beta1/coin.proto";
-import "cosmos_proto/cosmos.proto";
+
 
 
 message Reactor {
@@ -13,18 +12,9 @@ message Reactor {
 
   string validator = 2;
 
-  string power = 3 [
-   (cosmos_proto.scalar)  = "cosmos.Int",
-   (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-   (gogoproto.nullable)   = false
-  ];
+  uint64 power = 3;
 
-  string load = 4 [
-   (cosmos_proto.scalar)  = "cosmos.Int",
-   (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Int",
-   (gogoproto.nullable)   = false
-  ];
-
+  uint64 load = 4;
 
   enum Status {
     ONLINE          = 0;
@@ -33,7 +23,12 @@ message Reactor {
   	OVERLOAD        = 32;
   }
 
-  Status status = 5 ;
+  Status previous_status = 5 ;
+  Status status = 6 ;
 
   
+}
+
+message ReactorSubstations {
+    repeated uint64 substation_id = 1;
 }

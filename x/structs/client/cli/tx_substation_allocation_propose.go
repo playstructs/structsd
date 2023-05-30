@@ -11,7 +11,7 @@ import (
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
 
-	math "cosmossdk.io/math"
+
 )
 
 var _ = strconv.Itoa(0)
@@ -34,7 +34,10 @@ func CmdSubstationAllocationPropose() *cobra.Command {
 				return err
 			}
 
-			argPower := args[3]
+			argPower, err := cast.ToUint64E(args[3])
+            if err != nil {
+                return err
+            }
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -42,14 +45,13 @@ func CmdSubstationAllocationPropose() *cobra.Command {
 			}
 
 
-            power, _  := math.NewIntFromString(argPower)
 
 			msg := types.NewMsgSubstationAllocationPropose(
 				clientCtx.GetFromAddress().String(),
 				argSourceType,
 				argSourceId,
 				argDestinationId,
-				power,
+				argPower,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

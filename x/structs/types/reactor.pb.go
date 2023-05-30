@@ -5,8 +5,6 @@ package types
 
 import (
 	fmt "fmt"
-	_ "github.com/cosmos/cosmos-proto"
-	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/gogo/protobuf/gogoproto"
 	proto "github.com/gogo/protobuf/proto"
 	io "io"
@@ -57,11 +55,12 @@ func (Reactor_Status) EnumDescriptor() ([]byte, []int) {
 }
 
 type Reactor struct {
-	Id        uint64                                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Validator string                                 `protobuf:"bytes,2,opt,name=validator,proto3" json:"validator,omitempty"`
-	Power     github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,3,opt,name=power,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"power"`
-	Load      github_com_cosmos_cosmos_sdk_types.Int `protobuf:"bytes,4,opt,name=load,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Int" json:"load"`
-	Status    Reactor_Status                         `protobuf:"varint,5,opt,name=status,proto3,enum=structs.structs.Reactor_Status" json:"status,omitempty"`
+	Id             uint64         `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Validator      string         `protobuf:"bytes,2,opt,name=validator,proto3" json:"validator,omitempty"`
+	Power          uint64         `protobuf:"varint,3,opt,name=power,proto3" json:"power,omitempty"`
+	Load           uint64         `protobuf:"varint,4,opt,name=load,proto3" json:"load,omitempty"`
+	PreviousStatus Reactor_Status `protobuf:"varint,5,opt,name=previous_status,json=previousStatus,proto3,enum=structs.structs.Reactor_Status" json:"previous_status,omitempty"`
+	Status         Reactor_Status `protobuf:"varint,6,opt,name=status,proto3,enum=structs.structs.Reactor_Status" json:"status,omitempty"`
 }
 
 func (m *Reactor) Reset()         { *m = Reactor{} }
@@ -111,6 +110,27 @@ func (m *Reactor) GetValidator() string {
 	return ""
 }
 
+func (m *Reactor) GetPower() uint64 {
+	if m != nil {
+		return m.Power
+	}
+	return 0
+}
+
+func (m *Reactor) GetLoad() uint64 {
+	if m != nil {
+		return m.Load
+	}
+	return 0
+}
+
+func (m *Reactor) GetPreviousStatus() Reactor_Status {
+	if m != nil {
+		return m.PreviousStatus
+	}
+	return Reactor_ONLINE
+}
+
 func (m *Reactor) GetStatus() Reactor_Status {
 	if m != nil {
 		return m.Status
@@ -118,37 +138,81 @@ func (m *Reactor) GetStatus() Reactor_Status {
 	return Reactor_ONLINE
 }
 
+type ReactorSubstations struct {
+	SubstationId []uint64 `protobuf:"varint,1,rep,packed,name=substation_id,json=substationId,proto3" json:"substation_id,omitempty"`
+}
+
+func (m *ReactorSubstations) Reset()         { *m = ReactorSubstations{} }
+func (m *ReactorSubstations) String() string { return proto.CompactTextString(m) }
+func (*ReactorSubstations) ProtoMessage()    {}
+func (*ReactorSubstations) Descriptor() ([]byte, []int) {
+	return fileDescriptor_4de5f586530fedc8, []int{1}
+}
+func (m *ReactorSubstations) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *ReactorSubstations) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_ReactorSubstations.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *ReactorSubstations) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_ReactorSubstations.Merge(m, src)
+}
+func (m *ReactorSubstations) XXX_Size() int {
+	return m.Size()
+}
+func (m *ReactorSubstations) XXX_DiscardUnknown() {
+	xxx_messageInfo_ReactorSubstations.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_ReactorSubstations proto.InternalMessageInfo
+
+func (m *ReactorSubstations) GetSubstationId() []uint64 {
+	if m != nil {
+		return m.SubstationId
+	}
+	return nil
+}
+
 func init() {
 	proto.RegisterEnum("structs.structs.Reactor_Status", Reactor_Status_name, Reactor_Status_value)
 	proto.RegisterType((*Reactor)(nil), "structs.structs.Reactor")
+	proto.RegisterType((*ReactorSubstations)(nil), "structs.structs.ReactorSubstations")
 }
 
 func init() { proto.RegisterFile("structs/structs/reactor.proto", fileDescriptor_4de5f586530fedc8) }
 
 var fileDescriptor_4de5f586530fedc8 = []byte{
-	// 343 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x2d, 0x2e, 0x29, 0x2a,
-	0x4d, 0x2e, 0x29, 0xd6, 0x87, 0xd1, 0x45, 0xa9, 0x89, 0xc9, 0x25, 0xf9, 0x45, 0x7a, 0x05, 0x45,
-	0xf9, 0x25, 0xf9, 0x42, 0xfc, 0x50, 0x61, 0x3d, 0x28, 0x2d, 0x25, 0x92, 0x9e, 0x9f, 0x9e, 0x0f,
-	0x96, 0xd3, 0x07, 0xb1, 0x20, 0xca, 0xa4, 0x24, 0x93, 0xf3, 0x8b, 0x73, 0xf3, 0x8b, 0xe3, 0x21,
-	0x12, 0x10, 0x0e, 0x44, 0x4a, 0xe9, 0x36, 0x13, 0x17, 0x7b, 0x10, 0xc4, 0x4c, 0x21, 0x3e, 0x2e,
-	0xa6, 0xcc, 0x14, 0x09, 0x46, 0x05, 0x46, 0x0d, 0x96, 0x20, 0xa6, 0xcc, 0x14, 0x21, 0x19, 0x2e,
-	0xce, 0xb2, 0xc4, 0x9c, 0xcc, 0x94, 0xc4, 0x92, 0xfc, 0x22, 0x09, 0x26, 0x05, 0x46, 0x0d, 0xce,
-	0x20, 0x84, 0x80, 0x50, 0x10, 0x17, 0x6b, 0x41, 0x7e, 0x79, 0x6a, 0x91, 0x04, 0x33, 0x48, 0xc6,
-	0xc9, 0xe6, 0xc4, 0x3d, 0x79, 0x86, 0x5b, 0xf7, 0xe4, 0xd5, 0xd2, 0x33, 0x4b, 0x32, 0x4a, 0x93,
-	0xf4, 0x92, 0xf3, 0x73, 0xa1, 0x36, 0x41, 0x29, 0xdd, 0xe2, 0x94, 0x6c, 0xfd, 0x92, 0xca, 0x82,
-	0xd4, 0x62, 0x3d, 0xcf, 0xbc, 0x92, 0x4b, 0x5b, 0x74, 0xb9, 0xa0, 0x0e, 0xf1, 0xcc, 0x2b, 0x09,
-	0x82, 0x18, 0x25, 0x14, 0xc0, 0xc5, 0x92, 0x93, 0x9f, 0x98, 0x22, 0xc1, 0x42, 0x05, 0x23, 0xc1,
-	0x26, 0x09, 0x99, 0x73, 0xb1, 0x15, 0x97, 0x24, 0x96, 0x94, 0x16, 0x4b, 0xb0, 0x2a, 0x30, 0x6a,
-	0xf0, 0x19, 0xc9, 0xeb, 0xa1, 0x05, 0x99, 0x1e, 0xd4, 0xf7, 0x7a, 0xc1, 0x60, 0x65, 0x41, 0x50,
-	0xe5, 0x4a, 0xce, 0x5c, 0x6c, 0x10, 0x11, 0x21, 0x2e, 0x2e, 0x36, 0x7f, 0x3f, 0x1f, 0x4f, 0x3f,
-	0x57, 0x01, 0x06, 0x21, 0x6e, 0x2e, 0x76, 0x7f, 0x37, 0x37, 0x30, 0x87, 0x5d, 0x48, 0x88, 0x8b,
-	0xcf, 0xc5, 0xd5, 0xd9, 0xdf, 0xd7, 0xd7, 0x33, 0x38, 0xd8, 0xd3, 0xdf, 0xcf, 0xd5, 0x45, 0x40,
-	0x42, 0x88, 0x87, 0x8b, 0xc3, 0x3f, 0xcc, 0x35, 0xc8, 0xc7, 0xdf, 0xd1, 0x45, 0x40, 0xc1, 0xc9,
-	0xf0, 0xc4, 0x23, 0x39, 0xc6, 0x0b, 0x8f, 0xe4, 0x18, 0x1f, 0x3c, 0x92, 0x63, 0x9c, 0xf0, 0x58,
-	0x8e, 0xe1, 0xc2, 0x63, 0x39, 0x86, 0x1b, 0x8f, 0xe5, 0x18, 0xa2, 0xc4, 0x61, 0x11, 0x5a, 0x01,
-	0x8f, 0x5a, 0xb0, 0x47, 0x92, 0xd8, 0xc0, 0xf1, 0x62, 0x0c, 0x08, 0x00, 0x00, 0xff, 0xff, 0xc8,
-	0x83, 0x0a, 0xf8, 0xfa, 0x01, 0x00, 0x00,
+	// 335 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x51, 0x41, 0x4f, 0xf2, 0x40,
+	0x14, 0x6c, 0x4b, 0x29, 0x1f, 0xef, 0xc3, 0x42, 0x5e, 0x48, 0x6c, 0x8c, 0xd6, 0x06, 0x2f, 0x3d,
+	0x95, 0xa8, 0x07, 0xe3, 0x51, 0xa1, 0xc4, 0x26, 0x40, 0x93, 0x36, 0xf1, 0xe0, 0x85, 0x14, 0xda,
+	0x90, 0x26, 0xc4, 0x6d, 0xba, 0x5b, 0xd4, 0x7f, 0xe1, 0xdf, 0xf0, 0x9f, 0x78, 0xe4, 0xe8, 0xd1,
+	0xc0, 0x1f, 0x31, 0x6c, 0x17, 0x48, 0x3c, 0x79, 0x7a, 0x6f, 0x66, 0x67, 0x26, 0x2f, 0x3b, 0x70,
+	0x46, 0x59, 0x5e, 0xcc, 0x18, 0xed, 0xee, 0x66, 0x9e, 0x44, 0x33, 0x46, 0x72, 0x27, 0xcb, 0x09,
+	0x23, 0xd8, 0x14, 0xb4, 0x23, 0xe6, 0x49, 0x7b, 0x4e, 0xe6, 0x84, 0xbf, 0x75, 0xb7, 0x5b, 0x29,
+	0xeb, 0x7c, 0x28, 0x50, 0x0b, 0x4a, 0x23, 0xea, 0xa0, 0xa4, 0xb1, 0x21, 0x5b, 0xb2, 0xad, 0x06,
+	0x4a, 0x1a, 0xe3, 0x29, 0xd4, 0x97, 0xd1, 0x22, 0x8d, 0x23, 0x46, 0x72, 0x43, 0xb1, 0x64, 0xbb,
+	0x1e, 0x1c, 0x08, 0x6c, 0x43, 0x35, 0x23, 0x2f, 0x49, 0x6e, 0x54, 0xb8, 0xa1, 0x04, 0x88, 0xa0,
+	0x2e, 0x48, 0x14, 0x1b, 0x2a, 0x27, 0xf9, 0x8e, 0x0f, 0xd0, 0xcc, 0xf2, 0x64, 0x99, 0x92, 0x82,
+	0x4e, 0x28, 0x8b, 0x58, 0x41, 0x8d, 0xaa, 0x25, 0xdb, 0xfa, 0xd5, 0xb9, 0xf3, 0xeb, 0x48, 0x47,
+	0x9c, 0xe2, 0x84, 0x5c, 0x16, 0xe8, 0x3b, 0x5f, 0x89, 0xf1, 0x06, 0x34, 0x11, 0xa0, 0xfd, 0x2d,
+	0x40, 0xc8, 0x3b, 0x3d, 0xd0, 0x44, 0x04, 0x80, 0xe6, 0x8f, 0x87, 0xde, 0xd8, 0x6d, 0x49, 0xf8,
+	0x1f, 0x6a, 0xfe, 0x60, 0xc0, 0x41, 0x0d, 0x11, 0xf4, 0xbe, 0xdb, 0xf3, 0x47, 0x23, 0x2f, 0x0c,
+	0x3d, 0x7f, 0xec, 0xf6, 0x5b, 0x06, 0x36, 0xe0, 0x9f, 0xff, 0xe8, 0x06, 0x43, 0xff, 0xae, 0xdf,
+	0xb2, 0x3a, 0xb7, 0x80, 0x22, 0x3e, 0x2c, 0xa6, 0xdb, 0xe0, 0x94, 0x3c, 0x53, 0xbc, 0x80, 0x23,
+	0xba, 0x87, 0x13, 0xfe, 0x81, 0x15, 0x5b, 0x0d, 0x1a, 0x07, 0xd2, 0x8b, 0xef, 0x2f, 0x3f, 0xd7,
+	0xa6, 0xbc, 0x5a, 0x9b, 0xf2, 0xf7, 0xda, 0x94, 0xdf, 0x37, 0xa6, 0xb4, 0xda, 0x98, 0xd2, 0xd7,
+	0xc6, 0x94, 0x9e, 0x8e, 0x77, 0xf5, 0xbd, 0xee, 0x8b, 0x64, 0x6f, 0x59, 0x42, 0xa7, 0x1a, 0x2f,
+	0xe8, 0xfa, 0x27, 0x00, 0x00, 0xff, 0xff, 0x34, 0x85, 0x3d, 0xd5, 0xe8, 0x01, 0x00, 0x00,
 }
 
 func (m *Reactor) Marshal() (dAtA []byte, err error) {
@@ -174,28 +238,23 @@ func (m *Reactor) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	if m.Status != 0 {
 		i = encodeVarintReactor(dAtA, i, uint64(m.Status))
 		i--
+		dAtA[i] = 0x30
+	}
+	if m.PreviousStatus != 0 {
+		i = encodeVarintReactor(dAtA, i, uint64(m.PreviousStatus))
+		i--
 		dAtA[i] = 0x28
 	}
-	{
-		size := m.Load.Size()
-		i -= size
-		if _, err := m.Load.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintReactor(dAtA, i, uint64(size))
+	if m.Load != 0 {
+		i = encodeVarintReactor(dAtA, i, uint64(m.Load))
+		i--
+		dAtA[i] = 0x20
 	}
-	i--
-	dAtA[i] = 0x22
-	{
-		size := m.Power.Size()
-		i -= size
-		if _, err := m.Power.MarshalTo(dAtA[i:]); err != nil {
-			return 0, err
-		}
-		i = encodeVarintReactor(dAtA, i, uint64(size))
+	if m.Power != 0 {
+		i = encodeVarintReactor(dAtA, i, uint64(m.Power))
+		i--
+		dAtA[i] = 0x18
 	}
-	i--
-	dAtA[i] = 0x1a
 	if len(m.Validator) > 0 {
 		i -= len(m.Validator)
 		copy(dAtA[i:], m.Validator)
@@ -207,6 +266,47 @@ func (m *Reactor) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i = encodeVarintReactor(dAtA, i, uint64(m.Id))
 		i--
 		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *ReactorSubstations) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *ReactorSubstations) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *ReactorSubstations) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.SubstationId) > 0 {
+		dAtA2 := make([]byte, len(m.SubstationId)*10)
+		var j1 int
+		for _, num := range m.SubstationId {
+			for num >= 1<<7 {
+				dAtA2[j1] = uint8(uint64(num)&0x7f | 0x80)
+				num >>= 7
+				j1++
+			}
+			dAtA2[j1] = uint8(num)
+			j1++
+		}
+		i -= j1
+		copy(dAtA[i:], dAtA2[:j1])
+		i = encodeVarintReactor(dAtA, i, uint64(j1))
+		i--
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -235,12 +335,33 @@ func (m *Reactor) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovReactor(uint64(l))
 	}
-	l = m.Power.Size()
-	n += 1 + l + sovReactor(uint64(l))
-	l = m.Load.Size()
-	n += 1 + l + sovReactor(uint64(l))
+	if m.Power != 0 {
+		n += 1 + sovReactor(uint64(m.Power))
+	}
+	if m.Load != 0 {
+		n += 1 + sovReactor(uint64(m.Load))
+	}
+	if m.PreviousStatus != 0 {
+		n += 1 + sovReactor(uint64(m.PreviousStatus))
+	}
 	if m.Status != 0 {
 		n += 1 + sovReactor(uint64(m.Status))
+	}
+	return n
+}
+
+func (m *ReactorSubstations) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.SubstationId) > 0 {
+		l = 0
+		for _, e := range m.SubstationId {
+			l += sovReactor(uint64(e))
+		}
+		n += 1 + sovReactor(uint64(l)) + l
 	}
 	return n
 }
@@ -332,10 +453,10 @@ func (m *Reactor) Unmarshal(dAtA []byte) error {
 			m.Validator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Power", wireType)
 			}
-			var stringLen uint64
+			m.Power = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowReactor
@@ -345,31 +466,16 @@ func (m *Reactor) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.Power |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthReactor
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthReactor
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Power.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
 		case 4:
-			if wireType != 2 {
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Load", wireType)
 			}
-			var stringLen uint64
+			m.Load = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowReactor
@@ -379,27 +485,31 @@ func (m *Reactor) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.Load |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthReactor
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthReactor
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if err := m.Load.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
 		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PreviousStatus", wireType)
+			}
+			m.PreviousStatus = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowReactor
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PreviousStatus |= Reactor_Status(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
 			}
@@ -417,6 +527,132 @@ func (m *Reactor) Unmarshal(dAtA []byte) error {
 				if b < 0x80 {
 					break
 				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipReactor(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthReactor
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *ReactorSubstations) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowReactor
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: ReactorSubstations: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: ReactorSubstations: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType == 0 {
+				var v uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowReactor
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				m.SubstationId = append(m.SubstationId, v)
+			} else if wireType == 2 {
+				var packedLen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return ErrIntOverflowReactor
+					}
+					if iNdEx >= l {
+						return io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					packedLen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if packedLen < 0 {
+					return ErrInvalidLengthReactor
+				}
+				postIndex := iNdEx + packedLen
+				if postIndex < 0 {
+					return ErrInvalidLengthReactor
+				}
+				if postIndex > l {
+					return io.ErrUnexpectedEOF
+				}
+				var elementCount int
+				var count int
+				for _, integer := range dAtA[iNdEx:postIndex] {
+					if integer < 128 {
+						count++
+					}
+				}
+				elementCount = count
+				if elementCount != 0 && len(m.SubstationId) == 0 {
+					m.SubstationId = make([]uint64, 0, elementCount)
+				}
+				for iNdEx < postIndex {
+					var v uint64
+					for shift := uint(0); ; shift += 7 {
+						if shift >= 64 {
+							return ErrIntOverflowReactor
+						}
+						if iNdEx >= l {
+							return io.ErrUnexpectedEOF
+						}
+						b := dAtA[iNdEx]
+						iNdEx++
+						v |= uint64(b&0x7F) << shift
+						if b < 0x80 {
+							break
+						}
+					}
+					m.SubstationId = append(m.SubstationId, v)
+				}
+			} else {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubstationId", wireType)
 			}
 		default:
 			iNdEx = preIndex

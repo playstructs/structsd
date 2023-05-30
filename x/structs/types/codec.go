@@ -12,7 +12,6 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgSubstationCreate{}, "structs/SubstationCreate", nil)
 	cdc.RegisterConcrete(&MsgSubstationDelete{}, "structs/SubstationDelete", nil)
 	cdc.RegisterConcrete(&MsgSubstationAllocationPropose{}, "structs/SubstationAllocationPropose", nil)
-	cdc.RegisterConcrete(&MsgSubstationAllocationActivate{}, "structs/SubstationAllocationActivate", nil)
 	cdc.RegisterConcrete(&MsgSubstationAllocationDisconnect{}, "structs/SubstationAllocationDisconnect", nil)
 	cdc.RegisterConcrete(&MsgSubstationPlayerConnect{}, "structs/SubstationPlayerConnect", nil)
 	cdc.RegisterConcrete(&MsgSubstationPlayerDisconnect{}, "structs/SubstationPlayerDisconnect", nil)
@@ -31,9 +30,6 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgSubstationAllocationPropose{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgSubstationAllocationActivate{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgSubstationAllocationDisconnect{},
