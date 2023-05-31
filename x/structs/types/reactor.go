@@ -36,6 +36,11 @@ func (reactor *Reactor) SetStatusOverload() (error) {
     return nil
 }
 
+func (reactor *Reactor) IsOnline() bool {
+    return reactor.Status == Reactor_ONLINE
+}
+
+
 func (reactor *Reactor) ApplyAllocationSource(allocation Allocation) (error) {
     reactor.Load = reactor.Load + (allocation.Power +  allocation.TransmissionLoss)
     return nil;

@@ -48,6 +48,11 @@ func (k msgServer) ReactorAllocationActivate(goCtx context.Context, msg *types.M
         return &types.MsgReactorAllocationActivateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceNotFound, "source (%s) used for allocation not found", allocation.SourceType.String() + "-" + sourceId)
     }
 
+    if (!sourceReactor.IsOnline()) {
+        sourceId := strconv.FormatUint(proposal.SourceId, 10)
+        return &types.MsgReactorAllocationActivateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceNotOnline, "source (%s) used for allocation must be online to activate", allocation.SourceType.String() + "-" + sourceId)
+    }
+
     destinationSubstation, destinationSubstationFound := k.GetSubstation(ctx, proposal.DestinationId)
     if (!destinationSubstationFound){
         destinationId := strconv.FormatUint(proposal.DestinationId, 10)
