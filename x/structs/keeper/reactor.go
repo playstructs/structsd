@@ -90,14 +90,6 @@ func (k Keeper) ReactorUpdateEnergy(ctx sdk.Context, validatorAddress sdk.ValAdd
 	_ = reactor.SetEnergy(validator)
 
 
-    /* Check on the Status of the Reactor
-    */
-    if (reactor.Load > reactor.Power) {
-        _ = reactor.SetStatusOverload()
-    } else {
-        _ = reactor.SetStatusOnline()
-    }
-
     /* TODO: Permissions
      *
      * Create permissions based on the details field.
@@ -140,15 +132,6 @@ func (k Keeper) ReactorUpdateFromValidator(ctx sdk.Context, validatorAddress sdk
      * May as well update power levels while we are here
      */
 	_ = reactor.SetEnergy(validator)
-
-
-    /* Check on the Status of the Reactor
-    */
-    if (reactor.Load > reactor.Power) {
-        _ = reactor.SetStatusOverload()
-    } else {
-        _ = reactor.SetStatusOnline()
-    }
 
 
 	k.SetReactor(ctx, reactor)

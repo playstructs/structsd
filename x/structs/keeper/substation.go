@@ -124,7 +124,6 @@ func (k Keeper) UpdateSubstationByReactorCascade(ctx sdk.Context, reactor types.
             substation.RemoveAllocationSource(allocation)
         }
 
-        substation.Status = substation.CheckStatus()
         k.SetSubstation(ctx, substation)
 
     }

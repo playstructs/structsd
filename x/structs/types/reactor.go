@@ -21,7 +21,16 @@ func (reactor *Reactor) SetValidator(validator types.Validator) (error) {
 
 func (reactor *Reactor) SetEnergy(validator types.Validator) (error) {
 	reactor.Power =  validator.Tokens.Uint64()
+	reactor.CheckStatus()
 	return nil
+}
+
+func (reactor *Reactor) CheckStatus() {
+    if (reactor.Load > reactor.Power) {
+        _ = reactor.SetStatusOverload()
+    } else {
+        _ = reactor.SetStatusOnline()
+    }
 }
 
 func (reactor *Reactor) SetStatusOnline() (error) {
@@ -43,10 +52,12 @@ func (reactor *Reactor) IsOnline() bool {
 
 func (reactor *Reactor) ApplyAllocationSource(allocation Allocation) (error) {
     reactor.Load = reactor.Load + (allocation.Power +  allocation.TransmissionLoss)
+    reactor.CheckStatus()
     return nil;
 }
 
 func (reactor *Reactor) RemoveAllocationSource(allocation Allocation) (error) {
     reactor.Load = reactor.Load - (allocation.Power + allocation.TransmissionLoss)
+    reactor.CheckStatus()
     return nil;
 }

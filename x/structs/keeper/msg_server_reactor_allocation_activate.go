@@ -59,8 +59,6 @@ func (k msgServer) ReactorAllocationActivate(goCtx context.Context, msg *types.M
         return &types.MsgReactorAllocationActivateResponse{}, sdkerrors.Wrapf(types.ErrSubstationNotFound, "destination substation (%s) used for allocation not found", destinationId)
     }
 
-
-
 	allocation.SetPower(ctx, proposal)
     sourceReactor.ApplyAllocationSource(allocation)
     destinationSubstation.ApplyAllocationDestination(allocation)
