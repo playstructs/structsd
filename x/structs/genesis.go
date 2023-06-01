@@ -36,6 +36,12 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 
 	// Set allocationProposal count
 	k.SetAllocationProposalCount(ctx, genState.AllocationProposalCount)
+
+	// Set Allocation Status to Online where appropriate
+    for _, elem := range genState.AllocationStatus {
+        k.SetAllocationStatus(ctx, elem, types.AllocationStatus_Online)
+    }
+
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetPort(ctx, genState.PortId)
 	// Only try to bind to port if it is not already bound, since we may already own
@@ -65,6 +71,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.AllocationCount = k.GetAllocationCount(ctx)
 	genesis.AllocationProposalList = k.GetAllAllocationProposal(ctx)
 	genesis.AllocationProposalCount = k.GetAllocationProposalCount(ctx)
+	genesis.AllocationStatus = k.GetAllOnlineAllocation(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

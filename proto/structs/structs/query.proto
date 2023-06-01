@@ -121,6 +121,7 @@ message QueryAllAllocationRequest {
 message QueryAllAllocationResponse {
   repeated Allocation                             Allocation = 1 [(gogoproto.nullable) = false];
            cosmos.base.query.v1beta1.PageResponse pagination = 2;
+           repeated uint64 status  = 3;
 }
 
 message QueryGetAllocationProposalRequest {

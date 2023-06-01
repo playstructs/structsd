@@ -45326,6 +45326,11 @@ paths:
                            repeated Bar results = 1;
                            PageResponse page = 2;
                    }
+              status:
+                type: array
+                items:
+                  type: string
+                  format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -75933,6 +75938,11 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
+      status:
+        type: array
+        items:
+          type: string
+          format: uint64
   structs.structs.QueryAllReactorResponse:
     type: object
     properties:

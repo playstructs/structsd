@@ -59,14 +59,25 @@ func (k msgServer) ReactorAllocationActivate(goCtx context.Context, msg *types.M
         return &types.MsgReactorAllocationActivateResponse{}, sdkerrors.Wrapf(types.ErrSubstationNotFound, "destination substation (%s) used for allocation not found", destinationId)
     }
 
+    // will eventually need this for permissions
+    // otherwise no reason to load it above either.
+    _ = destinationSubstation
+
 	allocation.SetPower(ctx, proposal)
     sourceReactor.ApplyAllocationSource(allocation)
-    destinationSubstation.ApplyAllocationDestination(allocation)
+
+  // remove
+  //  destinationSubstation.ApplyAllocationDestination(allocation)
 
 
-    _ = k.AppendAllocation(ctx, allocation)
+    allocationId := k.AppendAllocation(ctx, allocation)
+    k.SetAllocationStatus(ctx, allocationId, types.AllocationStatus_Online)
+    
     k.SetReactor(ctx, sourceReactor)
-    k.SetSubstation(ctx, destinationSubstation)
+
+    // Remove too
+    //k.SetSubstation(ctx, destinationSubstation)
+
     k.RemoveAllocationProposal(ctx, msg.AllocationId)
 
 	return &types.MsgReactorAllocationActivateResponse{}, nil

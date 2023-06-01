@@ -29,12 +29,6 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
         reactor.SetValidator(validator)
     }
 
-    /* Bring the Reactor ONLINE
-     *
-     * It's possible we'll want this to start in a different
-     * but it should be fine for now.
-    */
-	_ = reactor.SetStatusOnline()
 
     /* TODO: Permissions
      *
@@ -49,9 +43,12 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
      * Set the initial power level of the Reactor based on the
      * tokens staked to the validator
      */
-	_ = reactor.SetEnergy(validator)
+	reactor.SetEnergy(validator)
 
 
+    /*
+     * Commit Reactor to the Keeper
+     */
 	k.SetReactor(ctx, reactor)
 
 	return reactor
@@ -87,7 +84,7 @@ func (k Keeper) ReactorUpdateEnergy(ctx sdk.Context, validatorAddress sdk.ValAdd
      * Set the initial power level of the Reactor based on the
      * tokens staked to the validator
      */
-	_ = reactor.SetEnergy(validator)
+	reactor.SetEnergy(validator)
 
 
     /* TODO: Permissions
@@ -101,7 +98,7 @@ func (k Keeper) ReactorUpdateEnergy(ctx sdk.Context, validatorAddress sdk.ValAdd
 	k.SetReactor(ctx, reactor)
 
 	// Update the connected Substations with the new details
-	k.CascadeReactorStatus(ctx, reactor)
+	k.CascadeReactorAllocationStatus(ctx, reactor)
 
 	return reactor
 }
@@ -131,13 +128,13 @@ func (k Keeper) ReactorUpdateFromValidator(ctx sdk.Context, validatorAddress sdk
      *
      * May as well update power levels while we are here
      */
-	_ = reactor.SetEnergy(validator)
+	reactor.SetEnergy(validator)
 
 
 	k.SetReactor(ctx, reactor)
 
     // Update the connected Substations with the new details
-    k.CascadeReactorStatus(ctx, reactor)
+    k.CascadeReactorAllocationStatus(ctx, reactor)
 
 	return reactor
 }
@@ -276,14 +273,16 @@ func GetReactorIDFromBytes(bz []byte) uint64 {
 	return binary.BigEndian.Uint64(bz)
 }
 
-
-
-// Call all the relevant Substations to update their status
-func (k Keeper) CascadeReactorStatus(ctx sdk.Context, reactor types.Reactor) {
+// Call all the relevant Allocations to update their status
+func (k Keeper) CascadeReactorAllocationStatus(ctx sdk.Context, reactor types.Reactor) {
     if (reactor.PreviousStatus != reactor.Status){
         allocations := k.GetAllReactorAllocations(ctx, reactor.Id)
         for _, allocation := range allocations {
-            k.UpdateSubstationByReactorCascade(ctx, reactor, allocation)
+            if (reactor.IsOnline()) {
+                k.SetAllocationStatus(ctx, allocation.Id, types.AllocationStatus_Online)
+            } else {
+                k.SetAllocationStatus(ctx, allocation.Id, types.AllocationStatus_Offline)
+            }
         }
     }
 }

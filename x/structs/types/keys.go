@@ -33,24 +33,22 @@ const (
 	ReactorKey              = "Reactor/value/"
 	ReactorCountKey         = "Reactor/count/"
 	ReactorValidatorKey     = "Reactor/validator/"
-	ReactorAllocationsKey   = "Reactor/allocations/"
-	ReactorSubstationsKey   = "Reactor/substations/"
-    ReactorLoadKey          = "Reactor/load/"
-	ReactorPowerKey         = "Reactor/power/"
 )
 
 const (
 	SubstationKey               = "Substation/value/"
 	SubstationCountKey          = "Substation/count/"
 	SubstationStatusKey         = "Substation/status/"
-	SubstationLoadKey           = "Substation/load/"
-	SubstationPowerKey          = "Substation/power/"
-	SubstationAllocationsKey    = "Substation/allocations/"
+
 )
 
 const (
 	AllocationKey      = "Allocation/value/"
 	AllocationCountKey = "Allocation/count/"
+	AllocationStatusKey = "Allocation/Status/"
+
+	AllocationStatus_Online = 1
+	AllocationStatus_Offline = 0
 )
 
 const (

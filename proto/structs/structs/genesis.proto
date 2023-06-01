@@ -23,5 +23,7 @@ message GenesisState {
            uint64             allocationCount         =  8;
   repeated AllocationProposal allocationProposalList  =  9 [(gogoproto.nullable) = false];
            uint64             allocationProposalCount = 10;
+  repeated uint64             allocationStatus        = 11;
+
 }
 

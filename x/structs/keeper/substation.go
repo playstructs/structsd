@@ -108,24 +108,33 @@ func GetSubstationIDFromBytes(bz []byte) uint64 {
 }
 
 
-// UpdateSubstationByReactorCascade(substationId, status)
-func (k Keeper) UpdateSubstationByReactorCascade(ctx sdk.Context, reactor types.Reactor, allocation types.Allocation) {
-    substation, found := k.GetSubstation(ctx, allocation.DestinationId)
 
-    if (found) {
 
-        if (reactor.Status == types.Reactor_ONLINE) {
-            substation.ApplyAllocationSource(allocation)
+// UpdateSubstationStatus(ctx sdk.Context)
+// Run at the EndBlock to update all Substations for the next block
+func (k Keeper) UpdateSubstationStatus(ctx sdk.Context) {
+    substations := k.GetAllSubstation(ctx)
+    var allocations []types.AllocationPackage
 
-        } else if (reactor.Status == types.Reactor_OFFLINE) {
-            substation.RemoveAllocationSource(allocation)
+    var originalPower uint64 = 0;
 
-        } else if (reactor.Status == types.Reactor_OVERLOAD) {
-            substation.RemoveAllocationSource(allocation)
+    for _, substation := range substations {
+        allocations = k.GetAllSubstationAllocationPackagesIn(ctx, substation.Id)
+        originalPower = substation.Power
+        substation.ResetPower()
+
+        for _, allocationPackage := range allocations {
+
+            if (allocationPackage.Status == types.AllocationStatus_Online) {
+               substation.ApplyAllocationDestination(allocationPackage.Allocation)
+            }
         }
 
-        k.SetSubstation(ctx, substation)
 
+        if (substation.Power != originalPower) {
+            k.SetSubstation(ctx, substation)
+        }
     }
 
+    //k.AppendSubstation(ctx, types.Substation{})
 }

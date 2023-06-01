@@ -18,6 +18,7 @@ func (k Keeper) AllocationAll(goCtx context.Context, req *types.QueryAllAllocati
 	}
 
 	var allocations []types.Allocation
+	var statuses []uint64
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	store := ctx.KVStore(k.storeKey)
@@ -29,6 +30,7 @@ func (k Keeper) AllocationAll(goCtx context.Context, req *types.QueryAllAllocati
 			return err
 		}
 
+        statuses = append(statuses, k.GetAllocationStatus(ctx, allocation.Id))
 		allocations = append(allocations, allocation)
 		return nil
 	})
@@ -37,7 +39,7 @@ func (k Keeper) AllocationAll(goCtx context.Context, req *types.QueryAllAllocati
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllAllocationResponse{Allocation: allocations, Pagination: pageRes}, nil
+	return &types.QueryAllAllocationResponse{Allocation: allocations, Status: statuses, Pagination: pageRes}, nil
 }
 
 func (k Keeper) Allocation(goCtx context.Context, req *types.QueryGetAllocationRequest) (*types.QueryGetAllocationResponse, error) {

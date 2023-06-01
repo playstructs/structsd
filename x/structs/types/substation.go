@@ -15,7 +15,11 @@ func CreateEmptySubstation() (Substation) {
     }
 }
 
-func (substation *Substation) ApplyAllocationSource(allocation Allocation) (error) {
+func (substation *Substation) ResetPower() {
+    substation.Power = 0;
+}
+
+func (substation *Substation) ApplyAllocationSource(allocation *Allocation) (error) {
     substation.Load = substation.Load + (allocation.Power + allocation.TransmissionLoss)
     return nil;
 }
@@ -25,7 +29,7 @@ func (substation *Substation) RemoveAllocationSource(allocation Allocation) (err
     return nil;
 }
 
-func (substation *Substation) ApplyAllocationDestination(allocation Allocation) (error) {
+func (substation *Substation) ApplyAllocationDestination(allocation *Allocation) (error) {
     substation.Power = substation.Power + allocation.Power
     return nil;
 }
