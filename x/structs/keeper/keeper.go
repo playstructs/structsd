@@ -30,6 +30,8 @@ type (
 
 		bankKeeper    types.BankKeeper
 		stakingKeeper types.StakingKeeper
+
+		tStoreKey     storetypes.StoreKey
 	}
 )
 
@@ -44,6 +46,7 @@ func NewKeeper(
 
 	bankKeeper types.BankKeeper,
 	stakingKeeper types.StakingKeeper,
+	tStoreKey   storetypes.StoreKey,
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -62,6 +65,8 @@ func NewKeeper(
 
 		bankKeeper:    bankKeeper,
 		stakingKeeper: stakingKeeper,
+
+		tStoreKey: tStoreKey,
 	}
 }
 

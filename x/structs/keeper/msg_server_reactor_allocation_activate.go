@@ -66,13 +66,9 @@ func (k msgServer) ReactorAllocationActivate(goCtx context.Context, msg *types.M
 	allocation.SetPower(ctx, proposal)
     sourceReactor.ApplyAllocationSource(allocation)
 
-  // remove
-  //  destinationSubstation.ApplyAllocationDestination(allocation)
-
 
     allocationId := k.AppendAllocation(ctx, allocation)
     k.SetAllocationStatus(ctx, allocationId, types.AllocationStatus_Online)
-    
     k.SetReactor(ctx, sourceReactor)
 
     // Remove too

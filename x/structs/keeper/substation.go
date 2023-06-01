@@ -138,3 +138,31 @@ func (k Keeper) UpdateSubstationStatus(ctx sdk.Context) {
 
     //k.AppendSubstation(ctx, types.Substation{})
 }
+
+// GetSubstationEnergyUse returns the amount of energy used up in a block
+func (k Keeper) GetSubstationEnergyUse(ctx sdk.Context, id uint64) (uint64) {
+	store := prefix.NewStore(ctx.KVStore(k.tStoreKey), types.KeyPrefix(types.SubstationKey))
+	bz := store.Get(GetSubstationIDBytes(id))
+
+	// Count doesn't exist: no element
+	if bz == nil {
+		return 0
+	}
+
+	return binary.BigEndian.Uint64(bz)
+}
+
+// IncreaseSubstationEnergyUse is used to update the Energy tracker for the Substation upon use
+// This probably should do a lookup to see if the energy is beyond the amount is should be using...
+func (k Keeper) IncreaseSubstationEnergyUse(ctx sdk.Context, id uint64, amount uint64) (uint64, error) {
+	store := prefix.NewStore(ctx.KVStore(k.tStoreKey), types.KeyPrefix(types.SubstationKey))
+
+    current := k.GetSubstationEnergyUse(ctx, id)
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, current + amount)
+	store.Set(GetReactorIDBytes(id), bz)
+
+	return current + amount, nil
+}
+

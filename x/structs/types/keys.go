@@ -7,6 +7,10 @@ const (
 	// StoreKey defines the primary module store key
 	StoreKey = ModuleName
 
+	// StoreKey defines the transient module store key
+	// Data stored only during block processing
+	TStoreKey = "transient_structs"
+
 	// RouterKey defines the module's message routing key
 	RouterKey = ModuleName
 
