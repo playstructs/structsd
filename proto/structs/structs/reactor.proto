@@ -10,17 +10,4 @@ message Reactor {
 
   string validator = 2;
 
-  uint64 power = 3;
-
-  uint64 load = 4;
-
-  enum Status {
-    ONLINE          = 0;
-    OFFLINE         = 7;
-    DECOMMISSIONED  = 24;
-  	OVERLOAD        = 32;
-  }
-
-  Status previous_status = 5 ;
-  Status status = 6 ;
 }

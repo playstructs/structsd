@@ -5,11 +5,11 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const TypeMsgReactorAllocationActivate = "reactor_allocation_activate"
+const TypeMsgReactorAllocationCreate = "reactor_allocation_create"
 
-var _ sdk.Msg = &MsgReactorAllocationActivate{}
+var _ sdk.Msg = &MsgReactorAllocationCreate{}
 
-func NewMsgReactorAllocationActivate(creator string, allocationId uint64, decision bool) *MsgReactorAllocationActivate {
+func NewMsgReactorAllocationCreate(creator string, allocationId uint64, decision bool) *MsgReactorAllocationCreate {
 	return &MsgReactorAllocationActivate{
 		Creator:      creator,
 		AllocationId: allocationId,
@@ -17,15 +17,15 @@ func NewMsgReactorAllocationActivate(creator string, allocationId uint64, decisi
 	}
 }
 
-func (msg *MsgReactorAllocationActivate) Route() string {
+func (msg *MsgReactorAllocationCreate) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgReactorAllocationActivate) Type() string {
-	return TypeMsgReactorAllocationActivate
+func (msg *MsgReactorAllocationCreate) Type() string {
+	return TypeMsgReactorAllocationCreate
 }
 
-func (msg *MsgReactorAllocationActivate) GetSigners() []sdk.AccAddress {
+func (msg *MsgReactorAllocationCreate) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		panic(err)
@@ -33,12 +33,12 @@ func (msg *MsgReactorAllocationActivate) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgReactorAllocationActivate) GetSignBytes() []byte {
+func (msg *MsgReactorAllocationCreate) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgReactorAllocationActivate) ValidateBasic() error {
+func (msg *MsgReactorAllocationCreate) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

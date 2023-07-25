@@ -16,4 +16,3 @@ enum objectType {
     substation     = 4;
     struct         = 5;
 }
-

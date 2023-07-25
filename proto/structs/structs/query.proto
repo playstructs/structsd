@@ -51,16 +51,7 @@ service Query {
     option (google.api.http).get = "/structs/structs/allocation";
   
   }
-  
-  // Queries a list of AllocationProposal items.
-  rpc AllocationProposal    (QueryGetAllocationProposalRequest) returns (QueryGetAllocationProposalResponse) {
-    option (google.api.http).get = "/structs/structs/allocation_proposal/{id}";
-  
-  }
-  rpc AllocationProposalAll (QueryAllAllocationProposalRequest) returns (QueryAllAllocationProposalResponse) {
-    option (google.api.http).get = "/structs/structs/allocation_proposal";
-  
-  }
+
 }
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
@@ -122,22 +113,5 @@ message QueryAllAllocationResponse {
   repeated Allocation                             Allocation = 1 [(gogoproto.nullable) = false];
            cosmos.base.query.v1beta1.PageResponse pagination = 2;
            repeated uint64 status  = 3;
-}
-
-message QueryGetAllocationProposalRequest {
-  uint64 id = 1;
-}
-
-message QueryGetAllocationProposalResponse {
-  AllocationProposal AllocationProposal = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryAllAllocationProposalRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryAllAllocationProposalResponse {
-  repeated AllocationProposal                     AllocationProposal = 1 [(gogoproto.nullable) = false];
-           cosmos.base.query.v1beta1.PageResponse pagination         = 2;
 }
 
