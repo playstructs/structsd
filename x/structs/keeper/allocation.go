@@ -227,3 +227,28 @@ func (k Keeper) SetAllocationStatus(ctx sdk.Context, id uint64, status uint64) {
     	store.Set(GetReactorIDBytes(id), bz)
     }
 }
+
+
+func (k Keeper) AllocationDestroy(ctx sdk.Context, allocation types.Allocation) {
+
+    // Figure out what the allocation source is and update the energy load
+    switch allocation.SourceType {
+        case types.ObjectType_reactor:
+            // Decrease Reactor Load
+            k.ReactorDecrementLoad(ctx, allocation.SourceId, allocation.Power)
+    }
+
+    k.RemoveAllocation(ctx, allocation.Id)
+
+    // Update the destination if the allocation is connected to a substation
+    //
+    // Needs to take place after this initiating
+    // allocation is already destroyed from the keeper
+    if (allocation.DestinationId > 0) {
+        k.SubstationDecrementEnergy(ctx, allocation.DestinationId, allocation.Power)
+        k.CascadeSubstationAllocationFailure(ctx, allocation.DestinationId)
+    }
+
+
+
+}

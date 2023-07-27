@@ -32,17 +32,17 @@ func (k msgServer) ReactorAllocationCreate(goCtx context.Context, msg *types.Msg
         return &types.MsgReactorAllocationActivateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceNotFound, "source (%s) used for allocation not found", allocation.SourceType.String() + "-" + sourceId)
     }
 
-    /*
-    if (!sourceReactor.IsOnline()) {
-        sourceId := strconv.FormatUint(proposal.SourceId, 10)
-        return &types.MsgReactorAllocationActivateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceNotOnline, "source (%s) used for allocation must be online to activate", allocation.SourceType.String() + "-" + sourceId)
-    }
-    */
+
 
     // Check to see if the Reactor has the Power available
-    newReactorCapacity, decrementError := k.ReactorDecrementCapacity(ctx, msg.Power)
-    if decrementError != nil {
-        return nil, decrementError
+    // Calling ReactorIncrementLoad will update the Memory store so the change has already been applied if successful
+    //
+    // Maybe this will change but currently a new allocation can't be created without the
+    // available capacity to bring it online. In the future, we could allow for this and it would
+    // blow up older allocations until it hits the threshold, but that feels overly destructive.
+    newReactorLoad, incrementLoadError := k.ReactorIncrementLoad(ctx, proposal.SourceId, msg.Power)
+    if incrementLoadError != nil {
+        return nil, incrementLoadError
     }
 
 	allocation.SetPower(ctx, msg.Power)
@@ -52,6 +52,6 @@ func (k msgServer) ReactorAllocationCreate(goCtx context.Context, msg *types.Msg
 
 	return &types.MsgReactorAllocationCreateResponse{
         AllocationId: allocationId,
-        NewReactorCapacity: newReactorCapacity,
+        NewReactorLoad: newReactorLoad,
     }, nil
 }

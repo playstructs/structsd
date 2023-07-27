@@ -287,3 +287,148 @@ func (k Keeper) CascadeReactorAllocationStatus(ctx sdk.Context, reactor types.Re
     }
 }
 
+
+// Call all the relevant Allocations to update their status
+func (k Keeper) CascadeReactorAllocationStatus(ctx sdk.Context, reactor types.Reactor) {
+    if (reactor.PreviousStatus != reactor.Status){
+        allocations := k.GetAllReactorAllocations(ctx, reactor.Id)
+        for _, allocation := range allocations {
+            if (reactor.IsOnline()) {
+                k.SetAllocationStatus(ctx, allocation.Id, types.AllocationStatus_Online)
+            } else {
+                k.SetAllocationStatus(ctx, allocation.Id, types.AllocationStatus_Offline)
+            }
+        }
+    }
+}
+
+
+
+// Iterate through the allocations, starting from oldest, and destroy them until power
+// consumption matches output
+func (k Keeper) CascadeReactorAllocationFailure(ctx sdk.Context, reactor types.Reactor) {
+    allocations := k.GetAllReactorAllocations(ctx, reactor.Id)
+    for _, allocation := range allocations {
+        if ( reactor.Energy > k.ReactorGetLoad(ctx, reactor.Id) ) {
+            break;
+        }
+
+        k.AllocationDestroy(ctx, allocation.Id)
+    }
+}
+
+
+
+func (k Keeper) ReactorDecrementLoad(ctx sdk.Context, id uint64, amount uint64) (uint64, error) {
+	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.ReactorLoadKey))
+
+    current := k.ReactorGetLoad(ctx, id)
+
+    if (amount > current) {
+        // this really shouldn't happen. Throw an error I guess but yeesh, this is a problem.
+    } else {
+        new := current - amount
+    }
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, new)
+	store.Set(GetReactorIDBytes(id), bz)
+
+	return new, nil
+}
+
+
+func (k Keeper) ReactorIncrementLoad(ctx sdk.Context, id uint64, amount uint64) (uint64, error) {
+	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.ReactorLoadKey))
+
+    current := k.ReactorGetLoad(ctx, id)
+
+    new := current + amount
+
+    reactorEnergy := k.ReactorGetEnergy(ctx, id)
+
+    if (new > reactorEnergy) {
+        return 0, sdkerrors.Wrapf(types.ErrReactorAvailableCapacityInsufficient, "source (%s) used for allocation not sufficient", allocation.SourceType.String() + "-" + sourceId)
+    }
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, new)
+	store.Set(GetReactorIDBytes(id), bz)
+
+	return new, nil
+}
+
+
+
+// ReactorGetLoad returns the current load of all allocations
+// Go to memory first, but then fall back to rebuilding from allocations
+func (k Keeper) ReactorGetLoad(ctx sdk.Context, id uint64) (load uint64) {
+	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.ReactorLoadKey))
+
+	bz := store.Get(GetReactorIDBytes(id))
+
+	// Reactor Capacity Not in Memory: no element
+	if bz == nil {
+	    load = k.ReactorRebuildLoad(ctx, id)
+	    k.ReactorSetLoad(ctx, id, load)
+
+	} else {
+    	load = binary.BigEndian.Uint64(bz)
+	}
+
+	return load
+}
+
+
+// ReactorSetLoad - Sets the in-memory representation of the aggregate load of all associated allocations
+func (k Keeper) ReactorSetLoad(ctx sdk.Context, id uint64, amount uint64) {
+	store := prefix.NewStore(ctx.KVStore(k.memKey),  types.KeyPrefix(types.ReactorLoadKey))
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, amount)
+
+	store.Set(GetReactorIDBytes(id), bz)
+}
+
+
+// ReactorRebuildLoad - Rebuilds the current load by iterating through all related allocations
+func (k Keeper) ReactorRebuildLoad(ctx sdk.Context, id uint64) (load uint64) {
+    allocations := k.GetAllReactorAllocations(ctx, id)
+
+    for _, allocation := range allocations {
+       load += allocation.Power
+    }
+
+    return
+}
+
+
+// ReactorGetEnergy returns the current energy production of the reactor
+// Go to memory first, but then fall back to rebuilding from storage
+func (k Keeper) ReactorGetEnergy(ctx sdk.Context, id uint64) (load uint64) {
+	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.ReactorEnergyKey))
+
+	bz := store.Get(GetReactorIDBytes(id))
+
+	// Reactor Energy Not in Memory: no element
+	if bz == nil {
+	    reactor := k.GetReactor(ctx, id)
+	    load = reactor.Energy
+	    k.ReactorSetEnergy(ctx, id, load)
+
+	} else {
+    	load = binary.BigEndian.Uint64(bz)
+	}
+
+	return load
+}
+
+// ReactorSetEnergy- Sets the in-memory representation of the reactors energy production
+func (k Keeper) ReactorSetEnergy(ctx sdk.Context, id uint64, amount uint64) {
+	store := prefix.NewStore(ctx.KVStore(k.memKey),  types.KeyPrefix(types.ReactorEnergyKey))
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, amount)
+
+	store.Set(GetReactorIDBytes(id), bz)
+}

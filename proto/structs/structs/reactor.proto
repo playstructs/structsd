@@ -7,7 +7,7 @@ import "gogoproto/gogo.proto";
 
 message Reactor {
   uint64 id = 1;
-
   string validator = 2;
 
+  uint64 energy = 3;
 }

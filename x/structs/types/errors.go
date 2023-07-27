@@ -23,4 +23,9 @@ var (
 
     ErrSubstationNotFound               = sdkerrors.Register(ModuleName, 1550, "substation not found")
     ErrSubstationHasNoPowerSource       = sdkerrors.Register(ModuleName, 1551, "substation has no power source")
+
+    ErrSubstationAvailableCapacityInsufficient       = sdkerrors.Register(ModuleName, 1552, "substation capacity lower then attempted change allows for")
+
+
+    ErrReactorAvailableCapacityInsufficient       = sdkerrors.Register(ModuleName, 1572, "reactor capacity lower then attempted change allows for")
 )
