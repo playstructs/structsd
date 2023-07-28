@@ -16,6 +16,21 @@ func (a *Allocation) SetPower(ctx sdk.Context, proposal AllocationProposal) (err
     return nil
 }
 
+func (a *Allocation) Disconnect(ctx sdk.Context) (error) {
+
+    a.DestinationId = nil
+
+    return nil
+}
+
+func (a *Allocation) Connect(ctx sdk.Context, destinationId uint64) (error) {
+
+    a.DestinationId = destinationId
+
+    return nil
+}
+
+
 /*
  * Currently, only Reactors and Structs (Power Plants) can have
  * power allocated from them to a substation.

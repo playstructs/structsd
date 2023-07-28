@@ -5,29 +5,27 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const TypeMsgSubstationAllocationPropose = "substation_allocation_propose"
+const TypeMsgSubstationAllocationConnect= "substation_allocation_connect"
 
-var _ sdk.Msg = &MsgSubstationAllocationPropose{}
+var _ sdk.Msg = &MsgSubstationAllocationConnect{}
 
-func NewMsgSubstationAllocationPropose(creator string, sourceType ObjectType, sourceId uint64, destinationId uint64, power uint64) *MsgSubstationAllocationPropose {
-	return &MsgSubstationAllocationPropose{
+func NewMsgSubstationAllocationConnect(creator string, allocationId uint64, destinationId uint64) *MsgSubstationAllocationConnect {
+	return &MsgSubstationAllocationConnect{
 		Creator:    creator,
-		SourceType: sourceType,
-		SourceId:   sourceId,
+		AllocationId: sourceType,
 		DestinationId: destinationId,
-		Power:      power,
 	}
 }
 
-func (msg *MsgSubstationAllocationPropose) Route() string {
+func (msg *MsgSubstationAllocationConnect) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgSubstationAllocationPropose) Type() string {
-	return TypeMsgSubstationAllocationPropose
+func (msg *MsgSubstationAllocationConnect) Type() string {
+	return TypeMsgSubstationAllocationConnect
 }
 
-func (msg *MsgSubstationAllocationPropose) GetSigners() []sdk.AccAddress {
+func (msg *MsgSubstationAllocationConnect) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		panic(err)
@@ -35,12 +33,12 @@ func (msg *MsgSubstationAllocationPropose) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgSubstationAllocationPropose) GetSignBytes() []byte {
+func (msg *MsgSubstationAllocationConnect) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgSubstationAllocationPropose) ValidateBasic() error {
+func (msg *MsgSubstationAllocationConnect) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

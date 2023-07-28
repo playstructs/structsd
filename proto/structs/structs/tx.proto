@@ -10,8 +10,12 @@ option go_package = "structs/x/structs/types";
 
 // Msg defines the Msg service.
 service Msg {
+  rpc AllocationCreate               (MsgAllocationCreate              ) returns (MsgAllocationCreateResponse              );
+  rpc ReactorAllocationCreate        (MsgReactorAllocationCreate       ) returns (MsgAllocationCreateResponse              );
+  rpc SubstationAllocationCreate     (MsgSubstationAllocationCreate    ) returns (MsgAllocationCreateResponse              );
   rpc SubstationCreate               (MsgSubstationCreate              ) returns (MsgSubstationCreateResponse              );
   rpc SubstationDelete               (MsgSubstationDelete              ) returns (MsgSubstationDeleteResponse              );
+  rpc SubstationAllocationConnect    (MsgSubstationAllocationConnect   ) returns (MsgSubstationAllocationConnectResponse   );
   rpc SubstationAllocationDisconnect (MsgSubstationAllocationDisconnect) returns (MsgSubstationAllocationDisconnectResponse);
   rpc SubstationPlayerConnect        (MsgSubstationPlayerConnect       ) returns (MsgSubstationPlayerConnectResponse       );
   rpc SubstationPlayerDisconnect     (MsgSubstationPlayerDisconnect    ) returns (MsgSubstationPlayerDisconnectResponse    );
@@ -36,6 +40,14 @@ message MsgSubstationDeleteResponse {}
 
 
 
+message MsgSubstationAllocationConnect {
+  string creator      = 1;
+  uint64 allocationId = 2;
+  uint64 destinationId = 3;
+}
+
+message MsgSubstationAllocationConnectResponse {}
+
 message MsgSubstationAllocationDisconnect {
   string creator      = 1;
   uint64 allocationId = 2;
@@ -59,3 +71,34 @@ message MsgSubstationPlayerDisconnect {
 
 message MsgSubstationPlayerDisconnectResponse {}
 
+
+
+message MsgAllocationCreate {
+  string creator    = 1;
+  string owner = 2;
+  objectType sourceType = 3;
+  uint64 sourceId   = 4;
+  uint64 power = 5;
+
+  //uint64 DestinationId
+}
+
+message MsgAllocationCreateResponse {}
+
+message MsgSubstationAllocationCreate {
+  string creator    = 1;
+  string owner = 2;
+  //uint64 DestinationId   = 2;
+  uint64 sourceId   = 3;
+  uint64 power = 4;
+
+}
+
+message MsgReactorAllocationCreate {
+  string creator    = 1;
+  string owner = 2;
+  //uint64 DestinationId   = 2;
+  uint64 sourceId   = 3;
+  uint64 power = 4;
+
+}
