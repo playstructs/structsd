@@ -13,10 +13,13 @@ service Msg {
   rpc AllocationCreate               (MsgAllocationCreate              ) returns (MsgAllocationCreateResponse              );
   rpc ReactorAllocationCreate        (MsgReactorAllocationCreate       ) returns (MsgAllocationCreateResponse              );
   rpc SubstationAllocationCreate     (MsgSubstationAllocationCreate    ) returns (MsgAllocationCreateResponse              );
+
   rpc SubstationCreate               (MsgSubstationCreate              ) returns (MsgSubstationCreateResponse              );
   rpc SubstationDelete               (MsgSubstationDelete              ) returns (MsgSubstationDeleteResponse              );
+
   rpc SubstationAllocationConnect    (MsgSubstationAllocationConnect   ) returns (MsgSubstationAllocationConnectResponse   );
   rpc SubstationAllocationDisconnect (MsgSubstationAllocationDisconnect) returns (MsgSubstationAllocationDisconnectResponse);
+
   rpc SubstationPlayerConnect        (MsgSubstationPlayerConnect       ) returns (MsgSubstationPlayerConnectResponse       );
   rpc SubstationPlayerDisconnect     (MsgSubstationPlayerDisconnect    ) returns (MsgSubstationPlayerDisconnectResponse    );
 }
