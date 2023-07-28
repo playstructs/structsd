@@ -348,7 +348,7 @@ func (k Keeper) ReactorIncrementLoad(ctx sdk.Context, id uint64, amount uint64) 
     reactorEnergy := k.ReactorGetEnergy(ctx, id)
 
     if (new > reactorEnergy) {
-        return 0, sdkerrors.Wrapf(types.ErrReactorAvailableCapacityInsufficient, "source (%s) used for allocation not sufficient", allocation.SourceType.String() + "-" + sourceId)
+        return 0, sdkerrors.Wrapf(types.ErrReactorAvailableCapacityInsufficient, "source (%s) used for allocation not sufficient",  "reactor-" + id)
     }
 
 	bz := make([]byte, 8)
