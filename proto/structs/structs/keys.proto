@@ -15,4 +15,5 @@ enum objectType {
     reactor        = 3;
     substation     = 4;
     struct         = 5;
+    allocation     = 6;
 }

@@ -50,6 +50,11 @@ func (k msgServer) ReactorAllocationCreate(goCtx context.Context, msg *types.Msg
 
     allocationId := k.AppendAllocation(ctx, allocation)
 
+    errEvent = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: allocationId, ObjectType: types.ObjectType_allocation, })
+    if errEvent != nil {
+        return nil, errEvent
+    }
+
 	return &types.MsgAllocationCreateResponse{
         AllocationId: allocationId,
         NewReactorLoad: newReactorLoad,

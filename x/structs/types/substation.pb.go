@@ -23,42 +23,10 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type Substation_Status int32
-
-const (
-	Substation_ONLINE         Substation_Status = 0
-	Substation_OFFLINE        Substation_Status = 7
-	Substation_DECOMMISSIONED Substation_Status = 24
-	Substation_OVERLOAD       Substation_Status = 32
-)
-
-var Substation_Status_name = map[int32]string{
-	0:  "ONLINE",
-	7:  "OFFLINE",
-	24: "DECOMMISSIONED",
-	32: "OVERLOAD",
-}
-
-var Substation_Status_value = map[string]int32{
-	"ONLINE":         0,
-	"OFFLINE":        7,
-	"DECOMMISSIONED": 24,
-	"OVERLOAD":       32,
-}
-
-func (x Substation_Status) String() string {
-	return proto.EnumName(Substation_Status_name, int32(x))
-}
-
-func (Substation_Status) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_1dfac9318fba59fb, []int{0, 0}
-}
-
 type Substation struct {
-	Id     uint64            `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Power  uint64            `protobuf:"varint,2,opt,name=power,proto3" json:"power,omitempty"`
-	Load   uint64            `protobuf:"varint,3,opt,name=load,proto3" json:"load,omitempty"`
-	Status Substation_Status `protobuf:"varint,5,opt,name=status,proto3,enum=structs.structs.Substation_Status" json:"status,omitempty"`
+	Id                         uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	PlayerConnectionAllocation uint64 `protobuf:"varint,2,opt,name=player_connection_allocation,json=playerConnectionAllocation,proto3" json:"player_connection_allocation,omitempty"`
+	Owner                      string `protobuf:"bytes,3,opt,name=owner,proto3" json:"owner,omitempty"`
 }
 
 func (m *Substation) Reset()         { *m = Substation{} }
@@ -101,53 +69,41 @@ func (m *Substation) GetId() uint64 {
 	return 0
 }
 
-func (m *Substation) GetPower() uint64 {
+func (m *Substation) GetPlayerConnectionAllocation() uint64 {
 	if m != nil {
-		return m.Power
+		return m.PlayerConnectionAllocation
 	}
 	return 0
 }
 
-func (m *Substation) GetLoad() uint64 {
+func (m *Substation) GetOwner() string {
 	if m != nil {
-		return m.Load
+		return m.Owner
 	}
-	return 0
-}
-
-func (m *Substation) GetStatus() Substation_Status {
-	if m != nil {
-		return m.Status
-	}
-	return Substation_ONLINE
+	return ""
 }
 
 func init() {
-	proto.RegisterEnum("structs.structs.Substation_Status", Substation_Status_name, Substation_Status_value)
 	proto.RegisterType((*Substation)(nil), "structs.structs.Substation")
 }
 
 func init() { proto.RegisterFile("structs/structs/substation.proto", fileDescriptor_1dfac9318fba59fb) }
 
 var fileDescriptor_1dfac9318fba59fb = []byte{
-	// 270 bytes of a gzipped FileDescriptorProto
+	// 202 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x52, 0x28, 0x2e, 0x29, 0x2a,
 	0x4d, 0x2e, 0x29, 0xd6, 0x87, 0xd3, 0xa5, 0x49, 0xc5, 0x25, 0x89, 0x25, 0x99, 0xf9, 0x79, 0x7a,
 	0x05, 0x45, 0xf9, 0x25, 0xf9, 0x42, 0xfc, 0x50, 0x19, 0x3d, 0x28, 0x2d, 0x25, 0x92, 0x9e, 0x9f,
 	0x9e, 0x0f, 0x96, 0xd3, 0x07, 0xb1, 0x20, 0xca, 0xa4, 0x30, 0x0c, 0x4a, 0xcc, 0xc9, 0xc9, 0x4f,
-	0x46, 0x32, 0x48, 0xe9, 0x38, 0x23, 0x17, 0x57, 0x30, 0xdc, 0x74, 0x21, 0x3e, 0x2e, 0xa6, 0xcc,
-	0x14, 0x09, 0x46, 0x05, 0x46, 0x0d, 0x96, 0x20, 0xa6, 0xcc, 0x14, 0x21, 0x11, 0x2e, 0xd6, 0x82,
-	0xfc, 0xf2, 0xd4, 0x22, 0x09, 0x26, 0xb0, 0x10, 0x84, 0x23, 0x24, 0xc4, 0xc5, 0x92, 0x93, 0x9f,
-	0x98, 0x22, 0xc1, 0x0c, 0x16, 0x04, 0xb3, 0x85, 0xac, 0xb8, 0xd8, 0x40, 0x86, 0x94, 0x16, 0x4b,
-	0xb0, 0x2a, 0x30, 0x6a, 0xf0, 0x19, 0x29, 0xe9, 0xa1, 0x39, 0x51, 0x0f, 0x61, 0x8d, 0x5e, 0x30,
-	0x58, 0x65, 0x10, 0x54, 0x87, 0x92, 0x33, 0x17, 0x1b, 0x44, 0x44, 0x88, 0x8b, 0x8b, 0xcd, 0xdf,
-	0xcf, 0xc7, 0xd3, 0xcf, 0x55, 0x80, 0x41, 0x88, 0x9b, 0x8b, 0xdd, 0xdf, 0xcd, 0x0d, 0xcc, 0x61,
-	0x17, 0x12, 0xe2, 0xe2, 0x73, 0x71, 0x75, 0xf6, 0xf7, 0xf5, 0xf5, 0x0c, 0x0e, 0xf6, 0xf4, 0xf7,
-	0x73, 0x75, 0x11, 0x90, 0x10, 0xe2, 0xe1, 0xe2, 0xf0, 0x0f, 0x73, 0x0d, 0xf2, 0xf1, 0x77, 0x74,
-	0x11, 0x50, 0x70, 0x32, 0x3c, 0xf1, 0x48, 0x8e, 0xf1, 0xc2, 0x23, 0x39, 0xc6, 0x07, 0x8f, 0xe4,
-	0x18, 0x27, 0x3c, 0x96, 0x63, 0xb8, 0xf0, 0x58, 0x8e, 0xe1, 0xc6, 0x63, 0x39, 0x86, 0x28, 0x71,
-	0x98, 0xef, 0x2b, 0xe0, 0xe1, 0x50, 0x52, 0x59, 0x90, 0x5a, 0x9c, 0xc4, 0x06, 0x0e, 0x03, 0x63,
-	0x40, 0x00, 0x00, 0x00, 0xff, 0xff, 0x46, 0xed, 0x4f, 0x13, 0x70, 0x01, 0x00, 0x00,
+	0x46, 0x32, 0x48, 0xa9, 0x84, 0x8b, 0x2b, 0x18, 0x6e, 0xb8, 0x10, 0x1f, 0x17, 0x53, 0x66, 0x8a,
+	0x04, 0xa3, 0x02, 0xa3, 0x06, 0x4b, 0x10, 0x53, 0x66, 0x8a, 0x90, 0x03, 0x97, 0x4c, 0x41, 0x4e,
+	0x62, 0x65, 0x6a, 0x51, 0x7c, 0x72, 0x7e, 0x5e, 0x5e, 0x6a, 0x32, 0x48, 0x51, 0x3c, 0xc2, 0x0c,
+	0x09, 0x26, 0xb0, 0x4a, 0x29, 0x88, 0x1a, 0x67, 0xb8, 0x12, 0x47, 0xb8, 0x0a, 0x21, 0x11, 0x2e,
+	0xd6, 0xfc, 0xf2, 0xbc, 0xd4, 0x22, 0x09, 0x66, 0x05, 0x46, 0x0d, 0xce, 0x20, 0x08, 0xc7, 0xc9,
+	0xf0, 0xc4, 0x23, 0x39, 0xc6, 0x0b, 0x8f, 0xe4, 0x18, 0x1f, 0x3c, 0x92, 0x63, 0x9c, 0xf0, 0x58,
+	0x8e, 0xe1, 0xc2, 0x63, 0x39, 0x86, 0x1b, 0x8f, 0xe5, 0x18, 0xa2, 0xc4, 0x61, 0x2e, 0xad, 0x80,
+	0xbb, 0xb9, 0xa4, 0xb2, 0x20, 0xb5, 0x38, 0x89, 0x0d, 0xec, 0x5e, 0x63, 0x40, 0x00, 0x00, 0x00,
+	0xff, 0xff, 0x36, 0x55, 0x61, 0xbe, 0x1c, 0x01, 0x00, 0x00,
 }
 
 func (m *Substation) Marshal() (dAtA []byte, err error) {
@@ -170,18 +126,15 @@ func (m *Substation) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Status != 0 {
-		i = encodeVarintSubstation(dAtA, i, uint64(m.Status))
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintSubstation(dAtA, i, uint64(len(m.Owner)))
 		i--
-		dAtA[i] = 0x28
+		dAtA[i] = 0x1a
 	}
-	if m.Load != 0 {
-		i = encodeVarintSubstation(dAtA, i, uint64(m.Load))
-		i--
-		dAtA[i] = 0x18
-	}
-	if m.Power != 0 {
-		i = encodeVarintSubstation(dAtA, i, uint64(m.Power))
+	if m.PlayerConnectionAllocation != 0 {
+		i = encodeVarintSubstation(dAtA, i, uint64(m.PlayerConnectionAllocation))
 		i--
 		dAtA[i] = 0x10
 	}
@@ -213,14 +166,12 @@ func (m *Substation) Size() (n int) {
 	if m.Id != 0 {
 		n += 1 + sovSubstation(uint64(m.Id))
 	}
-	if m.Power != 0 {
-		n += 1 + sovSubstation(uint64(m.Power))
+	if m.PlayerConnectionAllocation != 0 {
+		n += 1 + sovSubstation(uint64(m.PlayerConnectionAllocation))
 	}
-	if m.Load != 0 {
-		n += 1 + sovSubstation(uint64(m.Load))
-	}
-	if m.Status != 0 {
-		n += 1 + sovSubstation(uint64(m.Status))
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovSubstation(uint64(l))
 	}
 	return n
 }
@@ -281,9 +232,9 @@ func (m *Substation) Unmarshal(dAtA []byte) error {
 			}
 		case 2:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Power", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field PlayerConnectionAllocation", wireType)
 			}
-			m.Power = 0
+			m.PlayerConnectionAllocation = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowSubstation
@@ -293,16 +244,16 @@ func (m *Substation) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Power |= uint64(b&0x7F) << shift
+				m.PlayerConnectionAllocation |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Load", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
 			}
-			m.Load = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowSubstation
@@ -312,30 +263,24 @@ func (m *Substation) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Load |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 5:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthSubstation
 			}
-			m.Status = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowSubstation
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Status |= Substation_Status(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthSubstation
 			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Owner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipSubstation(dAtA[iNdEx:])

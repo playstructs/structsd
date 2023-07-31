@@ -6,12 +6,12 @@ import (
 )
 
 
-func (a *Allocation) SetPower(ctx sdk.Context, proposal AllocationProposal) (error) {
+func (a *Allocation) SetPower(ctx sdk.Context, uint64 newPower) (error) {
 
-    a.Power = proposal.Power
+    a.Power = newPower
 
     //TODO: Change into a parameter
-    a.TransmissionLoss = proposal.Power / 4
+    a.TransmissionLoss = newPower / 4
 
     return nil
 }

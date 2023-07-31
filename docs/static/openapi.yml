@@ -9628,625 +9628,6 @@ paths:
           type: boolean
       tags:
         - Service
-  /cosmos/distribution/v1beta1/community_pool:
-    get:
-      summary: CommunityPool queries the community pool coins.
-      operationId: CosmosDistributionV1Beta1CommunityPool
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              pool:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    denom:
-                      type: string
-                    amount:
-                      type: string
-                  description: >-
-                    DecCoin defines a token with a denomination and a decimal
-                    amount.
-
-
-                    NOTE: The amount field is an Dec which implements the custom
-                    method
-
-                    signatures required by gogoproto.
-                description: pool defines community pool's coins.
-            description: >-
-              QueryCommunityPoolResponse is the response type for the
-              Query/CommunityPool
-
-              RPC method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  /cosmos/distribution/v1beta1/delegators/{delegator_address}/rewards:
-    get:
-      summary: |-
-        DelegationTotalRewards queries the total rewards accrued by a each
-        validator.
-      operationId: CosmosDistributionV1Beta1DelegationTotalRewards
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              rewards:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    validator_address:
-                      type: string
-                    reward:
-                      type: array
-                      items:
-                        type: object
-                        properties:
-                          denom:
-                            type: string
-                          amount:
-                            type: string
-                        description: >-
-                          DecCoin defines a token with a denomination and a
-                          decimal amount.
-
-
-                          NOTE: The amount field is an Dec which implements the
-                          custom method
-
-                          signatures required by gogoproto.
-                  description: |-
-                    DelegationDelegatorReward represents the properties
-                    of a delegator's delegation reward.
-                description: rewards defines all the rewards accrued by a delegator.
-              total:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    denom:
-                      type: string
-                    amount:
-                      type: string
-                  description: >-
-                    DecCoin defines a token with a denomination and a decimal
-                    amount.
-
-
-                    NOTE: The amount field is an Dec which implements the custom
-                    method
-
-                    signatures required by gogoproto.
-                description: total defines the sum of all the rewards.
-            description: |-
-              QueryDelegationTotalRewardsResponse is the response type for the
-              Query/DelegationTotalRewards RPC method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: delegator_address
-          description: delegator_address defines the delegator address to query for.
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /cosmos/distribution/v1beta1/delegators/{delegator_address}/rewards/{validator_address}:
-    get:
-      summary: DelegationRewards queries the total rewards accrued by a delegation.
-      operationId: CosmosDistributionV1Beta1DelegationRewards
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              rewards:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    denom:
-                      type: string
-                    amount:
-                      type: string
-                  description: >-
-                    DecCoin defines a token with a denomination and a decimal
-                    amount.
-
-
-                    NOTE: The amount field is an Dec which implements the custom
-                    method
-
-                    signatures required by gogoproto.
-                description: rewards defines the rewards accrued by a delegation.
-            description: |-
-              QueryDelegationRewardsResponse is the response type for the
-              Query/DelegationRewards RPC method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: delegator_address
-          description: delegator_address defines the delegator address to query for.
-          in: path
-          required: true
-          type: string
-        - name: validator_address
-          description: validator_address defines the validator address to query for.
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /cosmos/distribution/v1beta1/delegators/{delegator_address}/validators:
-    get:
-      summary: DelegatorValidators queries the validators of a delegator.
-      operationId: CosmosDistributionV1Beta1DelegatorValidators
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              validators:
-                type: array
-                items:
-                  type: string
-                description: >-
-                  validators defines the validators a delegator is delegating
-                  for.
-            description: |-
-              QueryDelegatorValidatorsResponse is the response type for the
-              Query/DelegatorValidators RPC method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: delegator_address
-          description: delegator_address defines the delegator address to query for.
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /cosmos/distribution/v1beta1/delegators/{delegator_address}/withdraw_address:
-    get:
-      summary: DelegatorWithdrawAddress queries withdraw address of a delegator.
-      operationId: CosmosDistributionV1Beta1DelegatorWithdrawAddress
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              withdraw_address:
-                type: string
-                description: withdraw_address defines the delegator address to query for.
-            description: |-
-              QueryDelegatorWithdrawAddressResponse is the response type for the
-              Query/DelegatorWithdrawAddress RPC method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: delegator_address
-          description: delegator_address defines the delegator address to query for.
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /cosmos/distribution/v1beta1/params:
-    get:
-      summary: Params queries params of the distribution module.
-      operationId: CosmosDistributionV1Beta1Params
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              params:
-                description: params defines the parameters of the module.
-                type: object
-                properties:
-                  community_tax:
-                    type: string
-                  base_proposer_reward:
-                    type: string
-                  bonus_proposer_reward:
-                    type: string
-                  withdraw_addr_enabled:
-                    type: boolean
-            description: >-
-              QueryParamsResponse is the response type for the Query/Params RPC
-              method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  /cosmos/distribution/v1beta1/validators/{validator_address}/commission:
-    get:
-      summary: ValidatorCommission queries accumulated commission for a validator.
-      operationId: CosmosDistributionV1Beta1ValidatorCommission
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              commission:
-                description: commission defines the commision the validator received.
-                type: object
-                properties:
-                  commission:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        denom:
-                          type: string
-                        amount:
-                          type: string
-                      description: >-
-                        DecCoin defines a token with a denomination and a
-                        decimal amount.
-
-
-                        NOTE: The amount field is an Dec which implements the
-                        custom method
-
-                        signatures required by gogoproto.
-            title: |-
-              QueryValidatorCommissionResponse is the response type for the
-              Query/ValidatorCommission RPC method
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: validator_address
-          description: validator_address defines the validator address to query for.
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /cosmos/distribution/v1beta1/validators/{validator_address}/outstanding_rewards:
-    get:
-      summary: ValidatorOutstandingRewards queries rewards of a validator address.
-      operationId: CosmosDistributionV1Beta1ValidatorOutstandingRewards
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              rewards:
-                type: object
-                properties:
-                  rewards:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        denom:
-                          type: string
-                        amount:
-                          type: string
-                      description: >-
-                        DecCoin defines a token with a denomination and a
-                        decimal amount.
-
-
-                        NOTE: The amount field is an Dec which implements the
-                        custom method
-
-                        signatures required by gogoproto.
-                description: >-
-                  ValidatorOutstandingRewards represents outstanding
-                  (un-withdrawn) rewards
-
-                  for a validator inexpensive to track, allows simple sanity
-                  checks.
-            description: >-
-              QueryValidatorOutstandingRewardsResponse is the response type for
-              the
-
-              Query/ValidatorOutstandingRewards RPC method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: validator_address
-          description: validator_address defines the validator address to query for.
-          in: path
-          required: true
-          type: string
-      tags:
-        - Query
-  /cosmos/distribution/v1beta1/validators/{validator_address}/slashes:
-    get:
-      summary: ValidatorSlashes queries slash events of a validator.
-      operationId: CosmosDistributionV1Beta1ValidatorSlashes
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              slashes:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    validator_period:
-                      type: string
-                      format: uint64
-                    fraction:
-                      type: string
-                  description: >-
-                    ValidatorSlashEvent represents a validator slash event.
-
-                    Height is implicit within the store key.
-
-                    This is needed to calculate appropriate amount of staking
-                    tokens
-
-                    for delegations which are withdrawn after a slash has
-                    occurred.
-                description: slashes defines the slashes the validator received.
-              pagination:
-                description: pagination defines the pagination in the response.
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    description: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently. It will be empty if
-                      there are no more results.
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-            description: |-
-              QueryValidatorSlashesResponse is the response type for the
-              Query/ValidatorSlashes RPC method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: validator_address
-          description: validator_address defines the validator address to query for.
-          in: path
-          required: true
-          type: string
-        - name: starting_height
-          description: >-
-            starting_height defines the optional starting height to query the
-            slashes.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: ending_height
-          description: >-
-            starting_height defines the optional ending height to query the
-            slashes.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
-      tags:
-        - Query
   /cosmos/evidence/v1beta1/evidence:
     get:
       summary: AllEvidence queries all evidence.
@@ -22320,140 +21701,6 @@ paths:
           in: query
           required: false
           type: boolean
-      tags:
-        - Query
-  /cosmos/mint/v1beta1/annual_provisions:
-    get:
-      summary: AnnualProvisions current minting annual provisions value.
-      operationId: CosmosMintV1Beta1AnnualProvisions
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              annual_provisions:
-                type: string
-                format: byte
-                description: >-
-                  annual_provisions is the current minting annual provisions
-                  value.
-            description: |-
-              QueryAnnualProvisionsResponse is the response type for the
-              Query/AnnualProvisions RPC method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  /cosmos/mint/v1beta1/inflation:
-    get:
-      summary: Inflation returns the current minting inflation value.
-      operationId: CosmosMintV1Beta1Inflation
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              inflation:
-                type: string
-                format: byte
-                description: inflation is the current minting inflation value.
-            description: >-
-              QueryInflationResponse is the response type for the
-              Query/Inflation RPC
-
-              method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      tags:
-        - Query
-  /cosmos/mint/v1beta1/params:
-    get:
-      summary: Params returns the total set of minting parameters.
-      operationId: CosmosMintV1Beta1Params
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              params:
-                description: params defines the parameters of the module.
-                type: object
-                properties:
-                  mint_denom:
-                    type: string
-                    title: type of coin to mint
-                  inflation_rate_change:
-                    type: string
-                    title: maximum annual change in inflation rate
-                  inflation_max:
-                    type: string
-                    title: maximum inflation rate
-                  inflation_min:
-                    type: string
-                    title: minimum inflation rate
-                  goal_bonded:
-                    type: string
-                    title: goal of percent bonded atoms
-                  blocks_per_year:
-                    type: string
-                    format: uint64
-                    title: expected blocks per year
-            description: >-
-              QueryParamsResponse is the response type for the Query/Params RPC
-              method.
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
       tags:
         - Query
   /cosmos/nft/v1beta1/balance/{owner}/{class_id}:
@@ -45285,6 +44532,7 @@ paths:
                         - reactor
                         - substation
                         - struct
+                        - allocation
                       default: faction
                     sourceId:
                       type: string
@@ -45295,9 +44543,12 @@ paths:
                     power:
                       type: string
                       format: uint64
-                    transmissionLoss:
+                    creator:
                       type: string
-                      format: uint64
+                    owner:
+                      type: string
+                    locked:
+                      type: boolean
               pagination:
                 type: object
                 properties:
@@ -45433,6 +44684,7 @@ paths:
                       - reactor
                       - substation
                       - struct
+                      - allocation
                     default: faction
                   sourceId:
                     type: string
@@ -45443,211 +44695,12 @@ paths:
                   power:
                     type: string
                     format: uint64
-                  transmissionLoss:
+                  creator:
                     type: string
-                    format: uint64
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: string
-          format: uint64
-      tags:
-        - Query
-  /structs/structs/allocation_proposal:
-    get:
-      operationId: StructsStructsAllocationProposalAll
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              AllocationProposal:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      format: uint64
-                    sourceType:
-                      type: string
-                      enum:
-                        - faction
-                        - player
-                        - planet
-                        - reactor
-                        - substation
-                        - struct
-                      default: faction
-                    sourceId:
-                      type: string
-                      format: uint64
-                    destinationId:
-                      type: string
-                      format: uint64
-                    power:
-                      type: string
-                      format: uint64
-              pagination:
-                type: object
-                properties:
-                  next_key:
+                  owner:
                     type: string
-                    format: byte
-                    description: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently. It will be empty if
-                      there are no more results.
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-                description: >-
-                  PageResponse is to be embedded in gRPC response messages where
-                  the
-
-                  corresponding request message has used PageRequest.
-
-                   message SomeResponse {
-                           repeated Bar results = 1;
-                           PageResponse page = 2;
-                   }
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
-      tags:
-        - Query
-  /structs/structs/allocation_proposal/{id}:
-    get:
-      summary: Queries a list of AllocationProposal items.
-      operationId: StructsStructsAllocationProposal
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              AllocationProposal:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uint64
-                  sourceType:
-                    type: string
-                    enum:
-                      - faction
-                      - player
-                      - planet
-                      - reactor
-                      - substation
-                      - struct
-                    default: faction
-                  sourceId:
-                    type: string
-                    format: uint64
-                  destinationId:
-                    type: string
-                    format: uint64
-                  power:
-                    type: string
-                    format: uint64
+                  locked:
+                    type: boolean
         default:
           description: An unexpected error response.
           schema:
@@ -45729,28 +44782,9 @@ paths:
                       format: uint64
                     validator:
                       type: string
-                    power:
+                    energy:
                       type: string
                       format: uint64
-                    load:
-                      type: string
-                      format: uint64
-                    previous_status:
-                      type: string
-                      enum:
-                        - ONLINE
-                        - OFFLINE
-                        - DECOMMISSIONED
-                        - OVERLOAD
-                      default: ONLINE
-                    status:
-                      type: string
-                      enum:
-                        - ONLINE
-                        - OFFLINE
-                        - DECOMMISSIONED
-                        - OVERLOAD
-                      default: ONLINE
               pagination:
                 type: object
                 properties:
@@ -45874,28 +44908,9 @@ paths:
                     format: uint64
                   validator:
                     type: string
-                  power:
+                  energy:
                     type: string
                     format: uint64
-                  load:
-                    type: string
-                    format: uint64
-                  previous_status:
-                    type: string
-                    enum:
-                      - ONLINE
-                      - OFFLINE
-                      - DECOMMISSIONED
-                      - OVERLOAD
-                    default: ONLINE
-                  status:
-                    type: string
-                    enum:
-                      - ONLINE
-                      - OFFLINE
-                      - DECOMMISSIONED
-                      - OVERLOAD
-                    default: ONLINE
         default:
           description: An unexpected error response.
           schema:
@@ -45939,20 +44954,11 @@ paths:
                     id:
                       type: string
                       format: uint64
-                    power:
+                    player_connection_allocation:
                       type: string
                       format: uint64
-                    load:
+                    owner:
                       type: string
-                      format: uint64
-                    status:
-                      type: string
-                      enum:
-                        - ONLINE
-                        - OFFLINE
-                        - DECOMMISSIONED
-                        - OVERLOAD
-                      default: ONLINE
               pagination:
                 type: object
                 properties:
@@ -46074,20 +45080,11 @@ paths:
                   id:
                     type: string
                     format: uint64
-                  power:
+                  player_connection_allocation:
                     type: string
                     format: uint64
-                  load:
+                  owner:
                     type: string
-                    format: uint64
-                  status:
-                    type: string
-                    enum:
-                      - ONLINE
-                      - OFFLINE
-                      - DECOMMISSIONED
-                      - OVERLOAD
-                    default: ONLINE
         default:
           description: An unexpected error response.
           schema:
@@ -55237,388 +54234,6 @@ definitions:
   cosmos.crisis.v1beta1.MsgVerifyInvariantResponse:
     type: object
     description: MsgVerifyInvariantResponse defines the Msg/VerifyInvariant response type.
-  cosmos.base.v1beta1.DecCoin:
-    type: object
-    properties:
-      denom:
-        type: string
-      amount:
-        type: string
-    description: |-
-      DecCoin defines a token with a denomination and a decimal amount.
-
-      NOTE: The amount field is an Dec which implements the custom method
-      signatures required by gogoproto.
-  cosmos.distribution.v1beta1.DelegationDelegatorReward:
-    type: object
-    properties:
-      validator_address:
-        type: string
-      reward:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            DecCoin defines a token with a denomination and a decimal amount.
-
-            NOTE: The amount field is an Dec which implements the custom method
-            signatures required by gogoproto.
-    description: |-
-      DelegationDelegatorReward represents the properties
-      of a delegator's delegation reward.
-  cosmos.distribution.v1beta1.MsgFundCommunityPoolResponse:
-    type: object
-    description: >-
-      MsgFundCommunityPoolResponse defines the Msg/FundCommunityPool response
-      type.
-  cosmos.distribution.v1beta1.MsgSetWithdrawAddressResponse:
-    type: object
-    description: >-
-      MsgSetWithdrawAddressResponse defines the Msg/SetWithdrawAddress response
-      type.
-  cosmos.distribution.v1beta1.MsgWithdrawDelegatorRewardResponse:
-    type: object
-    properties:
-      amount:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            Coin defines a token with a denomination and an amount.
-
-            NOTE: The amount field is an Int which implements the custom method
-            signatures required by gogoproto.
-        title: 'Since: cosmos-sdk 0.46'
-    description: >-
-      MsgWithdrawDelegatorRewardResponse defines the Msg/WithdrawDelegatorReward
-      response type.
-  cosmos.distribution.v1beta1.MsgWithdrawValidatorCommissionResponse:
-    type: object
-    properties:
-      amount:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            Coin defines a token with a denomination and an amount.
-
-            NOTE: The amount field is an Int which implements the custom method
-            signatures required by gogoproto.
-        title: 'Since: cosmos-sdk 0.46'
-    description: >-
-      MsgWithdrawValidatorCommissionResponse defines the
-      Msg/WithdrawValidatorCommission response type.
-  cosmos.distribution.v1beta1.Params:
-    type: object
-    properties:
-      community_tax:
-        type: string
-      base_proposer_reward:
-        type: string
-      bonus_proposer_reward:
-        type: string
-      withdraw_addr_enabled:
-        type: boolean
-    description: Params defines the set of params for the distribution module.
-  cosmos.distribution.v1beta1.QueryCommunityPoolResponse:
-    type: object
-    properties:
-      pool:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            DecCoin defines a token with a denomination and a decimal amount.
-
-            NOTE: The amount field is an Dec which implements the custom method
-            signatures required by gogoproto.
-        description: pool defines community pool's coins.
-    description: >-
-      QueryCommunityPoolResponse is the response type for the
-      Query/CommunityPool
-
-      RPC method.
-  cosmos.distribution.v1beta1.QueryDelegationRewardsResponse:
-    type: object
-    properties:
-      rewards:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            DecCoin defines a token with a denomination and a decimal amount.
-
-            NOTE: The amount field is an Dec which implements the custom method
-            signatures required by gogoproto.
-        description: rewards defines the rewards accrued by a delegation.
-    description: |-
-      QueryDelegationRewardsResponse is the response type for the
-      Query/DelegationRewards RPC method.
-  cosmos.distribution.v1beta1.QueryDelegationTotalRewardsResponse:
-    type: object
-    properties:
-      rewards:
-        type: array
-        items:
-          type: object
-          properties:
-            validator_address:
-              type: string
-            reward:
-              type: array
-              items:
-                type: object
-                properties:
-                  denom:
-                    type: string
-                  amount:
-                    type: string
-                description: >-
-                  DecCoin defines a token with a denomination and a decimal
-                  amount.
-
-
-                  NOTE: The amount field is an Dec which implements the custom
-                  method
-
-                  signatures required by gogoproto.
-          description: |-
-            DelegationDelegatorReward represents the properties
-            of a delegator's delegation reward.
-        description: rewards defines all the rewards accrued by a delegator.
-      total:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            DecCoin defines a token with a denomination and a decimal amount.
-
-            NOTE: The amount field is an Dec which implements the custom method
-            signatures required by gogoproto.
-        description: total defines the sum of all the rewards.
-    description: |-
-      QueryDelegationTotalRewardsResponse is the response type for the
-      Query/DelegationTotalRewards RPC method.
-  cosmos.distribution.v1beta1.QueryDelegatorValidatorsResponse:
-    type: object
-    properties:
-      validators:
-        type: array
-        items:
-          type: string
-        description: validators defines the validators a delegator is delegating for.
-    description: |-
-      QueryDelegatorValidatorsResponse is the response type for the
-      Query/DelegatorValidators RPC method.
-  cosmos.distribution.v1beta1.QueryDelegatorWithdrawAddressResponse:
-    type: object
-    properties:
-      withdraw_address:
-        type: string
-        description: withdraw_address defines the delegator address to query for.
-    description: |-
-      QueryDelegatorWithdrawAddressResponse is the response type for the
-      Query/DelegatorWithdrawAddress RPC method.
-  cosmos.distribution.v1beta1.QueryParamsResponse:
-    type: object
-    properties:
-      params:
-        description: params defines the parameters of the module.
-        type: object
-        properties:
-          community_tax:
-            type: string
-          base_proposer_reward:
-            type: string
-          bonus_proposer_reward:
-            type: string
-          withdraw_addr_enabled:
-            type: boolean
-    description: QueryParamsResponse is the response type for the Query/Params RPC method.
-  cosmos.distribution.v1beta1.QueryValidatorCommissionResponse:
-    type: object
-    properties:
-      commission:
-        description: commission defines the commision the validator received.
-        type: object
-        properties:
-          commission:
-            type: array
-            items:
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-              description: >-
-                DecCoin defines a token with a denomination and a decimal
-                amount.
-
-
-                NOTE: The amount field is an Dec which implements the custom
-                method
-
-                signatures required by gogoproto.
-    title: |-
-      QueryValidatorCommissionResponse is the response type for the
-      Query/ValidatorCommission RPC method
-  cosmos.distribution.v1beta1.QueryValidatorOutstandingRewardsResponse:
-    type: object
-    properties:
-      rewards:
-        type: object
-        properties:
-          rewards:
-            type: array
-            items:
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-              description: >-
-                DecCoin defines a token with a denomination and a decimal
-                amount.
-
-
-                NOTE: The amount field is an Dec which implements the custom
-                method
-
-                signatures required by gogoproto.
-        description: >-
-          ValidatorOutstandingRewards represents outstanding (un-withdrawn)
-          rewards
-
-          for a validator inexpensive to track, allows simple sanity checks.
-    description: |-
-      QueryValidatorOutstandingRewardsResponse is the response type for the
-      Query/ValidatorOutstandingRewards RPC method.
-  cosmos.distribution.v1beta1.QueryValidatorSlashesResponse:
-    type: object
-    properties:
-      slashes:
-        type: array
-        items:
-          type: object
-          properties:
-            validator_period:
-              type: string
-              format: uint64
-            fraction:
-              type: string
-          description: |-
-            ValidatorSlashEvent represents a validator slash event.
-            Height is implicit within the store key.
-            This is needed to calculate appropriate amount of staking tokens
-            for delegations which are withdrawn after a slash has occurred.
-        description: slashes defines the slashes the validator received.
-      pagination:
-        description: pagination defines the pagination in the response.
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            description: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently. It will be empty if
-              there are no more results.
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-    description: |-
-      QueryValidatorSlashesResponse is the response type for the
-      Query/ValidatorSlashes RPC method.
-  cosmos.distribution.v1beta1.ValidatorAccumulatedCommission:
-    type: object
-    properties:
-      commission:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            DecCoin defines a token with a denomination and a decimal amount.
-
-            NOTE: The amount field is an Dec which implements the custom method
-            signatures required by gogoproto.
-    description: |-
-      ValidatorAccumulatedCommission represents accumulated commission
-      for a validator kept as a running counter, can be withdrawn at any time.
-  cosmos.distribution.v1beta1.ValidatorOutstandingRewards:
-    type: object
-    properties:
-      rewards:
-        type: array
-        items:
-          type: object
-          properties:
-            denom:
-              type: string
-            amount:
-              type: string
-          description: |-
-            DecCoin defines a token with a denomination and a decimal amount.
-
-            NOTE: The amount field is an Dec which implements the custom method
-            signatures required by gogoproto.
-    description: |-
-      ValidatorOutstandingRewards represents outstanding (un-withdrawn) rewards
-      for a validator inexpensive to track, allows simple sanity checks.
-  cosmos.distribution.v1beta1.ValidatorSlashEvent:
-    type: object
-    properties:
-      validator_period:
-        type: string
-        format: uint64
-      fraction:
-        type: string
-    description: |-
-      ValidatorSlashEvent represents a validator slash event.
-      Height is implicit within the store key.
-      This is needed to calculate appropriate amount of staking tokens
-      for delegations which are withdrawn after a slash has occurred.
   cosmos.evidence.v1beta1.MsgSubmitEvidenceResponse:
     type: object
     properties:
@@ -61349,76 +59964,6 @@ definitions:
        - VOTE_OPTION_ABSTAIN: VOTE_OPTION_ABSTAIN defines an abstain vote option.
        - VOTE_OPTION_NO: VOTE_OPTION_NO defines a no vote option.
        - VOTE_OPTION_NO_WITH_VETO: VOTE_OPTION_NO_WITH_VETO defines a no with veto vote option.
-  cosmos.mint.v1beta1.Params:
-    type: object
-    properties:
-      mint_denom:
-        type: string
-        title: type of coin to mint
-      inflation_rate_change:
-        type: string
-        title: maximum annual change in inflation rate
-      inflation_max:
-        type: string
-        title: maximum inflation rate
-      inflation_min:
-        type: string
-        title: minimum inflation rate
-      goal_bonded:
-        type: string
-        title: goal of percent bonded atoms
-      blocks_per_year:
-        type: string
-        format: uint64
-        title: expected blocks per year
-    description: Params holds parameters for the mint module.
-  cosmos.mint.v1beta1.QueryAnnualProvisionsResponse:
-    type: object
-    properties:
-      annual_provisions:
-        type: string
-        format: byte
-        description: annual_provisions is the current minting annual provisions value.
-    description: |-
-      QueryAnnualProvisionsResponse is the response type for the
-      Query/AnnualProvisions RPC method.
-  cosmos.mint.v1beta1.QueryInflationResponse:
-    type: object
-    properties:
-      inflation:
-        type: string
-        format: byte
-        description: inflation is the current minting inflation value.
-    description: |-
-      QueryInflationResponse is the response type for the Query/Inflation RPC
-      method.
-  cosmos.mint.v1beta1.QueryParamsResponse:
-    type: object
-    properties:
-      params:
-        description: params defines the parameters of the module.
-        type: object
-        properties:
-          mint_denom:
-            type: string
-            title: type of coin to mint
-          inflation_rate_change:
-            type: string
-            title: maximum annual change in inflation rate
-          inflation_max:
-            type: string
-            title: maximum inflation rate
-          inflation_min:
-            type: string
-            title: minimum inflation rate
-          goal_bonded:
-            type: string
-            title: goal of percent bonded atoms
-          blocks_per_year:
-            type: string
-            format: uint64
-            title: expected blocks per year
-    description: QueryParamsResponse is the response type for the Query/Params RPC method.
   cosmos.nft.v1beta1.Class:
     type: object
     properties:
@@ -75768,6 +74313,7 @@ definitions:
           - reactor
           - substation
           - struct
+          - allocation
         default: faction
       sourceId:
         type: string
@@ -75778,39 +74324,17 @@ definitions:
       power:
         type: string
         format: uint64
-      transmissionLoss:
+      creator:
         type: string
-        format: uint64
-  structs.structs.AllocationProposal:
+      owner:
+        type: string
+      locked:
+        type: boolean
+  structs.structs.MsgAllocationCreateResponse:
     type: object
-    properties:
-      id:
-        type: string
-        format: uint64
-      sourceType:
-        type: string
-        enum:
-          - faction
-          - player
-          - planet
-          - reactor
-          - substation
-          - struct
-        default: faction
-      sourceId:
-        type: string
-        format: uint64
-      destinationId:
-        type: string
-        format: uint64
-      power:
-        type: string
-        format: uint64
-  structs.structs.MsgReactorAllocationActivateResponse:
+  structs.structs.MsgSubstationAllocationConnectResponse:
     type: object
   structs.structs.MsgSubstationAllocationDisconnectResponse:
-    type: object
-  structs.structs.MsgSubstationAllocationProposeResponse:
     type: object
   structs.structs.MsgSubstationCreateResponse:
     type: object
@@ -75823,62 +74347,6 @@ definitions:
   structs.structs.Params:
     type: object
     description: Params defines the parameters for the module.
-  structs.structs.QueryAllAllocationProposalResponse:
-    type: object
-    properties:
-      AllocationProposal:
-        type: array
-        items:
-          type: object
-          properties:
-            id:
-              type: string
-              format: uint64
-            sourceType:
-              type: string
-              enum:
-                - faction
-                - player
-                - planet
-                - reactor
-                - substation
-                - struct
-              default: faction
-            sourceId:
-              type: string
-              format: uint64
-            destinationId:
-              type: string
-              format: uint64
-            power:
-              type: string
-              format: uint64
-      pagination:
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            description: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently. It will be empty if
-              there are no more results.
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-        description: |-
-          PageResponse is to be embedded in gRPC response messages where the
-          corresponding request message has used PageRequest.
-
-           message SomeResponse {
-                   repeated Bar results = 1;
-                   PageResponse page = 2;
-           }
   structs.structs.QueryAllAllocationResponse:
     type: object
     properties:
@@ -75899,6 +74367,7 @@ definitions:
                 - reactor
                 - substation
                 - struct
+                - allocation
               default: faction
             sourceId:
               type: string
@@ -75909,9 +74378,12 @@ definitions:
             power:
               type: string
               format: uint64
-            transmissionLoss:
+            creator:
               type: string
-              format: uint64
+            owner:
+              type: string
+            locked:
+              type: boolean
       pagination:
         type: object
         properties:
@@ -75956,28 +74428,9 @@ definitions:
               format: uint64
             validator:
               type: string
-            power:
+            energy:
               type: string
               format: uint64
-            load:
-              type: string
-              format: uint64
-            previous_status:
-              type: string
-              enum:
-                - ONLINE
-                - OFFLINE
-                - DECOMMISSIONED
-                - OVERLOAD
-              default: ONLINE
-            status:
-              type: string
-              enum:
-                - ONLINE
-                - OFFLINE
-                - DECOMMISSIONED
-                - OVERLOAD
-              default: ONLINE
       pagination:
         type: object
         properties:
@@ -76015,20 +74468,11 @@ definitions:
             id:
               type: string
               format: uint64
-            power:
+            player_connection_allocation:
               type: string
               format: uint64
-            load:
+            owner:
               type: string
-              format: uint64
-            status:
-              type: string
-              enum:
-                - ONLINE
-                - OFFLINE
-                - DECOMMISSIONED
-                - OVERLOAD
-              default: ONLINE
       pagination:
         type: object
         properties:
@@ -76055,34 +74499,6 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-  structs.structs.QueryGetAllocationProposalResponse:
-    type: object
-    properties:
-      AllocationProposal:
-        type: object
-        properties:
-          id:
-            type: string
-            format: uint64
-          sourceType:
-            type: string
-            enum:
-              - faction
-              - player
-              - planet
-              - reactor
-              - substation
-              - struct
-            default: faction
-          sourceId:
-            type: string
-            format: uint64
-          destinationId:
-            type: string
-            format: uint64
-          power:
-            type: string
-            format: uint64
   structs.structs.QueryGetAllocationResponse:
     type: object
     properties:
@@ -76101,6 +74517,7 @@ definitions:
               - reactor
               - substation
               - struct
+              - allocation
             default: faction
           sourceId:
             type: string
@@ -76111,9 +74528,12 @@ definitions:
           power:
             type: string
             format: uint64
-          transmissionLoss:
+          creator:
             type: string
-            format: uint64
+          owner:
+            type: string
+          locked:
+            type: boolean
   structs.structs.QueryGetReactorResponse:
     type: object
     properties:
@@ -76125,28 +74545,9 @@ definitions:
             format: uint64
           validator:
             type: string
-          power:
+          energy:
             type: string
             format: uint64
-          load:
-            type: string
-            format: uint64
-          previous_status:
-            type: string
-            enum:
-              - ONLINE
-              - OFFLINE
-              - DECOMMISSIONED
-              - OVERLOAD
-            default: ONLINE
-          status:
-            type: string
-            enum:
-              - ONLINE
-              - OFFLINE
-              - DECOMMISSIONED
-              - OVERLOAD
-            default: ONLINE
   structs.structs.QueryGetSubstationResponse:
     type: object
     properties:
@@ -76156,20 +74557,11 @@ definitions:
           id:
             type: string
             format: uint64
-          power:
+          player_connection_allocation:
             type: string
             format: uint64
-          load:
+          owner:
             type: string
-            format: uint64
-          status:
-            type: string
-            enum:
-              - ONLINE
-              - OFFLINE
-              - DECOMMISSIONED
-              - OVERLOAD
-            default: ONLINE
   structs.structs.QueryParamsResponse:
     type: object
     properties:
@@ -76185,64 +74577,20 @@ definitions:
         format: uint64
       validator:
         type: string
-      power:
+      energy:
         type: string
         format: uint64
-      load:
-        type: string
-        format: uint64
-      previous_status:
-        type: string
-        enum:
-          - ONLINE
-          - OFFLINE
-          - DECOMMISSIONED
-          - OVERLOAD
-        default: ONLINE
-      status:
-        type: string
-        enum:
-          - ONLINE
-          - OFFLINE
-          - DECOMMISSIONED
-          - OVERLOAD
-        default: ONLINE
-  structs.structs.Reactor.Status:
-    type: string
-    enum:
-      - ONLINE
-      - OFFLINE
-      - DECOMMISSIONED
-      - OVERLOAD
-    default: ONLINE
   structs.structs.Substation:
     type: object
     properties:
       id:
         type: string
         format: uint64
-      power:
+      player_connection_allocation:
         type: string
         format: uint64
-      load:
+      owner:
         type: string
-        format: uint64
-      status:
-        type: string
-        enum:
-          - ONLINE
-          - OFFLINE
-          - DECOMMISSIONED
-          - OVERLOAD
-        default: ONLINE
-  structs.structs.Substation.Status:
-    type: string
-    enum:
-      - ONLINE
-      - OFFLINE
-      - DECOMMISSIONED
-      - OVERLOAD
-    default: ONLINE
   structs.structs.objectType:
     type: string
     enum:
@@ -76252,4 +74600,5 @@ definitions:
       - reactor
       - substation
       - struct
+      - allocation
     default: faction

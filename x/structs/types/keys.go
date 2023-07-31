@@ -84,4 +84,5 @@ var ObjectType_enum = map[string]ObjectType{
 	"reactor":    ObjectType_reactor,
 	"substation": ObjectType_substation,
 	"struct":     ObjectType_struct,
+	"allocation": ObjectType_allocation,
 }
