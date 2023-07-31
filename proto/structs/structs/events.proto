@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package structs.structs;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "cosmos/base/query/v1beta1/pagination.proto";
+import "structs/structs/params.proto";
+import "structs/structs/reactor.proto";
+import "structs/structs/substation.proto";
+import "structs/structs/allocation.proto";
+import "structs/structs/keys.proto";
+
+
+option go_package = "structs/x/structs/types";
+
+
+// Cache Invalidation
+message EventCacheInvalidation {
+
+  string object_type = 1;
+
+  objectType object_id = 2;
+
+}

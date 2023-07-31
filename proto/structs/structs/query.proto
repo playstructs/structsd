@@ -9,7 +9,7 @@ import "structs/structs/params.proto";
 import "structs/structs/reactor.proto";
 import "structs/structs/substation.proto";
 import "structs/structs/allocation.proto";
-import "structs/structs/allocation_proposal.proto";
+
 
 option go_package = "structs/x/structs/types";
 
