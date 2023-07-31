@@ -5,7 +5,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
-	    sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"strconv"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 )
 
@@ -320,7 +322,8 @@ func (k Keeper) ReactorIncrementLoad(ctx sdk.Context, id uint64, amount uint64) 
     reactorEnergy := k.ReactorGetEnergy(ctx, id)
 
     if (new > reactorEnergy) {
-        return 0, sdkerrors.Wrapf(types.ErrReactorAvailableCapacityInsufficient, "source (%s) used for allocation not sufficient",  "reactor-" + id)
+        reactorId := strconv.FormatUint(id, 10)
+        return 0, sdkerrors.Wrapf(types.ErrReactorAvailableCapacityInsufficient, "source (%s) used for allocation not sufficient",  "reactor-" + reactorId)
     }
 
 	bz := make([]byte, 8)
@@ -384,7 +387,7 @@ func (k Keeper) ReactorGetEnergy(ctx sdk.Context, id uint64) (load uint64) {
 
 	// Reactor Energy Not in Memory: no element
 	if bz == nil {
-	    reactor := k.GetReactor(ctx, id)
+	    reactor, _ := k.GetReactor(ctx, id)
 	    load = reactor.Energy
 	    k.ReactorSetEnergy(ctx, id, load)
 

@@ -10,7 +10,7 @@ import (
 	"structs/x/structs/types"
 )
 
-func SimulateMsgReactorAllocationActivate(
+func SimulateMsgReactorAllocationCreate(
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
 	k keeper.Keeper,
@@ -18,12 +18,12 @@ func SimulateMsgReactorAllocationActivate(
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
-		msg := &types.MsgReactorAllocationActivate{
+		msg := &types.MsgReactorAllocationCreate{
 			Creator: simAccount.Address.String(),
 		}
 
 		// TODO: Handling the ReactorAllocationActivate simulation
 
-		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "ReactorAllocationActivate simulation not implemented"), nil, nil
+		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "ReactorAllocationCreate simulation not implemented"), nil, nil
 	}
 }

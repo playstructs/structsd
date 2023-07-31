@@ -95,6 +95,26 @@ func (k Keeper) GetAllAllocation(ctx sdk.Context) (list []types.Allocation) {
 
 
 // GetAllSubstationAllocationIn returns all allocation
+func (k Keeper) GetAllSubstationAllocationOut(ctx sdk.Context, substationId uint64) (list []types.Allocation) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AllocationKey))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.Allocation
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+
+		if (val.SourceType == types.ObjectType_substation && val.SourceId == substationId) {
+		    list = append(list, val)
+		}
+	}
+
+	return
+}
+
+
+// GetAllSubstationAllocationIn returns all allocation
 func (k Keeper) GetAllSubstationAllocationIn(ctx sdk.Context, substationId uint64) (list []types.Allocation) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AllocationKey))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
@@ -107,30 +127,6 @@ func (k Keeper) GetAllSubstationAllocationIn(ctx sdk.Context, substationId uint6
 
 		if (val.DestinationId == substationId) {
 		    list = append(list, val)
-		}
-	}
-
-	return
-}
-
-// GetAllSubstationAllocationIn returns all allocation
-func (k Keeper) GetAllSubstationAllocationPackagesIn(ctx sdk.Context, substationId uint64) (list []types.AllocationPackage) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AllocationKey))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
-
-    var status uint64
-    var allocationPackage types.AllocationPackage
-
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
-		var val types.Allocation
-		k.cdc.MustUnmarshal(iterator.Value(), &val)
-
-		if (val.DestinationId == substationId) {
-		    status = k.GetAllocationStatus(ctx, val.Id)
-		    allocationPackage = types.AllocationPackage{Allocation: &val, Status: status,}
-		    list = append(list, allocationPackage)
 		}
 	}
 
@@ -151,7 +147,7 @@ func (k Keeper) GetAllReactorAllocations(ctx sdk.Context, reactorId uint64) (lis
 		var val types.Allocation
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
-		if (val.SourceId == reactorId) {
+		if (val.SourceType == types.ObjectType_reactor && val.SourceId == reactorId) {
 		    list = append(list, val)
 		}
 	}

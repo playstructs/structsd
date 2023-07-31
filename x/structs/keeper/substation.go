@@ -6,6 +6,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
+
+    "strconv"
+    sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 
@@ -138,7 +141,7 @@ func (k Keeper) CascadeSubstationAllocationFailure(ctx sdk.Context, substationId
             break;
         }
 
-        k.AllocationDestroy(ctx, allocation.Id)
+        k.AllocationDestroy(ctx, allocation)
     }
 }
 
@@ -147,13 +150,13 @@ func (k Keeper) CascadeSubstationAllocationFailure(ctx sdk.Context, substationId
 // of a substation.
 //
 // Updates the Allocation Load and Total Load memory values
-func (k Keeper) SubstationDecrementAllocationLoad(ctx sdk.Context, id uint64, amount uint64) (uint64, error) {
+func (k Keeper) SubstationDecrementAllocationLoad(ctx sdk.Context, id uint64, amount uint64) (newAllocationLoad uint64, err error) {
     currentAllocationLoad := k.SubstationGetAllocationLoad(ctx, id)
 
     if (amount > currentAllocationLoad) {
         // this really shouldn't happen. Throw an error I guess but yeesh, this is a problem.
     } else {
-        newAllocationLoad := currentAllocationLoad - amount
+        newAllocationLoad = currentAllocationLoad - amount
     }
 
 	k.SubstationSetAllocationLoad(ctx, id, newAllocationLoad)
@@ -162,7 +165,7 @@ func (k Keeper) SubstationDecrementAllocationLoad(ctx sdk.Context, id uint64, am
 	newTotalLoad := currentTotalLoad - amount
 	k.SubstationSetLoad(ctx, id, newTotalLoad)
 
-	return new, nil
+	return newAllocationLoad, err
 }
 
 
@@ -183,13 +186,14 @@ func (k Keeper) SubstationIncrementAllocationLoad(ctx sdk.Context, id uint64, am
     substationEnergy := k.SubstationGetEnergy(ctx, id)
 
     if (newTotalLoad > substationEnergy) {
-        return 0, sdkerrors.Wrapf(types.ErrSubstationAvailableCapacityInsufficient, "source (%s) used for allocation sufficient", "substation-" + id)
+        substationId := strconv.FormatUint(id, 10)
+        return 0, sdkerrors.Wrapf(types.ErrSubstationAvailableCapacityInsufficient, "source (%s) used for allocation sufficient", "substation-" + substationId)
     }
 
 	k.SubstationSetAllocationLoad(ctx, id, newAllocationLoad)
 	k.SubstationSetLoad(ctx, id, newTotalLoad)
 
-	return new, nil
+	return newTotalLoad, nil
 }
 
 // For use when a player account is being disconnected and the power is no longer applied to the load
@@ -198,17 +202,17 @@ func (k Keeper) SubstationIncrementAllocationLoad(ctx sdk.Context, id uint64, am
 // Updates the Connected Player Load and Total Load memory values
 func (k Keeper) SubstationDecrementConnectedPlayerLoad(ctx sdk.Context, id uint64, amount uint64) (uint64, error) {
 
-    count = SubstationDecrementConnectedPlayerCount(ctx, id, amount)
+    _ = k.SubstationDecrementConnectedPlayerCount(ctx, id, amount)
 
     newConnectedPlayerLoad := k.SubstationRebuildConnectedPlayerLoad(ctx, id)
     currentAllocationLoad := k.SubstationGetAllocationLoad(ctx, id)
 
-    totalLoad := newConnectedPlayerLoad + currentAllocationLoad
+    newTotalLoad := newConnectedPlayerLoad + currentAllocationLoad
 
 	k.SubstationSetConnectedPlayerLoad(ctx, id, newConnectedPlayerLoad)
 	k.SubstationSetLoad(ctx, id, newTotalLoad)
 
-	return totalLoad, nil
+	return newTotalLoad, nil
 }
 
 
@@ -220,24 +224,25 @@ func (k Keeper) SubstationDecrementConnectedPlayerLoad(ctx sdk.Context, id uint6
 // Updates the Connected Player Load and Total Load memory values
 func (k Keeper) SubstationIncrementConnectedPlayerLoad(ctx sdk.Context, id uint64, amount uint64) (uint64, error) {
 
-    count = k.SubstationIncrementConnectedPlayerCount(ctx, id, amount)
+    _ = k.SubstationIncrementConnectedPlayerCount(ctx, id, amount)
 
     newConnectedPlayerLoad := k.SubstationRebuildConnectedPlayerLoad(ctx, id)
     currentAllocationLoad := k.SubstationGetAllocationLoad(ctx, id)
 
-    totalLoad := newConnectedPlayerLoad + currentAllocationLoad
+    newTotalLoad := newConnectedPlayerLoad + currentAllocationLoad
 
     substationEnergy := k.SubstationGetEnergy(ctx, id)
 
     if (newTotalLoad > substationEnergy) {
         k.SubstationDecrementConnectedPlayerCount(ctx, id, amount)
-        return 0, sdkerrors.Wrapf(types.ErrSubstationAvailableCapacityInsufficient, "source (%s) used for allocation sufficient", "substation-" + id)
+        substationId := strconv.FormatUint(id, 10)
+        return 0, sdkerrors.Wrapf(types.ErrSubstationAvailableCapacityInsufficient, "source (%s) used for allocation sufficient", "substation-" + substationId)
     }
 
 	k.SubstationSetConnectedPlayerLoad(ctx, id, newConnectedPlayerLoad)
 	k.SubstationSetLoad(ctx, id, newTotalLoad)
 
-	return totalLoad, nil
+	return newTotalLoad, nil
 }
 
 
@@ -300,7 +305,7 @@ func (k Keeper) SubstationGetConnectedPlayerLoad(ctx sdk.Context, id uint64) (lo
 
 	// Substation Capacity Not in Memory: no element
 	if bz == nil {
-	    connectedPlayerLoad := k.SubstationRebuildPlayerConnectionLoad(ctx, id)
+	    connectedPlayerLoad := k.SubstationRebuildConnectedPlayerLoad(ctx, id)
 	    k.SubstationSetConnectedPlayerLoad(ctx, id, connectedPlayerLoad)
 
 	} else {
@@ -358,9 +363,9 @@ func (k Keeper) SubstationRebuildAllocationLoad(ctx sdk.Context, id uint64) (loa
 // Rebuilds the current player connection load
 func (k Keeper) SubstationRebuildConnectedPlayerLoad(ctx sdk.Context, id uint64) (load uint64) {
 
-    connectedPlayerCount := k.GetSubstationConnectedPlayerCount(ctx, id)
+    connectedPlayerCount := k.SubstationGetConnectedPlayerCount(ctx, id)
 
-    substation := k.GetSubstation(ctx, id)
+    substation, _ := k.GetSubstation(ctx, id)
     load = connectedPlayerCount * substation.PlayerConnectionAllocation
 
     return
@@ -428,7 +433,7 @@ func (k Keeper) SubstationDecrementEnergy(ctx sdk.Context, id uint64, amount uin
 func (k Keeper) SubstationIncrementEnergy(ctx sdk.Context, id uint64, amount uint64) (new uint64) {
     current := k.SubstationGetEnergy(ctx, id)
 
-    new := current + amount
+    new = current + amount
 
 	k.SubstationSetEnergy(ctx, id, new)
 
@@ -457,11 +462,11 @@ func (k Keeper) SubstationGetConnectedPlayerCount(ctx sdk.Context, id uint64) (c
 // Increment the number of players currently sourcing energy from a substation
 //
 // This function does not also update the Substation Load memory values, which must be done separately!
-func (k Keeper) SubstationIncrementConnectedPlayerCount(ctx sdk.Context, id uint64) (count uint64) {
+func (k Keeper) SubstationIncrementConnectedPlayerCount(ctx sdk.Context, id uint64, amount uint64) (count uint64) {
     store := prefix.NewStore(ctx.KVStore(k.storeKey),  types.KeyPrefix(types.SubstationConnectedPlayerCount))
 
     count = k.SubstationGetConnectedPlayerCount(ctx, id)
-    count = count + 1
+    count = count + amount
 
     bz := make([]byte, 8)
     binary.BigEndian.PutUint64(bz, count)
@@ -474,11 +479,11 @@ func (k Keeper) SubstationIncrementConnectedPlayerCount(ctx sdk.Context, id uint
 // Decrement the number of players currently sourcing energy from a substation
 //
 // This function does not also update the Substation Load memory values, which must be done separately!
-func (k Keeper) SubstationDecrementConnectedPlayerCount(ctx sdk.Context, id uint64) (count uint64) {
+func (k Keeper) SubstationDecrementConnectedPlayerCount(ctx sdk.Context, id uint64, amount uint64) (count uint64) {
     store := prefix.NewStore(ctx.KVStore(k.storeKey),  types.KeyPrefix(types.SubstationConnectedPlayerCount))
 
     count = k.SubstationGetConnectedPlayerCount(ctx, id)
-    count = count - 1
+    count = count - amount
 
     bz := make([]byte, 8)
     binary.BigEndian.PutUint64(bz, count)

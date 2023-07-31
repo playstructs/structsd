@@ -2,9 +2,7 @@ package keeper
 
 import (
 	"context"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
-    "strconv"
     sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
