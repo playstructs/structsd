@@ -11,8 +11,8 @@ import (
 func CreateEmptySubstation() (Substation) {
     return Substation{
         PlayerConnectionAllocation: 0,
-        Creator: nil,
-        Owner: nil,
+        Creator: "",
+        Owner: 0,
     }
 }
 

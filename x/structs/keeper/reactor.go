@@ -5,6 +5,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
+	    sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 )
 
@@ -98,7 +99,7 @@ func (k Keeper) ReactorUpdateEnergy(ctx sdk.Context, validatorAddress sdk.ValAdd
 	k.SetReactor(ctx, reactor)
 
 	// Update the connected Substations with the new details
-	k.CascadeReactorAllocationStatus(ctx, reactor)
+	k.CascadeReactorAllocationFailure(ctx, reactor)
 
 	return reactor
 }
@@ -134,7 +135,7 @@ func (k Keeper) ReactorUpdateFromValidator(ctx sdk.Context, validatorAddress sdk
 	k.SetReactor(ctx, reactor)
 
     // Update the connected Substations with the new details
-    k.CascadeReactorAllocationStatus(ctx, reactor)
+	k.CascadeReactorAllocationFailure(ctx, reactor)
 
 	return reactor
 }
@@ -273,35 +274,6 @@ func GetReactorIDFromBytes(bz []byte) uint64 {
 	return binary.BigEndian.Uint64(bz)
 }
 
-// Call all the relevant Allocations to update their status
-func (k Keeper) CascadeReactorAllocationStatus(ctx sdk.Context, reactor types.Reactor) {
-    if (reactor.PreviousStatus != reactor.Status){
-        allocations := k.GetAllReactorAllocations(ctx, reactor.Id)
-        for _, allocation := range allocations {
-            if (reactor.IsOnline()) {
-                k.SetAllocationStatus(ctx, allocation.Id, types.AllocationStatus_Online)
-            } else {
-                k.SetAllocationStatus(ctx, allocation.Id, types.AllocationStatus_Offline)
-            }
-        }
-    }
-}
-
-
-// Call all the relevant Allocations to update their status
-func (k Keeper) CascadeReactorAllocationStatus(ctx sdk.Context, reactor types.Reactor) {
-    if (reactor.PreviousStatus != reactor.Status){
-        allocations := k.GetAllReactorAllocations(ctx, reactor.Id)
-        for _, allocation := range allocations {
-            if (reactor.IsOnline()) {
-                k.SetAllocationStatus(ctx, allocation.Id, types.AllocationStatus_Online)
-            } else {
-                k.SetAllocationStatus(ctx, allocation.Id, types.AllocationStatus_Offline)
-            }
-        }
-    }
-}
-
 
 
 // Iterate through the allocations, starting from oldest, and destroy them until power
@@ -313,13 +285,13 @@ func (k Keeper) CascadeReactorAllocationFailure(ctx sdk.Context, reactor types.R
             break;
         }
 
-        k.AllocationDestroy(ctx, allocation.Id)
+        k.AllocationDestroy(ctx, allocation)
     }
 }
 
 
 
-func (k Keeper) ReactorDecrementLoad(ctx sdk.Context, id uint64, amount uint64) (uint64, error) {
+func (k Keeper) ReactorDecrementLoad(ctx sdk.Context, id uint64, amount uint64) (new uint64, err error) {
 	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.ReactorLoadKey))
 
     current := k.ReactorGetLoad(ctx, id)
@@ -327,14 +299,14 @@ func (k Keeper) ReactorDecrementLoad(ctx sdk.Context, id uint64, amount uint64) 
     if (amount > current) {
         // this really shouldn't happen. Throw an error I guess but yeesh, this is a problem.
     } else {
-        new := current - amount
+        new = current - amount
     }
 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, new)
 	store.Set(GetReactorIDBytes(id), bz)
 
-	return new, nil
+	return
 }
 
 

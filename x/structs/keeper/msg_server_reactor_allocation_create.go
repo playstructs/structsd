@@ -23,12 +23,12 @@ func (k msgServer) ReactorAllocationCreate(goCtx context.Context, msg *types.Msg
 	    Power: 0,
 	    Locked: false,
 	    Creator: msg.Creator,
-	    Owner: msg.Creator,
+	    Controller: msg.Creator,
 	}
 
-    sourceReactor, sourceReactorFound := k.GetReactor(ctx, proposal.SourceId)
+    _, sourceReactorFound := k.GetReactor(ctx, msg.SourceId)
     if (!sourceReactorFound){
-        sourceId := strconv.FormatUint(proposal.SourceId, 10)
+        sourceId := strconv.FormatUint(msg.SourceId, 10)
         return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceNotFound, "source (%s) used for allocation not found", allocation.SourceType.String() + "-" + sourceId)
     }
 
@@ -40,23 +40,22 @@ func (k msgServer) ReactorAllocationCreate(goCtx context.Context, msg *types.Msg
     // Maybe this will change but currently a new allocation can't be created without the
     // available capacity to bring it online. In the future, we could allow for this and it would
     // blow up older allocations until it hits the threshold, but that feels overly destructive.
-    newReactorLoad, incrementLoadError := k.ReactorIncrementLoad(ctx, proposal.SourceId, msg.Power)
+    _, incrementLoadError := k.ReactorIncrementLoad(ctx, msg.SourceId, msg.Power)
     if incrementLoadError != nil {
         return nil, incrementLoadError
     }
 
 	allocation.SetPower(ctx, msg.Power)
-	allocation.SetOwner(ctx, msg.Owner)
+	allocation.SetController(ctx, msg.Controller)
 
     allocationId := k.AppendAllocation(ctx, allocation)
 
-    errEvent = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: allocationId, ObjectType: types.ObjectType_allocation, })
+    errEvent := ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: allocationId, ObjectType: types.ObjectType_allocation, })
     if errEvent != nil {
         return nil, errEvent
     }
 
 	return &types.MsgAllocationCreateResponse{
         AllocationId: allocationId,
-        NewReactorLoad: newReactorLoad,
     }, nil
 }

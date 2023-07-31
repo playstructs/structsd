@@ -39,16 +39,16 @@ message MsgSubstationCreateResponse {
 message MsgSubstationDelete {
   string creator      = 1;
   uint64 substationId = 2;
+  uint64 migrationSubstationId = 3;
 }
 
 message MsgSubstationDeleteResponse {}
 
 
-
 message MsgSubstationAllocationConnect {
   string creator      = 1;
   uint64 allocationId = 2;
-  uint64 destinationId = 3;
+  uint64 destinationSubstationId = 3;
 }
 
 message MsgSubstationAllocationConnectResponse {}
@@ -70,8 +70,7 @@ message MsgSubstationPlayerConnectResponse {}
 
 message MsgSubstationPlayerDisconnect {
   string creator  = 1;
-  uint64 id       = 2;
-  uint64 playerId = 3;
+  uint64 playerId = 2;
 }
 
 message MsgSubstationPlayerDisconnectResponse {}
@@ -79,31 +78,30 @@ message MsgSubstationPlayerDisconnectResponse {}
 
 
 message MsgAllocationCreate {
-  string creator    = 1;
-  string owner = 2;
+  string creator        = 1;
+  string controller     = 2;
   objectType sourceType = 3;
-  uint64 sourceId   = 4;
-  uint64 power = 5;
+  uint64 sourceId       = 4;
+  uint64 power          = 5;
 
-  //uint64 DestinationId
 }
 
-message MsgAllocationCreateResponse {}
+message MsgAllocationCreateResponse {
+    uint64 allocationId = 1;
+}
 
 message MsgSubstationAllocationCreate {
   string creator    = 1;
-  string owner = 2;
-  //uint64 DestinationId   = 2;
+  string controller = 2;
   uint64 sourceId   = 3;
-  uint64 power = 4;
+  uint64 power      = 4;
 
 }
 
 message MsgReactorAllocationCreate {
-  string creator    = 1;
-  string owner = 2;
-  //uint64 DestinationId   = 2;
-  uint64 sourceId   = 3;
-  uint64 power = 4;
+  string creator            = 1;
+  string controller         = 2;
+  uint64 sourceId           = 3;
+  uint64 power              = 4;
 
 }

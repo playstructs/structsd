@@ -23,12 +23,12 @@ func (k msgServer) SubstationAllocationCreate(goCtx context.Context, msg *types.
 	    Power: 0,
 	    Locked: false,
 	    Creator: msg.Creator,
-	    Owner: msg.Creator,
+	    Controller: msg.Creator,
 	}
 
-    sourceSubstation, sourceSubstationFound := k.GetSubstation(ctx, proposal.SourceId)
+    _, sourceSubstationFound := k.GetSubstation(ctx, msg.SourceId)
     if (!sourceSubstationFound){
-        sourceId := strconv.FormatUint(proposal.SourceId, 10)
+        sourceId := strconv.FormatUint(msg.SourceId, 10)
         return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceNotFound, "source (%s) used for allocation not found", allocation.SourceType.String() + "-" + sourceId)
     }
 
@@ -40,18 +40,17 @@ func (k msgServer) SubstationAllocationCreate(goCtx context.Context, msg *types.
     // Maybe this will change but currently a new allocation can't be created without the
     // available capacity to bring it online. In the future, we could allow for this and it would
     // blow up older allocations until it hits the threshold, but that feels overly destructive.
-    newSubstationLoad, incrementLoadError := k.SubstationIncrementAllocationLoad(ctx, proposal.SourceId, msg.Power)
+    _, incrementLoadError := k.SubstationIncrementAllocationLoad(ctx, msg.SourceId, msg.Power)
     if incrementLoadError != nil {
         return nil, incrementLoadError
     }
 
 	allocation.SetPower(ctx, msg.Power)
-	allocation.SetOwner(ctx, msg.Owner)
+	allocation.SetController(ctx, msg.Controller)
 
     allocationId := k.AppendAllocation(ctx, allocation)
 
 	return &types.MsgAllocationCreateResponse{
         AllocationId: allocationId,
-        NewReactorLoad: newSubstationLoad,
     }, nil
 }

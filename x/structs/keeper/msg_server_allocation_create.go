@@ -15,11 +15,11 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
      * just have a generic source variable that can switch between types
      *
      */
-    switch allocation.SourceType {
+    switch msg.SourceType {
         case types.ObjectType_substation:
             return k.SubstationAllocationCreate(goCtx, &types.MsgSubstationAllocationCreate{
                   Creator: msg.Creator,
-                  Owner: msg.Owner,
+                  Controller: msg.Controller,
                   SourceId: msg.SourceId,
                   Power: msg.Power,
             })
@@ -27,7 +27,7 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
         case types.ObjectType_reactor:
             return k.ReactorAllocationCreate(goCtx, &types.MsgReactorAllocationCreate{
                   Creator: msg.Creator,
-                  Owner: msg.Owner,
+                  Controller: msg.Controller,
                   SourceId: msg.SourceId,
                   Power: msg.Power,
             })
@@ -39,5 +39,6 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
            return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceTypeMismatch, "Source type (%s) mismatch somehow ", msg.SourceType.String())
     }
 
+    return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceTypeMismatch, "Source type (%s) mismatch somehow ", msg.SourceType.String())
 
 }

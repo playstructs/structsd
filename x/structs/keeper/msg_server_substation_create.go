@@ -16,16 +16,16 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
 	}
 
 	substation := types.CreateEmptySubstation()
-	substation.SetCreator(ctx, msg.Creator)
+	substation.SetCreator(msg.Creator)
 
 
 	// TODO Have this build the player object and pass that instead
 	// this will enforce the check that a player actually exists before it's
 	// given ownership over something.
-	substation.SetOwner(ctx, msg.Owner)
+	substation.SetOwner(msg.Owner)
 
 
-	substation.SetPlayerConnectionAllocation(ctx, msg.PlayerConnectionAllocation)
+	substation.SetPlayerConnectionAllocation(msg.PlayerConnectionAllocation)
 
     newSubstationId := k.AppendSubstation(ctx, substation)
 

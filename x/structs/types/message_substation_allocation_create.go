@@ -9,11 +9,14 @@ const TypeMsgSubstationAllocationCreate = "substation_allocation_create"
 
 var _ sdk.Msg = &MsgSubstationAllocationCreate{}
 
-func NewMsgSubstationAllocationCreate(creator string, allocationId uint64, decision bool) *MsgSubstationAllocationCreate {
-	return &MsgReactorAllocationActivate{
-		Creator:      creator,
-		AllocationId: allocationId,
-		Decision:     decision,
+
+
+func NewMsgSubstationAllocationCreate(creator string, controller string, sourceId uint64, power uint64) *MsgSubstationAllocationCreate {
+	return &MsgSubstationAllocationCreate{
+		Creator:    creator,
+		Controller: controller,
+		SourceId:   sourceId,
+		Power:      power,
 	}
 }
 

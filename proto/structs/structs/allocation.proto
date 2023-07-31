@@ -16,7 +16,7 @@ message Allocation {
   uint64 power = 5;
 
   string creator = 6;
-  string owner = 7;
+  string controller = 7;
 
   bool locked = 8;
 

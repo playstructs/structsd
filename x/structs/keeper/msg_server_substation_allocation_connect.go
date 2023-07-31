@@ -21,17 +21,17 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
 	allocation, allocationFound  := k.GetAllocation(ctx, msg.AllocationId)
     if (!allocationFound){
         allocationId := strconv.FormatUint(msg.AllocationId, 10)
-        return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationNotFound, "allocation (%s) not found", allocationId)
+        return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationNotFound, "allocation (%s) not found", allocationId)
     }
 
 
-	substation, substationFound  := k.GetSubstation(ctx, msg.DestinationId)
+	substation, substationFound  := k.GetSubstation(ctx, msg.DestinationSubstationId)
     if (!substationFound){
         substationId := strconv.FormatUint(allocation.DestinationId, 10)
         return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrSubstationNotFound, "destination substation (%s) not found", substationId)
     }
 
-    if (substation.Id == msg.DestinationId){
+    if (substation.Id == msg.DestinationSubstationId){
         substationId := strconv.FormatUint(allocation.DestinationId, 10)
         return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationConnectionChangeImpossible, "destination substation (%s) cannot change to same destination", substationId)
     }
@@ -39,15 +39,15 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
 
     // Check to see if there is already a destination Substation using this.
     // Disconnect it if so
-    if (substation.DestinationId > 0) {
-        newEnergy := k.SubstationDecrementEnergy(ctx, substation.DestinationId, allocation.Power)
-        k.CascadeSubstationAllocationFailure(ctx, substation)
+    if (allocation.DestinationId > 0) {
+        _ = k.SubstationDecrementEnergy(ctx, allocation.DestinationId, allocation.Power)
+        k.CascadeSubstationAllocationFailure(ctx, allocation.DestinationId)
     }
 
 
-    newEnergy := k.SubstationIncrementEnergy(ctx, substation.Id, allocation.Power)
+    _ = k.SubstationIncrementEnergy(ctx, substation.Id, allocation.Power)
 
-    allocation.Connect(ctx, msg.DestinationId)
+    allocation.Connect(ctx, msg.DestinationSubstationId)
     k.SetAllocation(ctx, allocation)
 
 	return &types.MsgSubstationAllocationConnectResponse{}, nil

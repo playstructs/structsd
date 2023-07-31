@@ -26,16 +26,9 @@ func (k msgServer) SubstationAllocationDisconnect(goCtx context.Context, msg *ty
     }
 
 
-	substation, substationFound  := k.GetSubstation(ctx, allocation.DestinationId)
-    if (!substationFound){
-        // Really shouldn't happen
-        substationId := strconv.FormatUint(allocation.DestinationId, 10)
-        return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrSubstationNotFound, "destination substation (%s) not found", substationId)
-    }
 
-
-    newEnergy := k.SubstationDecrementEnergy(ctx, substation.Id, allocation.Power)
-    k.CascadeSubstationAllocationFailure(ctx, substation)
+    _ = k.SubstationDecrementEnergy(ctx, allocation.DestinationId, allocation.Power)
+    k.CascadeSubstationAllocationFailure(ctx, allocation.DestinationId)
 
     allocation.Disconnect()
     k.SetAllocation(ctx, allocation)

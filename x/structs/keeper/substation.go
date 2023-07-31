@@ -113,30 +113,7 @@ func GetSubstationIDFromBytes(bz []byte) uint64 {
 // UpdateSubstationStatus(ctx sdk.Context)
 // Run at the EndBlock to update all Substations for the next block
 func (k Keeper) UpdateSubstationStatus(ctx sdk.Context) {
-    substations := k.GetAllSubstation(ctx)
-    var allocations []types.AllocationPackage
 
-    var originalPower uint64 = 0;
-
-    for _, substation := range substations {
-        allocations = k.GetAllSubstationAllocationPackagesIn(ctx, substation.Id)
-        originalPower = substation.Power
-        substation.ResetPower()
-
-        for _, allocationPackage := range allocations {
-
-            if (allocationPackage.Status == types.AllocationStatus_Online) {
-               substation.ApplyAllocationDestination(allocationPackage.Allocation)
-            }
-        }
-
-
-        if (substation.Power != originalPower) {
-            k.SetSubstation(ctx, substation)
-        }
-    }
-
-    //k.AppendSubstation(ctx, types.Substation{})
 }
 
 
@@ -148,16 +125,16 @@ func (k Keeper) UpdateSubstationStatus(ctx sdk.Context) {
 // This function can end up operating in
 // a recursive loop as Allocations effect
 // other Substations
-func (k Keeper) CascadeSubstationAllocationFailure(ctx sdk.Context, substation types.Substation) {
+func (k Keeper) CascadeSubstationAllocationFailure(ctx sdk.Context, substationId uint64) {
 
     // do a check first before spending the computation resources to load the allocation list
-    if (k.SubstationGetEnergy(ctx, substation.Id) > k.SubstationGetLoad(ctx, substation.Id) ) {
+    if (k.SubstationGetEnergy(ctx, substationId) > k.SubstationGetLoad(ctx, substationId) ) {
         return
     }
 
-    allocations := k.GetAllSubstationAllocationIn(ctx, substation.Id)
+    allocations := k.GetAllSubstationAllocationIn(ctx, substationId)
     for _, allocation := range allocations {
-        if ( k.SubstationGetEnergy(ctx, substation.Id) > k.SubstationGetLoad(ctx, substation.Id) ) {
+        if ( k.SubstationGetEnergy(ctx, substationId) > k.SubstationGetLoad(ctx, substationId) ) {
             break;
         }
 
@@ -460,7 +437,7 @@ func (k Keeper) SubstationIncrementEnergy(ctx sdk.Context, id uint64, amount uin
 
 
 // return the number of players currently sourcing energy from a substation
-func (k Keeper) SubstationGetConnectedPlayerCount(ctx sdk.Context, id uint64) (count) {
+func (k Keeper) SubstationGetConnectedPlayerCount(ctx sdk.Context, id uint64) (count uint64) {
     store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationConnectedPlayerCount))
 
     bz := store.Get(GetSubstationIDBytes(id))
@@ -480,7 +457,7 @@ func (k Keeper) SubstationGetConnectedPlayerCount(ctx sdk.Context, id uint64) (c
 // Increment the number of players currently sourcing energy from a substation
 //
 // This function does not also update the Substation Load memory values, which must be done separately!
-func (k Keeper) SubstationIncrementConnectedPlayerCount(ctx sdk.Context, id uint64) (count) {
+func (k Keeper) SubstationIncrementConnectedPlayerCount(ctx sdk.Context, id uint64) (count uint64) {
     store := prefix.NewStore(ctx.KVStore(k.storeKey),  types.KeyPrefix(types.SubstationConnectedPlayerCount))
 
     count = k.SubstationGetConnectedPlayerCount(ctx, id)
@@ -497,7 +474,7 @@ func (k Keeper) SubstationIncrementConnectedPlayerCount(ctx sdk.Context, id uint
 // Decrement the number of players currently sourcing energy from a substation
 //
 // This function does not also update the Substation Load memory values, which must be done separately!
-func (k Keeper) SubstationDecrementConnectedPlayerCount(ctx sdk.Context, id uint64) (count) {
+func (k Keeper) SubstationDecrementConnectedPlayerCount(ctx sdk.Context, id uint64) (count uint64) {
     store := prefix.NewStore(ctx.KVStore(k.storeKey),  types.KeyPrefix(types.SubstationConnectedPlayerCount))
 
     count = k.SubstationGetConnectedPlayerCount(ctx, id)

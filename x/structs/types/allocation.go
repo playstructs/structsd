@@ -10,22 +10,28 @@ func (a *Allocation) SetPower(ctx sdk.Context, newPower uint64) (error) {
 
     a.Power = newPower
 
-    //TODO: Change into a parameter
-    a.TransmissionLoss = newPower / 4
+    return nil
+}
+
+
+func (a *Allocation) SetController(ctx sdk.Context, controller string) (error) {
+
+    a.Controller = controller
 
     return nil
 }
 
-func (a *Allocation) Disconnect(ctx sdk.Context) (error) {
 
-    a.DestinationId = nil
+func (a *Allocation) Disconnect() (error) {
+
+    a.DestinationId = 0
 
     return nil
 }
 
-func (a *Allocation) Connect(ctx sdk.Context, destinationId uint64) (error) {
+func (a *Allocation) Connect(ctx sdk.Context, destinationSubstationId uint64) (error) {
 
-    a.DestinationId = destinationId
+    a.DestinationId = destinationSubstationId
 
     return nil
 }
@@ -41,7 +47,7 @@ func (a *Allocation) Connect(ctx sdk.Context, destinationId uint64) (error) {
  * Use this function anytime a user is providing the objectType of the source objectType
  */
 func IsValidAllocationConnectionType(objectType ObjectType) (bool) {
-	for _, a := range []ObjectType{ObjectType_reactor, ObjectType_struct} {
+	for _, a := range []ObjectType{ObjectType_reactor, ObjectType_struct, ObjectType_substation} {
 		if a == objectType {
 			return true
 		}
