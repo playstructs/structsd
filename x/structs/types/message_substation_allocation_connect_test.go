@@ -22,7 +22,7 @@ func TestMsgSubstationAllocationConnect_ValidateBasic(t *testing.T) {
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: MsgSubstationAllocationConnect
+			msg: MsgSubstationAllocationConnect{
 				Creator: sample.AccAddress(),
 			},
 		},

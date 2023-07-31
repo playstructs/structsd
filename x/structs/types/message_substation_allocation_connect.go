@@ -5,7 +5,7 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const TypeMsgSubstationAllocationConnect= "substation_allocation_connect"
+const TypeMsgSubstationAllocationConnect = "substation_allocation_connect"
 
 var _ sdk.Msg = &MsgSubstationAllocationConnect{}
 
