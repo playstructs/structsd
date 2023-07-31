@@ -10,7 +10,7 @@ const TypeMsgReactorAllocationCreate = "reactor_allocation_create"
 var _ sdk.Msg = &MsgReactorAllocationCreate{}
 
 func NewMsgReactorAllocationCreate(creator string, allocationId uint64, decision bool) *MsgReactorAllocationCreate {
-	return &MsgReactorAllocationActivate{
+	return &MsgReactorAllocationCreate{
 		Creator:      creator,
 		AllocationId: allocationId,
 		Decision:     decision,

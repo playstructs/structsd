@@ -27,12 +27,14 @@ service Msg {
 
 
 message MsgSubstationCreate {
-  string creator             = 1;
-  string permissionsOverride = 2;
-  string connect             = 3;
+  string creator  = 1;
+  uint64 owner    = 2;
+  uint64 playerConnectionAllocation = 3;
 }
 
-message MsgSubstationCreateResponse {}
+message MsgSubstationCreateResponse {
+    uint64 substationId = 1;
+}
 
 message MsgSubstationDelete {
   string creator      = 1;

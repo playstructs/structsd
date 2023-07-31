@@ -218,7 +218,7 @@ func (k Keeper) SubstationIncrementAllocationLoad(ctx sdk.Context, id uint64, am
 // For use when a player account is being disconnected and the power is no longer applied to the load
 // of a substation.
 //
-// Updates the Conencted Player Load and Total Load memory values
+// Updates the Connected Player Load and Total Load memory values
 func (k Keeper) SubstationDecrementConnectedPlayerLoad(ctx sdk.Context, id uint64, amount uint64) (uint64, error) {
 
     count = SubstationDecrementConnectedPlayerCount(ctx, id, amount)

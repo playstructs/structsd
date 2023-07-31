@@ -7,16 +7,6 @@ import (
 	"structs/x/structs/types"
 )
 
-/*
-message MsgSubstationCreate {
-  string creator             = 1;
-  string permissionsOverride = 2;
-  string connect             = 3;
-}
-
-message MsgSubstationCreateResponse {}
-*/
-
 func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstationCreate) (*types.MsgSubstationCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
@@ -26,8 +16,18 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
 	}
 
 	substation := types.CreateEmptySubstation()
+	substation.SetCreator(ctx, msg.Creator)
 
-    k.AppendSubstation(ctx, substation)
 
-	return &types.MsgSubstationCreateResponse{}, nil
+	// TODO Have this build the player object and pass that instead
+	// this will enforce the check that a player actually exists before it's
+	// given ownership over something.
+	substation.SetOwner(ctx, msg.Owner)
+
+
+	substation.SetPlayerConnectionAllocation(ctx, msg.PlayerConnectionAllocation)
+
+    newSubstationId := k.AppendSubstation(ctx, substation)
+
+	return &types.MsgSubstationCreateResponse{SubstationId: newSubstationId}, nil
 }

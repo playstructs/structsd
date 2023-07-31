@@ -10,8 +10,9 @@ option go_package = "structs/x/structs/types";
 message Substation {
     uint64 id = 1;
 
-    uint64 player_connection_allocation = 2;
+    uint64 playerConnectionAllocation = 2;
 
-    string owner = 3;
+    uint64 owner = 3;
+    string creator = 4;
 }
 

@@ -6,7 +6,7 @@ import (
 )
 
 
-func (a *Allocation) SetPower(ctx sdk.Context, uint64 newPower) (error) {
+func (a *Allocation) SetPower(ctx sdk.Context, newPower uint64) (error) {
 
     a.Power = newPower
 
