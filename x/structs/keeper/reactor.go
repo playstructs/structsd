@@ -32,8 +32,6 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
         reactor.SetValidator(validatorAddress.String())
         k.SetReactorValidatorBytes(ctx, reactor.Id, validatorAddress.String())
 
-
-
         /* TODO: Permissions
          *
          * Create permissions based on the details field.
@@ -77,17 +75,8 @@ func (k Keeper) ReactorUpdateEnergy(ctx sdk.Context, validatorAddress sdk.ValAdd
     reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.String())
     if (reactorBytesFound) {
          reactor, _  = k.GetReactorByBytes(ctx, reactorBytes, false)
-    }  /*else {
-        Build the initial Reactor object
-        reactor = types.CreateEmptyReactor()
-        reactor.SetValidator(validator)
-        reactor.SetId(k.GetReactorCount(ctx))
-        k.SetReactorCount(ctx, reactor.Id + 1)
-
-        k.SetReactorValidatorBytes(ctx, reactor.Id, reactor.Validator)
-
     }
-*/
+
     /* Sync Energy Levels
      *
      * Set the initial power level of the Reactor based on the
@@ -128,15 +117,8 @@ func (k Keeper) ReactorUpdateFromValidator(ctx sdk.Context, validatorAddress sdk
     reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.String())
     if (reactorBytesFound) {
          reactor, _  = k.GetReactorByBytes(ctx, reactorBytes, false)
-    } /*else {
-         Build the initial Reactor object
-        reactor = types.CreateEmptyReactor()
-        reactor.SetValidator(validator)
-        reactor.SetId(k.GetReactorCount(ctx))
-        k.SetReactorCount(ctx, reactor.Id + 1)
-        k.SetReactorValidatorBytes(ctx, reactor.Id, reactor.Validator)
     }
-*/
+
     /* Sync Energy Levels
      *
      * May as well update power levels while we are here

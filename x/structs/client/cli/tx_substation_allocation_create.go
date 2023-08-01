@@ -44,7 +44,7 @@ func CmdSubstationAllocationCreate() *cobra.Command {
                 argController = clientCtx.GetFromAddress().String()
             }
 
-			msg := types.NewMsgReactorAllocationCreate(
+			msg := types.NewMsgSubstationAllocationCreate(
 				clientCtx.GetFromAddress().String(),
 				argController,
 				argSourceId,

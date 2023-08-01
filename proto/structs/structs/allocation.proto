@@ -21,8 +21,3 @@ message Allocation {
   bool locked = 8;
 
 }
-
-message AllocationPackage {
-    Allocation allocation = 1;
-    uint64 status = 2;
-}

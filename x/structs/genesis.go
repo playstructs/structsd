@@ -59,7 +59,6 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.SubstationCount = k.GetSubstationCount(ctx)
 	genesis.AllocationList = k.GetAllAllocation(ctx)
 	genesis.AllocationCount = k.GetAllocationCount(ctx)
-	genesis.AllocationStatus = k.GetAllOnlineAllocation(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis
