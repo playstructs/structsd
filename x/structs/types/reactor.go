@@ -7,57 +7,23 @@ import (
 
 func CreateEmptyReactor() (Reactor) {
     return Reactor{
-        Power: 0,
-        Load: 0,
-        PreviousStatus: Reactor_ONLINE,
-        Status: Reactor_OFFLINE,
+        Energy: 0,
+        Validator: "",
     }
 }
 
-func (reactor *Reactor) SetValidator(validator types.Validator) (error) {
-	reactor.Validator =  validator.OperatorAddress
+func (reactor *Reactor) SetValidator(validatorAddress string) (error) {
+	reactor.Validator =  validatorAddress
 	return nil
 }
 
+func (reactor *Reactor) SetId(id uint64) {
+	reactor.Id =  id
+}
+
+
+// Sets the variable within the object but does not update the memory stores
 func (reactor *Reactor) SetEnergy(validator types.Validator) (error) {
-	reactor.Power =  validator.Tokens.Uint64()
-	reactor.CheckStatus()
+	reactor.Energy = validator.Tokens.Uint64()
 	return nil
-}
-
-func (reactor *Reactor) CheckStatus() {
-    if (reactor.Load > reactor.Power) {
-        _ = reactor.SetStatusOverload()
-    } else {
-        _ = reactor.SetStatusOnline()
-    }
-}
-
-func (reactor *Reactor) SetStatusOnline() (error) {
-    reactor.PreviousStatus = reactor.Status
-    reactor.Status = Reactor_ONLINE
-    return nil
-}
-
-func (reactor *Reactor) SetStatusOverload() (error) {
-    reactor.PreviousStatus = reactor.Status
-    reactor.Status = Reactor_OVERLOAD
-    return nil
-}
-
-func (reactor *Reactor) IsOnline() bool {
-    return reactor.Status == Reactor_ONLINE
-}
-
-
-func (reactor *Reactor) ApplyAllocationSource(allocation Allocation) (error) {
-    reactor.Load = reactor.Load + (allocation.Power +  allocation.TransmissionLoss)
-    reactor.CheckStatus()
-    return nil;
-}
-
-func (reactor *Reactor) RemoveAllocationSource(allocation Allocation) (error) {
-    reactor.Load = reactor.Load - (allocation.Power + allocation.TransmissionLoss)
-    reactor.CheckStatus()
-    return nil;
 }

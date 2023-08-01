@@ -15,11 +15,9 @@ message Allocation {
 
   uint64 power = 5;
 
-  uint64 transmissionLoss = 6 ;
-  
-}
+  string creator = 6;
+  string controller = 7;
 
-message AllocationPackage {
-    Allocation allocation = 1;
-    uint64 status = 2;
+  bool locked = 8;
+
 }

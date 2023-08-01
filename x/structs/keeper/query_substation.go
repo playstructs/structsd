@@ -29,6 +29,10 @@ func (k Keeper) SubstationAll(goCtx context.Context, req *types.QueryAllSubstati
 			return err
 		}
 
+        substation.Load = k.SubstationGetLoad(ctx, substation.Id)
+        substation.Energy = k.SubstationGetEnergy(ctx, substation.Id)
+        substation.ConnectedPlayerCount = k.SubstationGetConnectedPlayerCount(ctx, substation.Id)
+
 		substations = append(substations, substation)
 		return nil
 	})
@@ -46,7 +50,7 @@ func (k Keeper) Substation(goCtx context.Context, req *types.QueryGetSubstationR
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	substation, found := k.GetSubstation(ctx, req.Id)
+	substation, found := k.GetSubstation(ctx, req.Id, true)
 	if !found {
 		return nil, sdkerrors.ErrKeyNotFound
 	}

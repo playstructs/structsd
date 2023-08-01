@@ -15,7 +15,6 @@ func DefaultGenesis() *GenesisState {
 		ReactorList:            []Reactor{},
 		SubstationList:         []Substation{},
 		AllocationList:         []Allocation{},
-		AllocationProposalList: []AllocationProposal{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -63,18 +62,7 @@ func (gs GenesisState) Validate() error {
 		}
 		allocationIdMap[elem.Id] = true
 	}
-	// Check for duplicated ID in allocationProposal
-	allocationProposalIdMap := make(map[uint64]bool)
-	allocationProposalCount := gs.GetAllocationProposalCount()
-	for _, elem := range gs.AllocationProposalList {
-		if _, ok := allocationProposalIdMap[elem.Id]; ok {
-			return fmt.Errorf("duplicated id for allocationProposal")
-		}
-		if elem.Id >= allocationProposalCount {
-			return fmt.Errorf("allocationProposal id should be lower or equal than the last id")
-		}
-		allocationProposalIdMap[elem.Id] = true
-	}
+
 	// this line is used by starport scaffolding # genesis/types/validate
 
 	return gs.Params.Validate()

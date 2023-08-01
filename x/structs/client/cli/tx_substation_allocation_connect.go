@@ -13,17 +13,18 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdReactorAllocationActivate() *cobra.Command {
+func CmdSubstationAllocationConnect() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "reactor-allocation-activate [allocation-id] [decision]",
-		Short: "Broadcast message reactor-allocation-activate",
+		Use:   "substation-allocation-connect [allocation-id] [destination-substation-id]",
+		Short: "Broadcast message substation-allocation-connect",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argAllocationId, err := cast.ToUint64E(args[0])
 			if err != nil {
 				return err
 			}
-			argDecision, err := cast.ToBoolE(args[1])
+
+			argDestinationSubstationId, err := cast.ToUint64E(args[1])
 			if err != nil {
 				return err
 			}
@@ -33,10 +34,10 @@ func CmdReactorAllocationActivate() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgReactorAllocationActivate(
+			msg := types.NewMsgSubstationAllocationConnect(
 				clientCtx.GetFromAddress().String(),
 				argAllocationId,
-				argDecision,
+				argDestinationSubstationId,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

@@ -11,6 +11,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	// Set all the reactor
 	for _, elem := range genState.ReactorList {
 		k.SetReactor(ctx, elem)
+		k.SetReactorValidatorBytes(ctx, elem.Id, elem.Validator)
 	}
 
 	// Set reactor count
@@ -29,18 +30,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 
 	// Set allocation count
 	k.SetAllocationCount(ctx, genState.AllocationCount)
-	// Set all the allocationProposal
-	for _, elem := range genState.AllocationProposalList {
-		k.SetAllocationProposal(ctx, elem)
-	}
 
-	// Set allocationProposal count
-	k.SetAllocationProposalCount(ctx, genState.AllocationProposalCount)
-
-	// Set Allocation Status to Online where appropriate
-    for _, elem := range genState.AllocationStatus {
-        k.SetAllocationStatus(ctx, elem, types.AllocationStatus_Online)
-    }
 
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetPort(ctx, genState.PortId)
@@ -63,15 +53,12 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.Params = k.GetParams(ctx)
 
 	genesis.PortId = k.GetPort(ctx)
-	genesis.ReactorList = k.GetAllReactor(ctx)
+	genesis.ReactorList = k.GetAllReactor(ctx, false)
 	genesis.ReactorCount = k.GetReactorCount(ctx)
-	genesis.SubstationList = k.GetAllSubstation(ctx)
+	genesis.SubstationList = k.GetAllSubstation(ctx, false)
 	genesis.SubstationCount = k.GetSubstationCount(ctx)
 	genesis.AllocationList = k.GetAllAllocation(ctx)
 	genesis.AllocationCount = k.GetAllocationCount(ctx)
-	genesis.AllocationProposalList = k.GetAllAllocationProposal(ctx)
-	genesis.AllocationProposalCount = k.GetAllocationProposalCount(ctx)
-	genesis.AllocationStatus = k.GetAllOnlineAllocation(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

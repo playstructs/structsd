@@ -2,7 +2,6 @@ package cli
 
 import (
 	"strconv"
-	"strings"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -11,46 +10,44 @@ import (
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
 
-
+	//sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 var _ = strconv.Itoa(0)
 
-func CmdSubstationAllocationPropose() *cobra.Command {
+func CmdSubstationAllocationCreate() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "substation-allocation-propose [destiantion-id] [source-type] [source-id] [power]",
-		Short: "Broadcast message substation-allocation-propose",
-		Args:  cobra.ExactArgs(4),
+		Use:   "substation-allocation-create [source-id] [power] [controller]",
+		Short: "Broadcast message substation-allocation-create",
+		Args:  cobra.RangeArgs(2, 3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argDestinationId, err := cast.ToUint64E(args[0])
+
+			argSourceId, err := cast.ToUint64E(args[0])
 			if err != nil {
 				return err
 			}
 
-			argSourceType := types.ObjectType_enum[strings.ToLower(args[1])]
-
-			argSourceId, err := cast.ToUint64E(args[2])
+			argPower, err := cast.ToUint64E(args[1])
 			if err != nil {
 				return err
 			}
-
-			argPower, err := cast.ToUint64E(args[3])
-            if err != nil {
-                return err
-            }
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
+            var argController string
+            if (len(args) > 2) {
+                argController = args[2]
+            } else {
+                argController = clientCtx.GetFromAddress().String()
+            }
 
-
-			msg := types.NewMsgSubstationAllocationPropose(
+			msg := types.NewMsgSubstationAllocationCreate(
 				clientCtx.GetFromAddress().String(),
-				argSourceType,
+				argController,
 				argSourceId,
-				argDestinationId,
 				argPower,
 			)
 			if err := msg.ValidateBasic(); err != nil {

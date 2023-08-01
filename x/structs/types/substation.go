@@ -10,69 +10,37 @@ import (
 
 func CreateEmptySubstation() (Substation) {
     return Substation{
-        Power: 0,
-        Load: 0,
+        PlayerConnectionAllocation: 0,
+        Creator: "",
+        Owner: 0,
     }
 }
 
-func (substation *Substation) ResetPower() {
-    substation.Power = 0;
+
+
+// TODO: Once the player construct is in place, change this section
+// so that it receives a Player object. This will enforce that the
+// player account exists.
+func (substation *Substation) SetOwner(owner uint64) {
+    substation.Owner = owner;
 }
 
-func (substation *Substation) ApplyAllocationSource(allocation *Allocation) (error) {
-    substation.Load = substation.Load + (allocation.Power + allocation.TransmissionLoss)
-    return nil;
+
+
+func (substation *Substation) SetCreator(creator string) {
+    substation.Creator = creator;
 }
 
-func (substation *Substation) RemoveAllocationSource(allocation Allocation) (error) {
-    substation.Load = substation.Load - (allocation.Power + allocation.TransmissionLoss)
-    return nil;
+
+// Only sets the internal variable. Does not update any of the energy draw memory values (which would need to be rebuilt).
+func (substation *Substation) SetPlayerConnectionAllocation(playerConnectionAllocation uint64) {
+    substation.PlayerConnectionAllocation = playerConnectionAllocation;
 }
 
-func (substation *Substation) ApplyAllocationDestination(allocation *Allocation) (error) {
-    substation.Power = substation.Power + allocation.Power
-    return nil;
-}
 
-func (substation *Substation) RemoveAllocationDestination(allocation Allocation) (error) {
-    substation.Power = substation.Power - allocation.Power
-    return nil;
-}
 
-func (substation *Substation) CheckStatus() (Substation_Status) {
-    if (substation.Power >= substation.Load) {
-        return Substation_ONLINE
-    } else {
-        return Substation_OFFLINE
-    }
-
-}
-
+// TODO anything in this function
 func (substation *Substation) IsOnline(ctx sdk.Context) (bool, error) {
-    if (substation.Load == 0) {
-        return true, nil
-    }
-
-/*
-    var loadCheck uint64 = 0;
-
-    if (len(substation.AllocationIn) == 0){
-        substationIdString := strconv.FormatUint(substation.Id, 10)
-        return false, sdkerrors.Wrapf(ErrSubstationHasNoPowerSource, "substation (%s) has no power sources", substationIdString)
-    }
-
-    if (loadCheck != 0) {
-    }
-
-*/
-/*
-
-
-    // Order them by size
-        // At least, this would be smart to do but we're going to ignore it for now
-
-
-*/
 
     return true, nil
 

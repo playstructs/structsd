@@ -9,17 +9,14 @@ option go_package = "structs/x/structs/types";
 
 message Substation {
     uint64 id = 1;
-    uint64 power = 2;
 
-    uint64 load = 3 ;
+    uint64 playerConnectionAllocation = 2;
 
-    enum Status {
-      ONLINE          = 0;
-      OFFLINE         = 7;
-      DECOMMISSIONED  = 24;
-      OVERLOAD        = 32;
-    }
+    uint64 owner = 3;
+    string creator = 4;
 
-    Status status = 5;
+    uint64 load = 5;
+    uint64 energy = 6;
+    uint64 connectedPlayerCount = 7;
 }
 

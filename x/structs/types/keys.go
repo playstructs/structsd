@@ -22,6 +22,9 @@ const (
 
 	// PortID is the default port id that module binds to
 	PortID = "structs"
+
+	// Starting value for Keeper IDs
+	KeeperStartValue = 1
 )
 
 var (
@@ -37,12 +40,22 @@ const (
 	ReactorKey              = "Reactor/value/"
 	ReactorCountKey         = "Reactor/count/"
 	ReactorValidatorKey     = "Reactor/validator/"
+	ReactorCapacityKey      = "Reactor/capacity/"
+	ReactorLoadKey          = "Reactor/load/"
+	ReactorEnergyKey        = "Reactor/energy/"
 )
 
 const (
 	SubstationKey               = "Substation/value/"
 	SubstationCountKey          = "Substation/count/"
 	SubstationStatusKey         = "Substation/status/"
+
+    SubstationLoadKey                   = "Substation/load/"
+    SubstationAllocationLoadKey         = "Substation/allocationLoad/"
+    SubstationConnectedPlayerLoadKey    = "Substation/connectedPlayerLoad/"
+    SubstationConnectedPlayerCount     = "Substation/connectedPlayerCount/"
+
+    SubstationEnergyKey                 = "Substation/energy/"
 
 )
 
@@ -74,4 +87,5 @@ var ObjectType_enum = map[string]ObjectType{
 	"reactor":    ObjectType_reactor,
 	"substation": ObjectType_substation,
 	"struct":     ObjectType_struct,
+	"allocation": ObjectType_allocation,
 }

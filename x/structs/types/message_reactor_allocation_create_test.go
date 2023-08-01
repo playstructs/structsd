@@ -8,21 +8,21 @@ import (
 	"structs/testutil/sample"
 )
 
-func TestMsgReactorAllocationActivate_ValidateBasic(t *testing.T) {
+func TestMsgReactorAllocationCreate_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgReactorAllocationActivate
+		msg  MsgReactorAllocationCreate
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgReactorAllocationActivate{
+			msg: MsgReactorAllocationCreate{
 				Creator: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: MsgReactorAllocationActivate{
+			msg: MsgReactorAllocationCreate{
 				Creator: sample.AccAddress(),
 			},
 		},

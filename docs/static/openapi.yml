@@ -45259,7 +45259,7 @@ paths:
                         }
       tags:
         - Query
-  /structs/structs/allocation:
+  /structs/allocation:
     get:
       operationId: StructsStructsAllocationAll
       responses:
@@ -45285,6 +45285,7 @@ paths:
                         - reactor
                         - substation
                         - struct
+                        - allocation
                       default: faction
                     sourceId:
                       type: string
@@ -45295,9 +45296,12 @@ paths:
                     power:
                       type: string
                       format: uint64
-                    transmissionLoss:
+                    creator:
                       type: string
-                      format: uint64
+                    controller:
+                      type: string
+                    locked:
+                      type: boolean
               pagination:
                 type: object
                 properties:
@@ -45408,7 +45412,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /structs/structs/allocation/{id}:
+  /structs/allocation/{id}:
     get:
       summary: Queries a list of Allocation items.
       operationId: StructsStructsAllocation
@@ -45433,6 +45437,7 @@ paths:
                       - reactor
                       - substation
                       - struct
+                      - allocation
                     default: faction
                   sourceId:
                     type: string
@@ -45443,9 +45448,12 @@ paths:
                   power:
                     type: string
                     format: uint64
-                  transmissionLoss:
+                  creator:
                     type: string
-                    format: uint64
+                  controller:
+                    type: string
+                  locked:
+                    type: boolean
         default:
           description: An unexpected error response.
           schema:
@@ -45472,209 +45480,7 @@ paths:
           format: uint64
       tags:
         - Query
-  /structs/structs/allocation_proposal:
-    get:
-      operationId: StructsStructsAllocationProposalAll
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              AllocationProposal:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: string
-                      format: uint64
-                    sourceType:
-                      type: string
-                      enum:
-                        - faction
-                        - player
-                        - planet
-                        - reactor
-                        - substation
-                        - struct
-                      default: faction
-                    sourceId:
-                      type: string
-                      format: uint64
-                    destinationId:
-                      type: string
-                      format: uint64
-                    power:
-                      type: string
-                      format: uint64
-              pagination:
-                type: object
-                properties:
-                  next_key:
-                    type: string
-                    format: byte
-                    description: |-
-                      next_key is the key to be passed to PageRequest.key to
-                      query the next page most efficiently. It will be empty if
-                      there are no more results.
-                  total:
-                    type: string
-                    format: uint64
-                    title: >-
-                      total is total number of results available if
-                      PageRequest.count_total
-
-                      was set, its value is undefined otherwise
-                description: >-
-                  PageResponse is to be embedded in gRPC response messages where
-                  the
-
-                  corresponding request message has used PageRequest.
-
-                   message SomeResponse {
-                           repeated Bar results = 1;
-                           PageResponse page = 2;
-                   }
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: pagination.key
-          description: |-
-            key is a value returned in PageResponse.next_key to begin
-            querying the next page most efficiently. Only one of offset or key
-            should be set.
-          in: query
-          required: false
-          type: string
-          format: byte
-        - name: pagination.offset
-          description: >-
-            offset is a numeric offset that can be used when key is unavailable.
-
-            It is less efficient than using key. Only one of offset or key
-            should
-
-            be set.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.limit
-          description: >-
-            limit is the total number of results to be returned in the result
-            page.
-
-            If left empty it will default to a value to be set by each app.
-          in: query
-          required: false
-          type: string
-          format: uint64
-        - name: pagination.count_total
-          description: >-
-            count_total is set to true  to indicate that the result set should
-            include
-
-            a count of the total number of items available for pagination in
-            UIs.
-
-            count_total is only respected when offset is used. It is ignored
-            when key
-
-            is set.
-          in: query
-          required: false
-          type: boolean
-        - name: pagination.reverse
-          description: >-
-            reverse is set to true if results are to be returned in the
-            descending order.
-
-
-            Since: cosmos-sdk 0.43
-          in: query
-          required: false
-          type: boolean
-      tags:
-        - Query
-  /structs/structs/allocation_proposal/{id}:
-    get:
-      summary: Queries a list of AllocationProposal items.
-      operationId: StructsStructsAllocationProposal
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              AllocationProposal:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    format: uint64
-                  sourceType:
-                    type: string
-                    enum:
-                      - faction
-                      - player
-                      - planet
-                      - reactor
-                      - substation
-                      - struct
-                    default: faction
-                  sourceId:
-                    type: string
-                    format: uint64
-                  destinationId:
-                    type: string
-                    format: uint64
-                  power:
-                    type: string
-                    format: uint64
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: id
-          in: path
-          required: true
-          type: string
-          format: uint64
-      tags:
-        - Query
-  /structs/structs/params:
+  /structs/params:
     get:
       summary: Parameters queries the parameters of the module.
       operationId: StructsStructsParams
@@ -45710,7 +45516,7 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  /structs/structs/reactor:
+  /structs/reactor:
     get:
       operationId: StructsStructsReactorAll
       responses:
@@ -45729,28 +45535,13 @@ paths:
                       format: uint64
                     validator:
                       type: string
-                    power:
+                      title: string validator = 2;
+                    energy:
                       type: string
                       format: uint64
                     load:
                       type: string
                       format: uint64
-                    previous_status:
-                      type: string
-                      enum:
-                        - ONLINE
-                        - OFFLINE
-                        - DECOMMISSIONED
-                        - OVERLOAD
-                      default: ONLINE
-                    status:
-                      type: string
-                      enum:
-                        - ONLINE
-                        - OFFLINE
-                        - DECOMMISSIONED
-                        - OVERLOAD
-                      default: ONLINE
               pagination:
                 type: object
                 properties:
@@ -45856,7 +45647,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /structs/structs/reactor/{id}:
+  /structs/reactor/{id}:
     get:
       summary: Queries a list of Reactor items.
       operationId: StructsStructsReactor
@@ -45874,28 +45665,13 @@ paths:
                     format: uint64
                   validator:
                     type: string
-                  power:
+                    title: string validator = 2;
+                  energy:
                     type: string
                     format: uint64
                   load:
                     type: string
                     format: uint64
-                  previous_status:
-                    type: string
-                    enum:
-                      - ONLINE
-                      - OFFLINE
-                      - DECOMMISSIONED
-                      - OVERLOAD
-                    default: ONLINE
-                  status:
-                    type: string
-                    enum:
-                      - ONLINE
-                      - OFFLINE
-                      - DECOMMISSIONED
-                      - OVERLOAD
-                    default: ONLINE
         default:
           description: An unexpected error response.
           schema:
@@ -45922,7 +45698,7 @@ paths:
           format: uint64
       tags:
         - Query
-  /structs/structs/substation:
+  /structs/substation:
     get:
       operationId: StructsStructsSubstationAll
       responses:
@@ -45939,20 +45715,23 @@ paths:
                     id:
                       type: string
                       format: uint64
-                    power:
+                    playerConnectionAllocation:
                       type: string
                       format: uint64
+                    owner:
+                      type: string
+                      format: uint64
+                    creator:
+                      type: string
                     load:
                       type: string
                       format: uint64
-                    status:
+                    energy:
                       type: string
-                      enum:
-                        - ONLINE
-                        - OFFLINE
-                        - DECOMMISSIONED
-                        - OVERLOAD
-                      default: ONLINE
+                      format: uint64
+                    connectedPlayerCount:
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -46058,7 +45837,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /structs/structs/substation/{id}:
+  /structs/substation/{id}:
     get:
       summary: Queries a list of Substation items.
       operationId: StructsStructsSubstation
@@ -46074,20 +45853,23 @@ paths:
                   id:
                     type: string
                     format: uint64
-                  power:
+                  playerConnectionAllocation:
                     type: string
                     format: uint64
+                  owner:
+                    type: string
+                    format: uint64
+                  creator:
+                    type: string
                   load:
                     type: string
                     format: uint64
-                  status:
+                  energy:
                     type: string
-                    enum:
-                      - ONLINE
-                      - OFFLINE
-                      - DECOMMISSIONED
-                      - OVERLOAD
-                    default: ONLINE
+                    format: uint64
+                  connectedPlayerCount:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -75768,6 +75550,7 @@ definitions:
           - reactor
           - substation
           - struct
+          - allocation
         default: faction
       sourceId:
         type: string
@@ -75778,42 +75561,28 @@ definitions:
       power:
         type: string
         format: uint64
-      transmissionLoss:
+      creator:
         type: string
-        format: uint64
-  structs.structs.AllocationProposal:
+      controller:
+        type: string
+      locked:
+        type: boolean
+  structs.structs.MsgAllocationCreateResponse:
     type: object
     properties:
-      id:
+      allocationId:
         type: string
         format: uint64
-      sourceType:
-        type: string
-        enum:
-          - faction
-          - player
-          - planet
-          - reactor
-          - substation
-          - struct
-        default: faction
-      sourceId:
-        type: string
-        format: uint64
-      destinationId:
-        type: string
-        format: uint64
-      power:
-        type: string
-        format: uint64
-  structs.structs.MsgReactorAllocationActivateResponse:
+  structs.structs.MsgSubstationAllocationConnectResponse:
     type: object
   structs.structs.MsgSubstationAllocationDisconnectResponse:
     type: object
-  structs.structs.MsgSubstationAllocationProposeResponse:
-    type: object
   structs.structs.MsgSubstationCreateResponse:
     type: object
+    properties:
+      substationId:
+        type: string
+        format: uint64
   structs.structs.MsgSubstationDeleteResponse:
     type: object
   structs.structs.MsgSubstationPlayerConnectResponse:
@@ -75823,62 +75592,6 @@ definitions:
   structs.structs.Params:
     type: object
     description: Params defines the parameters for the module.
-  structs.structs.QueryAllAllocationProposalResponse:
-    type: object
-    properties:
-      AllocationProposal:
-        type: array
-        items:
-          type: object
-          properties:
-            id:
-              type: string
-              format: uint64
-            sourceType:
-              type: string
-              enum:
-                - faction
-                - player
-                - planet
-                - reactor
-                - substation
-                - struct
-              default: faction
-            sourceId:
-              type: string
-              format: uint64
-            destinationId:
-              type: string
-              format: uint64
-            power:
-              type: string
-              format: uint64
-      pagination:
-        type: object
-        properties:
-          next_key:
-            type: string
-            format: byte
-            description: |-
-              next_key is the key to be passed to PageRequest.key to
-              query the next page most efficiently. It will be empty if
-              there are no more results.
-          total:
-            type: string
-            format: uint64
-            title: >-
-              total is total number of results available if
-              PageRequest.count_total
-
-              was set, its value is undefined otherwise
-        description: |-
-          PageResponse is to be embedded in gRPC response messages where the
-          corresponding request message has used PageRequest.
-
-           message SomeResponse {
-                   repeated Bar results = 1;
-                   PageResponse page = 2;
-           }
   structs.structs.QueryAllAllocationResponse:
     type: object
     properties:
@@ -75899,6 +75612,7 @@ definitions:
                 - reactor
                 - substation
                 - struct
+                - allocation
               default: faction
             sourceId:
               type: string
@@ -75909,9 +75623,12 @@ definitions:
             power:
               type: string
               format: uint64
-            transmissionLoss:
+            creator:
               type: string
-              format: uint64
+            controller:
+              type: string
+            locked:
+              type: boolean
       pagination:
         type: object
         properties:
@@ -75956,28 +75673,13 @@ definitions:
               format: uint64
             validator:
               type: string
-            power:
+              title: string validator = 2;
+            energy:
               type: string
               format: uint64
             load:
               type: string
               format: uint64
-            previous_status:
-              type: string
-              enum:
-                - ONLINE
-                - OFFLINE
-                - DECOMMISSIONED
-                - OVERLOAD
-              default: ONLINE
-            status:
-              type: string
-              enum:
-                - ONLINE
-                - OFFLINE
-                - DECOMMISSIONED
-                - OVERLOAD
-              default: ONLINE
       pagination:
         type: object
         properties:
@@ -76015,20 +75717,23 @@ definitions:
             id:
               type: string
               format: uint64
-            power:
+            playerConnectionAllocation:
               type: string
               format: uint64
+            owner:
+              type: string
+              format: uint64
+            creator:
+              type: string
             load:
               type: string
               format: uint64
-            status:
+            energy:
               type: string
-              enum:
-                - ONLINE
-                - OFFLINE
-                - DECOMMISSIONED
-                - OVERLOAD
-              default: ONLINE
+              format: uint64
+            connectedPlayerCount:
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -76055,34 +75760,6 @@ definitions:
                    repeated Bar results = 1;
                    PageResponse page = 2;
            }
-  structs.structs.QueryGetAllocationProposalResponse:
-    type: object
-    properties:
-      AllocationProposal:
-        type: object
-        properties:
-          id:
-            type: string
-            format: uint64
-          sourceType:
-            type: string
-            enum:
-              - faction
-              - player
-              - planet
-              - reactor
-              - substation
-              - struct
-            default: faction
-          sourceId:
-            type: string
-            format: uint64
-          destinationId:
-            type: string
-            format: uint64
-          power:
-            type: string
-            format: uint64
   structs.structs.QueryGetAllocationResponse:
     type: object
     properties:
@@ -76101,6 +75778,7 @@ definitions:
               - reactor
               - substation
               - struct
+              - allocation
             default: faction
           sourceId:
             type: string
@@ -76111,9 +75789,12 @@ definitions:
           power:
             type: string
             format: uint64
-          transmissionLoss:
+          creator:
             type: string
-            format: uint64
+          controller:
+            type: string
+          locked:
+            type: boolean
   structs.structs.QueryGetReactorResponse:
     type: object
     properties:
@@ -76125,28 +75806,13 @@ definitions:
             format: uint64
           validator:
             type: string
-          power:
+            title: string validator = 2;
+          energy:
             type: string
             format: uint64
           load:
             type: string
             format: uint64
-          previous_status:
-            type: string
-            enum:
-              - ONLINE
-              - OFFLINE
-              - DECOMMISSIONED
-              - OVERLOAD
-            default: ONLINE
-          status:
-            type: string
-            enum:
-              - ONLINE
-              - OFFLINE
-              - DECOMMISSIONED
-              - OVERLOAD
-            default: ONLINE
   structs.structs.QueryGetSubstationResponse:
     type: object
     properties:
@@ -76156,20 +75822,23 @@ definitions:
           id:
             type: string
             format: uint64
-          power:
+          playerConnectionAllocation:
             type: string
             format: uint64
+          owner:
+            type: string
+            format: uint64
+          creator:
+            type: string
           load:
             type: string
             format: uint64
-          status:
+          energy:
             type: string
-            enum:
-              - ONLINE
-              - OFFLINE
-              - DECOMMISSIONED
-              - OVERLOAD
-            default: ONLINE
+            format: uint64
+          connectedPlayerCount:
+            type: string
+            format: uint64
   structs.structs.QueryParamsResponse:
     type: object
     properties:
@@ -76185,64 +75854,36 @@ definitions:
         format: uint64
       validator:
         type: string
-      power:
+        title: string validator = 2;
+      energy:
         type: string
         format: uint64
       load:
         type: string
         format: uint64
-      previous_status:
-        type: string
-        enum:
-          - ONLINE
-          - OFFLINE
-          - DECOMMISSIONED
-          - OVERLOAD
-        default: ONLINE
-      status:
-        type: string
-        enum:
-          - ONLINE
-          - OFFLINE
-          - DECOMMISSIONED
-          - OVERLOAD
-        default: ONLINE
-  structs.structs.Reactor.Status:
-    type: string
-    enum:
-      - ONLINE
-      - OFFLINE
-      - DECOMMISSIONED
-      - OVERLOAD
-    default: ONLINE
   structs.structs.Substation:
     type: object
     properties:
       id:
         type: string
         format: uint64
-      power:
+      playerConnectionAllocation:
         type: string
         format: uint64
+      owner:
+        type: string
+        format: uint64
+      creator:
+        type: string
       load:
         type: string
         format: uint64
-      status:
+      energy:
         type: string
-        enum:
-          - ONLINE
-          - OFFLINE
-          - DECOMMISSIONED
-          - OVERLOAD
-        default: ONLINE
-  structs.structs.Substation.Status:
-    type: string
-    enum:
-      - ONLINE
-      - OFFLINE
-      - DECOMMISSIONED
-      - OVERLOAD
-    default: ONLINE
+        format: uint64
+      connectedPlayerCount:
+        type: string
+        format: uint64
   structs.structs.objectType:
     type: string
     enum:
@@ -76252,4 +75893,5 @@ definitions:
       - reactor
       - substation
       - struct
+      - allocation
     default: faction

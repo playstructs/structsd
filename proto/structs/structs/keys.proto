@@ -2,7 +2,7 @@ syntax = "proto3";
 package structs.structs;
 
 import "gogoproto/gogo.proto";
-import "cosmos_proto/cosmos.proto";
+//import "cosmos_proto/cosmos.proto";
 
 option go_package = "structs/x/structs/types";
 
@@ -15,5 +15,5 @@ enum objectType {
     reactor        = 3;
     substation     = 4;
     struct         = 5;
+    allocation     = 6;
 }
-

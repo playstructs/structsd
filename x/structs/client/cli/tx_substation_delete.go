@@ -15,14 +15,16 @@ var _ = strconv.Itoa(0)
 
 func CmdSubstationDelete() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "substation-delete [substation-id]",
+		Use:   "substation-delete [substation-id] [migration-substation-id]",
 		Short: "Broadcast message substation-delete",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.RangeArgs(1, 2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argSubstationId, err := cast.ToUint64E(args[0])
 			if err != nil {
 				return err
 			}
+
+			argMigrationSubstationId, _ := cast.ToUint64E(args[1])
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -32,6 +34,7 @@ func CmdSubstationDelete() *cobra.Command {
 			msg := types.NewMsgSubstationDelete(
 				clientCtx.GetFromAddress().String(),
 				argSubstationId,
+				argMigrationSubstationId,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

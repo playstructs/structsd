@@ -23,7 +23,7 @@ func TestReactorGet(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 	items := createNReactor(keeper, ctx, 10)
 	for _, item := range items {
-		got, found := keeper.GetReactor(ctx, item.Id)
+		got, found := keeper.GetReactor(ctx, item.Id, false)
 		require.True(t, found)
 		require.Equal(t,
 			nullify.Fill(&item),
@@ -37,7 +37,7 @@ func TestReactorRemove(t *testing.T) {
 	items := createNReactor(keeper, ctx, 10)
 	for _, item := range items {
 		keeper.RemoveReactor(ctx, item.Id)
-		_, found := keeper.GetReactor(ctx, item.Id)
+		_, found := keeper.GetReactor(ctx, item.Id, false)
 		require.False(t, found)
 	}
 }
@@ -47,7 +47,7 @@ func TestReactorGetAll(t *testing.T) {
 	items := createNReactor(keeper, ctx, 10)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
-		nullify.Fill(keeper.GetAllReactor(ctx)),
+		nullify.Fill(keeper.GetAllReactor(ctx, false)),
 	)
 }
 

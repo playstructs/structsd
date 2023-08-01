@@ -10,7 +10,7 @@ import (
 	"structs/x/structs/types"
 )
 
-func SimulateMsgSubstationAllocationPropose(
+func SimulateMsgSubstationAllocationConnect(
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
 	k keeper.Keeper,
@@ -18,12 +18,12 @@ func SimulateMsgSubstationAllocationPropose(
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
-		msg := &types.MsgSubstationAllocationPropose{
+		msg := &types.MsgSubstationAllocationConnect{
 			Creator: simAccount.Address.String(),
 		}
 
-		// TODO: Handling the SubstationAllocationPropose simulation
+		// TODO: Handling the SubstationAllocationConnect simulation
 
-		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "SubstationAllocationPropose simulation not implemented"), nil, nil
+		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "SubstationAllocationConnect simulation not implemented"), nil, nil
 	}
 }

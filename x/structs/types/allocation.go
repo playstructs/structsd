@@ -6,15 +6,36 @@ import (
 )
 
 
-func (a *Allocation) SetPower(ctx sdk.Context, proposal AllocationProposal) (error) {
+func (a *Allocation) SetPower(ctx sdk.Context, newPower uint64) (error) {
 
-    a.Power = proposal.Power
-
-    //TODO: Change into a parameter
-    a.TransmissionLoss = proposal.Power / 4
+    a.Power = newPower
 
     return nil
 }
+
+
+func (a *Allocation) SetController(ctx sdk.Context, controller string) (error) {
+
+    a.Controller = controller
+
+    return nil
+}
+
+
+func (a *Allocation) Disconnect() (error) {
+
+    a.DestinationId = 0
+
+    return nil
+}
+
+func (a *Allocation) Connect(ctx sdk.Context, destinationSubstationId uint64) (error) {
+
+    a.DestinationId = destinationSubstationId
+
+    return nil
+}
+
 
 /*
  * Currently, only Reactors and Structs (Power Plants) can have
@@ -26,7 +47,7 @@ func (a *Allocation) SetPower(ctx sdk.Context, proposal AllocationProposal) (err
  * Use this function anytime a user is providing the objectType of the source objectType
  */
 func IsValidAllocationConnectionType(objectType ObjectType) (bool) {
-	for _, a := range []ObjectType{ObjectType_reactor, ObjectType_struct} {
+	for _, a := range []ObjectType{ObjectType_reactor, ObjectType_struct, ObjectType_substation} {
 		if a == objectType {
 			return true
 		}

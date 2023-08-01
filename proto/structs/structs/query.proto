@@ -9,7 +9,7 @@ import "structs/structs/params.proto";
 import "structs/structs/reactor.proto";
 import "structs/structs/substation.proto";
 import "structs/structs/allocation.proto";
-import "structs/structs/allocation_proposal.proto";
+
 
 option go_package = "structs/x/structs/types";
 
@@ -18,49 +18,40 @@ service Query {
   
   // Parameters queries the parameters of the module.
   rpc Params (QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/structs/structs/params";
+    option (google.api.http).get = "/structs/params";
   
   }
   
   // Queries a list of Reactor items.
   rpc Reactor    (QueryGetReactorRequest) returns (QueryGetReactorResponse) {
-    option (google.api.http).get = "/structs/structs/reactor/{id}";
+    option (google.api.http).get = "/structs/reactor/{id}";
   
   }
   rpc ReactorAll (QueryAllReactorRequest) returns (QueryAllReactorResponse) {
-    option (google.api.http).get = "/structs/structs/reactor";
+    option (google.api.http).get = "/structs/reactor";
   
   }
 
   // Queries a list of Substation items.
   rpc Substation    (QueryGetSubstationRequest) returns (QueryGetSubstationResponse) {
-    option (google.api.http).get = "/structs/structs/substation/{id}";
+    option (google.api.http).get = "/structs/substation/{id}";
   
   }
   rpc SubstationAll (QueryAllSubstationRequest) returns (QueryAllSubstationResponse) {
-    option (google.api.http).get = "/structs/structs/substation";
+    option (google.api.http).get = "/structs/substation";
   
   }
   
   // Queries a list of Allocation items.
   rpc Allocation    (QueryGetAllocationRequest) returns (QueryGetAllocationResponse) {
-    option (google.api.http).get = "/structs/structs/allocation/{id}";
+    option (google.api.http).get = "/structs/allocation/{id}";
   
   }
   rpc AllocationAll (QueryAllAllocationRequest) returns (QueryAllAllocationResponse) {
-    option (google.api.http).get = "/structs/structs/allocation";
+    option (google.api.http).get = "/structs/allocation";
   
   }
-  
-  // Queries a list of AllocationProposal items.
-  rpc AllocationProposal    (QueryGetAllocationProposalRequest) returns (QueryGetAllocationProposalResponse) {
-    option (google.api.http).get = "/structs/structs/allocation_proposal/{id}";
-  
-  }
-  rpc AllocationProposalAll (QueryAllAllocationProposalRequest) returns (QueryAllAllocationProposalResponse) {
-    option (google.api.http).get = "/structs/structs/allocation_proposal";
-  
-  }
+
 }
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
@@ -122,22 +113,5 @@ message QueryAllAllocationResponse {
   repeated Allocation                             Allocation = 1 [(gogoproto.nullable) = false];
            cosmos.base.query.v1beta1.PageResponse pagination = 2;
            repeated uint64 status  = 3;
-}
-
-message QueryGetAllocationProposalRequest {
-  uint64 id = 1;
-}
-
-message QueryGetAllocationProposalResponse {
-  AllocationProposal AllocationProposal = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryAllAllocationProposalRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryAllAllocationProposalResponse {
-  repeated AllocationProposal                     AllocationProposal = 1 [(gogoproto.nullable) = false];
-           cosmos.base.query.v1beta1.PageResponse pagination         = 2;
 }
 

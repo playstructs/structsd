@@ -7,7 +7,7 @@ import "structs/structs/params.proto";
 import "structs/structs/reactor.proto";
 import "structs/structs/substation.proto";
 import "structs/structs/allocation.proto";
-import "structs/structs/allocation_proposal.proto";
+
 
 option go_package = "structs/x/structs/types";
 
@@ -21,9 +21,7 @@ message GenesisState {
            uint64             substationCount         =  6;
   repeated Allocation         allocationList          =  7 [(gogoproto.nullable) = false];
            uint64             allocationCount         =  8;
-  repeated AllocationProposal allocationProposalList  =  9 [(gogoproto.nullable) = false];
-           uint64             allocationProposalCount = 10;
-  repeated uint64             allocationStatus        = 11;
+  repeated uint64             allocationStatus        =  9;
 
 }
 

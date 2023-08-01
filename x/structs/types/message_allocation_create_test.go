@@ -8,21 +8,21 @@ import (
 	"structs/testutil/sample"
 )
 
-func TestMsgSubstationAllocationPropose_ValidateBasic(t *testing.T) {
+func TestMsgReactorAllocationCreate_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgSubstationAllocationPropose
+		msg  MsgReactorAllocationCreate
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgSubstationAllocationPropose{
+			msg: MsgReactorAllocationCreate{
 				Creator: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: MsgSubstationAllocationPropose{
+			msg: MsgReactorAllocationCreate{
 				Creator: sample.AccAddress(),
 			},
 		},

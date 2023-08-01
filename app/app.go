@@ -275,7 +275,7 @@ func New(
 		// this line is used by starport scaffolding # stargate/app/storeKey
 	)
 	tkeys := sdk.NewTransientStoreKeys(paramstypes.TStoreKey, structsmoduletypes.TStoreKey)
-	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey)
+	memKeys := sdk.NewMemoryStoreKeys(capabilitytypes.MemStoreKey, structsmoduletypes.MemStoreKey)
 
 	app := &App{
 		BaseApp:           bApp,
@@ -467,7 +467,7 @@ func New(
 	app.StructsKeeper = *structsmodulekeeper.NewKeeper(
 		appCodec,
 		keys[structsmoduletypes.StoreKey],
-		keys[structsmoduletypes.MemStoreKey],
+		memKeys[structsmoduletypes.MemStoreKey],
 		app.GetSubspace(structsmoduletypes.ModuleName),
 		app.IBCKeeper.ChannelKeeper,
 		&app.IBCKeeper.PortKeeper,

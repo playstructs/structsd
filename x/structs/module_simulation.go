@@ -25,9 +25,9 @@ var (
 
 const (
 
-	opWeightMsgReactorAllocationActivate = "op_weight_msg_reactor_allocation_activate"
+	opWeightMsgReactorAllocationCreate = "op_weight_msg_reactor_allocation_create"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgReactorAllocationActivate int = 100
+	defaultWeightMsgReactorAllocationCreate int = 100
 
 	opWeightMsgSubstationCreate = "op_weight_msg_substation_create"
 	// TODO: Determine the simulation weight value
@@ -37,13 +37,13 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgSubstationDelete int = 100
 
-	opWeightMsgSubstationAllocationPropose = "op_weight_msg_substation_allocation_propose"
+	opWeightMsgSubstationAllocationCreate = "op_weight_msg_substation_allocation_create"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgSubstationAllocationPropose int = 100
+	defaultWeightMsgSubstationAllocationCreate int = 100
 
-	opWeightMsgSubstationAllocationActivate = "op_weight_msg_substation_allocation_activate"
+	opWeightMsgSubstationAllocationConnect = "op_weight_msg_substation_allocation_connect"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgSubstationAllocationActivate int = 100
+	defaultWeightMsgSubstationAllocationConnect int = 100
 
 	opWeightMsgSubstationAllocationDisconnect = "op_weight_msg_substation_allocation_disconnect"
 	// TODO: Determine the simulation weight value
@@ -92,15 +92,15 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
-	var weightMsgReactorAllocationActivate int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgReactorAllocationActivate, &weightMsgReactorAllocationActivate, nil,
+	var weightMsgReactorAllocationCreate int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgReactorAllocationCreate, &weightMsgReactorAllocationCreate, nil,
 		func(_ *rand.Rand) {
-			weightMsgReactorAllocationActivate = defaultWeightMsgReactorAllocationActivate
+			weightMsgReactorAllocationCreate = defaultWeightMsgReactorAllocationCreate
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgReactorAllocationActivate,
-		structssimulation.SimulateMsgReactorAllocationActivate(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgReactorAllocationCreate,
+		structssimulation.SimulateMsgReactorAllocationCreate(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	var weightMsgSubstationCreate int
@@ -125,15 +125,26 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		structssimulation.SimulateMsgSubstationDelete(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgSubstationAllocationPropose int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSubstationAllocationPropose, &weightMsgSubstationAllocationPropose, nil,
+	var weightMsgSubstationAllocationCreate int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSubstationAllocationCreate, &weightMsgSubstationAllocationCreate, nil,
 		func(_ *rand.Rand) {
-			weightMsgSubstationAllocationPropose = defaultWeightMsgSubstationAllocationPropose
+			weightMsgSubstationAllocationCreate = defaultWeightMsgSubstationAllocationCreate
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgSubstationAllocationPropose,
-		structssimulation.SimulateMsgSubstationAllocationPropose(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgSubstationAllocationCreate,
+		structssimulation.SimulateMsgSubstationAllocationCreate(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgSubstationAllocationConnect int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSubstationAllocationConnect, &weightMsgSubstationAllocationConnect, nil,
+		func(_ *rand.Rand) {
+			weightMsgSubstationAllocationConnect = defaultWeightMsgSubstationAllocationConnect
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgSubstationAllocationConnect,
+		structssimulation.SimulateMsgSubstationAllocationConnect(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	var weightMsgSubstationAllocationDisconnect int
