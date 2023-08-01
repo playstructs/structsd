@@ -25,13 +25,13 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
     }
 
 
-	substation, substationFound  := k.GetSubstation(ctx, msg.DestinationSubstationId)
+	substation, substationFound  := k.GetSubstation(ctx, msg.DestinationSubstationId, false)
     if (!substationFound){
         substationId := strconv.FormatUint(allocation.DestinationId, 10)
         return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrSubstationNotFound, "destination substation (%s) not found", substationId)
     }
 
-    if (substation.Id == msg.DestinationSubstationId){
+    if (substation.Id == allocation.DestinationId){
         substationId := strconv.FormatUint(allocation.DestinationId, 10)
         return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationConnectionChangeImpossible, "destination substation (%s) cannot change to same destination", substationId)
     }

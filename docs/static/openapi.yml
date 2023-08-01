@@ -45259,7 +45259,7 @@ paths:
                         }
       tags:
         - Query
-  /structs/structs/allocation:
+  /structs/allocation:
     get:
       operationId: StructsStructsAllocationAll
       responses:
@@ -45412,7 +45412,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /structs/structs/allocation/{id}:
+  /structs/allocation/{id}:
     get:
       summary: Queries a list of Allocation items.
       operationId: StructsStructsAllocation
@@ -45480,7 +45480,7 @@ paths:
           format: uint64
       tags:
         - Query
-  /structs/structs/params:
+  /structs/params:
     get:
       summary: Parameters queries the parameters of the module.
       operationId: StructsStructsParams
@@ -45516,7 +45516,7 @@ paths:
                   additionalProperties: {}
       tags:
         - Query
-  /structs/structs/reactor:
+  /structs/reactor:
     get:
       operationId: StructsStructsReactorAll
       responses:
@@ -45535,7 +45535,11 @@ paths:
                       format: uint64
                     validator:
                       type: string
+                      title: string validator = 2;
                     energy:
+                      type: string
+                      format: uint64
+                    load:
                       type: string
                       format: uint64
               pagination:
@@ -45643,7 +45647,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /structs/structs/reactor/{id}:
+  /structs/reactor/{id}:
     get:
       summary: Queries a list of Reactor items.
       operationId: StructsStructsReactor
@@ -45661,7 +45665,11 @@ paths:
                     format: uint64
                   validator:
                     type: string
+                    title: string validator = 2;
                   energy:
+                    type: string
+                    format: uint64
+                  load:
                     type: string
                     format: uint64
         default:
@@ -45690,7 +45698,7 @@ paths:
           format: uint64
       tags:
         - Query
-  /structs/structs/substation:
+  /structs/substation:
     get:
       operationId: StructsStructsSubstationAll
       responses:
@@ -45715,6 +45723,15 @@ paths:
                       format: uint64
                     creator:
                       type: string
+                    load:
+                      type: string
+                      format: uint64
+                    energy:
+                      type: string
+                      format: uint64
+                    connectedPlayerCount:
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -45820,7 +45837,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /structs/structs/substation/{id}:
+  /structs/substation/{id}:
     get:
       summary: Queries a list of Substation items.
       operationId: StructsStructsSubstation
@@ -45844,6 +45861,15 @@ paths:
                     format: uint64
                   creator:
                     type: string
+                  load:
+                    type: string
+                    format: uint64
+                  energy:
+                    type: string
+                    format: uint64
+                  connectedPlayerCount:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -75647,7 +75673,11 @@ definitions:
               format: uint64
             validator:
               type: string
+              title: string validator = 2;
             energy:
+              type: string
+              format: uint64
+            load:
               type: string
               format: uint64
       pagination:
@@ -75695,6 +75725,15 @@ definitions:
               format: uint64
             creator:
               type: string
+            load:
+              type: string
+              format: uint64
+            energy:
+              type: string
+              format: uint64
+            connectedPlayerCount:
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -75767,7 +75806,11 @@ definitions:
             format: uint64
           validator:
             type: string
+            title: string validator = 2;
           energy:
+            type: string
+            format: uint64
+          load:
             type: string
             format: uint64
   structs.structs.QueryGetSubstationResponse:
@@ -75787,6 +75830,15 @@ definitions:
             format: uint64
           creator:
             type: string
+          load:
+            type: string
+            format: uint64
+          energy:
+            type: string
+            format: uint64
+          connectedPlayerCount:
+            type: string
+            format: uint64
   structs.structs.QueryParamsResponse:
     type: object
     properties:
@@ -75802,7 +75854,11 @@ definitions:
         format: uint64
       validator:
         type: string
+        title: string validator = 2;
       energy:
+        type: string
+        format: uint64
+      load:
         type: string
         format: uint64
   structs.structs.Substation:
@@ -75819,6 +75875,15 @@ definitions:
         format: uint64
       creator:
         type: string
+      load:
+        type: string
+        format: uint64
+      energy:
+        type: string
+        format: uint64
+      connectedPlayerCount:
+        type: string
+        format: uint64
   structs.structs.objectType:
     type: string
     enum:

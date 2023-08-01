@@ -22,6 +22,9 @@ const (
 
 	// PortID is the default port id that module binds to
 	PortID = "structs"
+
+	// Starting value for Keeper IDs
+	KeeperStartValue = 1
 )
 
 var (

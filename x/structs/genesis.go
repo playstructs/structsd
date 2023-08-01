@@ -11,6 +11,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	// Set all the reactor
 	for _, elem := range genState.ReactorList {
 		k.SetReactor(ctx, elem)
+		k.SetReactorValidatorBytes(ctx, elem.Id, elem.Validator)
 	}
 
 	// Set reactor count
@@ -52,9 +53,9 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.Params = k.GetParams(ctx)
 
 	genesis.PortId = k.GetPort(ctx)
-	genesis.ReactorList = k.GetAllReactor(ctx)
+	genesis.ReactorList = k.GetAllReactor(ctx, false)
 	genesis.ReactorCount = k.GetReactorCount(ctx)
-	genesis.SubstationList = k.GetAllSubstation(ctx)
+	genesis.SubstationList = k.GetAllSubstation(ctx, false)
 	genesis.SubstationCount = k.GetSubstationCount(ctx)
 	genesis.AllocationList = k.GetAllAllocation(ctx)
 	genesis.AllocationCount = k.GetAllocationCount(ctx)

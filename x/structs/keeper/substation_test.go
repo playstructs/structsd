@@ -23,7 +23,7 @@ func TestSubstationGet(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 	items := createNSubstation(keeper, ctx, 10)
 	for _, item := range items {
-		got, found := keeper.GetSubstation(ctx, item.Id)
+		got, found := keeper.GetSubstation(ctx, item.Id, false)
 		require.True(t, found)
 		require.Equal(t,
 			nullify.Fill(&item),

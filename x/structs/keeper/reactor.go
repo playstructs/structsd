@@ -23,37 +23,38 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
     validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
 
     /* Does this Reactor exist? */
-    reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress)
+    reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.String())
     if (reactorBytesFound) {
-         reactor, _  = k.GetReactorByBytes(ctx, reactorBytes)
+         reactor, _  = k.GetReactorByBytes(ctx, reactorBytes, false)
     } else {
         /* Build the initial Reactor object */
         reactor = types.CreateEmptyReactor()
-        reactor.SetValidator(validator)
+        reactor.SetValidator(validatorAddress.String())
+        k.SetReactorValidatorBytes(ctx, reactor.Id, validatorAddress.String())
+
+
+
+        /* TODO: Permissions
+         *
+         * Create permissions based on the details field.
+         *  Link to Faction
+         *  Link to Player
+         */
+
+
+        /* Sync Energy Levels
+         *
+         * Set the initial power level of the Reactor based on the
+         * tokens staked to the validator
+         */
+        reactor.SetEnergy(validator)
+
+
+        /*
+         * Commit Reactor to the Keeper
+         */
+        k.AppendReactor(ctx, reactor)
     }
-
-
-    /* TODO: Permissions
-     *
-     * Create permissions based on the details field.
-     *  Link to Faction
-     *  Link to Player
-     */
-
-
-    /* Sync Energy Levels
-     *
-     * Set the initial power level of the Reactor based on the
-     * tokens staked to the validator
-     */
-	reactor.SetEnergy(validator)
-
-
-    /*
-     * Commit Reactor to the Keeper
-     */
-	k.SetReactor(ctx, reactor)
-
 	return reactor
 }
 
@@ -73,15 +74,20 @@ func (k Keeper) ReactorUpdateEnergy(ctx sdk.Context, validatorAddress sdk.ValAdd
     validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
 
     /* Does this Reactor exist? */
-    reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress)
+    reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.String())
     if (reactorBytesFound) {
-         reactor, _  = k.GetReactorByBytes(ctx, reactorBytes)
-    } else {
-        /* Build the initial Reactor object */
+         reactor, _  = k.GetReactorByBytes(ctx, reactorBytes, false)
+    }  /*else {
+        Build the initial Reactor object
         reactor = types.CreateEmptyReactor()
         reactor.SetValidator(validator)
-    }
+        reactor.SetId(k.GetReactorCount(ctx))
+        k.SetReactorCount(ctx, reactor.Id + 1)
 
+        k.SetReactorValidatorBytes(ctx, reactor.Id, reactor.Validator)
+
+    }
+*/
     /* Sync Energy Levels
      *
      * Set the initial power level of the Reactor based on the
@@ -99,6 +105,7 @@ func (k Keeper) ReactorUpdateEnergy(ctx sdk.Context, validatorAddress sdk.ValAdd
 
 
 	k.SetReactor(ctx, reactor)
+
 
 	// Update the connected Substations with the new details
 	k.CascadeReactorAllocationFailure(ctx, reactor)
@@ -118,15 +125,18 @@ func (k Keeper) ReactorUpdateFromValidator(ctx sdk.Context, validatorAddress sdk
     validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
 
     /* Does this Reactor exist? */
-    reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress)
+    reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.String())
     if (reactorBytesFound) {
-         reactor, _  = k.GetReactorByBytes(ctx, reactorBytes)
-    } else {
-        /* Build the initial Reactor object */
+         reactor, _  = k.GetReactorByBytes(ctx, reactorBytes, false)
+    } /*else {
+         Build the initial Reactor object
         reactor = types.CreateEmptyReactor()
         reactor.SetValidator(validator)
+        reactor.SetId(k.GetReactorCount(ctx))
+        k.SetReactorCount(ctx, reactor.Id + 1)
+        k.SetReactorValidatorBytes(ctx, reactor.Id, reactor.Validator)
     }
-
+*/
     /* Sync Energy Levels
      *
      * May as well update power levels while we are here
@@ -151,8 +161,8 @@ func (k Keeper) GetReactorCount(ctx sdk.Context) uint64 {
 	bz := store.Get(byteKey)
 
 	// Count doesn't exist: no element
-	if bz == nil {
-		return 0
+	if (bz == nil || binary.BigEndian.Uint64(bz) == 0) {
+		return types.KeeperStartValue
 	}
 
 	// Parse bytes
@@ -169,10 +179,10 @@ func (k Keeper) SetReactorCount(ctx sdk.Context, count uint64) {
 }
 
 // GetReactorBytesFromValidator get the bytes based on validator address
-func (k Keeper) GetReactorBytesFromValidator(ctx sdk.Context, validatorAddress sdk.ValAddress) (reactorBytes []byte, found bool) {
+func (k Keeper) GetReactorBytesFromValidator(ctx sdk.Context, validatorAddress string) (reactorBytes []byte, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorValidatorKey))
 
-    reactorBytes =  store.Get(validatorAddress)
+    reactorBytes = store.Get([]byte(validatorAddress))
 	// Count doesn't exist: no element
 	if reactorBytes == nil {
 		return reactorBytes, false
@@ -220,24 +230,34 @@ func (k Keeper) SetReactor(ctx sdk.Context, reactor types.Reactor) {
 }
 
 // GetReactor returns a reactor from its id
-func (k Keeper) GetReactor(ctx sdk.Context, id uint64) (val types.Reactor, found bool) {
+func (k Keeper) GetReactor(ctx sdk.Context, id uint64, full bool) (val types.Reactor, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorKey))
 	b := store.Get(GetReactorIDBytes(id))
 	if b == nil {
 		return val, false
 	}
 	k.cdc.MustUnmarshal(b, &val)
+
+    if (full) {
+        val.Load = k.ReactorGetLoad(ctx, val.Id)
+    }
+
 	return val, true
 }
 
 // GetReactor returns a reactor from its id
-func (k Keeper) GetReactorByBytes(ctx sdk.Context, id []byte) (val types.Reactor, found bool) {
+func (k Keeper) GetReactorByBytes(ctx sdk.Context, id []byte, full bool) (val types.Reactor, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorKey))
 	b := store.Get(id)
 	if b == nil {
 		return val, false
 	}
 	k.cdc.MustUnmarshal(b, &val)
+
+    if (full) {
+        val.Load = k.ReactorGetLoad(ctx, val.Id)
+    }
+
 	return val, true
 }
 
@@ -249,7 +269,7 @@ func (k Keeper) RemoveReactor(ctx sdk.Context, id uint64) {
 }
 
 // GetAllReactor returns all reactor
-func (k Keeper) GetAllReactor(ctx sdk.Context) (list []types.Reactor) {
+func (k Keeper) GetAllReactor(ctx sdk.Context, full bool) (list []types.Reactor) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorKey))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
@@ -258,6 +278,11 @@ func (k Keeper) GetAllReactor(ctx sdk.Context) (list []types.Reactor) {
 	for ; iterator.Valid(); iterator.Next() {
 		var val types.Reactor
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
+
+        if (full) {
+            val.Load = k.ReactorGetLoad(ctx, val.Id)
+        }
+
 		list = append(list, val)
 	}
 
@@ -387,7 +412,7 @@ func (k Keeper) ReactorGetEnergy(ctx sdk.Context, id uint64) (load uint64) {
 
 	// Reactor Energy Not in Memory: no element
 	if bz == nil {
-	    reactor, _ := k.GetReactor(ctx, id)
+	    reactor, _ := k.GetReactor(ctx, id, false)
 	    load = reactor.Energy
 	    k.ReactorSetEnergy(ctx, id, load)
 

@@ -26,7 +26,7 @@ func (k msgServer) SubstationAllocationCreate(goCtx context.Context, msg *types.
 	    Controller: msg.Creator,
 	}
 
-    _, sourceSubstationFound := k.GetSubstation(ctx, msg.SourceId)
+    _, sourceSubstationFound := k.GetSubstation(ctx, msg.SourceId, false)
     if (!sourceSubstationFound){
         sourceId := strconv.FormatUint(msg.SourceId, 10)
         return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceNotFound, "source (%s) used for allocation not found", allocation.SourceType.String() + "-" + sourceId)

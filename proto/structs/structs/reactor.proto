@@ -3,11 +3,15 @@ package structs.structs;
 
 option go_package = "structs/x/structs/types";
 
+import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 
 message Reactor {
   uint64 id = 1;
-  string validator = 2;
+  string validator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  //string validator = 2;
 
   uint64 energy = 3;
+
+  uint64 load = 4;
 }

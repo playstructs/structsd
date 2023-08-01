@@ -673,19 +673,19 @@ func RegisterQueryHandlerClient(ctx context.Context, mux *runtime.ServeMux, clie
 }
 
 var (
-	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1}, []string{"structs", "params"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Params_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"structs", "params"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Reactor_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"structs", "reactor", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Reactor_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"structs", "reactor", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_ReactorAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1}, []string{"structs", "reactor"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_ReactorAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"structs", "reactor"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Substation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"structs", "substation", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Substation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"structs", "substation", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_SubstationAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1}, []string{"structs", "substation"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_SubstationAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"structs", "substation"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Allocation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"structs", "allocation", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Allocation_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"structs", "allocation", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_AllocationAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1}, []string{"structs", "allocation"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_AllocationAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"structs", "allocation"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (

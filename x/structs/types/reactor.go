@@ -12,9 +12,13 @@ func CreateEmptyReactor() (Reactor) {
     }
 }
 
-func (reactor *Reactor) SetValidator(validator types.Validator) (error) {
-	reactor.Validator =  validator.OperatorAddress
+func (reactor *Reactor) SetValidator(validatorAddress string) (error) {
+	reactor.Validator =  validatorAddress
 	return nil
+}
+
+func (reactor *Reactor) SetId(id uint64) {
+	reactor.Id =  id
 }
 
 

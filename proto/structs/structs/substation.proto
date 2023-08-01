@@ -14,5 +14,9 @@ message Substation {
 
     uint64 owner = 3;
     string creator = 4;
+
+    uint64 load = 5;
+    uint64 energy = 6;
+    uint64 connectedPlayerCount = 7;
 }
 

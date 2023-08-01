@@ -19,8 +19,8 @@ func (k Keeper) GetSubstationCount(ctx sdk.Context) uint64 {
 	bz := store.Get(byteKey)
 
 	// Count doesn't exist: no element
-	if bz == nil {
-		return 0
+	if (bz == nil || binary.BigEndian.Uint64(bz) == 0) {
+		return types.KeeperStartValue
 	}
 
 	// Parse bytes
@@ -65,13 +65,19 @@ func (k Keeper) SetSubstation(ctx sdk.Context, substation types.Substation) {
 }
 
 // GetSubstation returns a substation from its id
-func (k Keeper) GetSubstation(ctx sdk.Context, id uint64) (val types.Substation, found bool) {
+func (k Keeper) GetSubstation(ctx sdk.Context, id uint64, full bool) (val types.Substation, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationKey))
 	b := store.Get(GetSubstationIDBytes(id))
 	if b == nil {
 		return val, false
 	}
 	k.cdc.MustUnmarshal(b, &val)
+
+    if (full) {
+        val.Load = k.SubstationGetLoad(ctx, val.Id)
+        val.Energy = k.SubstationGetEnergy(ctx, val.Id)
+        val.ConnectedPlayerCount = k.SubstationGetConnectedPlayerCount(ctx, val.Id)
+    }
 
 	return val, true
 }
@@ -83,7 +89,7 @@ func (k Keeper) RemoveSubstation(ctx sdk.Context, id uint64) {
 }
 
 // GetAllSubstation returns all substation
-func (k Keeper) GetAllSubstation(ctx sdk.Context) (list []types.Substation) {
+func (k Keeper) GetAllSubstation(ctx sdk.Context, full bool) (list []types.Substation) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationKey))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
@@ -92,6 +98,13 @@ func (k Keeper) GetAllSubstation(ctx sdk.Context) (list []types.Substation) {
 	for ; iterator.Valid(); iterator.Next() {
 		var val types.Substation
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
+
+        if (full) {
+            val.Load = k.SubstationGetLoad(ctx, val.Id)
+            val.Energy = k.SubstationGetEnergy(ctx, val.Id)
+            val.ConnectedPlayerCount = k.SubstationGetConnectedPlayerCount(ctx, val.Id)
+        }
+
 		list = append(list, val)
 	}
 
@@ -365,7 +378,7 @@ func (k Keeper) SubstationRebuildConnectedPlayerLoad(ctx sdk.Context, id uint64)
 
     connectedPlayerCount := k.SubstationGetConnectedPlayerCount(ctx, id)
 
-    substation, _ := k.GetSubstation(ctx, id)
+    substation, _ := k.GetSubstation(ctx, id, false)
     load = connectedPlayerCount * substation.PlayerConnectionAllocation
 
     return

@@ -26,7 +26,7 @@ func (k msgServer) ReactorAllocationCreate(goCtx context.Context, msg *types.Msg
 	    Controller: msg.Creator,
 	}
 
-    _, sourceReactorFound := k.GetReactor(ctx, msg.SourceId)
+    _, sourceReactorFound := k.GetReactor(ctx, msg.SourceId, false)
     if (!sourceReactorFound){
         sourceId := strconv.FormatUint(msg.SourceId, 10)
         return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceNotFound, "source (%s) used for allocation not found", allocation.SourceType.String() + "-" + sourceId)

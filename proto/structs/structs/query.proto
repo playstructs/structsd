@@ -18,37 +18,37 @@ service Query {
   
   // Parameters queries the parameters of the module.
   rpc Params (QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/structs/structs/params";
+    option (google.api.http).get = "/structs/params";
   
   }
   
   // Queries a list of Reactor items.
   rpc Reactor    (QueryGetReactorRequest) returns (QueryGetReactorResponse) {
-    option (google.api.http).get = "/structs/structs/reactor/{id}";
+    option (google.api.http).get = "/structs/reactor/{id}";
   
   }
   rpc ReactorAll (QueryAllReactorRequest) returns (QueryAllReactorResponse) {
-    option (google.api.http).get = "/structs/structs/reactor";
+    option (google.api.http).get = "/structs/reactor";
   
   }
 
   // Queries a list of Substation items.
   rpc Substation    (QueryGetSubstationRequest) returns (QueryGetSubstationResponse) {
-    option (google.api.http).get = "/structs/structs/substation/{id}";
+    option (google.api.http).get = "/structs/substation/{id}";
   
   }
   rpc SubstationAll (QueryAllSubstationRequest) returns (QueryAllSubstationResponse) {
-    option (google.api.http).get = "/structs/structs/substation";
+    option (google.api.http).get = "/structs/substation";
   
   }
   
   // Queries a list of Allocation items.
   rpc Allocation    (QueryGetAllocationRequest) returns (QueryGetAllocationResponse) {
-    option (google.api.http).get = "/structs/structs/allocation/{id}";
+    option (google.api.http).get = "/structs/allocation/{id}";
   
   }
   rpc AllocationAll (QueryAllAllocationRequest) returns (QueryAllAllocationResponse) {
-    option (google.api.http).get = "/structs/structs/allocation";
+    option (google.api.http).get = "/structs/allocation";
   
   }
 

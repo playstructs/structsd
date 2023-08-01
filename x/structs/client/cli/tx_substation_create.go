@@ -26,10 +26,15 @@ func CmdSubstationCreate() *cobra.Command {
 				return err
 			}
 
-			argOwner, err := cast.ToUint64E(args[1])
-			if err != nil {
-				return err
-			}
+
+            var argOwner uint64
+            if (len(args) > 1) {
+                argOwner, err = cast.ToUint64E(args[1])
+                if err != nil {
+                    return err
+                }
+
+            }
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

@@ -32,12 +32,18 @@ func CmdReactorAllocationCreate() *cobra.Command {
 				return err
 			}
 
-            argController := args[2]
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
+
+            var argController string
+
+            if (len(args) > 2) {
+                argController = args[2]
+            } else {
+                argController = clientCtx.GetFromAddress().String()
+            }
 
 			msg := types.NewMsgReactorAllocationCreate(
 				clientCtx.GetFromAddress().String(),
