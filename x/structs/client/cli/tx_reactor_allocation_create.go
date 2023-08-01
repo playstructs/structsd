@@ -9,34 +9,41 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
+
+	//sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 var _ = strconv.Itoa(0)
 
-func CmdReactorAllocationActivate() *cobra.Command {
+func CmdReactorAllocationCreate() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "reactor-allocation-activate [allocation-id] [decision]",
-		Short: "Broadcast message reactor-allocation-activate",
-		Args:  cobra.ExactArgs(2),
+		Use:   "reactor-allocation-create [source-id] [power] [controller]",
+		Short: "Broadcast message reactor-allocation-create",
+		Args:  cobra.RangeArgs(2, 3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argAllocationId, err := cast.ToUint64E(args[0])
+
+			argSourceId, err := cast.ToUint64E(args[0])
 			if err != nil {
 				return err
 			}
-			argDecision, err := cast.ToBoolE(args[1])
+
+			argPower, err := cast.ToUint64E(args[1])
 			if err != nil {
 				return err
 			}
+
+            argController := args[2]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgReactorAllocationActivate(
+			msg := types.NewMsgReactorAllocationCreate(
 				clientCtx.GetFromAddress().String(),
-				argAllocationId,
-				argDecision,
+				argController,
+				argSourceId,
+				argPower,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

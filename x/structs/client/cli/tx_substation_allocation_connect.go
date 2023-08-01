@@ -13,14 +13,18 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdSubstationPlayerDisconnect() *cobra.Command {
+func CmdSubstationAllocationConnect() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "substation-player-disconnect [player-id]",
-		Short: "Broadcast message substation-player-disconnect",
-		Args:  cobra.ExactArgs(1),
+		Use:   "substation-allocation-connect [allocation-id] [destination-substation-id]",
+		Short: "Broadcast message substation-allocation-connect",
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
+			argAllocationId, err := cast.ToUint64E(args[0])
+			if err != nil {
+				return err
+			}
 
-			argPlayerId, err := cast.ToUint64E(args[0])
+			argDestinationSubstationId, err := cast.ToUint64E(args[1])
 			if err != nil {
 				return err
 			}
@@ -30,9 +34,10 @@ func CmdSubstationPlayerDisconnect() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgSubstationPlayerDisconnect(
+			msg := types.NewMsgSubstationAllocationConnect(
 				clientCtx.GetFromAddress().String(),
-				argPlayerId,
+				argAllocationId,
+				argDestinationSubstationId,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
