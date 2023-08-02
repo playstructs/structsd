@@ -46368,6 +46368,9 @@ paths:
                       type: string
                     creator:
                       type: string
+                    owner:
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -46493,6 +46496,9 @@ paths:
                     type: string
                   creator:
                     type: string
+                  owner:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -75234,6 +75240,9 @@ definitions:
         type: string
       creator:
         type: string
+      owner:
+        type: string
+        format: uint64
   structs.structs.MsgAddressRegisterResponse:
     type: object
   structs.structs.MsgAddressRevokeResponse:
@@ -75246,6 +75255,10 @@ definitions:
         format: uint64
   structs.structs.MsgGuildCreateResponse:
     type: object
+    properties:
+      guildId:
+        type: string
+        format: uint64
   structs.structs.MsgPlayerCreateProxyResponse:
     type: object
   structs.structs.MsgPlayerCreateResponse:
@@ -75410,6 +75423,9 @@ definitions:
               type: string
             creator:
               type: string
+            owner:
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -75645,6 +75661,9 @@ definitions:
             type: string
           creator:
             type: string
+          owner:
+            type: string
+            format: uint64
   structs.structs.QueryGetPlayerResponse:
     type: object
     properties:

@@ -66,6 +66,7 @@ const (
 const (
 	GuildKey      = "Guild/value/"
 	GuildCountKey = "Guild/count/"
+	GuildPermissionKey = "Guild/permission/"
 )
 
 const (

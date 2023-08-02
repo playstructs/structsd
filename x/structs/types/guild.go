@@ -18,9 +18,41 @@ func (guild *Guild) SetEndpoint(endpoint string) error {
 	return nil
 }
 
+func (guild *Guild) SetOwner(player Player) error {
+
+	guild.Owner = player.Id
+
+	return nil
+}
+
 func CreateEmptyGuild() Guild {
 	return Guild{
 		Endpoint: "",
 		Creator:  "",
 	}
 }
+
+
+
+type GuildPermission uint16
+
+const (
+    // 1
+	GuildPermissionGrantUpdate GuildPermission = 1 << iota
+    // 2
+	GuildPermissionUpdate
+	// 4
+	GuildPermissionGrantRegisterPlayer
+	// 8
+	GuildPermissionRegisterPlayer
+	// 16
+	GuildPermissionGrantDelete
+	// 32
+	GuildPermissionDelete
+)
+const (
+    GuildPermissionless GuildPermission = 0 << iota
+	GuildPermissionAll = GuildPermissionUpdate | GuildPermissionRegisterPlayer | GuildPermissionDelete
+	GuildPermissionAllWithGrant = GuildPermissionGrantUpdate | GuildPermissionUpdate | GuildPermissionGrantRegisterPlayer | GuildPermissionRegisterPlayer | GuildPermissionGrantDelete | GuildPermissionDelete
+)
+
