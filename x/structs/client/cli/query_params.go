@@ -15,10 +15,10 @@ func CmdQueryParams() *cobra.Command {
 		Short: "shows the parameters of the module",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
-            clientCtx, err := client.GetClientQueryContext(cmd)
-            if err != nil {
-                return err
-            }
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			queryClient := types.NewQueryClient(clientCtx)
 

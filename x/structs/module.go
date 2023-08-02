@@ -16,7 +16,6 @@ limitations under the License.
 
 */
 
-
 package structs
 
 import (
@@ -131,7 +130,6 @@ func NewAppModule(
 	}
 }
 
-
 // RegisterServices registers a gRPC query service to respond to the module-specific gRPC queries
 func (am AppModule) RegisterServices(cfg module.Configurator) {
 	types.RegisterMsgServer(cfg.MsgServer(), keeper.NewMsgServerImpl(am.keeper))
@@ -163,12 +161,11 @@ func (AppModule) ConsensusVersion() uint64 { return 1 }
 
 // BeginBlock contains the logic that is automatically triggered at the beginning of each block
 func (am AppModule) BeginBlock(ctx sdk.Context, _ abci.RequestBeginBlock) {
-    //
+	//
 }
-
 
 // EndBlock contains the logic that is automatically triggered at the end of each block
 func (am AppModule) EndBlock(ctx sdk.Context, _ abci.RequestEndBlock) []abci.ValidatorUpdate {
-    am.keeper.EndBlocker(ctx)
-    return []abci.ValidatorUpdate{}
+	am.keeper.EndBlocker(ctx)
+	return []abci.ValidatorUpdate{}
 }

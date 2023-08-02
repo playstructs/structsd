@@ -13,16 +13,15 @@ import (
 
 	servertypes "github.com/cosmos/cosmos-sdk/server/types"
 
+	tmdb "github.com/cometbft/cometbft-db"
+	tmrand "github.com/cometbft/cometbft/libs/rand"
 	"github.com/cosmos/cosmos-sdk/testutil/network"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/stretchr/testify/require"
-	tmrand "github.com/cometbft/cometbft/libs/rand"
-	tmdb "github.com/cometbft/cometbft-db"
 
-    pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
-    simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
-
+	pruningtypes "github.com/cosmos/cosmos-sdk/store/pruning/types"
+	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
 )
 
 type (
@@ -44,8 +43,8 @@ func New(t *testing.T, configs ...network.Config) *network.Network {
 	}
 	net, err := network.New(t, t.TempDir(), cfg)
 	require.NoError(t, err)
-    _, err = net.WaitForHeight(1)
-    require.NoError(t, err)
+	_, err = net.WaitForHeight(1)
+	require.NoError(t, err)
 	t.Cleanup(net.Cleanup)
 	return net
 }
@@ -53,28 +52,27 @@ func New(t *testing.T, configs ...network.Config) *network.Network {
 // DefaultConfig will initialize config for the network with custom application,
 // genesis and single validator. All other parameters are inherited from cosmos-sdk/testutil/network.DefaultConfig
 func DefaultConfig() network.Config {
-    var (
-        encoding = app.MakeEncodingConfig()
-        chainID  = "chain-" + tmrand.NewRand().Str(6)
-    )
+	var (
+		encoding = app.MakeEncodingConfig()
+		chainID  = "chain-" + tmrand.NewRand().Str(6)
+	)
 	return network.Config{
 		Codec:             encoding.Marshaler,
 		TxConfig:          encoding.TxConfig,
 		LegacyAmino:       encoding.Amino,
 		InterfaceRegistry: encoding.InterfaceRegistry,
 		AccountRetriever:  authtypes.AccountRetriever{},
-        AppConstructor: func(val network.ValidatorI) servertypes.Application {
+		AppConstructor: func(val network.ValidatorI) servertypes.Application {
 			return app.New(
 				val.GetCtx().Logger,
 				tmdb.NewMemDB(), nil, true, map[int64]bool{},
 				val.GetCtx().Config.RootDir,
 				0,
 				encoding,
-                simtestutil.EmptyAppOptions{},
-                baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),
-                baseapp.SetMinGasPrices(val.GetAppConfig().MinGasPrices),
-                baseapp.SetChainID(chainID),
-
+				simtestutil.EmptyAppOptions{},
+				baseapp.SetPruning(pruningtypes.NewPruningOptionsFromString(val.GetAppConfig().Pruning)),
+				baseapp.SetMinGasPrices(val.GetAppConfig().MinGasPrices),
+				baseapp.SetChainID(chainID),
 			)
 		},
 		GenesisState:    app.ModuleBasics.DefaultGenesis(encoding.Marshaler),

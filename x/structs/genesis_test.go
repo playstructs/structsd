@@ -50,6 +50,24 @@ func TestGenesis(t *testing.T) {
 			},
 		},
 		AllocationProposalCount: 2,
+		GuildList: []types.Guild{
+			{
+				Id: 0,
+			},
+			{
+				Id: 1,
+			},
+		},
+		GuildCount: 2,
+		PlayerList: []types.Player{
+			{
+				Id: 0,
+			},
+			{
+				Id: 1,
+			},
+		},
+		PlayerCount: 2,
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -71,5 +89,9 @@ func TestGenesis(t *testing.T) {
 	require.Equal(t, genesisState.AllocationCount, got.AllocationCount)
 	require.ElementsMatch(t, genesisState.AllocationProposalList, got.AllocationProposalList)
 	require.Equal(t, genesisState.AllocationProposalCount, got.AllocationProposalCount)
+	require.ElementsMatch(t, genesisState.GuildList, got.GuildList)
+	require.Equal(t, genesisState.GuildCount, got.GuildCount)
+	require.ElementsMatch(t, genesisState.PlayerList, got.PlayerList)
+	require.Equal(t, genesisState.PlayerCount, got.PlayerCount)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

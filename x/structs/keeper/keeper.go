@@ -3,6 +3,7 @@ package keeper
 import (
 	"fmt"
 
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -12,7 +13,6 @@ import (
 	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
 	host "github.com/cosmos/ibc-go/v7/modules/core/24-host"
 	"github.com/cosmos/ibc-go/v7/modules/core/exported"
-	"github.com/cometbft/cometbft/libs/log"
 
 	"structs/x/structs/types"
 )
@@ -31,7 +31,7 @@ type (
 		bankKeeper    types.BankKeeper
 		stakingKeeper types.StakingKeeper
 
-		tStoreKey     storetypes.StoreKey
+		tStoreKey storetypes.StoreKey
 	}
 )
 
@@ -46,7 +46,7 @@ func NewKeeper(
 
 	bankKeeper types.BankKeeper,
 	stakingKeeper types.StakingKeeper,
-	tStoreKey   storetypes.StoreKey,
+	tStoreKey storetypes.StoreKey,
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {

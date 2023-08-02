@@ -29,7 +29,7 @@ func (k Keeper) ReactorAll(goCtx context.Context, req *types.QueryAllReactorRequ
 			return err
 		}
 
-        reactor.Load = k.ReactorGetLoad(ctx, reactor.Id)
+		reactor.Load = k.ReactorGetLoad(ctx, reactor.Id)
 
 		reactors = append(reactors, reactor)
 		return nil

@@ -7,21 +7,25 @@ import "structs/structs/params.proto";
 import "structs/structs/reactor.proto";
 import "structs/structs/substation.proto";
 import "structs/structs/allocation.proto";
-
+import "structs/structs/guild.proto";
+import "structs/structs/player.proto";
 
 option go_package = "structs/x/structs/types";
 
 // GenesisState defines the structs module's genesis state.
 message GenesisState {
-           Params             params                  =  1 [(gogoproto.nullable) = false];
-           string             port_id                 =  2;
-  repeated Reactor            reactorList             =  3 [(gogoproto.nullable) = false];
-           uint64             reactorCount            =  4;
-  repeated Substation         substationList          =  5 [(gogoproto.nullable) = false];
-           uint64             substationCount         =  6;
-  repeated Allocation         allocationList          =  7 [(gogoproto.nullable) = false];
-           uint64             allocationCount         =  8;
-  repeated uint64             allocationStatus        =  9;
-
+           Params     params           =  1 [(gogoproto.nullable) = false];
+           string     port_id          =  2;
+  repeated Reactor    reactorList      =  3 [(gogoproto.nullable) = false];
+           uint64     reactorCount     =  4;
+  repeated Substation substationList   =  5 [(gogoproto.nullable) = false];
+           uint64     substationCount  =  6;
+  repeated Allocation allocationList   =  7 [(gogoproto.nullable) = false];
+           uint64     allocationCount  =  8;
+  repeated uint64     allocationStatus =  9;
+  repeated Guild      guildList        = 10 [(gogoproto.nullable) = false];
+           uint64     guildCount       = 11;
+  repeated Player     playerList       = 12 [(gogoproto.nullable) = false];
+           uint64     playerCount      = 13;
 }
 

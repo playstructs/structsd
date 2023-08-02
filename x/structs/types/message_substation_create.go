@@ -11,8 +11,8 @@ var _ sdk.Msg = &MsgSubstationCreate{}
 
 func NewMsgSubstationCreate(creator string, owner uint64, playerConnectionAllocation uint64) *MsgSubstationCreate {
 	return &MsgSubstationCreate{
-		Creator:    creator,
-		Owner:      owner,
+		Creator:                    creator,
+		Owner:                      owner,
 		PlayerConnectionAllocation: playerConnectionAllocation,
 	}
 }

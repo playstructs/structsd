@@ -11,8 +11,8 @@ var _ sdk.Msg = &MsgSubstationAllocationConnect{}
 
 func NewMsgSubstationAllocationConnect(creator string, allocationId uint64, destinationSubstationId uint64) *MsgSubstationAllocationConnect {
 	return &MsgSubstationAllocationConnect{
-		Creator:    creator,
-		AllocationId: allocationId,
+		Creator:                 creator,
+		AllocationId:            allocationId,
 		DestinationSubstationId: destinationSubstationId,
 	}
 }

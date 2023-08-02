@@ -9,7 +9,8 @@ import "structs/structs/params.proto";
 import "structs/structs/reactor.proto";
 import "structs/structs/substation.proto";
 import "structs/structs/allocation.proto";
-
+import "structs/structs/guild.proto";
+import "structs/structs/player.proto";
 
 option go_package = "structs/x/structs/types";
 
@@ -31,7 +32,7 @@ service Query {
     option (google.api.http).get = "/structs/reactor";
   
   }
-
+  
   // Queries a list of Substation items.
   rpc Substation    (QueryGetSubstationRequest) returns (QueryGetSubstationResponse) {
     option (google.api.http).get = "/structs/substation/{id}";
@@ -51,7 +52,26 @@ service Query {
     option (google.api.http).get = "/structs/allocation";
   
   }
-
+  
+  // Queries a list of Guild items.
+  rpc Guild    (QueryGetGuildRequest) returns (QueryGetGuildResponse) {
+    option (google.api.http).get = "/structs/structs/guild/{id}";
+  
+  }
+  rpc GuildAll (QueryAllGuildRequest) returns (QueryAllGuildResponse) {
+    option (google.api.http).get = "/structs/structs/guild";
+  
+  }
+  
+  // Queries a list of Player items.
+  rpc Player    (QueryGetPlayerRequest) returns (QueryGetPlayerResponse) {
+    option (google.api.http).get = "/structs/structs/player/{id}";
+  
+  }
+  rpc PlayerAll (QueryAllPlayerRequest) returns (QueryAllPlayerResponse) {
+    option (google.api.http).get = "/structs/structs/player";
+  
+  }
 }
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
@@ -112,6 +132,40 @@ message QueryAllAllocationRequest {
 message QueryAllAllocationResponse {
   repeated Allocation                             Allocation = 1 [(gogoproto.nullable) = false];
            cosmos.base.query.v1beta1.PageResponse pagination = 2;
-           repeated uint64 status  = 3;
+  repeated uint64                                 status     = 3;
+}
+
+message QueryGetGuildRequest {
+  uint64 id = 1;
+}
+
+message QueryGetGuildResponse {
+  Guild Guild = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllGuildRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllGuildResponse {
+  repeated Guild                                  Guild      = 1 [(gogoproto.nullable) = false];
+           cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetPlayerRequest {
+  uint64 id = 1;
+}
+
+message QueryGetPlayerResponse {
+  Player Player = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllPlayerRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllPlayerResponse {
+  repeated Player                                 Player     = 1 [(gogoproto.nullable) = false];
+           cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

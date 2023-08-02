@@ -37,42 +37,41 @@ func KeyPrefix(p string) []byte {
 }
 
 const (
-	ReactorKey              = "Reactor/value/"
-	ReactorCountKey         = "Reactor/count/"
-	ReactorValidatorKey     = "Reactor/validator/"
-	ReactorCapacityKey      = "Reactor/capacity/"
-	ReactorLoadKey          = "Reactor/load/"
-	ReactorEnergyKey        = "Reactor/energy/"
+	ReactorKey          = "Reactor/value/"
+	ReactorCountKey     = "Reactor/count/"
+	ReactorValidatorKey = "Reactor/validator/"
+	ReactorCapacityKey  = "Reactor/capacity/"
+	ReactorLoadKey      = "Reactor/load/"
+	ReactorEnergyKey    = "Reactor/energy/"
 )
 
 const (
-	SubstationKey               = "Substation/value/"
-	SubstationCountKey          = "Substation/count/"
-	SubstationStatusKey         = "Substation/status/"
+	SubstationKey       = "Substation/value/"
+	SubstationCountKey  = "Substation/count/"
+	SubstationStatusKey = "Substation/status/"
 
-    SubstationLoadKey                   = "Substation/load/"
-    SubstationAllocationLoadKey         = "Substation/allocationLoad/"
-    SubstationConnectedPlayerLoadKey    = "Substation/connectedPlayerLoad/"
-    SubstationConnectedPlayerCount     = "Substation/connectedPlayerCount/"
+	SubstationLoadKey                = "Substation/load/"
+	SubstationAllocationLoadKey      = "Substation/allocationLoad/"
+	SubstationConnectedPlayerLoadKey = "Substation/connectedPlayerLoad/"
+	SubstationConnectedPlayerCount   = "Substation/connectedPlayerCount/"
 
-    SubstationEnergyKey                 = "Substation/energy/"
-
+	SubstationEnergyKey = "Substation/energy/"
 )
 
 const (
 	AllocationKey      = "Allocation/value/"
 	AllocationCountKey = "Allocation/count/"
-	AllocationStatusKey = "Allocation/Status/"
-
-	AllocationStatus_Online = 1
-	AllocationStatus_Offline = 0
 )
 
 const (
-	AllocationProposalKey      = "AllocationProposal/value/"
-	AllocationProposalCountKey = "AllocationProposal/count/"
+	GuildKey      = "Guild/value/"
+	GuildCountKey = "Guild/count/"
 )
 
+const (
+	PlayerKey      = "Player/value/"
+	PlayerCountKey = "Player/count/"
+)
 
 /*
  * Additional code needed for ObjectType enumeration that the proto

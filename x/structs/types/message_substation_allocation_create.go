@@ -9,8 +9,6 @@ const TypeMsgSubstationAllocationCreate = "substation_allocation_create"
 
 var _ sdk.Msg = &MsgSubstationAllocationCreate{}
 
-
-
 func NewMsgSubstationAllocationCreate(creator string, controller string, sourceId uint64, power uint64) *MsgSubstationAllocationCreate {
 	return &MsgSubstationAllocationCreate{
 		Creator:    creator,

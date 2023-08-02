@@ -1,41 +1,36 @@
 package types
 
 import (
-    sdk "github.com/cosmos/cosmos-sdk/types"
-
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
+func (a *Allocation) SetPower(ctx sdk.Context, newPower uint64) error {
 
-func (a *Allocation) SetPower(ctx sdk.Context, newPower uint64) (error) {
+	a.Power = newPower
 
-    a.Power = newPower
-
-    return nil
+	return nil
 }
 
+func (a *Allocation) SetController(ctx sdk.Context, controller string) error {
 
-func (a *Allocation) SetController(ctx sdk.Context, controller string) (error) {
+	a.Controller = controller
 
-    a.Controller = controller
-
-    return nil
+	return nil
 }
 
+func (a *Allocation) Disconnect() error {
 
-func (a *Allocation) Disconnect() (error) {
+	a.DestinationId = 0
 
-    a.DestinationId = 0
-
-    return nil
+	return nil
 }
 
-func (a *Allocation) Connect(ctx sdk.Context, destinationSubstationId uint64) (error) {
+func (a *Allocation) Connect(ctx sdk.Context, destinationSubstationId uint64) error {
 
-    a.DestinationId = destinationSubstationId
+	a.DestinationId = destinationSubstationId
 
-    return nil
+	return nil
 }
-
 
 /*
  * Currently, only Reactors and Structs (Power Plants) can have
@@ -46,7 +41,7 @@ func (a *Allocation) Connect(ctx sdk.Context, destinationSubstationId uint64) (e
  *
  * Use this function anytime a user is providing the objectType of the source objectType
  */
-func IsValidAllocationConnectionType(objectType ObjectType) (bool) {
+func IsValidAllocationConnectionType(objectType ObjectType) bool {
 	for _, a := range []ObjectType{ObjectType_reactor, ObjectType_struct, ObjectType_substation} {
 		if a == objectType {
 			return true
@@ -54,4 +49,3 @@ func IsValidAllocationConnectionType(objectType ObjectType) (bool) {
 	}
 	return false
 }
-

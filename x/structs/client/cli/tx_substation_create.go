@@ -6,8 +6,8 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/spf13/cobra"
 	"github.com/spf13/cast"
+	"github.com/spf13/cobra"
 	"structs/x/structs/types"
 )
 
@@ -20,21 +20,19 @@ func CmdSubstationCreate() *cobra.Command {
 		Args:  cobra.RangeArgs(1, 2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
-
 			argPlayerConnectionAllocation, err := cast.ToUint64E(args[0])
 			if err != nil {
 				return err
 			}
 
+			var argOwner uint64
+			if len(args) > 1 {
+				argOwner, err = cast.ToUint64E(args[1])
+				if err != nil {
+					return err
+				}
 
-            var argOwner uint64
-            if (len(args) > 1) {
-                argOwner, err = cast.ToUint64E(args[1])
-                if err != nil {
-                    return err
-                }
-
-            }
+			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
