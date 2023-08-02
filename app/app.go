@@ -300,6 +300,7 @@ func New(
 	bApp.SetTxEncoder(txConfig.TxEncoder())
 
 
+
 	keys := sdk.NewKVStoreKeys(
 		authtypes.StoreKey, authz.ModuleName, banktypes.StoreKey, stakingtypes.StoreKey, crisistypes.StoreKey,
 		slashingtypes.StoreKey, govtypes.StoreKey,
