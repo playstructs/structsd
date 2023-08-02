@@ -104,7 +104,7 @@ message MsgGuildCreate {
   string endpoint = 2;
 }
 
-message MsgGuildCreateResponse {}
+message MsgGuildCreateResponse { uint64 guildId = 1; }
 
 message MsgPlayerCreateProxy {
   string creator      = 1;
