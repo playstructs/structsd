@@ -17,6 +17,7 @@ func DefaultGenesis() *GenesisState {
 		AllocationList: []Allocation{},
 		GuildList:      []Guild{},
 		PlayerList:     []Player{},
+		AddressList:    []Address{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -88,6 +89,18 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("player id should be lower or equal than the last id")
 		}
 		playerIdMap[elem.Id] = true
+	}
+	// Check for duplicated ID in address
+	addressIdMap := make(map[uint64]bool)
+	addressCount := gs.GetAddressCount()
+	for _, elem := range gs.AddressList {
+		if _, ok := addressIdMap[elem.Id]; ok {
+			return fmt.Errorf("duplicated id for address")
+		}
+		if elem.Id >= addressCount {
+			return fmt.Errorf("address id should be lower or equal than the last id")
+		}
+		addressIdMap[elem.Id] = true
 	}
 	// this line is used by starport scaffolding # genesis/types/validate
 

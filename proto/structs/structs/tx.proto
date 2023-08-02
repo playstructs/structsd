@@ -22,6 +22,8 @@ service Msg {
   rpc GuildCreate                    (MsgGuildCreate                   ) returns (MsgGuildCreateResponse                   );
   rpc PlayerCreateProxy              (MsgPlayerCreateProxy             ) returns (MsgPlayerCreateProxyResponse             );
   rpc PlayerCreate                   (MsgPlayerCreate                  ) returns (MsgPlayerCreateResponse                  );
+  rpc AddressRegister                (MsgAddressRegister               ) returns (MsgAddressRegisterResponse               );
+  rpc AddressRevoke                  (MsgAddressRevoke                 ) returns (MsgAddressRevokeResponse                 );
 }
 message MsgSubstationCreate {
   string creator                    = 1;
@@ -120,4 +122,22 @@ message MsgPlayerCreate {
 }
 
 message MsgPlayerCreateResponse {}
+
+message MsgAddressRegister {
+  string creator     = 1;
+  uint64 playerId    = 2;
+  string addressType = 3;
+  string address     = 4;
+  string proof       = 5;
+}
+
+message MsgAddressRegisterResponse {}
+
+message MsgAddressRevoke {
+  string creator  = 1;
+  uint64 playerId = 2;
+  string address  = 3;
+}
+
+message MsgAddressRevokeResponse {}
 

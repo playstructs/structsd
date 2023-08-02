@@ -45,6 +45,13 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 
 	// Set player count
 	k.SetPlayerCount(ctx, genState.PlayerCount)
+	// Set all the address
+	for _, elem := range genState.AddressList {
+		k.SetAddress(ctx, elem)
+	}
+
+	// Set address count
+	k.SetAddressCount(ctx, genState.AddressCount)
 	// this line is used by starport scaffolding # genesis/module/init
 	k.SetPort(ctx, genState.PortId)
 	// Only try to bind to port if it is not already bound, since we may already own
@@ -76,6 +83,8 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.GuildCount = k.GetGuildCount(ctx)
 	genesis.PlayerList = k.GetAllPlayer(ctx)
 	genesis.PlayerCount = k.GetPlayerCount(ctx)
+	genesis.AddressList = k.GetAllAddress(ctx)
+	genesis.AddressCount = k.GetAddressCount(ctx)
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

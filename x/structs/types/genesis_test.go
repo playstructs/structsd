@@ -76,6 +76,15 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				PlayerCount: 2,
+				AddressList: []types.Address{
+					{
+						Id: 0,
+					},
+					{
+						Id: 1,
+					},
+				},
+				AddressCount: 2,
 				// this line is used by starport scaffolding # types/genesis/validField
 			},
 			valid: true,
@@ -233,6 +242,32 @@ func TestGenesisState_Validate(t *testing.T) {
 					},
 				},
 				PlayerCount: 0,
+			},
+			valid: false,
+		},
+		{
+			desc: "duplicated address",
+			genState: &types.GenesisState{
+				AddressList: []types.Address{
+					{
+						Id: 0,
+					},
+					{
+						Id: 0,
+					},
+				},
+			},
+			valid: false,
+		},
+		{
+			desc: "invalid address count",
+			genState: &types.GenesisState{
+				AddressList: []types.Address{
+					{
+						Id: 1,
+					},
+				},
+				AddressCount: 0,
 			},
 			valid: false,
 		},

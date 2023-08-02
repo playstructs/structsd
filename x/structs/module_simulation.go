@@ -67,6 +67,14 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgPlayerCreate int = 100
 
+	opWeightMsgAddressRegister = "op_weight_msg_address_register"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgAddressRegister int = 100
+
+	opWeightMsgAddressRevoke = "op_weight_msg_address_revoke"
+	// TODO: Determine the simulation weight value
+	defaultWeightMsgAddressRevoke int = 100
+
 	// this line is used by starport scaffolding # simapp/module/const
 )
 
@@ -113,6 +121,22 @@ func (am AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.Wei
 			defaultWeightMsgPlayerCreate,
 			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
 				structssimulation.SimulateMsgPlayerCreate(am.accountKeeper, am.bankKeeper, am.keeper)
+				return nil
+			},
+		),
+		simulation.NewWeightedProposalMsg(
+			opWeightMsgAddressRegister,
+			defaultWeightMsgAddressRegister,
+			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+				structssimulation.SimulateMsgAddressRegister(am.accountKeeper, am.bankKeeper, am.keeper)
+				return nil
+			},
+		),
+		simulation.NewWeightedProposalMsg(
+			opWeightMsgAddressRevoke,
+			defaultWeightMsgAddressRevoke,
+			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
+				structssimulation.SimulateMsgAddressRevoke(am.accountKeeper, am.bankKeeper, am.keeper)
 				return nil
 			},
 		),
@@ -246,6 +270,28 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	operations = append(operations, simulation.NewWeightedOperation(
 		weightMsgPlayerCreate,
 		structssimulation.SimulateMsgPlayerCreate(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgAddressRegister int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgAddressRegister, &weightMsgAddressRegister, nil,
+		func(_ *rand.Rand) {
+			weightMsgAddressRegister = defaultWeightMsgAddressRegister
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgAddressRegister,
+		structssimulation.SimulateMsgAddressRegister(am.accountKeeper, am.bankKeeper, am.keeper),
+	))
+
+	var weightMsgAddressRevoke int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgAddressRevoke, &weightMsgAddressRevoke, nil,
+		func(_ *rand.Rand) {
+			weightMsgAddressRevoke = defaultWeightMsgAddressRevoke
+		},
+	)
+	operations = append(operations, simulation.NewWeightedOperation(
+		weightMsgAddressRevoke,
+		structssimulation.SimulateMsgAddressRevoke(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	// this line is used by starport scaffolding # simapp/module/operation

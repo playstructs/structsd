@@ -68,6 +68,15 @@ func TestGenesis(t *testing.T) {
 			},
 		},
 		PlayerCount: 2,
+		AddressList: []types.Address{
+			{
+				Id: 0,
+			},
+			{
+				Id: 1,
+			},
+		},
+		AddressCount: 2,
 		// this line is used by starport scaffolding # genesis/test/state
 	}
 
@@ -93,5 +102,7 @@ func TestGenesis(t *testing.T) {
 	require.Equal(t, genesisState.GuildCount, got.GuildCount)
 	require.ElementsMatch(t, genesisState.PlayerList, got.PlayerList)
 	require.Equal(t, genesisState.PlayerCount, got.PlayerCount)
+	require.ElementsMatch(t, genesisState.AddressList, got.AddressList)
+	require.Equal(t, genesisState.AddressCount, got.AddressCount)
 	// this line is used by starport scaffolding # genesis/test/assert
 }

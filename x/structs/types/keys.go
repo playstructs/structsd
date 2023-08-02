@@ -73,6 +73,11 @@ const (
 	PlayerCountKey = "Player/count/"
 )
 
+const (
+	AddressKey      = "Address/value/"
+	AddressCountKey = "Address/count/"
+)
+
 /*
  * Additional code needed for ObjectType enumeration that the proto
  * file doesn't seem to generate in keys.pb.go
@@ -88,3 +93,4 @@ var ObjectType_enum = map[string]ObjectType{
 	"struct":     ObjectType_struct,
 	"allocation": ObjectType_allocation,
 }
+

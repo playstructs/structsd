@@ -11,6 +11,7 @@ import "structs/structs/substation.proto";
 import "structs/structs/allocation.proto";
 import "structs/structs/guild.proto";
 import "structs/structs/player.proto";
+import "structs/structs/address.proto";
 
 option go_package = "structs/x/structs/types";
 
@@ -70,6 +71,16 @@ service Query {
   }
   rpc PlayerAll (QueryAllPlayerRequest) returns (QueryAllPlayerResponse) {
     option (google.api.http).get = "/structs/structs/player";
+  
+  }
+  
+  // Queries a list of Address items.
+  rpc Address    (QueryGetAddressRequest) returns (QueryGetAddressResponse) {
+    option (google.api.http).get = "/structs/structs/address/{id}";
+  
+  }
+  rpc AddressAll (QueryAllAddressRequest) returns (QueryAllAddressResponse) {
+    option (google.api.http).get = "/structs/structs/address";
   
   }
 }
@@ -166,6 +177,23 @@ message QueryAllPlayerRequest {
 
 message QueryAllPlayerResponse {
   repeated Player                                 Player     = 1 [(gogoproto.nullable) = false];
+           cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetAddressRequest {
+  uint64 id = 1;
+}
+
+message QueryGetAddressResponse {
+  Address Address = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllAddressRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAddressResponse {
+  repeated Address                                Address    = 1 [(gogoproto.nullable) = false];
            cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
