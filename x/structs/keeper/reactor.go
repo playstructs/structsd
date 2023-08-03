@@ -54,10 +54,26 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
         if (playerId == 0) {
 
             // TODO FIX
+            /*
+                create player
+                create substation
+                create allocation
+                connect allocation
+                grant permissions to reactor to player
+            */
 
 
             player := types.CreateEmptyPlayer()
-            player.SetGuildId
+
+            substation := types.CreateEmptySubstation()
+            //grant player permissions to substation
+
+            allocation := types.CreateEmptyAllocation()
+            //set allocation owner
+
+            // connect allocation to substation
+
+            // grant  permissions to reactor
 
         } else {
             k.GetPlayer(ctx, playerId)

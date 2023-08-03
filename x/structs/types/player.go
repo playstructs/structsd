@@ -28,7 +28,7 @@ func (player *Player) SetSubstation(substationId uint64) error {
 
 
 func CreateEmptyPlayer() Player {
-	return Guild{
+	return Player{
 		GuildId:        0,
 		SubstationId:   0,
 	}
@@ -36,25 +36,25 @@ func CreateEmptyPlayer() Player {
 
 
 
-type GuildPermission uint16
+type PlayerPermission uint16
 
 const (
     // 1
-	GuildPermissionGrantUpdate GuildPermission = 1 << iota
+	PlayerPermissionGrantUpdate PlayerPermission = 1 << iota
     // 2
-	GuildPermissionUpdate
+	PlayerPermissionUpdate
 	// 4
-	GuildPermissionGrantRegisterPlayer
+	PlayerPermissionGrantRegisterPlayer
 	// 8
-	GuildPermissionRegisterPlayer
+	PlayerPermissionRegisterPlayer
 	// 16
-	GuildPermissionGrantDelete
+	PlayerPermissionGrantDelete
 	// 32
-	GuildPermissionDelete
+	PlayerPermissionDelete
 )
 const (
-    GuildPermissionless GuildPermission = 0 << iota
-	GuildPermissionAll = GuildPermissionUpdate | GuildPermissionRegisterPlayer | GuildPermissionDelete
-	GuildPermissionAllWithGrant = GuildPermissionGrantUpdate | GuildPermissionUpdate | GuildPermissionGrantRegisterPlayer | GuildPermissionRegisterPlayer | GuildPermissionGrantDelete | GuildPermissionDelete
+    PlayerPermissionless PlayerPermission = 0 << iota
+	PlayerPermissionAll = PlayerPermissionUpdate | PlayerPermissionRegisterPlayer | PlayerPermissionDelete
+	PlayerPermissionAllWithGrant = PlayerPermissionGrantUpdate | PlayerPermissionUpdate | PlayerPermissionGrantRegisterPlayer | PlayerPermissionRegisterPlayer | PlayerPermissionGrantDelete | PlayerPermissionDelete
 )
 
