@@ -46,7 +46,23 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
 		/*
 		 * Commit Reactor to the Keeper
 		 */
-		k.AppendReactor(ctx, reactor)
+		reactorId := k.AppendReactor(ctx, reactor)
+
+
+        identity := validator.Description.Identity
+        playerId := k.GetPlayerIdFromAddress(ctx, identity)
+        if (playerId == 0) {
+
+            // TODO FIX
+
+            player := types.CreateEmptyPlayer()
+            player.SetGuildId
+
+        } else {
+            k.GetPlayer(ctx, playerId)
+        }
+
+
 	}
 	return reactor
 }
@@ -107,6 +123,8 @@ func (k Keeper) ReactorUpdateFromValidator(ctx sdk.Context, validatorAddress sdk
 	if reactorBytesFound {
 		reactor, _ = k.GetReactorByBytes(ctx, reactorBytes, false)
 	}
+
+
 
 	/* Sync Energy Levels
 	 *
