@@ -55,6 +55,7 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
 
             // TODO FIX
 
+
             player := types.CreateEmptyPlayer()
             player.SetGuildId
 
