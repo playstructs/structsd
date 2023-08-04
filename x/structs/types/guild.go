@@ -18,9 +18,9 @@ func (guild *Guild) SetEndpoint(endpoint string) error {
 	return nil
 }
 
-func (guild *Guild) SetOwner(player Player) error {
+func (guild *Guild) SetOwner(playerId uint64) error {
 
-	guild.Owner = player.Id
+	guild.Owner = playerId
 
 	return nil
 }

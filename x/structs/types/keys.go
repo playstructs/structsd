@@ -98,7 +98,7 @@ const (
  * So this seems like as good a place as any for it.
  */
 var ObjectType_enum = map[string]ObjectType{
-	"faction":    ObjectType_faction,
+	"guild":      ObjectType_guild,
 	"player":     ObjectType_player,
 	"planet":     ObjectType_planet,
 	"reactor":    ObjectType_reactor,

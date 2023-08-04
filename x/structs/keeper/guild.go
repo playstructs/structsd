@@ -52,6 +52,8 @@ func (k Keeper) AppendGuild(
 	// Update guild count
 	k.SetGuildCount(ctx, count+1)
 
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: guild.Id, ObjectType: types.ObjectType_guild})
+
 	return count
 }
 
@@ -60,6 +62,8 @@ func (k Keeper) SetGuild(ctx sdk.Context, guild types.Guild) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GuildKey))
 	b := k.cdc.MustMarshal(&guild)
 	store.Set(GetGuildIDBytes(guild.Id), b)
+
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: guild.Id, ObjectType: types.ObjectType_guild})
 }
 
 // GetGuild returns a guild from its id

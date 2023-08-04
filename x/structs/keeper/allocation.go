@@ -50,6 +50,8 @@ func (k Keeper) AppendAllocation(
 	// Update allocation count
 	k.SetAllocationCount(ctx, count+1)
 
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: allocation.Id, ObjectType: types.ObjectType_allocation})
+
 	return count
 }
 
@@ -58,6 +60,8 @@ func (k Keeper) SetAllocation(ctx sdk.Context, allocation types.Allocation) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AllocationKey))
 	b := k.cdc.MustMarshal(&allocation)
 	store.Set(GetAllocationIDBytes(allocation.Id), b)
+
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: allocation.Id, ObjectType: types.ObjectType_allocation})
 }
 
 // GetAllocation returns a allocation from its id

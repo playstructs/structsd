@@ -75,7 +75,7 @@ func (m *EventCacheInvalidation) GetObjectType() ObjectType {
 	if m != nil {
 		return m.ObjectType
 	}
-	return ObjectType_faction
+	return ObjectType_guild
 }
 
 func init() {

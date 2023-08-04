@@ -61,6 +61,8 @@ func (k Keeper) AppendPlayer(
 	// Update player count
 	k.SetPlayerCount(ctx, count+1)
 
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: player.Id, ObjectType: types.ObjectType_player})
+
 	return count
 }
 
@@ -69,6 +71,8 @@ func (k Keeper) SetPlayer(ctx sdk.Context, player types.Player) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
 	b := k.cdc.MustMarshal(&player)
 	store.Set(GetPlayerIDBytes(player.Id), b)
+
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: player.Id, ObjectType: types.ObjectType_player})
 }
 
 // GetPlayer returns a player from its id

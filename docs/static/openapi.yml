@@ -45746,14 +45746,14 @@ paths:
                     sourceType:
                       type: string
                       enum:
-                        - faction
+                        - guild
                         - player
                         - planet
                         - reactor
                         - substation
                         - struct
                         - allocation
-                      default: faction
+                      default: guild
                     sourceId:
                       type: string
                       format: uint64
@@ -45898,14 +45898,14 @@ paths:
                   sourceType:
                     type: string
                     enum:
-                      - faction
+                      - guild
                       - player
                       - planet
                       - reactor
                       - substation
                       - struct
                       - allocation
-                    default: faction
+                    default: guild
                   sourceId:
                     type: string
                     format: uint64
@@ -75217,14 +75217,14 @@ definitions:
       sourceType:
         type: string
         enum:
-          - faction
+          - guild
           - player
           - planet
           - reactor
           - substation
           - struct
           - allocation
-        default: faction
+        default: guild
       sourceId:
         type: string
         format: uint64
@@ -75364,14 +75364,14 @@ definitions:
             sourceType:
               type: string
               enum:
-                - faction
+                - guild
                 - player
                 - planet
                 - reactor
                 - substation
                 - struct
                 - allocation
-              default: faction
+              default: guild
             sourceId:
               type: string
               format: uint64
@@ -75640,14 +75640,14 @@ definitions:
           sourceType:
             type: string
             enum:
-              - faction
+              - guild
               - player
               - planet
               - reactor
               - substation
               - struct
               - allocation
-            default: faction
+            default: guild
           sourceId:
             type: string
             format: uint64
@@ -75796,11 +75796,11 @@ definitions:
   structs.structs.objectType:
     type: string
     enum:
-      - faction
+      - guild
       - player
       - planet
       - reactor
       - substation
       - struct
       - allocation
-    default: faction
+    default: guild

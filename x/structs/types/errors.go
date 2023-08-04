@@ -21,6 +21,8 @@ var (
 	ErrAllocationSourceNotOnline            = sdkerrors.Register(ModuleName, 1514, "source not online")
 	ErrAllocationConnectionChangeImpossible = sdkerrors.Register(ModuleName, 1515, "allocation connection change attempted is impossible")
 
+    ErrPlayerRequired                       = sdkerrors.Register(ModuleName, 1530, "player account required for this action")
+
 	ErrSubstationNotFound         = sdkerrors.Register(ModuleName, 1550, "substation not found")
 	ErrSubstationHasNoPowerSource = sdkerrors.Register(ModuleName, 1551, "substation has no power source")
 

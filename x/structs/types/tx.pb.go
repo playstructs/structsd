@@ -662,7 +662,7 @@ func (m *MsgAllocationCreate) GetSourceType() ObjectType {
 	if m != nil {
 		return m.SourceType
 	}
-	return ObjectType_faction
+	return ObjectType_guild
 }
 
 func (m *MsgAllocationCreate) GetSourceId() uint64 {

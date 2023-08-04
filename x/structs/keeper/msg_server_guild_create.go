@@ -4,6 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"structs/x/structs/types"
 )
 
@@ -15,19 +16,20 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
 		return nil, err
 	}
 
+
+    playerId := k.GetPlayerIdFromAddress(ctx, msg.Creator)
+    if (playerId == 0) {
+        return nil, sdkerrors.Wrapf(types.ErrPlayerRequired, "Guild creation requires Player account but none associated with %s", msg.Creator)
+    }
+    //player, _ = k.GetPlayer(ctx, playerId)
+
 	guild := types.CreateEmptyGuild()
 	guild.SetEndpoint(msg.Endpoint)
 	guild.SetCreator(msg.Creator)
-
-    // Check if Creator is associated with a validator
-
-    // Check to see if Creator is associated with a player
-    // if not, create that player account
-
-
-
+	guild.SetOwner(playerId)
 
 	newGuildId := k.AppendGuild(ctx, guild)
+    k.GuildPermissionAdd(ctx, newGuildId, playerId, types.GuildPermissionAll)
 
 
 	return &types.MsgGuildCreateResponse{GuildId: newGuildId}, nil

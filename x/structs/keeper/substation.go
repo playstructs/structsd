@@ -64,6 +64,8 @@ func (k Keeper) AppendSubstation(
 	// Update substation count
 	k.SetSubstationCount(ctx, count+1)
 
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: substation.Id, ObjectType: types.ObjectType_substation})
+
 	return count
 }
 
@@ -72,6 +74,9 @@ func (k Keeper) SetSubstation(ctx sdk.Context, substation types.Substation) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationKey))
 	b := k.cdc.MustMarshal(&substation)
 	store.Set(GetSubstationIDBytes(substation.Id), b)
+
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: substation.Id, ObjectType: types.ObjectType_substation})
+
 }
 
 // GetSubstation returns a substation from its id
@@ -327,6 +332,8 @@ func (k Keeper) SubstationSetLoad(ctx sdk.Context, id uint64, amount uint64) {
 	binary.BigEndian.PutUint64(bz, amount)
 
 	store.Set(GetSubstationIDBytes(id), bz)
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: id, ObjectType: types.ObjectType_substation})
+
 }
 
 // SubstationSetAllocationLoad - Sets the in-memory representation of the aggregate load of all associated allocations
@@ -409,6 +416,9 @@ func (k Keeper) SubstationSetEnergy(ctx sdk.Context, id uint64, amount uint64) {
 	binary.BigEndian.PutUint64(bz, amount)
 
 	store.Set(GetReactorIDBytes(id), bz)
+
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: id, ObjectType: types.ObjectType_substation})
+
 }
 
 // Used to decrement the Substation Energy memory value

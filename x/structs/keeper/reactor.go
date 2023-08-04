@@ -214,6 +214,9 @@ func (k Keeper) AppendReactor(
 	// Update reactor count
 	k.SetReactorCount(ctx, count+1)
 
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: reactor.Id, ObjectType: types.ObjectType_reactor})
+
+
 	return count
 }
 
@@ -222,6 +225,8 @@ func (k Keeper) SetReactor(ctx sdk.Context, reactor types.Reactor) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorKey))
 	b := k.cdc.MustMarshal(&reactor)
 	store.Set(GetReactorIDBytes(reactor.Id), b)
+
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: reactor.Id, ObjectType: types.ObjectType_reactor})
 }
 
 // GetReactor returns a reactor from its id
@@ -451,6 +456,7 @@ func (k Keeper) ReactorSetLoad(ctx sdk.Context, id uint64, amount uint64) {
 	binary.BigEndian.PutUint64(bz, amount)
 
 	store.Set(GetReactorIDBytes(id), bz)
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: id, ObjectType: types.ObjectType_reactor})
 }
 
 // ReactorRebuildLoad - Rebuilds the current load by iterating through all related allocations
@@ -492,6 +498,7 @@ func (k Keeper) ReactorSetEnergy(ctx sdk.Context, id uint64, amount uint64) {
 	binary.BigEndian.PutUint64(bz, amount)
 
 	store.Set(GetReactorIDBytes(id), bz)
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: id, ObjectType: types.ObjectType_reactor})
 }
 
 

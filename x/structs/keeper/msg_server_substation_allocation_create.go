@@ -48,6 +48,7 @@ func (k msgServer) SubstationAllocationCreate(goCtx context.Context, msg *types.
 
 	allocationId := k.AppendAllocation(ctx, allocation)
 
+
 	return &types.MsgAllocationCreateResponse{
 		AllocationId: allocationId,
 	}, nil
