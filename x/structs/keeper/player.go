@@ -8,6 +8,17 @@ import (
 	"structs/x/structs/types"
 )
 
+
+// GetNextPlayerId allocate a new player ID
+func (k Keeper) GetNextPlayerId(ctx sdk.Context) (uint64) {
+
+    nextId := k.GetPlayerCount(ctx)
+
+    k.SetPlayerCount(ctx, nextId  + 1)
+
+	return nextId
+}
+
 // GetPlayerCount get the total number of player
 func (k Keeper) GetPlayerCount(ctx sdk.Context) uint64 {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})

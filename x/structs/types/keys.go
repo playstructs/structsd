@@ -25,6 +25,13 @@ const (
 
 	// Starting value for Keeper IDs
 	KeeperStartValue = 1
+
+	// Starting value for Reactor Owner Initialization
+	InitialReactorOwnerEnergy = 20
+
+	// Starting allocation for Reactor
+    InitialReactorAllocation = 100
+
 )
 
 var (
@@ -43,6 +50,8 @@ const (
 	ReactorCapacityKey  = "Reactor/capacity/"
 	ReactorLoadKey      = "Reactor/load/"
 	ReactorEnergyKey    = "Reactor/energy/"
+
+	ReactorPermissionKey = "Reactor/permission/"
 )
 
 const (
@@ -56,6 +65,8 @@ const (
 	SubstationConnectedPlayerCount   = "Substation/connectedPlayerCount/"
 
 	SubstationEnergyKey = "Substation/energy/"
+
+	SubstationPermissionKey = "Substation/permission/"
 )
 
 const (

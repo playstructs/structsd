@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"structs/x/structs/types"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -47,37 +48,14 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
 		 * Commit Reactor to the Keeper
 		 */
 		reactorId := k.AppendReactor(ctx, reactor)
+        reactor.SetId(reactorId)
 
-
-        identity := validator.Description.Identity
-        playerId := k.GetPlayerIdFromAddress(ctx, identity)
-        if (playerId == 0) {
-
-            // TODO FIX
-            /*
-                create player
-                create substation
-                create allocation
-                connect allocation
-                grant permissions to reactor to player
-            */
-
-
-            player := types.CreateEmptyPlayer()
-
-            substation := types.CreateEmptySubstation()
-            //grant player permissions to substation
-
-            allocation := types.CreateEmptyAllocation()
-            //set allocation owner
-
-            // connect allocation to substation
-
-            // grant  permissions to reactor
-
-        } else {
-            k.GetPlayer(ctx, playerId)
+        activated, _ := k.ReactorActivate(ctx, reactor, validator)
+        if (activated) {
+            reactor.SetActivated(true)
+            k.SetReactor(ctx, reactor)
         }
+
 
 
 	}
@@ -119,8 +97,15 @@ func (k Keeper) ReactorUpdateEnergy(ctx sdk.Context, validatorAddress sdk.ValAdd
 
 	k.SetReactor(ctx, reactor)
 
+    activated, _ := k.ReactorActivate(ctx, reactor, validator)
+    if (activated) {
+        reactor.SetActivated(true)
+        k.SetReactor(ctx, reactor)
+    }
+
 	// Update the connected Substations with the new details
 	k.CascadeReactorAllocationFailure(ctx, reactor)
+
 
 	return reactor
 }
@@ -150,6 +135,13 @@ func (k Keeper) ReactorUpdateFromValidator(ctx sdk.Context, validatorAddress sdk
 	reactor.SetEnergy(validator)
 
 	k.SetReactor(ctx, reactor)
+
+    activated, _ := k.ReactorActivate(ctx, reactor, validator)
+    if (activated) {
+        reactor.SetActivated(true)
+        k.SetReactor(ctx, reactor)
+    }
+
 
 	// Update the connected Substations with the new details
 	k.CascadeReactorAllocationFailure(ctx, reactor)
@@ -303,6 +295,83 @@ func GetReactorIDFromBytes(bz []byte) uint64 {
 	return binary.BigEndian.Uint64(bz)
 }
 
+
+func (k Keeper) ReactorActivate(ctx sdk.Context, reactor types.Reactor, validator staking.Validator) (bool, error) {
+
+    if (reactor.Activated) {
+        return false, sdkerrors.Wrapf(types.ErrReactorActivation, "Reactor already activated")
+    }
+
+    identity := validator.Description.Identity
+
+    if (identity == "") {
+        return false, sdkerrors.Wrapf(types.ErrReactorActivation, "Identity Missing for Reactor Activation")
+    }
+    // TODO verify that identity is actually an address
+        // return error about wrong identity format
+
+
+    if (reactor.Energy < types.InitialReactorAllocation) {
+        energyString := strconv.FormatUint(types.InitialReactorAllocation, 10)
+        return false, sdkerrors.Wrapf(types.ErrReactorActivation, "Reactor Activation Requires %s Energy", energyString)
+    }
+
+    playerId := k.GetPlayerIdFromAddress(ctx, identity)
+
+    var player types.Player
+    if (playerId == 0) {
+        // No Player Found, Creating..
+        player = types.CreateEmptyPlayer()
+        player.SetId(k.GetNextPlayerId(ctx))
+        k.SetPlayer(ctx, player)
+        k.SetPlayerIdForAddress(ctx, identity, player.Id)
+
+        // TODO Add Related Address
+    } else {
+       player, _ = k.GetPlayer(ctx, playerId)
+    }
+
+    // Apply Ownership Permissions of the Reactor to the Player
+    k.ReactorPermissionAdd(ctx, reactor.Id, player.Id, types.ReactorPermissionAll)
+
+    // Now let's get the player some power
+    if (player.SubstationId == 0) {
+        var substation types.Substation
+        substation = types.CreateEmptySubstation()
+        substation.SetId(k.GetNextSubstationId(ctx))
+        substation.SetOwner(player.Id)
+        substation.SetCreator(identity)
+        substation.SetPlayerConnectionAllocation(types.InitialReactorOwnerEnergy)
+        k.SetSubstation(ctx, substation)
+
+        k.SubstationPermissionAdd(ctx, substation.Id, player.Id, types.SubstationPermissionAll)
+
+
+        var allocation types.Allocation
+        allocation = types.CreateEmptyAllocation(types.ObjectType_reactor)
+        allocation.SetController(identity)
+        allocation.SetCreator(identity)
+        allocation.SetPower(types.InitialReactorAllocation)
+        allocation.SetSource(reactor.Id)
+
+        // Connect Allocation to Substation
+        allocation.Connect(substation.Id)
+        _ = k.SubstationIncrementEnergy(ctx, substation.Id, allocation.Power)
+
+        _ = k.AppendAllocation(ctx, allocation)
+
+        // Connect Player to Substation
+        k.SubstationIncrementConnectedPlayerLoad(ctx, substation.Id, 1)
+        player.SetSubstation(substation.Id)
+        k.SetPlayer(ctx, player)
+
+    }
+
+
+    return true, nil
+
+}
+
 // Iterate through the allocations, starting from oldest, and destroy them until power
 // consumption matches output
 func (k Keeper) CascadeReactorAllocationFailure(ctx sdk.Context, reactor types.Reactor) {
@@ -423,4 +492,79 @@ func (k Keeper) ReactorSetEnergy(ctx sdk.Context, id uint64, amount uint64) {
 	binary.BigEndian.PutUint64(bz, amount)
 
 	store.Set(GetReactorIDBytes(id), bz)
+}
+
+
+
+
+// GetReactorPermissionIDBytes returns the byte representation of the reactor and player id pair
+func GetReactorPermissionIDBytes(reactorId uint64, playerId uint64) []byte {
+	reactorIdString  := strconv.FormatUint(reactorId, 10)
+	playerIdString := strconv.FormatUint(playerId, 10)
+
+	return []byte(reactorIdString + "-" + playerIdString)
+}
+
+
+func (k Keeper) ReactorGetPlayerPermissionsByBytes(ctx sdk.Context, permissionRecord []byte) (types.ReactorPermission) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorPermissionKey))
+
+	bz := store.Get(permissionRecord)
+
+	// Substation Capacity Not in Memory: no element
+	if bz == nil {
+		return types.ReactorPermissionless
+	}
+
+	load := types.ReactorPermission(binary.BigEndian.Uint16(bz))
+
+	return load
+}
+
+func (k Keeper) ReactorSetPlayerPermissionsByBytes(ctx sdk.Context, permissionRecord []byte, permissions types.ReactorPermission) (types.ReactorPermission) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorPermissionKey))
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint16(bz, uint16(permissions))
+
+	store.Set(permissionRecord, bz)
+
+	return permissions
+}
+
+func (k Keeper) ReactorPermissionClearAll(ctx sdk.Context, reactorId uint64, playerId uint64) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorPermissionKey))
+	store.Delete(GetReactorPermissionIDBytes(reactorId, playerId))
+}
+
+func (k Keeper) ReactorPermissionAdd(ctx sdk.Context, reactorId uint64, playerId uint64, flag types.ReactorPermission) types.ReactorPermission {
+    permissionRecord := GetReactorPermissionIDBytes(reactorId, playerId)
+
+    currentPermission := k.ReactorGetPlayerPermissionsByBytes(ctx, permissionRecord)
+    newPermissions := k.ReactorSetPlayerPermissionsByBytes(ctx, permissionRecord, currentPermission | flag)
+	return newPermissions
+}
+
+func (k Keeper) ReactorPermissionRemove(ctx sdk.Context, reactorId uint64, playerId uint64, flag types.ReactorPermission) types.ReactorPermission {
+    permissionRecord := GetReactorPermissionIDBytes(reactorId, playerId)
+
+    currentPermission := k.ReactorGetPlayerPermissionsByBytes(ctx, permissionRecord)
+    newPermissions := k.ReactorSetPlayerPermissionsByBytes(ctx, permissionRecord, currentPermission &^ flag)
+	return newPermissions
+}
+
+func (k Keeper) ReactorPermissionHasAll(ctx sdk.Context, reactorId uint64, playerId uint64, flag types.ReactorPermission) bool {
+    permissionRecord := GetReactorPermissionIDBytes(reactorId, playerId)
+
+    currentPermission := k.ReactorGetPlayerPermissionsByBytes(ctx, permissionRecord)
+
+	return currentPermission&flag == flag
+}
+
+func (k Keeper) ReactorPermissionHasOneOf(ctx sdk.Context, reactorId uint64, playerId uint64, flag types.ReactorPermission) bool {
+    permissionRecord := GetReactorPermissionIDBytes(reactorId, playerId)
+
+    currentPermission := k.ReactorGetPlayerPermissionsByBytes(ctx, permissionRecord)
+
+	return currentPermission&flag != 0
 }

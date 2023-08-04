@@ -46009,6 +46009,8 @@ paths:
                     load:
                       type: string
                       format: uint64
+                    activated:
+                      type: boolean
               pagination:
                 type: object
                 properties:
@@ -46139,6 +46141,8 @@ paths:
                   load:
                     type: string
                     format: uint64
+                  activated:
+                    type: boolean
         default:
           description: An unexpected error response.
           schema:
@@ -75515,6 +75519,8 @@ definitions:
             load:
               type: string
               format: uint64
+            activated:
+              type: boolean
       pagination:
         type: object
         properties:
@@ -75697,6 +75703,8 @@ definitions:
           load:
             type: string
             format: uint64
+          activated:
+            type: boolean
   structs.structs.QueryGetSubstationResponse:
     type: object
     properties:
@@ -75745,6 +75753,8 @@ definitions:
       load:
         type: string
         format: uint64
+      activated:
+        type: boolean
   structs.structs.Substation:
     type: object
     properties:

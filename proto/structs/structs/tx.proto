@@ -25,6 +25,7 @@ service Msg {
   rpc AddressRegister                (MsgAddressRegister               ) returns (MsgAddressRegisterResponse               );
   rpc AddressRevoke                  (MsgAddressRevoke                 ) returns (MsgAddressRevokeResponse                 );
 }
+
 message MsgSubstationCreate {
   string creator                    = 1;
   uint64 owner                      = 2;

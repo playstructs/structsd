@@ -2,7 +2,7 @@ version: 1
 accounts:
   - name: alice
     coins:
-      - 2000000alpha
+      - 2000000000alpha
   - name: bob
     coins:
       - 10000alpha

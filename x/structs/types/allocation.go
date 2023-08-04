@@ -1,22 +1,39 @@
 package types
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	//sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (a *Allocation) SetPower(ctx sdk.Context, newPower uint64) error {
+func (a *Allocation) SetCreator(creator string) error {
+
+	a.Creator = creator
+
+	return nil
+}
+
+
+func (a *Allocation) SetPower(newPower uint64) error {
 
 	a.Power = newPower
 
 	return nil
 }
 
-func (a *Allocation) SetController(ctx sdk.Context, controller string) error {
+func (a *Allocation) SetController(controller string) error {
 
 	a.Controller = controller
 
 	return nil
 }
+
+func (a *Allocation) SetSource(sourceId uint64) error {
+
+	a.SourceId = sourceId
+
+	return nil
+}
+
+
 
 func (a *Allocation) Disconnect() error {
 
@@ -25,12 +42,28 @@ func (a *Allocation) Disconnect() error {
 	return nil
 }
 
-func (a *Allocation) Connect(ctx sdk.Context, destinationSubstationId uint64) error {
+func (a *Allocation) Connect(destinationSubstationId uint64) error {
 
 	a.DestinationId = destinationSubstationId
 
 	return nil
 }
+
+
+func CreateEmptyAllocation(sourceType ObjectType) Allocation {
+	return Allocation{
+		Id: 0,
+		SourceType: sourceType,
+		SourceId: 0,
+		DestinationId: 0,
+		Power: 0,
+		Creator: "",
+		Controller: "",
+		Locked: false,
+	}
+}
+
+
 
 /*
  * Currently, only Reactors and Structs (Power Plants) can have
@@ -49,3 +82,4 @@ func IsValidAllocationConnectionType(objectType ObjectType) bool {
 	}
 	return false
 }
+

@@ -43,8 +43,8 @@ func (k msgServer) SubstationAllocationCreate(goCtx context.Context, msg *types.
 		return nil, incrementLoadError
 	}
 
-	allocation.SetPower(ctx, msg.Power)
-	allocation.SetController(ctx, msg.Controller)
+	allocation.SetPower(msg.Power)
+	allocation.SetController(msg.Controller)
 
 	allocationId := k.AppendAllocation(ctx, allocation)
 

@@ -4,12 +4,14 @@ import (
 	//sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
-func (player *Player) SetCreator(creator string) error {
 
-	player.Creator = creator
+func (player *Player) SetId(id uint64) error {
+
+	player.Id = id
 
 	return nil
 }
+
 
 func (player *Player) SetGuild(guildId uint64) error {
 
@@ -29,6 +31,7 @@ func (player *Player) SetSubstation(substationId uint64) error {
 
 func CreateEmptyPlayer() Player {
 	return Player{
+	    Id:             0,
 		GuildId:        0,
 		SubstationId:   0,
 	}

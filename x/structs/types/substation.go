@@ -14,6 +14,15 @@ func CreateEmptySubstation() Substation {
 	}
 }
 
+func (substation *Substation) SetId(id uint64) error {
+
+	substation.Id = id
+
+	return nil
+}
+
+
+
 // TODO: Once the player construct is in place, change this section
 // so that it receives a Player object. This will enforce that the
 // player account exists.
@@ -36,3 +45,27 @@ func (substation *Substation) IsOnline(ctx sdk.Context) (bool, error) {
 	return true, nil
 
 }
+
+
+
+type SubstationPermission uint16
+
+const (
+    // 1
+	SubstationPermissionGrantUpdate SubstationPermission = 1 << iota
+    // 2
+	SubstationPermissionUpdate
+	// 4
+	SubstationPermissionGrantRegisterPlayer
+	// 8
+	SubstationPermissionRegisterPlayer
+	// 16
+	SubstationPermissionGrantDelete
+	// 32
+	SubstationPermissionDelete
+)
+const (
+    SubstationPermissionless SubstationPermission = 0 << iota
+	SubstationPermissionAll = SubstationPermissionUpdate | SubstationPermissionRegisterPlayer | SubstationPermissionDelete
+	SubstationPermissionAllWithGrant = SubstationPermissionGrantUpdate | SubstationPermissionUpdate | SubstationPermissionGrantRegisterPlayer | SubstationPermissionRegisterPlayer | SubstationPermissionGrantDelete | SubstationPermissionDelete
+)

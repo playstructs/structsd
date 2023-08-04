@@ -42,7 +42,7 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
 
 	_ = k.SubstationIncrementEnergy(ctx, substation.Id, allocation.Power)
 
-	allocation.Connect(ctx, msg.DestinationSubstationId)
+	allocation.Connect(msg.DestinationSubstationId)
 	k.SetAllocation(ctx, allocation)
 
 	return &types.MsgSubstationAllocationConnectResponse{}, nil

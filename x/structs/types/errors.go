@@ -26,5 +26,6 @@ var (
 
 	ErrSubstationAvailableCapacityInsufficient = sdkerrors.Register(ModuleName, 1552, "substation capacity lower then attempted change allows for")
 
+    ErrReactorActivation = sdkerrors.Register(ModuleName, 1571, "reactor activation failure")
 	ErrReactorAvailableCapacityInsufficient = sdkerrors.Register(ModuleName, 1572, "reactor capacity lower then attempted change allows for")
 )
