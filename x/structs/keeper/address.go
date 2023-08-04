@@ -15,8 +15,8 @@ func (k Keeper) GetAddressCount(ctx sdk.Context) uint64 {
 	bz := store.Get(byteKey)
 
 	// Count doesn't exist: no element
-	if bz == nil {
-		return 0
+	if bz == nil || binary.BigEndian.Uint64(bz) == 0{
+		return types.KeeperStartValue
 	}
 
 	// Parse bytes
@@ -113,7 +113,7 @@ func (k Keeper) GetPlayerIdFromAddress(ctx sdk.Context, address string) (uint64)
 	bz := store.Get([]byte(address))
 
 	// Substation Capacity Not in Memory: no element
-	if bz == nil {
+	if bz == nil  {
 		return 0
 	}
 

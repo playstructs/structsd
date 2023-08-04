@@ -17,8 +17,8 @@ func (k Keeper) GetGuildCount(ctx sdk.Context) uint64 {
 	bz := store.Get(byteKey)
 
 	// Count doesn't exist: no element
-	if bz == nil {
-		return 0
+	if bz == nil || binary.BigEndian.Uint64(bz) == 0  {
+		return types.KeeperStartValue
 	}
 
 	// Parse bytes

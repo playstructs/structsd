@@ -26,7 +26,7 @@ func (k Keeper) GetPlayerCount(ctx sdk.Context) uint64 {
 	bz := store.Get(byteKey)
 
 	// Count doesn't exist: no element
-	if bz == nil {
+	if bz == nil || binary.BigEndian.Uint64(bz) == 0 {
 		return types.KeeperStartValue
 	}
 
