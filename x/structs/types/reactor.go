@@ -37,20 +37,16 @@ type ReactorPermission uint16
 
 const (
     // 1
-	ReactorPermissionGrantUpdate ReactorPermission = 1 << iota
+	ReactorPermissionGrantAllocate ReactorPermission = 1 << iota
     // 2
-	ReactorPermissionUpdate
+	ReactorPermissionAllocate
 	// 4
-	ReactorPermissionGrantRegisterPlayer
+	ReactorPermissionGrantUpdateGuild
 	// 8
-	ReactorPermissionRegisterPlayer
-	// 16
-	ReactorPermissionGrantDelete
-	// 32
-	ReactorPermissionDelete
+	ReactorPermissionUpdateGuild
 )
 const (
     ReactorPermissionless ReactorPermission = 0 << iota
-	ReactorPermissionAll = ReactorPermissionUpdate | ReactorPermissionRegisterPlayer | ReactorPermissionDelete
-	ReactorPermissionAllWithGrant = ReactorPermissionGrantUpdate | ReactorPermissionUpdate | ReactorPermissionGrantRegisterPlayer | ReactorPermissionRegisterPlayer | ReactorPermissionGrantDelete | ReactorPermissionDelete
+	ReactorPermissionAll = ReactorPermissionAllocate | ReactorPermissionUpdateGuild
+	ReactorPermissionAllWithGrant = ReactorPermissionGrantAllocate | ReactorPermissionAllocate | ReactorPermissionGrantUpdateGuild | ReactorPermissionUpdateGuild
 )

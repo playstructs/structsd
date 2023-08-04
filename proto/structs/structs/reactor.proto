@@ -16,4 +16,6 @@ message Reactor {
   uint64 load = 4;
 
   bool activated = 5;
+
+  uint64 guildId = 6;
 }

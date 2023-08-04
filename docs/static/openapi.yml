@@ -46011,6 +46011,9 @@ paths:
                       format: uint64
                     activated:
                       type: boolean
+                    guildId:
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -46143,6 +46146,9 @@ paths:
                     format: uint64
                   activated:
                     type: boolean
+                  guildId:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -75521,6 +75527,9 @@ definitions:
               format: uint64
             activated:
               type: boolean
+            guildId:
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -75705,6 +75714,9 @@ definitions:
             format: uint64
           activated:
             type: boolean
+          guildId:
+            type: string
+            format: uint64
   structs.structs.QueryGetSubstationResponse:
     type: object
     properties:
@@ -75755,6 +75767,9 @@ definitions:
         format: uint64
       activated:
         type: boolean
+      guildId:
+        type: string
+        format: uint64
   structs.structs.Substation:
     type: object
     properties:

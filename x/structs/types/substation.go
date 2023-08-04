@@ -52,20 +52,32 @@ type SubstationPermission uint16
 
 const (
     // 1
-	SubstationPermissionGrantUpdate SubstationPermission = 1 << iota
+	SubstationPermissionGrantConnectPlayer SubstationPermission = 1 << iota
     // 2
-	SubstationPermissionUpdate
-	// 4
-	SubstationPermissionGrantRegisterPlayer
-	// 8
-	SubstationPermissionRegisterPlayer
-	// 16
-	SubstationPermissionGrantDelete
+	SubstationPermissionConnectPlayer
+    // 4
+    SubstationPermissionGrantDisconnectPlayer
+    // 8
+    SubstationPermissionDisconnectPlayer
+    // 16
+	SubstationPermissionGrantConnectAllocation
 	// 32
+	SubstationPermissionConnectAllocation
+	// 64
+	SubstationPermissionGrantDisconnectAllocation
+	// 128
+	SubstationPermissionDisconnectAllocation
+	// 256
+	SubstationPermissionGrantAllocate
+	// 512
+	SubstationPermissionAllocate
+	// 1024
+	SubstationPermissionGrantDelete
+	// 2048
 	SubstationPermissionDelete
 )
 const (
     SubstationPermissionless SubstationPermission = 0 << iota
-	SubstationPermissionAll = SubstationPermissionUpdate | SubstationPermissionRegisterPlayer | SubstationPermissionDelete
-	SubstationPermissionAllWithGrant = SubstationPermissionGrantUpdate | SubstationPermissionUpdate | SubstationPermissionGrantRegisterPlayer | SubstationPermissionRegisterPlayer | SubstationPermissionGrantDelete | SubstationPermissionDelete
+	SubstationPermissionAll = SubstationPermissionConnectPlayer | SubstationPermissionDisconnectPlayer | SubstationPermissionConnectAllocation | SubstationPermissionDisconnectAllocation | SubstationPermissionAllocate | SubstationPermissionDelete
+	SubstationPermissionAllWithGrant = SubstationPermissionGrantConnectPlayer | SubstationPermissionConnectPlayer | SubstationPermissionGrantDisconnectPlayer | SubstationPermissionDisconnectPlayer | SubstationPermissionGrantConnectAllocation | SubstationPermissionConnectAllocation | SubstationPermissionGrantDisconnectAllocation | SubstationPermissionDisconnectAllocation | SubstationPermissionGrantAllocate | SubstationPermissionAllocate | SubstationPermissionGrantDelete | SubstationPermissionDelete
 )
