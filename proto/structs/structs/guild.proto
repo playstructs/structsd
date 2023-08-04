@@ -8,5 +8,7 @@ message Guild {
   string endpoint = 2; 
   string creator = 3;
   uint64 owner = 4;
+
+
   
 }

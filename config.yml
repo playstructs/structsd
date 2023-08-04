@@ -12,7 +12,7 @@ client:
 faucet:
   name: bob
   coins:
-    - 1000alpha
+    - 100000alpha
 validators:
   - name: alice
     bonded: 2000000alpha

@@ -13,6 +13,7 @@ type StakingKeeper interface {
 
 	GetValidatorDelegations(ctx sdk.Context, valAddr sdk.ValAddress) (delegations []staking.Delegation)
 
+    GetDelegation(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (delegation staking.Delegation, found bool)
 	// Methods imported from staking should be defined here
 }
 

@@ -74,8 +74,11 @@ func (h Hooks) AfterDelegationRemoved(ctx sdk.Context, _ sdk.AccAddress, valAddr
 	return nil
 }
 
-func (h Hooks) AfterDelegationModified(ctx sdk.Context, _ sdk.AccAddress, valAddr sdk.ValAddress) error {
+func (h Hooks) AfterDelegationModified(ctx sdk.Context, playerAddress sdk.AccAddress, valAddr sdk.ValAddress) error {
+	// TODO we probably don't want both of these here but worry about that later
 	_ = h.k.ReactorUpdateEnergy(ctx, valAddr)
+	_ = h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
+
 	return nil
 }
 

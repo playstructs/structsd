@@ -9,6 +9,7 @@ import (
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strconv"
+	"cosmossdk.io/math"
 )
 
 /* Setup Reactor (when a validator is created)
@@ -109,6 +110,50 @@ func (k Keeper) ReactorUpdateEnergy(ctx sdk.Context, validatorAddress sdk.ValAdd
 
 	return reactor
 }
+
+
+
+/* Change Reactor Allocations for Player Delegations
+ *
+ * Triggered during Staking Hooks:
+ *   AfterDelegationModified
+ *
+ */
+func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) (reactor types.Reactor) {
+
+	validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
+
+	/* Does this Reactor exist? */
+	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.String())
+	if !reactorBytesFound {
+        return
+	}
+    reactor, _ = k.GetReactorByBytes(ctx, reactorBytes, false)
+
+    if !reactor.Activated {
+        return
+    }
+
+
+    delegation, _ := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
+
+    if validator.GetDelegatorShares().IsZero() {
+        //
+        return
+    }
+
+    delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
+
+    allocation := types.CreateEmptyAllocation(types.ObjectType_reactor)
+    allocation.SetPower(delegationShare.Uint64())
+    k.AppendAllocation(ctx, allocation)
+	// Update the connected Substations with the new details
+	k.CascadeReactorAllocationFailure(ctx, reactor)
+
+
+	return reactor
+}
+
 
 /* Update Reactor Details (Primarily In-Game Permissions/Ownership)
  *
