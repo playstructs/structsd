@@ -18,4 +18,8 @@ message Reactor {
   bool activated = 5;
 
   uint64 guildId = 6;
+
+  bool allowDelegateAllocations = 7;
+  uint64 delegateMinimumBeforeAllowedAllocations = 8;
+  uint64 delegateTaxOnAllocations = 9;
 }

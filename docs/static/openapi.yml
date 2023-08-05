@@ -46014,6 +46014,14 @@ paths:
                     guildId:
                       type: string
                       format: uint64
+                    allowDelegateAllocations:
+                      type: boolean
+                    delegateMinimumBeforeAllowedAllocations:
+                      type: string
+                      format: uint64
+                    delegateTaxOnAllocations:
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -46147,6 +46155,14 @@ paths:
                   activated:
                     type: boolean
                   guildId:
+                    type: string
+                    format: uint64
+                  allowDelegateAllocations:
+                    type: boolean
+                  delegateMinimumBeforeAllowedAllocations:
+                    type: string
+                    format: uint64
+                  delegateTaxOnAllocations:
                     type: string
                     format: uint64
         default:
@@ -75530,6 +75546,14 @@ definitions:
             guildId:
               type: string
               format: uint64
+            allowDelegateAllocations:
+              type: boolean
+            delegateMinimumBeforeAllowedAllocations:
+              type: string
+              format: uint64
+            delegateTaxOnAllocations:
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -75717,6 +75741,14 @@ definitions:
           guildId:
             type: string
             format: uint64
+          allowDelegateAllocations:
+            type: boolean
+          delegateMinimumBeforeAllowedAllocations:
+            type: string
+            format: uint64
+          delegateTaxOnAllocations:
+            type: string
+            format: uint64
   structs.structs.QueryGetSubstationResponse:
     type: object
     properties:
@@ -75768,6 +75800,14 @@ definitions:
       activated:
         type: boolean
       guildId:
+        type: string
+        format: uint64
+      allowDelegateAllocations:
+        type: boolean
+      delegateMinimumBeforeAllowedAllocations:
+        type: string
+        format: uint64
+      delegateTaxOnAllocations:
         type: string
         format: uint64
   structs.structs.Substation:

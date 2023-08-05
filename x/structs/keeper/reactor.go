@@ -144,9 +144,16 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
 
     delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
 
+
+    // TODO this is all very wrong.
     allocation := types.CreateEmptyAllocation(types.ObjectType_reactor)
     allocation.SetPower(delegationShare.Uint64())
     k.AppendAllocation(ctx, allocation)
+
+    // need to define a guild or reactor parameter for allowed allocation of contributions
+    // need to define a guild or reactor parameter for minimum contributions before allocations are allowed
+
+
 	// Update the connected Substations with the new details
 	k.CascadeReactorAllocationFailure(ctx, reactor)
 
