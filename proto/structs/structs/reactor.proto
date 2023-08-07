@@ -19,7 +19,11 @@ message Reactor {
 
   uint64 guildId = 6;
 
-  bool allowDelegateAllocations = 7;
-  uint64 delegateMinimumBeforeAllowedAllocations = 8;
-  uint64 delegateTaxOnAllocations = 9;
+  bool automatedAllocations == 7;
+  bool allowManualAllocations = 8;
+  bool allowExternalAllocations = 9;
+  bool allowUncappedAllocations = 10;
+  uint64 delegateMinimumBeforeAllowedAllocations = 11;
+  uint64 delegateTaxOnAllocations = 12;
+
 }

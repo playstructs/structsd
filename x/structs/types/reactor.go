@@ -2,6 +2,7 @@ package types
 
 import (
 	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
+	"cosmossdk.io/math"
 )
 
 func CreateEmptyReactor() Reactor {
@@ -9,8 +10,17 @@ func CreateEmptyReactor() Reactor {
 		Energy:    0,
 		Validator: "",
 		Activated: false,
+
+		AutomatedAllocations: true,
+		AllowManualAllocations: false,
+		AllowExternalAllocations: false,
+		AllowUncappedAllocations: false,
+		DelegateMinimumBeforeAllowedAllocations: 2,
+		DelegateTaxOnAllocations: math.LegacyZeroDec(),
+
 	}
 }
+
 
 func (reactor *Reactor) SetActivated(activated bool) error {
 	reactor.Activated = activated
@@ -44,9 +54,13 @@ const (
 	ReactorPermissionGrantUpdateGuild
 	// 8
 	ReactorPermissionUpdateGuild
+	// 16
+	ReactorPermissionGrantUpdateAllocationRules
+	// 32
+	ReactorPermissionUpdateAllocationRules
 )
 const (
     ReactorPermissionless ReactorPermission = 0 << iota
-	ReactorPermissionAll = ReactorPermissionAllocate | ReactorPermissionUpdateGuild
-	ReactorPermissionAllWithGrant = ReactorPermissionGrantAllocate | ReactorPermissionAllocate | ReactorPermissionGrantUpdateGuild | ReactorPermissionUpdateGuild
+	ReactorPermissionAll = ReactorPermissionAllocate | ReactorPermissionUpdateGuild | ReactorPermissionUpdateAllocationRules
+	ReactorPermissionAllWithGrant = ReactorPermissionGrantAllocate | ReactorPermissionAllocate | ReactorPermissionGrantUpdateGuild | ReactorPermissionUpdateGuild | ReactorPermissionGrantUpdateAllocationRules | ReactorPermissionUpdateAllocationRules
 )
