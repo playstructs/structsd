@@ -78,17 +78,63 @@ func (k Keeper) GetInfusion(ctx sdk.Context, id uint64) (val types.Infusion, fou
 func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType, destinationId uint64, address string, fuel uint64, automatedAllocation bool, delegateTaxOnAllocations sdk.Dec) (infusion types.Infusion){
 
     id := k.GetInfusionId(destinationType, destinationId, playerAddress)
-    infusion, found := k.GetInfusion(ctx, id)
-    if (found) {
+    infusion, infusionFound := k.GetInfusion(ctx, id)
+    if (infusionFound) {
         if (automatedAllocations) {
-            if (infusion.Fuel > fuel) {
-                // TODO decrement allocation
+            allocation, allocationFound := k.GetAllocation(ctx, infusion.LinkedAllocation)
+            if (!allocationFound) {
 
-                k.ReactorDecrementEnergy()
+                allocation := types.CreateEmptyAllocation(destinationType)
+                allocation.SetCreator(address)
+                allocation.SetController(address)
+                allocation.SetSource(destinationId)
+
+                // TODO actual fuel to energy ratio
+                // apply tax
+                allocation.SetPower(fuel)
+
+                allocation.SetLinkedInfusion(address)
+
+
+                playerId := k.GetPlayerIdFromAddress(ctx, identity)
+
+                var player types.Player
+                if (playerId == 0) {
+                    // No Player Found, Creating..
+                    player = types.CreateEmptyPlayer()
+                    player.SetId(k.GetNextPlayerId(ctx))
+                    k.SetPlayer(ctx, player)
+                    k.SetPlayerIdForAddress(ctx, identity, player.Id)
+
+                    // Now let's get the player some power
+                    if (player.SubstationId == 0) {
+                        var substation types.Substation
+                        substation = types.CreateEmptySubstation()
+                        substation.SetId(k.GetNextSubstationId(ctx))
+                        substation.SetOwner(player.Id)
+                        substation.SetCreator(identity)
+                        substation.SetPlayerConnectionAllocation(types.InitialReactorOwnerEnergy)
+                        k.SetSubstation(ctx, substation)
+
+                        k.SubstationPermissionAdd(ctx, substation.Id, player.Id, types.SubstationPermissionAll)
+
+                        // Connect Allocation to Substation
+                        allocation.Connect(substation.Id)
+                        _ = k.SubstationIncrementEnergy(ctx, substation.Id, allocation.Power)
+
+                        // Connect Player to Substation
+                        k.SubstationIncrementConnectedPlayerLoad(ctx, substation.Id, 1)
+                        player.SetSubstation(substation.Id)
+                        k.SetPlayer(ctx, player)
+                    }
+                }
+
+                allocationId := k.AppendAllocation(ctx, allocation)
 
             } else {
-                // TODO increase allocation
-
+                allocation.SetPower(fuel)
+                allocation.SetLinkedInfusion(address)
+                k.SetAllocation(ctx, allocation)
             }
             infusion.SetFuel(fuel)
         }
@@ -108,15 +154,8 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
             allocation.SetLinkedInfusion(address)
             allocationId := k.AppendAllocation(ctx, allocation)
 
-
-
-
         }
-
-
     }
-
-
 }
 
 // RemoveInfusion removes a infusion from the store
