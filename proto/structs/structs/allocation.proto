@@ -20,4 +20,8 @@ message Allocation {
 
   bool locked = 8;
 
+  // "dynamic" might be a better name for this
+  bool HasLinkedInfusion = 9;
+  string linkedInfusion = 10;
+
 }

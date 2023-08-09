@@ -2,6 +2,7 @@ package types
 
 import (
 	//sdk "github.com/cosmos/cosmos-sdk/types"
+    "strconv"
 )
 
 func (a *Allocation) SetCreator(creator string) error {
@@ -49,6 +50,22 @@ func (a *Allocation) Connect(destinationSubstationId uint64) error {
 	return nil
 }
 
+func (a *Allocation) SetLinkedInfusion(address string) error {
+    a.HasLinkedInfusion = true
+
+    sourceId := strconv.FormatUint(a.SourceId , 10)
+    a.LinkedInfusion = a.SourceType.String() + "-" + sourceId + "-" + address
+
+    return nil
+}
+
+func (a *Allocation) ClearLinkedInfusion() error {
+    a.HasLinkedInfusion = false
+    a.LinkedInfusion = ""
+
+    return nil
+}
+
 
 func CreateEmptyAllocation(sourceType ObjectType) Allocation {
 	return Allocation{
@@ -60,6 +77,8 @@ func CreateEmptyAllocation(sourceType ObjectType) Allocation {
 		Creator: "",
 		Controller: "",
 		Locked: false,
+		HasLinkedInfusion: false,
+		LinkedInfusion: "",
 	}
 }
 

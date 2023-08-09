@@ -16,4 +16,5 @@ enum objectType {
     substation     = 4;
     struct         = 5;
     allocation     = 6;
+    infusion       = 7;
 }

@@ -44,8 +44,8 @@ func (h Hooks) AfterValidatorCreated(ctx sdk.Context, valAddr sdk.ValAddress) er
 	return nil
 }
 
-func (h Hooks) AfterValidatorBeginUnbonding(ctx sdk.Context, _ sdk.ConsAddress, valAddr sdk.ValAddress) error {
-	_ = h.k.ReactorUpdateEnergy(ctx, valAddr)
+func (h Hooks) AfterValidatorBeginUnbonding(ctx sdk.Context, playerAddress sdk.ConsAddress, valAddr sdk.ValAddress) error {
+	_ = h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
 	return nil
 }
 
@@ -59,8 +59,8 @@ func (h Hooks) BeforeDelegationCreated(_ sdk.Context, _ sdk.AccAddress, _ sdk.Va
 	return nil
 }
 
-func (h Hooks) BeforeDelegationSharesModified(ctx sdk.Context, _ sdk.AccAddress, valAddr sdk.ValAddress) error {
-	_ = h.k.ReactorUpdateEnergy(ctx, valAddr)
+func (h Hooks) BeforeDelegationSharesModified(ctx sdk.Context, playerAddress sdk.AccAddress, valAddr sdk.ValAddress) error {
+	_ = h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
 	return nil
 }
 
@@ -69,14 +69,12 @@ func (h Hooks) BeforeDelegationRemoved(_ sdk.Context, _ sdk.AccAddress, _ sdk.Va
 }
 
 /* This doesn't actually exist yet, but I'd like it to */
-func (h Hooks) AfterDelegationRemoved(ctx sdk.Context, _ sdk.AccAddress, valAddr sdk.ValAddress) error {
-	_ = h.k.ReactorUpdateEnergy(ctx, valAddr)
+func (h Hooks) AfterDelegationRemoved(ctx sdk.Context, playerAddress sdk.AccAddress, valAddr sdk.ValAddress) error {
+	_ = h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
 	return nil
 }
 
 func (h Hooks) AfterDelegationModified(ctx sdk.Context, playerAddress sdk.AccAddress, valAddr sdk.ValAddress) error {
-	// TODO we probably don't want both of these here but worry about that later
-	_ = h.k.ReactorUpdateEnergy(ctx, valAddr)
 	_ = h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
 
 	return nil

@@ -45753,6 +45753,7 @@ paths:
                         - substation
                         - struct
                         - allocation
+                        - infusion
                       default: guild
                     sourceId:
                       type: string
@@ -45769,6 +45770,11 @@ paths:
                       type: string
                     locked:
                       type: boolean
+                    HasLinkedInfusion:
+                      type: boolean
+                      title: '"dynamic" might be a better name for this'
+                    linkedInfusion:
+                      type: string
               pagination:
                 type: object
                 properties:
@@ -45905,6 +45911,7 @@ paths:
                       - substation
                       - struct
                       - allocation
+                      - infusion
                     default: guild
                   sourceId:
                     type: string
@@ -45921,6 +45928,11 @@ paths:
                     type: string
                   locked:
                     type: boolean
+                  HasLinkedInfusion:
+                    type: boolean
+                    title: '"dynamic" might be a better name for this'
+                  linkedInfusion:
+                    type: string
         default:
           description: An unexpected error response.
           schema:
@@ -46014,14 +46026,18 @@ paths:
                     guildId:
                       type: string
                       format: uint64
-                    allowDelegateAllocations:
+                    automatedAllocations:
+                      type: boolean
+                    allowManualAllocations:
+                      type: boolean
+                    allowExternalAllocations:
+                      type: boolean
+                    allowUncappedAllocations:
                       type: boolean
                     delegateMinimumBeforeAllowedAllocations:
                       type: string
-                      format: uint64
                     delegateTaxOnAllocations:
                       type: string
-                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -46157,14 +46173,18 @@ paths:
                   guildId:
                     type: string
                     format: uint64
-                  allowDelegateAllocations:
+                  automatedAllocations:
+                    type: boolean
+                  allowManualAllocations:
+                    type: boolean
+                  allowExternalAllocations:
+                    type: boolean
+                  allowUncappedAllocations:
                     type: boolean
                   delegateMinimumBeforeAllowedAllocations:
                     type: string
-                    format: uint64
                   delegateTaxOnAllocations:
                     type: string
-                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -75240,6 +75260,7 @@ definitions:
           - substation
           - struct
           - allocation
+          - infusion
         default: guild
       sourceId:
         type: string
@@ -75256,6 +75277,11 @@ definitions:
         type: string
       locked:
         type: boolean
+      HasLinkedInfusion:
+        type: boolean
+        title: '"dynamic" might be a better name for this'
+      linkedInfusion:
+        type: string
   structs.structs.Guild:
     type: object
     properties:
@@ -75387,6 +75413,7 @@ definitions:
                 - substation
                 - struct
                 - allocation
+                - infusion
               default: guild
             sourceId:
               type: string
@@ -75403,6 +75430,11 @@ definitions:
               type: string
             locked:
               type: boolean
+            HasLinkedInfusion:
+              type: boolean
+              title: '"dynamic" might be a better name for this'
+            linkedInfusion:
+              type: string
       pagination:
         type: object
         properties:
@@ -75546,14 +75578,18 @@ definitions:
             guildId:
               type: string
               format: uint64
-            allowDelegateAllocations:
+            automatedAllocations:
+              type: boolean
+            allowManualAllocations:
+              type: boolean
+            allowExternalAllocations:
+              type: boolean
+            allowUncappedAllocations:
               type: boolean
             delegateMinimumBeforeAllowedAllocations:
               type: string
-              format: uint64
             delegateTaxOnAllocations:
               type: string
-              format: uint64
       pagination:
         type: object
         properties:
@@ -75671,6 +75707,7 @@ definitions:
               - substation
               - struct
               - allocation
+              - infusion
             default: guild
           sourceId:
             type: string
@@ -75687,6 +75724,11 @@ definitions:
             type: string
           locked:
             type: boolean
+          HasLinkedInfusion:
+            type: boolean
+            title: '"dynamic" might be a better name for this'
+          linkedInfusion:
+            type: string
   structs.structs.QueryGetGuildResponse:
     type: object
     properties:
@@ -75741,14 +75783,18 @@ definitions:
           guildId:
             type: string
             format: uint64
-          allowDelegateAllocations:
+          automatedAllocations:
+            type: boolean
+          allowManualAllocations:
+            type: boolean
+          allowExternalAllocations:
+            type: boolean
+          allowUncappedAllocations:
             type: boolean
           delegateMinimumBeforeAllowedAllocations:
             type: string
-            format: uint64
           delegateTaxOnAllocations:
             type: string
-            format: uint64
   structs.structs.QueryGetSubstationResponse:
     type: object
     properties:
@@ -75802,14 +75848,18 @@ definitions:
       guildId:
         type: string
         format: uint64
-      allowDelegateAllocations:
+      automatedAllocations:
+        type: boolean
+      allowManualAllocations:
+        type: boolean
+      allowExternalAllocations:
+        type: boolean
+      allowUncappedAllocations:
         type: boolean
       delegateMinimumBeforeAllowedAllocations:
         type: string
-        format: uint64
       delegateTaxOnAllocations:
         type: string
-        format: uint64
   structs.structs.Substation:
     type: object
     properties:
@@ -75843,4 +75893,5 @@ definitions:
       - substation
       - struct
       - allocation
+      - infusion
     default: guild

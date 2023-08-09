@@ -75,6 +75,11 @@ const (
 )
 
 const (
+	InfusionKey      = "Infusion/value/"
+	InfusionCountKey = "Infusion/count/"
+)
+
+const (
 	GuildKey      = "Guild/value/"
 	GuildCountKey = "Guild/count/"
 	GuildPermissionKey = "Guild/permission/"
@@ -105,5 +110,6 @@ var ObjectType_enum = map[string]ObjectType{
 	"substation": ObjectType_substation,
 	"struct":     ObjectType_struct,
 	"allocation": ObjectType_allocation,
+	"infusion":   ObjectType_infusion,
 }
 

@@ -15,7 +15,7 @@ func CreateEmptyReactor() Reactor {
 		AllowManualAllocations: false,
 		AllowExternalAllocations: false,
 		AllowUncappedAllocations: false,
-		DelegateMinimumBeforeAllowedAllocations: 2,
+		DelegateMinimumBeforeAllowedAllocations: math.LegacyOneDec(),
 		DelegateTaxOnAllocations: math.LegacyZeroDec(),
 
 	}

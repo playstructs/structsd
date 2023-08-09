@@ -6,6 +6,7 @@ package types
 import (
 	fmt "fmt"
 	_ "github.com/cosmos/cosmos-proto"
+	github_com_cosmos_cosmos_sdk_types "github.com/cosmos/cosmos-sdk/types"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	proto "github.com/cosmos/gogoproto/proto"
 	io "io"
@@ -25,15 +26,18 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type Reactor struct {
-	Id                                      uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Validator                               string `protobuf:"bytes,2,opt,name=validator,proto3" json:"validator,omitempty"`
-	Energy                                  uint64 `protobuf:"varint,3,opt,name=energy,proto3" json:"energy,omitempty"`
-	Load                                    uint64 `protobuf:"varint,4,opt,name=load,proto3" json:"load,omitempty"`
-	Activated                               bool   `protobuf:"varint,5,opt,name=activated,proto3" json:"activated,omitempty"`
-	GuildId                                 uint64 `protobuf:"varint,6,opt,name=guildId,proto3" json:"guildId,omitempty"`
-	AllowDelegateAllocations                bool   `protobuf:"varint,7,opt,name=allowDelegateAllocations,proto3" json:"allowDelegateAllocations,omitempty"`
-	DelegateMinimumBeforeAllowedAllocations uint64 `protobuf:"varint,8,opt,name=delegateMinimumBeforeAllowedAllocations,proto3" json:"delegateMinimumBeforeAllowedAllocations,omitempty"`
-	DelegateTaxOnAllocations                uint64 `protobuf:"varint,9,opt,name=delegateTaxOnAllocations,proto3" json:"delegateTaxOnAllocations,omitempty"`
+	Id                                      uint64                                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Validator                               string                                 `protobuf:"bytes,2,opt,name=validator,proto3" json:"validator,omitempty"`
+	Energy                                  uint64                                 `protobuf:"varint,3,opt,name=energy,proto3" json:"energy,omitempty"`
+	Load                                    uint64                                 `protobuf:"varint,4,opt,name=load,proto3" json:"load,omitempty"`
+	Activated                               bool                                   `protobuf:"varint,5,opt,name=activated,proto3" json:"activated,omitempty"`
+	GuildId                                 uint64                                 `protobuf:"varint,6,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	AutomatedAllocations                    bool                                   `protobuf:"varint,7,opt,name=automatedAllocations,proto3" json:"automatedAllocations,omitempty"`
+	AllowManualAllocations                  bool                                   `protobuf:"varint,8,opt,name=allowManualAllocations,proto3" json:"allowManualAllocations,omitempty"`
+	AllowExternalAllocations                bool                                   `protobuf:"varint,9,opt,name=allowExternalAllocations,proto3" json:"allowExternalAllocations,omitempty"`
+	AllowUncappedAllocations                bool                                   `protobuf:"varint,10,opt,name=allowUncappedAllocations,proto3" json:"allowUncappedAllocations,omitempty"`
+	DelegateMinimumBeforeAllowedAllocations github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,11,opt,name=delegateMinimumBeforeAllowedAllocations,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"delegateMinimumBeforeAllowedAllocations"`
+	DelegateTaxOnAllocations                github_com_cosmos_cosmos_sdk_types.Dec `protobuf:"bytes,12,opt,name=delegateTaxOnAllocations,proto3,customtype=github.com/cosmos/cosmos-sdk/types.Dec" json:"delegateTaxOnAllocations"`
 }
 
 func (m *Reactor) Reset()         { *m = Reactor{} }
@@ -111,25 +115,32 @@ func (m *Reactor) GetGuildId() uint64 {
 	return 0
 }
 
-func (m *Reactor) GetAllowDelegateAllocations() bool {
+func (m *Reactor) GetAutomatedAllocations() bool {
 	if m != nil {
-		return m.AllowDelegateAllocations
+		return m.AutomatedAllocations
 	}
 	return false
 }
 
-func (m *Reactor) GetDelegateMinimumBeforeAllowedAllocations() uint64 {
+func (m *Reactor) GetAllowManualAllocations() bool {
 	if m != nil {
-		return m.DelegateMinimumBeforeAllowedAllocations
+		return m.AllowManualAllocations
 	}
-	return 0
+	return false
 }
 
-func (m *Reactor) GetDelegateTaxOnAllocations() uint64 {
+func (m *Reactor) GetAllowExternalAllocations() bool {
 	if m != nil {
-		return m.DelegateTaxOnAllocations
+		return m.AllowExternalAllocations
 	}
-	return 0
+	return false
+}
+
+func (m *Reactor) GetAllowUncappedAllocations() bool {
+	if m != nil {
+		return m.AllowUncappedAllocations
+	}
+	return false
 }
 
 func init() {
@@ -139,31 +150,94 @@ func init() {
 func init() { proto.RegisterFile("structs/structs/reactor.proto", fileDescriptor_4de5f586530fedc8) }
 
 var fileDescriptor_4de5f586530fedc8 = []byte{
-	// 338 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x92, 0x3f, 0x4b, 0x03, 0x31,
-	0x18, 0xc6, 0x9b, 0xb6, 0xb6, 0xbd, 0x0c, 0x0a, 0xa1, 0x68, 0x2c, 0x7a, 0x14, 0x17, 0xbb, 0xd8,
-	0x22, 0x82, 0x83, 0x5b, 0x8b, 0x8b, 0x83, 0x08, 0xa7, 0x83, 0xb8, 0x48, 0xbc, 0xc4, 0x10, 0x48,
-	0xef, 0x2d, 0x49, 0xfa, 0xef, 0x13, 0xb8, 0xfa, 0x61, 0xfc, 0x10, 0x8e, 0xc5, 0xc9, 0x51, 0x7a,
-	0x5f, 0x44, 0x9a, 0xbb, 0xb3, 0x5d, 0x0a, 0x4e, 0xef, 0xfb, 0x3e, 0xcf, 0x93, 0x5f, 0x02, 0x6f,
-	0xf0, 0xb1, 0x75, 0x66, 0x1c, 0x3b, 0xdb, 0x2b, 0xaa, 0x11, 0x2c, 0x76, 0x60, 0xba, 0x23, 0x03,
-	0x0e, 0xc8, 0x5e, 0x2e, 0x77, 0xf3, 0xda, 0x3a, 0x8c, 0xc1, 0x0e, 0xc1, 0x3e, 0x7b, 0xbb, 0x97,
-	0x0d, 0x59, 0xb6, 0xd5, 0x94, 0x20, 0x21, 0xd3, 0x57, 0x5d, 0xa6, 0x9e, 0xbc, 0x55, 0x70, 0x3d,
-	0xca, 0x98, 0x64, 0x17, 0x97, 0x15, 0xa7, 0xa8, 0x8d, 0x3a, 0xd5, 0xa8, 0xac, 0x38, 0xb9, 0xc4,
-	0xc1, 0x84, 0x69, 0xc5, 0x99, 0x03, 0x43, 0xcb, 0x6d, 0xd4, 0x09, 0x06, 0xf4, 0xeb, 0xe3, 0xac,
-	0x99, 0x63, 0xfb, 0x9c, 0x1b, 0x61, 0xed, 0xbd, 0x33, 0x2a, 0x91, 0xd1, 0x3a, 0x4a, 0xf6, 0x71,
-	0x4d, 0x24, 0xc2, 0xc8, 0x39, 0xad, 0x78, 0x56, 0x3e, 0x11, 0x82, 0xab, 0x1a, 0x18, 0xa7, 0x55,
-	0xaf, 0xfa, 0x9e, 0x1c, 0xe1, 0x80, 0xc5, 0x4e, 0x4d, 0x98, 0x13, 0x9c, 0xee, 0xb4, 0x51, 0xa7,
-	0x11, 0xad, 0x05, 0x42, 0x71, 0x5d, 0x8e, 0x95, 0xe6, 0x37, 0x9c, 0xd6, 0xfc, 0xa1, 0x62, 0x24,
-	0x57, 0x98, 0x32, 0xad, 0x61, 0x7a, 0x2d, 0xb4, 0x90, 0xcc, 0x89, 0xbe, 0xd6, 0x10, 0x33, 0xa7,
-	0x20, 0xb1, 0xb4, 0xee, 0x31, 0x5b, 0x7d, 0xf2, 0x88, 0x4f, 0x79, 0x2e, 0xdf, 0xaa, 0x44, 0x0d,
-	0xc7, 0xc3, 0x81, 0x78, 0x05, 0xe3, 0x33, 0x53, 0xc1, 0x37, 0x51, 0x0d, 0x7f, 0xeb, 0x7f, 0xe3,
-	0xab, 0x57, 0x15, 0xd1, 0x07, 0x36, 0xbb, 0x4b, 0x36, 0x51, 0x81, 0x47, 0x6d, 0xf5, 0x07, 0xe7,
-	0x9f, 0xcb, 0x10, 0x2d, 0x96, 0x21, 0xfa, 0x59, 0x86, 0xe8, 0x3d, 0x0d, 0x4b, 0x8b, 0x34, 0x2c,
-	0x7d, 0xa7, 0x61, 0xe9, 0xe9, 0xa0, 0x58, 0xfe, 0xec, 0xef, 0x1b, 0xb8, 0xf9, 0x48, 0xd8, 0x97,
-	0x9a, 0xdf, 0xe1, 0xc5, 0x6f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x7d, 0x92, 0x64, 0x4e, 0x26, 0x02,
-	0x00, 0x00,
+	// 444 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x53, 0xbf, 0x6e, 0x13, 0x31,
+	0x18, 0x3f, 0x87, 0x6b, 0xd2, 0x33, 0x08, 0x24, 0x2b, 0x2a, 0xa6, 0x82, 0x4b, 0xc4, 0x00, 0x59,
+	0x72, 0x11, 0x20, 0x75, 0xa8, 0x58, 0x1a, 0x95, 0x81, 0xa1, 0x42, 0x3a, 0x60, 0x61, 0x41, 0xae,
+	0x6d, 0x0e, 0x0b, 0x9f, 0x7d, 0xb2, 0x7d, 0xed, 0xf5, 0x2d, 0x98, 0x98, 0x79, 0x06, 0xd4, 0x87,
+	0xe8, 0x58, 0x75, 0x42, 0x0c, 0x15, 0x4a, 0x16, 0x1e, 0x03, 0xc5, 0x77, 0xd7, 0x26, 0x52, 0x23,
+	0x31, 0x30, 0x7d, 0xfe, 0x7e, 0xff, 0xfc, 0x49, 0xf6, 0x07, 0x1f, 0x59, 0x67, 0x4a, 0xea, 0xec,
+	0xa4, 0xad, 0x86, 0x13, 0xea, 0xb4, 0x49, 0x0a, 0xa3, 0x9d, 0x46, 0xf7, 0x1a, 0x38, 0x69, 0xea,
+	0xf6, 0x03, 0xaa, 0x6d, 0xae, 0xed, 0x47, 0x4f, 0x4f, 0xea, 0xa6, 0xd6, 0x6e, 0xf7, 0x33, 0x9d,
+	0xe9, 0x1a, 0x5f, 0x9c, 0x6a, 0xf4, 0xf1, 0x8f, 0x0d, 0xd8, 0x4b, 0xeb, 0x4c, 0x74, 0x17, 0x76,
+	0x04, 0xc3, 0x60, 0x08, 0x46, 0x61, 0xda, 0x11, 0x0c, 0xed, 0xc0, 0xe8, 0x88, 0x48, 0xc1, 0x88,
+	0xd3, 0x06, 0x77, 0x86, 0x60, 0x14, 0x4d, 0xf1, 0xc5, 0xe9, 0xb8, 0xdf, 0xc4, 0xee, 0x31, 0x66,
+	0xb8, 0xb5, 0x6f, 0x9d, 0x11, 0x2a, 0x4b, 0xaf, 0xa5, 0x68, 0x0b, 0x76, 0xb9, 0xe2, 0x26, 0x3b,
+	0xc1, 0xb7, 0x7c, 0x56, 0xd3, 0x21, 0x04, 0x43, 0xa9, 0x09, 0xc3, 0xa1, 0x47, 0xfd, 0x19, 0x3d,
+	0x84, 0x11, 0xa1, 0x4e, 0x1c, 0x11, 0xc7, 0x19, 0xde, 0x18, 0x82, 0xd1, 0x66, 0x7a, 0x0d, 0x20,
+	0x0c, 0x7b, 0x59, 0x29, 0x24, 0x7b, 0xcd, 0x70, 0xd7, 0x9b, 0xda, 0x16, 0x3d, 0x87, 0x7d, 0x52,
+	0x3a, 0x9d, 0x2f, 0x64, 0x7b, 0x52, 0x6a, 0x4a, 0x9c, 0xd0, 0xca, 0xe2, 0x9e, 0x8f, 0xb8, 0x91,
+	0x43, 0x3b, 0x70, 0x8b, 0x48, 0xa9, 0x8f, 0x0f, 0x88, 0x2a, 0x89, 0x5c, 0x76, 0x6d, 0x7a, 0xd7,
+	0x1a, 0x16, 0xed, 0x42, 0xec, 0x99, 0x57, 0x95, 0xe3, 0x46, 0xad, 0x3a, 0x23, 0xef, 0x5c, 0xcb,
+	0x5f, 0x79, 0xdf, 0x2b, 0x4a, 0x8a, 0x62, 0x75, 0x56, 0xb8, 0xe4, 0xbd, 0x81, 0x47, 0xdf, 0x00,
+	0x7c, 0xca, 0xb8, 0xe4, 0x19, 0x71, 0xfc, 0x40, 0x28, 0x91, 0x97, 0xf9, 0x94, 0x7f, 0xd2, 0x86,
+	0x2f, 0x44, 0xc7, 0xab, 0x59, 0xb7, 0xfd, 0xf3, 0xbc, 0x3c, 0xbb, 0x1c, 0x04, 0xbf, 0x2e, 0x07,
+	0x4f, 0x32, 0xe1, 0x3e, 0x97, 0x87, 0x09, 0xd5, 0x79, 0xf3, 0x09, 0x9a, 0x32, 0xb6, 0xec, 0xcb,
+	0xc4, 0x9d, 0x14, 0xdc, 0x26, 0xfb, 0x9c, 0x5e, 0x9c, 0x8e, 0x61, 0xf3, 0x98, 0xfb, 0x9c, 0xa6,
+	0xff, 0x7a, 0x19, 0xaa, 0x20, 0x6e, 0xa5, 0xef, 0x48, 0xf5, 0x46, 0x2d, 0x0f, 0x72, 0xe7, 0x3f,
+	0x0c, 0xb2, 0x36, 0x7d, 0x37, 0xfc, 0xf3, 0x7d, 0x00, 0xa6, 0xcf, 0xce, 0x66, 0x31, 0x38, 0x9f,
+	0xc5, 0xe0, 0xf7, 0x2c, 0x06, 0x5f, 0xe7, 0x71, 0x70, 0x3e, 0x8f, 0x83, 0x9f, 0xf3, 0x38, 0xf8,
+	0x70, 0xbf, 0xdd, 0x93, 0xea, 0x6a, 0x63, 0xfc, 0x25, 0x87, 0x5d, 0xff, 0xdd, 0x5f, 0xfc, 0x0d,
+	0x00, 0x00, 0xff, 0xff, 0x42, 0xe1, 0x4a, 0x27, 0x51, 0x03, 0x00, 0x00,
 }
 
+func (this *Reactor) Equal(that interface{}) bool {
+	if that == nil {
+		return this == nil
+	}
+
+	that1, ok := that.(*Reactor)
+	if !ok {
+		that2, ok := that.(Reactor)
+		if ok {
+			that1 = &that2
+		} else {
+			return false
+		}
+	}
+	if that1 == nil {
+		return this == nil
+	} else if this == nil {
+		return false
+	}
+	if this.Id != that1.Id {
+		return false
+	}
+	if this.Validator != that1.Validator {
+		return false
+	}
+	if this.Energy != that1.Energy {
+		return false
+	}
+	if this.Load != that1.Load {
+		return false
+	}
+	if this.Activated != that1.Activated {
+		return false
+	}
+	if this.GuildId != that1.GuildId {
+		return false
+	}
+	if this.AutomatedAllocations != that1.AutomatedAllocations {
+		return false
+	}
+	if this.AllowManualAllocations != that1.AllowManualAllocations {
+		return false
+	}
+	if this.AllowExternalAllocations != that1.AllowExternalAllocations {
+		return false
+	}
+	if this.AllowUncappedAllocations != that1.AllowUncappedAllocations {
+		return false
+	}
+	if !this.DelegateMinimumBeforeAllowedAllocations.Equal(that1.DelegateMinimumBeforeAllowedAllocations) {
+		return false
+	}
+	if !this.DelegateTaxOnAllocations.Equal(that1.DelegateTaxOnAllocations) {
+		return false
+	}
+	return true
+}
 func (m *Reactor) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -184,19 +258,59 @@ func (m *Reactor) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.DelegateTaxOnAllocations != 0 {
-		i = encodeVarintReactor(dAtA, i, uint64(m.DelegateTaxOnAllocations))
+	{
+		size := m.DelegateTaxOnAllocations.Size()
+		i -= size
+		if _, err := m.DelegateTaxOnAllocations.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintReactor(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x62
+	{
+		size := m.DelegateMinimumBeforeAllowedAllocations.Size()
+		i -= size
+		if _, err := m.DelegateMinimumBeforeAllowedAllocations.MarshalTo(dAtA[i:]); err != nil {
+			return 0, err
+		}
+		i = encodeVarintReactor(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x5a
+	if m.AllowUncappedAllocations {
+		i--
+		if m.AllowUncappedAllocations {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x50
+	}
+	if m.AllowExternalAllocations {
+		i--
+		if m.AllowExternalAllocations {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
 		i--
 		dAtA[i] = 0x48
 	}
-	if m.DelegateMinimumBeforeAllowedAllocations != 0 {
-		i = encodeVarintReactor(dAtA, i, uint64(m.DelegateMinimumBeforeAllowedAllocations))
+	if m.AllowManualAllocations {
+		i--
+		if m.AllowManualAllocations {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
 		i--
 		dAtA[i] = 0x40
 	}
-	if m.AllowDelegateAllocations {
+	if m.AutomatedAllocations {
 		i--
-		if m.AllowDelegateAllocations {
+		if m.AutomatedAllocations {
 			dAtA[i] = 1
 		} else {
 			dAtA[i] = 0
@@ -280,15 +394,22 @@ func (m *Reactor) Size() (n int) {
 	if m.GuildId != 0 {
 		n += 1 + sovReactor(uint64(m.GuildId))
 	}
-	if m.AllowDelegateAllocations {
+	if m.AutomatedAllocations {
 		n += 2
 	}
-	if m.DelegateMinimumBeforeAllowedAllocations != 0 {
-		n += 1 + sovReactor(uint64(m.DelegateMinimumBeforeAllowedAllocations))
+	if m.AllowManualAllocations {
+		n += 2
 	}
-	if m.DelegateTaxOnAllocations != 0 {
-		n += 1 + sovReactor(uint64(m.DelegateTaxOnAllocations))
+	if m.AllowExternalAllocations {
+		n += 2
 	}
+	if m.AllowUncappedAllocations {
+		n += 2
+	}
+	l = m.DelegateMinimumBeforeAllowedAllocations.Size()
+	n += 1 + l + sovReactor(uint64(l))
+	l = m.DelegateTaxOnAllocations.Size()
+	n += 1 + l + sovReactor(uint64(l))
 	return n
 }
 
@@ -457,7 +578,7 @@ func (m *Reactor) Unmarshal(dAtA []byte) error {
 			}
 		case 7:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AllowDelegateAllocations", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AutomatedAllocations", wireType)
 			}
 			var v int
 			for shift := uint(0); ; shift += 7 {
@@ -474,12 +595,12 @@ func (m *Reactor) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-			m.AllowDelegateAllocations = bool(v != 0)
+			m.AutomatedAllocations = bool(v != 0)
 		case 8:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DelegateMinimumBeforeAllowedAllocations", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AllowManualAllocations", wireType)
 			}
-			m.DelegateMinimumBeforeAllowedAllocations = 0
+			var v int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowReactor
@@ -489,16 +610,17 @@ func (m *Reactor) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.DelegateMinimumBeforeAllowedAllocations |= uint64(b&0x7F) << shift
+				v |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			m.AllowManualAllocations = bool(v != 0)
 		case 9:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DelegateTaxOnAllocations", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AllowExternalAllocations", wireType)
 			}
-			m.DelegateTaxOnAllocations = 0
+			var v int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowReactor
@@ -508,11 +630,100 @@ func (m *Reactor) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.DelegateTaxOnAllocations |= uint64(b&0x7F) << shift
+				v |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			m.AllowExternalAllocations = bool(v != 0)
+		case 10:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AllowUncappedAllocations", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowReactor
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.AllowUncappedAllocations = bool(v != 0)
+		case 11:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DelegateMinimumBeforeAllowedAllocations", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowReactor
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthReactor
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthReactor
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.DelegateMinimumBeforeAllowedAllocations.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 12:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DelegateTaxOnAllocations", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowReactor
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthReactor
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthReactor
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.DelegateTaxOnAllocations.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipReactor(dAtA[iNdEx:])
