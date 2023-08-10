@@ -101,6 +101,7 @@ func (k Keeper) GetReactor(ctx sdk.Context, id uint64, full bool) (val types.Rea
 	k.cdc.MustUnmarshal(b, &val)
 
 	if full {
+    	val.Energy = k.ReactorGetEnergy(ctx, val.Id)
 		val.Load = k.ReactorGetLoad(ctx, val.Id)
 	}
 
@@ -142,6 +143,7 @@ func (k Keeper) GetAllReactor(ctx sdk.Context, full bool) (list []types.Reactor)
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
 		if full {
+		    val.Energy = k.ReactorGetEnergy(ctx, val.Id)
 			val.Load = k.ReactorGetLoad(ctx, val.Id)
 		}
 
@@ -211,7 +213,7 @@ func (k Keeper) ReactorActivate(ctx sdk.Context, reactor types.Reactor, validato
 func (k Keeper) CascadeReactorAllocationFailure(ctx sdk.Context, reactor types.Reactor) {
 	allocations := k.GetAllReactorAllocations(ctx, reactor.Id)
 	for _, allocation := range allocations {
-		if reactor.Energy > k.ReactorGetLoad(ctx, reactor.Id) {
+		if k.ReactorGetEnergy(ctx, reactor.Id) > k.ReactorGetLoad(ctx, reactor.Id) {
 			break
 		}
 

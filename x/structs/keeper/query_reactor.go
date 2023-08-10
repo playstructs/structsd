@@ -29,6 +29,7 @@ func (k Keeper) ReactorAll(goCtx context.Context, req *types.QueryAllReactorRequ
 			return err
 		}
 
+        reactor.Energy = k.ReactorGetEnergy(ctx, reactor.Id)
 		reactor.Load = k.ReactorGetLoad(ctx, reactor.Id)
 
 		reactors = append(reactors, reactor)
@@ -48,7 +49,7 @@ func (k Keeper) Reactor(goCtx context.Context, req *types.QueryGetReactorRequest
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	reactor, found := k.GetReactor(ctx, req.Id, false)
+	reactor, found := k.GetReactor(ctx, req.Id, true)
 	if !found {
 		return nil, sdkerrors.ErrKeyNotFound
 	}

@@ -79,13 +79,10 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
         var player types.Player
         if (playerId == 0) {
             // No Player Found, Creating..
-            playerId = k.GetNextPlayerId(ctx)
             player = types.CreateEmptyPlayer()
             player.SetCreator(playerAddress.String())
+            playerId = k.AppendPlayer(ctx, player)
             player.SetId(playerId)
-            k.SetPlayer(ctx, player)
-            k.SetPlayerIdForAddress(ctx, player.Creator, player.Id)
-
         } else {
             player, _ = k.GetPlayer(ctx, playerId)
         }
