@@ -6,6 +6,7 @@ import (
 	"structs/x/structs/types"
 	"cosmossdk.io/math"
 	"fmt"
+	"strconv"
 )
 
 
@@ -75,6 +76,9 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
     if (reactor.AutomatedAllocations && withDynamicAllocation) {
         playerId := k.GetPlayerIdFromAddress(ctx, playerAddress.String())
 
+        playerIdString := strconv.FormatUint(playerId, 10)
+        fmt.Println(playerIdString)
+
         var player types.Player
         if (playerId == 0) {
             // No Player Found, Creating..
@@ -83,6 +87,7 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
             playerId = k.AppendPlayer(ctx, player)
             player.SetId(playerId)
             fmt.Println("Player New")
+
 
         } else {
             player, _ = k.GetPlayer(ctx, playerId)
