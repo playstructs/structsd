@@ -6,7 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
-	"fmt"
 )
 
 // GetAllocationCount get the total number of allocation
@@ -195,13 +194,10 @@ func (k Keeper) UpsertAllocation(ctx sdk.Context, newAllocation types.Allocation
         allocation.SetPower(newAllocation.Power)
         allocation.LinkedInfusion = newAllocation.LinkedInfusion
         k.SetAllocation(ctx, allocation)
-        fmt.Println("Allocation Old")
     } else {
         allocation = newAllocation
         allocationId := k.AppendAllocation(ctx, allocation)
         allocation.SetId(allocationId)
-        fmt.Println(allocation.Id)
-        fmt.Println("Allocation New")
     }
 
     return allocation

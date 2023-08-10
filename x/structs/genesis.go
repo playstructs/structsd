@@ -8,6 +8,9 @@ import (
 
 // InitGenesis initializes the module's state from a provided genesis state.
 func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) {
+
+    /*
+
 	// Set all the reactor
 	for _, elem := range genState.ReactorList {
 		k.SetReactor(ctx, elem)
@@ -29,7 +32,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	}
 
 	// Set allocation count
-	k.SetAllocationCount(ctx, genState.AllocationCount)
+	//k.SetAllocationCount(ctx, genState.AllocationCount)
 
 	// Set all the guild
 	for _, elem := range genState.GuildList {
@@ -44,7 +47,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	}
 
 	// Set player count
-	k.SetPlayerCount(ctx, genState.PlayerCount)
+	//k.SetPlayerCount(ctx, genState.PlayerCount)
 	// Set all the address
 	for _, elem := range genState.AddressList {
 		k.SetAddress(ctx, elem)
@@ -52,7 +55,13 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 
 	// Set address count
 	k.SetAddressCount(ctx, genState.AddressCount)
+
+	*/
+	//custom genesis code will be needed due to some race conditions taking place
+
 	// this line is used by starport scaffolding # genesis/module/init
+
+
 	k.SetPort(ctx, genState.PortId)
 	// Only try to bind to port if it is not already bound, since we may already own
 	// port capability from capability InitGenesis

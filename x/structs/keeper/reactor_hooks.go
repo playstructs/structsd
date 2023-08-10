@@ -5,8 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 	"cosmossdk.io/math"
-	"fmt"
-	"strconv"
+
 )
 
 
@@ -73,25 +72,22 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
 
     _, allocation, withDynamicAllocation := k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String(), delegationShare.Uint64(), reactor.AutomatedAllocations, reactor.DelegateTaxOnAllocations)
 
+
     if (reactor.AutomatedAllocations && withDynamicAllocation) {
         playerId := k.GetPlayerIdFromAddress(ctx, playerAddress.String())
-
-        playerIdString := strconv.FormatUint(playerId, 10)
-        fmt.Println(playerIdString)
 
         var player types.Player
         if (playerId == 0) {
             // No Player Found, Creating..
+            playerId = k.GetNextPlayerId(ctx)
             player = types.CreateEmptyPlayer()
             player.SetCreator(playerAddress.String())
-            playerId = k.AppendPlayer(ctx, player)
             player.SetId(playerId)
-            fmt.Println("Player New")
-
+            k.SetPlayer(ctx, player)
+            k.SetPlayerIdForAddress(ctx, player.Creator, player.Id)
 
         } else {
             player, _ = k.GetPlayer(ctx, playerId)
-            fmt.Println("Player Old")
         }
 
         // Now let's get the player some power

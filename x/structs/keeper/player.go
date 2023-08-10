@@ -6,8 +6,20 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
+
 )
 
+
+
+// GetNextPlayerId allocate a new player ID
+func (k Keeper) GetNextPlayerId(ctx sdk.Context) (uint64) {
+
+    nextId := k.GetPlayerCount(ctx)
+
+    k.SetPlayerCount(ctx, nextId  + 1)
+
+	return nextId
+}
 
 // GetPlayerCount get the total number of player
 func (k Keeper) GetPlayerCount(ctx sdk.Context) uint64 {
@@ -50,7 +62,6 @@ func (k Keeper) AppendPlayer(
 
 	// Update player count
 	k.SetPlayerCount(ctx, count+1)
-    k.SetPlayerIdForAddress(ctx, player.Creator, player.Id)
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: player.Id, ObjectType: types.ObjectType_player})
 
@@ -61,6 +72,7 @@ func (k Keeper) AppendPlayer(
 func (k Keeper) SetPlayer(ctx sdk.Context, player types.Player) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
 	b := k.cdc.MustMarshal(&player)
+
 	store.Set(GetPlayerIDBytes(player.Id), b)
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: player.Id, ObjectType: types.ObjectType_player})
