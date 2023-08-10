@@ -110,9 +110,9 @@ func GetAddressIDFromBytes(bz []byte) uint64 {
 func (k Keeper) GetPlayerIdFromAddress(ctx sdk.Context, address string) (uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressPlayerKey))
 
-	bz := store.Get([]byte(address))
+	bz := store.Get(types.KeyPrefix(address))
 
-	// Substation Capacity Not in Memory: no element
+	// Address Not in Memory: no element
 	if bz == nil  {
 		return 0
 	}
@@ -126,6 +126,6 @@ func (k Keeper) SetPlayerIdForAddress(ctx sdk.Context, address string, playerId 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, playerId)
 
-	store.Set([]byte(address), bz)
+	store.Set(types.KeyPrefix(address), bz)
 
 }

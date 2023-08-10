@@ -1,7 +1,6 @@
 package types
 
 import (
-	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"cosmossdk.io/math"
 )
 
@@ -35,13 +34,6 @@ func (reactor *Reactor) SetValidator(validatorAddress string) error {
 func (reactor *Reactor) SetId(id uint64) {
 	reactor.Id = id
 }
-
-// Sets the variable within the object but does not update the memory stores
-func (reactor *Reactor) SetEnergy(validator staking.Validator) error {
-	reactor.Energy = validator.Tokens.Uint64()
-	return nil
-}
-
 
 type ReactorPermission uint16
 

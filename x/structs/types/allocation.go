@@ -5,6 +5,14 @@ import (
     "strconv"
 )
 
+func (a *Allocation) SetId(id uint64) error {
+
+	a.Id = id
+
+	return nil
+}
+
+
 func (a *Allocation) SetCreator(creator string) error {
 
 	a.Creator = creator

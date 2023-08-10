@@ -12,6 +12,8 @@ import "structs/structs/allocation.proto";
 import "structs/structs/guild.proto";
 import "structs/structs/player.proto";
 import "structs/structs/address.proto";
+import "structs/structs/infusion.proto";
+import "structs/structs/keys.proto";
 
 option go_package = "structs/x/structs/types";
 
@@ -82,6 +84,17 @@ service Query {
   rpc AddressAll (QueryAllAddressRequest) returns (QueryAllAddressResponse) {
     option (google.api.http).get = "/structs/structs/address";
   
+  }
+
+
+  // Queries a list of Allocation items.
+  rpc Infusion    (QueryGetInfusionRequest) returns (QueryGetInfusionResponse) {
+    option (google.api.http).get = "/structs/infusion/{destinationType}/{destinationId}/{address}";
+
+  }
+  rpc InfusionAll (QueryAllInfusionRequest) returns (QueryAllInfusionResponse) {
+    option (google.api.http).get = "/structs/infusion";
+
   }
 }
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -197,3 +210,25 @@ message QueryAllAddressResponse {
            cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+
+
+
+message QueryGetInfusionRequest {
+  string destinationType      = 1;
+  uint64 destinationId        = 2;
+  string address              = 3;
+}
+
+message QueryGetInfusionResponse {
+  Infusion Infusion = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllInfusionRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllInfusionResponse {
+  repeated Infusion                             Infusion = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+  repeated uint64                                 status     = 3;
+}

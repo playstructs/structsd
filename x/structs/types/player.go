@@ -12,6 +12,13 @@ func (player *Player) SetId(id uint64) error {
 	return nil
 }
 
+func (player *Player) SetCreator(creator string) error {
+
+	player.Creator = creator
+
+	return nil
+}
+
 
 func (player *Player) SetGuild(guildId uint64) error {
 
@@ -34,6 +41,7 @@ func CreateEmptyPlayer() Player {
 	    Id:             0,
 		GuildId:        0,
 		SubstationId:   0,
+		Creator:        "",
 	}
 }
 

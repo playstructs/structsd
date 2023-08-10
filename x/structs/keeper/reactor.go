@@ -189,9 +189,9 @@ func (k Keeper) ReactorActivate(ctx sdk.Context, reactor types.Reactor, validato
     if (playerId == 0) {
         // No Player Found, Creating..
         player = types.CreateEmptyPlayer()
-        player.SetId(k.GetNextPlayerId(ctx))
-        k.SetPlayer(ctx, player)
-        k.SetPlayerIdForAddress(ctx, identity, player.Id)
+        player.SetCreator(identity)
+
+        k.AppendPlayer(ctx, player)
 
         // TODO Add Related Address
     } else {
@@ -200,40 +200,6 @@ func (k Keeper) ReactorActivate(ctx sdk.Context, reactor types.Reactor, validato
 
     // Apply Ownership Permissions of the Reactor to the Player
     k.ReactorPermissionAdd(ctx, reactor.Id, player.Id, types.ReactorPermissionAll)
-
-    // Now let's get the player some power
-    if (player.SubstationId == 0) {
-        var substation types.Substation
-        substation = types.CreateEmptySubstation()
-        substation.SetId(k.GetNextSubstationId(ctx))
-        substation.SetOwner(player.Id)
-        substation.SetCreator(identity)
-        substation.SetPlayerConnectionAllocation(types.InitialReactorOwnerEnergy)
-        k.SetSubstation(ctx, substation)
-
-        k.SubstationPermissionAdd(ctx, substation.Id, player.Id, types.SubstationPermissionAll)
-
-
-        var allocation types.Allocation
-        allocation = types.CreateEmptyAllocation(types.ObjectType_reactor)
-        allocation.SetController(identity)
-        allocation.SetCreator(identity)
-        allocation.SetPower(types.InitialReactorAllocation)
-        allocation.SetSource(reactor.Id)
-
-        // Connect Allocation to Substation
-        allocation.Connect(substation.Id)
-        _ = k.SubstationIncrementEnergy(ctx, substation.Id, allocation.Power)
-
-        _ = k.AppendAllocation(ctx, allocation)
-
-        // Connect Player to Substation
-        k.SubstationIncrementConnectedPlayerLoad(ctx, substation.Id, 1)
-        player.SetSubstation(substation.Id)
-        k.SetPlayer(ctx, player)
-
-    }
-
 
     return true, nil
 
@@ -332,24 +298,37 @@ func (k Keeper) ReactorRebuildLoad(ctx sdk.Context, id uint64) (load uint64) {
 	return
 }
 
+
+// ReactorRebuildLoad - Rebuilds the current load by iterating through all related infusions
+func (k Keeper) ReactorRebuildEnergy(ctx sdk.Context, id uint64) (energy uint64) {
+	infusions := k.GetAllReactorInfusions(ctx, id)
+
+	for _, infusion := range infusions {
+	    // TODO ADD A REAL RATIO CALC
+		energy += infusion.Fuel * 10
+	}
+
+	return
+}
+
+
 // ReactorGetEnergy returns the current energy production of the reactor
 // Go to memory first, but then fall back to rebuilding from storage
-func (k Keeper) ReactorGetEnergy(ctx sdk.Context, id uint64) (load uint64) {
+func (k Keeper) ReactorGetEnergy(ctx sdk.Context, id uint64) (energy uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.ReactorEnergyKey))
 
 	bz := store.Get(GetReactorIDBytes(id))
 
 	// Reactor Energy Not in Memory: no element
 	if bz == nil {
-		reactor, _ := k.GetReactor(ctx, id, false)
-		load = reactor.Energy
-		k.ReactorSetEnergy(ctx, id, load)
+		energy = k.ReactorRebuildEnergy(ctx, id)
+		k.ReactorSetEnergy(ctx, id, energy)
 
 	} else {
-		load = binary.BigEndian.Uint64(bz)
+		energy = binary.BigEndian.Uint64(bz)
 	}
 
-	return load
+	return energy
 }
 
 // ReactorSetEnergy- Sets the in-memory representation of the reactors energy production

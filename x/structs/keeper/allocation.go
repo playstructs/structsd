@@ -187,3 +187,18 @@ func (k Keeper) AllocationDestroy(ctx sdk.Context, allocation types.Allocation) 
 	}
 
 }
+
+func (k Keeper) UpsertAllocation(ctx sdk.Context, newAllocation types.Allocation ) (allocation types.Allocation) {
+    allocation, allocationFound := k.GetAllocation(ctx, newAllocation.Id)
+    if (!allocationFound) {
+        allocation = newAllocation
+        allocationId := k.AppendAllocation(ctx, allocation)
+        allocation.SetId(allocationId)
+    } else {
+        allocation.SetPower(newAllocation.Power)
+        allocation.SetLinkedInfusion(newAllocation.LinkedInfusion)
+        k.SetAllocation(ctx, allocation)
+    }
+
+    return
+}

@@ -19,6 +19,7 @@ option go_package = "structs/x/structs/types";
 message EventCacheInvalidation {
 
   uint64 object_id = 1;
+  string object_name = 3;
 
   objectType object_type = 2;
 

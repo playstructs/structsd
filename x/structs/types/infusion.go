@@ -27,6 +27,14 @@ func (a *Infusion) SetDestination(destinationId uint64) error {
 	return nil
 }
 
+func (a *Infusion) SetLinkedAllocation(allocationId uint64) error {
+
+	a.LinkedAllocation = allocationId
+
+	return nil
+}
+
+
 
 func CreateNewInfusion(sourceType ObjectType, destinationId uint64, playerAddress string, fuel uint64) Infusion {
 	return Infusion{
