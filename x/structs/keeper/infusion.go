@@ -62,6 +62,8 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
 
         if (infusion.LinkedAllocation > 0) {
             allocation.SetId(infusion.LinkedAllocation)
+        } else {
+            allocation.SetId(0)
         }
 
         allocation.SetCreator(address)
@@ -75,8 +77,8 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
         allocation.SetLinkedInfusion(address)
 
         withDynamicAllocation = true
-        allocation = k.UpsertAllocation(ctx, allocation)
-        infusion.SetLinkedAllocation(allocation.Id)
+        appendedAllocation := k.UpsertAllocation(ctx, allocation)
+        infusion.SetLinkedAllocation(appendedAllocation.Id)
      } else {
          withDynamicAllocation = false
      }

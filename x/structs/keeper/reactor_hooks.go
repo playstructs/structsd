@@ -5,7 +5,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 	"cosmossdk.io/math"
+	"fmt"
 )
+
 
 /* Setup Reactor (when a validator is created)
  *
@@ -80,9 +82,11 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
             player.SetCreator(playerAddress.String())
             playerId = k.AppendPlayer(ctx, player)
             player.SetId(playerId)
+            fmt.Println("Player New")
 
         } else {
             player, _ = k.GetPlayer(ctx, playerId)
+            fmt.Println("Player Old")
         }
 
         // Now let's get the player some power

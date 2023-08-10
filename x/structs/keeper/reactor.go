@@ -117,6 +117,7 @@ func (k Keeper) GetReactorByBytes(ctx sdk.Context, id []byte, full bool) (val ty
 	k.cdc.MustUnmarshal(b, &val)
 
 	if full {
+	    val.Energy = k.ReactorGetEnergy(ctx, val.Id)
 		val.Load = k.ReactorGetLoad(ctx, val.Id)
 	}
 
