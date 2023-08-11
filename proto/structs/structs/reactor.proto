@@ -12,7 +12,6 @@ message Reactor {
   uint64 id = 1;
 
   string validator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  //string validator = 2;
 
   uint64 energy = 3;
 
@@ -37,6 +36,9 @@ message Reactor {
     (cosmos_proto.scalar)  = "cosmos.Dec",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
-  ];;
+  ];
 
+  bytes rawAddress = 13;
+
+  uint64 serviceSubstationId = 14;
 }

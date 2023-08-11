@@ -31,15 +31,10 @@ func (h Hooks) AfterValidatorRemoved(ctx sdk.Context, _ sdk.ConsAddress, _ sdk.V
 
 // AfterValidatorCreated adds the address-pubkey relation when a validator is created.
 func (h Hooks) AfterValidatorCreated(ctx sdk.Context, valAddr sdk.ValAddress) error {
-	/*
-		validator := h.k.sk.Validator(ctx, valAddr)
-		consPk, err := validator.ConsPubKey()
-		if err != nil {
-			return err
-		}
-	*/
 
-	_ = h.k.ReactorInitialize(ctx, valAddr)
+    // Setup the Reactor object once a validator comes online
+	h.k.ReactorInitialize(ctx, valAddr)
+
 	return nil
 }
 

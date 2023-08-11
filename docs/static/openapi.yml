@@ -46231,7 +46231,6 @@ paths:
                       format: uint64
                     validator:
                       type: string
-                      title: string validator = 2;
                     energy:
                       type: string
                       format: uint64
@@ -46255,6 +46254,12 @@ paths:
                       type: string
                     delegateTaxOnAllocations:
                       type: string
+                    rawAddress:
+                      type: string
+                      format: byte
+                    serviceSubstationId:
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -46378,7 +46383,6 @@ paths:
                     format: uint64
                   validator:
                     type: string
-                    title: string validator = 2;
                   energy:
                     type: string
                     format: uint64
@@ -46402,6 +46406,12 @@ paths:
                     type: string
                   delegateTaxOnAllocations:
                     type: string
+                  rawAddress:
+                    type: string
+                    format: byte
+                  serviceSubstationId:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -75879,7 +75889,6 @@ definitions:
               format: uint64
             validator:
               type: string
-              title: string validator = 2;
             energy:
               type: string
               format: uint64
@@ -75903,6 +75912,12 @@ definitions:
               type: string
             delegateTaxOnAllocations:
               type: string
+            rawAddress:
+              type: string
+              format: byte
+            serviceSubstationId:
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -76115,7 +76130,6 @@ definitions:
             format: uint64
           validator:
             type: string
-            title: string validator = 2;
           energy:
             type: string
             format: uint64
@@ -76139,6 +76153,12 @@ definitions:
             type: string
           delegateTaxOnAllocations:
             type: string
+          rawAddress:
+            type: string
+            format: byte
+          serviceSubstationId:
+            type: string
+            format: uint64
   structs.structs.QueryGetSubstationResponse:
     type: object
     properties:
@@ -76180,7 +76200,6 @@ definitions:
         format: uint64
       validator:
         type: string
-        title: string validator = 2;
       energy:
         type: string
         format: uint64
@@ -76204,6 +76223,12 @@ definitions:
         type: string
       delegateTaxOnAllocations:
         type: string
+      rawAddress:
+        type: string
+        format: byte
+      serviceSubstationId:
+        type: string
+        format: uint64
   structs.structs.Substation:
     type: object
     properties:

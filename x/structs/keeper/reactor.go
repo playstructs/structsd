@@ -4,7 +4,6 @@ import (
 	"encoding/binary"
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"structs/x/structs/types"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -71,7 +70,7 @@ func (k Keeper) AppendReactor(
 	store.Set(GetReactorIDBytes(reactor.Id), appendedValue)
 
 	// Add a record to the Validator index
-	k.SetReactorValidatorBytes(ctx, reactor.Id, reactor.Validator)
+	k.SetReactorValidatorBytes(ctx, reactor.Id, reactor.RawAddress)
 
 	// Update reactor count
 	k.SetReactorCount(ctx, count+1)
@@ -165,48 +164,6 @@ func GetReactorIDFromBytes(bz []byte) uint64 {
 	return binary.BigEndian.Uint64(bz)
 }
 
-
-func (k Keeper) ReactorCheckIdentity(ctx sdk.Context, reactor types.Reactor, validator staking.Validator) (bool, error) {
-
-    if (reactor.Activated) {
-        return false, sdkerrors.Wrapf(types.ErrReactorActivation, "Reactor already activated")
-    }
-
-    identity := validator.Description.Identity
-
-    if (identity == "") {
-        return false, sdkerrors.Wrapf(types.ErrReactorActivation, "Identity Missing for Reactor Activation")
-    }
-    // TODO verify that identity is actually an address
-        // return error about wrong identity format
-
-
-    if (reactor.Energy < types.InitialReactorAllocation) {
-        energyString := strconv.FormatUint(types.InitialReactorAllocation, 10)
-        return false, sdkerrors.Wrapf(types.ErrReactorActivation, "Reactor Activation Requires %s Energy", energyString)
-    }
-
-    playerId := k.GetPlayerIdFromAddress(ctx, identity)
-
-    var player types.Player
-    if (playerId == 0) {
-        // No Player Found, Creating..
-        player = types.CreateEmptyPlayer()
-        player.SetCreator(identity)
-
-        k.AppendPlayer(ctx, player)
-
-        // TODO Add Related Address
-    } else {
-       player, _ = k.GetPlayer(ctx, playerId)
-    }
-
-    // Apply Ownership Permissions of the Reactor to the Player
-    k.ReactorPermissionAdd(ctx, reactor.Id, player.Id, types.ReactorPermissionAll)
-
-    return true, nil
-
-}
 
 // Iterate through the allocations, starting from oldest, and destroy them until power
 // consumption matches output

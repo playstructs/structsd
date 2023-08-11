@@ -8,6 +8,7 @@ func CreateEmptyReactor() Reactor {
 	return Reactor{
 		Energy:    0,
 		Validator: "",
+		RawAddress: nil,
 		Activated: false,
 		AutomatedAllocations: true,
 		AllowManualAllocations: false,
@@ -15,6 +16,7 @@ func CreateEmptyReactor() Reactor {
 		AllowUncappedAllocations: false,
 		DelegateMinimumBeforeAllowedAllocations: math.LegacyOneDec(),
 		DelegateTaxOnAllocations: math.LegacyZeroDec(),
+		ServiceSubstationId: 0,
 
 	}
 }
@@ -30,8 +32,16 @@ func (reactor *Reactor) SetValidator(validatorAddress string) error {
 	return nil
 }
 
+func (reactor *Reactor) SetRawAddress(rawAddress []byte) {
+	reactor.RawAddress = rawAddress
+}
+
 func (reactor *Reactor) SetId(id uint64) {
 	reactor.Id = id
+}
+
+func (reactor *Reactor) SetServiceSubstationId(serviceSubstationId uint64) {
+	reactor.ServiceSubstationId = serviceSubstationId
 }
 
 type ReactorPermission uint16

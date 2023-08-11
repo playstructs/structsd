@@ -14,11 +14,10 @@ import (
  * Triggered during Staking Hooks:
  *   AfterValidatorCreated
  */
-func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddress) (reactor types.Reactor) {
-
-
+func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddress)  {
 
 	/* Does this Reactor exist? */
+	var reactor types.Reactor
 	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
 	if reactorBytesFound {
 		reactor, _ = k.GetReactorByBytes(ctx, reactorBytes, false)
@@ -26,24 +25,21 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
 		/* Build the initial Reactor object */
 		reactor = types.CreateEmptyReactor()
 		reactor.SetValidator(validatorAddress.String())
-		k.SetReactorValidatorBytes(ctx, reactor.Id, validatorAddress.Bytes())
-
+		reactor.SetRawAddress(validatorAddress.Bytes())
 
 		/*
 		 * Commit Reactor to the Keeper
 		 */
-
 		reactorId := k.AppendReactor(ctx, reactor)
-        reactor.SetId(reactorId)
+		reactor.SetId(reactorId)
+		k.SetReactorValidatorBytes(ctx, reactor.Id, validatorAddress.Bytes())
 
 
         /*
          * Reverse engineer the sdk.ValAddress into a regular sdk.AccAddress
          *
          * This will allow us to create a player account with the correct permissions
-         *
          */
-
 
         var identity sdk.AccAddress
         identity = validatorAddress.Bytes()
@@ -55,31 +51,36 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
             player = types.CreateEmptyPlayer()
             player.SetCreator(identity.String())
 
-            k.AppendPlayer(ctx, player)
+            playerId = k.AppendPlayer(ctx, player)
+            player.SetId(playerId)
 
             // TODO Add Related Address
         } else {
            player, _ = k.GetPlayer(ctx, playerId)
         }
 
+        // Add the player as a permissioned user of the reactor
+        k.ReactorPermissionAdd(ctx, reactor.Id, player.Id, types.ReactorPermissionAll)
+
+
+        // Build the Primary Substation
+        // This will be unpowered at first since there is likely no
+        // delegations of fuel to the reactor at this phase.
+        substation := types.CreateEmptySubstation()
+        substation.SetOwner(playerId)
+        substation.SetCreator(player.Creator)
+
+        substationId := k.AppendSubstation(ctx, substation)
+        substation.SetId(substationId)
+
+        k.SubstationPermissionAdd(ctx, substation.Id, player.Id, types.SubstationPermissionAll)
+
+        // Wasteful right now that we're writing this a couple times
+        // to the keeper, but we'll clean it up later.
+        reactor.SetServiceSubstationId(substation.Id)
+        k.SetReactor(ctx, reactor)
 
 	}
-
-    validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
-    activated, _ := k.ReactorCheckIdentity(ctx, reactor, validator)
-    if (activated) {
-        reactor.SetActivated(true)
-        k.SetReactor(ctx, reactor)
-    }
-
-
-    // Check for identity to add to permissions
-    // Build primary Substation if needed
-    // Set Primary
-    //
-
-
-	return reactor
 }
 
 
@@ -92,7 +93,7 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
 func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) (reactor types.Reactor) {
 
 	/* Does this Reactor exist? */
-	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.String())
+	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
 	if !reactorBytesFound {
         return
 	}
@@ -168,19 +169,7 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
  */
 func (k Keeper) ReactorUpdateFromValidator(ctx sdk.Context, validatorAddress sdk.ValAddress)  {
 
-	validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
-
-	/* Does this Reactor exist? */
-	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.String())
-	if reactorBytesFound {
-		reactor, _ := k.GetReactorByBytes(ctx, reactorBytes, false)
-
-        activated, _ := k.ReactorCheckIdentity(ctx, reactor, validator)
-        if (activated) {
-            reactor.SetActivated(true)
-            k.SetReactor(ctx, reactor)
-        }
-
-	}
+    // Currently no need to run updates after the Validator Description is updated
+    // but we may use this in the future
 
 }
