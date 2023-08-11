@@ -114,8 +114,10 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
     if (reactor.AutomatedAllocations && withDynamicSourceAllocation) {
         // Connect Allocation to Substation
         sourceAllocation.Connect(reactor.ServiceSubstationId)
-        _ = k.SubstationIncrementEnergy(ctx, reactor.ServiceSubstationId, sourceAllocation.Power)
         k.SetAllocation(ctx, sourceAllocation)
+
+        k.SubstationSetEnergy(ctx, reactor.ServiceSubstationId, k.SubstationRebuildAllocationEnergy(ctx, reactor.ServiceSubstationId))
+
     }
 
     if (reactor.AutomatedAllocations && withDynamicPlayerAllocation) {
@@ -147,14 +149,15 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
 
             // Connect Allocation to Substation
             playerAllocation.Connect(substation.Id)
-            _ = k.SubstationIncrementEnergy(ctx, substation.Id, playerAllocation.Power)
             k.SetAllocation(ctx, playerAllocation)
+
 
             // Connect Player to Substation
             k.SubstationIncrementConnectedPlayerLoad(ctx, substation.Id, 1)
             player.SetSubstation(substation.Id)
             k.SetPlayer(ctx, player)
         }
+        k.SubstationSetEnergy(ctx, player.SubstationId, k.SubstationRebuildAllocationEnergy(ctx, player.SubstationId))
     }
 
     // need to define a guild or reactor parameter for allowed allocation of contributions
