@@ -13,8 +13,11 @@ message Infusion {
   uint64 destinationId = 2;
 
   uint64 fuel = 3;
-  uint64 linkedAllocation = 4;
+  uint64 energy = 4;
 
-  string address = 5;
+  uint64 linkedSourceAllocationId = 5;
+  uint64 linkedPlayerAllocationId = 6;
+
+  string address = 7;
 
 }

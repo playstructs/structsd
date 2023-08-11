@@ -100,6 +100,7 @@ func (k Keeper) GetReactor(ctx sdk.Context, id uint64, full bool) (val types.Rea
 	k.cdc.MustUnmarshal(b, &val)
 
 	if full {
+    	val.Fuel = k.ReactorGetFuel(ctx, val.Id)
     	val.Energy = k.ReactorGetEnergy(ctx, val.Id)
 		val.Load = k.ReactorGetLoad(ctx, val.Id)
 	}
@@ -117,6 +118,7 @@ func (k Keeper) GetReactorByBytes(ctx sdk.Context, id []byte, full bool) (val ty
 	k.cdc.MustUnmarshal(b, &val)
 
 	if full {
+	    val.Fuel = k.ReactorGetFuel(ctx, val.Id)
 	    val.Energy = k.ReactorGetEnergy(ctx, val.Id)
 		val.Load = k.ReactorGetLoad(ctx, val.Id)
 	}
@@ -142,6 +144,7 @@ func (k Keeper) GetAllReactor(ctx sdk.Context, full bool) (list []types.Reactor)
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
 		if full {
+		    val.Fuel = k.ReactorGetFuel(ctx, val.Id)
 		    val.Energy = k.ReactorGetEnergy(ctx, val.Id)
 			val.Load = k.ReactorGetLoad(ctx, val.Id)
 		}
@@ -259,13 +262,14 @@ func (k Keeper) ReactorRebuildLoad(ctx sdk.Context, id uint64) (load uint64) {
 }
 
 
-// ReactorRebuildLoad - Rebuilds the current load by iterating through all related infusions
-func (k Keeper) ReactorRebuildEnergy(ctx sdk.Context, id uint64) (energy uint64) {
+// ReactorRebuildInfusions - Rebuilds the current load by iterating through all related infusions
+func (k Keeper) ReactorRebuildInfusions(ctx sdk.Context, id uint64) (fuel uint64, energy uint64) {
 	infusions := k.GetAllReactorInfusions(ctx, id)
 
 	for _, infusion := range infusions {
 	    // TODO ADD A REAL RATIO CALC
-		energy += infusion.Fuel * 10
+	    fuel += infusion.Fuel
+		energy += types.CalculateReactorEnergy(infusion.Fuel)
 	}
 
 	return
@@ -281,7 +285,11 @@ func (k Keeper) ReactorGetEnergy(ctx sdk.Context, id uint64) (energy uint64) {
 
 	// Reactor Energy Not in Memory: no element
 	if bz == nil {
-		energy = k.ReactorRebuildEnergy(ctx, id)
+
+	    // may as well set both since we've got to perform the
+	    // iteration on the infusions
+		fuel, energy := k.ReactorRebuildInfusions(ctx, id)
+		k.ReactorSetFuel(ctx, id, fuel)
 		k.ReactorSetEnergy(ctx, id, energy)
 
 	} else {
@@ -294,6 +302,43 @@ func (k Keeper) ReactorGetEnergy(ctx sdk.Context, id uint64) (energy uint64) {
 // ReactorSetEnergy- Sets the in-memory representation of the reactors energy production
 func (k Keeper) ReactorSetEnergy(ctx sdk.Context, id uint64, amount uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.ReactorEnergyKey))
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, amount)
+
+	store.Set(GetReactorIDBytes(id), bz)
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: id, ObjectType: types.ObjectType_reactor})
+}
+
+
+
+
+// ReactorGetFuel returns the current fuel infused in the reactor
+// Go to memory first, but then fall back to rebuilding from storage
+func (k Keeper) ReactorGetFuel(ctx sdk.Context, id uint64) (fuel uint64) {
+	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.ReactorFuelKey))
+
+	bz := store.Get(GetReactorIDBytes(id))
+
+	// Reactor Energy Not in Memory: no element
+	if bz == nil {
+
+	    // may as well set both since we've got to perform the
+	    // iteration on the infusions
+		fuel, energy := k.ReactorRebuildInfusions(ctx, id)
+		k.ReactorSetFuel(ctx, id, fuel)
+		k.ReactorSetEnergy(ctx, id, energy)
+
+	} else {
+		fuel = binary.BigEndian.Uint64(bz)
+	}
+
+	return fuel
+}
+
+// ReactorSetEnergy- Sets the in-memory representation of the reactors energy production
+func (k Keeper) ReactorSetFuel(ctx sdk.Context, id uint64, amount uint64) {
+	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.ReactorFuelKey))
 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, amount)

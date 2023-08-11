@@ -45991,7 +45991,13 @@ paths:
                     fuel:
                       type: string
                       format: uint64
-                    linkedAllocation:
+                    energy:
+                      type: string
+                      format: uint64
+                    linkedSourceAllocationId:
+                      type: string
+                      format: uint64
+                    linkedPlayerAllocationId:
                       type: string
                       format: uint64
                     address:
@@ -46137,7 +46143,13 @@ paths:
                   fuel:
                     type: string
                     format: uint64
-                  linkedAllocation:
+                  energy:
+                    type: string
+                    format: uint64
+                  linkedSourceAllocationId:
+                    type: string
+                    format: uint64
+                  linkedPlayerAllocationId:
                     type: string
                     format: uint64
                   address:
@@ -46231,6 +46243,9 @@ paths:
                       format: uint64
                     validator:
                       type: string
+                    fuel:
+                      type: string
+                      format: uint64
                     energy:
                       type: string
                       format: uint64
@@ -46383,6 +46398,9 @@ paths:
                     format: uint64
                   validator:
                     type: string
+                  fuel:
+                    type: string
+                    format: uint64
                   energy:
                     type: string
                     format: uint64
@@ -75547,7 +75565,13 @@ definitions:
       fuel:
         type: string
         format: uint64
-      linkedAllocation:
+      energy:
+        type: string
+        format: uint64
+      linkedSourceAllocationId:
+        type: string
+        format: uint64
+      linkedPlayerAllocationId:
         type: string
         format: uint64
       address:
@@ -75795,7 +75819,13 @@ definitions:
             fuel:
               type: string
               format: uint64
-            linkedAllocation:
+            energy:
+              type: string
+              format: uint64
+            linkedSourceAllocationId:
+              type: string
+              format: uint64
+            linkedPlayerAllocationId:
               type: string
               format: uint64
             address:
@@ -75889,6 +75919,9 @@ definitions:
               format: uint64
             validator:
               type: string
+            fuel:
+              type: string
+              format: uint64
             energy:
               type: string
               format: uint64
@@ -76097,7 +76130,13 @@ definitions:
           fuel:
             type: string
             format: uint64
-          linkedAllocation:
+          energy:
+            type: string
+            format: uint64
+          linkedSourceAllocationId:
+            type: string
+            format: uint64
+          linkedPlayerAllocationId:
             type: string
             format: uint64
           address:
@@ -76130,6 +76169,9 @@ definitions:
             format: uint64
           validator:
             type: string
+          fuel:
+            type: string
+            format: uint64
           energy:
             type: string
             format: uint64
@@ -76200,6 +76242,9 @@ definitions:
         format: uint64
       validator:
         type: string
+      fuel:
+        type: string
+        format: uint64
       energy:
         type: string
         format: uint64

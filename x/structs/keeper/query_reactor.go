@@ -29,6 +29,7 @@ func (k Keeper) ReactorAll(goCtx context.Context, req *types.QueryAllReactorRequ
 			return err
 		}
 
+        reactor.Fuel = k.ReactorGetFuel(ctx, reactor.Id)
         reactor.Energy = k.ReactorGetEnergy(ctx, reactor.Id)
 		reactor.Load = k.ReactorGetLoad(ctx, reactor.Id)
 

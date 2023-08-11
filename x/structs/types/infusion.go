@@ -14,7 +14,8 @@ func (a *Infusion) SetAddress(address string) error {
 
 func (a *Infusion) SetFuel(newFuel uint64) error {
 
-	a.Fuel = newFuel
+	a.Fuel   = newFuel
+	a.Energy = CalculateInfusionEnergy(a.DestinationType, newFuel)
 
 	return nil
 }
@@ -27,22 +28,39 @@ func (a *Infusion) SetDestination(destinationId uint64) error {
 	return nil
 }
 
-func (a *Infusion) SetLinkedAllocation(allocationId uint64) error {
+func (a *Infusion) SetLinkedSourceAllocation(allocationId uint64) error {
 
-	a.LinkedAllocation = allocationId
+	a.LinkedSourceAllocationId = allocationId
+
+	return nil
+}
+
+func (a *Infusion) SetLinkedPlayerAllocation(allocationId uint64) error {
+
+	a.LinkedPlayerAllocationId = allocationId
 
 	return nil
 }
 
 
+func CalculateInfusionEnergy(destinationType ObjectType, fuel uint64) (energy uint64) {
+    switch destinationType {
+        case ObjectType_reactor:
+            energy = CalculateReactorEnergy(fuel)
+    }
 
-func CreateNewInfusion(sourceType ObjectType, destinationId uint64, playerAddress string, fuel uint64) Infusion {
+    return
+}
+
+func CreateNewInfusion(destinationType ObjectType, destinationId uint64, playerAddress string, fuel uint64) Infusion {
 	return Infusion{
-		DestinationType: sourceType,
+		DestinationType: destinationType,
 		DestinationId: destinationId,
 		Fuel: fuel,
+		Energy: CalculateInfusionEnergy(destinationType, fuel),
 		Address: playerAddress,
-		LinkedAllocation: 0,
+		LinkedSourceAllocationId: 0,
+		LinkedPlayerAllocationId: 0,
 	}
 }
 

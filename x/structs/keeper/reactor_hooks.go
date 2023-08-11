@@ -78,6 +78,9 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
         // Wasteful right now that we're writing this a couple times
         // to the keeper, but we'll clean it up later.
         reactor.SetServiceSubstationId(substation.Id)
+
+
+        reactor.DelegateTaxOnAllocations, _ = math.LegacyNewDecFromStr("0.04")
         k.SetReactor(ctx, reactor)
 
 	}
@@ -106,10 +109,16 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
     delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
 
 
-    _, allocation, withDynamicAllocation := k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String(), delegationShare.Uint64(), reactor.AutomatedAllocations, reactor.DelegateTaxOnAllocations)
+    _, sourceAllocation, withDynamicSourceAllocation, playerAllocation, withDynamicPlayerAllocation := k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String(), delegationShare.Uint64(), reactor.AutomatedAllocations, reactor.DelegateTaxOnAllocations)
 
+    if (reactor.AutomatedAllocations && withDynamicSourceAllocation) {
+        // Connect Allocation to Substation
+        sourceAllocation.Connect(reactor.ServiceSubstationId)
+        _ = k.SubstationIncrementEnergy(ctx, reactor.ServiceSubstationId, sourceAllocation.Power)
+        k.SetAllocation(ctx, sourceAllocation)
+    }
 
-    if (reactor.AutomatedAllocations && withDynamicAllocation) {
+    if (reactor.AutomatedAllocations && withDynamicPlayerAllocation) {
         playerId := k.GetPlayerIdFromAddress(ctx, playerAddress.String())
 
         var player types.Player
@@ -137,8 +146,9 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
             k.SubstationPermissionAdd(ctx, substation.Id, playerId, types.SubstationPermissionAll)
 
             // Connect Allocation to Substation
-            allocation.Connect(substation.Id)
-            _ = k.SubstationIncrementEnergy(ctx, substation.Id, allocation.Power)
+            playerAllocation.Connect(substation.Id)
+            _ = k.SubstationIncrementEnergy(ctx, substation.Id, playerAllocation.Power)
+            k.SetAllocation(ctx, playerAllocation)
 
             // Connect Player to Substation
             k.SubstationIncrementConnectedPlayerLoad(ctx, substation.Id, 1)

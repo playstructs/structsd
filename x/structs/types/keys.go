@@ -50,8 +50,11 @@ const (
 	ReactorCapacityKey  = "Reactor/capacity/"
 	ReactorLoadKey      = "Reactor/load/"
 	ReactorEnergyKey    = "Reactor/energy/"
+	ReactorFuelKey      = "Reactor/fuel/"
 
 	ReactorPermissionKey = "Reactor/permission/"
+
+	ReactorFuelToEnergyConversion = 10
 )
 
 const (

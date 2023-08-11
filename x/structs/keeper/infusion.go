@@ -6,6 +6,7 @@ import (
 	"structs/x/structs/types"
 
 	"strconv"
+	"cosmossdk.io/math"
 )
 
 
@@ -47,7 +48,7 @@ func (k Keeper) GetInfusion(ctx sdk.Context, destinationType types.ObjectType, d
 	return val, true
 }
 
-func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType, destinationId uint64, address string, fuel uint64, automatedAllocation bool, delegateTaxOnAllocations sdk.Dec) (infusion types.Infusion, allocation types.Allocation, withDynamicAllocation bool){
+func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType, destinationId uint64, address string, fuel uint64, automatedAllocation bool, delegateTaxOnAllocations sdk.Dec) (infusion types.Infusion, sourceAllocation types.Allocation, withDynamicSourceAllocation bool, playerAllocation types.Allocation, withDynamicPlayerAllocation bool){
 
     infusion, infusionFound := k.GetInfusion(ctx, destinationType, destinationId, address)
     if (infusionFound) {
@@ -58,36 +59,68 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
 
 
     if (automatedAllocation) {
-        allocation = types.CreateEmptyAllocation(destinationType)
 
-        if (infusion.LinkedAllocation > 0) {
-            allocation.SetId(infusion.LinkedAllocation)
+        energyToPortion := infusion.Energy
+        if (delegateTaxOnAllocations.GT(math.LegacyZeroDec())) {
+           withDynamicSourceAllocation = true
+
+           sourceAllocation = types.CreateEmptyAllocation(destinationType)
+
+            if (infusion.LinkedSourceAllocationId > 0) {
+                sourceAllocation.SetId(infusion.LinkedSourceAllocationId)
+            } else {
+                sourceAllocation.SetId(0)
+            }
+
+            sourceAllocation.SetCreator(address)
+            sourceAllocation.SetSource(destinationId)
+
+            sourcePortion := delegateTaxOnAllocations.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(energyToPortion)))
+            sourceAllocation.SetPower(sourcePortion.RoundInt().Uint64())
+            energyToPortion = energyToPortion - sourceAllocation.Power
+
+            sourceAllocation.SetLinkedInfusion(address)
+
+            withDynamicPlayerAllocation = true
+            sourceAllocation = k.UpsertAllocation(ctx, sourceAllocation)
+
+            infusion.SetLinkedSourceAllocation(sourceAllocation.Id)
         } else {
-            allocation.SetId(0)
+            withDynamicSourceAllocation = false
         }
 
-        allocation.SetCreator(address)
-        allocation.SetController(address)
-        allocation.SetSource(destinationId)
+        playerAllocation = types.CreateEmptyAllocation(destinationType)
+
+        if (infusion.LinkedPlayerAllocationId > 0) {
+            playerAllocation.SetId(infusion.LinkedPlayerAllocationId)
+        } else {
+            playerAllocation.SetId(0)
+        }
+
+        playerAllocation.SetCreator(address)
+        playerAllocation.SetController(address)
+        playerAllocation.SetSource(destinationId)
 
         // TODO actual fuel to energy ratio
         // apply tax
-        allocation.SetPower(fuel * 10)
+        playerAllocation.SetPower(energyToPortion)
 
-        allocation.SetLinkedInfusion(address)
+        playerAllocation.SetLinkedInfusion(address)
 
-        withDynamicAllocation = true
-        appendedAllocation := k.UpsertAllocation(ctx, allocation)
-        infusion.SetLinkedAllocation(appendedAllocation.Id)
+        withDynamicPlayerAllocation = true
+        playerAllocation = k.UpsertAllocation(ctx, playerAllocation)
+        infusion.SetLinkedPlayerAllocation(playerAllocation.Id)
      } else {
-         withDynamicAllocation = false
+         withDynamicSourceAllocation = false
+         withDynamicPlayerAllocation = false
      }
 
      k.SetInfusion(ctx, infusion)
 
     switch infusion.DestinationType {
         case types.ObjectType_reactor:
-            newEnergy := k.ReactorRebuildEnergy(ctx, destinationId)
+            newFuel, newEnergy := k.ReactorRebuildInfusions(ctx, destinationId)
+            k.ReactorSetFuel(ctx, destinationId, newFuel)
             k.ReactorSetEnergy(ctx, destinationId, newEnergy)
     }
 

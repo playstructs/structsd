@@ -7,6 +7,7 @@ import (
 func CreateEmptyReactor() Reactor {
 	return Reactor{
 		Energy:    0,
+		Fuel:       0,
 		Validator: "",
 		RawAddress: nil,
 		Activated: false,
@@ -42,6 +43,14 @@ func (reactor *Reactor) SetId(id uint64) {
 
 func (reactor *Reactor) SetServiceSubstationId(serviceSubstationId uint64) {
 	reactor.ServiceSubstationId = serviceSubstationId
+}
+
+// Take an amount of fuel and return the energy it will generate
+//
+// This will need some work later on to be more dynamic in
+// relation to other system state, but for now it is static.
+func CalculateReactorEnergy(fuel uint64) (energy uint64) {
+    return fuel * ReactorFuelToEnergyConversion
 }
 
 type ReactorPermission uint16
