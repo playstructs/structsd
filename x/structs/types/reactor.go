@@ -9,7 +9,6 @@ func CreateEmptyReactor() Reactor {
 		Energy:    0,
 		Validator: "",
 		Activated: false,
-
 		AutomatedAllocations: true,
 		AllowManualAllocations: false,
 		AllowExternalAllocations: false,

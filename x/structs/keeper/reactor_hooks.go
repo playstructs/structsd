@@ -16,34 +16,69 @@ import (
  */
 func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddress) (reactor types.Reactor) {
 
-	validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
+
 
 	/* Does this Reactor exist? */
-	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.String())
+	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
 	if reactorBytesFound {
 		reactor, _ = k.GetReactorByBytes(ctx, reactorBytes, false)
 	} else {
 		/* Build the initial Reactor object */
 		reactor = types.CreateEmptyReactor()
 		reactor.SetValidator(validatorAddress.String())
-		k.SetReactorValidatorBytes(ctx, reactor.Id, validatorAddress.String())
+		k.SetReactorValidatorBytes(ctx, reactor.Id, validatorAddress.Bytes())
 
 
 		/*
 		 * Commit Reactor to the Keeper
 		 */
+
 		reactorId := k.AppendReactor(ctx, reactor)
         reactor.SetId(reactorId)
 
-        activated, _ := k.ReactorActivate(ctx, reactor, validator)
-        if (activated) {
-            reactor.SetActivated(true)
-            k.SetReactor(ctx, reactor)
+
+        /*
+         * Reverse engineer the sdk.ValAddress into a regular sdk.AccAddress
+         *
+         * This will allow us to create a player account with the correct permissions
+         *
+         */
+
+
+        var identity sdk.AccAddress
+        identity = validatorAddress.Bytes()
+        playerId := k.GetPlayerIdFromAddress(ctx, identity.String())
+
+        var player types.Player
+        if (playerId == 0) {
+            // No Player Found, Creating..
+            player = types.CreateEmptyPlayer()
+            player.SetCreator(identity.String())
+
+            k.AppendPlayer(ctx, player)
+
+            // TODO Add Related Address
+        } else {
+           player, _ = k.GetPlayer(ctx, playerId)
         }
 
 
-
 	}
+
+    validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
+    activated, _ := k.ReactorCheckIdentity(ctx, reactor, validator)
+    if (activated) {
+        reactor.SetActivated(true)
+        k.SetReactor(ctx, reactor)
+    }
+
+
+    // Check for identity to add to permissions
+    // Build primary Substation if needed
+    // Set Primary
+    //
+
+
 	return reactor
 }
 
@@ -140,7 +175,7 @@ func (k Keeper) ReactorUpdateFromValidator(ctx sdk.Context, validatorAddress sdk
 	if reactorBytesFound {
 		reactor, _ := k.GetReactorByBytes(ctx, reactorBytes, false)
 
-        activated, _ := k.ReactorActivate(ctx, reactor, validator)
+        activated, _ := k.ReactorCheckIdentity(ctx, reactor, validator)
         if (activated) {
             reactor.SetActivated(true)
             k.SetReactor(ctx, reactor)

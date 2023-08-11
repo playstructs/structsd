@@ -36,10 +36,10 @@ func (k Keeper) SetReactorCount(ctx sdk.Context, count uint64) {
 }
 
 // GetReactorBytesFromValidator get the bytes based on validator address
-func (k Keeper) GetReactorBytesFromValidator(ctx sdk.Context, validatorAddress string) (reactorBytes []byte, found bool) {
+func (k Keeper) GetReactorBytesFromValidator(ctx sdk.Context, validatorAddress []byte) (reactorBytes []byte, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorValidatorKey))
 
-	reactorBytes = store.Get([]byte(validatorAddress))
+	reactorBytes = store.Get(validatorAddress)
 	// Count doesn't exist: no element
 	if reactorBytes == nil {
 		return reactorBytes, false
@@ -49,10 +49,10 @@ func (k Keeper) GetReactorBytesFromValidator(ctx sdk.Context, validatorAddress s
 }
 
 // SetReactorValidatorBytes set the validator address index bytes
-func (k Keeper) SetReactorValidatorBytes(ctx sdk.Context, id uint64, validatorAddress string) {
+func (k Keeper) SetReactorValidatorBytes(ctx sdk.Context, id uint64, validatorAddress []byte) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorValidatorKey))
 
-	store.Set([]byte(validatorAddress), GetReactorIDBytes(id))
+	store.Set(validatorAddress, GetReactorIDBytes(id))
 }
 
 // AppendReactor appends a reactor in the store with a new id and update the count
@@ -166,7 +166,7 @@ func GetReactorIDFromBytes(bz []byte) uint64 {
 }
 
 
-func (k Keeper) ReactorActivate(ctx sdk.Context, reactor types.Reactor, validator staking.Validator) (bool, error) {
+func (k Keeper) ReactorCheckIdentity(ctx sdk.Context, reactor types.Reactor, validator staking.Validator) (bool, error) {
 
     if (reactor.Activated) {
         return false, sdkerrors.Wrapf(types.ErrReactorActivation, "Reactor already activated")
