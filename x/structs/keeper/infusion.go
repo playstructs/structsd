@@ -190,13 +190,24 @@ func GetInfusionIDFromBytes(bz []byte) string {
 
 func (k Keeper) InfusionDestroy(ctx sdk.Context, infusion types.Infusion) {
 
-	// Figure out what the infusion source is and update the energy load
-	switch infusion.DestinationType {
-	case types.ObjectType_reactor:
-		// Decrease Reactor Energy
-		//k.ReactorDecrementEnergy(ctx, infusion.DestinationId, infusion.Fuel)
-	}
+    if (infusion.LinkedPlayerAllocationId > 0) {
+        playerAllocation, _ := k.GetAllocation(ctx, infusion.LinkedPlayerAllocationId)
+        k.AllocationDestroy(ctx, playerAllocation)
+    }
+
+    if (infusion.LinkedSourceAllocationId > 0) {
+        sourceAllocation, _ := k.GetAllocation(ctx, infusion.LinkedSourceAllocationId)
+        k.AllocationDestroy(ctx, sourceAllocation)
+    }
 
 	k.RemoveInfusion(ctx, infusion.DestinationType, infusion.DestinationId, infusion.Address)
+
+	// Figure out what the infusion source is and update the energy load
+	switch infusion.DestinationType {
+	    case types.ObjectType_reactor:
+            newFuel, newEnergy := k.ReactorRebuildInfusions(ctx, infusion.DestinationId)
+            k.ReactorSetFuel(ctx, infusion.DestinationId, newFuel)
+            k.ReactorSetEnergy(ctx, infusion.DestinationId, newEnergy)
+	}
 
 }

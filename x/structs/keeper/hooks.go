@@ -38,8 +38,8 @@ func (h Hooks) AfterValidatorCreated(ctx sdk.Context, valAddr sdk.ValAddress) er
 	return nil
 }
 
-func (h Hooks) AfterValidatorBeginUnbonding(ctx sdk.Context, _ sdk.ConsAddress, _ sdk.ValAddress) error {
-	//_ = h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
+func (h Hooks) AfterValidatorBeginUnbonding(_ sdk.Context, _ sdk.ConsAddress, _ sdk.ValAddress) error {
+
 	return nil
 }
 
@@ -49,7 +49,7 @@ func (h Hooks) BeforeValidatorModified(ctx sdk.Context, valAddr sdk.ValAddress) 
 }
 
 func (h Hooks) BeforeDelegationCreated(_ sdk.Context, _ sdk.AccAddress, _ sdk.ValAddress) error {
-
+    //_ = h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
 	return nil
 }
 
@@ -79,7 +79,7 @@ func (h Hooks) BeforeValidatorSlashed(_ sdk.Context, _ sdk.ValAddress, _ sdk.Dec
 	return nil
 }
 
-func (h Hooks) AfterUnbondingInitiated(_ sdk.Context, _ uint64) error {
-
+func (h Hooks) AfterUnbondingInitiated(ctx sdk.Context, unbondingId uint64) error {
+    h.k.ReactorRemoveInfusion(ctx, unbondingId)
 	return nil
 }

@@ -14,7 +14,9 @@ type StakingKeeper interface {
 	GetValidatorDelegations(ctx sdk.Context, valAddr sdk.ValAddress) (delegations []staking.Delegation)
 
     GetDelegation(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (delegation staking.Delegation, found bool)
-	// Methods imported from staking should be defined here
+
+	GetUnbondingDelegation(ctx sdk.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress) (ubd staking.UnbondingDelegation, found bool)
+	GetUnbondingDelegationByUnbondingID(ctx sdk.Context, id uint64) (ubd staking.UnbondingDelegation, found bool)
 }
 
 // AccountKeeper defines the expected account keeper used for simulations (noalias)

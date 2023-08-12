@@ -103,71 +103,71 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
     reactor, _ = k.GetReactorByBytes(ctx, reactorBytes, false)
 	validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
 
-    delegation, _ := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
+    delegation, delegationFound := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
+
+    if (delegationFound) {
+        delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
 
 
-    delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
+        _, sourceAllocation, withDynamicSourceAllocation, playerAllocation, withDynamicPlayerAllocation := k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String(), delegationShare.Uint64(), reactor.AutomatedAllocations, reactor.DelegateTaxOnAllocations)
 
-
-    _, sourceAllocation, withDynamicSourceAllocation, playerAllocation, withDynamicPlayerAllocation := k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String(), delegationShare.Uint64(), reactor.AutomatedAllocations, reactor.DelegateTaxOnAllocations)
-
-    if (reactor.AutomatedAllocations && withDynamicSourceAllocation) {
-        // Connect Allocation to Substation
-        sourceAllocation.Connect(reactor.ServiceSubstationId)
-        k.SetAllocation(ctx, sourceAllocation)
-
-        k.SubstationSetEnergy(ctx, reactor.ServiceSubstationId, k.SubstationRebuildAllocationEnergy(ctx, reactor.ServiceSubstationId))
-
-    }
-
-    if (reactor.AutomatedAllocations && withDynamicPlayerAllocation) {
-        playerId := k.GetPlayerIdFromAddress(ctx, playerAddress.String())
-
-        var player types.Player
-        if (playerId == 0) {
-            // No Player Found, Creating..
-            player = types.CreateEmptyPlayer()
-            player.SetCreator(playerAddress.String())
-            playerId = k.AppendPlayer(ctx, player)
-            player.SetId(playerId)
-        } else {
-            player, _ = k.GetPlayer(ctx, playerId)
-        }
-
-        // Now let's get the player some power
-        if (player.SubstationId == 0) {
-            var substation types.Substation
-            substation = types.CreateEmptySubstation()
-            substationId := k.GetNextSubstationId(ctx)
-            substation.SetId(substationId)
-            substation.SetOwner(playerId)
-            substation.SetCreator(player.Creator)
-            substation.SetPlayerConnectionAllocation(types.InitialReactorOwnerEnergy)
-            k.SetSubstation(ctx, substation)
-
-            k.SubstationPermissionAdd(ctx, substation.Id, playerId, types.SubstationPermissionAll)
-
+        if (reactor.AutomatedAllocations && withDynamicSourceAllocation) {
             // Connect Allocation to Substation
-            playerAllocation.Connect(substation.Id)
-            k.SetAllocation(ctx, playerAllocation)
+            sourceAllocation.Connect(reactor.ServiceSubstationId)
+            k.SetAllocation(ctx, sourceAllocation)
 
+            k.SubstationSetEnergy(ctx, reactor.ServiceSubstationId, k.SubstationRebuildAllocationEnergy(ctx, reactor.ServiceSubstationId))
 
-            // Connect Player to Substation
-            k.SubstationIncrementConnectedPlayerLoad(ctx, substation.Id, 1)
-            player.SetSubstation(substation.Id)
-            k.SetPlayer(ctx, player)
         }
-        k.SubstationSetEnergy(ctx, player.SubstationId, k.SubstationRebuildAllocationEnergy(ctx, player.SubstationId))
+
+        if (reactor.AutomatedAllocations && withDynamicPlayerAllocation) {
+            playerId := k.GetPlayerIdFromAddress(ctx, playerAddress.String())
+
+            var player types.Player
+            if (playerId == 0) {
+                // No Player Found, Creating..
+                player = types.CreateEmptyPlayer()
+                player.SetCreator(playerAddress.String())
+                playerId = k.AppendPlayer(ctx, player)
+                player.SetId(playerId)
+            } else {
+                player, _ = k.GetPlayer(ctx, playerId)
+            }
+
+            // Now let's get the player some power
+            if (player.SubstationId == 0) {
+                var substation types.Substation
+                substation = types.CreateEmptySubstation()
+                substationId := k.GetNextSubstationId(ctx)
+                substation.SetId(substationId)
+                substation.SetOwner(playerId)
+                substation.SetCreator(player.Creator)
+                substation.SetPlayerConnectionAllocation(types.InitialReactorOwnerEnergy)
+                k.SetSubstation(ctx, substation)
+
+                k.SubstationPermissionAdd(ctx, substation.Id, playerId, types.SubstationPermissionAll)
+
+                // Connect Allocation to Substation
+                playerAllocation.Connect(substation.Id)
+                k.SetAllocation(ctx, playerAllocation)
+
+
+                // Connect Player to Substation
+                k.SubstationIncrementConnectedPlayerLoad(ctx, substation.Id, 1)
+                player.SetSubstation(substation.Id)
+                k.SetPlayer(ctx, player)
+            }
+            k.SubstationSetEnergy(ctx, player.SubstationId, k.SubstationRebuildAllocationEnergy(ctx, player.SubstationId))
+        }
+
     }
 
     // need to define a guild or reactor parameter for allowed allocation of contributions
     // need to define a guild or reactor parameter for minimum contributions before allocations are allowed
 
 
-
-
 	// Update the connected Substations with the new details
-	//k.CascadeReactorAllocationFailure(ctx, reactor)
+	k.CascadeReactorAllocationFailure(ctx, reactor)
 
 
 	return reactor
@@ -184,5 +184,32 @@ func (k Keeper) ReactorUpdateFromValidator(ctx sdk.Context, validatorAddress sdk
 
     // Currently no need to run updates after the Validator Description is updated
     // but we may use this in the future
+
+}
+
+
+func (k Keeper) ReactorRemoveInfusion(ctx sdk.Context, unbondingId uint64) {
+
+    unbondingDelegation , unbondingDelegationFound := k.stakingKeeper.GetUnbondingDelegationByUnbondingID(ctx, unbondingId)
+    if (unbondingDelegationFound) {
+
+        var playerAddress sdk.AccAddress
+        playerAddress, _ = sdk.AccAddressFromBech32(unbondingDelegation.DelegatorAddress)
+        var validatorAddress sdk.ValAddress
+        validatorAddress, _ = sdk.ValAddressFromBech32(unbondingDelegation.ValidatorAddress)
+
+        /* Does this Reactor exist? It really should... */
+        reactorBytes, _ := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
+        reactor, _ := k.GetReactorByBytes(ctx, reactorBytes, false)
+
+
+        if (unbondingDelegationFound) {
+            unbondingInfusion, _ := k.GetInfusion(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String())
+            k.InfusionDestroy(ctx, unbondingInfusion)
+        }
+
+        k.CascadeReactorAllocationFailure(ctx, reactor)
+
+    }
 
 }

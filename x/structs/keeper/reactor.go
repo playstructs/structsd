@@ -173,7 +173,7 @@ func GetReactorIDFromBytes(bz []byte) uint64 {
 func (k Keeper) CascadeReactorAllocationFailure(ctx sdk.Context, reactor types.Reactor) {
 	allocations := k.GetAllReactorAllocations(ctx, reactor.Id)
 	for _, allocation := range allocations {
-		if k.ReactorGetEnergy(ctx, reactor.Id) > k.ReactorGetLoad(ctx, reactor.Id) {
+		if k.ReactorGetEnergy(ctx, reactor.Id) >= k.ReactorGetLoad(ctx, reactor.Id) {
 			break
 		}
 
