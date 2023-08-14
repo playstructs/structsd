@@ -43,21 +43,7 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
 
         var identity sdk.AccAddress
         identity = validatorAddress.Bytes()
-        playerId := k.GetPlayerIdFromAddress(ctx, identity.String())
-
-        var player types.Player
-        if (playerId == 0) {
-            // No Player Found, Creating..
-            player = types.CreateEmptyPlayer()
-            player.SetCreator(identity.String())
-
-            playerId = k.AppendPlayer(ctx, player)
-            player.SetId(playerId)
-
-            // TODO Add Related Address
-        } else {
-           player, _ = k.GetPlayer(ctx, playerId)
-        }
+        player := k.UpsertPlayer(ctx, identity.String())
 
         // Add the player as a permissioned user of the reactor
         k.ReactorPermissionAdd(ctx, reactor.Id, player.Id, types.ReactorPermissionAll)
@@ -66,14 +52,7 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
         // Build the Primary Substation
         // This will be unpowered at first since there is likely no
         // delegations of fuel to the reactor at this phase.
-        substation := types.CreateEmptySubstation()
-        substation.SetOwner(playerId)
-        substation.SetCreator(player.Creator)
-
-        substationId := k.AppendSubstation(ctx, substation)
-        substation.SetId(substationId)
-
-        k.SubstationPermissionAdd(ctx, substation.Id, player.Id, types.SubstationPermissionAll)
+        substation := k.AppendSubstation(ctx, types.InitialReactorOwnerEnergy, player)
 
         // Wasteful right now that we're writing this a couple times
         // to the keeper, but we'll clean it up later.
@@ -121,36 +100,16 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
         }
 
         if (reactor.AutomatedAllocations && withDynamicPlayerAllocation) {
-            playerId := k.GetPlayerIdFromAddress(ctx, playerAddress.String())
-
-            var player types.Player
-            if (playerId == 0) {
-                // No Player Found, Creating..
-                player = types.CreateEmptyPlayer()
-                player.SetCreator(playerAddress.String())
-                playerId = k.AppendPlayer(ctx, player)
-                player.SetId(playerId)
-            } else {
-                player, _ = k.GetPlayer(ctx, playerId)
-            }
+            player := k.UpsertPlayer(ctx, playerAddress.String())
 
             // Now let's get the player some power
             if (player.SubstationId == 0) {
-                var substation types.Substation
-                substation = types.CreateEmptySubstation()
-                substationId := k.GetNextSubstationId(ctx)
-                substation.SetId(substationId)
-                substation.SetOwner(playerId)
-                substation.SetCreator(player.Creator)
-                substation.SetPlayerConnectionAllocation(types.InitialReactorOwnerEnergy)
-                k.SetSubstation(ctx, substation)
 
-                k.SubstationPermissionAdd(ctx, substation.Id, playerId, types.SubstationPermissionAll)
+                substation := k.AppendSubstation(ctx, types.InitialSubstationOwnerEnergy, player)
 
                 // Connect Allocation to Substation
                 playerAllocation.Connect(substation.Id)
                 k.SetAllocation(ctx, playerAllocation)
-
 
                 // Connect Player to Substation
                 k.SubstationIncrementConnectedPlayerLoad(ctx, substation.Id, 1)

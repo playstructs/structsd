@@ -29,6 +29,9 @@ const (
 	// Starting value for Reactor Owner Initialization
 	InitialReactorOwnerEnergy = 20
 
+    // Starting value for Reactor Owner Initialization
+	InitialSubstationOwnerEnergy = 20
+
 	// Starting allocation for Reactor
     InitialReactorAllocation = 100
 

@@ -200,5 +200,10 @@ func (k Keeper) UpsertAllocation(ctx sdk.Context, newAllocation types.Allocation
         allocation.SetId(allocationId)
     }
 
+    // TODO  MAYBE
+    if (allocation.DestinationId > 0) {
+        //k.SubstationRebuildEnergy()
+    }
+
     return allocation
 }

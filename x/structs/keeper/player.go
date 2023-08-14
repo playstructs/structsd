@@ -112,3 +112,21 @@ func GetPlayerIDBytes(id uint64) []byte {
 func GetPlayerIDFromBytes(bz []byte) uint64 {
 	return binary.BigEndian.Uint64(bz)
 }
+
+
+// Technically more of an InGet than an UpSert
+func (k Keeper) UpsertPlayer(ctx sdk.Context, playerAddress string ) (player types.Player) {
+    playerId := k.GetPlayerIdFromAddress(ctx, playerAddress)
+
+    if (playerId == 0) {
+        // No Player Found, Creating..
+        player = types.CreateEmptyPlayer()
+        player.SetCreator(playerAddress)
+        playerId = k.AppendPlayer(ctx, player)
+        player.SetId(playerId)
+    } else {
+        player, _ = k.GetPlayer(ctx, playerId)
+    }
+
+    return player
+}
