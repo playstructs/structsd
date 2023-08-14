@@ -122,6 +122,8 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
             newFuel, newEnergy := k.ReactorRebuildInfusions(ctx, destinationId)
             k.ReactorSetFuel(ctx, destinationId, newFuel)
             k.ReactorSetEnergy(ctx, destinationId, newEnergy)
+
+
     }
 
 

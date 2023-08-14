@@ -36,7 +36,7 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
 
 
         /*
-         * Reverse engineer the sdk.ValAddress into a regular sdk.AccAddress
+         * Convert the sdk.ValAddress into a regular sdk.AccAddress
          *
          * This will allow us to create a player account with the correct permissions
          */
