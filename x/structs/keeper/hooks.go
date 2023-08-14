@@ -65,12 +65,12 @@ func (h Hooks) BeforeDelegationRemoved(_ sdk.Context, _ sdk.AccAddress, _ sdk.Va
 
 /* This doesn't actually exist yet, but I'd like it to */
 func (h Hooks) AfterDelegationRemoved(ctx sdk.Context, playerAddress sdk.AccAddress, valAddr sdk.ValAddress) error {
-	_ = h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
+	h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
 	return nil
 }
 
 func (h Hooks) AfterDelegationModified(ctx sdk.Context, playerAddress sdk.AccAddress, valAddr sdk.ValAddress) error {
-	_ = h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
+	h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
 
 	return nil
 }

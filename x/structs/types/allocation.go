@@ -51,7 +51,7 @@ func (a *Allocation) Disconnect() error {
 	return nil
 }
 
-func (a *Allocation) Connect(destinationSubstationId uint64) error {
+func (a *Allocation) SetDestinationId(destinationSubstationId uint64) error {
 
 	a.DestinationId = destinationSubstationId
 

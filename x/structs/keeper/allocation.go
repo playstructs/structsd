@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
+
 )
 
 // GetAllocationCount get the total number of allocation
@@ -62,6 +63,24 @@ func (k Keeper) SetAllocation(ctx sdk.Context, allocation types.Allocation) {
 	store.Set(GetAllocationIDBytes(allocation.Id), b)
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: allocation.Id, ObjectType: types.ObjectType_allocation})
+
+    // Update Source Load
+    switch allocation.SourceType {
+        case types.ObjectType_reactor:
+            newLoad := k.ReactorRebuildLoad(ctx, allocation.SourceId)
+            k.ReactorSetLoad(ctx, allocation.SourceId, newLoad)
+        case types.ObjectType_substation:
+            newLoad := k.SubstationRebuildAllocationLoad(ctx, allocation.SourceId)
+            k.SubstationSetAllocationLoad(ctx, allocation.SourceId, newLoad)
+    }
+
+
+    // Update Destination Energy
+    if (allocation.DestinationId > 0){
+        newEnergy := k.SubstationRebuildAllocationEnergy(ctx, allocation.DestinationId)
+        k.SubstationSetEnergy(ctx, allocation.DestinationId, newEnergy)
+    }
+
 }
 
 // GetAllocation returns a allocation from its id
@@ -97,18 +116,20 @@ func (k Keeper) GetAllAllocation(ctx sdk.Context) (list []types.Allocation) {
 	return
 }
 
-// GetAllSubstationAllocationIn returns all allocation
+// GetAllSubstationAllocationOut returns all allocation
 func (k Keeper) GetAllSubstationAllocationOut(ctx sdk.Context, substationId uint64) (list []types.Allocation) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AllocationKey))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
 		var val types.Allocation
+
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
-		if val.SourceType == types.ObjectType_substation && val.SourceId == substationId {
+		if ((val.SourceType == types.ObjectType_substation) && (val.SourceId == substationId)) {
 			list = append(list, val)
 		}
 	}

@@ -72,34 +72,37 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
  *   AfterDelegationModified
  *
  */
-func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) (reactor types.Reactor) {
+func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) {
 
 	/* Does this Reactor exist? */
 	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
 	if !reactorBytesFound {
+
         return
 	}
-    reactor, _ = k.GetReactorByBytes(ctx, reactorBytes, false)
+    reactor, _ := k.GetReactorByBytes(ctx, reactorBytes, false)
 	validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
+
 
     delegation, delegationFound := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
 
     if (delegationFound) {
+
+
         delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
 
 
         _, sourceAllocation, withDynamicSourceAllocation, playerAllocation, withDynamicPlayerAllocation := k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String(), delegationShare.Uint64(), reactor.AutomatedAllocations, reactor.DelegateTaxOnAllocations)
 
         if (reactor.AutomatedAllocations && withDynamicSourceAllocation) {
+
             // Connect Allocation to Substation
-            sourceAllocation.Connect(reactor.ServiceSubstationId)
-            k.SetAllocation(ctx, sourceAllocation)
-
-            k.SubstationSetEnergy(ctx, reactor.ServiceSubstationId, k.SubstationRebuildAllocationEnergy(ctx, reactor.ServiceSubstationId))
-
+            serviceSubstation, _ := k.GetSubstation(ctx, reactor.ServiceSubstationId, true)
+            k.SubstationConnectAllocation(ctx, serviceSubstation, sourceAllocation)
         }
 
         if (reactor.AutomatedAllocations && withDynamicPlayerAllocation) {
+
             player := k.UpsertPlayer(ctx, playerAddress.String())
 
             // Now let's get the player some power
@@ -107,19 +110,18 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
 
                 substation := k.AppendSubstation(ctx, types.InitialSubstationOwnerEnergy, player)
 
+
                 // Connect Allocation to Substation
-                playerAllocation.Connect(substation.Id)
-                k.SetAllocation(ctx, playerAllocation)
+                k.SubstationConnectAllocation(ctx, substation, playerAllocation)
+
 
                 // Connect Player to Substation
-                k.SubstationIncrementConnectedPlayerLoad(ctx, substation.Id, 1)
-                player.SetSubstation(substation.Id)
-                k.SetPlayer(ctx, player)
-            }
-            k.SubstationSetEnergy(ctx, player.SubstationId, k.SubstationRebuildAllocationEnergy(ctx, player.SubstationId))
-        }
+                k.SubstationConnectPlayer(ctx, substation, player)
 
+            }
+        }
     }
+
 
     // need to define a guild or reactor parameter for allowed allocation of contributions
     // need to define a guild or reactor parameter for minimum contributions before allocations are allowed
@@ -129,7 +131,7 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
 	k.CascadeReactorAllocationFailure(ctx, reactor)
 
 
-	return reactor
+
 }
 
 

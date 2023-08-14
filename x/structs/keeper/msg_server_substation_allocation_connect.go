@@ -33,19 +33,7 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
 		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationConnectionChangeImpossible, "destination substation (%s) cannot change to same destination", substationId)
 	}
 
-	// Check to see if there is already a destination Substation using this.
-	// Disconnect it if so
-	if allocation.DestinationId > 0 {
-		_ = k.SubstationDecrementEnergy(ctx, allocation.DestinationId, allocation.Power)
-		k.CascadeSubstationAllocationFailure(ctx, allocation.DestinationId)
-	}
-
-	_ = k.SubstationIncrementEnergy(ctx, substation.Id, allocation.Power)
-
-	allocation.Connect(msg.DestinationSubstationId)
-	k.SetAllocation(ctx, allocation)
-
-
+    k.SubstationConnectAllocation(ctx, substation, allocation)
 
 	return &types.MsgSubstationAllocationConnectResponse{}, nil
 }
