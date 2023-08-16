@@ -46662,6 +46662,18 @@ paths:
                     owner:
                       type: string
                       format: uint64
+                    guildJoinType:
+                      type: string
+                      format: uint64
+                    infusionJoinMinimum:
+                      type: string
+                      format: uint64
+                    primaryReactorId:
+                      type: string
+                      format: uint64
+                    entrySubstationId:
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -46788,6 +46800,18 @@ paths:
                   creator:
                     type: string
                   owner:
+                    type: string
+                    format: uint64
+                  guildJoinType:
+                    type: string
+                    format: uint64
+                  infusionJoinMinimum:
+                    type: string
+                    format: uint64
+                  primaryReactorId:
+                    type: string
+                    format: uint64
+                  entrySubstationId:
                     type: string
                     format: uint64
         default:
@@ -75544,6 +75568,18 @@ definitions:
       owner:
         type: string
         format: uint64
+      guildJoinType:
+        type: string
+        format: uint64
+      infusionJoinMinimum:
+        type: string
+        format: uint64
+      primaryReactorId:
+        type: string
+        format: uint64
+      entrySubstationId:
+        type: string
+        format: uint64
   structs.structs.Infusion:
     type: object
     properties:
@@ -75765,6 +75801,18 @@ definitions:
             creator:
               type: string
             owner:
+              type: string
+              format: uint64
+            guildJoinType:
+              type: string
+              format: uint64
+            infusionJoinMinimum:
+              type: string
+              format: uint64
+            primaryReactorId:
+              type: string
+              format: uint64
+            entrySubstationId:
               type: string
               format: uint64
       pagination:
@@ -76104,6 +76152,18 @@ definitions:
           creator:
             type: string
           owner:
+            type: string
+            format: uint64
+          guildJoinType:
+            type: string
+            format: uint64
+          infusionJoinMinimum:
+            type: string
+            format: uint64
+          primaryReactorId:
+            type: string
+            format: uint64
+          entrySubstationId:
             type: string
             format: uint64
   structs.structs.QueryGetInfusionResponse:

@@ -18,12 +18,15 @@ func SimulateMsgPlayerCreateProxy(
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
+
+
 		msg := &types.MsgPlayerCreateProxy{
 			Creator: simAccount.Address.String(),
 		}
 
 		// TODO: Handling the PlayerCreateProxy simulation
 
+        //return msg
 		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "PlayerCreateProxy simulation not implemented"), nil, nil
 	}
 }

@@ -18,6 +18,14 @@ func (guild *Guild) SetEndpoint(endpoint string) error {
 	return nil
 }
 
+func (guild *Guild) SetPrimaryReactorId(reactorId uint64) error {
+
+	guild.PrimaryReactorId = reactorId
+
+	return nil
+}
+
+
 func (guild *Guild) SetOwner(playerId uint64) error {
 
 	guild.Owner = playerId
@@ -29,6 +37,11 @@ func CreateEmptyGuild() Guild {
 	return Guild{
 		Endpoint: "",
 		Creator:  "",
+		Owner: 0,
+	    GuildJoinType: 0,
+        InfusionJoinMinimum: 0,
+        PrimaryReactorId: 0,
+        EntrySubstationId: 0,
 	}
 }
 

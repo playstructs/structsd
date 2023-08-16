@@ -23,7 +23,7 @@ func TestSubstationGet(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 	items := createNSubstation(keeper, ctx, 10)
 	for _, item := range items {
-		got, found := keeper.GetSubstation(ctx, item.Id, false)
+		got, found := keeper.GetSubstation(ctx, item.Id, true)
 		require.True(t, found)
 		require.Equal(t,
 			nullify.Fill(&item),
@@ -37,7 +37,7 @@ func TestSubstationRemove(t *testing.T) {
 	items := createNSubstation(keeper, ctx, 10)
 	for _, item := range items {
 		keeper.RemoveSubstation(ctx, item.Id)
-		_, found := keeper.GetSubstation(ctx, item.Id)
+		_, found := keeper.GetSubstation(ctx, item.Id, true)
 		require.False(t, found)
 	}
 }
@@ -47,7 +47,7 @@ func TestSubstationGetAll(t *testing.T) {
 	items := createNSubstation(keeper, ctx, 10)
 	require.ElementsMatch(t,
 		nullify.Fill(items),
-		nullify.Fill(keeper.GetAllSubstation(ctx)),
+		nullify.Fill(keeper.GetAllSubstation(ctx, true)),
 	)
 }
 

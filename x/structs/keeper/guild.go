@@ -37,13 +37,22 @@ func (k Keeper) SetGuildCount(ctx sdk.Context, count uint64) {
 // AppendGuild appends a guild in the store with a new id and update the count
 func (k Keeper) AppendGuild(
 	ctx sdk.Context,
-	guild types.Guild,
-) uint64 {
+	//guild types.Guild,
+	endpoint string,
+	reactor types.Reactor,
+	player types.Player,
+) (guild types.Guild) {
+    guild = types.CreateEmptyGuild()
+
 	// Create the guild
 	count := k.GetGuildCount(ctx)
 
 	// Set the ID of the appended value
 	guild.Id = count
+	guild.SetEndpoint(endpoint)
+	guild.SetCreator(player.Creator)
+	guild.SetOwner(player.Id)
+	guild.SetPrimaryReactorId(reactor.Id)
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GuildKey))
 	appendedValue := k.cdc.MustMarshal(&guild)
@@ -51,10 +60,11 @@ func (k Keeper) AppendGuild(
 
 	// Update guild count
 	k.SetGuildCount(ctx, count+1)
+    k.GuildPermissionAdd(ctx, guild.Id, player.Id, types.GuildPermissionAll)
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: guild.Id, ObjectType: types.ObjectType_guild})
 
-	return count
+	return guild
 }
 
 // SetGuild set a specific guild in the store

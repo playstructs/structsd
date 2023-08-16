@@ -30,4 +30,5 @@ var (
 
     ErrReactorActivation = sdkerrors.Register(ModuleName, 1571, "reactor activation failure")
 	ErrReactorAvailableCapacityInsufficient = sdkerrors.Register(ModuleName, 1572, "reactor capacity lower then attempted change allows for")
+	ErrReactorRequired                      = sdkerrors.Register(ModuleName, 1573, "reactor account required for this action")
 )

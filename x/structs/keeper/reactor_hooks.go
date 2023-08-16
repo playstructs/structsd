@@ -16,23 +16,23 @@ import (
  */
 func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddress)  {
 
-	/* Does this Reactor exist? */
-	var reactor types.Reactor
-	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
-	if reactorBytesFound {
-		reactor, _ = k.GetReactorByBytes(ctx, reactorBytes, false)
-	} else {
-		/* Build the initial Reactor object */
-		reactor = types.CreateEmptyReactor()
-		reactor.SetValidator(validatorAddress.String())
-		reactor.SetRawAddress(validatorAddress.Bytes())
+    /* Does this Reactor exist? */
+    var reactor types.Reactor
+    reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
+    if reactorBytesFound {
+        reactor, _ = k.GetReactorByBytes(ctx, reactorBytes, false)
+    } else {
+        /* Build the initial Reactor object */
+        reactor = types.CreateEmptyReactor()
+        reactor.SetValidator(validatorAddress.String())
+        reactor.SetRawAddress(validatorAddress.Bytes())
 
-		/*
-		 * Commit Reactor to the Keeper
-		 */
-		reactorId := k.AppendReactor(ctx, reactor)
-		reactor.SetId(reactorId)
-		k.SetReactorValidatorBytes(ctx, reactor.Id, validatorAddress.Bytes())
+        /*
+         * Commit Reactor to the Keeper
+         */
+        reactorId := k.AppendReactor(ctx, reactor)
+        reactor.SetId(reactorId)
+        k.SetReactorValidatorBytes(ctx, reactor.Id, validatorAddress.Bytes())
 
 
         /*
@@ -62,7 +62,8 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
         reactor.DelegateTaxOnAllocations, _ = math.LegacyNewDecFromStr("0.04")
         k.SetReactor(ctx, reactor)
 
-	}
+    }
+
 }
 
 

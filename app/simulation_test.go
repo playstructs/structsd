@@ -5,38 +5,38 @@ import (
 	"testing"
 	"time"
 
-	abci "github.com/cometbft/cometbft/abci/types"
-	tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
+	//abci "github.com/cometbft/cometbft/abci/types"
+	//tmproto "github.com/cometbft/cometbft/proto/tendermint/types"
 	simulationtypes "github.com/cosmos/cosmos-sdk/types/simulation"
 	"github.com/cosmos/cosmos-sdk/x/simulation"
 	"github.com/stretchr/testify/require"
 
-	"encoding/json"
-	"fmt"
-	"math/rand"
-	"runtime/debug"
-	"strings"
+	//"encoding/json"
+	//"fmt"
+	//"math/rand"
+	//"runtime/debug"
+	//"strings"
 
-	dbm "github.com/cometbft/cometbft-db"
-	"github.com/cometbft/cometbft/libs/log"
+	//dbm "github.com/cometbft/cometbft-db"
+	//"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/baseapp"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/server"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	simtestutil "github.com/cosmos/cosmos-sdk/testutil/sims"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
-	authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
-	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
-	distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
-	evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
-	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
-	paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
+	//sdk "github.com/cosmos/cosmos-sdk/types"
+	//authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	//authzkeeper "github.com/cosmos/cosmos-sdk/x/authz/keeper"
+	//banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	//capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
+	//distrtypes "github.com/cosmos/cosmos-sdk/x/distribution/types"
+	//evidencetypes "github.com/cosmos/cosmos-sdk/x/evidence/types"
+	//govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
+	//minttypes "github.com/cosmos/cosmos-sdk/x/mint/types"
+	//paramstypes "github.com/cosmos/cosmos-sdk/x/params/types"
 	simcli "github.com/cosmos/cosmos-sdk/x/simulation/client/cli"
-	slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
-	stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
+	//slashingtypes "github.com/cosmos/cosmos-sdk/x/slashing/types"
+	//stakingtypes "github.com/cosmos/cosmos-sdk/x/staking/types"
 
 	"structs/app"
 )
@@ -101,21 +101,22 @@ func BenchmarkSimulation(b *testing.B) {
 	)
 	require.Equal(b, app.Name, bApp.Name())
 
-	// Run randomized simulations
-	_, simParams, simErr := simulation.SimulateFromSeed(
-		b,
-		os.Stdout,
-		bApp.BaseApp,
-		simtestutil.AppStateFn(
-			bApp.AppCodec(),
-			bApp.SimulationManager(),
-			app.NewDefaultGenesisState(bApp.AppCodec()),
-		),
-		simtestutil.SimulationOperations(bApp, bApp.AppCodec(), config),
-		bApp.ModuleAccountAddrs(),
-		config,
-		bApp.AppCodec(),
-	)
+// Run randomized simulations
+_, simParams, simErr := simulation.SimulateFromSeed(
+    b,
+    os.Stdout,
+    bApp.BaseApp,
+    simtestutil.AppStateFn(
+        bApp.AppCodec(),
+        bApp.SimulationManager(),
+        app.NewDefaultGenesisState(bApp.AppCodec()),
+    ),
+    simulationtypes.RandomAccounts,
+    simtestutil.SimulationOperations(bApp, bApp.AppCodec(), config),
+    bApp.ModuleAccountAddrs(),
+    config,
+    bApp.AppCodec(),
+)
 
 	// export state and simParams before the simulation error is checked
 	err = simtestutil.CheckExportSimulation(bApp, config, simParams)

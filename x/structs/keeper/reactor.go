@@ -36,6 +36,11 @@ func (k Keeper) SetReactorCount(ctx sdk.Context, count uint64) {
 
 // GetReactorBytesFromValidator get the bytes based on validator address
 func (k Keeper) GetReactorBytesFromValidator(ctx sdk.Context, validatorAddress []byte) (reactorBytes []byte, found bool) {
+
+    if validatorAddress == nil {
+        return reactorBytes, false
+    }
+
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorValidatorKey))
 
 	reactorBytes = store.Get(validatorAddress)
@@ -110,6 +115,10 @@ func (k Keeper) GetReactor(ctx sdk.Context, id uint64, full bool) (val types.Rea
 
 // GetReactor returns a reactor from its id
 func (k Keeper) GetReactorByBytes(ctx sdk.Context, id []byte, full bool) (val types.Reactor, found bool) {
+    if id == nil {
+        return val, false
+    }
+
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorKey))
 	b := store.Get(id)
 	if b == nil {
