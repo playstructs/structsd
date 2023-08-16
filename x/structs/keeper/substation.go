@@ -216,7 +216,7 @@ func (k Keeper) SubstationIncrementAllocationLoad(ctx sdk.Context, id uint64, am
 
 	if newTotalLoad > substationEnergy {
 		substationId := strconv.FormatUint(id, 10)
-		return 0, sdkerrors.Wrapf(types.ErrSubstationAvailableCapacityInsufficient, "source (%s) used for allocation sufficient", "substation-"+substationId)
+		return 0, sdkerrors.Wrapf(types.ErrSubstationAvailableCapacityInsufficient, "source (%s) used for allocation insufficient", "substation-"+substationId)
 	}
 
 	k.SubstationSetAllocationLoad(ctx, id, newAllocationLoad)
@@ -304,11 +304,8 @@ func (k Keeper) SubstationGetAllocationLoad(ctx sdk.Context, id uint64) (load ui
 
 	// Substation Capacity Not in Memory: no element
 	if bz == nil {
-
 		load = k.SubstationRebuildAllocationLoad(ctx, id) + 0
-
 		k.SubstationSetAllocationLoad(ctx, id, load)
-
 	} else {
 		load = binary.BigEndian.Uint64(bz)
 	}
@@ -327,7 +324,6 @@ func (k Keeper) SubstationGetConnectedPlayerLoad(ctx sdk.Context, id uint64) (lo
 	if bz == nil {
 		connectedPlayerLoad := k.SubstationRebuildConnectedPlayerLoad(ctx, id)
 		k.SubstationSetConnectedPlayerLoad(ctx, id, connectedPlayerLoad)
-
 	} else {
 		load = binary.BigEndian.Uint64(bz)
 	}
@@ -339,17 +335,12 @@ func (k Keeper) SubstationGetConnectedPlayerLoad(ctx sdk.Context, id uint64) (lo
 func (k Keeper) SubstationSetLoad(ctx sdk.Context, id uint64, amount uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.SubstationLoadKey))
 
-
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, amount)
 
-
 	store.Set(GetSubstationIDBytes(id), bz)
 
-
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: id, ObjectType: types.ObjectType_substation})
-
-
 }
 
 // SubstationSetAllocationLoad - Sets the in-memory representation of the aggregate load of all associated allocations
@@ -384,7 +375,6 @@ func (k Keeper) SubstationSetConnectedPlayerLoad(ctx sdk.Context, id uint64, amo
 
 // Rebuilds the current load by iterating through all related allocations
 func (k Keeper) SubstationRebuildAllocationLoad(ctx sdk.Context, id uint64) (load uint64) {
-
 	allocations := k.GetAllSubstationAllocationOut(ctx, id)
 
     for _, allocation := range allocations {
@@ -396,7 +386,6 @@ func (k Keeper) SubstationRebuildAllocationLoad(ctx sdk.Context, id uint64) (loa
 
 // Rebuilds the current player connection load
 func (k Keeper) SubstationRebuildConnectedPlayerLoad(ctx sdk.Context, id uint64) (load uint64) {
-
 	connectedPlayerCount := k.SubstationGetConnectedPlayerCount(ctx, id)
 
 	substation, _ := k.GetSubstation(ctx, id, false)
@@ -484,7 +473,6 @@ func (k Keeper) SubstationGetConnectedPlayerCount(ctx sdk.Context, id uint64) (c
 	// No connected player count set for Substation yet: no element
 	if bz == nil {
 		count = 0
-
 	} else {
 		count = binary.BigEndian.Uint64(bz)
 	}
@@ -530,17 +518,12 @@ func (k Keeper) SubstationDecrementConnectedPlayerCount(ctx sdk.Context, id uint
 
 func (k Keeper) SubstationConnectPlayer(ctx sdk.Context, substation types.Substation, player types.Player) (error) {
 
-
     // If the player is already on a substation then disconnect them from it first
     if (player.SubstationId > 0) {
-
-
         k.SubstationDecrementConnectedPlayerLoad(ctx, player.SubstationId, 1)
-
     }
 
     // Connect Player to Substation
-
     k.SubstationIncrementConnectedPlayerLoad(ctx, substation.Id, 1)
 
     player.SetSubstation(substation.Id)
