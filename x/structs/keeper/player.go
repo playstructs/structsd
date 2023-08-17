@@ -51,7 +51,10 @@ func (k Keeper) AppendPlayer(
 
 	// Update player count
 	k.SetPlayerCount(ctx, count+1)
+
+	//Add Address records
 	k.SetPlayerIdForAddress(ctx, player.Creator, player.Id)
+	k.AddressPermissionAdd(ctx, player.Creator, types.AddressPermissionAllWithGrant)
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: player.Id, ObjectType: types.ObjectType_player})
 

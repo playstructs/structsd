@@ -6,19 +6,6 @@ import (
 	//  sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-func CreateEmptyAddress() Address {
-	return Address{
-
-	}
-}
-
-func (address *Address) SetId(id uint64) error {
-
-	address.Id = id
-
-	return nil
-}
-
 
 
 type AddressPermission uint16
