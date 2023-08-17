@@ -97,9 +97,8 @@ const (
 )
 
 const (
-	AddressKey      = "Address/value/"
-	AddressCountKey = "Address/count/"
 	AddressPlayerKey = "Address/player/"
+	AddressPermissionKey = "Address/permission/"
 )
 
 /*

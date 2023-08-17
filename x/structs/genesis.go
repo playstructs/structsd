@@ -92,8 +92,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.GuildCount = k.GetGuildCount(ctx)
 	genesis.PlayerList = k.GetAllPlayer(ctx)
 	genesis.PlayerCount = k.GetPlayerCount(ctx)
-	genesis.AddressList = k.GetAllAddress(ctx)
-	genesis.AddressCount = k.GetAddressCount(ctx)
+
 	// this line is used by starport scaffolding # genesis/module/export
 
 	return genesis

@@ -8,103 +8,6 @@ import (
 	"structs/x/structs/types"
 )
 
-// GetAddressCount get the total number of address
-func (k Keeper) GetAddressCount(ctx sdk.Context) uint64 {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
-	byteKey := types.KeyPrefix(types.AddressCountKey)
-	bz := store.Get(byteKey)
-
-	// Count doesn't exist: no element
-	if bz == nil || binary.BigEndian.Uint64(bz) == 0{
-		return types.KeeperStartValue
-	}
-
-	// Parse bytes
-	return binary.BigEndian.Uint64(bz)
-}
-
-// SetAddressCount set the total number of address
-func (k Keeper) SetAddressCount(ctx sdk.Context, count uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
-	byteKey := types.KeyPrefix(types.AddressCountKey)
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, count)
-	store.Set(byteKey, bz)
-}
-
-// AppendAddress appends a address in the store with a new id and update the count
-func (k Keeper) AppendAddress(
-	ctx sdk.Context,
-	address types.Address,
-) uint64 {
-	// Create the address
-	count := k.GetAddressCount(ctx)
-
-	// Set the ID of the appended value
-	address.Id = count
-
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressKey))
-	appendedValue := k.cdc.MustMarshal(&address)
-	store.Set(GetAddressIDBytes(address.Id), appendedValue)
-
-	// Update address count
-	k.SetAddressCount(ctx, count+1)
-
-	return count
-}
-
-// SetAddress set a specific address in the store
-func (k Keeper) SetAddress(ctx sdk.Context, address types.Address) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressKey))
-	b := k.cdc.MustMarshal(&address)
-	store.Set(GetAddressIDBytes(address.Id), b)
-}
-
-// GetAddress returns a address from its id
-func (k Keeper) GetAddress(ctx sdk.Context, id uint64) (val types.Address, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressKey))
-	b := store.Get(GetAddressIDBytes(id))
-	if b == nil {
-		return val, false
-	}
-	k.cdc.MustUnmarshal(b, &val)
-	return val, true
-}
-
-// RemoveAddress removes a address from the store
-func (k Keeper) RemoveAddress(ctx sdk.Context, id uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressKey))
-	store.Delete(GetAddressIDBytes(id))
-}
-
-// GetAllAddress returns all address
-func (k Keeper) GetAllAddress(ctx sdk.Context) (list []types.Address) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressKey))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
-
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
-		var val types.Address
-		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		list = append(list, val)
-	}
-
-	return
-}
-
-// GetAddressIDBytes returns the byte representation of the ID
-func GetAddressIDBytes(id uint64) []byte {
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, id)
-	return bz
-}
-
-// GetAddressIDFromBytes returns ID in uint64 format from a byte array
-func GetAddressIDFromBytes(bz []byte) uint64 {
-	return binary.BigEndian.Uint64(bz)
-}
-
 
 
 func (k Keeper) GetPlayerIdFromAddress(ctx sdk.Context, address string) (uint64) {
@@ -128,4 +31,69 @@ func (k Keeper) SetPlayerIdForAddress(ctx sdk.Context, address string, playerId 
 
 	store.Set(types.KeyPrefix(address), bz)
 
+}
+
+
+
+func (k Keeper) AddressGetPlayerPermissionsByBytes(ctx sdk.Context, permissionRecord []byte) (types.AddressPermission) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressPermissionKey))
+
+	bz := store.Get(permissionRecord)
+
+	// Substation Capacity Not in Memory: no element
+	if bz == nil {
+		return types.AddressPermissionless
+	}
+
+	load := types.AddressPermission(binary.BigEndian.Uint16(bz))
+
+	return load
+}
+
+func (k Keeper) AddressSetPlayerPermissionsByBytes(ctx sdk.Context, permissionRecord []byte, permissions types.AddressPermission) (types.AddressPermission) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressPermissionKey))
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint16(bz, uint16(permissions))
+
+	store.Set(permissionRecord, bz)
+
+	return permissions
+}
+
+func (k Keeper) AddressPermissionClearAll(ctx sdk.Context, address string) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressPermissionKey))
+	store.Delete(types.KeyPrefix(address))
+}
+
+func (k Keeper) AddressPermissionAdd(ctx sdk.Context, address string, flag types.AddressPermission) types.AddressPermission {
+    permissionRecord := types.KeyPrefix(address)
+
+    currentPermission := k.AddressGetPlayerPermissionsByBytes(ctx, permissionRecord)
+    newPermissions := k.AddressSetPlayerPermissionsByBytes(ctx, permissionRecord, currentPermission | flag)
+	return newPermissions
+}
+
+func (k Keeper) AddressPermissionRemove(ctx sdk.Context, address string, flag types.AddressPermission) types.AddressPermission {
+    permissionRecord := types.KeyPrefix(address)
+
+    currentPermission := k.AddressGetPlayerPermissionsByBytes(ctx, permissionRecord)
+    newPermissions := k.AddressSetPlayerPermissionsByBytes(ctx, permissionRecord, currentPermission &^ flag)
+	return newPermissions
+}
+
+func (k Keeper) AddressPermissionHasAll(ctx sdk.Context, address string, flag types.AddressPermission) bool {
+    permissionRecord := types.KeyPrefix(address)
+
+    currentPermission := k.AddressGetPlayerPermissionsByBytes(ctx, permissionRecord)
+
+	return currentPermission&flag == flag
+}
+
+func (k Keeper) AddressPermissionHasOneOf(ctx sdk.Context, address string, flag types.AddressPermission) bool {
+    permissionRecord := types.KeyPrefix(address)
+
+    currentPermission := k.AddressGetPlayerPermissionsByBytes(ctx, permissionRecord)
+
+	return currentPermission&flag != 0
 }

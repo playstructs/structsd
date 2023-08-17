@@ -9,7 +9,7 @@ import "structs/structs/substation.proto";
 import "structs/structs/allocation.proto";
 import "structs/structs/guild.proto";
 import "structs/structs/player.proto";
-import "structs/structs/address.proto";
+
 
 option go_package = "structs/x/structs/types";
 
@@ -28,7 +28,7 @@ message GenesisState {
            uint64     guildCount       = 11;
   repeated Player     playerList       = 12 [(gogoproto.nullable) = false];
            uint64     playerCount      = 13;
-  repeated Address    addressList      = 14 [(gogoproto.nullable) = false];
-           uint64     addressCount     = 15;
+  repeated uint64     addressPermissionKey   = 14;
+           uint64     addressPlayerKey       = 15;
 }
 
