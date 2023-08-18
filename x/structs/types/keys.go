@@ -25,6 +25,16 @@ const (
 
 	// Starting value for Keeper IDs
 	KeeperStartValue = 1
+
+	// Starting value for Reactor Owner Initialization
+	InitialReactorOwnerEnergy = 20
+
+    // Starting value for Reactor Owner Initialization
+	InitialSubstationOwnerEnergy = 20
+
+	// Starting allocation for Reactor
+    InitialReactorAllocation = 100
+
 )
 
 var (
@@ -37,42 +47,59 @@ func KeyPrefix(p string) []byte {
 }
 
 const (
-	ReactorKey              = "Reactor/value/"
-	ReactorCountKey         = "Reactor/count/"
-	ReactorValidatorKey     = "Reactor/validator/"
-	ReactorCapacityKey      = "Reactor/capacity/"
-	ReactorLoadKey          = "Reactor/load/"
-	ReactorEnergyKey        = "Reactor/energy/"
+	ReactorKey          = "Reactor/value/"
+	ReactorCountKey     = "Reactor/count/"
+	ReactorValidatorKey = "Reactor/validator/"
+	ReactorCapacityKey  = "Reactor/capacity/"
+	ReactorLoadKey      = "Reactor/load/"
+	ReactorEnergyKey    = "Reactor/energy/"
+	ReactorFuelKey      = "Reactor/fuel/"
+
+	ReactorPermissionKey = "Reactor/permission/"
+
+	ReactorFuelToEnergyConversion = 10
 )
 
 const (
-	SubstationKey               = "Substation/value/"
-	SubstationCountKey          = "Substation/count/"
-	SubstationStatusKey         = "Substation/status/"
+	SubstationKey       = "Substation/value/"
+	SubstationCountKey  = "Substation/count/"
+	SubstationStatusKey = "Substation/status/"
 
-    SubstationLoadKey                   = "Substation/load/"
-    SubstationAllocationLoadKey         = "Substation/allocationLoad/"
-    SubstationConnectedPlayerLoadKey    = "Substation/connectedPlayerLoad/"
-    SubstationConnectedPlayerCount     = "Substation/connectedPlayerCount/"
+	SubstationLoadKey                = "Substation/load/"
+	SubstationAllocationLoadKey      = "Substation/allocationLoad/"
+	SubstationConnectedPlayerLoadKey = "Substation/connectedPlayerLoad/"
+	SubstationConnectedPlayerCount   = "Substation/connectedPlayerCount/"
 
-    SubstationEnergyKey                 = "Substation/energy/"
+	SubstationEnergyKey = "Substation/energy/"
 
+	SubstationPermissionKey = "Substation/permission/"
 )
 
 const (
 	AllocationKey      = "Allocation/value/"
 	AllocationCountKey = "Allocation/count/"
-	AllocationStatusKey = "Allocation/Status/"
-
-	AllocationStatus_Online = 1
-	AllocationStatus_Offline = 0
 )
 
 const (
-	AllocationProposalKey      = "AllocationProposal/value/"
-	AllocationProposalCountKey = "AllocationProposal/count/"
+	InfusionKey      = "Infusion/value/"
+	InfusionCountKey = "Infusion/count/"
 )
 
+const (
+	GuildKey      = "Guild/value/"
+	GuildCountKey = "Guild/count/"
+	GuildPermissionKey = "Guild/permission/"
+)
+
+const (
+	PlayerKey      = "Player/value/"
+	PlayerCountKey = "Player/count/"
+)
+
+const (
+	AddressPlayerKey = "Address/player/"
+	AddressPermissionKey = "Address/permission/"
+)
 
 /*
  * Additional code needed for ObjectType enumeration that the proto
@@ -81,11 +108,13 @@ const (
  * So this seems like as good a place as any for it.
  */
 var ObjectType_enum = map[string]ObjectType{
-	"faction":    ObjectType_faction,
+	"guild":      ObjectType_guild,
 	"player":     ObjectType_player,
 	"planet":     ObjectType_planet,
 	"reactor":    ObjectType_reactor,
 	"substation": ObjectType_substation,
 	"struct":     ObjectType_struct,
 	"allocation": ObjectType_allocation,
+	"infusion":   ObjectType_infusion,
 }
+

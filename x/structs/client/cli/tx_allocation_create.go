@@ -23,7 +23,7 @@ var _ = strconv.Itoa(0)
   uint64 sourceId       = 4;
   uint64 power          = 5;
 
- */
+*/
 
 func CmdAllocationCreate() *cobra.Command {
 	cmd := &cobra.Command{
@@ -32,11 +32,10 @@ func CmdAllocationCreate() *cobra.Command {
 		Args:  cobra.RangeArgs(3, 4),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
-
-            argSourceType := types.ObjectType_enum[args[0]]
-            if (!types.IsValidAllocationConnectionType(argSourceType)) {
-                return sdkerrors.Wrapf(types.ErrAllocationSourceType, "source type (%s) not valid for allocation", argSourceType.String() )
-            }
+			argSourceType := types.ObjectType_enum[args[0]]
+			if !types.IsValidAllocationConnectionType(argSourceType) {
+				return sdkerrors.Wrapf(types.ErrAllocationSourceType, "source type (%s) not valid for allocation", argSourceType.String())
+			}
 
 			argSourceId, err := cast.ToUint64E(args[1])
 			if err != nil {
@@ -48,7 +47,7 @@ func CmdAllocationCreate() *cobra.Command {
 				return err
 			}
 
-            argController := args[3]
+			argController := args[3]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

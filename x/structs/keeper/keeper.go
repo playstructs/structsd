@@ -3,16 +3,16 @@ package keeper
 import (
 	"fmt"
 
+	"github.com/cometbft/cometbft/libs/log"
 	"github.com/cosmos/cosmos-sdk/codec"
 	storetypes "github.com/cosmos/cosmos-sdk/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	capabilitytypes "github.com/cosmos/cosmos-sdk/x/capability/types"
 	paramtypes "github.com/cosmos/cosmos-sdk/x/params/types"
-	channeltypes "github.com/cosmos/ibc-go/v6/modules/core/04-channel/types"
-	host "github.com/cosmos/ibc-go/v6/modules/core/24-host"
-	"github.com/cosmos/ibc-go/v6/modules/core/exported"
-	"github.com/tendermint/tendermint/libs/log"
+	channeltypes "github.com/cosmos/ibc-go/v7/modules/core/04-channel/types"
+	host "github.com/cosmos/ibc-go/v7/modules/core/24-host"
+	"github.com/cosmos/ibc-go/v7/modules/core/exported"
 
 	"structs/x/structs/types"
 )
@@ -28,10 +28,11 @@ type (
 		portKeeper    types.PortKeeper
 		scopedKeeper  exported.ScopedKeeper
 
+        accountKeeper types.AccountKeeper
 		bankKeeper    types.BankKeeper
 		stakingKeeper types.StakingKeeper
 
-		tStoreKey     storetypes.StoreKey
+		tStoreKey storetypes.StoreKey
 	}
 )
 
@@ -44,9 +45,10 @@ func NewKeeper(
 	portKeeper types.PortKeeper,
 	scopedKeeper exported.ScopedKeeper,
 
+    accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
 	stakingKeeper types.StakingKeeper,
-	tStoreKey   storetypes.StoreKey,
+	tStoreKey storetypes.StoreKey,
 ) *Keeper {
 	// set KeyTable if it has not already been set
 	if !ps.HasKeyTable() {
@@ -63,6 +65,7 @@ func NewKeeper(
 		portKeeper:    portKeeper,
 		scopedKeeper:  scopedKeeper,
 
+        accountKeeper: accountKeeper,
 		bankKeeper:    bankKeeper,
 		stakingKeeper: stakingKeeper,
 

@@ -29,9 +29,9 @@ func (k Keeper) SubstationAll(goCtx context.Context, req *types.QueryAllSubstati
 			return err
 		}
 
-        substation.Load = k.SubstationGetLoad(ctx, substation.Id)
-        substation.Energy = k.SubstationGetEnergy(ctx, substation.Id)
-        substation.ConnectedPlayerCount = k.SubstationGetConnectedPlayerCount(ctx, substation.Id)
+		substation.Load = k.SubstationGetLoad(ctx, substation.Id)
+		substation.Energy = k.SubstationGetEnergy(ctx, substation.Id)
+		substation.ConnectedPlayerCount = k.SubstationGetConnectedPlayerCount(ctx, substation.Id)
 
 		substations = append(substations, substation)
 		return nil

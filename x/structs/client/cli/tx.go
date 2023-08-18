@@ -37,11 +37,16 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(CmdSubstationCreate())
 	cmd.AddCommand(CmdSubstationDelete())
 
-    cmd.AddCommand(CmdSubstationAllocationConnect())
+	cmd.AddCommand(CmdSubstationAllocationConnect())
 	cmd.AddCommand(CmdSubstationAllocationDisconnect())
 
 	cmd.AddCommand(CmdSubstationPlayerConnect())
 	cmd.AddCommand(CmdSubstationPlayerDisconnect())
+	cmd.AddCommand(CmdGuildCreate())
+	cmd.AddCommand(CmdPlayerCreateProxy())
+	cmd.AddCommand(CmdPlayerCreate())
+	cmd.AddCommand(CmdAddressRegister())
+	cmd.AddCommand(CmdAddressRevoke())
 	// this line is used by starport scaffolding # 1
 
 	return cmd

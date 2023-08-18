@@ -15,7 +15,10 @@ func CmdListReactor() *cobra.Command {
 		Use:   "list-reactor",
 		Short: "list all reactor",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			clientCtx := client.GetClientContextFromCmd(cmd)
+			clientCtx, err := client.GetClientQueryContext(cmd)
+			if err != nil {
+				return err
+			}
 
 			pageReq, err := client.ReadPageRequest(cmd.Flags())
 			if err != nil {

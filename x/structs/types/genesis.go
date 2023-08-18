@@ -2,7 +2,7 @@ package types
 
 import (
 	"fmt"
-	host "github.com/cosmos/ibc-go/v6/modules/core/24-host"
+	host "github.com/cosmos/ibc-go/v7/modules/core/24-host"
 )
 
 // DefaultIndex is the default global index
@@ -11,10 +11,12 @@ const DefaultIndex uint64 = 1
 // DefaultGenesis returns the default genesis state
 func DefaultGenesis() *GenesisState {
 	return &GenesisState{
-		PortId:                 PortID,
-		ReactorList:            []Reactor{},
-		SubstationList:         []Substation{},
-		AllocationList:         []Allocation{},
+		PortId:         PortID,
+		ReactorList:    []Reactor{},
+		SubstationList: []Substation{},
+		AllocationList: []Allocation{},
+		GuildList:      []Guild{},
+		PlayerList:     []Player{},
 		// this line is used by starport scaffolding # genesis/types/default
 		Params: DefaultParams(),
 	}
@@ -61,6 +63,31 @@ func (gs GenesisState) Validate() error {
 			return fmt.Errorf("allocation id should be lower or equal than the last id")
 		}
 		allocationIdMap[elem.Id] = true
+	}
+
+	// Check for duplicated ID in guild
+	guildIdMap := make(map[uint64]bool)
+	guildCount := gs.GetGuildCount()
+	for _, elem := range gs.GuildList {
+		if _, ok := guildIdMap[elem.Id]; ok {
+			return fmt.Errorf("duplicated id for guild")
+		}
+		if elem.Id >= guildCount {
+			return fmt.Errorf("guild id should be lower or equal than the last id")
+		}
+		guildIdMap[elem.Id] = true
+	}
+	// Check for duplicated ID in player
+	playerIdMap := make(map[uint64]bool)
+	playerCount := gs.GetPlayerCount()
+	for _, elem := range gs.PlayerList {
+		if _, ok := playerIdMap[elem.Id]; ok {
+			return fmt.Errorf("duplicated id for player")
+		}
+		if elem.Id >= playerCount {
+			return fmt.Errorf("player id should be lower or equal than the last id")
+		}
+		playerIdMap[elem.Id] = true
 	}
 
 	// this line is used by starport scaffolding # genesis/types/validate

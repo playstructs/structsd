@@ -17,14 +17,19 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgSubstationAllocationDisconnect{}, "structs/SubstationAllocationDisconnect", nil)
 	cdc.RegisterConcrete(&MsgSubstationPlayerConnect{}, "structs/SubstationPlayerConnect", nil)
 	cdc.RegisterConcrete(&MsgSubstationPlayerDisconnect{}, "structs/SubstationPlayerDisconnect", nil)
+	cdc.RegisterConcrete(&MsgGuildCreate{}, "structs/GuildCreate", nil)
+	cdc.RegisterConcrete(&MsgPlayerCreateProxy{}, "structs/PlayerCreateProxy", nil)
+	cdc.RegisterConcrete(&MsgPlayerCreate{}, "structs/PlayerCreate", nil)
+	cdc.RegisterConcrete(&MsgAddressRegister{}, "structs/AddressRegister", nil)
+	cdc.RegisterConcrete(&MsgAddressRevoke{}, "structs/AddressRevoke", nil)
 	// this line is used by starport scaffolding # 2
 }
 
 func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-        &MsgAllocationCreate{},
-    )
-    registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgAllocationCreate{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgReactorAllocationCreate{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
@@ -47,6 +52,21 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgSubstationPlayerDisconnect{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgGuildCreate{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgPlayerCreateProxy{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgPlayerCreate{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgAddressRegister{},
+	)
+	registry.RegisterImplementations((*sdk.Msg)(nil),
+		&MsgAddressRevoke{},
 	)
 	// this line is used by starport scaffolding # 3
 

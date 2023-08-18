@@ -9,11 +9,12 @@ option go_package = "structs/x/structs/types";
 
 
 enum objectType {
-    faction        = 0;
+    guild          = 0;
     player         = 1;
     planet         = 2;
     reactor        = 3;
     substation     = 4;
     struct         = 5;
     allocation     = 6;
+    infusion       = 7;
 }

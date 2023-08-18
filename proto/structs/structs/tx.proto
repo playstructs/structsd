@@ -13,41 +13,40 @@ service Msg {
   rpc AllocationCreate               (MsgAllocationCreate              ) returns (MsgAllocationCreateResponse              );
   rpc ReactorAllocationCreate        (MsgReactorAllocationCreate       ) returns (MsgAllocationCreateResponse              );
   rpc SubstationAllocationCreate     (MsgSubstationAllocationCreate    ) returns (MsgAllocationCreateResponse              );
-
   rpc SubstationCreate               (MsgSubstationCreate              ) returns (MsgSubstationCreateResponse              );
   rpc SubstationDelete               (MsgSubstationDelete              ) returns (MsgSubstationDeleteResponse              );
-
   rpc SubstationAllocationConnect    (MsgSubstationAllocationConnect   ) returns (MsgSubstationAllocationConnectResponse   );
   rpc SubstationAllocationDisconnect (MsgSubstationAllocationDisconnect) returns (MsgSubstationAllocationDisconnectResponse);
-
   rpc SubstationPlayerConnect        (MsgSubstationPlayerConnect       ) returns (MsgSubstationPlayerConnectResponse       );
   rpc SubstationPlayerDisconnect     (MsgSubstationPlayerDisconnect    ) returns (MsgSubstationPlayerDisconnectResponse    );
+  rpc GuildCreate                    (MsgGuildCreate                   ) returns (MsgGuildCreateResponse                   );
+  rpc PlayerCreateProxy              (MsgPlayerCreateProxy             ) returns (MsgPlayerCreateProxyResponse             );
+  rpc PlayerCreate                   (MsgPlayerCreate                  ) returns (MsgPlayerCreateResponse                  );
+  rpc AddressRegister                (MsgAddressRegister               ) returns (MsgAddressRegisterResponse               );
+  rpc AddressRevoke                  (MsgAddressRevoke                 ) returns (MsgAddressRevokeResponse                 );
 }
 
-
-
 message MsgSubstationCreate {
-  string creator  = 1;
-  uint64 owner    = 2;
+  string creator                    = 1;
+  uint64 owner                      = 2;
   uint64 playerConnectionAllocation = 3;
 }
 
 message MsgSubstationCreateResponse {
-    uint64 substationId = 1;
+  uint64 substationId = 1;
 }
 
 message MsgSubstationDelete {
-  string creator      = 1;
-  uint64 substationId = 2;
+  string creator               = 1;
+  uint64 substationId          = 2;
   uint64 migrationSubstationId = 3;
 }
 
 message MsgSubstationDeleteResponse {}
 
-
 message MsgSubstationAllocationConnect {
-  string creator      = 1;
-  uint64 allocationId = 2;
+  string creator                 = 1;
+  uint64 allocationId            = 2;
   uint64 destinationSubstationId = 3;
 }
 
@@ -75,19 +74,16 @@ message MsgSubstationPlayerDisconnect {
 
 message MsgSubstationPlayerDisconnectResponse {}
 
-
-
 message MsgAllocationCreate {
-  string creator        = 1;
-  string controller     = 2;
+  string     creator    = 1;
+  string     controller = 2;
   objectType sourceType = 3;
-  uint64 sourceId       = 4;
-  uint64 power          = 5;
-
+  uint64     sourceId   = 4;
+  uint64     power      = 5;
 }
 
 message MsgAllocationCreateResponse {
-    uint64 allocationId = 1;
+  uint64 allocationId = 1;
 }
 
 message MsgSubstationAllocationCreate {
@@ -95,13 +91,52 @@ message MsgSubstationAllocationCreate {
   string controller = 2;
   uint64 sourceId   = 3;
   uint64 power      = 4;
-
 }
 
 message MsgReactorAllocationCreate {
-  string creator            = 1;
-  string controller         = 2;
-  uint64 sourceId           = 3;
-  uint64 power              = 4;
-
+  string creator    = 1;
+  string controller = 2;
+  uint64 sourceId   = 3;
+  uint64 power      = 4;
 }
+
+message MsgGuildCreate {
+  string creator  = 1;
+  string endpoint = 2;
+}
+
+message MsgGuildCreateResponse { uint64 guildId = 1; }
+
+message MsgPlayerCreateProxy {
+  string creator      = 1;
+  string address      = 4;
+  string proof        = 5;
+}
+
+message MsgPlayerCreateProxyResponse {}
+
+message MsgPlayerCreate {
+  string creator = 1;
+  uint64 guildId = 2;
+}
+
+message MsgPlayerCreateResponse {}
+
+message MsgAddressRegister {
+  string creator     = 1;
+  uint64 playerId    = 2;
+  string addressType = 3;
+  string address     = 4;
+  string proof       = 5;
+}
+
+message MsgAddressRegisterResponse {}
+
+message MsgAddressRevoke {
+  string creator  = 1;
+  uint64 playerId = 2;
+  string address  = 3;
+}
+
+message MsgAddressRevokeResponse {}
+

@@ -2,20 +2,41 @@ version: 1
 accounts:
   - name: alice
     coins:
-      - 2000000alpha
+      - 2000000000alpha
   - name: bob
     coins:
       - 10000alpha
+  - name: bobit
+    coins:
+      - 100000alpha
+  - name: bobby
+    coins:
+      - 2000000alpha
+  - name: bobble
+    coins:
+      - 1000000alpha
+  - name: bobie
+    coins:
+      - 100000alpha
+  - name: bobs
+    coins:
+      - 1000alpha
 client:
   openapi:
     path: docs/static/openapi.yml
 faucet:
   name: bob
   coins:
-    - 1000alpha
+    - 100000alpha
 validators:
   - name: alice
     bonded: 2000000alpha
+  - name: bobby
+    bonded: 200alpha
+  - name: bobs
+    bonded: 200alpha
+  - name: bobble
+    bonded: 200000alpha
 genesis:
   app_state:
     staking:

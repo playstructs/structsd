@@ -1,8 +1,6 @@
 package keeper
 
 import (
-
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/x/slashing/types"
 )
@@ -20,65 +18,60 @@ func (k Keeper) Hooks() Hooks {
 }
 
 // AfterValidatorBonded updates the signing info start height or create a new signing info
-func (h Hooks) AfterValidatorBonded(ctx sdk.Context, consAddr sdk.ConsAddress, valAddr sdk.ValAddress) error {
-    _ = h.k.ReactorUpdateEnergy(ctx, valAddr);
+func (h Hooks) AfterValidatorBonded(ctx sdk.Context, _ sdk.ConsAddress, _ sdk.ValAddress) error {
 
 	return nil
 }
 
 // AfterValidatorRemoved deletes the address-pubkey relation when a validator is removed,
-func (h Hooks) AfterValidatorRemoved(ctx sdk.Context, consAddr sdk.ConsAddress, _ sdk.ValAddress) error {
+func (h Hooks) AfterValidatorRemoved(ctx sdk.Context, _ sdk.ConsAddress, _ sdk.ValAddress) error {
 
 	return nil
 }
 
 // AfterValidatorCreated adds the address-pubkey relation when a validator is created.
 func (h Hooks) AfterValidatorCreated(ctx sdk.Context, valAddr sdk.ValAddress) error {
-	/*
-	validator := h.k.sk.Validator(ctx, valAddr)
-	consPk, err := validator.ConsPubKey()
-	if err != nil {
-		return err
-	}
-*/
 
-    _ = h.k.ReactorInitialize(ctx, valAddr);
+    // Setup the Reactor object once a validator comes online
+	h.k.ReactorInitialize(ctx, valAddr)
+
 	return nil
 }
 
-func (h Hooks) AfterValidatorBeginUnbonding(ctx sdk.Context, _ sdk.ConsAddress, valAddr sdk.ValAddress) error {
-    _ = h.k.ReactorUpdateEnergy(ctx, valAddr);
+func (h Hooks) AfterValidatorBeginUnbonding(_ sdk.Context, _ sdk.ConsAddress, _ sdk.ValAddress) error {
+
 	return nil
 }
 
 func (h Hooks) BeforeValidatorModified(ctx sdk.Context, valAddr sdk.ValAddress) error {
-     _ = h.k.ReactorUpdateFromValidator(ctx, valAddr);
+	h.k.ReactorUpdateFromValidator(ctx, valAddr)
 	return nil
 }
 
 func (h Hooks) BeforeDelegationCreated(_ sdk.Context, _ sdk.AccAddress, _ sdk.ValAddress) error {
-
+    //_ = h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
 	return nil
 }
 
-func (h Hooks) BeforeDelegationSharesModified(ctx sdk.Context, _ sdk.AccAddress, valAddr sdk.ValAddress) error {
-    _ = h.k.ReactorUpdateEnergy(ctx, valAddr);
+func (h Hooks) BeforeDelegationSharesModified(_ sdk.Context, _ sdk.AccAddress, _ sdk.ValAddress) error {
+	//_ = h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
 	return nil
 }
 
 func (h Hooks) BeforeDelegationRemoved(_ sdk.Context, _ sdk.AccAddress, _ sdk.ValAddress) error {
+
 	return nil
 }
 
 /* This doesn't actually exist yet, but I'd like it to */
-func (h Hooks) AfterDelegationRemoved(ctx sdk.Context, _ sdk.AccAddress, valAddr sdk.ValAddress) error {
-     _ = h.k.ReactorUpdateEnergy(ctx, valAddr);
+func (h Hooks) AfterDelegationRemoved(ctx sdk.Context, playerAddress sdk.AccAddress, valAddr sdk.ValAddress) error {
+	h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
 	return nil
 }
 
+func (h Hooks) AfterDelegationModified(ctx sdk.Context, playerAddress sdk.AccAddress, valAddr sdk.ValAddress) error {
+	h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
 
-func (h Hooks) AfterDelegationModified(ctx sdk.Context, _ sdk.AccAddress, valAddr sdk.ValAddress) error {
-    _ = h.k.ReactorUpdateEnergy(ctx, valAddr);
 	return nil
 }
 
@@ -86,7 +79,7 @@ func (h Hooks) BeforeValidatorSlashed(_ sdk.Context, _ sdk.ValAddress, _ sdk.Dec
 	return nil
 }
 
-func (h Hooks) AfterUnbondingInitiated(_ sdk.Context, _ uint64) error {
-
+func (h Hooks) AfterUnbondingInitiated(ctx sdk.Context, unbondingId uint64) error {
+    h.k.ReactorRemoveInfusion(ctx, unbondingId)
 	return nil
 }

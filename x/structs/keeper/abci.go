@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"context"
-	abci "github.com/tendermint/tendermint/abci/types"
+	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -14,6 +14,6 @@ func (k *Keeper) BeginBlocker(ctx sdk.Context) {
 
 // Called every block, update validator set
 func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error) {
-    k.UpdateSubstationStatus(sdk.UnwrapSDKContext(ctx))
+	k.UpdateSubstationStatus(sdk.UnwrapSDKContext(ctx))
 	return []abci.ValidatorUpdate{}, nil
 }

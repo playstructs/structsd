@@ -11,8 +11,8 @@ var _ sdk.Msg = &MsgSubstationDelete{}
 
 func NewMsgSubstationDelete(creator string, substationId uint64, migrationSubstationId uint64) *MsgSubstationDelete {
 	return &MsgSubstationDelete{
-		Creator:      creator,
-		SubstationId: substationId,
+		Creator:               creator,
+		SubstationId:          substationId,
 		MigrationSubstationId: migrationSubstationId,
 	}
 }

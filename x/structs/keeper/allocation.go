@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
+
 )
 
 // GetAllocationCount get the total number of allocation
@@ -15,7 +16,7 @@ func (k Keeper) GetAllocationCount(ctx sdk.Context) uint64 {
 	bz := store.Get(byteKey)
 
 	// Count doesn't exist: no element
-	if (bz == nil || binary.BigEndian.Uint64(bz) == 0) {
+	if bz == nil || binary.BigEndian.Uint64(bz) == 0 {
 		return types.KeeperStartValue
 	}
 
@@ -50,6 +51,8 @@ func (k Keeper) AppendAllocation(
 	// Update allocation count
 	k.SetAllocationCount(ctx, count+1)
 
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: allocation.Id, ObjectType: types.ObjectType_allocation})
+
 	return count
 }
 
@@ -58,6 +61,26 @@ func (k Keeper) SetAllocation(ctx sdk.Context, allocation types.Allocation) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AllocationKey))
 	b := k.cdc.MustMarshal(&allocation)
 	store.Set(GetAllocationIDBytes(allocation.Id), b)
+
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: allocation.Id, ObjectType: types.ObjectType_allocation})
+
+    // Update Source Load
+    switch allocation.SourceType {
+        case types.ObjectType_reactor:
+            newLoad := k.ReactorRebuildLoad(ctx, allocation.SourceId)
+            k.ReactorSetLoad(ctx, allocation.SourceId, newLoad)
+        case types.ObjectType_substation:
+            newLoad := k.SubstationRebuildAllocationLoad(ctx, allocation.SourceId)
+            k.SubstationSetAllocationLoad(ctx, allocation.SourceId, newLoad)
+    }
+
+
+    // Update Destination Energy
+    if (allocation.DestinationId > 0){
+        newEnergy := k.SubstationRebuildAllocationEnergy(ctx, allocation.DestinationId)
+        k.SubstationSetEnergy(ctx, allocation.DestinationId, newEnergy)
+    }
+
 }
 
 // GetAllocation returns a allocation from its id
@@ -93,26 +116,26 @@ func (k Keeper) GetAllAllocation(ctx sdk.Context) (list []types.Allocation) {
 	return
 }
 
-
-// GetAllSubstationAllocationIn returns all allocation
+// GetAllSubstationAllocationOut returns all allocation
 func (k Keeper) GetAllSubstationAllocationOut(ctx sdk.Context, substationId uint64) (list []types.Allocation) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AllocationKey))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
 		var val types.Allocation
+
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
-		if (val.SourceType == types.ObjectType_substation && val.SourceId == substationId) {
-		    list = append(list, val)
+		if ((val.SourceType == types.ObjectType_substation) && (val.SourceId == substationId)) {
+			list = append(list, val)
 		}
 	}
 
 	return
 }
-
 
 // GetAllSubstationAllocationIn returns all allocation
 func (k Keeper) GetAllSubstationAllocationIn(ctx sdk.Context, substationId uint64) (list []types.Allocation) {
@@ -125,16 +148,13 @@ func (k Keeper) GetAllSubstationAllocationIn(ctx sdk.Context, substationId uint6
 		var val types.Allocation
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
-		if (val.DestinationId == substationId) {
-		    list = append(list, val)
+		if val.DestinationId == substationId {
+			list = append(list, val)
 		}
 	}
 
 	return
 }
-
-
-
 
 // GetAllReactorAllocations returns all allocation relating to a reactor
 func (k Keeper) GetAllReactorAllocations(ctx sdk.Context, reactorId uint64) (list []types.Allocation) {
@@ -147,15 +167,13 @@ func (k Keeper) GetAllReactorAllocations(ctx sdk.Context, reactorId uint64) (lis
 		var val types.Allocation
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
-		if (val.SourceType == types.ObjectType_reactor && val.SourceId == reactorId) {
-		    list = append(list, val)
+		if val.SourceType == types.ObjectType_reactor && val.SourceId == reactorId {
+			list = append(list, val)
 		}
 	}
 
 	return
 }
-
-
 
 // GetAllocationIDBytes returns the byte representation of the ID
 func GetAllocationIDBytes(id uint64) []byte {
@@ -169,27 +187,44 @@ func GetAllocationIDFromBytes(bz []byte) uint64 {
 	return binary.BigEndian.Uint64(bz)
 }
 
-
 func (k Keeper) AllocationDestroy(ctx sdk.Context, allocation types.Allocation) {
 
-    // Figure out what the allocation source is and update the energy load
-    switch allocation.SourceType {
-        case types.ObjectType_reactor:
-            // Decrease Reactor Load
-            k.ReactorDecrementLoad(ctx, allocation.SourceId, allocation.Power)
+	// Figure out what the allocation source is and update the energy load
+	switch allocation.SourceType {
+	case types.ObjectType_reactor:
+		// Decrease Reactor Load
+		k.ReactorDecrementLoad(ctx, allocation.SourceId, allocation.Power)
+	}
+
+	k.RemoveAllocation(ctx, allocation.Id)
+
+	// Update the destination if the allocation is connected to a substation
+	//
+	// Needs to take place after this initiating
+	// allocation is already destroyed from the keeper
+	if allocation.DestinationId > 0 {
+		k.SubstationDecrementEnergy(ctx, allocation.DestinationId, allocation.Power)
+		k.CascadeSubstationAllocationFailure(ctx, allocation.DestinationId)
+	}
+
+}
+
+func (k Keeper) UpsertAllocation(ctx sdk.Context, newAllocation types.Allocation ) (types.Allocation) {
+    allocation, allocationFound := k.GetAllocation(ctx, newAllocation.Id)
+    if (allocationFound) {
+        allocation.SetPower(newAllocation.Power)
+        allocation.LinkedInfusion = newAllocation.LinkedInfusion
+        k.SetAllocation(ctx, allocation)
+    } else {
+        allocation = newAllocation
+        allocationId := k.AppendAllocation(ctx, allocation)
+        allocation.SetId(allocationId)
     }
 
-    k.RemoveAllocation(ctx, allocation.Id)
-
-    // Update the destination if the allocation is connected to a substation
-    //
-    // Needs to take place after this initiating
-    // allocation is already destroyed from the keeper
+    // TODO  MAYBE
     if (allocation.DestinationId > 0) {
-        k.SubstationDecrementEnergy(ctx, allocation.DestinationId, allocation.Power)
-        k.CascadeSubstationAllocationFailure(ctx, allocation.DestinationId)
+        //k.SubstationRebuildEnergy()
     }
 
-
-
+    return allocation
 }
