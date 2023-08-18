@@ -523,6 +523,7 @@ func New(
 		app.IBCKeeper.ChannelKeeper,
 		&app.IBCKeeper.PortKeeper,
 		scopedStructsKeeper,
+		app.AccountKeeper,
 		app.BankKeeper,
 		app.StakingKeeper,
 		tkeys[structsmoduletypes.TStoreKey],

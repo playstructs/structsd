@@ -9,11 +9,9 @@ const TypeMsgPlayerCreateProxy = "player_create_proxy"
 
 var _ sdk.Msg = &MsgPlayerCreateProxy{}
 
-func NewMsgPlayerCreateProxy(creator string, guildId uint64, substationId uint64, address string, proof string) *MsgPlayerCreateProxy {
+func NewMsgPlayerCreateProxy(creator string, address string, proof string) *MsgPlayerCreateProxy {
 	return &MsgPlayerCreateProxy{
 		Creator:      creator,
-		GuildId:      guildId,
-		SubstationId: substationId,
 		Address:      address,
 		Proof:        proof,
 	}

@@ -109,8 +109,6 @@ message MsgGuildCreateResponse { uint64 guildId = 1; }
 
 message MsgPlayerCreateProxy {
   string creator      = 1;
-  uint64 guildId      = 2;
-  uint64 substationId = 3;
   string address      = 4;
   string proof        = 5;
 }

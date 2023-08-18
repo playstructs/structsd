@@ -28,6 +28,7 @@ type (
 		portKeeper    types.PortKeeper
 		scopedKeeper  exported.ScopedKeeper
 
+        accountKeeper types.AccountKeeper
 		bankKeeper    types.BankKeeper
 		stakingKeeper types.StakingKeeper
 
@@ -44,6 +45,7 @@ func NewKeeper(
 	portKeeper types.PortKeeper,
 	scopedKeeper exported.ScopedKeeper,
 
+    accountKeeper types.AccountKeeper,
 	bankKeeper types.BankKeeper,
 	stakingKeeper types.StakingKeeper,
 	tStoreKey storetypes.StoreKey,
@@ -63,6 +65,7 @@ func NewKeeper(
 		portKeeper:    portKeeper,
 		scopedKeeper:  scopedKeeper,
 
+        accountKeeper: accountKeeper,
 		bankKeeper:    bankKeeper,
 		stakingKeeper: stakingKeeper,
 

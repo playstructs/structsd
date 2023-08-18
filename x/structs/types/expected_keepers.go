@@ -2,8 +2,9 @@ package types
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/x/auth/types"
+	auth "github.com/cosmos/cosmos-sdk/x/auth/types"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
+
 )
 
 type StakingKeeper interface {
@@ -21,7 +22,9 @@ type StakingKeeper interface {
 
 // AccountKeeper defines the expected account keeper used for simulations (noalias)
 type AccountKeeper interface {
-	GetAccount(ctx sdk.Context, addr sdk.AccAddress) types.AccountI
+	GetAccount(ctx sdk.Context, addr sdk.AccAddress) auth.AccountI
+	NewAccountWithAddress(ctx sdk.Context, addr sdk.AccAddress) auth.AccountI
+	SetAccount(ctx sdk.Context, acc auth.AccountI)
 	// Methods imported from account should be defined here
 }
 

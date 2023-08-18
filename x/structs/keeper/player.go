@@ -56,6 +56,16 @@ func (k Keeper) AppendPlayer(
 	k.SetPlayerIdForAddress(ctx, player.Creator, player.Id)
 	k.AddressPermissionAdd(ctx, player.Creator, types.AddressPermissionAllWithGrant)
 
+	// Add the Account keeper record
+	// This is needed for the proxy account creation
+	playerAccAddress, _ := sdk.AccAddressFromBech32(player.Creator)
+	playerAuthAccount := k.accountKeeper.GetAccount(ctx, playerAccAddress)
+    if playerAuthAccount == nil {
+        playerAuthAccount = k.accountKeeper.NewAccountWithAddress(ctx, playerAccAddress)
+        k.accountKeeper.SetAccount(ctx, playerAuthAccount)
+    }
+
+
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: player.Id, ObjectType: types.ObjectType_player})
 
 	return count
