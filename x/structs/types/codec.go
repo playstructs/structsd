@@ -21,6 +21,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgPlayerCreateProxy{}, "structs/PlayerCreateProxy", nil)
 	cdc.RegisterConcrete(&MsgPlayerCreate{}, "structs/PlayerCreate", nil)
 	cdc.RegisterConcrete(&MsgAddressRegister{}, "structs/AddressRegister", nil)
+	cdc.RegisterConcrete(&MsgAddressApproveRegister{}, "structs/AddressApproveRegister", nil)
 	cdc.RegisterConcrete(&MsgAddressRevoke{}, "structs/AddressRevoke", nil)
 	// this line is used by starport scaffolding # 2
 }
@@ -65,6 +66,9 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgAddressRegister{},
 	)
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgAddressApproveRegister{},
+    )
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgAddressRevoke{},
 	)

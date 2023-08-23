@@ -34,6 +34,60 @@ func (k Keeper) SetPlayerIdForAddress(ctx sdk.Context, address string, playerId 
 }
 
 
+func (k Keeper) AddressSetRegisterRequest(ctx sdk.Context, player types.Player, address string) {
+    	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressRegistrationKey))
+
+    	bz := make([]byte, 8)
+    	binary.BigEndian.PutUint64(bz, player.Id)
+
+    	store.Set(types.KeyPrefix(address), bz)
+
+
+    /*
+    registrationPlayer, registrationFound := k.AddressGetRegistrationRequest(ctx, address)
+    if (registrationPlayer.Id = player.Id) {
+
+    }
+    */
+
+}
+
+func (k Keeper) AddressApproveRegisterRequest(ctx sdk.Context, player types.Player, address string, permissions types.AddressPermission) {
+
+    registrationPlayer, registrationFound := k.AddressGetRegisterRequest(ctx, address)
+    if ((registrationFound) && (registrationPlayer.Id == player.Id)) {
+            k.AddressPermissionAdd(ctx, address, permissions)
+
+            store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressRegistrationKey))
+            store.Delete(types.KeyPrefix(address))
+    }
+
+}
+
+func (k Keeper) AddressDenyRegisterRequest(ctx sdk.Context, player types.Player, address string) {
+    registrationPlayer, registrationFound := k.AddressGetRegisterRequest(ctx, address)
+    if ((registrationFound) && (registrationPlayer.Id == player.Id)) {
+            store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressRegistrationKey))
+            store.Delete(types.KeyPrefix(address))
+    }
+}
+
+func (k Keeper) AddressGetRegisterRequest(ctx sdk.Context, address string) (player types.Player, found bool) {
+    	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressRegistrationKey))
+
+    	bz := store.Get(types.KeyPrefix(address))
+
+    	// Substation Capacity Not in Memory: no element
+    	if bz == nil {
+    		return types.Player{}, false
+    	}
+
+    	player, found = k.GetPlayer(ctx, binary.BigEndian.Uint64(bz))
+
+    	return player, found
+
+}
+
 
 func (k Keeper) AddressGetPlayerPermissionsByBytes(ctx sdk.Context, permissionRecord []byte) (types.AddressPermission) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressPermissionKey))

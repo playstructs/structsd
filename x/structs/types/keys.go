@@ -99,6 +99,7 @@ const (
 const (
 	AddressPlayerKey = "Address/player/"
 	AddressPermissionKey = "Address/permission/"
+	AddressRegistrationKey = "Address/registration/"
 )
 
 /*

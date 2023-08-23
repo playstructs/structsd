@@ -10,8 +10,16 @@ import (
 func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRevoke) (*types.MsgAddressRevokeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Handling the message
-	_ = ctx
+
+    player, playerFound := k.GetPlayer(ctx, k.GetPlayerIdFromAddress(ctx, msg.Creator))
+    if (playerFound) {
+        // TODO Add address proof signature verification
+        playerId := k.GetPlayerIdFromAddress(ctx, msg.Address)
+        if (playerId == player.Id) {
+            // TODO check permissions that the specific address has revoke capabilities
+            k.AddressPermissionClearAll(ctx, msg.Address)
+        }
+    }
 
 	return &types.MsgAddressRevokeResponse{}, nil
 }

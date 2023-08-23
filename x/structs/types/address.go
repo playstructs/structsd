@@ -31,10 +31,14 @@ const (
 	AddressPermissionGrantManageAssets
 	// 512
 	AddressPermissionManageAssets
+	// 1024
+	AddressPermissionGrantManagePlayer
+	// 2048
+	AddressPermissionManagePlayer
 
 )
 const (
     AddressPermissionless AddressPermission = 0 << iota
-	AddressPermissionAll = AddressPermissionAssociate | AddressPermissionRevoke | AddressPermissionManageEnergy | AddressPermissionGrantPlay | AddressPermissionManageAssets
-	AddressPermissionAllWithGrant = AddressPermissionGrantAssociate | AddressPermissionAssociate | AddressPermissionGrantRevoke | AddressPermissionRevoke | AddressPermissionGrantManageEnergy | AddressPermissionManageEnergy | AddressPermissionGrantPlay | AddressPermissionPlay | AddressPermissionGrantManageAssets | AddressPermissionManageAssets
+	AddressPermissionAll = AddressPermissionAssociate | AddressPermissionRevoke | AddressPermissionManageEnergy | AddressPermissionGrantPlay | AddressPermissionManageAssets | AddressPermissionManagePlayer
+	AddressPermissionAllWithGrant = AddressPermissionGrantAssociate | AddressPermissionAssociate | AddressPermissionGrantRevoke | AddressPermissionRevoke | AddressPermissionGrantManageEnergy | AddressPermissionManageEnergy | AddressPermissionGrantPlay | AddressPermissionPlay | AddressPermissionGrantManageAssets | AddressPermissionManageAssets | AddressPermissionGrantManagePlayer | AddressPermissionManagePlayer
 )

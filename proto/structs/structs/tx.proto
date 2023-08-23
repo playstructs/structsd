@@ -23,6 +23,7 @@ service Msg {
   rpc PlayerCreateProxy              (MsgPlayerCreateProxy             ) returns (MsgPlayerCreateProxyResponse             );
   rpc PlayerCreate                   (MsgPlayerCreate                  ) returns (MsgPlayerCreateResponse                  );
   rpc AddressRegister                (MsgAddressRegister               ) returns (MsgAddressRegisterResponse               );
+  rpc AddressApproveRegister         (MsgAddressApproveRegister        ) returns (MsgAddressRegisterResponse               );
   rpc AddressRevoke                  (MsgAddressRevoke                 ) returns (MsgAddressRevokeResponse                 );
 }
 
@@ -121,6 +122,15 @@ message MsgPlayerCreate {
 }
 
 message MsgPlayerCreateResponse {}
+
+message MsgAddressApproveRegister {
+  string creator     = 1;
+  bool   approve     = 2;
+  string addressType = 3;
+  string address     = 4;
+  string permissions = 5;
+}
+
 
 message MsgAddressRegister {
   string creator     = 1;

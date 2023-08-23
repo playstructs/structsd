@@ -10,8 +10,11 @@ import (
 func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressRegister) (*types.MsgAddressRegisterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	// TODO: Handling the message
-	_ = ctx
+    player, playerFound := k.GetPlayer(ctx, msg.PlayerId)
+    if (playerFound) {
+        // TODO Add address proof signature verification
+        k.AddressSetRegisterRequest(ctx, player, msg.Address)
+    }
 
 	return &types.MsgAddressRegisterResponse{}, nil
 }
