@@ -13,23 +13,29 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdAddressRevoke() *cobra.Command {
+func CmdAddressApproveRegister() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "address-revoke [address]",
-		Short: "Broadcast message address-revoke",
-		Args:  cobra.ExactArgs(1),
+		Use:   "address-approve-register [address] [decision] [permissions]",
+		Short: "Broadcast message address-approve-register",
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-
-			argAddress := args[1]
+			argApproved, err := strconv.ParseBool(args[0])
+			if err != nil {
+				return err
+			}
+			argAddress      := args[1]
+			argPermissions  := args[2]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgAddressRevoke(
+			msg := types.NewMsgAddressApproveRegister(
 				clientCtx.GetFromAddress().String(),
+				argApproved,
 				argAddress,
+				argPermissions,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

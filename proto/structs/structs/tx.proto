@@ -144,8 +144,7 @@ message MsgAddressRegisterResponse {}
 
 message MsgAddressRevoke {
   string creator  = 1;
-  uint64 playerId = 2;
-  string address  = 3;
+  string address  = 2;
 }
 
 message MsgAddressRevokeResponse {}

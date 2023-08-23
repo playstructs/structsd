@@ -9,11 +9,10 @@ const TypeMsgAddressApproveRegister = "address_approve_register"
 
 var _ sdk.Msg = &MsgAddressApproveRegister{}
 
-func NewMsgAddressApproveRegister(creator string, approve bool, addressType string, address string, permissions string) *MsgAddressApproveRegister {
+func NewMsgAddressApproveRegister(creator string, approve bool, address string, permissions string) *MsgAddressApproveRegister {
 	return &MsgAddressApproveRegister{
 		Creator:     creator,
 		Approve:     approve,
-		AddressType: addressType,
 		Address:     address,
 		Permissions: permissions,
 	}

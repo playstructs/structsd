@@ -10,7 +10,6 @@ import (
 func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRevoke) (*types.MsgAddressRevokeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-
     player, playerFound := k.GetPlayer(ctx, k.GetPlayerIdFromAddress(ctx, msg.Creator))
     if (playerFound) {
         // TODO Add address proof signature verification

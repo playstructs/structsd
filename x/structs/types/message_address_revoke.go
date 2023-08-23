@@ -9,10 +9,9 @@ const TypeMsgAddressRevoke = "address_revoke"
 
 var _ sdk.Msg = &MsgAddressRevoke{}
 
-func NewMsgAddressRevoke(creator string, playerId uint64, address string) *MsgAddressRevoke {
+func NewMsgAddressRevoke(creator string, address string) *MsgAddressRevoke {
 	return &MsgAddressRevoke{
 		Creator:  creator,
-		PlayerId: playerId,
 		Address:  address,
 	}
 }
