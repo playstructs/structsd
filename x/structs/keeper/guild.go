@@ -123,6 +123,69 @@ func GetGuildIDFromBytes(bz []byte) uint64 {
 
 
 
+func (k Keeper) GuildSetRegisterRequest(ctx sdk.Context, guild types.Guild, player types.Player) {
+    	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GuildRegistrationKey))
+
+    	bz := make([]byte, 8)
+    	binary.BigEndian.PutUint64(bz, guild.Id)
+
+    	store.Set(GetPlayerIDBytes(player.Id), bz)
+}
+
+func (k Keeper) GuildApproveRegisterRequest(ctx sdk.Context, guild types.Guild, player types.Player) {
+
+    registrationGuild, registrationFound := k.GuildGetRegisterRequest(ctx, player)
+    if ((registrationFound) && (registrationGuild.Id == guild.Id)) {
+            // look up destination substation
+            substation, substationFound := k.GetSubstation(ctx, guild.EntrySubstationId, true)
+
+            // If the player is already connected to a substation then leave them
+            // Maybe add an option to force migration later
+            if (player.SubstationId == 0) {
+                if (substationFound) {
+                    // Check if the substation has room
+                    if substation.HasPlayerCapacity() {
+                        // Connect Player to Substation
+                        k.SubstationConnectPlayer(ctx, substation, player)
+                    }
+                }
+            }
+
+            // Add player to the guild
+            player.SetGuild(guild.Id)
+            k.SetPlayer(ctx, player)
+
+            store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GuildRegistrationKey))
+            store.Delete(GetPlayerIDBytes(player.Id))
+    }
+
+}
+
+func (k Keeper) GuildDenyRegisterRequest(ctx sdk.Context, guild types.Guild, player types.Player) {
+    registrationGuild, registrationFound := k.GuildGetRegisterRequest(ctx, player)
+    if ((registrationFound) && (registrationGuild.Id == guild.Id)) {
+            store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GuildRegistrationKey))
+            store.Delete(GetPlayerIDBytes(player.Id))
+    }
+}
+
+func (k Keeper) GuildGetRegisterRequest(ctx sdk.Context, player types.Player) (guild types.Guild, found bool) {
+    	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GuildRegistrationKey))
+
+    	bz := store.Get(GetPlayerIDBytes(player.Id))
+
+    	// Substation Capacity Not in Memory: no element
+    	if bz == nil {
+    		return types.Guild{}, false
+    	}
+
+    	guild, found = k.GetGuild(ctx, binary.BigEndian.Uint64(bz))
+
+    	return guild, found
+
+}
+
+
 
 // GetGuildPermissionIDBytes returns the byte representation of the guild and player id pair
 func GetGuildPermissionIDBytes(guildId uint64, playerId uint64) []byte {

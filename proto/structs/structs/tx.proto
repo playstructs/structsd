@@ -3,8 +3,10 @@ syntax = "proto3";
 package structs.structs;
 
 import "gogoproto/gogo.proto";
+import "google/protobuf/any.proto";
 import "cosmos_proto/cosmos.proto";
 import "structs/structs/keys.proto";
+
 
 option go_package = "structs/x/structs/types";
 
@@ -20,6 +22,7 @@ service Msg {
   rpc SubstationPlayerConnect        (MsgSubstationPlayerConnect       ) returns (MsgSubstationPlayerConnectResponse       );
   rpc SubstationPlayerDisconnect     (MsgSubstationPlayerDisconnect    ) returns (MsgSubstationPlayerDisconnectResponse    );
   rpc GuildCreate                    (MsgGuildCreate                   ) returns (MsgGuildCreateResponse                   );
+  rpc GuildApproveRegister           (MsgGuildApproveRegister          ) returns (MsgGuildApproveRegisterResponse          );
   rpc PlayerCreateProxy              (MsgPlayerCreateProxy             ) returns (MsgPlayerCreateProxyResponse             );
   rpc PlayerCreate                   (MsgPlayerCreate                  ) returns (MsgPlayerCreateResponse                  );
   rpc AddressRegister                (MsgAddressRegister               ) returns (MsgAddressRegisterResponse               );
@@ -110,8 +113,7 @@ message MsgGuildCreateResponse { uint64 guildId = 1; }
 
 message MsgPlayerCreateProxy {
   string creator      = 1;
-  string address      = 4;
-  string proof        = 5;
+  string address      = 2;
 }
 
 message MsgPlayerCreateProxyResponse {}
@@ -135,9 +137,8 @@ message MsgAddressApproveRegister {
 message MsgAddressRegister {
   string creator     = 1;
   uint64 playerId    = 2;
-  string addressType = 3;
-  string address     = 4;
-  string proof       = 5;
+  string address     = 3;
+
 }
 
 message MsgAddressRegisterResponse {}
@@ -149,3 +150,11 @@ message MsgAddressRevoke {
 
 message MsgAddressRevokeResponse {}
 
+message MsgGuildApproveRegister {
+  string creator     = 1;
+  bool   approve     = 2;
+  uint64 guildId     = 3;
+  uint64 playerId    = 4;
+}
+
+message MsgGuildApproveRegisterResponse {}

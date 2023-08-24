@@ -3,19 +3,19 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
 )
 
 const TypeMsgAddressRegister = "address_register"
 
 var _ sdk.Msg = &MsgAddressRegister{}
 
-func NewMsgAddressRegister(creator string, playerId uint64, addressType string, address string, proof string) *MsgAddressRegister {
+func NewMsgAddressRegister(creator string, playerId uint64,address string) *MsgAddressRegister {
 	return &MsgAddressRegister{
 		Creator:     creator,
 		PlayerId:    playerId,
-		AddressType: addressType,
 		Address:     address,
-		Proof:       proof,
+
 	}
 }
 

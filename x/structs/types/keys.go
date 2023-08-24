@@ -89,6 +89,11 @@ const (
 	GuildKey      = "Guild/value/"
 	GuildCountKey = "Guild/count/"
 	GuildPermissionKey = "Guild/permission/"
+	GuildRegistrationKey = "Guild/registration/"
+
+	GuildJoinType_Private           = 0
+	GuildJoinType_InfusionMinimum   = 1
+	GuildJoinType_Public            = 2
 )
 
 const (

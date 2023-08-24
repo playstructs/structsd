@@ -21,7 +21,9 @@ func (substation *Substation) SetId(id uint64) error {
 	return nil
 }
 
-
+func (substation *Substation) HasPlayerCapacity() bool {
+    return ((substation.Energy + substation.PlayerConnectionAllocation) <= substation.Load)
+}
 
 // TODO: Once the player construct is in place, change this section
 // so that it receives a Player object. This will enforce that the

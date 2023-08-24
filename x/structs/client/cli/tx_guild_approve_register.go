@@ -6,35 +6,47 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/spf13/cast"
+    "github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
 )
 
 var _ = strconv.Itoa(0)
 
-func CmdAddressRegister() *cobra.Command {
+func CmdGuildApproveRegister() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "address-register [player-id] [address]",
-		Short: "Broadcast message address-register",
-		Args:  cobra.ExactArgs(2),
+		Use:   "guild-approve-register [guildId] [playerId] [decision]",
+		Short: "Broadcast message guild-approve-register",
+		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argPlayerId, err := cast.ToUint64E(args[0])
+            argGuildId, err := cast.ToUint64E(args[0])
+            if err != nil {
+                return err
+            }
+
+			argPlayerId, err := cast.ToUint64E(args[1])
 			if err != nil {
 				return err
 			}
-			argAddress := args[1]
+
+
+			argApproved, err := strconv.ParseBool(args[2])
+			if err != nil {
+				return err
+			}
+
+
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgAddressRegister(
+			msg := types.NewMsgGuildApproveRegister(
 				clientCtx.GetFromAddress().String(),
+				argApproved,
+				argGuildId,
 				argPlayerId,
-				argAddress,
-
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

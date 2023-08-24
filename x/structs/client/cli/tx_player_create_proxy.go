@@ -15,12 +15,11 @@ var _ = strconv.Itoa(0)
 
 func CmdPlayerCreateProxy() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "player-create-proxy [address] [proof]",
+		Use:   "player-create-proxy [address]",
 		Short: "Broadcast message player-create-proxy",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argAddress := args[0]
-			argProof := args[1]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -30,7 +29,6 @@ func CmdPlayerCreateProxy() *cobra.Command {
 			msg := types.NewMsgPlayerCreateProxy(
 				clientCtx.GetFromAddress().String(),
 				argAddress,
-				argProof,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
