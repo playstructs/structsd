@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-
+	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
 )
@@ -24,7 +24,10 @@ func CmdAddressApproveRegister() *cobra.Command {
 				return err
 			}
 			argAddress      := args[1]
-			argPermissions  := args[2]
+			argPermissions, err := cast.ToUint64E(args[2])
+            if err != nil {
+                return err
+            }
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

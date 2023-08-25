@@ -47,7 +47,7 @@ func CreateEmptyPlayer() Player {
 
 
 
-type PlayerPermission uint16
+type PlayerPermission uint64
 
 const (
     // 1
@@ -55,17 +55,13 @@ const (
     // 2
 	PlayerPermissionUpdate
 	// 4
-	PlayerPermissionGrantRegisterPlayer
-	// 8
-	PlayerPermissionRegisterPlayer
-	// 16
 	PlayerPermissionGrantDelete
-	// 32
+	// 8
 	PlayerPermissionDelete
 )
 const (
     PlayerPermissionless PlayerPermission = 0 << iota
-	PlayerPermissionAll = PlayerPermissionUpdate | PlayerPermissionRegisterPlayer | PlayerPermissionDelete
-	PlayerPermissionAllWithGrant = PlayerPermissionGrantUpdate | PlayerPermissionUpdate | PlayerPermissionGrantRegisterPlayer | PlayerPermissionRegisterPlayer | PlayerPermissionGrantDelete | PlayerPermissionDelete
+	PlayerPermissionAll = PlayerPermissionUpdate |  PlayerPermissionDelete
+	PlayerPermissionAllWithGrant = PlayerPermissionGrantUpdate | PlayerPermissionUpdate | PlayerPermissionGrantDelete | PlayerPermissionDelete
 )
 

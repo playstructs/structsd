@@ -32,7 +32,7 @@ func (k Keeper) SubstationGetPlayerPermissionsByBytes(ctx sdk.Context, permissio
 		return types.SubstationPermissionless
 	}
 
-	load := types.SubstationPermission(binary.BigEndian.Uint16(bz))
+	load := types.SubstationPermission(binary.BigEndian.Uint64(bz))
 
 	return load
 }
@@ -41,7 +41,7 @@ func (k Keeper) SubstationSetPlayerPermissionsByBytes(ctx sdk.Context, permissio
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationPermissionKey))
 
 	bz := make([]byte, 8)
-	binary.BigEndian.PutUint16(bz, uint16(permissions))
+	binary.BigEndian.PutUint64(bz, uint64(permissions))
 
 	store.Set(permissionRecord, bz)
 

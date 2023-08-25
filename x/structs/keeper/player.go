@@ -54,7 +54,7 @@ func (k Keeper) AppendPlayer(
 
 	//Add Address records
 	k.SetPlayerIdForAddress(ctx, player.Creator, player.Id)
-	k.AddressPermissionAdd(ctx, player.Creator, types.AddressPermissionAllWithGrant)
+	k.AddressPermissionAdd(ctx, player.Creator, types.AddressPermissionAll)
 
 	// Add the Account keeper record
 	// This is needed for the proxy account creation

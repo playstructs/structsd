@@ -50,7 +50,7 @@ func (substation *Substation) IsOnline(ctx sdk.Context) (bool, error) {
 
 
 
-type SubstationPermission uint16
+type SubstationPermission uint64
 
 const (
     // 1

@@ -8,37 +8,26 @@ import (
 
 
 
-type AddressPermission uint16
+type AddressPermission uint64
 
 const (
     // 1
-	AddressPermissionGrantAssociate AddressPermission = 1 << iota
+	AddressPermissionAssociate AddressPermission = 1 << iota
     // 2
-	AddressPermissionAssociate
-    // 4
-    AddressPermissionGrantRevoke
-    // 8
     AddressPermissionRevoke
-    // 16
-	AddressPermissionGrantManageEnergy
-	// 32
+	// 4
 	AddressPermissionManageEnergy
-	// 64
-	AddressPermissionGrantPlay
-	// 128
+	// 8
 	AddressPermissionPlay
-	// 256
-	AddressPermissionGrantManageAssets
-	// 512
+	// 16
 	AddressPermissionManageAssets
-	// 1024
-	AddressPermissionGrantManagePlayer
-	// 2048
+	// 32
 	AddressPermissionManagePlayer
+	// 64
+	AddressPermissionManageGuild
 
 )
 const (
     AddressPermissionless AddressPermission = 0 << iota
-	AddressPermissionAll = AddressPermissionAssociate | AddressPermissionRevoke | AddressPermissionManageEnergy | AddressPermissionGrantPlay | AddressPermissionManageAssets | AddressPermissionManagePlayer
-	AddressPermissionAllWithGrant = AddressPermissionGrantAssociate | AddressPermissionAssociate | AddressPermissionGrantRevoke | AddressPermissionRevoke | AddressPermissionGrantManageEnergy | AddressPermissionManageEnergy | AddressPermissionGrantPlay | AddressPermissionPlay | AddressPermissionGrantManageAssets | AddressPermissionManageAssets | AddressPermissionGrantManagePlayer | AddressPermissionManagePlayer
+	AddressPermissionAll = AddressPermissionAssociate | AddressPermissionRevoke | AddressPermissionManageEnergy | AddressPermissionPlay|  AddressPermissionManageAssets | AddressPermissionManagePlayer | AddressPermissionManageGuild
 )

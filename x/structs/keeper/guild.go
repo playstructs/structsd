@@ -206,7 +206,7 @@ func (k Keeper) GuildGetPlayerPermissionsByBytes(ctx sdk.Context, permissionReco
 		return types.GuildPermissionless
 	}
 
-	load := types.GuildPermission(binary.BigEndian.Uint16(bz))
+	load := types.GuildPermission(binary.BigEndian.Uint64(bz))
 
 	return load
 }
@@ -215,7 +215,7 @@ func (k Keeper) GuildSetPlayerPermissionsByBytes(ctx sdk.Context, permissionReco
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GuildPermissionKey))
 
 	bz := make([]byte, 8)
-	binary.BigEndian.PutUint16(bz, uint16(permissions))
+	binary.BigEndian.PutUint64(bz, uint64(permissions))
 
 	store.Set(permissionRecord, bz)
 

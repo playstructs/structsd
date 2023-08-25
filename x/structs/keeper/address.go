@@ -89,28 +89,28 @@ func (k Keeper) AddressGetRegisterRequest(ctx sdk.Context, address string) (play
 }
 
 
-func (k Keeper) AddressGetPlayerPermissionsByBytes(ctx sdk.Context, permissionRecord []byte) (types.AddressPermission) {
+func (k Keeper) AddressGetPlayerPermissions(ctx sdk.Context, address string) (types.AddressPermission) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressPermissionKey))
 
-	bz := store.Get(permissionRecord)
+	bz := store.Get(types.KeyPrefix(address))
 
 	// Substation Capacity Not in Memory: no element
 	if bz == nil {
 		return types.AddressPermissionless
 	}
 
-	load := types.AddressPermission(binary.BigEndian.Uint16(bz))
+	load := types.AddressPermission(binary.BigEndian.Uint64(bz))
 
 	return load
 }
 
-func (k Keeper) AddressSetPlayerPermissionsByBytes(ctx sdk.Context, permissionRecord []byte, permissions types.AddressPermission) (types.AddressPermission) {
+func (k Keeper) AddressSetPlayerPermissions(ctx sdk.Context, address string, permissions types.AddressPermission) (types.AddressPermission) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressPermissionKey))
 
 	bz := make([]byte, 8)
-	binary.BigEndian.PutUint16(bz, uint16(permissions))
+	binary.BigEndian.PutUint64(bz, uint64(permissions))
 
-	store.Set(permissionRecord, bz)
+	store.Set(types.KeyPrefix(address), bz)
 
 	return permissions
 }
@@ -121,33 +121,27 @@ func (k Keeper) AddressPermissionClearAll(ctx sdk.Context, address string) {
 }
 
 func (k Keeper) AddressPermissionAdd(ctx sdk.Context, address string, flag types.AddressPermission) types.AddressPermission {
-    permissionRecord := types.KeyPrefix(address)
 
-    currentPermission := k.AddressGetPlayerPermissionsByBytes(ctx, permissionRecord)
-    newPermissions := k.AddressSetPlayerPermissionsByBytes(ctx, permissionRecord, currentPermission | flag)
+    currentPermission := k.AddressGetPlayerPermissions(ctx, address)
+    newPermissions := k.AddressSetPlayerPermissions(ctx, address, currentPermission | flag)
 	return newPermissions
 }
 
 func (k Keeper) AddressPermissionRemove(ctx sdk.Context, address string, flag types.AddressPermission) types.AddressPermission {
-    permissionRecord := types.KeyPrefix(address)
 
-    currentPermission := k.AddressGetPlayerPermissionsByBytes(ctx, permissionRecord)
-    newPermissions := k.AddressSetPlayerPermissionsByBytes(ctx, permissionRecord, currentPermission &^ flag)
+    currentPermission := k.AddressGetPlayerPermissions(ctx, address)
+    newPermissions := k.AddressSetPlayerPermissions(ctx, address, currentPermission &^ flag)
 	return newPermissions
 }
 
 func (k Keeper) AddressPermissionHasAll(ctx sdk.Context, address string, flag types.AddressPermission) bool {
-    permissionRecord := types.KeyPrefix(address)
-
-    currentPermission := k.AddressGetPlayerPermissionsByBytes(ctx, permissionRecord)
+    currentPermission := k.AddressGetPlayerPermissions(ctx, address)
 
 	return currentPermission&flag == flag
 }
 
 func (k Keeper) AddressPermissionHasOneOf(ctx sdk.Context, address string, flag types.AddressPermission) bool {
-    permissionRecord := types.KeyPrefix(address)
-
-    currentPermission := k.AddressGetPlayerPermissionsByBytes(ctx, permissionRecord)
+    currentPermission := k.AddressGetPlayerPermissions(ctx, address)
 
 	return currentPermission&flag != 0
 }

@@ -29,7 +29,7 @@ func (k Keeper) ReactorGetPlayerPermissionsByBytes(ctx sdk.Context, permissionRe
 		return types.ReactorPermissionless
 	}
 
-	load := types.ReactorPermission(binary.BigEndian.Uint16(bz))
+	load := types.ReactorPermission(binary.BigEndian.Uint64(bz))
 
 	return load
 }
@@ -38,7 +38,7 @@ func (k Keeper) ReactorSetPlayerPermissionsByBytes(ctx sdk.Context, permissionRe
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorPermissionKey))
 
 	bz := make([]byte, 8)
-	binary.BigEndian.PutUint16(bz, uint16(permissions))
+	binary.BigEndian.PutUint64(bz, uint64(permissions))
 
 	store.Set(permissionRecord, bz)
 

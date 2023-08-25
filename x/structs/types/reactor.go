@@ -53,7 +53,7 @@ func CalculateReactorEnergy(fuel uint64) (energy uint64) {
     return fuel * ReactorFuelToEnergyConversion
 }
 
-type ReactorPermission uint16
+type ReactorPermission uint64
 
 const (
     // 1
