@@ -16,17 +16,25 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
 		return nil, err
 	}
 
-
     var playerAddress sdk.AccAddress
     playerAddress, _ = sdk.AccAddressFromBech32(msg.Creator)
+
     var validatorAddress sdk.ValAddress
     validatorAddress = playerAddress.Bytes()
+
     reactorBytes, _ := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
     reactor, reactorFound := k.GetReactorByBytes(ctx, reactorBytes, true)
 
     if (!reactorFound) {
         return nil, sdkerrors.Wrapf(types.ErrReactorRequired, "Guild creation requires Reactor but none associated with %s", msg.Creator)
     }
+
+    // Currently, no real reason to do permission checks that the player can
+    // add the reactor, since the player account IS the reactor
+        // TODO
+        // Although, this should be changed so that if an account
+        // that includes a validator as an associated address, it's able to perform this step
+
 
     playerId := k.GetPlayerIdFromAddress(ctx, msg.Creator)
     if (playerId == 0) {
