@@ -1,0 +1,25 @@
+syntax = "proto3";
+package structs.structs;
+
+option go_package = "structs/x/structs/types";
+
+message Struct {
+  uint64 id = 1;
+
+  string creator = 2;
+  uint64 owner   = 3;
+
+
+  string status = 4;
+
+  // This will all need to be reworked but let's
+  // do some super basic crap here to get testnet up
+  uint64 type    = 5;
+  string ambit    = 6;
+
+  uint64 planetId = 7;
+  uint64 slot     = 8;
+
+  // No fleet stuff yet
+
+}
