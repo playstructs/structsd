@@ -21,7 +21,7 @@ func (k msgServer) GuildApproveRegister(goCtx context.Context, msg *types.MsgGui
 
     guild, guildFound := k.GetGuild(ctx, msg.GuildId)
     if (!guildFound) {
-        guildIdString := strconv.FormatUint(player.Id, 10)
+        guildIdString := strconv.FormatUint(guild.Id, 10)
         return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrGuildNotFound, "Referenced Guild (%s) not found", guildIdString)
 
     }

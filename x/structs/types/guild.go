@@ -51,21 +51,14 @@ type GuildPermission uint64
 
 const (
     // 1
-	GuildPermissionGrantUpdate GuildPermission = 1 << iota
-    // 2
-	GuildPermissionUpdate
-	// 4
-	GuildPermissionGrantRegisterPlayer
-	// 8
+	GuildPermissionUpdate GuildPermission = 1 << iota
+	// 2
 	GuildPermissionRegisterPlayer
-	// 16
-	GuildPermissionGrantDelete
-	// 32
+	// 4
 	GuildPermissionDelete
 )
 const (
     GuildPermissionless GuildPermission = 0 << iota
 	GuildPermissionAll = GuildPermissionUpdate | GuildPermissionRegisterPlayer | GuildPermissionDelete
-	GuildPermissionAllWithGrant = GuildPermissionGrantUpdate | GuildPermissionUpdate | GuildPermissionGrantRegisterPlayer | GuildPermissionRegisterPlayer | GuildPermissionGrantDelete | GuildPermissionDelete
 )
 

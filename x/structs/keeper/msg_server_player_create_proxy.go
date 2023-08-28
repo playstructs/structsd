@@ -2,8 +2,10 @@ package keeper
 
 import (
 	"context"
+	"strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"structs/x/structs/types"
 )
 
@@ -20,7 +22,14 @@ func (k msgServer) PlayerCreateProxy(goCtx context.Context, msg *types.MsgPlayer
 	guild, guildFound := k.GetGuild(ctx, proxyPlayer.GuildId)
 
     if (!guildFound) {
-        // abort
+        guildIdString := strconv.FormatUint(guild.Id, 10)
+        return &types.MsgPlayerCreateProxyResponse{}, sdkerrors.Wrapf(types.ErrGuildNotFound, "Referenced Guild (%s) not found", guildIdString)
+    }
+
+    // Check to make sure the player has permissions on the guild
+    if (!k.GuildPermissionHasOneOf(ctx, guild.Id, proxyPlayer.Id, types.GuildPermissionRegisterPlayer)) {
+        playerIdString := strconv.FormatUint(proxyPlayer.Id, 10)
+        return &types.MsgPlayerCreateProxyResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%s) has no Player Registration permissions ", playerIdString)
     }
 
 	// look up destination substation
@@ -42,6 +51,9 @@ func (k msgServer) PlayerCreateProxy(goCtx context.Context, msg *types.MsgPlayer
         // Connect Player to Substation
         k.SubstationConnectPlayer(ctx, substation, player)
     }
+
+    // Give this user (aka the guild) the ability to update their substation
+    k.PlayerPermissionAdd(ctx, player.Id, proxyPlayer.Id, types.PlayerPermissionSubstation)
 
 
 	return &types.MsgPlayerCreateProxyResponse{}, nil
