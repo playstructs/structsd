@@ -26,11 +26,29 @@ func (k msgServer) SubstationAllocationCreate(goCtx context.Context, msg *types.
 		Controller: msg.Creator,
 	}
 
-	_, sourceSubstationFound := k.GetSubstation(ctx, msg.SourceId, false)
-	if !sourceSubstationFound {
+	substation, sourceSubstationFound := k.GetSubstation(ctx, msg.SourceId, false)
+	if (!sourceSubstationFound) {
 		sourceId := strconv.FormatUint(msg.SourceId, 10)
 		return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceNotFound, "source (%s) used for allocation not found", allocation.SourceType.String()+"-"+sourceId)
 	}
+
+	player, playerFound := k.GetPlayer(ctx, k.GetPlayerIdFromAddress(ctx, msg.Creator))
+    if (!playerFound) {
+        return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrPlayerNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)
+    }
+
+	// check that the player has reactor permissions
+    if (!k.SubstationPermissionHasOneOf(ctx, substation.Id, player.Id, types.SubstationPermissionAllocate)) {
+        playerIdString := strconv.FormatUint(player.Id, 10)
+        return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationCreate, "Calling player (%s) has no Substation Allocation permissions ", playerIdString)
+    }
+
+    // check that the account has energy management permissions
+    playerPermissions := k.AddressGetPlayerPermissions(ctx, msg.Creator)
+    if (playerPermissions&types.AddressPermissionManageEnergy != 0) {
+        return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
+    }
+
 
 	// Check to see if the Substation has the Power available
 	// Calling SubstationIncrementAllocationLoad will update the Memory store so the change has already been applied if successful

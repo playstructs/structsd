@@ -57,20 +57,13 @@ type ReactorPermission uint64
 
 const (
     // 1
-	ReactorPermissionGrantAllocate ReactorPermission = 1 << iota
-    // 2
-	ReactorPermissionAllocate
-	// 4
-	ReactorPermissionGrantUpdateGuild
-	// 8
+	ReactorPermissionAllocate ReactorPermission = 1 << iota
+	// 2
 	ReactorPermissionUpdateGuild
-	// 16
-	ReactorPermissionGrantUpdateAllocationRules
-	// 32
+	// 4
 	ReactorPermissionUpdateAllocationRules
 )
 const (
     ReactorPermissionless ReactorPermission = 0 << iota
 	ReactorPermissionAll = ReactorPermissionAllocate | ReactorPermissionUpdateGuild | ReactorPermissionUpdateAllocationRules
-	ReactorPermissionAllWithGrant = ReactorPermissionGrantAllocate | ReactorPermissionAllocate | ReactorPermissionGrantUpdateGuild | ReactorPermissionUpdateGuild | ReactorPermissionGrantUpdateAllocationRules | ReactorPermissionUpdateAllocationRules
 )

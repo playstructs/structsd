@@ -137,6 +137,7 @@ func (k Keeper) UpsertPlayer(ctx sdk.Context, playerAddress string ) (player typ
         player.SetCreator(playerAddress)
         playerId = k.AppendPlayer(ctx, player)
         player.SetId(playerId)
+
     } else {
         player, _ = k.GetPlayer(ctx, playerId)
     }

@@ -41,8 +41,19 @@ var (
 	ErrPermissionManageAssets               = sdkerrors.Register(ModuleName, 1603, "Permission error during asset management action")
 	ErrPermissionManagePlayer               = sdkerrors.Register(ModuleName, 1604, "Permission error during player management action")
     ErrPermissionManageGuild                = sdkerrors.Register(ModuleName, 1605, "Permission error during guild management action")
+    ErrPermissionManageEnergy               = sdkerrors.Register(ModuleName, 1606, "Permission error during asset management action")
 
     ErrPermissionGuildRegister              = sdkerrors.Register(ModuleName, 1611, "Guild permission error during player register")
+
+    ErrPermissionReactorAllocationCreate    = sdkerrors.Register(ModuleName, 1621, "Reactor permission error during allocation creation")
+
+    ErrPermissionAllocation                 = sdkerrors.Register(ModuleName, 1630, "Allocation not owned by calling player")
+
+    ErrPermissionSubstationAllocationCreate     = sdkerrors.Register(ModuleName, 1631, "Substation permission error during allocation creation")
+    ErrPermissionSubstationDelete               = sdkerrors.Register(ModuleName, 1632, "Substation permission error during allocation creation")
+    ErrPermissionSubstationAllocationConnect    = sdkerrors.Register(ModuleName, 1633, "Substation permission error during allocation connection")
+    ErrPermissionSubstationAllocationDisconnect = sdkerrors.Register(ModuleName, 1634, "Substation permission error during allocation disconnection")
+
 
 
 )

@@ -54,32 +54,19 @@ type SubstationPermission uint64
 
 const (
     // 1
-	SubstationPermissionGrantConnectPlayer SubstationPermission = 1 << iota
+	SubstationPermissionConnectPlayer SubstationPermission = 1 << iota
     // 2
-	SubstationPermissionConnectPlayer
-    // 4
-    SubstationPermissionGrantDisconnectPlayer
-    // 8
     SubstationPermissionDisconnectPlayer
-    // 16
-	SubstationPermissionGrantConnectAllocation
-	// 32
+    // 4
 	SubstationPermissionConnectAllocation
-	// 64
-	SubstationPermissionGrantDisconnectAllocation
-	// 128
+	// 8
 	SubstationPermissionDisconnectAllocation
-	// 256
-	SubstationPermissionGrantAllocate
-	// 512
+	// 16
 	SubstationPermissionAllocate
-	// 1024
-	SubstationPermissionGrantDelete
-	// 2048
+	// 32
 	SubstationPermissionDelete
 )
 const (
     SubstationPermissionless SubstationPermission = 0 << iota
 	SubstationPermissionAll = SubstationPermissionConnectPlayer | SubstationPermissionDisconnectPlayer | SubstationPermissionConnectAllocation | SubstationPermissionDisconnectAllocation | SubstationPermissionAllocate | SubstationPermissionDelete
-	SubstationPermissionAllWithGrant = SubstationPermissionGrantConnectPlayer | SubstationPermissionConnectPlayer | SubstationPermissionGrantDisconnectPlayer | SubstationPermissionDisconnectPlayer | SubstationPermissionGrantConnectAllocation | SubstationPermissionConnectAllocation | SubstationPermissionGrantDisconnectAllocation | SubstationPermissionDisconnectAllocation | SubstationPermissionGrantAllocate | SubstationPermissionAllocate | SubstationPermissionGrantDelete | SubstationPermissionDelete
 )

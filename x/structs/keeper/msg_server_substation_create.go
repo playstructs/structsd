@@ -4,6 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"structs/x/structs/types"
 )
 
@@ -16,6 +17,13 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
 	}
 
     player := k.UpsertPlayer(ctx, msg.Creator)
+    // check that the account has energy management permissions
+    playerPermissions := k.AddressGetPlayerPermissions(ctx, msg.Creator)
+    if (playerPermissions&types.AddressPermissionManageEnergy != 0) {
+        return &types.MsgSubstationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
+    }
+
+
 
     substation := k.AppendSubstation(ctx, msg.PlayerConnectionAllocation, player)
 
