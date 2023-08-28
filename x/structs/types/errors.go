@@ -53,6 +53,8 @@ var (
     ErrPermissionSubstationDelete               = sdkerrors.Register(ModuleName, 1632, "Substation permission error during allocation creation")
     ErrPermissionSubstationAllocationConnect    = sdkerrors.Register(ModuleName, 1633, "Substation permission error during allocation connection")
     ErrPermissionSubstationAllocationDisconnect = sdkerrors.Register(ModuleName, 1634, "Substation permission error during allocation disconnection")
+    ErrPermissionSubstationPlayerConnect        = sdkerrors.Register(ModuleName, 1635, "Substation permission error during player connection")
+    ErrPermissionSubstationPlayerDisconnect     = sdkerrors.Register(ModuleName, 1636, "Substation permission error during player disconnection")
 
 
 

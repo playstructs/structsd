@@ -99,6 +99,7 @@ const (
 const (
 	PlayerKey      = "Player/value/"
 	PlayerCountKey = "Player/count/"
+	PlayerPermissionKey = "Player/permission/"
 )
 
 const (

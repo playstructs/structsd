@@ -51,17 +51,14 @@ type PlayerPermission uint64
 
 const (
     // 1
-	PlayerPermissionGrantUpdate PlayerPermission = 1 << iota
-    // 2
-	PlayerPermissionUpdate
-	// 4
-	PlayerPermissionGrantDelete
-	// 8
+	PlayerPermissionUpdate PlayerPermission = 1 << iota
+	// 2
 	PlayerPermissionDelete
+	// 4
+	PlayerPermissionSubstation
 )
 const (
     PlayerPermissionless PlayerPermission = 0 << iota
-	PlayerPermissionAll = PlayerPermissionUpdate |  PlayerPermissionDelete
-	PlayerPermissionAllWithGrant = PlayerPermissionGrantUpdate | PlayerPermissionUpdate | PlayerPermissionGrantDelete | PlayerPermissionDelete
+	PlayerPermissionAll = PlayerPermissionUpdate |  PlayerPermissionDelete | PlayerPermissionSubstation
 )
 
