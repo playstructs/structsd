@@ -19,7 +19,7 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
     player := k.UpsertPlayer(ctx, msg.Creator)
     // check that the account has energy management permissions
     playerPermissions := k.AddressGetPlayerPermissions(ctx, msg.Creator)
-    if (playerPermissions&types.AddressPermissionManageEnergy != 0) {
+    if (playerPermissions&types.AddressPermissionManageEnergy == 0) {
         return &types.MsgSubstationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
     }
 

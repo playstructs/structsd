@@ -42,14 +42,6 @@ func (k Keeper) AddressSetRegisterRequest(ctx sdk.Context, player types.Player, 
 
     	store.Set(types.KeyPrefix(address), bz)
 
-
-    /*
-    registrationPlayer, registrationFound := k.AddressGetRegistrationRequest(ctx, address)
-    if (registrationPlayer.Id = player.Id) {
-
-    }
-    */
-
 }
 
 func (k Keeper) AddressApproveRegisterRequest(ctx sdk.Context, player types.Player, address string, permissions types.AddressPermission) {

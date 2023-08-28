@@ -57,5 +57,8 @@ var (
     ErrPermissionSubstationPlayerDisconnect     = sdkerrors.Register(ModuleName, 1636, "Substation permission error during player disconnection")
 
 
+    ErrPlanetNotFound                           = sdkerrors.Register(ModuleName,  1710, "planet specified does not exist")
+    ErrPlanetExploration                        = sdkerrors.Register(ModuleName,  1711, "planet exploration failed")
+
 
 )

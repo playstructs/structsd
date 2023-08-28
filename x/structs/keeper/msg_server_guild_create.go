@@ -26,7 +26,7 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
     reactor, reactorFound := k.GetReactorByBytes(ctx, reactorBytes, true)
 
     if (!reactorFound) {
-        return nil, sdkerrors.Wrapf(types.ErrReactorRequired, "Guild creation requires Reactor but none associated with %s", msg.Creator)
+        return &types.MsgGuildCreateResponse{}, sdkerrors.Wrapf(types.ErrReactorRequired, "Guild creation requires Reactor but none associated with %s", msg.Creator)
     }
 
     // Currently, no real reason to do permission checks that the player can
@@ -40,7 +40,7 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
     if (playerId == 0) {
         // should really never get here as player creation is triggered
         // during reactor initialization
-        return nil, sdkerrors.Wrapf(types.ErrPlayerRequired, "Guild creation requires Player account but none associated with %s", msg.Creator)
+        return &types.MsgGuildCreateResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Guild creation requires Player account but none associated with %s", msg.Creator)
     }
     player, _ := k.GetPlayer(ctx, playerId)
 

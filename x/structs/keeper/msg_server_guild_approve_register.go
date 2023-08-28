@@ -34,7 +34,7 @@ func (k msgServer) GuildApproveRegister(goCtx context.Context, msg *types.MsgGui
 
     playerPermissions := k.AddressGetPlayerPermissions(ctx, msg.Creator)
     // Make sure the address calling this has Associate permissions
-    if (playerPermissions&types.AddressPermissionManageGuild != 0) {
+    if (playerPermissions&types.AddressPermissionManageGuild == 0) {
         // TODO permission error
         return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
     }

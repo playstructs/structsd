@@ -108,6 +108,17 @@ const (
 	AddressRegistrationKey = "Address/registration/"
 )
 
+const (
+	PlanetKey      = "Planet/value/"
+	PlanetCountKey  = "Planet/count/"
+	PlanetRefinementCountKey = "Planet/refinement/"
+
+	// TODO Make these dynamic in the future
+	PlanetStartingOre = 4
+	PlanetStartingSlots = 4
+
+)
+
 /*
  * Additional code needed for ObjectType enumeration that the proto
  * file doesn't seem to generate in keys.pb.go

@@ -27,6 +27,13 @@ func (player *Player) SetGuild(guildId uint64) error {
 	return nil
 }
 
+func (player *Player) SetPlanetId(planetId uint64) error {
+
+	player.PlanetId = planetId
+
+	return nil
+}
+
 
 func (player *Player) SetSubstation(substationId uint64) error {
 

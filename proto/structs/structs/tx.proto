@@ -6,6 +6,7 @@ import "gogoproto/gogo.proto";
 import "google/protobuf/any.proto";
 import "cosmos_proto/cosmos.proto";
 import "structs/structs/keys.proto";
+import "structs/structs/planet.proto";
 
 
 option go_package = "structs/x/structs/types";
@@ -28,6 +29,7 @@ service Msg {
   rpc AddressRegister                (MsgAddressRegister               ) returns (MsgAddressRegisterResponse               );
   rpc AddressApproveRegister         (MsgAddressApproveRegister        ) returns (MsgAddressRegisterResponse               );
   rpc AddressRevoke                  (MsgAddressRevoke                 ) returns (MsgAddressRevokeResponse                 );
+  rpc PlanetExplore                  (MsgPlanetExplore                 ) returns (MsgPlanetExploreResponse                 );
 }
 
 message MsgSubstationCreate {
@@ -158,3 +160,12 @@ message MsgGuildApproveRegister {
 }
 
 message MsgGuildApproveRegisterResponse {}
+
+
+message MsgPlanetExplore {
+  string creator     = 1;
+}
+
+message MsgPlanetExploreResponse {
+  Planet planet = 1 [(gogoproto.nullable) = false];
+}

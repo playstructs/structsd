@@ -9,5 +9,7 @@ message Player {
   uint64 substationId = 3;
 
   string creator = 4;
+
+  uint64 planetId = 5;
   
 }

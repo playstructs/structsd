@@ -40,7 +40,7 @@ func (k msgServer) SubstationPlayerDisconnect(goCtx context.Context, msg *types.
 
     // check that the account has energy management permissions
     playerPermissions := k.AddressGetPlayerPermissions(ctx, msg.Creator)
-    if (playerPermissions&types.AddressPermissionManageEnergy != 0) {
+    if (playerPermissions&types.AddressPermissionManageEnergy == 0) {
         return &types.MsgSubstationPlayerDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
     }
 

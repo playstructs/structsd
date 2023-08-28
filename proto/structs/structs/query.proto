@@ -11,6 +11,7 @@ import "structs/structs/substation.proto";
 import "structs/structs/allocation.proto";
 import "structs/structs/guild.proto";
 import "structs/structs/player.proto";
+import "structs/structs/planet.proto";
 import "structs/structs/infusion.proto";
 import "structs/structs/keys.proto";
 
@@ -85,6 +86,17 @@ service Query {
     option (google.api.http).get = "/structs/infusion";
 
   }
+
+  // Queries a list of Guild items.
+  rpc Planet    (QueryGetPlanetRequest) returns (QueryGetPlanetResponse) {
+    option (google.api.http).get = "/structs/structs/planet/{id}";
+
+  }
+  rpc PlanetAll (QueryAllPlanetRequest) returns (QueryAllPlanetResponse) {
+    option (google.api.http).get = "/structs/structs/planet";
+
+  }
+
 }
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
@@ -203,4 +215,23 @@ message QueryAllInfusionResponse {
   repeated Infusion                             Infusion = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
   repeated uint64                                 status     = 3;
+}
+
+
+
+message QueryGetPlanetRequest {
+  uint64 id = 1;
+}
+
+message QueryGetPlanetResponse {
+  Planet Planet = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllPlanetRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllPlanetResponse {
+  repeated Planet                                  Planet      = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

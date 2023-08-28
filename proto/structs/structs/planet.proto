@@ -1,0 +1,28 @@
+syntax = "proto3";
+package structs.structs;
+
+option go_package = "structs/x/structs/types";
+
+message Planet {
+  uint64 id = 1;
+
+  uint64 maxOre = 2;
+  uint64 currentOre = 3;
+
+  string creator = 4;
+  uint64 owner   = 5;
+
+
+  repeated uint64 space = 6;
+  repeated uint64 sky   = 7;
+  repeated uint64 land  = 8;
+  repeated uint64 water = 9;
+
+  uint64 spaceSlots     = 10;
+  uint64 skySlots       = 11;
+  uint64 landSlots      = 12;
+  uint64 waterSlots     = 13;
+
+  uint64 status = 14;
+
+}
