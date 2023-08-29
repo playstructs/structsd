@@ -11,5 +11,7 @@ message Player {
   string creator = 4;
 
   uint64 planetId = 5;
+
+  uint64 load = 6;
   
 }

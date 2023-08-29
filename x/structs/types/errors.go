@@ -56,9 +56,14 @@ var (
     ErrPermissionSubstationPlayerConnect        = sdkerrors.Register(ModuleName, 1635, "Substation permission error during player connection")
     ErrPermissionSubstationPlayerDisconnect     = sdkerrors.Register(ModuleName, 1636, "Substation permission error during player disconnection")
 
+    ErrPermissionPlayerPlay                     = sdkerrors.Register(ModuleName, 1641, "Player cannot play other players yet (no sudo yo)")
 
     ErrPlanetNotFound                           = sdkerrors.Register(ModuleName,  1710, "planet specified does not exist")
     ErrPlanetExploration                        = sdkerrors.Register(ModuleName,  1711, "planet exploration failed")
+
+    ErrStructNotFound                           = sdkerrors.Register(ModuleName,  1720, "struct specified does not exist")
+    ErrStructBuildInitiate                      = sdkerrors.Register(ModuleName,  1721, "Struct build initialization failed")
+    ErrStructBuildComplete                      = sdkerrors.Register(ModuleName,  1722, "Struct build completion failed")
 
 
 )

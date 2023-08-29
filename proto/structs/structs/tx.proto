@@ -7,6 +7,7 @@ import "google/protobuf/any.proto";
 import "cosmos_proto/cosmos.proto";
 import "structs/structs/keys.proto";
 import "structs/structs/planet.proto";
+import "structs/structs/struct.proto";
 
 
 option go_package = "structs/x/structs/types";
@@ -30,6 +31,8 @@ service Msg {
   rpc AddressApproveRegister         (MsgAddressApproveRegister        ) returns (MsgAddressRegisterResponse               );
   rpc AddressRevoke                  (MsgAddressRevoke                 ) returns (MsgAddressRevokeResponse                 );
   rpc PlanetExplore                  (MsgPlanetExplore                 ) returns (MsgPlanetExploreResponse                 );
+  rpc StructBuildInitiate            (MsgStructBuildInitiate           ) returns (MsgStructBuildInitiateResponse           );
+  rpc StructBuildComplete            (MsgStructBuildComplete           ) returns (MsgStructBuildCompleteResponse           );
 }
 
 message MsgSubstationCreate {
@@ -168,4 +171,33 @@ message MsgPlanetExplore {
 
 message MsgPlanetExploreResponse {
   Planet planet = 1 [(gogoproto.nullable) = false];
+}
+
+
+
+
+message MsgStructBuildInitiate {
+  string creator      = 1;
+
+  string structType   = 2;
+  uint64 planetId     = 3;
+  uint64 slot         = 4;
+
+
+}
+
+message MsgStructBuildInitiateResponse {
+  Struct struct = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgStructBuildComplete {
+  string creator      = 1;
+  uint64 structId     = 2;
+  string proof        = 3;
+  bool   activate     = 4;
+
+}
+
+message MsgStructBuildCompleteResponse {
+  Struct struct = 1 [(gogoproto.nullable) = false];
 }

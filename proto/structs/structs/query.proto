@@ -12,6 +12,7 @@ import "structs/structs/allocation.proto";
 import "structs/structs/guild.proto";
 import "structs/structs/player.proto";
 import "structs/structs/planet.proto";
+import "structs/structs/struct.proto";
 import "structs/structs/infusion.proto";
 import "structs/structs/keys.proto";
 
@@ -87,13 +88,23 @@ service Query {
 
   }
 
-  // Queries a list of Guild items.
+  // Queries a list of Planet items.
   rpc Planet    (QueryGetPlanetRequest) returns (QueryGetPlanetResponse) {
     option (google.api.http).get = "/structs/structs/planet/{id}";
 
   }
   rpc PlanetAll (QueryAllPlanetRequest) returns (QueryAllPlanetResponse) {
     option (google.api.http).get = "/structs/structs/planet";
+
+  }
+
+  // Queries a list of Structs items.
+  rpc Struct    (QueryGetStructRequest) returns (QueryGetStructResponse) {
+    option (google.api.http).get = "/structs/structs/struct/{id}";
+
+  }
+  rpc StructAll (QueryAllStructRequest) returns (QueryAllStructResponse) {
+    option (google.api.http).get = "/structs/structs/struct";
 
   }
 
@@ -233,5 +244,23 @@ message QueryAllPlanetRequest {
 
 message QueryAllPlanetResponse {
   repeated Planet                                  Planet      = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+
+message QueryGetStructRequest {
+  uint64 id = 1;
+}
+
+message QueryGetStructResponse {
+  Struct Struct = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllStructRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllStructResponse {
+  repeated Struct                                  Struct      = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }

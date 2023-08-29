@@ -29,6 +29,8 @@ func (k Keeper) PlayerAll(goCtx context.Context, req *types.QueryAllPlayerReques
 			return err
 		}
 
+        player.Load = k.PlayerGetLoad(ctx, player.Id)
+
 		players = append(players, player)
 		return nil
 	})

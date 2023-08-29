@@ -28,6 +28,16 @@ func (planet *Planet) SetStatus(status uint64) error {
 	return nil
 }
 
+
+func (planet *Planet) SetLandSlot(structure Struct) error {
+
+    planet.Land[structure.Slot] = structure.Id
+
+	return nil
+}
+
+
+
 func CreateEmptyPlanet() Planet {
 
     defaultEmptySlots := []uint64{0, 0, 0, 0}

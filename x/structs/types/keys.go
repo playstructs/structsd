@@ -100,6 +100,9 @@ const (
 	PlayerKey      = "Player/value/"
 	PlayerCountKey = "Player/count/"
 	PlayerPermissionKey = "Player/permission/"
+	PlayerLoadKey = "Player/load/"
+
+	PlayerPassiveDraw = 10
 )
 
 const (
@@ -117,6 +120,11 @@ const (
 	PlanetStartingOre = 4
 	PlanetStartingSlots = 4
 
+)
+
+const (
+	StructKey      = "Struct/value/"
+	StructCountKey  = "Struct/count/"
 )
 
 /*

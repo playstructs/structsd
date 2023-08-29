@@ -5,6 +5,8 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"strconv"
 	"structs/x/structs/types"
 
 )
@@ -89,6 +91,8 @@ func (k Keeper) GetPlayer(ctx sdk.Context, id uint64) (val types.Player, found b
 		return val, false
 	}
 	k.cdc.MustUnmarshal(b, &val)
+
+	val.Load = k.PlayerGetLoad(ctx, val.Id)
 	return val, true
 }
 
@@ -108,6 +112,9 @@ func (k Keeper) GetAllPlayer(ctx sdk.Context) (list []types.Player) {
 	for ; iterator.Valid(); iterator.Next() {
 		var val types.Player
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
+
+		val.Load = k.PlayerGetLoad(ctx, val.Id)
+
 		list = append(list, val)
 	}
 
@@ -143,4 +150,101 @@ func (k Keeper) UpsertPlayer(ctx sdk.Context, playerAddress string ) (player typ
     }
 
     return player
+}
+
+
+
+
+
+
+
+
+// the current total load of the player structs
+// Go to memory first, but then fall back to rebuilding from storage
+func (k Keeper) PlayerGetLoad(ctx sdk.Context, id uint64) (load uint64) {
+	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.PlayerLoadKey))
+
+	bz := store.Get(GetPlayerIDBytes(id))
+
+	// Substation Capacity Not in Memory: no element
+	if bz == nil {
+		load = k.PlayerRebuildLoad(ctx, id)
+		k.PlayerSetLoad(ctx, id, load)
+
+	} else {
+		load = binary.BigEndian.Uint64(bz)
+	}
+
+	return load
+}
+
+
+// Sets the in-memory representation of the aggregate load for the player
+func (k Keeper) PlayerSetLoad(ctx sdk.Context, id uint64, amount uint64) {
+	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.PlayerLoadKey))
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, amount)
+
+	store.Set(GetPlayerIDBytes(id), bz)
+
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: id, ObjectType: types.ObjectType_player})
+}
+
+
+// Rebuilds the current load by iterating through all player objects
+func (k Keeper) PlayerRebuildLoad(ctx sdk.Context, playerId uint64) (load uint64) {
+
+    // Add the static player draw
+	load = types.PlayerPassiveDraw
+
+    // Add all the active Structs
+	structures := k.GetAllStruct(ctx)
+    for _, structure := range structures {
+        if (structure.Owner == playerId) {
+            if (structure.Status == "ACTIVE") {
+                load += structure.PassiveDraw
+            }
+        }
+    }
+
+	return
+}
+
+
+func (k Keeper) PlayerDecrementLoad(ctx sdk.Context, id uint64, amount uint64) (newLoad uint64, err error) {
+	currentLoad := k.PlayerGetLoad(ctx, id)
+
+	if amount > currentLoad {
+		// this really shouldn't happen. Throw an error I guess but yeesh, this is a problem.
+	} else {
+		newLoad = currentLoad - amount
+	}
+
+	k.PlayerSetLoad(ctx, id, newLoad)
+
+	return newLoad, err
+}
+
+
+func (k Keeper) PlayerIncrementLoad(ctx sdk.Context, player types.Player, amount uint64) (uint64, error) {
+
+	currentLoad := k.PlayerGetLoad(ctx, player.Id)
+	newLoad := currentLoad + amount
+
+    substation, substationFound := k.GetSubstation(ctx, player.SubstationId, false)
+    if (!substationFound) {
+    	substationId := strconv.FormatUint(substation.Id, 10)
+    	return 0, sdkerrors.Wrapf(types.ErrSubstationNotFound, "Player substation (%s) no longer exists (that's bad)", "substation-"+substationId)
+    }
+
+
+	if newLoad > substation.PlayerConnectionAllocation {
+		substationId := strconv.FormatUint(substation.Id, 10)
+		return 0, sdkerrors.Wrapf(types.ErrSubstationAvailableCapacityInsufficient, "source (%s) used for allocation insufficient", "substation-"+substationId)
+	}
+
+	k.PlayerSetLoad(ctx, player.Id, newLoad)
+
+	return newLoad, nil
 }
