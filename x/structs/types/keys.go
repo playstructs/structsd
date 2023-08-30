@@ -30,10 +30,10 @@ const (
 	InitialReactorOwnerEnergy = 100
 
     // Starting value for Reactor Owner Initialization
-	InitialSubstationOwnerEnergy = 40
+	InitialSubstationOwnerEnergy = 140
 
 	// Starting allocation for Reactor
-    InitialReactorAllocation = 100
+    InitialReactorAllocation = 1000
 
     DifficultyBuildAgeRange  = 50  // 36000 // 1 days
     DifficultyActionAgeRange = 100 // 252000 // 7 days

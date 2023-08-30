@@ -80,7 +80,7 @@ func (k Keeper) GetPlanet(ctx sdk.Context, id uint64) (val types.Planet, found b
 	}
 	k.cdc.MustUnmarshal(b, &val)
 
-	val.OreRemaining = k.GetPlanetRefinementCount(ctx, val.Id) - val.MaxOre
+	val.OreRemaining = val.MaxOre - k.GetPlanetRefinementCount(ctx, val.Id)
     val.OreStored    = k.GetPlanetOreCount(ctx, val.Id)
 
 	return val, true
@@ -103,7 +103,7 @@ func (k Keeper) GetAllPlanet(ctx sdk.Context) (list []types.Planet) {
 		var val types.Planet
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
-		val.OreRemaining = k.GetPlanetRefinementCount(ctx, val.Id) - val.MaxOre
+		val.OreRemaining = val.MaxOre - k.GetPlanetRefinementCount(ctx, val.Id)
         val.OreStored    = k.GetPlanetOreCount(ctx, val.Id)
 
 		list = append(list, val)

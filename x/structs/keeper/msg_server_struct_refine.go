@@ -75,7 +75,7 @@ func (k msgServer) StructRefine(goCtx context.Context, msg *types.MsgStructRefin
 
     currentAge := uint64(ctx.BlockHeight()) - structure.ActiveRefiningSystemBlock
     if (!types.HashBuildAndCheckActionDifficulty(hashInput, msg.Proof, currentAge)) {
-       return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Work failure for input (%s) when trying to refine on Struct %d", hashInput, structure.Id)
+       return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Work failure for input (%s) when trying to refine on Struct %d", hashInput, structure.Id)
     }
 
     // decrement the balance of ore for the planet

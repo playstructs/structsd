@@ -5,34 +5,26 @@ import (
 )
 
 func (planet *Planet) SetCreator(creator string) error {
-
 	planet.Creator = creator
-
 	return nil
 }
 
 
 
 func (planet *Planet) SetOwner(playerId uint64) error {
-
 	planet.Owner = playerId
-
 	return nil
 }
 
 
 func (planet *Planet) SetStatus(status uint64) error {
-
 	planet.Status = status
-
 	return nil
 }
 
 
 func (planet *Planet) SetLandSlot(structure Struct) error {
-
     planet.Land[structure.Slot] = structure.Id
-
 	return nil
 }
 
