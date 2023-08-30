@@ -34,6 +34,7 @@ service Msg {
   rpc StructBuildInitiate            (MsgStructBuildInitiate           ) returns (MsgStructBuildInitiateResponse           );
   rpc StructBuildComplete            (MsgStructBuildComplete           ) returns (MsgStructBuildCompleteResponse           );
   rpc StructMineActivate             (MsgStructMineActivate            ) returns (MsgStructMineActivateResponse            );
+  rpc StructMineDeactivate           (MsgStructMineDeactivate          ) returns (MsgStructMineDeactivateResponse          );
 
 }
 
@@ -211,5 +212,14 @@ message MsgStructMineActivate {
 }
 
 message MsgStructMineActivateResponse {
+  Struct struct = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgStructMineDeactivate {
+  string creator      = 1;
+  uint64 structId     = 2;
+}
+
+message MsgStructMineDeactivateResponse {
   Struct struct = 1 [(gogoproto.nullable) = false];
 }

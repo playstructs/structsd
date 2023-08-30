@@ -27,6 +27,8 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgPlanetExplore{}, "structs/PlanetExplore", nil)
 	cdc.RegisterConcrete(&MsgStructBuildInitiate{}, "structs/StructBuildInitiate", nil)
 	cdc.RegisterConcrete(&MsgStructBuildComplete{}, "structs/StructBuildComplete", nil)
+	cdc.RegisterConcrete(&MsgStructMineActivate{}, "structs/StructMineActivate", nil)
+    cdc.RegisterConcrete(&MsgStructMineDeactivate{}, "structs/StructMineDeactivate", nil)
 	// this line is used by starport scaffolding # 2
 }
 
@@ -88,6 +90,13 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil),
         &MsgStructBuildComplete{},
     )
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgStructMineActivate{},
+    )
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgStructMineDeactivate{},
+    )
+
 	// this line is used by starport scaffolding # 3
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
