@@ -92,5 +92,8 @@ func (k msgServer) StructRefine(goCtx context.Context, msg *types.MsgStructRefin
     playerAcc, _ := sdk.AccAddressFromBech32(player.PrimaryAddress)
     k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, playerAcc, newAlpha)
 
+    structure.SetRefiningSystemActivationBlock(uint64(ctx.BlockHeight()))
+    k.SetStruct(ctx, structure)
+
 	return &types.MsgStructRefineResponse{Struct: structure}, nil
 }

@@ -82,5 +82,9 @@ func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (
     k.IncreasePlanetRefinementCount(ctx, structure.PlanetId)
     k.IncreasePlanetOreCount(ctx, structure.PlanetId)
 
+    // Reset difficulty block
+    structure.SetMiningSystemActivationBlock(uint64(ctx.BlockHeight()))
+    k.SetStruct(ctx, structure)
+
 	return &types.MsgStructMineResponse{Struct: structure}, nil
 }
