@@ -27,10 +27,10 @@ const (
 	KeeperStartValue = 1
 
 	// Starting value for Reactor Owner Initialization
-	InitialReactorOwnerEnergy = 20
+	InitialReactorOwnerEnergy = 100
 
     // Starting value for Reactor Owner Initialization
-	InitialSubstationOwnerEnergy = 20
+	InitialSubstationOwnerEnergy = 40
 
 	// Starting allocation for Reactor
     InitialReactorAllocation = 100

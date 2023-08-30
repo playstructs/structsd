@@ -66,6 +66,17 @@ func (structure *Struct) SetBuildStartBlock(block uint64) error {
     return nil
 }
 
+func (structure *Struct) SetMiningSystemActivationBlock(block uint64) error {
+    structure.ActiveMiningSystemBlock = block
+
+    return nil
+}
+
+func (structure *Struct) SetRefiningSystemActivationBlock(block uint64) error {
+    structure.ActiveRefiningSystemBlock = block
+
+    return nil
+}
 
 func CreateBaseStruct(structType string) Struct {
 
@@ -146,8 +157,10 @@ func CreateBaseStruct(structType string) Struct {
         ActiveRefiningSystemDraw: newActiveRefiningSystemDraw,
 
         MiningSystemStatus: "INACTIVE",
-        RefiningSystemStatus: "INACTIVE",
+        ActiveMiningSystemBlock: 0,
 
+        RefiningSystemStatus: "INACTIVE",
+        ActiveRefiningSystemBlock: 0,
 
 	}
 }

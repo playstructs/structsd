@@ -33,6 +33,8 @@ service Msg {
   rpc PlanetExplore                  (MsgPlanetExplore                 ) returns (MsgPlanetExploreResponse                 );
   rpc StructBuildInitiate            (MsgStructBuildInitiate           ) returns (MsgStructBuildInitiateResponse           );
   rpc StructBuildComplete            (MsgStructBuildComplete           ) returns (MsgStructBuildCompleteResponse           );
+  rpc StructMineActivate             (MsgStructMineActivate            ) returns (MsgStructMineActivateResponse            );
+
 }
 
 message MsgSubstationCreate {
@@ -199,5 +201,15 @@ message MsgStructBuildComplete {
 }
 
 message MsgStructBuildCompleteResponse {
+  Struct struct = 1 [(gogoproto.nullable) = false];
+}
+
+
+message MsgStructMineActivate {
+  string creator      = 1;
+  uint64 structId     = 2;
+}
+
+message MsgStructMineActivateResponse {
   Struct struct = 1 [(gogoproto.nullable) = false];
 }
