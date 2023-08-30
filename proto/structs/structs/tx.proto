@@ -35,6 +35,9 @@ service Msg {
   rpc StructBuildComplete            (MsgStructBuildComplete           ) returns (MsgStructBuildCompleteResponse           );
   rpc StructMineActivate             (MsgStructMineActivate            ) returns (MsgStructMineActivateResponse            );
   rpc StructMineDeactivate           (MsgStructMineDeactivate          ) returns (MsgStructMineDeactivateResponse          );
+  rpc StructMine                     (MsgStructMine                    ) returns (MsgStructMineResponse                    );
+  rpc StructRefineActivate           (MsgStructRefineActivate          ) returns (MsgStructRefineActivateResponse          );
+  rpc StructRefineDeactivate         (MsgStructRefineDeactivate        ) returns (MsgStructRefineDeactivateResponse        );
 
 }
 
@@ -197,7 +200,8 @@ message MsgStructBuildComplete {
   string creator      = 1;
   uint64 structId     = 2;
   string proof        = 3;
-  bool   activate     = 4;
+  string nonce        = 4;
+  bool   activate     = 5;
 
 }
 
@@ -221,5 +225,34 @@ message MsgStructMineDeactivate {
 }
 
 message MsgStructMineDeactivateResponse {
+  Struct struct = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgStructMine {
+  string creator      = 1;
+  uint64 structId     = 2;
+  string proof        = 3;
+  string nonce        = 4;
+}
+
+message MsgStructMineResponse {
+  Struct struct = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgStructRefineActivate {
+  string creator      = 1;
+  uint64 structId     = 2;
+}
+
+message MsgStructRefineActivateResponse {
+  Struct struct = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgStructRefineDeactivate {
+  string creator      = 1;
+  uint64 structId     = 2;
+}
+
+message MsgStructRefineDeactivateResponse {
   Struct struct = 1 [(gogoproto.nullable) = false];
 }

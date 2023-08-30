@@ -8,7 +8,6 @@ import (
 	"structs/x/structs/types"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"strconv"
 
 )
 
@@ -215,8 +214,7 @@ func (k Keeper) SubstationIncrementAllocationLoad(ctx sdk.Context, id uint64, am
 	substationEnergy := k.SubstationGetEnergy(ctx, id)
 
 	if newTotalLoad > substationEnergy {
-		substationId := strconv.FormatUint(id, 10)
-		return 0, sdkerrors.Wrapf(types.ErrSubstationAvailableCapacityInsufficient, "source (%s) used for allocation insufficient", "substation-"+substationId)
+		return 0, sdkerrors.Wrapf(types.ErrSubstationAvailableCapacityInsufficient, "source (substation-%d) used for allocation insufficient", id)
 	}
 
 	k.SubstationSetAllocationLoad(ctx, id, newAllocationLoad)

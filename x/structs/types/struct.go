@@ -164,3 +164,4 @@ func CreateBaseStruct(structType string) Struct {
 
 	}
 }
+

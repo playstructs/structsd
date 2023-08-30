@@ -4,7 +4,6 @@ import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"strconv"
 	"structs/x/structs/types"
 )
 
@@ -18,14 +17,12 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
 
 	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId)
 	if !allocationFound {
-		allocationId := strconv.FormatUint(msg.AllocationId, 10)
-		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationNotFound, "allocation (%s) not found", allocationId)
+		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationNotFound, "allocation (%d) not found", msg.AllocationId)
 	}
 
 	substation, substationFound := k.GetSubstation(ctx, msg.DestinationSubstationId, false)
 	if !substationFound {
-		substationId := strconv.FormatUint(allocation.DestinationId, 10)
-		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrSubstationNotFound, "destination substation (%s) not found", substationId)
+		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrSubstationNotFound, "destination substation (%d) not found", allocation.DestinationId)
 	}
 
 
@@ -46,8 +43,7 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
 
 	// check that the player has reactor permissions
     if (!k.SubstationPermissionHasOneOf(ctx, substation.Id, player.Id, types.SubstationPermissionConnectAllocation)) {
-        playerIdString := strconv.FormatUint(player.Id, 10)
-        return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Calling player (%s) has no Substation Connect Allocation permissions ", playerIdString)
+        return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Calling player (%d) has no Substation Connect Allocation permissions ", player.Id)
     }
 
     // check that the account has energy management permissions
@@ -58,8 +54,7 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
 
 
 	if substation.Id == allocation.DestinationId {
-		substationId := strconv.FormatUint(allocation.DestinationId, 10)
-		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationConnectionChangeImpossible, "destination substation (%s) cannot change to same destination", substationId)
+		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationConnectionChangeImpossible, "destination substation (%d) cannot change to same destination", allocation.DestinationId)
 	}
 
     k.SubstationConnectAllocation(ctx, substation, allocation)

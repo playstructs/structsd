@@ -7,7 +7,6 @@ import (
 	"structs/x/structs/types"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"strconv"
 )
 
 // GetReactorCount get the total number of reactor
@@ -218,8 +217,7 @@ func (k Keeper) ReactorIncrementLoad(ctx sdk.Context, id uint64, amount uint64) 
 	reactorEnergy := k.ReactorGetEnergy(ctx, id)
 
 	if new > reactorEnergy {
-		reactorId := strconv.FormatUint(id, 10)
-		return 0, sdkerrors.Wrapf(types.ErrReactorAvailableCapacityInsufficient, "source (%s) used for allocation not sufficient", "reactor-"+reactorId)
+		return 0, sdkerrors.Wrapf(types.ErrReactorAvailableCapacityInsufficient, "source (reactor-%d) used for allocation not sufficient", id)
 	}
 
 	bz := make([]byte, 8)

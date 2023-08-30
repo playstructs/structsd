@@ -2,9 +2,6 @@ package keeper
 
 import (
 	"context"
-    "strconv"
-
-    //"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -33,32 +30,27 @@ func (k msgServer) StructMineDeactivate(goCtx context.Context, msg *types.MsgStr
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
-        structIdString := strconv.FormatUint(msg.StructId, 10)
-        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%s) not found", structIdString)
+        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%d) not found", msg.StructId)
     }
 
     if (structure.Type != "Mining Rig") {
-        structIdString := strconv.FormatUint(msg.StructId, 10)
-        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineDeactivate, "This struct (%s) has no mining systems", structIdString)
+        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineDeactivate, "This struct (%d) has no mining systems", msg.StructId)
     }
 
     if (structure.Status != "ACTIVE") {
-        structIdString := strconv.FormatUint(msg.StructId, 10)
-        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineDeactivate, "This struct (%s) is not online", structIdString)
+        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineDeactivate, "This struct (%d) is not online", msg.StructId)
     }
 
 
     if (structure.MiningSystemStatus == "INACTIVE") {
-        structIdString := strconv.FormatUint(msg.StructId, 10)
-        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineDeactivate, "This Mining System for struct (%s) is already inactive", structIdString)
+        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineDeactivate, "This Mining System for struct (%d) is already inactive", msg.StructId)
     }
 
     /*
      * Until we let players give out Play permissions, this can't happened
      */
     if (player.Id != structure.Owner) {
-       structIdString := strconv.FormatUint(structure.Owner, 10)
-       return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo structs, no permission for action on Struct (%s)", structIdString)
+       return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you (%d) can't sudo structs, no permission for action on Struct (%d)", structure.Owner, msg.StructId)
     }
 
     _, _ = k.PlayerDecrementLoad(ctx, player.Id, structure.ActiveMiningSystemDraw)

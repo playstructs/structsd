@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-    "strconv"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"structs/x/structs/types"
@@ -18,22 +17,19 @@ func (k msgServer) SubstationPlayerConnect(goCtx context.Context, msg *types.Msg
 
 	targetPlayer, targetPlayerFound := k.GetPlayer(ctx, msg.PlayerId)
     if (!targetPlayerFound) {
-        playerIdString := strconv.FormatUint(msg.PlayerId, 10)
-        return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrPlayerNotFound, "Target player (%s) could be be found", playerIdString)
+        return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrPlayerNotFound, "Target player (%d) could be be found", player.Id)
     }
 
     // check that the calling player has substation permissions
     if (!k.SubstationPermissionHasOneOf(ctx, msg.SubstationId, player.Id, types.SubstationPermissionConnectPlayer)) {
-        playerIdString := strconv.FormatUint(player.Id, 10)
-        return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%s) has no Substation Connect Player permissions ", playerIdString)
+        return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%d) has no Substation Connect Player permissions ", player.Id)
     }
 
 
     if (player.Id != msg.PlayerId) {
         // check that the calling player has target player permissions
         if (!k.PlayerPermissionHasOneOf(ctx, msg.PlayerId, player.Id, types.PlayerPermissionSubstation)) {
-            playerIdString := strconv.FormatUint(player.Id, 10)
-            return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%s) has no Player Substation permissions ", playerIdString)
+            return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%d) has no Player Substation permissions ", player.Id)
         }
     }
 
@@ -45,8 +41,7 @@ func (k msgServer) SubstationPlayerConnect(goCtx context.Context, msg *types.Msg
 
     substation, sourceSubstationFound := k.GetSubstation(ctx, msg.SubstationId, false)
     if (!sourceSubstationFound) {
-        substationId := strconv.FormatUint(msg.SubstationId, 10)
-        return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceNotFound, "substation (%s) used for player connection not found", substationId)
+        return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceNotFound, "substation (%d) used for player connection not found", msg.SubstationId)
     }
 
 	// connect to new substation

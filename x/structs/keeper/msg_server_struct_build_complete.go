@@ -49,6 +49,14 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 
     /* More garbage clown code rushed to make the testnet more interesting */
     // Check the Proof
+    structIdString                  := strconv.FormatUint(structure.Id, 10)
+    buildStartBlockString           := strconv.FormatUint(structure.BuildStartBlock , 10)
+    hashInput                       := structIdString + "BUILD" + buildStartBlockString + "NONCE" + msg.Nonce
+
+    currentAge := uint64(ctx.BlockHeight()) - structure.BuildStartBlock
+    if (!types.HashBuildAndCheckBuildDifficulty(hashInput, msg.Proof, currentAge)) {
+       return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Work failure for input (%s) when trying to build Struct %d", hashInput, structure.Id)
+    }
 
     // Set the appropriate status
     if (msg.Activate) {
@@ -59,8 +67,6 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
         } else {
             structure.SetStatus("INACTIVE")
         }
-
-
     } else {
         structure.SetStatus("INACTIVE")
     }

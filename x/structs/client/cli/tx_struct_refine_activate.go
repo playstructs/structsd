@@ -16,11 +16,11 @@ import (
 var _ = strconv.Itoa(0)
 
 
-func CmdStructBuildComplete() *cobra.Command {
+func CmdStructRefineActivate() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "struct-build-complete [struct ID] [proof] [nonce] [activate]",
-		Short: "Complete the build process for a new Struct",
-		Args:  cobra.ExactArgs(4),
+		Use:   "struct-refine-activate [Struct ID]",
+		Short: "Activate the refining process for a Struct",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
 			argStructId, err := cast.ToUint64E(args[0])
@@ -28,23 +28,14 @@ func CmdStructBuildComplete() *cobra.Command {
 				return err
 			}
 
-            argProof := args[1]
-
-            argNonce := args[2]
-
-            argActivate := cast.ToBool(args[3])
-
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgStructBuildComplete(
+			msg := types.NewMsgStructRefineActivate(
 				clientCtx.GetFromAddress().String(),
                 argStructId,
-                argProof,
-                argNonce,
-                argActivate,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

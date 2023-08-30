@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-    "strconv"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
@@ -26,8 +25,7 @@ func (k msgServer) SubstationDelete(goCtx context.Context, msg *types.MsgSubstat
 
 	// check that the player has reactor permissions
     if (!k.SubstationPermissionHasOneOf(ctx, msg.SubstationId, player.Id, types.SubstationPermissionDelete)) {
-        playerIdString := strconv.FormatUint(player.Id, 10)
-        return &types.MsgSubstationDeleteResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationDelete, "Calling player (%s) has no Substation Delete permissions ", playerIdString)
+        return &types.MsgSubstationDeleteResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationDelete, "Calling player (%d) has no Substation Delete permissions ", player.Id)
     }
 
 

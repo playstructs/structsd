@@ -4,7 +4,6 @@ import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"strconv"
 	"structs/x/structs/types"
 )
 
@@ -28,8 +27,7 @@ func (k msgServer) SubstationAllocationCreate(goCtx context.Context, msg *types.
 
 	substation, sourceSubstationFound := k.GetSubstation(ctx, msg.SourceId, false)
 	if (!sourceSubstationFound) {
-		sourceId := strconv.FormatUint(msg.SourceId, 10)
-		return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceNotFound, "source (%s) used for allocation not found", allocation.SourceType.String()+"-"+sourceId)
+		return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceNotFound, "source (%s - %d) used for allocation not found", allocation.SourceType.String(), msg.SourceId)
 	}
 
 	player, playerFound := k.GetPlayer(ctx, k.GetPlayerIdFromAddress(ctx, msg.Creator))
@@ -39,8 +37,7 @@ func (k msgServer) SubstationAllocationCreate(goCtx context.Context, msg *types.
 
 	// check that the player has reactor permissions
     if (!k.SubstationPermissionHasOneOf(ctx, substation.Id, player.Id, types.SubstationPermissionAllocate)) {
-        playerIdString := strconv.FormatUint(player.Id, 10)
-        return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationCreate, "Calling player (%s) has no Substation Allocation permissions ", playerIdString)
+        return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationCreate, "Calling player (%d) has no Substation Allocation permissions ", player.Id)
     }
 
     // check that the account has energy management permissions

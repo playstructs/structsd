@@ -21,52 +21,50 @@ func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (
 
     playerId := k.GetPlayerIdFromAddress(ctx, msg.Creator)
     if (playerId == 0) {
-        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build initialization requires Player account but none associated with %s", msg.Creator)
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build initialization requires Player account but none associated with %s", msg.Creator)
     }
     player, _ := k.GetPlayer(ctx, playerId)
 
 
     playerPermissions := k.AddressGetPlayerPermissions(ctx, msg.Creator)
     if ((playerPermissions&types.AddressPermissionPlay) == 0) {
-        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
     }
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
-        structIdString := strconv.FormatUint(msg.StructId, 10)
-        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%s) not found", structIdString)
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%d) not found", msg.StructId)
     }
 
     if (structure.Type != "Mining Rig") {
-        structIdString := strconv.FormatUint(msg.StructId, 10)
-        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "This struct (%s) has no mining systems", structIdString)
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "This struct (%d) has no mining systems", msg.StructId)
     }
 
     if (structure.Status != "ACTIVE") {
-        structIdString := strconv.FormatUint(msg.StructId, 10)
-        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "This struct (%s) is not online", structIdString)
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "This struct (%d) is not online", msg.StructId)
     }
 
 
     if (structure.MiningSystemStatus != "ACTIVE") {
-        structIdString := strconv.FormatUint(msg.StructId, 10)
-        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "This Mining System for struct (%s) is inactive", structIdString)
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "This Mining System for struct (%d) is inactive", msg.StructId)
     }
 
     /*
      * Until we let players give out Play permissions, this can't happened
      */
     if (player.Id != structure.Owner) {
-       structIdString := strconv.FormatUint(structure.Owner, 10)
-       return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo structs, no permission for action on Struct (%s)", structIdString)
+       return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo structs, no permission for action on Struct (%d)", structure.Owner)
     }
 
 
+    structIdString := strconv.FormatUint(structure.Owner, 10)
+    activeMiningSystemBlockString := strconv.FormatUint(structure.ActiveMiningSystemBlock , 10)
+    hashInput := structIdString + "MINE" + activeMiningSystemBlockString + "NONCE" + msg.Nonce
 
-    // Check proof
-        // something about block times
-        // yada yada yada, extract some some ore
-
+    currentAge := uint64(ctx.BlockHeight()) - structure.ActiveMiningSystemBlock
+    if (!types.HashBuildAndCheckActionDifficulty(hashInput, msg.Proof, currentAge)) {
+       return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Work failure for input (%s) when trying to mine on Struct %d", hashInput, structure.Id)
+    }
 
     // increment the balance of ore for the planet
     //

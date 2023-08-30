@@ -4,7 +4,6 @@ import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"strconv"
 	"structs/x/structs/types"
 )
 
@@ -23,16 +22,14 @@ func (k msgServer) SubstationAllocationDisconnect(goCtx context.Context, msg *ty
     }
 
 	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId)
-	if !allocationFound {
-		allocationId := strconv.FormatUint(msg.AllocationId, 10)
-		return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationNotFound, "allocation (%s) not found", allocationId)
+	if (!allocationFound) {
+		return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationNotFound, "allocation (%d) not found", msg.AllocationId)
 	}
 
 
 	// check that the player has reactor permissions
     if (!k.SubstationPermissionHasOneOf(ctx, allocation.DestinationId, player.Id, types.SubstationPermissionDisconnectAllocation)) {
-        playerIdString := strconv.FormatUint(player.Id, 10)
-        return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationDisconnect, "Calling player (%s) has no Substation Allocation Disconnect permissions ", playerIdString)
+        return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationDisconnect, "Calling player (%d) has no Substation Allocation Disconnect permissions ", player.Id)
     }
 
     // check that the account has energy management permissions

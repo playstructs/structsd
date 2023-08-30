@@ -6,7 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"strconv"
 	"structs/x/structs/types"
 
 )
@@ -234,14 +233,12 @@ func (k Keeper) PlayerIncrementLoad(ctx sdk.Context, player types.Player, amount
 
     substation, substationFound := k.GetSubstation(ctx, player.SubstationId, false)
     if (!substationFound) {
-    	substationId := strconv.FormatUint(substation.Id, 10)
-    	return 0, sdkerrors.Wrapf(types.ErrSubstationNotFound, "Player substation (%s) no longer exists (that's bad)", "substation-"+substationId)
+    	return 0, sdkerrors.Wrapf(types.ErrSubstationNotFound, "Player substation (substation-%d) no longer exists (that's bad)", substation.Id)
     }
 
 
 	if newLoad > substation.PlayerConnectionAllocation {
-		substationId := strconv.FormatUint(substation.Id, 10)
-		return 0, sdkerrors.Wrapf(types.ErrSubstationAvailableCapacityInsufficient, "source (%s) used for allocation insufficient", "substation-"+substationId)
+		return 0, sdkerrors.Wrapf(types.ErrSubstationAvailableCapacityInsufficient, "source (substation-%d) used for allocation insufficient", substation.Id)
 	}
 
 	k.PlayerSetLoad(ctx, player.Id, newLoad)
