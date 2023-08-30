@@ -69,5 +69,6 @@ var (
     ErrStructMine                               = sdkerrors.Register(ModuleName,  1725, "Struct mining action failed")
     ErrStructRefineActivate                     = sdkerrors.Register(ModuleName,  1726, "Struct refining system activation failed")
     ErrStructRefineDeactivate                   = sdkerrors.Register(ModuleName,  1727, "Struct refining system deactivation failed")
+    ErrStructRefine                             = sdkerrors.Register(ModuleName,  1728, "Struct refining action failed")
 
 )

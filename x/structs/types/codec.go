@@ -29,6 +29,11 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgStructBuildComplete{}, "structs/StructBuildComplete", nil)
 	cdc.RegisterConcrete(&MsgStructMineActivate{}, "structs/StructMineActivate", nil)
     cdc.RegisterConcrete(&MsgStructMineDeactivate{}, "structs/StructMineDeactivate", nil)
+    cdc.RegisterConcrete(&MsgStructMine{}, "structs/StructMine", nil)
+	cdc.RegisterConcrete(&MsgStructRefineActivate{}, "structs/StructRefineActivate", nil)
+    cdc.RegisterConcrete(&MsgStructRefineDeactivate{}, "structs/StructRefineDeactivate", nil)
+    cdc.RegisterConcrete(&MsgStructRefine{}, "structs/StructRefine", nil)
+
 	// this line is used by starport scaffolding # 2
 }
 
@@ -96,7 +101,18 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil),
         &MsgStructMineDeactivate{},
     )
-
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgStructMine{},
+    )
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgStructRefineActivate{},
+    )
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgStructRefineDeactivate{},
+    )
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgStructRefine{},
+    )
 	// this line is used by starport scaffolding # 3
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

@@ -38,6 +38,7 @@ service Msg {
   rpc StructMine                     (MsgStructMine                    ) returns (MsgStructMineResponse                    );
   rpc StructRefineActivate           (MsgStructRefineActivate          ) returns (MsgStructRefineActivateResponse          );
   rpc StructRefineDeactivate         (MsgStructRefineDeactivate        ) returns (MsgStructRefineDeactivateResponse        );
+  rpc StructRefine                   (MsgStructRefine                  ) returns (MsgStructRefineResponse                  );
 
 }
 
@@ -254,5 +255,16 @@ message MsgStructRefineDeactivate {
 }
 
 message MsgStructRefineDeactivateResponse {
+  Struct struct = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgStructRefine {
+  string creator      = 1;
+  uint64 structId     = 2;
+  string proof        = 3;
+  string nonce        = 4;
+}
+
+message MsgStructRefineResponse {
   Struct struct = 1 [(gogoproto.nullable) = false];
 }
