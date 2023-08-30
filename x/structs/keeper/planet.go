@@ -208,3 +208,12 @@ func (k Keeper) IncreasePlanetOreCount(ctx sdk.Context, planetId uint64) (uint64
     return current
 }
 
+// TODO convert this into a function that errors out if already 0
+func (k Keeper) DecreasePlanetOreCount(ctx sdk.Context, planetId uint64) (uint64) {
+    current := k.GetPlanetOreCount(ctx, planetId)
+    current = current - 1
+
+    k.SetPlanetOreCount(ctx, planetId, current)
+    return current
+}
+

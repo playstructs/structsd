@@ -69,16 +69,16 @@ func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (
         return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Planet (%d) is empty, nothing to mine", structure.PlanetId)
     }
 
-    structIdString := strconv.FormatUint(structure.Owner, 10)
-    activeMiningSystemBlockString := strconv.FormatUint(structure.ActiveMiningSystemBlock , 10)
-    hashInput := structIdString + "MINE" + activeMiningSystemBlockString + "NONCE" + msg.Nonce
+    structIdString                  := strconv.FormatUint(structure.Id, 10)
+    activeMiningSystemBlockString   := strconv.FormatUint(structure.ActiveMiningSystemBlock , 10)
+    hashInput                       := structIdString + "MINE" + activeMiningSystemBlockString + "NONCE" + msg.Nonce
 
     currentAge := uint64(ctx.BlockHeight()) - structure.ActiveMiningSystemBlock
     if (!types.HashBuildAndCheckActionDifficulty(hashInput, msg.Proof, currentAge)) {
        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Work failure for input (%s) when trying to mine on Struct %d", hashInput, structure.Id)
     }
 
-
+    // Got this far, let's reward the player with some Ore
     k.IncreasePlanetRefinementCount(ctx, structure.PlanetId)
     k.IncreasePlanetOreCount(ctx, structure.PlanetId)
 

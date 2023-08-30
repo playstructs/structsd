@@ -51,6 +51,7 @@ func (k Keeper) AppendStruct(
 	structure.Id = count
 	structure.SetCreator(player.Creator)
 	structure.SetOwner(player.Id)
+	structure.SetPlanetId(planet.Id)
 	structure.SetSlot(slot)
 	structure.SetBuildStartBlock(uint64(ctx.BlockHeight()))
 

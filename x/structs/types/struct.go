@@ -12,52 +12,45 @@ import (
  */
 
 func (structure *Struct) SetCreator(creator string) error {
-
 	structure.Creator = creator
-
 	return nil
 }
 
 
-
 func (structure *Struct) SetOwner(playerId uint64) error {
-
 	structure.Owner = playerId
-
 	return nil
 }
 
 
 func (structure *Struct) SetStatus(status string) error {
-
 	structure.Status = status
-
 	return nil
 }
 
 
 func (structure *Struct) SetMiningSystemStatus(status string) error {
-
 	structure.MiningSystemStatus = status
-
 	return nil
 }
 
 
 func (structure *Struct) SetRefiningSystemStatus(status string) error {
-
 	structure.RefiningSystemStatus = status
-
 	return nil
 }
 
 
 func (structure *Struct) SetSlot(slot uint64) error {
-
 	structure.Slot = slot
-
 	return nil
 }
+
+func (structure *Struct) SetPlanetId(planetId uint64) error {
+	structure.PlanetId = planetId
+	return nil
+}
+
 
 func (structure *Struct) SetBuildStartBlock(block uint64) error {
 

@@ -48782,6 +48782,8 @@ paths:
                       format: uint64
                     creator:
                       type: string
+                    primaryAddress:
+                      type: string
                     planetId:
                       type: string
                       format: uint64
@@ -49083,6 +49085,8 @@ paths:
                     type: string
                     format: uint64
                   creator:
+                    type: string
+                  primaryAddress:
                     type: string
                   planetId:
                     type: string
@@ -79572,6 +79576,8 @@ definitions:
         format: uint64
       creator:
         type: string
+      primaryAddress:
+        type: string
       planetId:
         type: string
         format: uint64
@@ -79880,6 +79886,8 @@ definitions:
               type: string
               format: uint64
             creator:
+              type: string
+            primaryAddress:
               type: string
             planetId:
               type: string
@@ -80317,6 +80325,8 @@ definitions:
             type: string
             format: uint64
           creator:
+            type: string
+          primaryAddress:
             type: string
           planetId:
             type: string

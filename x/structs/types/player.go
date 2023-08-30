@@ -15,6 +15,7 @@ func (player *Player) SetId(id uint64) error {
 func (player *Player) SetCreator(creator string) error {
 
 	player.Creator = creator
+	player.PrimaryAddress = creator
 
 	return nil
 }

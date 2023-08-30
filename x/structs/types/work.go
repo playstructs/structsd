@@ -35,7 +35,7 @@ func HashBuildAndCheckActionDifficulty(input string, proof string, age uint64) b
 
     // Either the string isn't all 0's and can't
     // be converted, or it's a number greater than zero
-    return (err != nil || i > 0)
+    return ((err == nil) && (i == 0))
 }
 
 
@@ -63,11 +63,11 @@ func HashBuildAndCheckBuildDifficulty(input string, proof string, age uint64) bo
         return false
     }
 
-    i, err := strconv.ParseUint(hash[:CalculateActionDifficulty(float64(age))], 10, 64)
+    i, err := strconv.ParseUint(hash[:CalculateBuildDifficulty(float64(age))], 10, 64)
 
     // Either the string isn't all 0's and can't
     // be converted, or it's a number greater than zero
-    return (err != nil || i > 0)
+    return ((err == nil) && (i == 0))
 }
 
 

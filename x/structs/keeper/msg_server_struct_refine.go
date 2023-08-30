@@ -56,8 +56,20 @@ func (k msgServer) StructRefine(goCtx context.Context, msg *types.MsgStructRefin
        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo structs, no permission for action on Struct (%d)", structure.Owner)
     }
 
+    planet, planetFound := k.GetPlanet(ctx, structure.PlanetId)
+    if (!planetFound) {
+        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%d) was not found, which is actually a pretty big problem. Please tell an adult", structure.PlanetId)
+    }
 
-    structIdString := strconv.FormatUint(structure.Owner, 10)
+    if (planet.Status != 0) {
+        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Planet (%d) is already complete. Move on bud, no work to be done here", structure.PlanetId)
+    }
+
+    if (k.GetPlanetOreCount(ctx, planet.Id) == 0) {
+        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Planet (%d) is empty, nothing to refine", structure.PlanetId)
+    }
+
+    structIdString := strconv.FormatUint(structure.Id, 10)
     activeRefiningSystemBlockString := strconv.FormatUint(structure.ActiveRefiningSystemBlock , 10)
     hashInput := structIdString + "REFINE" + activeRefiningSystemBlockString + "NONCE" + msg.Nonce
 
@@ -67,10 +79,18 @@ func (k msgServer) StructRefine(goCtx context.Context, msg *types.MsgStructRefin
     }
 
     // decrement the balance of ore for the planet
-    // increment alpha balance
+    k.DecreasePlanetOreCount(ctx, planet.Id)
 
 
+    // Can't seem to add to a player account directly anymore with AddCoins
+    // So instead we Mint the new alpha to the module and transfer into the account
 
+    // Mint the new Alpha to the module
+    newAlpha, _ := sdk.ParseCoinsNormalized("1alpha")
+    k.bankKeeper.MintCoins(ctx, types.ModuleName, newAlpha)
+    // Transfer the refined Alpha to the player
+    playerAcc, _ := sdk.AccAddressFromBech32(player.PrimaryAddress)
+    k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, playerAcc, newAlpha)
 
 	return &types.MsgStructRefineResponse{Struct: structure}, nil
 }

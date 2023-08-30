@@ -35,8 +35,8 @@ const (
 	// Starting allocation for Reactor
     InitialReactorAllocation = 100
 
-    DifficultyBuildAgeRange = 36000 // 1 days
-    DifficultyActionAgeRange = 252000 // 7 days
+    DifficultyBuildAgeRange  = 50  // 36000 // 1 days
+    DifficultyActionAgeRange = 100 // 252000 // 7 days
 
 
 )
