@@ -35,6 +35,23 @@ func (structure *Struct) SetStatus(status string) error {
 	return nil
 }
 
+
+func (structure *Struct) SetMiningSystemStatus(status string) error {
+
+	structure.MiningSystemStatus = status
+
+	return nil
+}
+
+
+func (structure *Struct) SetRefiningSystemStatus(status string) error {
+
+	structure.RefiningSystemStatus = status
+
+	return nil
+}
+
+
 func (structure *Struct) SetSlot(slot uint64) error {
 
 	structure.Slot = slot
@@ -52,15 +69,17 @@ func (structure *Struct) SetBuildStartBlock(block uint64) error {
 
 func CreateBaseStruct(structType string) Struct {
 
-    var newCategory string
-    var newType string
-    var newAmbit string
+    var newCategory         string
+    var newType             string
+    var newAmbit            string
 
-    var newMiningSystem uint64
-    var newRefiningSystem uint64
-    var newPowerSystem uint64
+    var newMiningSystem     uint64
+    var newRefiningSystem   uint64
+    var newPowerSystem      uint64
 
-    var newPassiveDraw uint64
+    var newPassiveDraw              uint64
+    var newActiveMiningSystemDraw   uint64
+    var newActiveRefiningSystemDraw uint64
 
     switch structType {
     	case "Mining Rig":
@@ -72,7 +91,9 @@ func CreateBaseStruct(structType string) Struct {
             newRefiningSystem = 0;
             newPowerSystem    = 0;
 
-            newPassiveDraw    = 10;
+            newPassiveDraw              = 10;
+            newActiveMiningSystemDraw   = 20;
+            newActiveRefiningSystemDraw = 0;
 
 	    case "Refinery":
 	        newCategory = "Planetary Struct"
@@ -84,6 +105,8 @@ func CreateBaseStruct(structType string) Struct {
             newPowerSystem    = 0;
 
             newPassiveDraw    = 20;
+            newActiveMiningSystemDraw   = 0;
+            newActiveRefiningSystemDraw = 30;
 
 	    case "Small Generator":
 	        newCategory = "Planetary Struct"
@@ -95,6 +118,8 @@ func CreateBaseStruct(structType string) Struct {
             newPowerSystem    = 1;
 
             newPassiveDraw    = 5;
+            newActiveMiningSystemDraw   = 0;
+            newActiveRefiningSystemDraw = 0;
 
 	    default:
     }
@@ -117,6 +142,12 @@ func CreateBaseStruct(structType string) Struct {
         PowerSystem: newPowerSystem,
 
         PassiveDraw: newPassiveDraw,
+        ActiveMiningSystemDraw: newActiveMiningSystemDraw,
+        ActiveRefiningSystemDraw: newActiveRefiningSystemDraw,
+
+        MiningSystemStatus: "INACTIVE",
+        RefiningSystemStatus: "INACTIVE",
+
 
 	}
 }

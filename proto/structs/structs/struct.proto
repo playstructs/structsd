@@ -35,4 +35,12 @@ message Struct {
   uint64 buildStartBlock = 15;
 
   uint64 passiveDraw      = 16;
+  uint64 activeMiningSystemDraw   = 17;
+  uint64 activeRefiningSystemDraw = 18;
+
+  string miningSystemStatus       = 19;
+  string refiningSystemStatus     = 20;
+
+
+
 }

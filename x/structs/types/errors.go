@@ -64,6 +64,7 @@ var (
     ErrStructNotFound                           = sdkerrors.Register(ModuleName,  1720, "struct specified does not exist")
     ErrStructBuildInitiate                      = sdkerrors.Register(ModuleName,  1721, "Struct build initialization failed")
     ErrStructBuildComplete                      = sdkerrors.Register(ModuleName,  1722, "Struct build completion failed")
+    ErrStructMineInitiate                       = sdkerrors.Register(ModuleName,  1723, "Struct mining initialization failed")
 
 
 )

@@ -49339,6 +49339,16 @@ paths:
                     passiveDraw:
                       type: string
                       format: uint64
+                    activeMiningSystemDraw:
+                      type: string
+                      format: uint64
+                    activeRefiningSystemDraw:
+                      type: string
+                      format: uint64
+                    miningSystemStatus:
+                      type: string
+                    refiningSystemStatus:
+                      type: string
                   title: |-
                     This will all need to be reworked but let's
                     do some super basic crap here to get testnet up
@@ -49675,6 +49685,16 @@ paths:
                   passiveDraw:
                     type: string
                     format: uint64
+                  activeMiningSystemDraw:
+                    type: string
+                    format: uint64
+                  activeRefiningSystemDraw:
+                    type: string
+                    format: uint64
+                  miningSystemStatus:
+                    type: string
+                  refiningSystemStatus:
+                    type: string
                 title: |-
                   This will all need to be reworked but let's
                   do some super basic crap here to get testnet up
@@ -78913,6 +78933,16 @@ definitions:
           passiveDraw:
             type: string
             format: uint64
+          activeMiningSystemDraw:
+            type: string
+            format: uint64
+          activeRefiningSystemDraw:
+            type: string
+            format: uint64
+          miningSystemStatus:
+            type: string
+          refiningSystemStatus:
+            type: string
         title: |-
           This will all need to be reworked but let's
           do some super basic crap here to get testnet up
@@ -78970,6 +79000,16 @@ definitions:
           passiveDraw:
             type: string
             format: uint64
+          activeMiningSystemDraw:
+            type: string
+            format: uint64
+          activeRefiningSystemDraw:
+            type: string
+            format: uint64
+          miningSystemStatus:
+            type: string
+          refiningSystemStatus:
+            type: string
         title: |-
           This will all need to be reworked but let's
           do some super basic crap here to get testnet up
@@ -79523,6 +79563,16 @@ definitions:
             passiveDraw:
               type: string
               format: uint64
+            activeMiningSystemDraw:
+              type: string
+              format: uint64
+            activeRefiningSystemDraw:
+              type: string
+              format: uint64
+            miningSystemStatus:
+              type: string
+            refiningSystemStatus:
+              type: string
           title: |-
             This will all need to be reworked but let's
             do some super basic crap here to get testnet up
@@ -79885,6 +79935,16 @@ definitions:
           passiveDraw:
             type: string
             format: uint64
+          activeMiningSystemDraw:
+            type: string
+            format: uint64
+          activeRefiningSystemDraw:
+            type: string
+            format: uint64
+          miningSystemStatus:
+            type: string
+          refiningSystemStatus:
+            type: string
         title: |-
           This will all need to be reworked but let's
           do some super basic crap here to get testnet up
@@ -80012,6 +80072,16 @@ definitions:
       passiveDraw:
         type: string
         format: uint64
+      activeMiningSystemDraw:
+        type: string
+        format: uint64
+      activeRefiningSystemDraw:
+        type: string
+        format: uint64
+      miningSystemStatus:
+        type: string
+      refiningSystemStatus:
+        type: string
     title: |-
       This will all need to be reworked but let's
       do some super basic crap here to get testnet up
