@@ -56,6 +56,18 @@ func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (
        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo structs, no permission for action on Struct (%d)", structure.Owner)
     }
 
+    planet, planetFound := k.GetPlanet(ctx, structure.PlanetId)
+    if (!planetFound) {
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%d) was not found, which is actually a pretty big problem. Please tell an adult", structure.PlanetId)
+    }
+
+    if (planet.Status != 0) {
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Planet (%d) is already complete. Move on bud, no work to be done here", structure.PlanetId)
+    }
+
+    if (planet.OreRemaining == 0) {
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Planet (%d) is empty, nothing to mine", structure.PlanetId)
+    }
 
     structIdString := strconv.FormatUint(structure.Owner, 10)
     activeMiningSystemBlockString := strconv.FormatUint(structure.ActiveMiningSystemBlock , 10)
@@ -66,10 +78,9 @@ func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (
        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Work failure for input (%s) when trying to mine on Struct %d", hashInput, structure.Id)
     }
 
-    // increment the balance of ore for the planet
-    //
 
-
+    k.IncreasePlanetRefinementCount(ctx, structure.PlanetId)
+    k.IncreasePlanetOreCount(ctx, structure.PlanetId)
 
 	return &types.MsgStructMineResponse{Struct: structure}, nil
 }

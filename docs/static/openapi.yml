@@ -48181,7 +48181,10 @@ paths:
                     maxOre:
                       type: string
                       format: uint64
-                    currentOre:
+                    OreRemaining:
+                      type: string
+                      format: uint64
+                    OreStored:
                       type: string
                       format: uint64
                     creator:
@@ -48515,7 +48518,10 @@ paths:
                   maxOre:
                     type: string
                     format: uint64
-                  currentOre:
+                  OreRemaining:
+                    type: string
+                    format: uint64
+                  OreStored:
                     type: string
                     format: uint64
                   creator:
@@ -78844,7 +78850,10 @@ definitions:
           maxOre:
             type: string
             format: uint64
-          currentOre:
+          OreRemaining:
+            type: string
+            format: uint64
+          OreStored:
             type: string
             format: uint64
           creator:
@@ -79402,6 +79411,79 @@ definitions:
         title: |-
           This will all need to be reworked but let's
           do some super basic crap here to get testnet up
+  structs.structs.MsgStructRefineResponse:
+    type: object
+    properties:
+      struct:
+        type: object
+        properties:
+          id:
+            type: string
+            format: uint64
+          creator:
+            type: string
+          owner:
+            type: string
+            format: uint64
+          status:
+            type: string
+          maxHealth:
+            type: string
+            format: uint64
+          health:
+            type: string
+            format: uint64
+          category:
+            type: string
+            title: Planet or Fleet
+          type:
+            type: string
+            title: What it is
+          ambit:
+            type: string
+            title: Where it is
+          planetId:
+            type: string
+            format: uint64
+            title: No fleet stuff yet
+          slot:
+            type: string
+            format: uint64
+          miningSystem:
+            type: string
+            format: uint64
+            title: Struct Features
+          refiningSystem:
+            type: string
+            format: uint64
+          powerSystem:
+            type: string
+            format: uint64
+          buildStartBlock:
+            type: string
+            format: uint64
+          passiveDraw:
+            type: string
+            format: uint64
+          activeMiningSystemDraw:
+            type: string
+            format: uint64
+          activeMiningSystemBlock:
+            type: string
+            format: uint64
+          activeRefiningSystemDraw:
+            type: string
+            format: uint64
+          activeRefiningSystemBlock:
+            type: string
+            format: uint64
+          miningSystemStatus:
+            type: string
+          refiningSystemStatus:
+            type: string
+        title: |-
+          This will all need to be reworked but let's
+          do some super basic crap here to get testnet up
   structs.structs.MsgSubstationAllocationConnectResponse:
     type: object
   structs.structs.MsgSubstationAllocationDisconnectResponse:
@@ -79430,7 +79512,10 @@ definitions:
       maxOre:
         type: string
         format: uint64
-      currentOre:
+      OreRemaining:
+        type: string
+        format: uint64
+      OreStored:
         type: string
         format: uint64
       creator:
@@ -79705,7 +79790,10 @@ definitions:
             maxOre:
               type: string
               format: uint64
-            currentOre:
+            OreRemaining:
+              type: string
+              format: uint64
+            OreStored:
               type: string
               format: uint64
             creator:
@@ -80167,7 +80255,10 @@ definitions:
           maxOre:
             type: string
             format: uint64
-          currentOre:
+          OreRemaining:
+            type: string
+            format: uint64
+          OreStored:
             type: string
             format: uint64
           creator:

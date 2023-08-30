@@ -2,10 +2,6 @@ package keeper
 
 import (
 	"context"
-    "strconv"
-
-    //"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"structs/x/structs/types"
@@ -36,13 +32,11 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
         // Check to see if the planet can be completed
         currentPlanet, currentPlanetFound := k.GetPlanet(ctx, player.PlanetId)
         if (!currentPlanetFound) {
-            planetIdString := strconv.FormatUint(player.PlanetId, 10)
-            return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%s) was not found which in this case is extremely bad. Something horrible has happened", planetIdString)
+            return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%d) was not found which in this case is extremely bad. Something horrible has happened", player.PlanetId)
         }
 
         if (!k.PlanetComplete(ctx, currentPlanet)) {
-             planetIdString := strconv.FormatUint(player.PlanetId, 10)
-             return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrPlanetExploration, "New Planet cannot be explored while current planet (%s) has Ore available for mining", planetIdString)
+             return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrPlanetExploration, "New Planet cannot be explored while current planet (%d) has Ore available for mining", player.PlanetId)
         }
     }
 

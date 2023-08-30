@@ -2,10 +2,6 @@ package keeper
 
 import (
 	"context"
-    "strconv"
-
-    //"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"structs/x/structs/types"
@@ -33,39 +29,33 @@ func (k msgServer) StructMineActivate(goCtx context.Context, msg *types.MsgStruc
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
-        structIdString := strconv.FormatUint(msg.StructId, 10)
-        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%s) not found", structIdString)
+        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%d) not found", msg.StructId)
     }
 
     if (structure.Type != "Mining Rig") {
-        structIdString := strconv.FormatUint(msg.StructId, 10)
-        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineActivate, "This struct (%s) has no mining systems", structIdString)
+        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineActivate, "This struct (%d) has no mining systems", msg.StructId)
     }
 
     if (structure.Status != "ACTIVE") {
-        structIdString := strconv.FormatUint(msg.StructId, 10)
-        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineActivate, "This struct (%s) is not online", structIdString)
+        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineActivate, "This struct (%d) is not online", msg.StructId)
     }
 
 
     if (structure.MiningSystemStatus != "INACTIVE") {
-        structIdString := strconv.FormatUint(msg.StructId, 10)
-        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineActivate, "This Mining System for struct (%s) is already active", structIdString)
+        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineActivate, "This Mining System for struct (%d) is already active", msg.StructId)
     }
 
     /*
      * Until we let players give out Play permissions, this can't happened
      */
     if (player.Id != structure.Owner) {
-       structIdString := strconv.FormatUint(structure.Owner, 10)
-       return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo structs, no permission for action on Struct (%s)", structIdString)
+       return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo structs, no permission for action on Struct (%d)", structure.Id)
     }
 
     _, err = k.PlayerIncrementLoad(ctx, player, structure.ActiveMiningSystemDraw)
 
     if (err != nil) {
-        structIdString := strconv.FormatUint(msg.StructId, 10)
-        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineActivate, "Not enough power to bring Mining System online for Struct (%s)", structIdString)
+        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineActivate, "Not enough power to bring Mining System online for Struct (%s)", msg.StructId)
     }
 
     structure.SetMiningSystemStatus("ACTIVE")

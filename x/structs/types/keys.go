@@ -116,9 +116,10 @@ const (
 )
 
 const (
-	PlanetKey      = "Planet/value/"
-	PlanetCountKey  = "Planet/count/"
+	PlanetKey                = "Planet/value/"
+	PlanetCountKey           = "Planet/count/"
 	PlanetRefinementCountKey = "Planet/refinement/"
+	PlanetOreCountKey        = "Planet/ore/"
 
 	// TODO Make these dynamic in the future
 	PlanetStartingOre = 4

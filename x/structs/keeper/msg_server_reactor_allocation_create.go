@@ -4,7 +4,6 @@ import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"strconv"
 	"structs/x/structs/types"
 )
 
@@ -33,14 +32,12 @@ func (k msgServer) ReactorAllocationCreate(goCtx context.Context, msg *types.Msg
 
 	reactor, sourceReactorFound := k.GetReactor(ctx, msg.SourceId, false)
 	if !sourceReactorFound {
-		sourceId := strconv.FormatUint(msg.SourceId, 10)
-		return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceNotFound, "source (%s) used for allocation not found", allocation.SourceType.String()+"-"+sourceId)
+		return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceNotFound, "source (%s-%d) used for allocation not found", allocation.SourceType.String(), msg.SourceId)
 	}
 
 	// check that the player has reactor permissions
     if (!k.ReactorPermissionHasOneOf(ctx, reactor.Id, player.Id, types.ReactorPermissionAllocate)) {
-        playerIdString := strconv.FormatUint(player.Id, 10)
-        return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionReactorAllocationCreate, "Calling player (%s) has no Reactor Allocation permissions ", playerIdString)
+        return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionReactorAllocationCreate, "Calling player (%d) has no Reactor Allocation permissions ", player.Id)
     }
 
     // check that the account has energy management permissions

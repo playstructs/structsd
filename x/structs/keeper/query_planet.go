@@ -29,7 +29,8 @@ func (k Keeper) PlanetAll(goCtx context.Context, req *types.QueryAllPlanetReques
 			return err
 		}
 
-        planet.CurrentOre = k.GetPlanetRefinementCount(ctx, planet.Id)
+        planet.OreRemaining = k.GetPlanetRefinementCount(ctx, planet.Id) - planet.MaxOre
+        planet.OreStored    = k.GetPlanetOreCount(ctx, planet.Id)
 
 		planets = append(planets, planet)
 		return nil

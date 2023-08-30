@@ -2,8 +2,6 @@ package keeper
 
 import (
 	"context"
-	"strconv"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"structs/x/structs/types"
@@ -21,15 +19,12 @@ func (k msgServer) GuildApproveRegister(goCtx context.Context, msg *types.MsgGui
 
     guild, guildFound := k.GetGuild(ctx, msg.GuildId)
     if (!guildFound) {
-        guildIdString := strconv.FormatUint(guild.Id, 10)
-        return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrGuildNotFound, "Referenced Guild (%s) not found", guildIdString)
-
+        return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrGuildNotFound, "Referenced Guild (%d) not found", guild.Id)
     }
 
     // Check to make sure the player has permissions on the guild
     if (!k.GuildPermissionHasOneOf(ctx, guild.Id, player.Id, types.GuildPermissionRegisterPlayer)) {
-        playerIdString := strconv.FormatUint(player.Id, 10)
-        return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%s) has no Player Registration permissions ", playerIdString)
+        return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%d) has no Player Registration permissions ", player.Id)
     }
 
     playerPermissions := k.AddressGetPlayerPermissions(ctx, msg.Creator)

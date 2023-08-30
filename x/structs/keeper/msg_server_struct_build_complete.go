@@ -33,8 +33,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
-        structIdString := strconv.FormatUint(msg.StructId, 10)
-        return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%s) not found", structIdString)
+        return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%d) not found", msg.StructId)
     }
 
 
@@ -42,8 +41,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
      * Until we let players give out Play permissions, this can't happened
      */
     if (player.Id != structure.Owner) {
-       structIdString := strconv.FormatUint(structure.Owner, 10)
-       return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo build structs for others, no permission to complete (%s)", structIdString)
+       return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo build structs for others, no permission to complete (%s)", structure.Id)
     }
 
 

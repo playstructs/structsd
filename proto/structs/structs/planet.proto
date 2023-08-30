@@ -7,22 +7,23 @@ message Planet {
   uint64 id = 1;
 
   uint64 maxOre = 2;
-  uint64 currentOre = 3;
+  uint64 OreRemaining = 3;
+  uint64 OreStored = 4;
 
-  string creator = 4;
-  uint64 owner   = 5;
+  string creator = 5;
+  uint64 owner   = 6;
 
 
-  repeated uint64 space = 6;
-  repeated uint64 sky   = 7;
-  repeated uint64 land  = 8;
-  repeated uint64 water = 9;
+  repeated uint64 space = 7;
+  repeated uint64 sky   = 8;
+  repeated uint64 land  = 9;
+  repeated uint64 water = 10;
 
-  uint64 spaceSlots     = 10;
-  uint64 skySlots       = 11;
-  uint64 landSlots      = 12;
-  uint64 waterSlots     = 13;
+  uint64 spaceSlots     = 11;
+  uint64 skySlots       = 12;
+  uint64 landSlots      = 13;
+  uint64 waterSlots     = 14;
 
-  uint64 status = 14;
+  uint64 status = 15;
 
 }

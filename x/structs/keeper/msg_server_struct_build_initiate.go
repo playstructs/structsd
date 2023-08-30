@@ -2,10 +2,6 @@ package keeper
 
 import (
 	"context"
-    "strconv"
-
-    //"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"structs/x/structs/types"
@@ -36,26 +32,22 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
      * Until we let players give out Play permissions, this can't happened
      */
     if (player.PlanetId != msg.PlanetId) {
-        planetIdString := strconv.FormatUint(player.PlanetId, 10)
-        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo build structs for others, you should be building at %s", planetIdString)
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo build structs for others, you should be building at %d", player.PlanetId)
     }
 
     planet, planetFound := k.GetPlanet(ctx, msg.PlanetId)
     if (!planetFound) {
-        planetIdString := strconv.FormatUint(msg.PlanetId, 10)
-        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%s) was not found. Building a Struct in a void might be tough", planetIdString)
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%d) was ot found. Building a Struct in a void might be tough", msg.PlanetId)
     }
 
 
     /* More garbage clown code rushed to make the testnet more interesting */
     if (msg.Slot >= planet.LandSlots) {
-        planetIdString := strconv.FormatUint(msg.PlanetId, 10)
-        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet specified doesn't have that slot available to build on", planetIdString)
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet (%d) specified doesn't have that slot available to build on", msg.PlanetId)
     }
 
     if (planet.Land[msg.Slot] > 0) {
-        planetIdString := strconv.FormatUint(msg.PlanetId, 10)
-        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet specified already has a struct on that slot", planetIdString)
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet (%d) specified already has a struct on that slot", msg.PlanetId)
     }
 
 
