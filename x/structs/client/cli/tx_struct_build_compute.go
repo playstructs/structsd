@@ -24,17 +24,12 @@ var _ = strconv.Itoa(0)
 
 func CmdStructBuildCompute() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "struct-build-compute [struct ID] [height estimate]",
+		Use:   "struct-build-compute [struct ID]",
 		Short: "Do the work to finish a Struct build",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
 			argStructId, err := cast.ToUint64E(args[0])
-			if err != nil {
-				return err
-			}
-
-			argHeightEst, err := cast.ToUint64E(args[1])
 			if err != nil {
 				return err
 			}
@@ -72,7 +67,9 @@ func CmdStructBuildCompute() *cobra.Command {
                 return nil
             }
 
-            currentBlock := argHeightEst
+
+            currentBlockResponse, _ := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+            currentBlock := currentBlockResponse.BlockHeight
             fmt.Printf("Build process activated on %d, current block is %d \n", performingStructure.BuildStartBlock, currentBlock)
             currentAge := currentBlock - performingStructure.BuildStartBlock
             currentDifficulty := types.CalculateActionDifficulty(float64(currentAge))
@@ -83,6 +80,7 @@ func CmdStructBuildCompute() *cobra.Command {
             buildStartBlockString           := strconv.FormatUint(performingStructure.BuildStartBlock , 10)
             fmt.Println("Starting Building...")
 
+            var newDifficulty int
 			var i int = 0
 			for  {
 				if i > 0  {      // the condition stops matching
@@ -92,24 +90,25 @@ func CmdStructBuildCompute() *cobra.Command {
 COMPUTE:
 				i = i + 1
 
-				// dumb progress bar
-				if (i % 3) > 0 {
-					fmt.Print("\b")
-				} else {
-					fmt.Print("..")
-				}
+                if (i % 20000) > 0 {
+                    currentBlockResponse, _ = queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+                    currentBlock = currentBlockResponse.BlockHeight
+                    currentAge = currentBlock - performingStructure.BuildStartBlock
+                    newDifficulty = types.CalculateActionDifficulty(float64(currentAge))
 
+                    if currentDifficulty != newDifficulty {
+                        currentDifficulty = newDifficulty
+                        fmt.Printf("Difficulty Change: %d \n", currentDifficulty)
+                    }
+
+                }
 				newHash := sha256.New()
-
-				/* hashInput                       := structIdString + "MINE" + activeMiningSystemBlockString + "NONCE" + msg.Nonce */
 
                 newInput := structIdString + "BUILD" + buildStartBlockString + "NONCE" + strconv.Itoa(i)
 				newHash.Write([]byte(newInput))
 				newHashOutput := hex.EncodeToString(newHash.Sum(nil))
 
-
 				if (!types.HashBuildAndCheckBuildDifficulty(newInput, newHashOutput, currentAge)) { goto COMPUTE }
-
 
 				fmt.Println("")
 				fmt.Println("Building Complete!")

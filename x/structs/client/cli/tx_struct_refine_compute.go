@@ -24,20 +24,15 @@ var _ = strconv.Itoa(0)
 
 func CmdStructRefineCompute() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "struct-refine-compute [struct ID] [Height Estimate]",
+		Use:   "struct-refine-compute [struct ID]",
 		Short: "Do the work to convert Alpha Ore into Alpha Matter",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
 			argStructId, err := cast.ToUint64E(args[0])
 			if err != nil {
 				return err
 			}
-
-            argHeightEst, err := cast.ToUint64E(args[1])
-            if err != nil {
-                return err
-            }
 
 			var argProof string
 			var argNonce string
@@ -72,9 +67,10 @@ func CmdStructRefineCompute() *cobra.Command {
                 return nil
             }
 
-            currentBlock := argHeightEst
+            currentBlockResponse, _ := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+            currentBlock := currentBlockResponse.BlockHeight
             fmt.Printf("Refining process activated on %d, current block is %d \n", performingStructure.ActiveRefiningSystemBlock, currentBlock)
-            currentAge := currentBlock - performingStructure.ActiveMiningSystemBlock
+            currentAge := currentBlock - performingStructure.ActiveRefiningSystemBlock
             currentDifficulty := types.CalculateActionDifficulty(float64(currentAge))
             fmt.Printf("Refining difficult is %d \n", currentDifficulty)
 
@@ -83,6 +79,7 @@ func CmdStructRefineCompute() *cobra.Command {
             activeRefiningSystemBlockString := strconv.FormatUint(performingStructure.ActiveRefiningSystemBlock , 10)
             fmt.Println("Starting Refining...")
 
+            var newDifficulty int
 			var i int = 0
 			for  {
 				if i > 0  {      // the condition stops matching
@@ -92,25 +89,29 @@ func CmdStructRefineCompute() *cobra.Command {
 COMPUTE:
 				i = i + 1
 
-				// dumb progress bar
-				if (i % 3) > 0 {
-					fmt.Print("\b")
-				} else {
-					fmt.Print("..")
-				}
+                if (i % 20000) > 0 {
+                    fmt.Print("\b")
+                    currentBlockResponse, _ = queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+                    currentBlock = currentBlockResponse.BlockHeight
+                    currentAge = currentBlock - performingStructure.ActiveRefiningSystemBlock
+                    newDifficulty = types.CalculateActionDifficulty(float64(currentAge))
 
+                    if currentDifficulty != newDifficulty {
+                        currentDifficulty = newDifficulty
+                        fmt.Printf("Difficulty Change: %d \n", currentDifficulty)
+                    }
+
+                }
 				newHash := sha256.New()
 
                 newInput := structIdString + "REFINE" + activeRefiningSystemBlockString + "NONCE" + strconv.Itoa(i)
 				newHash.Write([]byte(newInput))
 				newHashOutput := hex.EncodeToString(newHash.Sum(nil))
 
-
 				if (!types.HashBuildAndCheckActionDifficulty(newInput, newHashOutput, currentAge)) { goto COMPUTE }
 
-
 				fmt.Println("")
-				fmt.Println("Refining (hopefully) Complete!")
+				fmt.Println("Refining Complete!")
 				fmt.Println(newInput)
 				argNonce = strconv.Itoa(i)
 				fmt.Println(newHashOutput)

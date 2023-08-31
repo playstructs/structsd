@@ -72,6 +72,9 @@ func (k Keeper) SetAllocation(ctx sdk.Context, allocation types.Allocation) {
         case types.ObjectType_substation:
             newLoad := k.SubstationRebuildAllocationLoad(ctx, allocation.SourceId)
             k.SubstationSetAllocationLoad(ctx, allocation.SourceId, newLoad)
+        case types.ObjectType_struct:
+            newLoad := k.StructRebuildLoad(ctx, allocation.SourceId)
+            k.StructSetLoad(ctx, allocation.SourceId, newLoad)
     }
 
 
@@ -175,6 +178,25 @@ func (k Keeper) GetAllReactorAllocations(ctx sdk.Context, reactorId uint64) (lis
 	return
 }
 
+// GetAllStructAllocations returns all allocation relating to a reactor
+func (k Keeper) GetAllStructAllocations(ctx sdk.Context, structId uint64) (list []types.Allocation) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AllocationKey))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.Allocation
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+
+		if val.SourceType == types.ObjectType_struct && val.SourceId == structId {
+			list = append(list, val)
+		}
+	}
+
+	return
+}
+
 // GetAllocationIDBytes returns the byte representation of the ID
 func GetAllocationIDBytes(id uint64) []byte {
 	bz := make([]byte, 8)
@@ -191,9 +213,15 @@ func (k Keeper) AllocationDestroy(ctx sdk.Context, allocation types.Allocation) 
 
 	// Figure out what the allocation source is and update the energy load
 	switch allocation.SourceType {
-	case types.ObjectType_reactor:
-		// Decrease Reactor Load
-		k.ReactorDecrementLoad(ctx, allocation.SourceId, allocation.Power)
+        case types.ObjectType_reactor:
+            // Decrease Reactor Load
+            k.ReactorDecrementLoad(ctx, allocation.SourceId, allocation.Power)
+        case types.ObjectType_substation:
+            // Decrease Substation Load
+            k.SubstationDecrementAllocationLoad(ctx, allocation.SourceId, allocation.Power)
+        case types.ObjectType_struct:
+            // Decrease Struct Load
+            k.StructDecrementLoad(ctx, allocation.SourceId, allocation.Power)
 	}
 
 	k.RemoveAllocation(ctx, allocation.Id)

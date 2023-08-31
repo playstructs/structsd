@@ -4,7 +4,7 @@ import (
     "math"
     "crypto/sha256"
     "encoding/hex"
-    "strconv"
+
 )
 
 
@@ -31,11 +31,19 @@ func HashBuildAndCheckActionDifficulty(input string, proof string, age uint64) b
         return false
     }
 
-    i, err := strconv.ParseUint(hash[:CalculateActionDifficulty(float64(age))], 10, 64)
+    difficulty := CalculateActionDifficulty(float64(age))
 
-    // Either the string isn't all 0's and can't
-    // be converted, or it's a number greater than zero
-    return ((err == nil) && (i == 0))
+
+    position := 1
+    for position <= difficulty {
+        if (hash[position - 1 : position] != "0") {
+            return false
+        }
+        position++
+    }
+
+    return true
+
 }
 
 
@@ -63,11 +71,17 @@ func HashBuildAndCheckBuildDifficulty(input string, proof string, age uint64) bo
         return false
     }
 
-    i, err := strconv.ParseUint(hash[:CalculateBuildDifficulty(float64(age))], 10, 64)
+    difficulty := CalculateBuildDifficulty(float64(age))
 
-    // Either the string isn't all 0's and can't
-    // be converted, or it's a number greater than zero
-    return ((err == nil) && (i == 0))
+    position := 1
+    for position <= difficulty {
+        if (hash[position - 1 : position] != "0") {
+            return false
+        }
+        position++
+    }
+
+    return true
 }
 
 
@@ -84,4 +98,11 @@ func CalculateBuildDifficulty(activationAge float64) int {
 	}
 
 	return difficulty
+}
+
+func DifficultyPrefixString(plength int) (s string){
+    for i:=len(s);i<plength;i++{
+        s="1"+s
+    }
+    return s
 }

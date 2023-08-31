@@ -30,7 +30,13 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
 		})
 
 	case types.ObjectType_struct:
-		//Not Implemented yet
+		return k.StructAllocationCreate(goCtx, &types.MsgStructAllocationCreate{
+			Creator:    msg.Creator,
+			Controller: msg.Controller,
+			SourceId:   msg.SourceId,
+			Power:      msg.Power,
+		})
+
 
 	default:
 		return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceTypeMismatch, "Source type (%s) mismatch somehow ", msg.SourceType.String())

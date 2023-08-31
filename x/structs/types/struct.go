@@ -71,6 +71,14 @@ func (structure *Struct) SetRefiningSystemActivationBlock(block uint64) error {
     return nil
 }
 
+// Take an amount of fuel and return the energy it will generate
+//
+// This will need some work later on to be more dynamic in
+// relation to other system state, but for now it is static.
+func CalculateStructEnergy(fuel uint64) (energy uint64) {
+    return fuel * StructFuelToEnergyConversion
+}
+
 func CreateBaseStruct(structType string) Struct {
 
     var newCategory         string

@@ -24,20 +24,15 @@ var _ = strconv.Itoa(0)
 
 func CmdStructMineCompute() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "struct-mine-compute [struct ID] [Height Estimate]",
+		Use:   "struct-mine-compute [struct ID]",
 		Short: "Do the work to extract an Ore from the planet",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
 			argStructId, err := cast.ToUint64E(args[0])
 			if err != nil {
 				return err
 			}
-
-            argHeightEst, err := cast.ToUint64E(args[1])
-            if err != nil {
-                return err
-            }
 
 			var argProof string
 			var argNonce string
@@ -72,7 +67,8 @@ func CmdStructMineCompute() *cobra.Command {
                 return nil
             }
 
-            currentBlock := argHeightEst
+            currentBlockResponse, _ := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+            currentBlock := currentBlockResponse.BlockHeight
             fmt.Printf("Mining process activated on %d, current block is %d \n", performingStructure.ActiveMiningSystemBlock, currentBlock)
             currentAge := currentBlock - performingStructure.ActiveMiningSystemBlock
             currentDifficulty := types.CalculateActionDifficulty(float64(currentAge))
@@ -83,6 +79,7 @@ func CmdStructMineCompute() *cobra.Command {
             activeMiningSystemBlockString   := strconv.FormatUint(performingStructure.ActiveMiningSystemBlock , 10)
             fmt.Println("Starting Mining...")
 
+            var newDifficulty int
 			var i int = 0
 			for  {
 				if i > 0  {      // the condition stops matching
@@ -92,24 +89,26 @@ func CmdStructMineCompute() *cobra.Command {
 COMPUTE:
 				i = i + 1
 
-				// dumb progress bar
-				if (i % 3) > 0 {
-					fmt.Print("\b")
-				} else {
-					fmt.Print("..")
-				}
+                if (i % 20000) > 0 {
+                    currentBlockResponse, _ = queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+                    currentBlock = currentBlockResponse.BlockHeight
+                    currentAge = currentBlock - performingStructure.ActiveMiningSystemBlock
+                    newDifficulty = types.CalculateActionDifficulty(float64(currentAge))
+
+                    if currentDifficulty != newDifficulty {
+                        currentDifficulty = newDifficulty
+                        fmt.Printf("Difficulty Change: %d \n", currentDifficulty)
+                    }
+
+                }
 
 				newHash := sha256.New()
-
-				/* hashInput                       := structIdString + "MINE" + activeMiningSystemBlockString + "NONCE" + msg.Nonce */
 
                 newInput := structIdString + "MINE" + activeMiningSystemBlockString + "NONCE" + strconv.Itoa(i)
 				newHash.Write([]byte(newInput))
 				newHashOutput := hex.EncodeToString(newHash.Sum(nil))
 
-
 				if (!types.HashBuildAndCheckActionDifficulty(newInput, newHashOutput, currentAge)) { goto COMPUTE }
-
 
 				fmt.Println("")
 				fmt.Println("Mining Complete!")

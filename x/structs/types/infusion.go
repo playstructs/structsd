@@ -47,6 +47,8 @@ func CalculateInfusionEnergy(destinationType ObjectType, fuel uint64) (energy ui
     switch destinationType {
         case ObjectType_reactor:
             energy = CalculateReactorEnergy(fuel)
+        case ObjectType_struct:
+            energy = CalculateStructEnergy(fuel)
     }
 
     return

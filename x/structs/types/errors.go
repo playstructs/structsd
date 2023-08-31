@@ -72,5 +72,6 @@ var (
     ErrStructRefineDeactivate                   = sdkerrors.Register(ModuleName,  1727, "Struct refining system deactivation failed")
     ErrStructRefine                             = sdkerrors.Register(ModuleName,  1728, "Struct refining action failed")
     ErrStructInfuse                             = sdkerrors.Register(ModuleName,  1729, "Struct infusion action failed")
+    ErrStructAllocationCreate                   = sdkerrors.Register(ModuleName,  1730, "Allocation of power from struct failed")
 
 )

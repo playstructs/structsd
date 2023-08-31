@@ -35,8 +35,8 @@ const (
 	// Starting allocation for Reactor
     InitialReactorAllocation = 1000
 
-    DifficultyBuildAgeRange  = 50  // 36000 // 1 days
-    DifficultyActionAgeRange = 100 // 252000 // 7 days
+    DifficultyBuildAgeRange  = 5  // 36000 // 1 days
+    DifficultyActionAgeRange = 10 // 252000 // 7 days
 
 
 )
@@ -130,6 +130,12 @@ const (
 const (
 	StructKey      = "Struct/value/"
 	StructCountKey  = "Struct/count/"
+	StructLoadKey      = "Struct/load/"
+    StructEnergyKey    = "Struct/energy/"
+    StructFuelKey      = "Struct/fuel/"
+
+
+	StructFuelToEnergyConversion = 1000
 )
 
 /*

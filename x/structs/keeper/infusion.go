@@ -122,6 +122,11 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
             newFuel, newEnergy := k.ReactorRebuildInfusions(ctx, destinationId)
             k.ReactorSetFuel(ctx, destinationId, newFuel)
             k.ReactorSetEnergy(ctx, destinationId, newEnergy)
+        case types.ObjectType_struct:
+            newFuel, newEnergy := k.StructRebuildInfusions(ctx, destinationId)
+            k.StructSetFuel(ctx, destinationId, newFuel)
+            k.StructSetEnergy(ctx, destinationId, newEnergy)
+
 
 
     }
@@ -172,6 +177,26 @@ func (k Keeper) GetAllReactorInfusions(ctx sdk.Context, reactorId uint64) (list 
 
 	return
 }
+
+// GetAllReactorInfusions returns all infusion relating to a struct
+func (k Keeper) GetAllStructInfusions(ctx sdk.Context, structId uint64) (list []types.Infusion) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.InfusionKey))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.Infusion
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+
+		if val.DestinationType == types.ObjectType_struct && val.DestinationId == structId {
+			list = append(list, val)
+		}
+	}
+
+	return
+}
+
 
 func GetInfusionId(destinationType types.ObjectType, destinationId uint64, address string) (id string) {
     destinationIdString := strconv.FormatUint(destinationId , 10)

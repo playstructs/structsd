@@ -32,6 +32,7 @@ service Msg {
   rpc AddressApproveRegister         (MsgAddressApproveRegister        ) returns (MsgAddressRegisterResponse               );
   rpc AddressRevoke                  (MsgAddressRevoke                 ) returns (MsgAddressRevokeResponse                 );
   rpc PlanetExplore                  (MsgPlanetExplore                 ) returns (MsgPlanetExploreResponse                 );
+  rpc StructAllocationCreate         (MsgStructAllocationCreate        ) returns (MsgAllocationCreateResponse              );
   rpc StructBuildInitiate            (MsgStructBuildInitiate           ) returns (MsgStructBuildInitiateResponse           );
   rpc StructBuildComplete            (MsgStructBuildComplete           ) returns (MsgStructBuildCompleteResponse           );
   rpc StructMineActivate             (MsgStructMineActivate            ) returns (MsgStructMineActivateResponse            );
@@ -117,6 +118,14 @@ message MsgReactorAllocationCreate {
   uint64 sourceId   = 3;
   uint64 power      = 4;
 }
+
+message MsgStructAllocationCreate {
+  string creator    = 1;
+  string controller = 2;
+  uint64 sourceId   = 3;
+  uint64 power      = 4;
+}
+
 
 message MsgGuildCreate {
   string creator  = 1;

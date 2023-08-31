@@ -3,9 +3,6 @@ package keeper
 import (
 	"context"
     "strconv"
-
-    //"fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"structs/x/structs/types"
@@ -52,6 +49,8 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     hashInput                       := structIdString + "BUILD" + buildStartBlockString + "NONCE" + msg.Nonce
 
     currentAge := uint64(ctx.BlockHeight()) - structure.BuildStartBlock
+
+
     if (!types.HashBuildAndCheckBuildDifficulty(hashInput, msg.Proof, currentAge)) {
        return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrStructBuildComplete, "Work failure for input (%s) when trying to build Struct %d", hashInput, structure.Id)
     }

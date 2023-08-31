@@ -7,6 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"structs/x/structs/types"
+
+	"cosmossdk.io/math"
 )
 
 func (k msgServer) StructInfuse(goCtx context.Context, msg *types.MsgStructInfuse) (*types.MsgStructInfuseResponse, error) {
@@ -59,11 +61,6 @@ func (k msgServer) StructInfuse(goCtx context.Context, msg *types.MsgStructInfus
         return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrStructInfuse, "Planet (%d) is already complete. Move on bud, no work to be done here", structure.PlanetId)
     }
 
-
-    // Check the player primary address
-    // Does it have any alpha?
-
-
     // Mint the new Alpha to the module
     infusionAmount, parseError := sdk.ParseCoinsNormalized(msg.InfuseAmount)
     if (parseError != nil ){
@@ -83,11 +80,16 @@ func (k msgServer) StructInfuse(goCtx context.Context, msg *types.MsgStructInfus
     }
     k.bankKeeper.BurnCoins(ctx, types.ModuleName, infusionAmount)
 
-    // need to set fuel PowerSystemFuel
+    var newInfusionAmount uint64
 
-    // Set energy powerSystemEnergy
+    infusion, infusionFound := k.GetInfusion(ctx, types.ObjectType_struct, structure.Id, player.PrimaryAddress)
+    if (infusionFound) {
+        newInfusionAmount = infusionAmount[0].Amount.Uint64() + infusion.Fuel
+    } else {
+        newInfusionAmount = infusionAmount[0].Amount.Uint64()
+    }
 
-
+    k.UpsertInfusion(ctx, types.ObjectType_struct, structure.Id, player.PrimaryAddress, newInfusionAmount , false, math.LegacyZeroDec() )
 
 	return &types.MsgStructInfuseResponse{}, nil
 }
