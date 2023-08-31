@@ -48790,6 +48790,21 @@ paths:
                     load:
                       type: string
                       format: uint64
+                    storage:
+                      type: object
+                      properties:
+                        denom:
+                          type: string
+                        amount:
+                          type: string
+                      description: >-
+                        Coin defines a token with a denomination and an amount.
+
+
+                        NOTE: The amount field is an Int which implements the
+                        custom method
+
+                        signatures required by gogoproto.
               pagination:
                 type: object
                 properties:
@@ -49094,6 +49109,21 @@ paths:
                   load:
                     type: string
                     format: uint64
+                  storage:
+                    type: object
+                    properties:
+                      denom:
+                        type: string
+                      amount:
+                        type: string
+                    description: >-
+                      Coin defines a token with a denomination and an amount.
+
+
+                      NOTE: The amount field is an Int which implements the
+                      custom method
+
+                      signatures required by gogoproto.
         default:
           description: An unexpected error response.
           schema:
@@ -78904,6 +78934,8 @@ definitions:
     type: object
   structs.structs.MsgPlayerCreateResponse:
     type: object
+  structs.structs.MsgPlayerUpdatePrimaryAddressResponse:
+    type: object
   structs.structs.MsgStructBuildCompleteResponse:
     type: object
     properties:
@@ -79584,6 +79616,18 @@ definitions:
       load:
         type: string
         format: uint64
+      storage:
+        type: object
+        properties:
+          denom:
+            type: string
+          amount:
+            type: string
+        description: |-
+          Coin defines a token with a denomination and an amount.
+
+          NOTE: The amount field is an Int which implements the custom method
+          signatures required by gogoproto.
   structs.structs.QueryAllAllocationResponse:
     type: object
     properties:
@@ -79895,6 +79939,21 @@ definitions:
             load:
               type: string
               format: uint64
+            storage:
+              type: object
+              properties:
+                denom:
+                  type: string
+                amount:
+                  type: string
+              description: >-
+                Coin defines a token with a denomination and an amount.
+
+
+                NOTE: The amount field is an Int which implements the custom
+                method
+
+                signatures required by gogoproto.
       pagination:
         type: object
         properties:
@@ -80334,6 +80393,21 @@ definitions:
           load:
             type: string
             format: uint64
+          storage:
+            type: object
+            properties:
+              denom:
+                type: string
+              amount:
+                type: string
+            description: >-
+              Coin defines a token with a denomination and an amount.
+
+
+              NOTE: The amount field is an Int which implements the custom
+              method
+
+              signatures required by gogoproto.
   structs.structs.QueryGetReactorResponse:
     type: object
     properties:

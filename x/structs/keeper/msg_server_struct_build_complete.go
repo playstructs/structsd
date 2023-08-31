@@ -53,23 +53,16 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 
     currentAge := uint64(ctx.BlockHeight()) - structure.BuildStartBlock
     if (!types.HashBuildAndCheckBuildDifficulty(hashInput, msg.Proof, currentAge)) {
-       return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Work failure for input (%s) when trying to build Struct %d", hashInput, structure.Id)
+       return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrStructBuildComplete, "Work failure for input (%s) when trying to build Struct %d", hashInput, structure.Id)
     }
 
-    // Set the appropriate status
-    if (msg.Activate) {
-        _, err := k.PlayerIncrementLoad(ctx, player, structure.PassiveDraw)
-
-        if (err == nil) {
-            structure.SetStatus("ACTIVE")
-        } else {
-            structure.SetStatus("INACTIVE")
-        }
-    } else {
-        structure.SetStatus("INACTIVE")
+    // Try to bring online if there is room in the energy cap
+    _, err = k.PlayerIncrementLoad(ctx, player, structure.PassiveDraw)
+    if (err != nil) {
+        return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrStructBuildComplete, "Could not bring Struct %d online, player %d does not have enough power",structure.Id, player.Id)
     }
 
-
+    structure.SetStatus("ACTIVE")
     k.SetStruct(ctx, structure)
 
 

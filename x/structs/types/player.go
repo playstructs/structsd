@@ -20,6 +20,12 @@ func (player *Player) SetCreator(creator string) error {
 	return nil
 }
 
+func (player *Player) SetPrimaryAddress(primaryAddress string) error {
+	player.PrimaryAddress = primaryAddress
+
+	return nil
+}
+
 
 func (player *Player) SetGuild(guildId uint64) error {
 

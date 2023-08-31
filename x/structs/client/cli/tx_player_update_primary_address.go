@@ -6,43 +6,29 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
-
-	//sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 var _ = strconv.Itoa(0)
 
-
-func CmdStructBuildComplete() *cobra.Command {
+func CmdPlayerUpdatePrimaryAddress() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "struct-build-complete [struct ID] [proof] [nonce]",
-		Short: "Complete the build process for a new Struct",
-		Args:  cobra.ExactArgs(3),
+		Use:   "player-create [primary address]",
+		Short: "Update the Primary Address of a Player account",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
-			argStructId, err := cast.ToUint64E(args[0])
-			if err != nil {
-				return err
-			}
-
-            argProof := args[1]
-
-            argNonce := args[2]
-
+			argPrimaryAddress := args[0]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgStructBuildComplete(
+			msg := types.NewMsgPlayerUpdatePrimaryAddress(
 				clientCtx.GetFromAddress().String(),
-                argStructId,
-                argProof,
-                argNonce,
+				argPrimaryAddress,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

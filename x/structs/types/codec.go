@@ -78,6 +78,9 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgPlayerCreate{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgPlayerUpdatePrimaryAddress{},
+    )
+	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgAddressRegister{},
 	)
     registry.RegisterImplementations((*sdk.Msg)(nil),

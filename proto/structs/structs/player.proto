@@ -3,6 +3,7 @@ package structs.structs;
 
 option go_package = "structs/x/structs/types";
 
+import "cosmos/base/v1beta1/coin.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 
@@ -17,5 +18,8 @@ message Player {
   uint64 planetId = 6;
 
   uint64 load = 7;
+
+  cosmos.base.v1beta1.Coin storage = 8
+    [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
   
 }

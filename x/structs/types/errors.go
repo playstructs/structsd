@@ -23,6 +23,7 @@ var (
 
     ErrPlayerRequired                       = sdkerrors.Register(ModuleName, 1530, "player account required for this action")
     ErrPlayerNotFound                       = sdkerrors.Register(ModuleName, 1531, "player account specified does not exist")
+    ErrPlayerUpdate                         = sdkerrors.Register(ModuleName, 1532, "player account update failed")
 
 	ErrSubstationNotFound         = sdkerrors.Register(ModuleName, 1550, "substation not found")
 	ErrSubstationHasNoPowerSource = sdkerrors.Register(ModuleName, 1551, "substation has no power source")

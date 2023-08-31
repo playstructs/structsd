@@ -92,6 +92,9 @@ func (k Keeper) GetPlayer(ctx sdk.Context, id uint64) (val types.Player, found b
 	k.cdc.MustUnmarshal(b, &val)
 
 	val.Load = k.PlayerGetLoad(ctx, val.Id)
+	playerAcc, _ := sdk.AccAddressFromBech32(val.PrimaryAddress)
+    val.Storage = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
+
 	return val, true
 }
 
@@ -113,6 +116,8 @@ func (k Keeper) GetAllPlayer(ctx sdk.Context) (list []types.Player) {
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
 		val.Load = k.PlayerGetLoad(ctx, val.Id)
+		playerAcc, _ := sdk.AccAddressFromBech32(val.PrimaryAddress)
+		val.Storage = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
 
 		list = append(list, val)
 	}

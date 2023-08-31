@@ -27,6 +27,7 @@ service Msg {
   rpc GuildApproveRegister           (MsgGuildApproveRegister          ) returns (MsgGuildApproveRegisterResponse          );
   rpc PlayerCreateProxy              (MsgPlayerCreateProxy             ) returns (MsgPlayerCreateProxyResponse             );
   rpc PlayerCreate                   (MsgPlayerCreate                  ) returns (MsgPlayerCreateResponse                  );
+  rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse    );
   rpc AddressRegister                (MsgAddressRegister               ) returns (MsgAddressRegisterResponse               );
   rpc AddressApproveRegister         (MsgAddressApproveRegister        ) returns (MsgAddressRegisterResponse               );
   rpc AddressRevoke                  (MsgAddressRevoke                 ) returns (MsgAddressRevokeResponse                 );
@@ -39,7 +40,6 @@ service Msg {
   rpc StructRefineActivate           (MsgStructRefineActivate          ) returns (MsgStructRefineActivateResponse          );
   rpc StructRefineDeactivate         (MsgStructRefineDeactivate        ) returns (MsgStructRefineDeactivateResponse        );
   rpc StructRefine                   (MsgStructRefine                  ) returns (MsgStructRefineResponse                  );
-
 }
 
 message MsgSubstationCreate {
@@ -202,7 +202,6 @@ message MsgStructBuildComplete {
   uint64 structId     = 2;
   string proof        = 3;
   string nonce        = 4;
-  bool   activate     = 5;
 
 }
 
@@ -268,3 +267,10 @@ message MsgStructRefine {
 message MsgStructRefineResponse {
   Struct struct = 1 [(gogoproto.nullable) = false];
 }
+
+message MsgPlayerUpdatePrimaryAddress {
+  string creator        = 1;
+  string primaryAddress = 2;
+}
+
+message MsgPlayerUpdatePrimaryAddressResponse {}

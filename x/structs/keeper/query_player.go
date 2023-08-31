@@ -31,6 +31,9 @@ func (k Keeper) PlayerAll(goCtx context.Context, req *types.QueryAllPlayerReques
 
         player.Load = k.PlayerGetLoad(ctx, player.Id)
 
+        playerAcc, _ := sdk.AccAddressFromBech32(player.PrimaryAddress)
+        player.Storage = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
+
 		players = append(players, player)
 		return nil
 	})

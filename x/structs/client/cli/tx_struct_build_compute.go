@@ -24,9 +24,9 @@ var _ = strconv.Itoa(0)
 
 func CmdStructBuildCompute() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "struct-build-compute [struct ID] [activate] [height estimate]",
+		Use:   "struct-build-compute [struct ID] [height estimate]",
 		Short: "Do the work to finish a Struct build",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
 			argStructId, err := cast.ToUint64E(args[0])
@@ -34,9 +34,7 @@ func CmdStructBuildCompute() *cobra.Command {
 				return err
 			}
 
-            argActivate := cast.ToBool(args[1])
-
-			argHeightEst, err := cast.ToUint64E(args[2])
+			argHeightEst, err := cast.ToUint64E(args[1])
 			if err != nil {
 				return err
 			}
@@ -128,7 +126,6 @@ COMPUTE:
                 argStructId,
                 argProof,
                 argNonce,
-                argActivate,
 			)
 
 			if err := msg.ValidateBasic(); err != nil {

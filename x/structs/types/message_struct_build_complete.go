@@ -10,13 +10,12 @@ const TypeMsgStructBuildComplete = "struct_build_complete"
 var _ sdk.Msg = &MsgStructBuildComplete{}
 
 
-func NewMsgStructBuildComplete(creator string, structId uint64, proof string, nonce string, activate bool) *MsgStructBuildComplete {
+func NewMsgStructBuildComplete(creator string, structId uint64, proof string, nonce string) *MsgStructBuildComplete {
 	return &MsgStructBuildComplete{
 		Creator:  creator,
 		StructId: structId,
 		Proof: proof,
 		Nonce: nonce,
-		Activate: activate,
 	}
 }
 
