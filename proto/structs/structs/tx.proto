@@ -40,6 +40,8 @@ service Msg {
   rpc StructRefineActivate           (MsgStructRefineActivate          ) returns (MsgStructRefineActivateResponse          );
   rpc StructRefineDeactivate         (MsgStructRefineDeactivate        ) returns (MsgStructRefineDeactivateResponse        );
   rpc StructRefine                   (MsgStructRefine                  ) returns (MsgStructRefineResponse                  );
+  rpc StructInfuse                   (MsgStructInfuse                  ) returns (MsgStructInfuseResponse                  );
+
 }
 
 message MsgSubstationCreate {
@@ -274,3 +276,11 @@ message MsgPlayerUpdatePrimaryAddress {
 }
 
 message MsgPlayerUpdatePrimaryAddressResponse {}
+
+message MsgStructInfuse{
+  string creator        = 1;
+  uint64 structId       = 2;
+  string infuseAmount   = 3;
+}
+
+message MsgStructInfuseResponse {}

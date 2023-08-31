@@ -21,7 +21,7 @@ func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (
 
     playerId := k.GetPlayerIdFromAddress(ctx, msg.Creator)
     if (playerId == 0) {
-        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build initialization requires Player account but none associated with %s", msg.Creator)
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct mining requires Player account but none associated with %s", msg.Creator)
     }
     player, _ := k.GetPlayer(ctx, playerId)
 

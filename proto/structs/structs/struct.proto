@@ -44,4 +44,7 @@ message Struct {
   string miningSystemStatus       = 21;
   string refiningSystemStatus     = 22;
 
+  uint64 powerSystemFuel    = 23;
+  uint64 powerSystemEnergy  = 24;
+  uint64 powerSystemLoad    = 25;
 }

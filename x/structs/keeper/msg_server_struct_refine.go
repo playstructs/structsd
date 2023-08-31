@@ -21,7 +21,7 @@ func (k msgServer) StructRefine(goCtx context.Context, msg *types.MsgStructRefin
 
     playerId := k.GetPlayerIdFromAddress(ctx, msg.Creator)
     if (playerId == 0) {
-        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build initialization requires Player account but none associated with %s", msg.Creator)
+        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct refine requires Player account but none associated with %s", msg.Creator)
     }
     player, _ := k.GetPlayer(ctx, playerId)
 

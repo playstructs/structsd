@@ -49395,6 +49395,15 @@ paths:
                       type: string
                     refiningSystemStatus:
                       type: string
+                    powerSystemFuel:
+                      type: string
+                      format: uint64
+                    powerSystemEnergy:
+                      type: string
+                      format: uint64
+                    powerSystemLoad:
+                      type: string
+                      format: uint64
                   title: |-
                     This will all need to be reworked but let's
                     do some super basic crap here to get testnet up
@@ -49747,6 +49756,15 @@ paths:
                     type: string
                   refiningSystemStatus:
                     type: string
+                  powerSystemFuel:
+                    type: string
+                    format: uint64
+                  powerSystemEnergy:
+                    type: string
+                    format: uint64
+                  powerSystemLoad:
+                    type: string
+                    format: uint64
                 title: |-
                   This will all need to be reworked but let's
                   do some super basic crap here to get testnet up
@@ -79006,6 +79024,15 @@ definitions:
             type: string
           refiningSystemStatus:
             type: string
+          powerSystemFuel:
+            type: string
+            format: uint64
+          powerSystemEnergy:
+            type: string
+            format: uint64
+          powerSystemLoad:
+            type: string
+            format: uint64
         title: |-
           This will all need to be reworked but let's
           do some super basic crap here to get testnet up
@@ -79079,9 +79106,20 @@ definitions:
             type: string
           refiningSystemStatus:
             type: string
+          powerSystemFuel:
+            type: string
+            format: uint64
+          powerSystemEnergy:
+            type: string
+            format: uint64
+          powerSystemLoad:
+            type: string
+            format: uint64
         title: |-
           This will all need to be reworked but let's
           do some super basic crap here to get testnet up
+  structs.structs.MsgStructInfuseResponse:
+    type: object
   structs.structs.MsgStructMineActivateResponse:
     type: object
     properties:
@@ -79152,6 +79190,15 @@ definitions:
             type: string
           refiningSystemStatus:
             type: string
+          powerSystemFuel:
+            type: string
+            format: uint64
+          powerSystemEnergy:
+            type: string
+            format: uint64
+          powerSystemLoad:
+            type: string
+            format: uint64
         title: |-
           This will all need to be reworked but let's
           do some super basic crap here to get testnet up
@@ -79225,6 +79272,15 @@ definitions:
             type: string
           refiningSystemStatus:
             type: string
+          powerSystemFuel:
+            type: string
+            format: uint64
+          powerSystemEnergy:
+            type: string
+            format: uint64
+          powerSystemLoad:
+            type: string
+            format: uint64
         title: |-
           This will all need to be reworked but let's
           do some super basic crap here to get testnet up
@@ -79298,6 +79354,15 @@ definitions:
             type: string
           refiningSystemStatus:
             type: string
+          powerSystemFuel:
+            type: string
+            format: uint64
+          powerSystemEnergy:
+            type: string
+            format: uint64
+          powerSystemLoad:
+            type: string
+            format: uint64
         title: |-
           This will all need to be reworked but let's
           do some super basic crap here to get testnet up
@@ -79371,6 +79436,15 @@ definitions:
             type: string
           refiningSystemStatus:
             type: string
+          powerSystemFuel:
+            type: string
+            format: uint64
+          powerSystemEnergy:
+            type: string
+            format: uint64
+          powerSystemLoad:
+            type: string
+            format: uint64
         title: |-
           This will all need to be reworked but let's
           do some super basic crap here to get testnet up
@@ -79444,6 +79518,15 @@ definitions:
             type: string
           refiningSystemStatus:
             type: string
+          powerSystemFuel:
+            type: string
+            format: uint64
+          powerSystemEnergy:
+            type: string
+            format: uint64
+          powerSystemLoad:
+            type: string
+            format: uint64
         title: |-
           This will all need to be reworked but let's
           do some super basic crap here to get testnet up
@@ -79517,6 +79600,15 @@ definitions:
             type: string
           refiningSystemStatus:
             type: string
+          powerSystemFuel:
+            type: string
+            format: uint64
+          powerSystemEnergy:
+            type: string
+            format: uint64
+          powerSystemLoad:
+            type: string
+            format: uint64
         title: |-
           This will all need to be reworked but let's
           do some super basic crap here to get testnet up
@@ -80123,6 +80215,15 @@ definitions:
               type: string
             refiningSystemStatus:
               type: string
+            powerSystemFuel:
+              type: string
+              format: uint64
+            powerSystemEnergy:
+              type: string
+              format: uint64
+            powerSystemLoad:
+              type: string
+              format: uint64
           title: |-
             This will all need to be reworked but let's
             do some super basic crap here to get testnet up
@@ -80521,6 +80622,15 @@ definitions:
             type: string
           refiningSystemStatus:
             type: string
+          powerSystemFuel:
+            type: string
+            format: uint64
+          powerSystemEnergy:
+            type: string
+            format: uint64
+          powerSystemLoad:
+            type: string
+            format: uint64
         title: |-
           This will all need to be reworked but let's
           do some super basic crap here to get testnet up
@@ -80664,6 +80774,15 @@ definitions:
         type: string
       refiningSystemStatus:
         type: string
+      powerSystemFuel:
+        type: string
+        format: uint64
+      powerSystemEnergy:
+        type: string
+        format: uint64
+      powerSystemLoad:
+        type: string
+        format: uint64
     title: |-
       This will all need to be reworked but let's
       do some super basic crap here to get testnet up
