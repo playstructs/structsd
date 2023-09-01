@@ -304,3 +304,14 @@ func (k Keeper) StructIncrementLoad(ctx sdk.Context, id uint64, amount uint64) (
 
 	return new, nil
 }
+
+func (k Keeper) StructDeactivate(ctx sdk.Context, structId uint64) {
+    // Set the Struct to inactive
+
+    // Set the internal systems to INACTIVE + reset block starts to zero
+
+    // if has power systems, destroy allocations
+
+
+
+}

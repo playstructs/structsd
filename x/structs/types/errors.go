@@ -29,6 +29,7 @@ var (
 	ErrSubstationHasNoPowerSource = sdkerrors.Register(ModuleName, 1551, "substation has no power source")
 
 	ErrSubstationAvailableCapacityInsufficient = sdkerrors.Register(ModuleName, 1552, "substation capacity lower then attempted change allows for")
+	ErrSubstationOffline                       = sdkerrors.Register(ModuleName, 1553, "substation currently unable to support connected players")
 
     ErrReactorActivation = sdkerrors.Register(ModuleName, 1571, "reactor activation failure")
 	ErrReactorAvailableCapacityInsufficient = sdkerrors.Register(ModuleName, 1572, "reactor capacity lower then attempted change allows for")

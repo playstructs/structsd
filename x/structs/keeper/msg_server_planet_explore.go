@@ -27,6 +27,10 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
         return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
     }
 
+    if (!k.SubstationIsOnline(ctx, player.SubstationId)){
+        return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The players substation (%d) is offline ",player.SubstationId)
+    }
+
 
     if (player.PlanetId > 0) {
         // Check to see if the planet can be completed

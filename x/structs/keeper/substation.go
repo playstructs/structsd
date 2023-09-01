@@ -551,3 +551,7 @@ func (k Keeper) SubstationConnectAllocation(ctx sdk.Context, substation types.Su
 
     return nil
 }
+
+func (k Keeper) SubstationIsOnline(ctx sdk.Context, substationId uint64) (bool) {
+    return (k.SubstationGetEnergy(ctx, substationId) >= k.SubstationGetLoad(ctx, substationId))
+}

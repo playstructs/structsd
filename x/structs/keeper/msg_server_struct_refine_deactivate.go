@@ -21,6 +21,9 @@ func (k msgServer) StructRefineDeactivate(goCtx context.Context, msg *types.MsgS
     }
     player, _ := k.GetPlayer(ctx, playerId)
 
+    if (!k.SubstationIsOnline(ctx, player.SubstationId)){
+        return &types.MsgStructRefineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The players substation (%d) is offline ",player.SubstationId)
+    }
 
     playerPermissions := k.AddressGetPlayerPermissions(ctx, msg.Creator)
     if ((playerPermissions&types.AddressPermissionPlay) == 0) {

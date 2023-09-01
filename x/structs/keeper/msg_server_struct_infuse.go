@@ -25,7 +25,6 @@ func (k msgServer) StructInfuse(goCtx context.Context, msg *types.MsgStructInfus
     }
     player, _ := k.GetPlayer(ctx, playerId)
 
-
     playerPermissions := k.AddressGetPlayerPermissions(ctx, msg.Creator)
     if ((playerPermissions&types.AddressPermissionPlay) == 0) {
         return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
