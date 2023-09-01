@@ -17,6 +17,7 @@ validators:
   - name: alice
     bonded: 1000000alpha
 genesis:
+  chain_id: "structstestnet-00"
   app_state:
     staking:
       params:
