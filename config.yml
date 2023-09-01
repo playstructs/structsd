@@ -21,4 +21,4 @@ genesis:
   app_state:
     staking:
       params:
-        bond_denom: alpha
+        bond_denom: "alpha"

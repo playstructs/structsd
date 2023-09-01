@@ -24,14 +24,17 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type Allocation struct {
-	Id            uint64     `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	// Core allocation details
 	SourceType    ObjectType `protobuf:"varint,2,opt,name=sourceType,proto3,enum=structs.structs.ObjectType" json:"sourceType,omitempty"`
 	SourceId      uint64     `protobuf:"varint,3,opt,name=sourceId,proto3" json:"sourceId,omitempty"`
 	DestinationId uint64     `protobuf:"varint,4,opt,name=destinationId,proto3" json:"destinationId,omitempty"`
 	Power         uint64     `protobuf:"varint,5,opt,name=power,proto3" json:"power,omitempty"`
-	Creator       string     `protobuf:"bytes,6,opt,name=creator,proto3" json:"creator,omitempty"`
-	Controller    string     `protobuf:"bytes,7,opt,name=controller,proto3" json:"controller,omitempty"`
-	Locked        bool       `protobuf:"varint,8,opt,name=locked,proto3" json:"locked,omitempty"`
+	// Who does this currently belong to
+	Creator    string `protobuf:"bytes,6,opt,name=creator,proto3" json:"creator,omitempty"`
+	Controller string `protobuf:"bytes,7,opt,name=controller,proto3" json:"controller,omitempty"`
+	// Locking will be needed for IBC
+	Locked bool `protobuf:"varint,8,opt,name=locked,proto3" json:"locked,omitempty"`
 	// "dynamic" might be a better name for this
 	HasLinkedInfusion bool   `protobuf:"varint,9,opt,name=HasLinkedInfusion,proto3" json:"HasLinkedInfusion,omitempty"`
 	LinkedInfusion    string `protobuf:"bytes,10,opt,name=linkedInfusion,proto3" json:"linkedInfusion,omitempty"`

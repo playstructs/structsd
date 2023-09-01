@@ -1674,25 +1674,25 @@ var (
 
 	pattern_Query_AllocationAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"structs", "allocation"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Guild_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"structs", "guild", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Guild_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"structs", "guild", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_GuildAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1}, []string{"structs", "guild"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_GuildAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"structs", "guild"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Player_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"structs", "player", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Player_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"structs", "player", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_PlayerAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1}, []string{"structs", "player"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_PlayerAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"structs", "player"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_Infusion_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"structs", "infusion", "destinationType", "destinationId", "address"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_InfusionAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"structs", "infusion"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Planet_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"structs", "planet", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Planet_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"structs", "planet", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_PlanetAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1}, []string{"structs", "planet"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_PlanetAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"structs", "planet"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Struct_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"structs", "struct", "id"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Struct_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2}, []string{"structs", "struct", "id"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_StructAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 0, 2, 1}, []string{"structs", "struct"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_StructAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"structs", "struct"}, "", runtime.AssumeColonVerbOpt(true)))
 )
 
 var (
