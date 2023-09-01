@@ -8,16 +8,14 @@ option go_package = "structs/x/structs/types";
 
 
 message Infusion {
+  objectType  destinationType          = 1;
+  uint64      destinationId            = 2;
 
-  objectType destinationType = 1;
-  uint64 destinationId = 2;
+  uint64      fuel                     = 3;
+  uint64      energy                   = 4;
 
-  uint64 fuel = 3;
-  uint64 energy = 4;
+  uint64      linkedSourceAllocationId = 5;
+  uint64      linkedPlayerAllocationId = 6;
 
-  uint64 linkedSourceAllocationId = 5;
-  uint64 linkedPlayerAllocationId = 6;
-
-  string address = 7;
-
+  string      address                  = 7;
 }

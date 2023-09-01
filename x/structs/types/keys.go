@@ -27,13 +27,13 @@ const (
 	KeeperStartValue = 1
 
 	// Starting value for Reactor Owner Initialization
-	InitialReactorOwnerEnergy = 100
+	InitialReactorOwnerEnergy = 10000
 
     // Starting value for Reactor Owner Initialization
-	InitialSubstationOwnerEnergy = 140
+	InitialSubstationOwnerEnergy = 20000
 
 	// Starting allocation for Reactor
-    InitialReactorAllocation = 1000
+    InitialReactorAllocation = 20000
 
     DifficultyBuildAgeRange  = 5  // 36000 // 1 days
     DifficultyActionAgeRange = 10 // 252000 // 7 days
@@ -64,7 +64,7 @@ const (
 
 	ReactorPermissionKey = "Reactor/permission/"
 
-	ReactorFuelToEnergyConversion = 10
+	ReactorFuelToEnergyConversion = 1
 )
 
 const (
@@ -109,7 +109,7 @@ const (
 	PlayerPermissionKey = "Player/permission/"
 	PlayerLoadKey = "Player/load/"
 
-	PlayerPassiveDraw = 10
+	PlayerPassiveDraw = 1000
 )
 
 const (
@@ -125,7 +125,7 @@ const (
 	PlanetOreCountKey        = "Planet/ore/"
 
 	// TODO Make these dynamic in the future
-	PlanetStartingOre = 4
+	PlanetStartingOre = 5
 	PlanetStartingSlots = 4
 
 )

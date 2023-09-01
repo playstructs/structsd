@@ -7,25 +7,25 @@ option go_package = "structs/x/structs/types";
 // This will all need to be reworked but let's
 // do some super basic crap here to get testnet up
 message Struct {
-  uint64 id = 1;
+  uint64 id         = 1;
 
-  string creator = 2;
-  uint64 owner   = 3;
+  string creator    = 2;
+  uint64 owner      = 3;
 
   string status     = 4;
   uint64 maxHealth  = 5;
   uint64 health     = 6;
 
   // Planet or Fleet
-  string category  = 7;
+  string category   = 7;
 
   // What it is
-  string type      = 8;
+  string type       = 8;
 
   // Where it is
-  string ambit     = 9;
-  uint64 planetId  = 10;   // No fleet stuff yet
-  uint64 slot      = 11;
+  string ambit      = 9;
+  uint64 planetId   = 10;   // No fleet stuff yet
+  uint64 slot       = 11;
 
   // Struct Features
   uint64 miningSystem   = 12;
@@ -34,7 +34,7 @@ message Struct {
 
   uint64 buildStartBlock = 15;
 
-  uint64 passiveDraw      = 16;
+  uint64 passiveDraw               = 16;
   uint64 activeMiningSystemDraw    = 17;
   uint64 activeMiningSystemBlock   = 18;
 
@@ -44,7 +44,7 @@ message Struct {
   string miningSystemStatus       = 21;
   string refiningSystemStatus     = 22;
 
-  uint64 powerSystemFuel    = 23;
-  uint64 powerSystemEnergy  = 24;
-  uint64 powerSystemLoad    = 25;
+  uint64 powerSystemFuel          = 23;
+  uint64 powerSystemEnergy        = 24;
+  uint64 powerSystemLoad          = 25;
 }

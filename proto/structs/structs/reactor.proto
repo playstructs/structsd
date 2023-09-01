@@ -7,40 +7,40 @@ import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 
 message Reactor {
-  option (gogoproto.equal)            = true;
+  option (gogoproto.equal) = true;
 
-  uint64 id = 1;
+  uint64  id                        = 1;
 
-  string validator = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string  validator                 = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
-  uint64 fuel = 3;
+  uint64  fuel                      = 3;
 
-  uint64 energy = 4;
+  uint64  energy                    = 4;
 
-  uint64 load = 5;
+  uint64  load                      = 5;
 
-  bool activated = 6;
+  bool    activated                 = 6;
 
-  uint64 guildId = 7;
+  uint64  guildId                   = 7;
 
-  bool automatedAllocations = 8;
-  bool allowManualAllocations = 9;
-  bool allowExternalAllocations = 10;
-  bool allowUncappedAllocations = 11;
+  bool    automatedAllocations      = 8;
+  bool    allowManualAllocations    = 9;
+  bool    allowExternalAllocations  = 10;
+  bool    allowUncappedAllocations  = 11;
 
-  string delegateMinimumBeforeAllowedAllocations = 12 [
+  string  delegateMinimumBeforeAllowedAllocations = 12 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];
 
-  string delegateTaxOnAllocations = 13 [
+  string  delegateTaxOnAllocations = 13 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];
 
-  bytes rawAddress = 14;
+  bytes   rawAddress                = 14;
 
-  uint64 serviceSubstationId = 15;
+  uint64  serviceSubstationId       = 15;
 }

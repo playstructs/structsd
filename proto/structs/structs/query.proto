@@ -65,21 +65,21 @@ service Query {
   
   // Queries a list of Guild items.
   rpc Guild    (QueryGetGuildRequest) returns (QueryGetGuildResponse) {
-    option (google.api.http).get = "/structs/structs/guild/{id}";
+    option (google.api.http).get = "/structs/guild/{id}";
   
   }
   rpc GuildAll (QueryAllGuildRequest) returns (QueryAllGuildResponse) {
-    option (google.api.http).get = "/structs/structs/guild";
+    option (google.api.http).get = "/structs/guild";
   
   }
   
   // Queries a list of Player items.
   rpc Player    (QueryGetPlayerRequest) returns (QueryGetPlayerResponse) {
-    option (google.api.http).get = "/structs/structs/player/{id}";
+    option (google.api.http).get = "/structs/player/{id}";
   
   }
   rpc PlayerAll (QueryAllPlayerRequest) returns (QueryAllPlayerResponse) {
-    option (google.api.http).get = "/structs/structs/player";
+    option (google.api.http).get = "/structs/player";
   
   }
 
@@ -96,21 +96,21 @@ service Query {
 
   // Queries a list of Planet items.
   rpc Planet    (QueryGetPlanetRequest) returns (QueryGetPlanetResponse) {
-    option (google.api.http).get = "/structs/structs/planet/{id}";
+    option (google.api.http).get = "/structs/planet/{id}";
 
   }
   rpc PlanetAll (QueryAllPlanetRequest) returns (QueryAllPlanetResponse) {
-    option (google.api.http).get = "/structs/structs/planet";
+    option (google.api.http).get = "/structs/planet";
 
   }
 
   // Queries a list of Structs items.
   rpc Struct    (QueryGetStructRequest) returns (QueryGetStructResponse) {
-    option (google.api.http).get = "/structs/structs/struct/{id}";
+    option (google.api.http).get = "/structs/struct/{id}";
 
   }
   rpc StructAll (QueryAllStructRequest) returns (QueryAllStructResponse) {
-    option (google.api.http).get = "/structs/structs/struct";
+    option (google.api.http).get = "/structs/struct";
 
   }
 

@@ -8,20 +8,22 @@ option go_package = "structs/x/structs/types";
 
 
 message Allocation {
-  uint64 id = 1;
-  objectType sourceType = 2;
-  uint64 sourceId = 3; 
-  uint64 destinationId = 4;
+  uint64      id                  = 1;
 
-  uint64 power = 5;
+  // Core allocation details
+  objectType  sourceType          = 2;
+  uint64      sourceId            = 3;
+  uint64      destinationId       = 4;
+  uint64      power               = 5;
 
-  string creator = 6;
-  string controller = 7;
+  // Who does this currently belong to
+  string      creator             = 6;
+  string      controller          = 7;
 
-  bool locked = 8;
+  // Locking will be needed for IBC
+  bool        locked              = 8;
 
   // "dynamic" might be a better name for this
-  bool HasLinkedInfusion = 9;
-  string linkedInfusion = 10;
-
+  bool        HasLinkedInfusion   = 9;
+  string      linkedInfusion      = 10;
 }
