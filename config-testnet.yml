@@ -1,11 +1,7 @@
 version: 1
-accounts:
-  - name: alice
-    coins:
-      - 2000000alpha
-  - name: bob
-    coins:
-      - 100alpha
+client:
+  openapi:
+    path: docs/static/openapi.yml
 genesis:
   app_state:
     crisis:
