@@ -53,6 +53,8 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(CmdPlanetExplore())
 
+    cmd.AddCommand(CmdStructActivate())
+
 	cmd.AddCommand(CmdStructBuildInitiate())
 	cmd.AddCommand(CmdStructBuildComplete())
 	cmd.AddCommand(CmdStructBuildCompute())

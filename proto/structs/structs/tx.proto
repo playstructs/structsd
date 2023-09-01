@@ -32,6 +32,7 @@ service Msg {
   rpc AddressApproveRegister         (MsgAddressApproveRegister        ) returns (MsgAddressRegisterResponse               );
   rpc AddressRevoke                  (MsgAddressRevoke                 ) returns (MsgAddressRevokeResponse                 );
   rpc PlanetExplore                  (MsgPlanetExplore                 ) returns (MsgPlanetExploreResponse                 );
+  rpc StructActivate                 (MsgStructActivate                ) returns (MsgStructActivateResponse                );
   rpc StructAllocationCreate         (MsgStructAllocationCreate        ) returns (MsgAllocationCreateResponse              );
   rpc StructBuildInitiate            (MsgStructBuildInitiate           ) returns (MsgStructBuildInitiateResponse           );
   rpc StructBuildComplete            (MsgStructBuildComplete           ) returns (MsgStructBuildCompleteResponse           );
@@ -193,6 +194,14 @@ message MsgPlanetExploreResponse {
 
 
 
+message MsgStructActivate {
+  string creator      = 1;
+  uint64 structId     = 2;
+}
+
+message MsgStructActivateResponse {
+  Struct struct = 1 [(gogoproto.nullable) = false];
+}
 
 message MsgStructBuildInitiate {
   string creator      = 1;

@@ -173,6 +173,22 @@ func (k Keeper) CascadeSubstationAllocationFailure(ctx sdk.Context, substationId
 
 		k.AllocationDestroy(ctx, allocation)
 	}
+
+	// If we get here and Energy is still less than load, then we need to deactivate the structs
+    if k.SubstationGetEnergy(ctx, substationId) < k.SubstationGetLoad(ctx, substationId) {
+        players := k.GetAllPlayerBySubstation(ctx, substationId)
+        for _, player := range players {
+            planet, planetFound := k.GetPlanet(ctx, player.PlanetId)
+            // TODO Lets hardcore some laziness but fix once we have a better idea
+            if (planetFound) {
+                for i := uint64(0); i < planet.LandSlots; i++ {
+                    if (planet.Land[i] != 0) {
+                        k.StructDeactivate(ctx, planet.Land[i])
+                    }
+                }
+            }
+        }
+    }
 }
 
 // For use when an allocation is being destroyed and the power is no longer applied to the load

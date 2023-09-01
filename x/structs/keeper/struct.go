@@ -306,12 +306,73 @@ func (k Keeper) StructIncrementLoad(ctx sdk.Context, id uint64, amount uint64) (
 }
 
 func (k Keeper) StructDeactivate(ctx sdk.Context, structId uint64) {
-    // Set the Struct to inactive
+    structure, structureFound := k.GetStruct(ctx, structId)
+    if (structureFound) {
 
-    // Set the internal systems to INACTIVE + reset block starts to zero
+        if (structure.Status == "ACTIVE") {
 
-    // if has power systems, destroy allocations
+            structure.SetStatus("INACTIVE")
 
+            if (structure.MiningSystem == 1) {
+                structure.SetMiningSystemStatus("INACTIVE")
+                structure.SetMiningSystemActivationBlock(0)
+            }
 
+            if (structure.RefiningSystem == 1) {
+                structure.SetRefiningSystemStatus("INACTIVE")
+                structure.SetRefiningSystemActivationBlock(0)
+            }
+
+            k.SetStruct(ctx, structure)
+
+            if (structure.PowerSystem == 1) {
+                k.StructDestroyAllocations(ctx, structure.Id)
+            }
+        }
+    }
+}
+
+func (k Keeper) StructDestroyAllocations(ctx sdk.Context, structId uint64) {
+    allocations := k.GetAllStructAllocations(ctx, structId)
+    for _, allocation := range allocations {
+        k.AllocationDestroy(ctx, allocation)
+    }
+}
+
+func (k Keeper) StructDestroyInfusions(ctx sdk.Context, structId uint64) {
+    infusions := k.GetAllStructInfusions(ctx, structId)
+    for _, infusion := range infusions {
+        k.InfusionDestroy(ctx, infusion)
+    }
+}
+
+func (k Keeper) StructDestroy(ctx sdk.Context, structure types.Struct) {
+
+    planet, planetFound := k.GetPlanet(ctx, structure.PlanetId)
+    if (planetFound) {
+        switch structure.Ambit {
+            case "LAND":
+                planet.Land[structure.Slot] = 0
+        }
+
+        k.SetPlanet(ctx, planet)
+    }
+
+    k.StructDestroyAllocations(ctx, structure.Id)
+
+    k.StructDestroyInfusions(ctx, structure.Id)
+
+    storeLoad := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.StructLoadKey))
+    storeLoad.Delete(GetStructIDBytes(structure.Id))
+
+    storeEnergy := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.StructEnergyKey))
+    storeEnergy.Delete(GetStructIDBytes(structure.Id))
+
+    storeFuel := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.StructFuelKey))
+    storeFuel.Delete(GetStructIDBytes(structure.Id))
+
+    k.RemoveStruct(ctx, structure.Id)
+
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: structure.Id, ObjectType: types.ObjectType_struct})
 
 }

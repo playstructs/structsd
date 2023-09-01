@@ -235,6 +235,10 @@ func (k Keeper) InfusionDestroy(ctx sdk.Context, infusion types.Infusion) {
             newFuel, newEnergy := k.ReactorRebuildInfusions(ctx, infusion.DestinationId)
             k.ReactorSetFuel(ctx, infusion.DestinationId, newFuel)
             k.ReactorSetEnergy(ctx, infusion.DestinationId, newEnergy)
+        case types.ObjectType_struct:
+            newFuel, newEnergy := k.StructRebuildInfusions(ctx, infusion.DestinationId)
+            k.StructSetFuel(ctx, infusion.DestinationId, newFuel)
+            k.StructSetEnergy(ctx, infusion.DestinationId, newEnergy)
 	}
 
 }

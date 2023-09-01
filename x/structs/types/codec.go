@@ -25,6 +25,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgAddressApproveRegister{}, "structs/AddressApproveRegister", nil)
 	cdc.RegisterConcrete(&MsgAddressRevoke{}, "structs/AddressRevoke", nil)
 	cdc.RegisterConcrete(&MsgPlanetExplore{}, "structs/PlanetExplore", nil)
+	cdc.RegisterConcrete(&MsgStructActivate{}, "structs/StructActivate", nil)
 	cdc.RegisterConcrete(&MsgStructAllocationCreate{}, "structs/StructAllocationCreate", nil)
 	cdc.RegisterConcrete(&MsgStructBuildInitiate{}, "structs/StructBuildInitiate", nil)
 	cdc.RegisterConcrete(&MsgStructBuildComplete{}, "structs/StructBuildComplete", nil)
@@ -93,6 +94,9 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	)
     registry.RegisterImplementations((*sdk.Msg)(nil),
         &MsgPlanetExplore{},
+    )
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgStructActivate{},
     )
     registry.RegisterImplementations((*sdk.Msg)(nil),
         &MsgStructAllocationCreate{},

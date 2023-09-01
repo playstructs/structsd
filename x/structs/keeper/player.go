@@ -125,6 +125,29 @@ func (k Keeper) GetAllPlayer(ctx sdk.Context) (list []types.Player) {
 	return
 }
 
+// GetAllPlayer returns all player
+func (k Keeper) GetAllPlayerBySubstation(ctx sdk.Context, substationId uint64) (list []types.Player) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.Player
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+
+        if (val.SubstationId == substationId) {
+            val.Load = k.PlayerGetLoad(ctx, val.Id)
+            playerAcc, _ := sdk.AccAddressFromBech32(val.PrimaryAddress)
+            val.Storage = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
+
+            list = append(list, val)
+		}
+	}
+
+	return
+}
+
 // GetPlayerIDBytes returns the byte representation of the ID
 func GetPlayerIDBytes(id uint64) []byte {
 	bz := make([]byte, 8)
