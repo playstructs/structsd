@@ -18,7 +18,15 @@ validators:
     bonded: 1000000alpha
 genesis:
   app_state:
+    crisis:
+      constant_fee:
+        denom: "alpha"
     staking:
       params:
         bond_denom: "alpha"
+    gov:
+      deposit_params:
+        min_deposit:
+          - amount: "100"
+            denom: "alpha"
   chain_id: "structstestnet-00"
