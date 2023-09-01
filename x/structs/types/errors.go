@@ -76,4 +76,6 @@ var (
     ErrStructAllocationCreate                   = sdkerrors.Register(ModuleName,  1730, "Allocation of power from struct failed")
     ErrStructActivate                           = sdkerrors.Register(ModuleName,  1731, "Struct activation failed")
 
+    ErrSabotage                                 = sdkerrors.Register(ModuleName,  1800, "Sabotage failed")
+
 )

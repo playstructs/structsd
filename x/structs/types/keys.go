@@ -38,6 +38,9 @@ const (
     DifficultyBuildAgeRange  = 5  // 36000 // 1 days
     DifficultyActionAgeRange = 10 // 252000 // 7 days
 
+    DifficultySabotageRangeMine   = DifficultyActionAgeRange  // 36000 // 1 days
+    DifficultySabotageRangeRefine = DifficultyActionAgeRange // 252000 // 7 days
+    DifficultySabotageRangePower  = 50 // 36000 // 1 days
 
 )
 

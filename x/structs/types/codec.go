@@ -36,6 +36,8 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
     cdc.RegisterConcrete(&MsgStructRefineDeactivate{}, "structs/StructRefineDeactivate", nil)
     cdc.RegisterConcrete(&MsgStructRefine{}, "structs/StructRefine", nil)
 
+    cdc.RegisterConcrete(&MsgSabotage{}, "structs/Sabotage", nil)
+
 
 	// this line is used by starport scaffolding # 2
 }
@@ -128,6 +130,11 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil),
         &MsgStructInfuse{},
     )
+
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgSabotage{},
+    )
+
 	// this line is used by starport scaffolding # 3
 
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)

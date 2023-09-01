@@ -72,6 +72,8 @@ func GetTxCmd() *cobra.Command {
     cmd.AddCommand(CmdStructInfuse())
     cmd.AddCommand(CmdStructAllocationCreate())
 
+    cmd.AddCommand(CmdSabotage())
+
 	// this line is used by starport scaffolding # 1
 
 	return cmd

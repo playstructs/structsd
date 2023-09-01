@@ -79154,6 +79154,8 @@ definitions:
     type: object
   structs.structs.MsgPlayerUpdatePrimaryAddressResponse:
     type: object
+  structs.structs.MsgSabotageResponse:
+    type: object
   structs.structs.MsgStructActivateResponse:
     type: object
     properties:
