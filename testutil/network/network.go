@@ -5,6 +5,8 @@ import (
 	"testing"
 	"time"
 
+
+
 	"structs/app"
 
 	"github.com/cosmos/cosmos-sdk/baseapp"
@@ -56,6 +58,7 @@ func DefaultConfig() network.Config {
 		encoding = app.MakeEncodingConfig()
 		chainID  = "chain-" + tmrand.NewRand().Str(6)
 	)
+
 	return network.Config{
 		Codec:             encoding.Marshaler,
 		TxConfig:          encoding.TxConfig,

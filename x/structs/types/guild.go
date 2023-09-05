@@ -18,6 +18,14 @@ func (guild *Guild) SetEndpoint(endpoint string) error {
 	return nil
 }
 
+func (guild *Guild) SetEntrySubstationId(substationId uint64) error {
+
+	guild.EntrySubstationId = substationId
+
+	return nil
+}
+
+
 func (guild *Guild) SetPrimaryReactorId(reactorId uint64) error {
 
 	guild.PrimaryReactorId = reactorId

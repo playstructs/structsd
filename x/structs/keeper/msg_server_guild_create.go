@@ -45,7 +45,17 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
     player, _ := k.GetPlayer(ctx, playerId)
 
 
-    guild := k.AppendGuild(ctx, msg.Endpoint, reactor, player)
+    if (msg.EntrySubstationId > 0 ) {
+        // check that the calling player has substation permissions
+        if (!k.SubstationPermissionHasOneOf(ctx, msg.EntrySubstationId, player.Id, types.SubstationPermissionConnectPlayer)) {
+            return &types.MsgGuildCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%d) has no Substation Connect Player permissions ", player.Id)
+        }
+    }
+
+    guild := k.AppendGuild(ctx, msg.Endpoint, msg.EntrySubstationId, reactor, player)
+
+    player.SetGuild(guild.Id)
+    k.SetPlayer(ctx, player)
 
 	return &types.MsgGuildCreateResponse{GuildId: guild.Id}, nil
 }

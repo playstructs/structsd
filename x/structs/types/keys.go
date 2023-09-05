@@ -27,13 +27,11 @@ const (
 	KeeperStartValue = 1
 
 	// Starting value for Reactor Owner Initialization
-	InitialReactorOwnerEnergy = 10000
+	InitialReactorOwnerEnergy = 100
 
     // Starting value for Reactor Owner Initialization
-	InitialSubstationOwnerEnergy = 20000
+	InitialSubstationOwnerEnergy = 100
 
-	// Starting allocation for Reactor
-    InitialReactorAllocation = 20000
 
     DifficultyBuildAgeRange  = 1800  // 36000 // 1 days
     DifficultyActionAgeRange = 3600 // 252000 // 7 days
@@ -64,7 +62,7 @@ const (
 
 	ReactorPermissionKey = "Reactor/permission/"
 
-	ReactorFuelToEnergyConversion = 1
+	ReactorFuelToEnergyConversion = 100
 )
 
 const (
@@ -109,7 +107,7 @@ const (
 	PlayerPermissionKey = "Player/permission/"
 	PlayerLoadKey = "Player/load/"
 
-	PlayerPassiveDraw = 1000
+	PlayerPassiveDraw = 25
 )
 
 const (
@@ -138,7 +136,7 @@ const (
     StructFuelKey      = "Struct/fuel/"
 
 
-	StructFuelToEnergyConversion = 1000
+	StructFuelToEnergyConversion = 200
 )
 
 /*

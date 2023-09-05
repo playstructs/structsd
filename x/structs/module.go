@@ -38,6 +38,8 @@ import (
 	"structs/x/structs/client/cli"
 	"structs/x/structs/keeper"
 	"structs/x/structs/types"
+
+
 )
 
 var (
@@ -45,6 +47,8 @@ var (
 	_ module.AppModuleBasic = AppModuleBasic{}
 	_ porttypes.IBCModule   = IBCModule{}
 )
+
+
 
 // ----------------------------------------------------------------------------
 // AppModuleBasic

@@ -103,8 +103,8 @@ func CreateBaseStruct(structType string) Struct {
             newRefiningSystem = 0;
             newPowerSystem    = 0;
 
-            newPassiveDraw              = 1000;
-            newActiveMiningSystemDraw   = 2000;
+            newPassiveDraw              = 10;
+            newActiveMiningSystemDraw   = 20;
             newActiveRefiningSystemDraw = 0;
 
 	    case "Refinery":
@@ -116,9 +116,9 @@ func CreateBaseStruct(structType string) Struct {
             newRefiningSystem = 1;
             newPowerSystem    = 0;
 
-            newPassiveDraw    = 2000;
+            newPassiveDraw              = 20;
             newActiveMiningSystemDraw   = 0;
-            newActiveRefiningSystemDraw = 3000;
+            newActiveRefiningSystemDraw = 30;
 
 	    case "Small Generator":
 	        newCategory = "Planetary Struct"
@@ -129,7 +129,7 @@ func CreateBaseStruct(structType string) Struct {
             newRefiningSystem = 0;
             newPowerSystem    = 1;
 
-            newPassiveDraw    = 500;
+            newPassiveDraw              = 5;
             newActiveMiningSystemDraw   = 0;
             newActiveRefiningSystemDraw = 0;
 

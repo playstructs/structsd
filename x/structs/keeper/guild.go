@@ -39,6 +39,7 @@ func (k Keeper) AppendGuild(
 	ctx sdk.Context,
 	//guild types.Guild,
 	endpoint string,
+	substationId uint64,
 	reactor types.Reactor,
 	player types.Player,
 ) (guild types.Guild) {
@@ -53,6 +54,7 @@ func (k Keeper) AppendGuild(
 	guild.SetCreator(player.Creator)
 	guild.SetOwner(player.Id)
 	guild.SetPrimaryReactorId(reactor.Id)
+	guild.SetEntrySubstationId(substationId)
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GuildKey))
 	appendedValue := k.cdc.MustMarshal(&guild)

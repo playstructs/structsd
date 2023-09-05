@@ -132,6 +132,7 @@ message MsgStructAllocationCreate {
 message MsgGuildCreate {
   string creator  = 1;
   string endpoint = 2;
+  uint64 entrySubstationId = 3;
 }
 
 message MsgGuildCreateResponse { uint64 guildId = 1; }
