@@ -30,7 +30,6 @@ func (k msgServer) GuildUpdate(goCtx context.Context, msg *types.MsgGuildUpdate)
     }
 
 
-
     playerId := k.GetPlayerIdFromAddress(ctx, msg.Creator)
     if (playerId == 0) {
         // should really never get here as player creation is triggered
