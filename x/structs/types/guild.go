@@ -41,6 +41,22 @@ func (guild *Guild) SetOwner(playerId uint64) error {
 	return nil
 }
 
+
+func (guild *Guild) SetGuildJoinType(guildJoinType uint64) error {
+
+	guild.GuildJoinType = guildJoinType
+
+	return nil
+}
+
+
+func (guild *Guild) SetInfusionJoinMinimum(infusionJoinMinimum uint64) error {
+
+	guild.InfusionJoinMinimum = infusionJoinMinimum
+
+	return nil
+}
+
 func CreateEmptyGuild() Guild {
 	return Guild{
 		Endpoint: "",

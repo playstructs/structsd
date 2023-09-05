@@ -79099,6 +79099,8 @@ definitions:
       guildId:
         type: string
         format: uint64
+  structs.structs.MsgGuildUpdateResponse:
+    type: object
   structs.structs.MsgPlanetExploreResponse:
     type: object
     properties:
