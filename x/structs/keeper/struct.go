@@ -155,7 +155,7 @@ func (k Keeper) StructRebuildInfusions(ctx sdk.Context, id uint64) (fuel uint64,
 
 // ReactorSetFuel - Sets the in-memory representation of the struct energy production
 func (k Keeper) StructSetFuel(ctx sdk.Context, id uint64, amount uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.StructFuelKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructFuelKey))
 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, amount)
@@ -167,7 +167,7 @@ func (k Keeper) StructSetFuel(ctx sdk.Context, id uint64, amount uint64) {
 
 // StructSetEnergy- Sets the in-memory representation of the Struct energy production
 func (k Keeper) StructSetEnergy(ctx sdk.Context, id uint64, amount uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.StructEnergyKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructEnergyKey))
 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, amount)
@@ -179,7 +179,7 @@ func (k Keeper) StructSetEnergy(ctx sdk.Context, id uint64, amount uint64) {
 // StructGetEnergy returns the current energy production of the struct
 // Go to memory first, but then fall back to rebuilding from storage
 func (k Keeper) StructGetEnergy(ctx sdk.Context, id uint64) (energy uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.StructEnergyKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructEnergyKey))
 
 	bz := store.Get(GetStructIDBytes(id))
 
@@ -204,7 +204,7 @@ func (k Keeper) StructGetEnergy(ctx sdk.Context, id uint64) (energy uint64) {
 // StructGetFuel returns the current fuel infused in the Struct
 // Go to memory first, but then fall back to rebuilding from storage
 func (k Keeper) StructGetFuel(ctx sdk.Context, id uint64) (fuel uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.StructFuelKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructFuelKey))
 
 	bz := store.Get(GetStructIDBytes(id))
 
@@ -239,7 +239,7 @@ func (k Keeper) StructRebuildLoad(ctx sdk.Context, id uint64) (load uint64) {
 // StructGetLoad returns the current load of all allocations
 // Go to memory first, but then fall back to rebuilding from allocations
 func (k Keeper) StructGetLoad(ctx sdk.Context, id uint64) (load uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.StructLoadKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructLoadKey))
 
 	bz := store.Get(GetStructIDBytes(id))
 
@@ -257,7 +257,7 @@ func (k Keeper) StructGetLoad(ctx sdk.Context, id uint64) (load uint64) {
 
 // StructSetLoad - Sets the in-memory representation of the aggregate load of all associated allocations
 func (k Keeper) StructSetLoad(ctx sdk.Context, id uint64, amount uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.StructLoadKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructLoadKey))
 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, amount)
@@ -268,7 +268,7 @@ func (k Keeper) StructSetLoad(ctx sdk.Context, id uint64, amount uint64) {
 
 
 func (k Keeper) StructDecrementLoad(ctx sdk.Context, id uint64, amount uint64) (new uint64, err error) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.StructLoadKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructLoadKey))
 
 	current := k.StructGetLoad(ctx, id)
 
@@ -286,7 +286,7 @@ func (k Keeper) StructDecrementLoad(ctx sdk.Context, id uint64, amount uint64) (
 }
 
 func (k Keeper) StructIncrementLoad(ctx sdk.Context, id uint64, amount uint64) (uint64, error) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.StructLoadKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructLoadKey))
 
 	current := k.StructGetLoad(ctx, id)
 
@@ -362,13 +362,13 @@ func (k Keeper) StructDestroy(ctx sdk.Context, structure types.Struct) {
 
     k.StructDestroyInfusions(ctx, structure.Id)
 
-    storeLoad := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.StructLoadKey))
+    storeLoad := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructLoadKey))
     storeLoad.Delete(GetStructIDBytes(structure.Id))
 
-    storeEnergy := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.StructEnergyKey))
+    storeEnergy := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructEnergyKey))
     storeEnergy.Delete(GetStructIDBytes(structure.Id))
 
-    storeFuel := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.StructFuelKey))
+    storeFuel := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructFuelKey))
     storeFuel.Delete(GetStructIDBytes(structure.Id))
 
     k.RemoveStruct(ctx, structure.Id)

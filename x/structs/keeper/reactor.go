@@ -7,6 +7,8 @@ import (
 	"structs/x/structs/types"
 
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+
+	"fmt"
 )
 
 // GetReactorCount get the total number of reactor
@@ -152,8 +154,9 @@ func (k Keeper) GetAllReactor(ctx sdk.Context, full bool) (list []types.Reactor)
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
 		if full {
-		    val.Fuel = k.ReactorGetFuel(ctx, val.Id)
 		    val.Energy = k.ReactorGetEnergy(ctx, val.Id)
+		    val.Fuel = k.ReactorGetFuel(ctx, val.Id)
+
 			val.Load = k.ReactorGetLoad(ctx, val.Id)
 		}
 
@@ -190,7 +193,7 @@ func (k Keeper) CascadeReactorAllocationFailure(ctx sdk.Context, reactor types.R
 }
 
 func (k Keeper) ReactorDecrementLoad(ctx sdk.Context, id uint64, amount uint64) (new uint64, err error) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.ReactorLoadKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorLoadKey))
 
 	current := k.ReactorGetLoad(ctx, id)
 
@@ -208,7 +211,7 @@ func (k Keeper) ReactorDecrementLoad(ctx sdk.Context, id uint64, amount uint64) 
 }
 
 func (k Keeper) ReactorIncrementLoad(ctx sdk.Context, id uint64, amount uint64) (uint64, error) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.ReactorLoadKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorLoadKey))
 
 	current := k.ReactorGetLoad(ctx, id)
 
@@ -230,7 +233,7 @@ func (k Keeper) ReactorIncrementLoad(ctx sdk.Context, id uint64, amount uint64) 
 // ReactorGetLoad returns the current load of all allocations
 // Go to memory first, but then fall back to rebuilding from allocations
 func (k Keeper) ReactorGetLoad(ctx sdk.Context, id uint64) (load uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.ReactorLoadKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorLoadKey))
 
 	bz := store.Get(GetReactorIDBytes(id))
 
@@ -248,7 +251,7 @@ func (k Keeper) ReactorGetLoad(ctx sdk.Context, id uint64) (load uint64) {
 
 // ReactorSetLoad - Sets the in-memory representation of the aggregate load of all associated allocations
 func (k Keeper) ReactorSetLoad(ctx sdk.Context, id uint64, amount uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.ReactorLoadKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorLoadKey))
 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, amount)
@@ -286,13 +289,13 @@ func (k Keeper) ReactorRebuildInfusions(ctx sdk.Context, id uint64) (fuel uint64
 // ReactorGetEnergy returns the current energy production of the reactor
 // Go to memory first, but then fall back to rebuilding from storage
 func (k Keeper) ReactorGetEnergy(ctx sdk.Context, id uint64) (energy uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.ReactorEnergyKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorEnergyKey))
 
 	bz := store.Get(GetReactorIDBytes(id))
 
 	// Reactor Energy Not in Memory: no element
 	if bz == nil {
-
+        fmt.Printf("Reactor (%d) Energy record not in memory, rebuilding \n", id)
 	    // may as well set both since we've got to perform the
 	    // iteration on the infusions
 		fuel, energy := k.ReactorRebuildInfusions(ctx, id)
@@ -308,12 +311,13 @@ func (k Keeper) ReactorGetEnergy(ctx sdk.Context, id uint64) (energy uint64) {
 
 // ReactorSetEnergy- Sets the in-memory representation of the reactors energy production
 func (k Keeper) ReactorSetEnergy(ctx sdk.Context, id uint64, amount uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.ReactorEnergyKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorEnergyKey))
 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, amount)
-
+    fmt.Printf("Reactor (%d) Setting Energy record to (%d)...", id, amount)
 	store.Set(GetReactorIDBytes(id), bz)
+	fmt.Printf("Reactor (%d) Energy Set\n", id)
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: id, ObjectType: types.ObjectType_reactor})
 }
 
@@ -323,13 +327,13 @@ func (k Keeper) ReactorSetEnergy(ctx sdk.Context, id uint64, amount uint64) {
 // ReactorGetFuel returns the current fuel infused in the reactor
 // Go to memory first, but then fall back to rebuilding from storage
 func (k Keeper) ReactorGetFuel(ctx sdk.Context, id uint64) (fuel uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.ReactorFuelKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorFuelKey))
 
 	bz := store.Get(GetReactorIDBytes(id))
 
 	// Reactor Energy Not in Memory: no element
 	if bz == nil {
-
+        fmt.Printf("Reactor (%d) Fuel record not in memory, rebuilding \n", id)
 	    // may as well set both since we've got to perform the
 	    // iteration on the infusions
 		fuel, energy := k.ReactorRebuildInfusions(ctx, id)
@@ -343,14 +347,16 @@ func (k Keeper) ReactorGetFuel(ctx sdk.Context, id uint64) (fuel uint64) {
 	return fuel
 }
 
-// ReactorSetEnergy- Sets the in-memory representation of the reactors energy production
+// ReactorSetFuel - Sets the in-memory representation of the reactors energy production
 func (k Keeper) ReactorSetFuel(ctx sdk.Context, id uint64, amount uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.ReactorFuelKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorFuelKey))
 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, amount)
 
+    fmt.Printf("Reactor (%d) Setting Fuel record to (%d) ...", id, amount)
 	store.Set(GetReactorIDBytes(id), bz)
+	fmt.Printf("Reactor (%d) Fuel Set\n", id)
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: id, ObjectType: types.ObjectType_reactor})
 }
 

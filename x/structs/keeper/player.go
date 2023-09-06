@@ -189,7 +189,7 @@ func (k Keeper) UpsertPlayer(ctx sdk.Context, playerAddress string ) (player typ
 // the current total load of the player structs
 // Go to memory first, but then fall back to rebuilding from storage
 func (k Keeper) PlayerGetLoad(ctx sdk.Context, id uint64) (load uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.PlayerLoadKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerLoadKey))
 
 	bz := store.Get(GetPlayerIDBytes(id))
 
@@ -208,7 +208,7 @@ func (k Keeper) PlayerGetLoad(ctx sdk.Context, id uint64) (load uint64) {
 
 // Sets the in-memory representation of the aggregate load for the player
 func (k Keeper) PlayerSetLoad(ctx sdk.Context, id uint64, amount uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.PlayerLoadKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerLoadKey))
 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, amount)

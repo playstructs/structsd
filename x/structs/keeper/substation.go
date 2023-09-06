@@ -289,7 +289,7 @@ func (k Keeper) SubstationIncrementConnectedPlayerLoad(ctx sdk.Context, id uint6
 // SubstationGetLoad returns the current total load of the substation
 // Go to memory first, but then fall back to rebuilding from storage
 func (k Keeper) SubstationGetLoad(ctx sdk.Context, id uint64) (load uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.SubstationLoadKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationLoadKey))
 
 	bz := store.Get(GetSubstationIDBytes(id))
 
@@ -312,7 +312,7 @@ func (k Keeper) SubstationGetLoad(ctx sdk.Context, id uint64) (load uint64) {
 // SubstationGetAllocationLoad returns the current load of all allocations
 // Go to memory first, but then fall back to rebuilding from allocations
 func (k Keeper) SubstationGetAllocationLoad(ctx sdk.Context, id uint64) (load uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.SubstationAllocationLoadKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationAllocationLoadKey))
 
 	bz := store.Get(GetSubstationIDBytes(id))
 
@@ -330,7 +330,7 @@ func (k Keeper) SubstationGetAllocationLoad(ctx sdk.Context, id uint64) (load ui
 // SubstationGetConnectedPlayerLoad returns the current load of all allocations
 // Go to memory first, but then fall back to rebuilding from allocations
 func (k Keeper) SubstationGetConnectedPlayerLoad(ctx sdk.Context, id uint64) (load uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.SubstationConnectedPlayerLoadKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationConnectedPlayerLoadKey))
 
 	bz := store.Get(GetSubstationIDBytes(id))
 
@@ -347,7 +347,7 @@ func (k Keeper) SubstationGetConnectedPlayerLoad(ctx sdk.Context, id uint64) (lo
 
 // SubstationSetLoad - Sets the in-memory representation of the aggregate load of all associated allocations
 func (k Keeper) SubstationSetLoad(ctx sdk.Context, id uint64, amount uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.SubstationLoadKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationLoadKey))
 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, amount)
@@ -359,7 +359,7 @@ func (k Keeper) SubstationSetLoad(ctx sdk.Context, id uint64, amount uint64) {
 
 // SubstationSetAllocationLoad - Sets the in-memory representation of the aggregate load of all associated allocations
 func (k Keeper) SubstationSetAllocationLoad(ctx sdk.Context, id uint64, amount uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.SubstationAllocationLoadKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationAllocationLoadKey))
 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, amount)
@@ -372,7 +372,7 @@ func (k Keeper) SubstationSetAllocationLoad(ctx sdk.Context, id uint64, amount u
 
 // Sets the in-memory representation of the aggregate load of all connected players
 func (k Keeper) SubstationSetConnectedPlayerLoad(ctx sdk.Context, id uint64, amount uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.SubstationConnectedPlayerLoadKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationConnectedPlayerLoadKey))
 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, amount)
@@ -411,7 +411,7 @@ func (k Keeper) SubstationRebuildConnectedPlayerLoad(ctx sdk.Context, id uint64)
 // SubstationGetEnergy returns the current aggregate energy supply across all allocations
 // Go to memory first, but then fall back to rebuilding from storage
 func (k Keeper) SubstationGetEnergy(ctx sdk.Context, id uint64) (load uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.SubstationEnergyKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationEnergyKey))
 
 	bz := store.Get(GetSubstationIDBytes(id))
 
@@ -440,7 +440,7 @@ func (k Keeper) SubstationRebuildAllocationEnergy(ctx sdk.Context, id uint64) (l
 
 // Sets the in-memory representation of the substations available energy
 func (k Keeper) SubstationSetEnergy(ctx sdk.Context, id uint64, amount uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.memKey), types.KeyPrefix(types.SubstationEnergyKey))
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationEnergyKey))
 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, amount)
