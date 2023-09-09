@@ -73,7 +73,7 @@ func CmdStructBuildCompute() *cobra.Command {
             fmt.Printf("Build process activated on %d, current block is %d \n", performingStructure.BuildStartBlock, currentBlock)
             currentAge := currentBlock - performingStructure.BuildStartBlock
             currentDifficulty := types.CalculateActionDifficulty(float64(currentAge))
-            fmt.Printf("Building difficult is %d \n", currentDifficulty)
+            fmt.Printf("Building difficulty is %d \n", currentDifficulty)
 
 
             structIdString                  := strconv.FormatUint(performingStructure.Id, 10)

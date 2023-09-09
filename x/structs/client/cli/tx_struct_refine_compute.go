@@ -72,7 +72,7 @@ func CmdStructRefineCompute() *cobra.Command {
             fmt.Printf("Refining process activated on %d, current block is %d \n", performingStructure.ActiveRefiningSystemBlock, currentBlock)
             currentAge := currentBlock - performingStructure.ActiveRefiningSystemBlock
             currentDifficulty := types.CalculateActionDifficulty(float64(currentAge))
-            fmt.Printf("Refining difficult is %d \n", currentDifficulty)
+            fmt.Printf("Refining difficulty is %d \n", currentDifficulty)
 
 
             structIdString                  := strconv.FormatUint(performingStructure.Id, 10)

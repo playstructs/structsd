@@ -72,7 +72,7 @@ func CmdStructMineCompute() *cobra.Command {
             fmt.Printf("Mining process activated on %d, current block is %d \n", performingStructure.ActiveMiningSystemBlock, currentBlock)
             currentAge := currentBlock - performingStructure.ActiveMiningSystemBlock
             currentDifficulty := types.CalculateActionDifficulty(float64(currentAge))
-            fmt.Printf("Mining difficult is %d \n", currentDifficulty)
+            fmt.Printf("Mining difficulty is %d \n", currentDifficulty)
 
 
             structIdString                  := strconv.FormatUint(performingStructure.Id, 10)
