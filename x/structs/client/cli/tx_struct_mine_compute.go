@@ -89,7 +89,7 @@ func CmdStructMineCompute() *cobra.Command {
 COMPUTE:
 				i = i + 1
 
-                if (i % 20000) > 0 {
+                if (i % 20000) == 0 {
                     currentBlockResponse, _ = queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
                     currentBlock = currentBlockResponse.BlockHeight
                     currentAge = currentBlock - performingStructure.ActiveMiningSystemBlock
