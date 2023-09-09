@@ -65,7 +65,7 @@ func CmdSabotage() *cobra.Command {
 
             currentBlockResponse, _ := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
             currentBlock := currentBlockResponse.BlockHeight
-            fmt.Printf("Sabotage process activated on %d, current block is %d \n", performingStructure.ActiveMiningSystemBlock, currentBlock)
+            fmt.Printf("Sabotage process activated on %d, current block is %d \n", performingStructure.Id, currentBlock)
 
             var currentAge uint64
             var currentDifficulty int
@@ -89,7 +89,7 @@ func CmdSabotage() *cobra.Command {
             fmt.Printf("Sabotage difficulty is %d \n", currentDifficulty)
             structIdString := strconv.FormatUint(performingStructure.Id, 10)
 
-            fmt.Println("Starting Mining...")
+            fmt.Println("Starting sabotage mission...")
 
             var newDifficulty int
 			var i int = 0
@@ -142,7 +142,7 @@ COMPUTE:
 
 
 
-			msg := types.NewMsgStructMine(
+			msg := types.NewMsgSabotage(
 				clientCtx.GetFromAddress().String(),
                 argStructId,
                 argProof,

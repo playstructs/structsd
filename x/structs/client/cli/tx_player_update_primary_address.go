@@ -14,7 +14,7 @@ var _ = strconv.Itoa(0)
 
 func CmdPlayerUpdatePrimaryAddress() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "player-create [primary address]",
+		Use:   "player-update [primary address]",
 		Short: "Update the Primary Address of a Player account",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
