@@ -15,7 +15,7 @@ var _ = strconv.Itoa(0)
 
 func CmdGuildCreate() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "guild-create [endpoint]",
+		Use:   "guild-create [endpoint] [substation id]",
 		Short: "Broadcast message guild-create",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
