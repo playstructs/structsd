@@ -57,7 +57,7 @@ func (k Keeper) AppendPlanet(
 	k.SetPlanetCount(ctx, count+1)
 
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: planet.Id, ObjectType: types.ObjectType_planet})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlanet{Planet: &planet})
 
 	return planet
 }
@@ -68,7 +68,7 @@ func (k Keeper) SetPlanet(ctx sdk.Context, planet types.Planet) {
 	b := k.cdc.MustMarshal(&planet)
 	store.Set(GetPlanetIDBytes(planet.Id), b)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: planet.Id, ObjectType: types.ObjectType_planet})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlanet{Planet: &planet})
 }
 
 // GetPlanet returns a planet from its id
@@ -158,7 +158,7 @@ func (k Keeper) SetPlanetRefinementCount(ctx sdk.Context, planetId uint64, count
 
 	store.Set(GetPlanetIDBytes(planetId), bz)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: planetId, ObjectType: types.ObjectType_planet})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlanetRefinementCount{Body: &types.EventBodyKeyPair{Key: planetId, Value: count}})
 }
 
 
@@ -196,7 +196,7 @@ func (k Keeper) SetPlanetOreCount(ctx sdk.Context, planetId uint64, count uint64
 
 	store.Set(GetPlanetIDBytes(planetId), bz)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: planetId, ObjectType: types.ObjectType_planet})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlanetOreCount{Body: &types.EventBodyKeyPair{Key: planetId, Value: count}})
 }
 
 

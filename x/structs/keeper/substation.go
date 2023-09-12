@@ -72,7 +72,7 @@ func (k Keeper) AppendSubstation(
 
 
     // Cache invalidation event
-    _ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: substation.Id, ObjectType: types.ObjectType_substation})
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventSubstation{Substation: &substation})
 
 	return substation
 }
@@ -83,7 +83,7 @@ func (k Keeper) SetSubstation(ctx sdk.Context, substation types.Substation) {
 	b := k.cdc.MustMarshal(&substation)
 	store.Set(GetSubstationIDBytes(substation.Id), b)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: substation.Id, ObjectType: types.ObjectType_substation})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventSubstation{Substation: &substation})
 
 }
 
@@ -354,7 +354,7 @@ func (k Keeper) SubstationSetLoad(ctx sdk.Context, id uint64, amount uint64) {
 
 	store.Set(GetSubstationIDBytes(id), bz)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: id, ObjectType: types.ObjectType_substation})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventSubstationLoad{Body: &types.EventBodyKeyPair{Key: id, Value: amount}})
 }
 
 // SubstationSetAllocationLoad - Sets the in-memory representation of the aggregate load of all associated allocations
@@ -447,7 +447,7 @@ func (k Keeper) SubstationSetEnergy(ctx sdk.Context, id uint64, amount uint64) {
 
 	store.Set(GetReactorIDBytes(id), bz)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: id, ObjectType: types.ObjectType_substation})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventSubstationEnergy{Body: &types.EventBodyKeyPair{Key: id, Value: amount}})
 
 }
 

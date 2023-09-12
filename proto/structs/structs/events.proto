@@ -1,26 +1,115 @@
 syntax = "proto3";
 
-package structs.structs;
+package structs;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "structs/structs/params.proto";
-import "structs/structs/reactor.proto";
-import "structs/structs/substation.proto";
-import "structs/structs/allocation.proto";
 import "structs/structs/keys.proto";
+
+import "structs/structs/allocation.proto";
+import "structs/structs/guild.proto";
+import "structs/structs/infusion.proto";
+import "structs/structs/planet.proto";
+import "structs/structs/player.proto";
+import "structs/structs/reactor.proto";
+import "structs/structs/struct.proto";
+import "structs/structs/substation.proto";
+
 
 
 option go_package = "structs/x/structs/types";
 
 
-// Cache Invalidation
-message EventCacheInvalidation {
 
-  uint64 object_id = 1;
-  string object_name = 3;
 
-  objectType object_type = 2;
+message EventAllocation {
+  Allocation allocation = 1;
+}
 
+message EventGuild {
+  Guild guild = 1;
+}
+
+message EventInfusion {
+  Infusion infusion = 1;
+}
+
+message EventPlanet {
+  Planet planet = 1;
+}
+
+message EventPlayer {
+  Player player = 1;
+}
+
+message EventReactor {
+  Reactor reactor = 1;
+}
+
+message EventStruct {
+  Struct structure = 1;
+}
+
+message EventSubstation {
+  Substation substation = 1;
+}
+
+
+
+// Might end up needing these but may just delete
+
+message EventObjectAttribute {
+  EventBodyKeyPair body = 1;
+}
+
+message EventBodyKeyPair {
+  uint64 key    = 1;
+  uint64 value  = 2;
+}
+message EventPlayerLoad {
+  EventBodyKeyPair body = 1;
+}
+
+
+message EventReactorFuel {
+  EventBodyKeyPair body = 1;
+}
+
+message EventReactorEnergy {
+  EventBodyKeyPair body = 1;
+}
+
+message EventReactorLoad {
+  EventBodyKeyPair body = 1;
+}
+
+
+message EventStructFuel {
+  EventBodyKeyPair body = 1;
+}
+message EventStructEnergy {
+  EventBodyKeyPair body = 1;
+}
+
+message EventStructLoad {
+  EventBodyKeyPair body = 1;
+}
+
+
+message EventSubstationEnergy {
+  EventBodyKeyPair body = 1;
+}
+
+message EventSubstationLoad {
+  EventBodyKeyPair body = 1;
+}
+
+message EventPlanetRefinementCount {
+  EventBodyKeyPair body = 1;
+}
+
+message EventPlanetOreCount {
+  EventBodyKeyPair body = 1;
 }

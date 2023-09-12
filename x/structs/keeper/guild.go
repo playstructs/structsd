@@ -64,7 +64,7 @@ func (k Keeper) AppendGuild(
 	k.SetGuildCount(ctx, count+1)
     k.GuildPermissionAdd(ctx, guild.Id, player.Id, types.GuildPermissionAll)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: guild.Id, ObjectType: types.ObjectType_guild})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventGuild{Guild: &guild})
 
 	return guild
 }
@@ -75,7 +75,7 @@ func (k Keeper) SetGuild(ctx sdk.Context, guild types.Guild) {
 	b := k.cdc.MustMarshal(&guild)
 	store.Set(GetGuildIDBytes(guild.Id), b)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: guild.Id, ObjectType: types.ObjectType_guild})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventGuild{Guild: &guild})
 }
 
 // GetGuild returns a guild from its id

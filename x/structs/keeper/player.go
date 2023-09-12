@@ -67,7 +67,7 @@ func (k Keeper) AppendPlayer(
     }
 
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: player.Id, ObjectType: types.ObjectType_player})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlayer{Player: &player})
 
 	return count
 }
@@ -79,7 +79,7 @@ func (k Keeper) SetPlayer(ctx sdk.Context, player types.Player) {
 
 	store.Set(GetPlayerIDBytes(player.Id), b)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: player.Id, ObjectType: types.ObjectType_player})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlayer{Player: &player})
 }
 
 // GetPlayer returns a player from its id
@@ -215,7 +215,7 @@ func (k Keeper) PlayerSetLoad(ctx sdk.Context, id uint64, amount uint64) {
 
 	store.Set(GetPlayerIDBytes(id), bz)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: id, ObjectType: types.ObjectType_player})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlayerLoad{Body: &types.EventBodyKeyPair{Key: id, Value: amount}})
 }
 
 

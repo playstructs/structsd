@@ -64,7 +64,7 @@ func (k Keeper) AppendStruct(
 	k.SetStructCount(ctx, count+1)
 
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: structure.Id, ObjectType: types.ObjectType_struct})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})
 
 	return structure
 }
@@ -75,7 +75,7 @@ func (k Keeper) SetStruct(ctx sdk.Context, structure types.Struct) {
 	b := k.cdc.MustMarshal(&structure)
 	store.Set(GetStructIDBytes(structure.Id), b)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: structure.Id, ObjectType: types.ObjectType_struct})
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})
 }
 
 // GetStruct returns a struct from its id
@@ -161,7 +161,7 @@ func (k Keeper) StructSetFuel(ctx sdk.Context, id uint64, amount uint64) {
 	binary.BigEndian.PutUint64(bz, amount)
 
 	store.Set(GetStructIDBytes(id), bz)
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: id, ObjectType: types.ObjectType_struct})
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventStructFuel{Body: &types.EventBodyKeyPair{Key: id, Value: amount}})
 }
 
 
@@ -173,7 +173,7 @@ func (k Keeper) StructSetEnergy(ctx sdk.Context, id uint64, amount uint64) {
 	binary.BigEndian.PutUint64(bz, amount)
 
 	store.Set(GetStructIDBytes(id), bz)
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: id, ObjectType: types.ObjectType_struct})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventStructEnergy{Body: &types.EventBodyKeyPair{Key: id, Value: amount}})
 }
 
 // StructGetEnergy returns the current energy production of the struct
@@ -263,7 +263,7 @@ func (k Keeper) StructSetLoad(ctx sdk.Context, id uint64, amount uint64) {
 	binary.BigEndian.PutUint64(bz, amount)
 
 	store.Set(GetStructIDBytes(id), bz)
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: id, ObjectType: types.ObjectType_struct})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventStructLoad{Body: &types.EventBodyKeyPair{Key: id, Value: amount}})
 }
 
 
@@ -373,6 +373,8 @@ func (k Keeper) StructDestroy(ctx sdk.Context, structure types.Struct) {
 
     k.RemoveStruct(ctx, structure.Id)
 
-    _ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: structure.Id, ObjectType: types.ObjectType_struct})
+    structure.SetStatus("DESTROYED")
+
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})
 
 }
