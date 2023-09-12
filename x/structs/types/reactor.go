@@ -17,7 +17,7 @@ func CreateEmptyReactor() Reactor {
 		DelegateMinimumBeforeAllowedAllocations: math.LegacyOneDec(),
 		DelegateTaxOnAllocations: math.LegacyZeroDec(),
 		ServiceSubstationId: 0,
-
+        GuildId: 0,
 	}
 }
 
@@ -33,6 +33,10 @@ func (reactor *Reactor) SetRawAddress(rawAddress []byte) {
 
 func (reactor *Reactor) SetId(id uint64) {
 	reactor.Id = id
+}
+
+func (reactor *Reactor) SetGuildId(guildId uint64) {
+	reactor.GuildId = guildId
 }
 
 func (reactor *Reactor) SetServiceSubstationId(serviceSubstationId uint64) {
