@@ -14,6 +14,7 @@ import (
 
 	"context"
 	"fmt"
+	"time"
 
     "crypto/sha256"
     "encoding/hex"
@@ -42,6 +43,7 @@ func CmdSabotage() *cobra.Command {
 				return err
 			}
 
+            difficultyTargetStart, _ := cmd.Flags().GetInt("difficulty_target_start")
 
 			queryClient := types.NewQueryClient(clientCtx)
 
@@ -76,11 +78,11 @@ func CmdSabotage() *cobra.Command {
                     currentDifficulty  = types.CalculateActionDifficultySabotage(float64(currentAge), types.DifficultySabotageRangeMine)
                     blockString        = strconv.FormatUint(performingStructure.ActiveMiningSystemBlock , 10)
                 case "Refinery":
-                    currentAge         = currentBlock - performingStructure.ActiveMiningSystemBlock
+                    currentAge         = currentBlock - performingStructure.ActiveRefiningSystemBlock
                     currentDifficulty  = types.CalculateActionDifficultySabotage(float64(currentAge), types.DifficultySabotageRangeRefine)
                     blockString        = strconv.FormatUint(performingStructure.ActiveRefiningSystemBlock , 10)
                 case "Small Generator":
-                    currentAge         = currentBlock - performingStructure.ActiveMiningSystemBlock
+                    currentAge         = currentBlock - performingStructure.BuildStartBlock
                     currentDifficulty  = types.CalculateActionDifficultySabotage(float64(currentAge), types.DifficultySabotageRangePower)
                     blockString        = strconv.FormatUint(performingStructure.BuildStartBlock , 10)
             }
@@ -110,16 +112,23 @@ COMPUTE:
                             currentAge         = currentBlock - performingStructure.ActiveMiningSystemBlock
                             currentDifficulty  = types.CalculateActionDifficultySabotage(float64(currentAge), types.DifficultySabotageRangeMine)
                         case "Refinery":
-                            currentAge         = currentBlock - performingStructure.ActiveMiningSystemBlock
+                            currentAge         = currentBlock - performingStructure.ActiveRefiningSystemBlock
                             currentDifficulty  = types.CalculateActionDifficultySabotage(float64(currentAge), types.DifficultySabotageRangeRefine)
                         case "Small Generator":
-                            currentAge         = currentBlock - performingStructure.ActiveMiningSystemBlock
+                            currentAge         = currentBlock - performingStructure.BuildStartBlock
                             currentDifficulty  = types.CalculateActionDifficultySabotage(float64(currentAge), types.DifficultySabotageRangePower)
                     }
 
                     if currentDifficulty != newDifficulty {
                         currentDifficulty = newDifficulty
                         fmt.Printf("Difficulty Change: %d \n", currentDifficulty)
+                    }
+
+                    if (difficultyTargetStart > 0 ) {
+                        if (difficultyTargetStart > currentDifficulty) {
+                            time.Sleep(5 * time.Minute)
+                            goto COMPUTE
+                        }
                     }
 
                 }
@@ -133,7 +142,7 @@ COMPUTE:
 				if (!types.HashBuildAndCheckActionDifficulty(newInput, newHashOutput, currentAge)) { goto COMPUTE }
 
 				fmt.Println("")
-				fmt.Println("Mining Complete!")
+				fmt.Println("Saboteur!")
 				fmt.Println(newInput)
 				argNonce = strconv.Itoa(i)
 				fmt.Println(newHashOutput)
@@ -156,6 +165,7 @@ COMPUTE:
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
+	cmd.Flags().IntP("difficulty_target_start", "D", 0, "Do not start the compute process until difficulty reaches this level (1-64)")
 
 	return cmd
 }
