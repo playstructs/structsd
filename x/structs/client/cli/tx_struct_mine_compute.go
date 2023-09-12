@@ -143,7 +143,6 @@ COMPUTE:
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
-    flags.AddTxFlagsToCmd(cmd)
     cmd.Flags().IntP("difficulty_target_start", "D", 0, "Do not start the compute process until difficulty reaches this level (1-64)")
 
 	return cmd

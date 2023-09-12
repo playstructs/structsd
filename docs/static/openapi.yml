@@ -48985,8 +48985,6 @@ paths:
                     load:
                       type: string
                       format: uint64
-                    activated:
-                      type: boolean
                     guildId:
                       type: string
                       format: uint64
@@ -49307,8 +49305,6 @@ paths:
                   load:
                     type: string
                     format: uint64
-                  activated:
-                    type: boolean
                   guildId:
                     type: string
                     format: uint64
@@ -80392,8 +80388,6 @@ definitions:
             load:
               type: string
               format: uint64
-            activated:
-              type: boolean
             guildId:
               type: string
               format: uint64
@@ -80836,8 +80830,6 @@ definitions:
           load:
             type: string
             format: uint64
-          activated:
-            type: boolean
           guildId:
             type: string
             format: uint64
@@ -80991,8 +80983,6 @@ definitions:
       load:
         type: string
         format: uint64
-      activated:
-        type: boolean
       guildId:
         type: string
         format: uint64

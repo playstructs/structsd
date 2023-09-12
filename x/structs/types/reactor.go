@@ -10,7 +10,6 @@ func CreateEmptyReactor() Reactor {
 		Fuel:       0,
 		Validator: "",
 		RawAddress: nil,
-		Activated: false,
 		AutomatedAllocations: true,
 		AllowManualAllocations: false,
 		AllowExternalAllocations: false,
@@ -22,11 +21,6 @@ func CreateEmptyReactor() Reactor {
 	}
 }
 
-
-func (reactor *Reactor) SetActivated(activated bool) error {
-	reactor.Activated = activated
-	return nil
-}
 
 func (reactor *Reactor) SetValidator(validatorAddress string) error {
 	reactor.Validator = validatorAddress
