@@ -74,6 +74,7 @@ func GetTxCmd() *cobra.Command {
     cmd.AddCommand(CmdStructAllocationCreate())
 
     cmd.AddCommand(CmdSabotage())
+    cmd.AddCommand(CmdSabotageCompute())
 
 	// this line is used by starport scaffolding # 1
 
