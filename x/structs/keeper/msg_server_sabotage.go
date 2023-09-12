@@ -64,8 +64,8 @@ func (k msgServer) Sabotage(goCtx context.Context, msg *types.MsgSabotage) (*typ
                 }
 
                 if (k.GetPlanetOreCount(ctx, structure.PlanetId) > 0) {
-                    k.DecreasePlanetOreCount(ctx, player.PlanetId)
-                    k.IncreasePlanetOreCount(ctx, structure.PlanetId)
+                    k.DecreasePlanetOreCount(ctx, structure.PlanetId)
+                    k.IncreasePlanetOreCount(ctx, player.PlanetId)
                 }
             }
         case "Small Generator":
