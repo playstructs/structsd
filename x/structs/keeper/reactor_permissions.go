@@ -6,6 +6,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 	"strconv"
+	"strings"
+
+
 )
 
 
@@ -41,6 +44,9 @@ func (k Keeper) ReactorSetPlayerPermissionsByBytes(ctx sdk.Context, permissionRe
 	binary.BigEndian.PutUint64(bz, uint64(permissions))
 
 	store.Set(permissionRecord, bz)
+
+	keys := strings.Split(string(permissionRecord), "-")
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventReactorPermission{Body: &types.EventPermissionBodyKeyPair{ObjectId: keys[0], PlayerId: keys[1], Value: uint64(permissions)}})
 
 	return permissions
 }

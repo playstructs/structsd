@@ -42,6 +42,22 @@ service Query {
     option (google.api.http).get = "/structs/reactor";
   
   }
+
+  // Queries a list of Reactor Permission items.
+  rpc ReactorPermission    (QueryGetReactorPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
+    option (google.api.http).get = "/structs/permission/reactor/{reactorId}";
+
+  }
+
+  rpc ReactorPlayerPermission    (QueryGetReactorPlayerPermissionRequest) returns (QueryPermissionResponse) {
+    option (google.api.http).get = "/structs/permission/reactor/{reactorId}/{playerId}";
+
+  }
+  rpc ReactorPermissionAll (QueryAllReactorPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
+    option (google.api.http).get = "/structs/permission/reactor";
+
+  }
+
   
   // Queries a list of Substation items.
   rpc Substation    (QueryGetSubstationRequest) returns (QueryGetSubstationResponse) {
@@ -52,7 +68,22 @@ service Query {
     option (google.api.http).get = "/structs/substation";
   
   }
-  
+
+  // Queries a list of Substation Permission items.
+  rpc SubstationPermission    (QueryGetSubstationPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
+    option (google.api.http).get = "/structs/permission/substation/{substationId}";
+
+  }
+
+  rpc SubstationPlayerPermission    (QueryGetSubstationPlayerPermissionRequest) returns (QueryPermissionResponse) {
+    option (google.api.http).get = "/structs/permission/substation/{substationId}/{playerId}";
+
+  }
+  rpc SubstationPermissionAll (QueryAllSubstationPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
+    option (google.api.http).get = "/structs/permission/substation";
+
+  }
+
   // Queries a list of Allocation items.
   rpc Allocation    (QueryGetAllocationRequest) returns (QueryGetAllocationResponse) {
     option (google.api.http).get = "/structs/allocation/{id}";
@@ -72,6 +103,21 @@ service Query {
     option (google.api.http).get = "/structs/guild";
   
   }
+
+  // Queries a list of Guild Permission items.
+  rpc GuildPermission    (QueryGetGuildPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
+    option (google.api.http).get = "/structs/permission/guild/{guildId}";
+
+  }
+
+  rpc GuildPlayerPermission    (QueryGetGuildPlayerPermissionRequest) returns (QueryPermissionResponse) {
+    option (google.api.http).get = "/structs/permission/guild/{guildId}/{playerId}";
+
+  }
+  rpc GuildPermissionAll (QueryAllGuildPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
+    option (google.api.http).get = "/structs/permission/guild";
+
+  }
   
   // Queries a list of Player items.
   rpc Player    (QueryGetPlayerRequest) returns (QueryGetPlayerResponse) {
@@ -83,6 +129,20 @@ service Query {
   
   }
 
+  // Queries a list of Player Permission items.
+  rpc PlayerPermission    (QueryGetPlayerPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
+    option (google.api.http).get = "/structs/permission/player/{playerId}";
+
+  }
+
+  rpc PlayerPlayerPermission    (QueryGetPlayerPlayerPermissionRequest) returns (QueryPermissionResponse) {
+    option (google.api.http).get = "/structs/permission/player/{targetPlayerId}/{playerId}";
+
+  }
+  rpc PlayerPermissionAll (QueryAllPlayerPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
+    option (google.api.http).get = "/structs/permission/player";
+
+  }
 
   // Queries a list of Allocation items.
   rpc Infusion    (QueryGetInfusionRequest) returns (QueryGetInfusionResponse) {
@@ -115,6 +175,20 @@ service Query {
   }
 
 }
+// Generic Responses for Permissions
+message QueryPermissionResponse {
+  string objectId         = 1;
+  string playerId         = 2;
+  uint64 permissionRecord = 3;
+}
+
+message QueryGetMultiplePermissionResponse {
+  repeated QueryPermissionResponse permission = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+
+
 // QueryParamsRequest is request type for the Query/Params RPC method.
 message QueryParamsRequest {}
 
@@ -142,6 +216,23 @@ message QueryAllReactorResponse {
            cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+
+message QueryGetReactorPermissionRequest {
+  uint64 reactorId = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryGetReactorPlayerPermissionRequest {
+  uint64 reactorId = 1;
+  uint64 playerId  = 2;
+}
+
+message QueryAllReactorPermissionRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+
+
 message QueryGetSubstationRequest {
   uint64 id = 1;
 }
@@ -157,6 +248,20 @@ message QueryAllSubstationRequest {
 message QueryAllSubstationResponse {
   repeated Substation                             Substation = 1 [(gogoproto.nullable) = false];
            cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetSubstationPermissionRequest {
+  uint64 substationId = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryGetSubstationPlayerPermissionRequest {
+  uint64 substationId = 1;
+  uint64 playerId  = 2;
+}
+
+message QueryAllSubstationPermissionRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
 message QueryGetAllocationRequest {
@@ -194,6 +299,20 @@ message QueryAllGuildResponse {
            cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+message QueryGetGuildPermissionRequest {
+  uint64 guildId = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryGetGuildPlayerPermissionRequest {
+  uint64 guildId = 1;
+  uint64 playerId  = 2;
+}
+
+message QueryAllGuildPermissionRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
 message QueryGetPlayerRequest {
   uint64 id = 1;
 }
@@ -211,6 +330,19 @@ message QueryAllPlayerResponse {
            cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+message QueryGetPlayerPermissionRequest {
+  uint64 playerId = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryGetPlayerPlayerPermissionRequest {
+  uint64 targetPlayerId = 1;
+  uint64 playerId  = 2;
+}
+
+message QueryAllPlayerPermissionRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
 
 
 

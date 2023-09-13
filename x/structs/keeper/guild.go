@@ -8,6 +8,7 @@ import (
 	"structs/x/structs/types"
 
 	"strconv"
+	"strings"
 )
 
 // GetGuildCount get the total number of guild
@@ -220,6 +221,9 @@ func (k Keeper) GuildSetPlayerPermissionsByBytes(ctx sdk.Context, permissionReco
 	binary.BigEndian.PutUint64(bz, uint64(permissions))
 
 	store.Set(permissionRecord, bz)
+
+    keys := strings.Split(string(permissionRecord), "-")
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventGuildPermission{Body: &types.EventPermissionBodyKeyPair{ObjectId: keys[0], PlayerId: keys[1], Value: uint64(permissions)}})
 
 	return permissions
 }

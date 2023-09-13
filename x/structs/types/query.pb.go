@@ -30,6 +30,119 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
+// Generic Responses for Permissions
+type QueryPermissionResponse struct {
+	ObjectId         string `protobuf:"bytes,1,opt,name=objectId,proto3" json:"objectId,omitempty"`
+	PlayerId         string `protobuf:"bytes,2,opt,name=playerId,proto3" json:"playerId,omitempty"`
+	PermissionRecord uint64 `protobuf:"varint,3,opt,name=permissionRecord,proto3" json:"permissionRecord,omitempty"`
+}
+
+func (m *QueryPermissionResponse) Reset()         { *m = QueryPermissionResponse{} }
+func (m *QueryPermissionResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryPermissionResponse) ProtoMessage()    {}
+func (*QueryPermissionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ec69a82c62500e60, []int{0}
+}
+func (m *QueryPermissionResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryPermissionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryPermissionResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryPermissionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryPermissionResponse.Merge(m, src)
+}
+func (m *QueryPermissionResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryPermissionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryPermissionResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryPermissionResponse proto.InternalMessageInfo
+
+func (m *QueryPermissionResponse) GetObjectId() string {
+	if m != nil {
+		return m.ObjectId
+	}
+	return ""
+}
+
+func (m *QueryPermissionResponse) GetPlayerId() string {
+	if m != nil {
+		return m.PlayerId
+	}
+	return ""
+}
+
+func (m *QueryPermissionResponse) GetPermissionRecord() uint64 {
+	if m != nil {
+		return m.PermissionRecord
+	}
+	return 0
+}
+
+type QueryGetMultiplePermissionResponse struct {
+	Permission []*QueryPermissionResponse `protobuf:"bytes,1,rep,name=permission,proto3" json:"permission,omitempty"`
+	Pagination *query.PageResponse        `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryGetMultiplePermissionResponse) Reset()         { *m = QueryGetMultiplePermissionResponse{} }
+func (m *QueryGetMultiplePermissionResponse) String() string { return proto.CompactTextString(m) }
+func (*QueryGetMultiplePermissionResponse) ProtoMessage()    {}
+func (*QueryGetMultiplePermissionResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ec69a82c62500e60, []int{1}
+}
+func (m *QueryGetMultiplePermissionResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetMultiplePermissionResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetMultiplePermissionResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetMultiplePermissionResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetMultiplePermissionResponse.Merge(m, src)
+}
+func (m *QueryGetMultiplePermissionResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetMultiplePermissionResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetMultiplePermissionResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetMultiplePermissionResponse proto.InternalMessageInfo
+
+func (m *QueryGetMultiplePermissionResponse) GetPermission() []*QueryPermissionResponse {
+	if m != nil {
+		return m.Permission
+	}
+	return nil
+}
+
+func (m *QueryGetMultiplePermissionResponse) GetPagination() *query.PageResponse {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
 // QueryParamsRequest is request type for the Query/Params RPC method.
 type QueryParamsRequest struct {
 }
@@ -38,7 +151,7 @@ func (m *QueryParamsRequest) Reset()         { *m = QueryParamsRequest{} }
 func (m *QueryParamsRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryParamsRequest) ProtoMessage()    {}
 func (*QueryParamsRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{0}
+	return fileDescriptor_ec69a82c62500e60, []int{2}
 }
 func (m *QueryParamsRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -77,7 +190,7 @@ func (m *QueryParamsResponse) Reset()         { *m = QueryParamsResponse{} }
 func (m *QueryParamsResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryParamsResponse) ProtoMessage()    {}
 func (*QueryParamsResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{1}
+	return fileDescriptor_ec69a82c62500e60, []int{3}
 }
 func (m *QueryParamsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -121,7 +234,7 @@ func (m *QueryGetReactorRequest) Reset()         { *m = QueryGetReactorRequest{}
 func (m *QueryGetReactorRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryGetReactorRequest) ProtoMessage()    {}
 func (*QueryGetReactorRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{2}
+	return fileDescriptor_ec69a82c62500e60, []int{4}
 }
 func (m *QueryGetReactorRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -165,7 +278,7 @@ func (m *QueryGetReactorResponse) Reset()         { *m = QueryGetReactorResponse
 func (m *QueryGetReactorResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryGetReactorResponse) ProtoMessage()    {}
 func (*QueryGetReactorResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{3}
+	return fileDescriptor_ec69a82c62500e60, []int{5}
 }
 func (m *QueryGetReactorResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -209,7 +322,7 @@ func (m *QueryAllReactorRequest) Reset()         { *m = QueryAllReactorRequest{}
 func (m *QueryAllReactorRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryAllReactorRequest) ProtoMessage()    {}
 func (*QueryAllReactorRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{4}
+	return fileDescriptor_ec69a82c62500e60, []int{6}
 }
 func (m *QueryAllReactorRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -254,7 +367,7 @@ func (m *QueryAllReactorResponse) Reset()         { *m = QueryAllReactorResponse
 func (m *QueryAllReactorResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryAllReactorResponse) ProtoMessage()    {}
 func (*QueryAllReactorResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{5}
+	return fileDescriptor_ec69a82c62500e60, []int{7}
 }
 func (m *QueryAllReactorResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -297,6 +410,156 @@ func (m *QueryAllReactorResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
+type QueryGetReactorPermissionRequest struct {
+	ReactorId  uint64             `protobuf:"varint,1,opt,name=reactorId,proto3" json:"reactorId,omitempty"`
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryGetReactorPermissionRequest) Reset()         { *m = QueryGetReactorPermissionRequest{} }
+func (m *QueryGetReactorPermissionRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetReactorPermissionRequest) ProtoMessage()    {}
+func (*QueryGetReactorPermissionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ec69a82c62500e60, []int{8}
+}
+func (m *QueryGetReactorPermissionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetReactorPermissionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetReactorPermissionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetReactorPermissionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetReactorPermissionRequest.Merge(m, src)
+}
+func (m *QueryGetReactorPermissionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetReactorPermissionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetReactorPermissionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetReactorPermissionRequest proto.InternalMessageInfo
+
+func (m *QueryGetReactorPermissionRequest) GetReactorId() uint64 {
+	if m != nil {
+		return m.ReactorId
+	}
+	return 0
+}
+
+func (m *QueryGetReactorPermissionRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryGetReactorPlayerPermissionRequest struct {
+	ReactorId uint64 `protobuf:"varint,1,opt,name=reactorId,proto3" json:"reactorId,omitempty"`
+	PlayerId  uint64 `protobuf:"varint,2,opt,name=playerId,proto3" json:"playerId,omitempty"`
+}
+
+func (m *QueryGetReactorPlayerPermissionRequest) Reset() {
+	*m = QueryGetReactorPlayerPermissionRequest{}
+}
+func (m *QueryGetReactorPlayerPermissionRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetReactorPlayerPermissionRequest) ProtoMessage()    {}
+func (*QueryGetReactorPlayerPermissionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ec69a82c62500e60, []int{9}
+}
+func (m *QueryGetReactorPlayerPermissionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetReactorPlayerPermissionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetReactorPlayerPermissionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetReactorPlayerPermissionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetReactorPlayerPermissionRequest.Merge(m, src)
+}
+func (m *QueryGetReactorPlayerPermissionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetReactorPlayerPermissionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetReactorPlayerPermissionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetReactorPlayerPermissionRequest proto.InternalMessageInfo
+
+func (m *QueryGetReactorPlayerPermissionRequest) GetReactorId() uint64 {
+	if m != nil {
+		return m.ReactorId
+	}
+	return 0
+}
+
+func (m *QueryGetReactorPlayerPermissionRequest) GetPlayerId() uint64 {
+	if m != nil {
+		return m.PlayerId
+	}
+	return 0
+}
+
+type QueryAllReactorPermissionRequest struct {
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryAllReactorPermissionRequest) Reset()         { *m = QueryAllReactorPermissionRequest{} }
+func (m *QueryAllReactorPermissionRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllReactorPermissionRequest) ProtoMessage()    {}
+func (*QueryAllReactorPermissionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ec69a82c62500e60, []int{10}
+}
+func (m *QueryAllReactorPermissionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllReactorPermissionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllReactorPermissionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllReactorPermissionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllReactorPermissionRequest.Merge(m, src)
+}
+func (m *QueryAllReactorPermissionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllReactorPermissionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllReactorPermissionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllReactorPermissionRequest proto.InternalMessageInfo
+
+func (m *QueryAllReactorPermissionRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
 type QueryGetSubstationRequest struct {
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
@@ -305,7 +568,7 @@ func (m *QueryGetSubstationRequest) Reset()         { *m = QueryGetSubstationReq
 func (m *QueryGetSubstationRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryGetSubstationRequest) ProtoMessage()    {}
 func (*QueryGetSubstationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{6}
+	return fileDescriptor_ec69a82c62500e60, []int{11}
 }
 func (m *QueryGetSubstationRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -349,7 +612,7 @@ func (m *QueryGetSubstationResponse) Reset()         { *m = QueryGetSubstationRe
 func (m *QueryGetSubstationResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryGetSubstationResponse) ProtoMessage()    {}
 func (*QueryGetSubstationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{7}
+	return fileDescriptor_ec69a82c62500e60, []int{12}
 }
 func (m *QueryGetSubstationResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -393,7 +656,7 @@ func (m *QueryAllSubstationRequest) Reset()         { *m = QueryAllSubstationReq
 func (m *QueryAllSubstationRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryAllSubstationRequest) ProtoMessage()    {}
 func (*QueryAllSubstationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{8}
+	return fileDescriptor_ec69a82c62500e60, []int{13}
 }
 func (m *QueryAllSubstationRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -438,7 +701,7 @@ func (m *QueryAllSubstationResponse) Reset()         { *m = QueryAllSubstationRe
 func (m *QueryAllSubstationResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryAllSubstationResponse) ProtoMessage()    {}
 func (*QueryAllSubstationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{9}
+	return fileDescriptor_ec69a82c62500e60, []int{14}
 }
 func (m *QueryAllSubstationResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -481,6 +744,158 @@ func (m *QueryAllSubstationResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
+type QueryGetSubstationPermissionRequest struct {
+	SubstationId uint64             `protobuf:"varint,1,opt,name=substationId,proto3" json:"substationId,omitempty"`
+	Pagination   *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryGetSubstationPermissionRequest) Reset()         { *m = QueryGetSubstationPermissionRequest{} }
+func (m *QueryGetSubstationPermissionRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetSubstationPermissionRequest) ProtoMessage()    {}
+func (*QueryGetSubstationPermissionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ec69a82c62500e60, []int{15}
+}
+func (m *QueryGetSubstationPermissionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetSubstationPermissionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetSubstationPermissionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetSubstationPermissionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetSubstationPermissionRequest.Merge(m, src)
+}
+func (m *QueryGetSubstationPermissionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetSubstationPermissionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetSubstationPermissionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetSubstationPermissionRequest proto.InternalMessageInfo
+
+func (m *QueryGetSubstationPermissionRequest) GetSubstationId() uint64 {
+	if m != nil {
+		return m.SubstationId
+	}
+	return 0
+}
+
+func (m *QueryGetSubstationPermissionRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryGetSubstationPlayerPermissionRequest struct {
+	SubstationId uint64 `protobuf:"varint,1,opt,name=substationId,proto3" json:"substationId,omitempty"`
+	PlayerId     uint64 `protobuf:"varint,2,opt,name=playerId,proto3" json:"playerId,omitempty"`
+}
+
+func (m *QueryGetSubstationPlayerPermissionRequest) Reset() {
+	*m = QueryGetSubstationPlayerPermissionRequest{}
+}
+func (m *QueryGetSubstationPlayerPermissionRequest) String() string {
+	return proto.CompactTextString(m)
+}
+func (*QueryGetSubstationPlayerPermissionRequest) ProtoMessage() {}
+func (*QueryGetSubstationPlayerPermissionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ec69a82c62500e60, []int{16}
+}
+func (m *QueryGetSubstationPlayerPermissionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetSubstationPlayerPermissionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetSubstationPlayerPermissionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetSubstationPlayerPermissionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetSubstationPlayerPermissionRequest.Merge(m, src)
+}
+func (m *QueryGetSubstationPlayerPermissionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetSubstationPlayerPermissionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetSubstationPlayerPermissionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetSubstationPlayerPermissionRequest proto.InternalMessageInfo
+
+func (m *QueryGetSubstationPlayerPermissionRequest) GetSubstationId() uint64 {
+	if m != nil {
+		return m.SubstationId
+	}
+	return 0
+}
+
+func (m *QueryGetSubstationPlayerPermissionRequest) GetPlayerId() uint64 {
+	if m != nil {
+		return m.PlayerId
+	}
+	return 0
+}
+
+type QueryAllSubstationPermissionRequest struct {
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryAllSubstationPermissionRequest) Reset()         { *m = QueryAllSubstationPermissionRequest{} }
+func (m *QueryAllSubstationPermissionRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllSubstationPermissionRequest) ProtoMessage()    {}
+func (*QueryAllSubstationPermissionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ec69a82c62500e60, []int{17}
+}
+func (m *QueryAllSubstationPermissionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllSubstationPermissionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllSubstationPermissionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllSubstationPermissionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllSubstationPermissionRequest.Merge(m, src)
+}
+func (m *QueryAllSubstationPermissionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllSubstationPermissionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllSubstationPermissionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllSubstationPermissionRequest proto.InternalMessageInfo
+
+func (m *QueryAllSubstationPermissionRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
 type QueryGetAllocationRequest struct {
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
@@ -489,7 +904,7 @@ func (m *QueryGetAllocationRequest) Reset()         { *m = QueryGetAllocationReq
 func (m *QueryGetAllocationRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryGetAllocationRequest) ProtoMessage()    {}
 func (*QueryGetAllocationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{10}
+	return fileDescriptor_ec69a82c62500e60, []int{18}
 }
 func (m *QueryGetAllocationRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -533,7 +948,7 @@ func (m *QueryGetAllocationResponse) Reset()         { *m = QueryGetAllocationRe
 func (m *QueryGetAllocationResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryGetAllocationResponse) ProtoMessage()    {}
 func (*QueryGetAllocationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{11}
+	return fileDescriptor_ec69a82c62500e60, []int{19}
 }
 func (m *QueryGetAllocationResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -577,7 +992,7 @@ func (m *QueryAllAllocationRequest) Reset()         { *m = QueryAllAllocationReq
 func (m *QueryAllAllocationRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryAllAllocationRequest) ProtoMessage()    {}
 func (*QueryAllAllocationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{12}
+	return fileDescriptor_ec69a82c62500e60, []int{20}
 }
 func (m *QueryAllAllocationRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -623,7 +1038,7 @@ func (m *QueryAllAllocationResponse) Reset()         { *m = QueryAllAllocationRe
 func (m *QueryAllAllocationResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryAllAllocationResponse) ProtoMessage()    {}
 func (*QueryAllAllocationResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{13}
+	return fileDescriptor_ec69a82c62500e60, []int{21}
 }
 func (m *QueryAllAllocationResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -681,7 +1096,7 @@ func (m *QueryGetGuildRequest) Reset()         { *m = QueryGetGuildRequest{} }
 func (m *QueryGetGuildRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryGetGuildRequest) ProtoMessage()    {}
 func (*QueryGetGuildRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{14}
+	return fileDescriptor_ec69a82c62500e60, []int{22}
 }
 func (m *QueryGetGuildRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -725,7 +1140,7 @@ func (m *QueryGetGuildResponse) Reset()         { *m = QueryGetGuildResponse{} }
 func (m *QueryGetGuildResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryGetGuildResponse) ProtoMessage()    {}
 func (*QueryGetGuildResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{15}
+	return fileDescriptor_ec69a82c62500e60, []int{23}
 }
 func (m *QueryGetGuildResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -769,7 +1184,7 @@ func (m *QueryAllGuildRequest) Reset()         { *m = QueryAllGuildRequest{} }
 func (m *QueryAllGuildRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryAllGuildRequest) ProtoMessage()    {}
 func (*QueryAllGuildRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{16}
+	return fileDescriptor_ec69a82c62500e60, []int{24}
 }
 func (m *QueryAllGuildRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -814,7 +1229,7 @@ func (m *QueryAllGuildResponse) Reset()         { *m = QueryAllGuildResponse{} }
 func (m *QueryAllGuildResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryAllGuildResponse) ProtoMessage()    {}
 func (*QueryAllGuildResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{17}
+	return fileDescriptor_ec69a82c62500e60, []int{25}
 }
 func (m *QueryAllGuildResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -857,6 +1272,154 @@ func (m *QueryAllGuildResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
+type QueryGetGuildPermissionRequest struct {
+	GuildId    uint64             `protobuf:"varint,1,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryGetGuildPermissionRequest) Reset()         { *m = QueryGetGuildPermissionRequest{} }
+func (m *QueryGetGuildPermissionRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetGuildPermissionRequest) ProtoMessage()    {}
+func (*QueryGetGuildPermissionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ec69a82c62500e60, []int{26}
+}
+func (m *QueryGetGuildPermissionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetGuildPermissionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetGuildPermissionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetGuildPermissionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetGuildPermissionRequest.Merge(m, src)
+}
+func (m *QueryGetGuildPermissionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetGuildPermissionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetGuildPermissionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetGuildPermissionRequest proto.InternalMessageInfo
+
+func (m *QueryGetGuildPermissionRequest) GetGuildId() uint64 {
+	if m != nil {
+		return m.GuildId
+	}
+	return 0
+}
+
+func (m *QueryGetGuildPermissionRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryGetGuildPlayerPermissionRequest struct {
+	GuildId  uint64 `protobuf:"varint,1,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	PlayerId uint64 `protobuf:"varint,2,opt,name=playerId,proto3" json:"playerId,omitempty"`
+}
+
+func (m *QueryGetGuildPlayerPermissionRequest) Reset()         { *m = QueryGetGuildPlayerPermissionRequest{} }
+func (m *QueryGetGuildPlayerPermissionRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetGuildPlayerPermissionRequest) ProtoMessage()    {}
+func (*QueryGetGuildPlayerPermissionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ec69a82c62500e60, []int{27}
+}
+func (m *QueryGetGuildPlayerPermissionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetGuildPlayerPermissionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetGuildPlayerPermissionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetGuildPlayerPermissionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetGuildPlayerPermissionRequest.Merge(m, src)
+}
+func (m *QueryGetGuildPlayerPermissionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetGuildPlayerPermissionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetGuildPlayerPermissionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetGuildPlayerPermissionRequest proto.InternalMessageInfo
+
+func (m *QueryGetGuildPlayerPermissionRequest) GetGuildId() uint64 {
+	if m != nil {
+		return m.GuildId
+	}
+	return 0
+}
+
+func (m *QueryGetGuildPlayerPermissionRequest) GetPlayerId() uint64 {
+	if m != nil {
+		return m.PlayerId
+	}
+	return 0
+}
+
+type QueryAllGuildPermissionRequest struct {
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryAllGuildPermissionRequest) Reset()         { *m = QueryAllGuildPermissionRequest{} }
+func (m *QueryAllGuildPermissionRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllGuildPermissionRequest) ProtoMessage()    {}
+func (*QueryAllGuildPermissionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ec69a82c62500e60, []int{28}
+}
+func (m *QueryAllGuildPermissionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllGuildPermissionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllGuildPermissionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllGuildPermissionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllGuildPermissionRequest.Merge(m, src)
+}
+func (m *QueryAllGuildPermissionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllGuildPermissionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllGuildPermissionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllGuildPermissionRequest proto.InternalMessageInfo
+
+func (m *QueryAllGuildPermissionRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
 type QueryGetPlayerRequest struct {
 	Id uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 }
@@ -865,7 +1428,7 @@ func (m *QueryGetPlayerRequest) Reset()         { *m = QueryGetPlayerRequest{} }
 func (m *QueryGetPlayerRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryGetPlayerRequest) ProtoMessage()    {}
 func (*QueryGetPlayerRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{18}
+	return fileDescriptor_ec69a82c62500e60, []int{29}
 }
 func (m *QueryGetPlayerRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -909,7 +1472,7 @@ func (m *QueryGetPlayerResponse) Reset()         { *m = QueryGetPlayerResponse{}
 func (m *QueryGetPlayerResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryGetPlayerResponse) ProtoMessage()    {}
 func (*QueryGetPlayerResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{19}
+	return fileDescriptor_ec69a82c62500e60, []int{30}
 }
 func (m *QueryGetPlayerResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -953,7 +1516,7 @@ func (m *QueryAllPlayerRequest) Reset()         { *m = QueryAllPlayerRequest{} }
 func (m *QueryAllPlayerRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryAllPlayerRequest) ProtoMessage()    {}
 func (*QueryAllPlayerRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{20}
+	return fileDescriptor_ec69a82c62500e60, []int{31}
 }
 func (m *QueryAllPlayerRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -998,7 +1561,7 @@ func (m *QueryAllPlayerResponse) Reset()         { *m = QueryAllPlayerResponse{}
 func (m *QueryAllPlayerResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryAllPlayerResponse) ProtoMessage()    {}
 func (*QueryAllPlayerResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{21}
+	return fileDescriptor_ec69a82c62500e60, []int{32}
 }
 func (m *QueryAllPlayerResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1041,6 +1604,154 @@ func (m *QueryAllPlayerResponse) GetPagination() *query.PageResponse {
 	return nil
 }
 
+type QueryGetPlayerPermissionRequest struct {
+	PlayerId   uint64             `protobuf:"varint,1,opt,name=playerId,proto3" json:"playerId,omitempty"`
+	Pagination *query.PageRequest `protobuf:"bytes,2,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryGetPlayerPermissionRequest) Reset()         { *m = QueryGetPlayerPermissionRequest{} }
+func (m *QueryGetPlayerPermissionRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetPlayerPermissionRequest) ProtoMessage()    {}
+func (*QueryGetPlayerPermissionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ec69a82c62500e60, []int{33}
+}
+func (m *QueryGetPlayerPermissionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetPlayerPermissionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetPlayerPermissionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetPlayerPermissionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetPlayerPermissionRequest.Merge(m, src)
+}
+func (m *QueryGetPlayerPermissionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetPlayerPermissionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetPlayerPermissionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetPlayerPermissionRequest proto.InternalMessageInfo
+
+func (m *QueryGetPlayerPermissionRequest) GetPlayerId() uint64 {
+	if m != nil {
+		return m.PlayerId
+	}
+	return 0
+}
+
+func (m *QueryGetPlayerPermissionRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
+type QueryGetPlayerPlayerPermissionRequest struct {
+	TargetPlayerId uint64 `protobuf:"varint,1,opt,name=targetPlayerId,proto3" json:"targetPlayerId,omitempty"`
+	PlayerId       uint64 `protobuf:"varint,2,opt,name=playerId,proto3" json:"playerId,omitempty"`
+}
+
+func (m *QueryGetPlayerPlayerPermissionRequest) Reset()         { *m = QueryGetPlayerPlayerPermissionRequest{} }
+func (m *QueryGetPlayerPlayerPermissionRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryGetPlayerPlayerPermissionRequest) ProtoMessage()    {}
+func (*QueryGetPlayerPlayerPermissionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ec69a82c62500e60, []int{34}
+}
+func (m *QueryGetPlayerPlayerPermissionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryGetPlayerPlayerPermissionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryGetPlayerPlayerPermissionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryGetPlayerPlayerPermissionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryGetPlayerPlayerPermissionRequest.Merge(m, src)
+}
+func (m *QueryGetPlayerPlayerPermissionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryGetPlayerPlayerPermissionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryGetPlayerPlayerPermissionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryGetPlayerPlayerPermissionRequest proto.InternalMessageInfo
+
+func (m *QueryGetPlayerPlayerPermissionRequest) GetTargetPlayerId() uint64 {
+	if m != nil {
+		return m.TargetPlayerId
+	}
+	return 0
+}
+
+func (m *QueryGetPlayerPlayerPermissionRequest) GetPlayerId() uint64 {
+	if m != nil {
+		return m.PlayerId
+	}
+	return 0
+}
+
+type QueryAllPlayerPermissionRequest struct {
+	Pagination *query.PageRequest `protobuf:"bytes,1,opt,name=pagination,proto3" json:"pagination,omitempty"`
+}
+
+func (m *QueryAllPlayerPermissionRequest) Reset()         { *m = QueryAllPlayerPermissionRequest{} }
+func (m *QueryAllPlayerPermissionRequest) String() string { return proto.CompactTextString(m) }
+func (*QueryAllPlayerPermissionRequest) ProtoMessage()    {}
+func (*QueryAllPlayerPermissionRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_ec69a82c62500e60, []int{35}
+}
+func (m *QueryAllPlayerPermissionRequest) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *QueryAllPlayerPermissionRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_QueryAllPlayerPermissionRequest.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *QueryAllPlayerPermissionRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_QueryAllPlayerPermissionRequest.Merge(m, src)
+}
+func (m *QueryAllPlayerPermissionRequest) XXX_Size() int {
+	return m.Size()
+}
+func (m *QueryAllPlayerPermissionRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_QueryAllPlayerPermissionRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_QueryAllPlayerPermissionRequest proto.InternalMessageInfo
+
+func (m *QueryAllPlayerPermissionRequest) GetPagination() *query.PageRequest {
+	if m != nil {
+		return m.Pagination
+	}
+	return nil
+}
+
 type QueryGetInfusionRequest struct {
 	DestinationType string `protobuf:"bytes,1,opt,name=destinationType,proto3" json:"destinationType,omitempty"`
 	DestinationId   uint64 `protobuf:"varint,2,opt,name=destinationId,proto3" json:"destinationId,omitempty"`
@@ -1051,7 +1762,7 @@ func (m *QueryGetInfusionRequest) Reset()         { *m = QueryGetInfusionRequest
 func (m *QueryGetInfusionRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryGetInfusionRequest) ProtoMessage()    {}
 func (*QueryGetInfusionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{22}
+	return fileDescriptor_ec69a82c62500e60, []int{36}
 }
 func (m *QueryGetInfusionRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1109,7 +1820,7 @@ func (m *QueryGetInfusionResponse) Reset()         { *m = QueryGetInfusionRespon
 func (m *QueryGetInfusionResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryGetInfusionResponse) ProtoMessage()    {}
 func (*QueryGetInfusionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{23}
+	return fileDescriptor_ec69a82c62500e60, []int{37}
 }
 func (m *QueryGetInfusionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1153,7 +1864,7 @@ func (m *QueryAllInfusionRequest) Reset()         { *m = QueryAllInfusionRequest
 func (m *QueryAllInfusionRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryAllInfusionRequest) ProtoMessage()    {}
 func (*QueryAllInfusionRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{24}
+	return fileDescriptor_ec69a82c62500e60, []int{38}
 }
 func (m *QueryAllInfusionRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1199,7 +1910,7 @@ func (m *QueryAllInfusionResponse) Reset()         { *m = QueryAllInfusionRespon
 func (m *QueryAllInfusionResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryAllInfusionResponse) ProtoMessage()    {}
 func (*QueryAllInfusionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{25}
+	return fileDescriptor_ec69a82c62500e60, []int{39}
 }
 func (m *QueryAllInfusionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1257,7 +1968,7 @@ func (m *QueryGetPlanetRequest) Reset()         { *m = QueryGetPlanetRequest{} }
 func (m *QueryGetPlanetRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryGetPlanetRequest) ProtoMessage()    {}
 func (*QueryGetPlanetRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{26}
+	return fileDescriptor_ec69a82c62500e60, []int{40}
 }
 func (m *QueryGetPlanetRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1301,7 +2012,7 @@ func (m *QueryGetPlanetResponse) Reset()         { *m = QueryGetPlanetResponse{}
 func (m *QueryGetPlanetResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryGetPlanetResponse) ProtoMessage()    {}
 func (*QueryGetPlanetResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{27}
+	return fileDescriptor_ec69a82c62500e60, []int{41}
 }
 func (m *QueryGetPlanetResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1345,7 +2056,7 @@ func (m *QueryAllPlanetRequest) Reset()         { *m = QueryAllPlanetRequest{} }
 func (m *QueryAllPlanetRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryAllPlanetRequest) ProtoMessage()    {}
 func (*QueryAllPlanetRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{28}
+	return fileDescriptor_ec69a82c62500e60, []int{42}
 }
 func (m *QueryAllPlanetRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1390,7 +2101,7 @@ func (m *QueryAllPlanetResponse) Reset()         { *m = QueryAllPlanetResponse{}
 func (m *QueryAllPlanetResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryAllPlanetResponse) ProtoMessage()    {}
 func (*QueryAllPlanetResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{29}
+	return fileDescriptor_ec69a82c62500e60, []int{43}
 }
 func (m *QueryAllPlanetResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1441,7 +2152,7 @@ func (m *QueryGetStructRequest) Reset()         { *m = QueryGetStructRequest{} }
 func (m *QueryGetStructRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryGetStructRequest) ProtoMessage()    {}
 func (*QueryGetStructRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{30}
+	return fileDescriptor_ec69a82c62500e60, []int{44}
 }
 func (m *QueryGetStructRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1485,7 +2196,7 @@ func (m *QueryGetStructResponse) Reset()         { *m = QueryGetStructResponse{}
 func (m *QueryGetStructResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryGetStructResponse) ProtoMessage()    {}
 func (*QueryGetStructResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{31}
+	return fileDescriptor_ec69a82c62500e60, []int{45}
 }
 func (m *QueryGetStructResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1529,7 +2240,7 @@ func (m *QueryAllStructRequest) Reset()         { *m = QueryAllStructRequest{} }
 func (m *QueryAllStructRequest) String() string { return proto.CompactTextString(m) }
 func (*QueryAllStructRequest) ProtoMessage()    {}
 func (*QueryAllStructRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{32}
+	return fileDescriptor_ec69a82c62500e60, []int{46}
 }
 func (m *QueryAllStructRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1574,7 +2285,7 @@ func (m *QueryAllStructResponse) Reset()         { *m = QueryAllStructResponse{}
 func (m *QueryAllStructResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryAllStructResponse) ProtoMessage()    {}
 func (*QueryAllStructResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{33}
+	return fileDescriptor_ec69a82c62500e60, []int{47}
 }
 func (m *QueryAllStructResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1624,7 +2335,7 @@ func (m *QueryBlockHeight) Reset()         { *m = QueryBlockHeight{} }
 func (m *QueryBlockHeight) String() string { return proto.CompactTextString(m) }
 func (*QueryBlockHeight) ProtoMessage()    {}
 func (*QueryBlockHeight) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{34}
+	return fileDescriptor_ec69a82c62500e60, []int{48}
 }
 func (m *QueryBlockHeight) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1661,7 +2372,7 @@ func (m *QueryBlockHeightResponse) Reset()         { *m = QueryBlockHeightRespon
 func (m *QueryBlockHeightResponse) String() string { return proto.CompactTextString(m) }
 func (*QueryBlockHeightResponse) ProtoMessage()    {}
 func (*QueryBlockHeightResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_ec69a82c62500e60, []int{35}
+	return fileDescriptor_ec69a82c62500e60, []int{49}
 }
 func (m *QueryBlockHeightResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1698,16 +2409,24 @@ func (m *QueryBlockHeightResponse) GetBlockHeight() uint64 {
 }
 
 func init() {
+	proto.RegisterType((*QueryPermissionResponse)(nil), "structs.QueryPermissionResponse")
+	proto.RegisterType((*QueryGetMultiplePermissionResponse)(nil), "structs.QueryGetMultiplePermissionResponse")
 	proto.RegisterType((*QueryParamsRequest)(nil), "structs.QueryParamsRequest")
 	proto.RegisterType((*QueryParamsResponse)(nil), "structs.QueryParamsResponse")
 	proto.RegisterType((*QueryGetReactorRequest)(nil), "structs.QueryGetReactorRequest")
 	proto.RegisterType((*QueryGetReactorResponse)(nil), "structs.QueryGetReactorResponse")
 	proto.RegisterType((*QueryAllReactorRequest)(nil), "structs.QueryAllReactorRequest")
 	proto.RegisterType((*QueryAllReactorResponse)(nil), "structs.QueryAllReactorResponse")
+	proto.RegisterType((*QueryGetReactorPermissionRequest)(nil), "structs.QueryGetReactorPermissionRequest")
+	proto.RegisterType((*QueryGetReactorPlayerPermissionRequest)(nil), "structs.QueryGetReactorPlayerPermissionRequest")
+	proto.RegisterType((*QueryAllReactorPermissionRequest)(nil), "structs.QueryAllReactorPermissionRequest")
 	proto.RegisterType((*QueryGetSubstationRequest)(nil), "structs.QueryGetSubstationRequest")
 	proto.RegisterType((*QueryGetSubstationResponse)(nil), "structs.QueryGetSubstationResponse")
 	proto.RegisterType((*QueryAllSubstationRequest)(nil), "structs.QueryAllSubstationRequest")
 	proto.RegisterType((*QueryAllSubstationResponse)(nil), "structs.QueryAllSubstationResponse")
+	proto.RegisterType((*QueryGetSubstationPermissionRequest)(nil), "structs.QueryGetSubstationPermissionRequest")
+	proto.RegisterType((*QueryGetSubstationPlayerPermissionRequest)(nil), "structs.QueryGetSubstationPlayerPermissionRequest")
+	proto.RegisterType((*QueryAllSubstationPermissionRequest)(nil), "structs.QueryAllSubstationPermissionRequest")
 	proto.RegisterType((*QueryGetAllocationRequest)(nil), "structs.QueryGetAllocationRequest")
 	proto.RegisterType((*QueryGetAllocationResponse)(nil), "structs.QueryGetAllocationResponse")
 	proto.RegisterType((*QueryAllAllocationRequest)(nil), "structs.QueryAllAllocationRequest")
@@ -1716,10 +2435,16 @@ func init() {
 	proto.RegisterType((*QueryGetGuildResponse)(nil), "structs.QueryGetGuildResponse")
 	proto.RegisterType((*QueryAllGuildRequest)(nil), "structs.QueryAllGuildRequest")
 	proto.RegisterType((*QueryAllGuildResponse)(nil), "structs.QueryAllGuildResponse")
+	proto.RegisterType((*QueryGetGuildPermissionRequest)(nil), "structs.QueryGetGuildPermissionRequest")
+	proto.RegisterType((*QueryGetGuildPlayerPermissionRequest)(nil), "structs.QueryGetGuildPlayerPermissionRequest")
+	proto.RegisterType((*QueryAllGuildPermissionRequest)(nil), "structs.QueryAllGuildPermissionRequest")
 	proto.RegisterType((*QueryGetPlayerRequest)(nil), "structs.QueryGetPlayerRequest")
 	proto.RegisterType((*QueryGetPlayerResponse)(nil), "structs.QueryGetPlayerResponse")
 	proto.RegisterType((*QueryAllPlayerRequest)(nil), "structs.QueryAllPlayerRequest")
 	proto.RegisterType((*QueryAllPlayerResponse)(nil), "structs.QueryAllPlayerResponse")
+	proto.RegisterType((*QueryGetPlayerPermissionRequest)(nil), "structs.QueryGetPlayerPermissionRequest")
+	proto.RegisterType((*QueryGetPlayerPlayerPermissionRequest)(nil), "structs.QueryGetPlayerPlayerPermissionRequest")
+	proto.RegisterType((*QueryAllPlayerPermissionRequest)(nil), "structs.QueryAllPlayerPermissionRequest")
 	proto.RegisterType((*QueryGetInfusionRequest)(nil), "structs.QueryGetInfusionRequest")
 	proto.RegisterType((*QueryGetInfusionResponse)(nil), "structs.QueryGetInfusionResponse")
 	proto.RegisterType((*QueryAllInfusionRequest)(nil), "structs.QueryAllInfusionRequest")
@@ -1739,87 +2464,125 @@ func init() {
 func init() { proto.RegisterFile("structs/structs/query.proto", fileDescriptor_ec69a82c62500e60) }
 
 var fileDescriptor_ec69a82c62500e60 = []byte{
-	// 1273 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xb4, 0x58, 0xcd, 0x6f, 0xe3, 0x44,
-	0x14, 0xaf, 0x9b, 0x6e, 0xbb, 0x3b, 0x65, 0xfb, 0x31, 0xfd, 0x4a, 0xdd, 0x36, 0x0d, 0x03, 0xda,
-	0xad, 0x16, 0x11, 0xd3, 0xdd, 0x13, 0x12, 0x08, 0xb5, 0x7c, 0x94, 0x8a, 0x03, 0x25, 0x8b, 0x84,
-	0x84, 0x10, 0xe0, 0x26, 0x43, 0xd6, 0xaa, 0x6b, 0x67, 0x63, 0x07, 0xa8, 0xaa, 0x5e, 0xe0, 0xca,
-	0x61, 0x25, 0x10, 0x67, 0xfe, 0x04, 0x8e, 0xdc, 0xb9, 0xec, 0x71, 0x25, 0x2e, 0x9c, 0x10, 0x6a,
-	0xf9, 0x43, 0x90, 0x67, 0xde, 0x78, 0xc6, 0x33, 0xe3, 0x24, 0x87, 0xe4, 0x94, 0xf8, 0xbd, 0xe7,
-	0xf7, 0xfb, 0xfd, 0xde, 0xf3, 0x78, 0xde, 0x18, 0x6d, 0x25, 0x69, 0xaf, 0xdf, 0x4a, 0x13, 0x4f,
-	0xfc, 0x3e, 0xed, 0xd3, 0xde, 0x45, 0xa3, 0xdb, 0x8b, 0xd3, 0x18, 0xcf, 0x81, 0xd1, 0x5d, 0xed,
-	0xc4, 0x9d, 0x98, 0xd9, 0xbc, 0xec, 0x1f, 0x77, 0xbb, 0xdb, 0x9d, 0x38, 0xee, 0x84, 0xd4, 0xf3,
-	0xbb, 0x81, 0xe7, 0x47, 0x51, 0x9c, 0xfa, 0x69, 0x10, 0x47, 0x09, 0x78, 0x1f, 0xb4, 0xe2, 0xe4,
-	0x3c, 0x4e, 0xbc, 0x53, 0x3f, 0xa1, 0x3c, 0xab, 0xf7, 0xed, 0xfe, 0x29, 0x4d, 0xfd, 0x7d, 0xaf,
-	0xeb, 0x77, 0x82, 0x88, 0x05, 0x8b, 0x4c, 0x3a, 0x8b, 0xae, 0xdf, 0xf3, 0xcf, 0x45, 0xa6, 0x1d,
-	0xdd, 0xdb, 0xa3, 0x7e, 0x2b, 0x8d, 0x7b, 0xe0, 0xae, 0xeb, 0xee, 0xa4, 0x7f, 0x9a, 0xa4, 0x6a,
-	0x7a, 0x23, 0xc2, 0x0f, 0xc3, 0xb8, 0xa5, 0x46, 0x18, 0x65, 0xe8, 0xf4, 0x83, 0xb0, 0x5d, 0xca,
-	0x2e, 0xf4, 0x2f, 0x68, 0x6f, 0x80, 0x37, 0xa2, 0x69, 0x99, 0x97, 0xff, 0x82, 0xb7, 0xa6, 0x7b,
-	0x83, 0xe8, 0x9b, 0x7e, 0x22, 0x69, 0xb9, 0xba, 0xff, 0x8c, 0x5e, 0x40, 0x55, 0xc8, 0x2a, 0xc2,
-	0x9f, 0x64, 0x55, 0x3d, 0x61, 0xa5, 0x6a, 0xd2, 0xa7, 0x7d, 0x9a, 0xa4, 0xe4, 0x3d, 0xb4, 0x52,
-	0xb0, 0x26, 0xdd, 0x38, 0x4a, 0x28, 0x7e, 0x1d, 0xcd, 0xf2, 0x92, 0x56, 0x9d, 0xba, 0xb3, 0x37,
-	0xff, 0x70, 0xb1, 0x01, 0x19, 0x1b, 0x3c, 0xf0, 0x70, 0xe6, 0xf9, 0x3f, 0xbb, 0x53, 0x4d, 0x08,
-	0x22, 0x7b, 0x68, 0x9d, 0x65, 0x39, 0xa2, 0x69, 0x93, 0xd7, 0x1a, 0xf2, 0xe3, 0x05, 0x34, 0x1d,
-	0xb4, 0x59, 0x92, 0x99, 0xe6, 0x74, 0xd0, 0x26, 0x1f, 0xa1, 0x0d, 0x23, 0x12, 0x30, 0xdf, 0x40,
-	0x73, 0x60, 0x02, 0xd0, 0xa5, 0x1c, 0x14, 0xec, 0x80, 0x2a, 0xc2, 0xc8, 0xd7, 0x00, 0x7b, 0x10,
-	0x86, 0x1a, 0xec, 0x07, 0x08, 0xc9, 0x87, 0x06, 0xd2, 0xdd, 0x6b, 0xf0, 0x27, 0xac, 0x91, 0x3d,
-	0x61, 0x0d, 0xfe, 0xdc, 0xc2, 0x13, 0xd6, 0x38, 0xf1, 0x3b, 0x14, 0xee, 0x6d, 0x2a, 0x77, 0x92,
-	0x5f, 0x1c, 0xe0, 0xab, 0x42, 0xd8, 0xf8, 0x56, 0x46, 0xe0, 0x8b, 0x8f, 0x0a, 0xac, 0xa6, 0x19,
-	0xab, 0xfb, 0x43, 0x59, 0x71, 0xb8, 0x02, 0xad, 0xd7, 0xd0, 0xa6, 0xa8, 0xe2, 0xe3, 0xfc, 0xe1,
-	0x2d, 0x2b, 0xf9, 0x67, 0xc8, 0xb5, 0x05, 0x83, 0x8a, 0x37, 0x11, 0x92, 0x56, 0xa8, 0xd4, 0x4a,
-	0x2e, 0x44, 0xba, 0x40, 0x8b, 0x12, 0x4c, 0x5a, 0xc0, 0xe2, 0x20, 0x0c, 0x4d, 0x16, 0xe3, 0xea,
-	0xc0, 0x6f, 0x0e, 0xd0, 0xd7, 0x50, 0x4a, 0xe8, 0x57, 0x46, 0xa6, 0x3f, 0x91, 0x6e, 0x1c, 0xe4,
-	0x2f, 0x8a, 0x11, 0xba, 0xa1, 0x06, 0x4b, 0x39, 0xd2, 0x6a, 0x74, 0x43, 0xba, 0x84, 0x1c, 0x69,
-	0x51, 0xbb, 0x61, 0xb2, 0x18, 0x57, 0x37, 0xfe, 0x50, 0xba, 0x31, 0x02, 0xfd, 0xca, 0xc8, 0xf4,
-	0xc7, 0xd6, 0x0d, 0xbc, 0x8e, 0x66, 0xb3, 0x0e, 0xf7, 0x93, 0x6a, 0xa5, 0x5e, 0xd9, 0x9b, 0x69,
-	0xc2, 0x15, 0xb9, 0x87, 0x56, 0x45, 0xe1, 0x8f, 0xb2, 0x97, 0x75, 0x59, 0x83, 0xde, 0x45, 0x6b,
-	0x5a, 0x1c, 0x88, 0x7b, 0x80, 0x6e, 0x31, 0x03, 0x94, 0x6f, 0x21, 0xd7, 0xc5, 0xac, 0x20, 0x89,
-	0x87, 0x90, 0x2f, 0x01, 0xec, 0x20, 0x0c, 0x0b, 0x60, 0xe3, 0xea, 0xc3, 0x4f, 0x0e, 0xb0, 0x94,
-	0x00, 0x26, 0xcb, 0xca, 0x10, 0x96, 0xe3, 0x5b, 0x01, 0xf7, 0x65, 0xcd, 0x4e, 0xd8, 0x5e, 0x57,
-	0x56, 0xdc, 0x23, 0xb9, 0x51, 0x88, 0x40, 0xb9, 0xe3, 0x70, 0x8b, 0xb9, 0xe3, 0x30, 0xb3, 0xd8,
-	0x71, 0xf8, 0x15, 0xf9, 0x4a, 0xea, 0x2f, 0x22, 0x8e, 0xab, 0xc2, 0xcf, 0x1c, 0xb9, 0xb9, 0x0c,
-	0xa0, 0x5a, 0x19, 0x4a, 0x75, 0x7c, 0x55, 0xfe, 0xd1, 0x91, 0x9b, 0xe7, 0x31, 0x6c, 0xfc, 0x42,
-	0xf6, 0x1e, 0x5a, 0x6c, 0xd3, 0x24, 0x85, 0xd0, 0x4f, 0x2f, 0xba, 0x94, 0x69, 0xbf, 0xd3, 0xd4,
-	0xcd, 0xf8, 0x55, 0x74, 0x57, 0x31, 0x1d, 0xb7, 0x19, 0xa3, 0x99, 0x66, 0xd1, 0x88, 0xab, 0x68,
-	0xce, 0x6f, 0xb7, 0x7b, 0x34, 0xc9, 0x96, 0x51, 0x96, 0x47, 0x5c, 0x92, 0x8f, 0x51, 0xd5, 0x24,
-	0x01, 0x95, 0x79, 0x84, 0x6e, 0x0b, 0x1b, 0x94, 0x7e, 0x39, 0xaf, 0x8d, 0x70, 0x40, 0x75, 0xf2,
-	0x40, 0xe2, 0xcb, 0x2d, 0x56, 0x57, 0x35, 0xae, 0x66, 0xfe, 0xee, 0x00, 0xe9, 0x02, 0x86, 0x95,
-	0x74, 0x65, 0x24, 0xd2, 0x93, 0x7f, 0x5d, 0x15, 0x97, 0x54, 0x94, 0x8d, 0x4b, 0xa3, 0x2c, 0x29,
-	0x16, 0x58, 0x78, 0x4e, 0x23, 0x9a, 0xda, 0x96, 0x54, 0x44, 0x53, 0xe5, 0x39, 0x8d, 0x68, 0xaa,
-	0x2d, 0x29, 0x05, 0x71, 0x42, 0x4b, 0xaa, 0x8c, 0x6a, 0x65, 0x28, 0xd5, 0x89, 0xbc, 0xb8, 0x1e,
-	0x33, 0xc0, 0x11, 0xaa, 0x2c, 0x02, 0x25, 0x75, 0x6e, 0x31, 0xaa, 0xcc, 0xcd, 0x82, 0x3a, 0xbf,
-	0x52, 0xab, 0x5c, 0x44, 0x9c, 0x44, 0x95, 0x07, 0x50, 0xad, 0x0c, 0xa5, 0x3a, 0xbe, 0x2a, 0x63,
-	0xb4, 0xc4, 0x18, 0x1d, 0x86, 0x71, 0xeb, 0xec, 0x43, 0x1a, 0x74, 0x9e, 0xa4, 0xe4, 0x2d, 0x58,
-	0x91, 0x8a, 0x2d, 0xe7, 0x59, 0x47, 0xf3, 0xa7, 0xd2, 0x0c, 0x5d, 0x50, 0x4d, 0x0f, 0xff, 0x5c,
-	0x44, 0xb7, 0xd8, 0xed, 0xb8, 0x8d, 0x16, 0x8e, 0x68, 0xaa, 0x64, 0xc1, 0x9b, 0xb9, 0x2a, 0x1d,
-	0xc0, 0x7d, 0xb9, 0xd4, 0x25, 0xb0, 0xc9, 0xea, 0x0f, 0x7f, 0xfd, 0xf7, 0xf3, 0xf4, 0x02, 0x7e,
-	0xc9, 0x63, 0x78, 0x4f, 0x78, 0xce, 0x2f, 0xd0, 0x2c, 0x3f, 0xf8, 0xe0, 0xad, 0x62, 0x8a, 0xc2,
-	0x69, 0xca, 0xdd, 0xb6, 0x3b, 0x21, 0xf5, 0x06, 0x4b, 0xbd, 0x8c, 0x17, 0xb5, 0x63, 0x2b, 0x3e,
-	0xcb, 0x4f, 0x12, 0x78, 0xb7, 0x98, 0xc1, 0x38, 0x50, 0xb9, 0xf5, 0xf2, 0x00, 0x80, 0xd9, 0x61,
-	0x30, 0x1b, 0x78, 0x4d, 0x3f, 0xff, 0x7a, 0x97, 0x41, 0xfb, 0x0a, 0x07, 0x08, 0xc1, 0x1d, 0x07,
-	0x61, 0xa8, 0xe3, 0x19, 0x27, 0x29, 0x1d, 0xcf, 0x3c, 0x07, 0x91, 0x2a, 0xc3, 0xc3, 0x78, 0x49,
-	0xc7, 0xc3, 0xdf, 0xa9, 0xc3, 0x39, 0x26, 0x06, 0x73, 0xe3, 0xd4, 0xe0, 0xbe, 0x32, 0x30, 0x06,
-	0x00, 0xeb, 0x0c, 0xd0, 0xc5, 0x55, 0xcb, 0x09, 0x9e, 0x6b, 0xec, 0xa3, 0xbb, 0xf2, 0xbe, 0x4c,
-	0x26, 0x31, 0x54, 0x0c, 0xc5, 0xb6, 0x9e, 0x37, 0xc8, 0x16, 0xc3, 0x5e, 0xc3, 0x2b, 0x16, 0xec,
-	0x4c, 0xaf, 0x32, 0xd1, 0x9a, 0x7a, 0x8d, 0xb9, 0xdc, 0xa2, 0xd7, 0x9c, 0xaa, 0x2d, 0x7a, 0xe5,
-	0xf7, 0x88, 0x5c, 0xaf, 0xbc, 0xcf, 0xae, 0x77, 0x28, 0xb6, 0x75, 0xa2, 0xb7, 0xe8, 0x95, 0xd8,
-	0xb8, 0x05, 0xb3, 0x26, 0xde, 0x31, 0x64, 0xa8, 0x53, 0xaf, 0x5b, 0x2b, 0x73, 0x97, 0x82, 0xb0,
-	0xcf, 0x29, 0x5c, 0x9b, 0x8f, 0x6e, 0xb3, 0xe8, 0x4c, 0xd6, 0x8e, 0x41, 0x79, 0x10, 0x8e, 0x3e,
-	0x1b, 0x93, 0x75, 0x86, 0xb3, 0x84, 0x17, 0x8a, 0x38, 0xb8, 0x23, 0x06, 0x3a, 0x6c, 0x32, 0x2d,
-	0x4c, 0x97, 0xee, 0x6e, 0xa9, 0x1f, 0x20, 0xb6, 0x19, 0xc4, 0x3a, 0x5e, 0xd5, 0x3e, 0xfe, 0x70,
-	0x2d, 0x14, 0xdd, 0xe1, 0xf1, 0x99, 0x18, 0x93, 0xed, 0x40, 0x2c, 0x63, 0x0e, 0xb5, 0xbd, 0x4f,
-	0xb8, 0x8a, 0x5f, 0x1d, 0x39, 0xd2, 0x60, 0xf3, 0x85, 0xa1, 0x4d, 0x59, 0xfa, 0x5b, 0xd1, 0x32,
-	0xd8, 0x91, 0xf7, 0x19, 0xd4, 0x3b, 0xf8, 0x6d, 0xe3, 0xcb, 0x93, 0x77, 0xa9, 0x0d, 0x98, 0x57,
-	0x05, 0xcb, 0x71, 0xfb, 0xca, 0xbb, 0x84, 0xd1, 0xf1, 0x0a, 0x9f, 0xa3, 0x79, 0x91, 0x3a, 0xab,
-	0x80, 0xf9, 0x6e, 0x19, 0x42, 0xcd, 0x32, 0xbe, 0x91, 0x4d, 0x46, 0x6d, 0x05, 0x2f, 0x1b, 0xd4,
-	0xa0, 0xaf, 0xd9, 0xc0, 0x60, 0xed, 0xab, 0x1c, 0x71, 0xec, 0x7d, 0x55, 0x06, 0x14, 0x7b, 0x5f,
-	0x23, 0x9a, 0xaa, 0x7d, 0x8d, 0xd8, 0xea, 0xb5, 0xf7, 0xb5, 0x1c, 0xcb, 0x18, 0x86, 0xec, 0x7d,
-	0xcd, 0x54, 0x74, 0xc4, 0xfe, 0x6d, 0xd1, 0x53, 0x18, 0x26, 0x2c, 0x7a, 0x8a, 0xa3, 0x80, 0x45,
-	0x0f, 0xff, 0xcd, 0xf5, 0xf0, 0x78, 0xbb, 0x9e, 0x81, 0x58, 0xc6, 0xd8, 0x61, 0xd1, 0xc3, 0x7f,
-	0x0f, 0xf7, 0x9f, 0x5f, 0xd7, 0x9c, 0x17, 0xd7, 0x35, 0xe7, 0xdf, 0xeb, 0x9a, 0xf3, 0xec, 0xa6,
-	0x36, 0xf5, 0xe2, 0xa6, 0x36, 0xf5, 0xf7, 0x4d, 0x6d, 0xea, 0xf3, 0x0d, 0x11, 0xf9, 0x7d, 0x7e,
-	0x4f, 0x7a, 0xd1, 0xa5, 0xc9, 0xe9, 0x2c, 0xfb, 0x98, 0xf9, 0xe8, 0xff, 0x00, 0x00, 0x00, 0xff,
-	0xff, 0xf2, 0x0a, 0xca, 0xc7, 0x88, 0x16, 0x00, 0x00,
+	// 1873 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x5a, 0xcf, 0x6f, 0x1b, 0xc5,
+	0x17, 0xcf, 0xc6, 0x69, 0xda, 0x4c, 0xda, 0xfc, 0x78, 0xf9, 0xe5, 0x6c, 0x12, 0xc7, 0xdd, 0xb4,
+	0x89, 0xd3, 0x36, 0x76, 0x9b, 0x7e, 0xbf, 0x55, 0xbf, 0xd5, 0x17, 0x68, 0xca, 0x8f, 0x10, 0x21,
+	0x44, 0x71, 0x91, 0x90, 0x50, 0x05, 0x6c, 0xec, 0xc5, 0x75, 0xb3, 0xf1, 0xba, 0xde, 0x35, 0x10,
+	0x55, 0xbe, 0x14, 0x21, 0x71, 0x00, 0xa9, 0xa8, 0x15, 0xe2, 0xd0, 0x43, 0x8f, 0x88, 0x0b, 0x1c,
+	0x38, 0xf0, 0x27, 0x94, 0x5b, 0x25, 0x2e, 0x9c, 0x10, 0x6a, 0xf9, 0x43, 0xd0, 0xce, 0xcc, 0xee,
+	0xcc, 0xce, 0xcc, 0xae, 0xdd, 0x64, 0xc3, 0xc9, 0xdd, 0x37, 0x6f, 0xe7, 0x7d, 0xde, 0x7b, 0x9f,
+	0x99, 0x9d, 0xf9, 0xa4, 0x68, 0xce, 0xf5, 0x5a, 0xed, 0x8a, 0xe7, 0x96, 0x82, 0xdf, 0x3b, 0x6d,
+	0xab, 0xb5, 0x57, 0x6c, 0xb6, 0x1c, 0xcf, 0x81, 0xa3, 0xd4, 0xa8, 0x4f, 0xd6, 0x9c, 0x9a, 0x83,
+	0x6d, 0x25, 0xff, 0x5f, 0x64, 0x58, 0x9f, 0xaf, 0x39, 0x4e, 0xcd, 0xb6, 0x4a, 0x66, 0xb3, 0x5e,
+	0x32, 0x1b, 0x0d, 0xc7, 0x33, 0xbd, 0xba, 0xd3, 0x70, 0xe9, 0xe8, 0x99, 0x8a, 0xe3, 0xee, 0x3a,
+	0x6e, 0x69, 0xdb, 0x74, 0x2d, 0x32, 0x6b, 0xe9, 0xd3, 0x0b, 0xdb, 0x96, 0x67, 0x5e, 0x28, 0x35,
+	0xcd, 0x5a, 0xbd, 0x81, 0x9d, 0x83, 0x99, 0x44, 0x14, 0x4d, 0xb3, 0x65, 0xee, 0x06, 0x33, 0x2d,
+	0x88, 0xa3, 0x2d, 0xcb, 0xac, 0x78, 0x4e, 0x8b, 0x0e, 0xe7, 0xc5, 0x61, 0xb7, 0xbd, 0xed, 0x7a,
+	0xfc, 0xf4, 0x92, 0x87, 0x69, 0xdb, 0x4e, 0x85, 0xf7, 0x90, 0xca, 0x50, 0x6b, 0xd7, 0xed, 0x6a,
+	0x2c, 0x3a, 0xdb, 0xdc, 0xb3, 0x5a, 0x09, 0xa3, 0x0d, 0xcb, 0x8b, 0x1b, 0x25, 0xbf, 0x74, 0x34,
+	0x27, 0x8e, 0xd6, 0x1b, 0x9f, 0xb4, 0x5d, 0x06, 0x4b, 0x17, 0xc7, 0x77, 0xac, 0x3d, 0x5a, 0x15,
+	0xa3, 0x83, 0x66, 0xde, 0xf5, 0xab, 0x7a, 0xdd, 0x6a, 0xed, 0xd6, 0x5d, 0xff, 0xa5, 0xb2, 0xe5,
+	0x36, 0x9d, 0x86, 0x6b, 0x81, 0x8e, 0x8e, 0x39, 0xdb, 0xb7, 0xad, 0x8a, 0xb7, 0x55, 0xcd, 0x6a,
+	0x79, 0xad, 0x30, 0x54, 0x0e, 0x9f, 0xfd, 0x31, 0x02, 0x7f, 0xab, 0x9a, 0xed, 0x27, 0x63, 0xc1,
+	0x33, 0x9c, 0x41, 0x63, 0x4d, 0x6e, 0xb6, 0x8a, 0xd3, 0xaa, 0x66, 0x33, 0x79, 0xad, 0x30, 0x50,
+	0x96, 0xec, 0xc6, 0x4f, 0x1a, 0x32, 0x70, 0xfc, 0x4d, 0xcb, 0x7b, 0xbb, 0x6d, 0x7b, 0xf5, 0xa6,
+	0x6d, 0x29, 0xa0, 0x5c, 0x45, 0x88, 0xbd, 0x9a, 0xd5, 0xf2, 0x99, 0xc2, 0xf0, 0x7a, 0xbe, 0x48,
+	0xd3, 0x29, 0xc6, 0x24, 0x50, 0xe6, 0xde, 0x81, 0x4d, 0x84, 0x18, 0x5f, 0x30, 0xe4, 0xe1, 0xf5,
+	0x95, 0x22, 0x21, 0x57, 0xd1, 0x27, 0x57, 0x91, 0x50, 0x96, 0x92, 0xab, 0x78, 0xdd, 0xac, 0x59,
+	0xdc, 0x44, 0xe1, 0xab, 0xc6, 0x24, 0x02, 0x12, 0x0f, 0x73, 0xab, 0x6c, 0xdd, 0x69, 0x5b, 0xae,
+	0x67, 0xbc, 0x86, 0x26, 0x22, 0x56, 0x8a, 0x7b, 0x0d, 0x0d, 0x12, 0x0e, 0xe2, 0x02, 0x0e, 0xaf,
+	0x8f, 0x86, 0x98, 0x89, 0xe3, 0xb5, 0x81, 0x27, 0x7f, 0x2e, 0xf6, 0x95, 0xa9, 0x93, 0x51, 0x40,
+	0xd3, 0x41, 0x31, 0xca, 0x84, 0x9c, 0x74, 0x7e, 0x18, 0x41, 0xfd, 0x75, 0xd2, 0x85, 0x81, 0x72,
+	0x7f, 0xbd, 0x6a, 0xbc, 0x45, 0xdb, 0xc6, 0x7b, 0xd2, 0x98, 0xe7, 0xd1, 0x51, 0x6a, 0xa2, 0x41,
+	0xc7, 0xc2, 0xa0, 0xd4, 0x4e, 0xa3, 0x06, 0x6e, 0xc6, 0xc7, 0x34, 0xec, 0x86, 0x6d, 0x0b, 0x61,
+	0xdf, 0x88, 0x54, 0x8d, 0x4c, 0xb7, 0xdc, 0xb5, 0x6a, 0xf8, 0xdd, 0x48, 0xd1, 0x1e, 0x6a, 0x14,
+	0x2f, 0x1f, 0x42, 0x85, 0x37, 0xd3, 0x03, 0xde, 0xf4, 0x7a, 0xf9, 0x95, 0x86, 0xf2, 0x42, 0x19,
+	0x79, 0x1a, 0x91, 0x1a, 0xcc, 0xa3, 0x21, 0xba, 0x53, 0x6c, 0x05, 0x1d, 0x60, 0x06, 0xa1, 0x42,
+	0xfd, 0xfb, 0xae, 0xd0, 0x36, 0x5a, 0x16, 0x91, 0xe0, 0xf5, 0xf4, 0xa2, 0x78, 0xc4, 0x85, 0x39,
+	0xc0, 0x16, 0xa6, 0x71, 0x9b, 0x66, 0xcb, 0x9a, 0x20, 0xcf, 0x9e, 0x56, 0xc7, 0xcf, 0xa2, 0xd9,
+	0x20, 0x9f, 0x1b, 0xe1, 0x46, 0x1a, 0xc7, 0xe6, 0xf7, 0x91, 0xae, 0x72, 0xa6, 0x04, 0xf9, 0x1f,
+	0x42, 0xcc, 0x4a, 0x21, 0x4d, 0x84, 0x1c, 0x61, 0x43, 0x94, 0x26, 0x9c, 0xb3, 0x51, 0xa1, 0x28,
+	0x36, 0x6c, 0x5b, 0x46, 0x91, 0x56, 0xaa, 0x8f, 0x35, 0x0a, 0x5f, 0x88, 0x12, 0x03, 0x3f, 0xd3,
+	0x33, 0xfc, 0xf4, 0x88, 0xfe, 0xad, 0x86, 0x96, 0xe4, 0x0a, 0xcb, 0xdd, 0x37, 0xd0, 0x71, 0xf6,
+	0xd9, 0x0b, 0xe9, 0x15, 0xb1, 0xa5, 0xc6, 0xf8, 0x1d, 0xb4, 0xaa, 0x80, 0x14, 0x43, 0xfa, 0x5e,
+	0x80, 0x25, 0x51, 0x7f, 0x97, 0xe6, 0x1f, 0x69, 0xd1, 0xbf, 0xc2, 0xfe, 0x8d, 0xf0, 0x90, 0xd0,
+	0x03, 0xfb, 0x79, 0x67, 0x46, 0x1f, 0x66, 0x95, 0xd8, 0xcf, 0x86, 0x02, 0xfa, 0x30, 0x0b, 0xcf,
+	0x7e, 0x19, 0x45, 0x5a, 0xa9, 0xfe, 0xca, 0xb1, 0xbf, 0x07, 0xf8, 0x99, 0x9e, 0xe1, 0xa7, 0xc6,
+	0x7e, 0x98, 0x46, 0x83, 0x7e, 0xc7, 0xdb, 0x6e, 0x36, 0x93, 0xcf, 0x14, 0x06, 0xca, 0xf4, 0xc9,
+	0x58, 0x46, 0x93, 0x41, 0xe1, 0x37, 0xfd, 0x83, 0x5a, 0x5c, 0x83, 0x5e, 0x45, 0x53, 0x82, 0x1f,
+	0x4d, 0xee, 0x0c, 0x3a, 0x82, 0x0d, 0xb4, 0x7c, 0x23, 0x61, 0x5e, 0xd8, 0x4a, 0x53, 0x22, 0x2e,
+	0xc6, 0x87, 0x34, 0xd8, 0x86, 0x6d, 0x47, 0x82, 0xa5, 0xd5, 0x87, 0xaf, 0x35, 0x8a, 0x92, 0x05,
+	0x90, 0x51, 0x66, 0xba, 0xa0, 0x4c, 0x6f, 0xc7, 0xb9, 0xa7, 0xa1, 0x5c, 0xa4, 0x68, 0xf2, 0x62,
+	0xcb, 0xa2, 0xa3, 0xf8, 0x7c, 0x1c, 0x2e, 0xe7, 0xe0, 0x31, 0xb5, 0x2d, 0xe6, 0x26, 0x3a, 0x15,
+	0xc5, 0x10, 0xb3, 0xbb, 0xc4, 0x23, 0x49, 0xda, 0x53, 0x6e, 0xd1, 0x0c, 0x83, 0x82, 0x1f, 0xde,
+	0x76, 0xb2, 0xc2, 0x08, 0x48, 0x52, 0x88, 0x63, 0xea, 0x26, 0x3b, 0x40, 0x06, 0x8e, 0xec, 0x24,
+	0x4a, 0x2c, 0xf2, 0x49, 0x14, 0x9b, 0x83, 0x93, 0x28, 0x79, 0x32, 0x3e, 0x62, 0x64, 0x8a, 0x46,
+	0x4c, 0x2b, 0xa5, 0xfb, 0x1a, 0x3b, 0x74, 0x26, 0x40, 0xcd, 0x74, 0x85, 0x9a, 0x1e, 0x65, 0xbf,
+	0xd4, 0xd0, 0x62, 0xb4, 0x7a, 0x72, 0x47, 0x79, 0x3e, 0x68, 0x51, 0x3e, 0xa4, 0xf8, 0x61, 0x3c,
+	0x2d, 0xc0, 0x88, 0x01, 0xb3, 0x8c, 0x46, 0x3c, 0xb3, 0x55, 0x0b, 0xdc, 0x42, 0x48, 0x82, 0x35,
+	0x91, 0xc4, 0x75, 0x9a, 0x73, 0xd8, 0x86, 0xc3, 0x63, 0xf1, 0x17, 0x1a, 0xbb, 0xb4, 0x6c, 0xd1,
+	0x1b, 0x6a, 0x10, 0xa3, 0x80, 0x46, 0xab, 0x96, 0xeb, 0x51, 0xd7, 0xf7, 0xf6, 0x9a, 0x16, 0xbd,
+	0x72, 0x8a, 0x66, 0x38, 0x85, 0x4e, 0x70, 0xa6, 0x30, 0xa3, 0xa8, 0xd1, 0x5f, 0xd1, 0x66, 0xb5,
+	0xda, 0xb2, 0x5c, 0x17, 0x5f, 0x3d, 0x87, 0xca, 0xc1, 0xa3, 0xf1, 0x0e, 0xca, 0xca, 0x20, 0x28,
+	0xf3, 0x2e, 0xa2, 0x63, 0x81, 0x8d, 0xe6, 0x39, 0x1e, 0x72, 0x2f, 0x18, 0xa0, 0xec, 0x0b, 0x1d,
+	0x0d, 0x93, 0x5d, 0x6d, 0xc4, 0xac, 0xd2, 0xaa, 0xdc, 0xcf, 0x1a, 0x05, 0x1d, 0x89, 0xa1, 0x04,
+	0x9d, 0xe9, 0x09, 0xf4, 0xe1, 0x7f, 0x5b, 0xa3, 0x5b, 0x56, 0xc3, 0xbf, 0xd5, 0xf4, 0xb2, 0x65,
+	0x61, 0xc7, 0xc8, 0x3e, 0xd0, 0xb0, 0x3c, 0xd5, 0x96, 0xd5, 0xb0, 0x3c, 0x6e, 0x1f, 0x68, 0x58,
+	0x9e, 0xb0, 0x65, 0x71, 0x11, 0x0f, 0x69, 0xcb, 0x8a, 0x83, 0x9a, 0xe9, 0x0a, 0x35, 0xbd, 0x2d,
+	0x8b, 0xab, 0xf2, 0x0d, 0x1c, 0xb0, 0x87, 0x2a, 0x07, 0x8e, 0x0c, 0x3a, 0xb1, 0x48, 0x55, 0x26,
+	0xe6, 0x00, 0x3a, 0x79, 0xe2, 0xab, 0x1c, 0x8d, 0x78, 0x18, 0x55, 0x4e, 0x80, 0x9a, 0xe9, 0x0a,
+	0x35, 0xbd, 0x2a, 0x03, 0x1a, 0xc3, 0x88, 0xae, 0xd9, 0x4e, 0x65, 0xe7, 0x4d, 0xab, 0x5e, 0xbb,
+	0xe5, 0x19, 0xff, 0xa7, 0x2b, 0x92, 0xb3, 0x85, 0x38, 0xf3, 0x68, 0x78, 0x9b, 0x99, 0x69, 0x17,
+	0x78, 0xd3, 0xfa, 0x6f, 0x39, 0x74, 0x04, 0xbf, 0x0e, 0x55, 0x34, 0xb2, 0x69, 0x79, 0xdc, 0x2c,
+	0x30, 0x1b, 0xd5, 0xb5, 0xb8, 0x21, 0xfd, 0x64, 0xec, 0x50, 0x10, 0xdb, 0x98, 0xbc, 0xf7, 0xfb,
+	0xdf, 0x0f, 0xfa, 0x47, 0xe0, 0x78, 0x09, 0xc7, 0xbb, 0x45, 0xe6, 0xbc, 0x89, 0x06, 0x89, 0xe0,
+	0x04, 0x73, 0x82, 0x6a, 0xc6, 0xab, 0x58, 0xfa, 0xbc, 0x7a, 0x90, 0x4e, 0x3d, 0x83, 0xa7, 0x1e,
+	0x87, 0x51, 0x41, 0x5f, 0x85, 0x9d, 0x50, 0xc1, 0x81, 0xc5, 0xe8, 0x0c, 0x92, 0x90, 0xa5, 0xe7,
+	0xe3, 0x1d, 0x68, 0x98, 0x05, 0x1c, 0x66, 0x06, 0xa6, 0x44, 0xa1, 0xb6, 0x74, 0xb7, 0x5e, 0xed,
+	0x40, 0x1d, 0x21, 0xfa, 0xc6, 0x86, 0x6d, 0x8b, 0xf1, 0x24, 0x05, 0x4b, 0x8c, 0x27, 0xeb, 0x4f,
+	0x46, 0x16, 0xc7, 0x03, 0x18, 0x13, 0xe3, 0xc1, 0x23, 0x0d, 0x8d, 0x4b, 0x42, 0x09, 0xac, 0xc6,
+	0x65, 0x20, 0x7d, 0x39, 0xf5, 0xb3, 0x92, 0x6b, 0xbc, 0xc6, 0x69, 0x94, 0x30, 0x8e, 0x55, 0x58,
+	0x61, 0xe5, 0x0d, 0x9d, 0x58, 0x09, 0x42, 0xa5, 0xa7, 0x03, 0x3f, 0x68, 0x68, 0x26, 0x46, 0x2b,
+	0x82, 0x52, 0x2c, 0x48, 0xf5, 0x47, 0x5e, 0xef, 0xaa, 0xa6, 0x1a, 0x57, 0x30, 0xbe, 0xff, 0xc0,
+	0x7a, 0x8f, 0xf8, 0x4a, 0x77, 0x83, 0x43, 0x46, 0x07, 0x1e, 0x68, 0x68, 0x52, 0xaa, 0x92, 0xdf,
+	0xbf, 0xd5, 0xb8, 0xf6, 0x1c, 0xb0, 0x98, 0x4b, 0x18, 0xec, 0x02, 0xcc, 0x25, 0x80, 0x85, 0xcf,
+	0x78, 0x65, 0x06, 0x0c, 0x69, 0x7e, 0x49, 0x32, 0xd2, 0x97, 0x12, 0x7d, 0x68, 0xec, 0x3c, 0x8e,
+	0xad, 0x43, 0x56, 0xf1, 0xa7, 0x04, 0xc2, 0xe1, 0x36, 0x3a, 0xc1, 0xde, 0xf3, 0xcb, 0x60, 0x48,
+	0x65, 0xe8, 0x1a, 0x5b, 0x29, 0x36, 0x19, 0x73, 0x38, 0xf6, 0x14, 0x4c, 0x28, 0x62, 0xfb, 0x84,
+	0x99, 0x54, 0xa9, 0x1f, 0x70, 0x2e, 0x21, 0xad, 0x03, 0x36, 0xe2, 0xbf, 0x18, 0x50, 0x09, 0xd6,
+	0x54, 0x8d, 0xe0, 0xeb, 0xc2, 0x4b, 0x39, 0x1d, 0xf8, 0x45, 0x43, 0x7a, 0xbc, 0x2a, 0x04, 0xeb,
+	0x49, 0x80, 0xf7, 0xcd, 0xf0, 0xab, 0x18, 0xeb, 0x15, 0xb8, 0xfc, 0x42, 0x58, 0x79, 0x9e, 0x3f,
+	0xd2, 0xd0, 0x8c, 0xaa, 0x74, 0x7e, 0x8f, 0xcf, 0x25, 0xf4, 0xef, 0x80, 0x45, 0x5e, 0xc6, 0xc0,
+	0xf3, 0x90, 0x4b, 0x06, 0xee, 0x13, 0x9e, 0xd3, 0x57, 0x64, 0xc2, 0x4b, 0x2a, 0x91, 0x82, 0xf0,
+	0xb2, 0xc6, 0xa3, 0x20, 0x3c, 0xfb, 0xcb, 0x58, 0x48, 0x78, 0xf6, 0x9e, 0x9a, 0xf0, 0x5d, 0x63,
+	0x2b, 0xf5, 0x25, 0x05, 0xe1, 0x59, 0x6c, 0xa8, 0x50, 0xe5, 0x03, 0x16, 0xa4, 0x34, 0x78, 0x0d,
+	0x46, 0xcf, 0xc5, 0x0d, 0xc7, 0x06, 0xc1, 0xfa, 0x00, 0xc9, 0xcd, 0x44, 0xc7, 0xb0, 0xb7, 0x9f,
+	0xd6, 0x82, 0x04, 0x39, 0x29, 0x8e, 0xa8, 0xd4, 0x18, 0xd3, 0x38, 0xce, 0x18, 0x8c, 0x44, 0xe3,
+	0xc0, 0x43, 0x0d, 0x8d, 0x0a, 0x12, 0x03, 0xac, 0xa8, 0x31, 0x1f, 0x90, 0x49, 0x67, 0x31, 0x82,
+	0xd3, 0xb0, 0xa4, 0x62, 0x12, 0x4d, 0x9a, 0x6a, 0x23, 0x1d, 0x78, 0xac, 0xa1, 0x29, 0xa5, 0xae,
+	0x02, 0x6b, 0x31, 0xe0, 0xf6, 0xbd, 0x34, 0x2f, 0x61, 0x5c, 0xe7, 0xa1, 0xd8, 0x03, 0x2e, 0x7e,
+	0x41, 0x7e, 0xa3, 0x21, 0x10, 0xea, 0xe2, 0xf7, 0x69, 0x45, 0xdd, 0x88, 0x03, 0x16, 0xef, 0x24,
+	0x06, 0x39, 0x07, 0xb3, 0xb1, 0x20, 0xa1, 0x16, 0x68, 0x1b, 0x20, 0x73, 0x2e, 0x22, 0xb4, 0xe8,
+	0x8b, 0xb1, 0xe3, 0x34, 0xda, 0x3c, 0x8e, 0x36, 0x0d, 0x93, 0xc2, 0x1f, 0x94, 0x09, 0x2b, 0x2d,
+	0x34, 0x44, 0xfc, 0xfd, 0x74, 0x65, 0xde, 0x25, 0xc6, 0x92, 0x24, 0x19, 0xd5, 0xd1, 0x8f, 0x64,
+	0xf1, 0xbd, 0x86, 0xc6, 0xa4, 0xee, 0x17, 0x62, 0xa0, 0x1f, 0xb0, 0xbc, 0x6b, 0x18, 0xc4, 0x0a,
+	0x9c, 0x56, 0x95, 0x37, 0xc8, 0x9d, 0xb5, 0xfe, 0x47, 0x0d, 0x4d, 0xab, 0xf5, 0x13, 0x28, 0xc6,
+	0x01, 0xdc, 0x37, 0x3f, 0x5f, 0xc6, 0xd8, 0x2e, 0xc3, 0xa5, 0x24, 0x6c, 0x51, 0x59, 0x26, 0xc2,
+	0xd3, 0xfb, 0x1a, 0x9a, 0x10, 0xa3, 0xfb, 0x9d, 0x2b, 0xc4, 0x74, 0xe6, 0x80, 0xa5, 0x34, 0x30,
+	0xdc, 0x79, 0xd0, 0xe3, 0xe1, 0xc2, 0x77, 0x1a, 0x13, 0x16, 0x40, 0x3e, 0xb6, 0x0b, 0x5a, 0x87,
+	0x78, 0x37, 0x51, 0xc8, 0x2b, 0xc6, 0xeb, 0x38, 0xea, 0x2b, 0xf0, 0x92, 0xf4, 0x1f, 0x15, 0x4a,
+	0x77, 0x05, 0x99, 0xa7, 0x13, 0xb1, 0xe0, 0x62, 0x51, 0x01, 0xa7, 0x03, 0xbb, 0x68, 0x38, 0x98,
+	0xda, 0x2f, 0x91, 0x7c, 0xc2, 0xef, 0x02, 0x4d, 0x21, 0xa2, 0x18, 0xb3, 0x18, 0xda, 0x04, 0x8c,
+	0x4b, 0xd0, 0xe8, 0x92, 0xf5, 0xaf, 0xed, 0xca, 0x25, 0xcb, 0x84, 0x06, 0xf5, 0x92, 0xe5, 0x64,
+	0x02, 0xf5, 0x92, 0x6d, 0x58, 0x1e, 0xbf, 0x64, 0x1b, 0xf8, 0x13, 0xab, 0x5e, 0xb2, 0xf1, 0xb1,
+	0x24, 0x49, 0x42, 0xbd, 0x64, 0xfd, 0x2c, 0x6a, 0xc1, 0x2d, 0x5a, 0x91, 0x4f, 0xe4, 0x4a, 0xaf,
+	0xc8, 0x27, 0x7a, 0x21, 0x57, 0xe4, 0x43, 0x7e, 0xc3, 0x7c, 0x88, 0xbf, 0x3a, 0x9f, 0xc4, 0x58,
+	0xd2, 0xe5, 0x5f, 0x91, 0x0f, 0xf9, 0xbd, 0x76, 0xe1, 0xc9, 0xb3, 0x9c, 0xf6, 0xf4, 0x59, 0x4e,
+	0xfb, 0xeb, 0x59, 0x4e, 0xbb, 0xff, 0x3c, 0xd7, 0xf7, 0xf4, 0x79, 0xae, 0xef, 0x8f, 0xe7, 0xb9,
+	0xbe, 0x0f, 0x66, 0x02, 0xcf, 0xcf, 0xc3, 0x77, 0xbc, 0xbd, 0xa6, 0xe5, 0x6e, 0x0f, 0xe2, 0xff,
+	0xfb, 0x72, 0xf1, 0x9f, 0x00, 0x00, 0x00, 0xff, 0xff, 0xec, 0xc4, 0xc7, 0xb1, 0xb7, 0x24, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -1841,18 +2604,34 @@ type QueryClient interface {
 	// Queries a list of Reactor items.
 	Reactor(ctx context.Context, in *QueryGetReactorRequest, opts ...grpc.CallOption) (*QueryGetReactorResponse, error)
 	ReactorAll(ctx context.Context, in *QueryAllReactorRequest, opts ...grpc.CallOption) (*QueryAllReactorResponse, error)
+	// Queries a list of Reactor Permission items.
+	ReactorPermission(ctx context.Context, in *QueryGetReactorPermissionRequest, opts ...grpc.CallOption) (*QueryGetMultiplePermissionResponse, error)
+	ReactorPlayerPermission(ctx context.Context, in *QueryGetReactorPlayerPermissionRequest, opts ...grpc.CallOption) (*QueryPermissionResponse, error)
+	ReactorPermissionAll(ctx context.Context, in *QueryAllReactorPermissionRequest, opts ...grpc.CallOption) (*QueryGetMultiplePermissionResponse, error)
 	// Queries a list of Substation items.
 	Substation(ctx context.Context, in *QueryGetSubstationRequest, opts ...grpc.CallOption) (*QueryGetSubstationResponse, error)
 	SubstationAll(ctx context.Context, in *QueryAllSubstationRequest, opts ...grpc.CallOption) (*QueryAllSubstationResponse, error)
+	// Queries a list of Substation Permission items.
+	SubstationPermission(ctx context.Context, in *QueryGetSubstationPermissionRequest, opts ...grpc.CallOption) (*QueryGetMultiplePermissionResponse, error)
+	SubstationPlayerPermission(ctx context.Context, in *QueryGetSubstationPlayerPermissionRequest, opts ...grpc.CallOption) (*QueryPermissionResponse, error)
+	SubstationPermissionAll(ctx context.Context, in *QueryAllSubstationPermissionRequest, opts ...grpc.CallOption) (*QueryGetMultiplePermissionResponse, error)
 	// Queries a list of Allocation items.
 	Allocation(ctx context.Context, in *QueryGetAllocationRequest, opts ...grpc.CallOption) (*QueryGetAllocationResponse, error)
 	AllocationAll(ctx context.Context, in *QueryAllAllocationRequest, opts ...grpc.CallOption) (*QueryAllAllocationResponse, error)
 	// Queries a list of Guild items.
 	Guild(ctx context.Context, in *QueryGetGuildRequest, opts ...grpc.CallOption) (*QueryGetGuildResponse, error)
 	GuildAll(ctx context.Context, in *QueryAllGuildRequest, opts ...grpc.CallOption) (*QueryAllGuildResponse, error)
+	// Queries a list of Guild Permission items.
+	GuildPermission(ctx context.Context, in *QueryGetGuildPermissionRequest, opts ...grpc.CallOption) (*QueryGetMultiplePermissionResponse, error)
+	GuildPlayerPermission(ctx context.Context, in *QueryGetGuildPlayerPermissionRequest, opts ...grpc.CallOption) (*QueryPermissionResponse, error)
+	GuildPermissionAll(ctx context.Context, in *QueryAllGuildPermissionRequest, opts ...grpc.CallOption) (*QueryGetMultiplePermissionResponse, error)
 	// Queries a list of Player items.
 	Player(ctx context.Context, in *QueryGetPlayerRequest, opts ...grpc.CallOption) (*QueryGetPlayerResponse, error)
 	PlayerAll(ctx context.Context, in *QueryAllPlayerRequest, opts ...grpc.CallOption) (*QueryAllPlayerResponse, error)
+	// Queries a list of Player Permission items.
+	PlayerPermission(ctx context.Context, in *QueryGetPlayerPermissionRequest, opts ...grpc.CallOption) (*QueryGetMultiplePermissionResponse, error)
+	PlayerPlayerPermission(ctx context.Context, in *QueryGetPlayerPlayerPermissionRequest, opts ...grpc.CallOption) (*QueryPermissionResponse, error)
+	PlayerPermissionAll(ctx context.Context, in *QueryAllPlayerPermissionRequest, opts ...grpc.CallOption) (*QueryGetMultiplePermissionResponse, error)
 	// Queries a list of Allocation items.
 	Infusion(ctx context.Context, in *QueryGetInfusionRequest, opts ...grpc.CallOption) (*QueryGetInfusionResponse, error)
 	InfusionAll(ctx context.Context, in *QueryAllInfusionRequest, opts ...grpc.CallOption) (*QueryAllInfusionResponse, error)
@@ -1908,6 +2687,33 @@ func (c *queryClient) ReactorAll(ctx context.Context, in *QueryAllReactorRequest
 	return out, nil
 }
 
+func (c *queryClient) ReactorPermission(ctx context.Context, in *QueryGetReactorPermissionRequest, opts ...grpc.CallOption) (*QueryGetMultiplePermissionResponse, error) {
+	out := new(QueryGetMultiplePermissionResponse)
+	err := c.cc.Invoke(ctx, "/structs.Query/ReactorPermission", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ReactorPlayerPermission(ctx context.Context, in *QueryGetReactorPlayerPermissionRequest, opts ...grpc.CallOption) (*QueryPermissionResponse, error) {
+	out := new(QueryPermissionResponse)
+	err := c.cc.Invoke(ctx, "/structs.Query/ReactorPlayerPermission", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ReactorPermissionAll(ctx context.Context, in *QueryAllReactorPermissionRequest, opts ...grpc.CallOption) (*QueryGetMultiplePermissionResponse, error) {
+	out := new(QueryGetMultiplePermissionResponse)
+	err := c.cc.Invoke(ctx, "/structs.Query/ReactorPermissionAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) Substation(ctx context.Context, in *QueryGetSubstationRequest, opts ...grpc.CallOption) (*QueryGetSubstationResponse, error) {
 	out := new(QueryGetSubstationResponse)
 	err := c.cc.Invoke(ctx, "/structs.Query/Substation", in, out, opts...)
@@ -1920,6 +2726,33 @@ func (c *queryClient) Substation(ctx context.Context, in *QueryGetSubstationRequ
 func (c *queryClient) SubstationAll(ctx context.Context, in *QueryAllSubstationRequest, opts ...grpc.CallOption) (*QueryAllSubstationResponse, error) {
 	out := new(QueryAllSubstationResponse)
 	err := c.cc.Invoke(ctx, "/structs.Query/SubstationAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) SubstationPermission(ctx context.Context, in *QueryGetSubstationPermissionRequest, opts ...grpc.CallOption) (*QueryGetMultiplePermissionResponse, error) {
+	out := new(QueryGetMultiplePermissionResponse)
+	err := c.cc.Invoke(ctx, "/structs.Query/SubstationPermission", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) SubstationPlayerPermission(ctx context.Context, in *QueryGetSubstationPlayerPermissionRequest, opts ...grpc.CallOption) (*QueryPermissionResponse, error) {
+	out := new(QueryPermissionResponse)
+	err := c.cc.Invoke(ctx, "/structs.Query/SubstationPlayerPermission", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) SubstationPermissionAll(ctx context.Context, in *QueryAllSubstationPermissionRequest, opts ...grpc.CallOption) (*QueryGetMultiplePermissionResponse, error) {
+	out := new(QueryGetMultiplePermissionResponse)
+	err := c.cc.Invoke(ctx, "/structs.Query/SubstationPermissionAll", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1962,6 +2795,33 @@ func (c *queryClient) GuildAll(ctx context.Context, in *QueryAllGuildRequest, op
 	return out, nil
 }
 
+func (c *queryClient) GuildPermission(ctx context.Context, in *QueryGetGuildPermissionRequest, opts ...grpc.CallOption) (*QueryGetMultiplePermissionResponse, error) {
+	out := new(QueryGetMultiplePermissionResponse)
+	err := c.cc.Invoke(ctx, "/structs.Query/GuildPermission", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GuildPlayerPermission(ctx context.Context, in *QueryGetGuildPlayerPermissionRequest, opts ...grpc.CallOption) (*QueryPermissionResponse, error) {
+	out := new(QueryPermissionResponse)
+	err := c.cc.Invoke(ctx, "/structs.Query/GuildPlayerPermission", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GuildPermissionAll(ctx context.Context, in *QueryAllGuildPermissionRequest, opts ...grpc.CallOption) (*QueryGetMultiplePermissionResponse, error) {
+	out := new(QueryGetMultiplePermissionResponse)
+	err := c.cc.Invoke(ctx, "/structs.Query/GuildPermissionAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) Player(ctx context.Context, in *QueryGetPlayerRequest, opts ...grpc.CallOption) (*QueryGetPlayerResponse, error) {
 	out := new(QueryGetPlayerResponse)
 	err := c.cc.Invoke(ctx, "/structs.Query/Player", in, out, opts...)
@@ -1974,6 +2834,33 @@ func (c *queryClient) Player(ctx context.Context, in *QueryGetPlayerRequest, opt
 func (c *queryClient) PlayerAll(ctx context.Context, in *QueryAllPlayerRequest, opts ...grpc.CallOption) (*QueryAllPlayerResponse, error) {
 	out := new(QueryAllPlayerResponse)
 	err := c.cc.Invoke(ctx, "/structs.Query/PlayerAll", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) PlayerPermission(ctx context.Context, in *QueryGetPlayerPermissionRequest, opts ...grpc.CallOption) (*QueryGetMultiplePermissionResponse, error) {
+	out := new(QueryGetMultiplePermissionResponse)
+	err := c.cc.Invoke(ctx, "/structs.Query/PlayerPermission", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) PlayerPlayerPermission(ctx context.Context, in *QueryGetPlayerPlayerPermissionRequest, opts ...grpc.CallOption) (*QueryPermissionResponse, error) {
+	out := new(QueryPermissionResponse)
+	err := c.cc.Invoke(ctx, "/structs.Query/PlayerPlayerPermission", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) PlayerPermissionAll(ctx context.Context, in *QueryAllPlayerPermissionRequest, opts ...grpc.CallOption) (*QueryGetMultiplePermissionResponse, error) {
+	out := new(QueryGetMultiplePermissionResponse)
+	err := c.cc.Invoke(ctx, "/structs.Query/PlayerPermissionAll", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -2043,18 +2930,34 @@ type QueryServer interface {
 	// Queries a list of Reactor items.
 	Reactor(context.Context, *QueryGetReactorRequest) (*QueryGetReactorResponse, error)
 	ReactorAll(context.Context, *QueryAllReactorRequest) (*QueryAllReactorResponse, error)
+	// Queries a list of Reactor Permission items.
+	ReactorPermission(context.Context, *QueryGetReactorPermissionRequest) (*QueryGetMultiplePermissionResponse, error)
+	ReactorPlayerPermission(context.Context, *QueryGetReactorPlayerPermissionRequest) (*QueryPermissionResponse, error)
+	ReactorPermissionAll(context.Context, *QueryAllReactorPermissionRequest) (*QueryGetMultiplePermissionResponse, error)
 	// Queries a list of Substation items.
 	Substation(context.Context, *QueryGetSubstationRequest) (*QueryGetSubstationResponse, error)
 	SubstationAll(context.Context, *QueryAllSubstationRequest) (*QueryAllSubstationResponse, error)
+	// Queries a list of Substation Permission items.
+	SubstationPermission(context.Context, *QueryGetSubstationPermissionRequest) (*QueryGetMultiplePermissionResponse, error)
+	SubstationPlayerPermission(context.Context, *QueryGetSubstationPlayerPermissionRequest) (*QueryPermissionResponse, error)
+	SubstationPermissionAll(context.Context, *QueryAllSubstationPermissionRequest) (*QueryGetMultiplePermissionResponse, error)
 	// Queries a list of Allocation items.
 	Allocation(context.Context, *QueryGetAllocationRequest) (*QueryGetAllocationResponse, error)
 	AllocationAll(context.Context, *QueryAllAllocationRequest) (*QueryAllAllocationResponse, error)
 	// Queries a list of Guild items.
 	Guild(context.Context, *QueryGetGuildRequest) (*QueryGetGuildResponse, error)
 	GuildAll(context.Context, *QueryAllGuildRequest) (*QueryAllGuildResponse, error)
+	// Queries a list of Guild Permission items.
+	GuildPermission(context.Context, *QueryGetGuildPermissionRequest) (*QueryGetMultiplePermissionResponse, error)
+	GuildPlayerPermission(context.Context, *QueryGetGuildPlayerPermissionRequest) (*QueryPermissionResponse, error)
+	GuildPermissionAll(context.Context, *QueryAllGuildPermissionRequest) (*QueryGetMultiplePermissionResponse, error)
 	// Queries a list of Player items.
 	Player(context.Context, *QueryGetPlayerRequest) (*QueryGetPlayerResponse, error)
 	PlayerAll(context.Context, *QueryAllPlayerRequest) (*QueryAllPlayerResponse, error)
+	// Queries a list of Player Permission items.
+	PlayerPermission(context.Context, *QueryGetPlayerPermissionRequest) (*QueryGetMultiplePermissionResponse, error)
+	PlayerPlayerPermission(context.Context, *QueryGetPlayerPlayerPermissionRequest) (*QueryPermissionResponse, error)
+	PlayerPermissionAll(context.Context, *QueryAllPlayerPermissionRequest) (*QueryGetMultiplePermissionResponse, error)
 	// Queries a list of Allocation items.
 	Infusion(context.Context, *QueryGetInfusionRequest) (*QueryGetInfusionResponse, error)
 	InfusionAll(context.Context, *QueryAllInfusionRequest) (*QueryAllInfusionResponse, error)
@@ -2082,11 +2985,29 @@ func (*UnimplementedQueryServer) Reactor(ctx context.Context, req *QueryGetReact
 func (*UnimplementedQueryServer) ReactorAll(ctx context.Context, req *QueryAllReactorRequest) (*QueryAllReactorResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReactorAll not implemented")
 }
+func (*UnimplementedQueryServer) ReactorPermission(ctx context.Context, req *QueryGetReactorPermissionRequest) (*QueryGetMultiplePermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReactorPermission not implemented")
+}
+func (*UnimplementedQueryServer) ReactorPlayerPermission(ctx context.Context, req *QueryGetReactorPlayerPermissionRequest) (*QueryPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReactorPlayerPermission not implemented")
+}
+func (*UnimplementedQueryServer) ReactorPermissionAll(ctx context.Context, req *QueryAllReactorPermissionRequest) (*QueryGetMultiplePermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReactorPermissionAll not implemented")
+}
 func (*UnimplementedQueryServer) Substation(ctx context.Context, req *QueryGetSubstationRequest) (*QueryGetSubstationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Substation not implemented")
 }
 func (*UnimplementedQueryServer) SubstationAll(ctx context.Context, req *QueryAllSubstationRequest) (*QueryAllSubstationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubstationAll not implemented")
+}
+func (*UnimplementedQueryServer) SubstationPermission(ctx context.Context, req *QueryGetSubstationPermissionRequest) (*QueryGetMultiplePermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubstationPermission not implemented")
+}
+func (*UnimplementedQueryServer) SubstationPlayerPermission(ctx context.Context, req *QueryGetSubstationPlayerPermissionRequest) (*QueryPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubstationPlayerPermission not implemented")
+}
+func (*UnimplementedQueryServer) SubstationPermissionAll(ctx context.Context, req *QueryAllSubstationPermissionRequest) (*QueryGetMultiplePermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubstationPermissionAll not implemented")
 }
 func (*UnimplementedQueryServer) Allocation(ctx context.Context, req *QueryGetAllocationRequest) (*QueryGetAllocationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Allocation not implemented")
@@ -2100,11 +3021,29 @@ func (*UnimplementedQueryServer) Guild(ctx context.Context, req *QueryGetGuildRe
 func (*UnimplementedQueryServer) GuildAll(ctx context.Context, req *QueryAllGuildRequest) (*QueryAllGuildResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildAll not implemented")
 }
+func (*UnimplementedQueryServer) GuildPermission(ctx context.Context, req *QueryGetGuildPermissionRequest) (*QueryGetMultiplePermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildPermission not implemented")
+}
+func (*UnimplementedQueryServer) GuildPlayerPermission(ctx context.Context, req *QueryGetGuildPlayerPermissionRequest) (*QueryPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildPlayerPermission not implemented")
+}
+func (*UnimplementedQueryServer) GuildPermissionAll(ctx context.Context, req *QueryAllGuildPermissionRequest) (*QueryGetMultiplePermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildPermissionAll not implemented")
+}
 func (*UnimplementedQueryServer) Player(ctx context.Context, req *QueryGetPlayerRequest) (*QueryGetPlayerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Player not implemented")
 }
 func (*UnimplementedQueryServer) PlayerAll(ctx context.Context, req *QueryAllPlayerRequest) (*QueryAllPlayerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlayerAll not implemented")
+}
+func (*UnimplementedQueryServer) PlayerPermission(ctx context.Context, req *QueryGetPlayerPermissionRequest) (*QueryGetMultiplePermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlayerPermission not implemented")
+}
+func (*UnimplementedQueryServer) PlayerPlayerPermission(ctx context.Context, req *QueryGetPlayerPlayerPermissionRequest) (*QueryPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlayerPlayerPermission not implemented")
+}
+func (*UnimplementedQueryServer) PlayerPermissionAll(ctx context.Context, req *QueryAllPlayerPermissionRequest) (*QueryGetMultiplePermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlayerPermissionAll not implemented")
 }
 func (*UnimplementedQueryServer) Infusion(ctx context.Context, req *QueryGetInfusionRequest) (*QueryGetInfusionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Infusion not implemented")
@@ -2201,6 +3140,60 @@ func _Query_ReactorAll_Handler(srv interface{}, ctx context.Context, dec func(in
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_ReactorPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetReactorPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ReactorPermission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.Query/ReactorPermission",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ReactorPermission(ctx, req.(*QueryGetReactorPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ReactorPlayerPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetReactorPlayerPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ReactorPlayerPermission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.Query/ReactorPlayerPermission",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ReactorPlayerPermission(ctx, req.(*QueryGetReactorPlayerPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ReactorPermissionAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllReactorPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ReactorPermissionAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.Query/ReactorPermissionAll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ReactorPermissionAll(ctx, req.(*QueryAllReactorPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_Substation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryGetSubstationRequest)
 	if err := dec(in); err != nil {
@@ -2233,6 +3226,60 @@ func _Query_SubstationAll_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).SubstationAll(ctx, req.(*QueryAllSubstationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_SubstationPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetSubstationPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).SubstationPermission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.Query/SubstationPermission",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).SubstationPermission(ctx, req.(*QueryGetSubstationPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_SubstationPlayerPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetSubstationPlayerPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).SubstationPlayerPermission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.Query/SubstationPlayerPermission",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).SubstationPlayerPermission(ctx, req.(*QueryGetSubstationPlayerPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_SubstationPermissionAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllSubstationPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).SubstationPermissionAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.Query/SubstationPermissionAll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).SubstationPermissionAll(ctx, req.(*QueryAllSubstationPermissionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2309,6 +3356,60 @@ func _Query_GuildAll_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_GuildPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetGuildPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GuildPermission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.Query/GuildPermission",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GuildPermission(ctx, req.(*QueryGetGuildPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GuildPlayerPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetGuildPlayerPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GuildPlayerPermission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.Query/GuildPlayerPermission",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GuildPlayerPermission(ctx, req.(*QueryGetGuildPlayerPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GuildPermissionAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllGuildPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GuildPermissionAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.Query/GuildPermissionAll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GuildPermissionAll(ctx, req.(*QueryAllGuildPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_Player_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryGetPlayerRequest)
 	if err := dec(in); err != nil {
@@ -2341,6 +3442,60 @@ func _Query_PlayerAll_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).PlayerAll(ctx, req.(*QueryAllPlayerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_PlayerPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetPlayerPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).PlayerPermission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.Query/PlayerPermission",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).PlayerPermission(ctx, req.(*QueryGetPlayerPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_PlayerPlayerPermission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetPlayerPlayerPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).PlayerPlayerPermission(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.Query/PlayerPlayerPermission",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).PlayerPlayerPermission(ctx, req.(*QueryGetPlayerPlayerPermissionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_PlayerPermissionAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllPlayerPermissionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).PlayerPermissionAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.Query/PlayerPermissionAll",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).PlayerPermissionAll(ctx, req.(*QueryAllPlayerPermissionRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2474,12 +3629,36 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_ReactorAll_Handler,
 		},
 		{
+			MethodName: "ReactorPermission",
+			Handler:    _Query_ReactorPermission_Handler,
+		},
+		{
+			MethodName: "ReactorPlayerPermission",
+			Handler:    _Query_ReactorPlayerPermission_Handler,
+		},
+		{
+			MethodName: "ReactorPermissionAll",
+			Handler:    _Query_ReactorPermissionAll_Handler,
+		},
+		{
 			MethodName: "Substation",
 			Handler:    _Query_Substation_Handler,
 		},
 		{
 			MethodName: "SubstationAll",
 			Handler:    _Query_SubstationAll_Handler,
+		},
+		{
+			MethodName: "SubstationPermission",
+			Handler:    _Query_SubstationPermission_Handler,
+		},
+		{
+			MethodName: "SubstationPlayerPermission",
+			Handler:    _Query_SubstationPlayerPermission_Handler,
+		},
+		{
+			MethodName: "SubstationPermissionAll",
+			Handler:    _Query_SubstationPermissionAll_Handler,
 		},
 		{
 			MethodName: "Allocation",
@@ -2498,12 +3677,36 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Query_GuildAll_Handler,
 		},
 		{
+			MethodName: "GuildPermission",
+			Handler:    _Query_GuildPermission_Handler,
+		},
+		{
+			MethodName: "GuildPlayerPermission",
+			Handler:    _Query_GuildPlayerPermission_Handler,
+		},
+		{
+			MethodName: "GuildPermissionAll",
+			Handler:    _Query_GuildPermissionAll_Handler,
+		},
+		{
 			MethodName: "Player",
 			Handler:    _Query_Player_Handler,
 		},
 		{
 			MethodName: "PlayerAll",
 			Handler:    _Query_PlayerAll_Handler,
+		},
+		{
+			MethodName: "PlayerPermission",
+			Handler:    _Query_PlayerPermission_Handler,
+		},
+		{
+			MethodName: "PlayerPlayerPermission",
+			Handler:    _Query_PlayerPlayerPermission_Handler,
+		},
+		{
+			MethodName: "PlayerPermissionAll",
+			Handler:    _Query_PlayerPermissionAll_Handler,
 		},
 		{
 			MethodName: "Infusion",
@@ -2532,6 +3735,97 @@ var _Query_serviceDesc = grpc.ServiceDesc{
 	},
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "structs/structs/query.proto",
+}
+
+func (m *QueryPermissionResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryPermissionResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryPermissionResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.PermissionRecord != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.PermissionRecord))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.PlayerId) > 0 {
+		i -= len(m.PlayerId)
+		copy(dAtA[i:], m.PlayerId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.PlayerId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.ObjectId) > 0 {
+		i -= len(m.ObjectId)
+		copy(dAtA[i:], m.ObjectId)
+		i = encodeVarintQuery(dAtA, i, uint64(len(m.ObjectId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetMultiplePermissionResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetMultiplePermissionResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetMultiplePermissionResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Permission) > 0 {
+		for iNdEx := len(m.Permission) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.Permission[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintQuery(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0xa
+		}
+	}
+	return len(dAtA) - i, nil
 }
 
 func (m *QueryParamsRequest) Marshal() (dAtA []byte, err error) {
@@ -2735,6 +4029,114 @@ func (m *QueryAllReactorResponse) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryGetReactorPermissionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetReactorPermissionRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetReactorPermissionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.ReactorId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.ReactorId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetReactorPlayerPermissionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetReactorPlayerPermissionRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetReactorPlayerPermissionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.PlayerId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.PlayerId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.ReactorId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.ReactorId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllReactorPermissionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllReactorPermissionRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllReactorPermissionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *QueryGetSubstationRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -2880,6 +4282,114 @@ func (m *QueryAllSubstationResponse) MarshalToSizedBuffer(dAtA []byte) (int, err
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryGetSubstationPermissionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetSubstationPermissionRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetSubstationPermissionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.SubstationId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.SubstationId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetSubstationPlayerPermissionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetSubstationPlayerPermissionRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetSubstationPlayerPermissionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.PlayerId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.PlayerId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.SubstationId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.SubstationId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllSubstationPermissionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllSubstationPermissionRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllSubstationPermissionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *QueryGetAllocationRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -2997,20 +4507,20 @@ func (m *QueryAllAllocationResponse) MarshalToSizedBuffer(dAtA []byte) (int, err
 	var l int
 	_ = l
 	if len(m.Status) > 0 {
-		dAtA11 := make([]byte, len(m.Status)*10)
-		var j10 int
+		dAtA16 := make([]byte, len(m.Status)*10)
+		var j15 int
 		for _, num := range m.Status {
 			for num >= 1<<7 {
-				dAtA11[j10] = uint8(uint64(num)&0x7f | 0x80)
+				dAtA16[j15] = uint8(uint64(num)&0x7f | 0x80)
 				num >>= 7
-				j10++
+				j15++
 			}
-			dAtA11[j10] = uint8(num)
-			j10++
+			dAtA16[j15] = uint8(num)
+			j15++
 		}
-		i -= j10
-		copy(dAtA[i:], dAtA11[:j10])
-		i = encodeVarintQuery(dAtA, i, uint64(j10))
+		i -= j15
+		copy(dAtA[i:], dAtA16[:j15])
+		i = encodeVarintQuery(dAtA, i, uint64(j15))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -3188,6 +4698,114 @@ func (m *QueryAllGuildResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryGetGuildPermissionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetGuildPermissionRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetGuildPermissionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.GuildId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.GuildId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetGuildPlayerPermissionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetGuildPlayerPermissionRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetGuildPlayerPermissionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.PlayerId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.PlayerId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.GuildId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.GuildId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllGuildPermissionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllGuildPermissionRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllGuildPermissionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *QueryGetPlayerRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -3333,6 +4951,114 @@ func (m *QueryAllPlayerResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	return len(dAtA) - i, nil
 }
 
+func (m *QueryGetPlayerPermissionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetPlayerPermissionRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetPlayerPermissionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.PlayerId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.PlayerId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryGetPlayerPlayerPermissionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryGetPlayerPlayerPermissionRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryGetPlayerPlayerPermissionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.PlayerId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.PlayerId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.TargetPlayerId != 0 {
+		i = encodeVarintQuery(dAtA, i, uint64(m.TargetPlayerId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *QueryAllPlayerPermissionRequest) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *QueryAllPlayerPermissionRequest) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *QueryAllPlayerPermissionRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		{
+			size, err := m.Pagination.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintQuery(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func (m *QueryGetInfusionRequest) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
@@ -3464,20 +5190,20 @@ func (m *QueryAllInfusionResponse) MarshalToSizedBuffer(dAtA []byte) (int, error
 	var l int
 	_ = l
 	if len(m.Status) > 0 {
-		dAtA22 := make([]byte, len(m.Status)*10)
-		var j21 int
+		dAtA31 := make([]byte, len(m.Status)*10)
+		var j30 int
 		for _, num := range m.Status {
 			for num >= 1<<7 {
-				dAtA22[j21] = uint8(uint64(num)&0x7f | 0x80)
+				dAtA31[j30] = uint8(uint64(num)&0x7f | 0x80)
 				num >>= 7
-				j21++
+				j30++
 			}
-			dAtA22[j21] = uint8(num)
-			j21++
+			dAtA31[j30] = uint8(num)
+			j30++
 		}
-		i -= j21
-		copy(dAtA[i:], dAtA22[:j21])
-		i = encodeVarintQuery(dAtA, i, uint64(j21))
+		i -= j30
+		copy(dAtA[i:], dAtA31[:j30])
+		i = encodeVarintQuery(dAtA, i, uint64(j30))
 		i--
 		dAtA[i] = 0x1a
 	}
@@ -3862,6 +5588,45 @@ func encodeVarintQuery(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
+func (m *QueryPermissionResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ObjectId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	l = len(m.PlayerId)
+	if l > 0 {
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	if m.PermissionRecord != 0 {
+		n += 1 + sovQuery(uint64(m.PermissionRecord))
+	}
+	return n
+}
+
+func (m *QueryGetMultiplePermissionResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if len(m.Permission) > 0 {
+		for _, e := range m.Permission {
+			l = e.Size()
+			n += 1 + l + sovQuery(uint64(l))
+		}
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
 func (m *QueryParamsRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -3937,6 +5702,50 @@ func (m *QueryAllReactorResponse) Size() (n int) {
 	return n
 }
 
+func (m *QueryGetReactorPermissionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.ReactorId != 0 {
+		n += 1 + sovQuery(uint64(m.ReactorId))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryGetReactorPlayerPermissionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.ReactorId != 0 {
+		n += 1 + sovQuery(uint64(m.ReactorId))
+	}
+	if m.PlayerId != 0 {
+		n += 1 + sovQuery(uint64(m.PlayerId))
+	}
+	return n
+}
+
+func (m *QueryAllReactorPermissionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
 func (m *QueryGetSubstationRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -3985,6 +5794,50 @@ func (m *QueryAllSubstationResponse) Size() (n int) {
 			n += 1 + l + sovQuery(uint64(l))
 		}
 	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryGetSubstationPermissionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.SubstationId != 0 {
+		n += 1 + sovQuery(uint64(m.SubstationId))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryGetSubstationPlayerPermissionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.SubstationId != 0 {
+		n += 1 + sovQuery(uint64(m.SubstationId))
+	}
+	if m.PlayerId != 0 {
+		n += 1 + sovQuery(uint64(m.PlayerId))
+	}
+	return n
+}
+
+func (m *QueryAllSubstationPermissionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
 	if m.Pagination != nil {
 		l = m.Pagination.Size()
 		n += 1 + l + sovQuery(uint64(l))
@@ -4109,6 +5962,50 @@ func (m *QueryAllGuildResponse) Size() (n int) {
 	return n
 }
 
+func (m *QueryGetGuildPermissionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.GuildId != 0 {
+		n += 1 + sovQuery(uint64(m.GuildId))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryGetGuildPlayerPermissionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.GuildId != 0 {
+		n += 1 + sovQuery(uint64(m.GuildId))
+	}
+	if m.PlayerId != 0 {
+		n += 1 + sovQuery(uint64(m.PlayerId))
+	}
+	return n
+}
+
+func (m *QueryAllGuildPermissionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
 func (m *QueryGetPlayerRequest) Size() (n int) {
 	if m == nil {
 		return 0
@@ -4157,6 +6054,50 @@ func (m *QueryAllPlayerResponse) Size() (n int) {
 			n += 1 + l + sovQuery(uint64(l))
 		}
 	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryGetPlayerPermissionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.PlayerId != 0 {
+		n += 1 + sovQuery(uint64(m.PlayerId))
+	}
+	if m.Pagination != nil {
+		l = m.Pagination.Size()
+		n += 1 + l + sovQuery(uint64(l))
+	}
+	return n
+}
+
+func (m *QueryGetPlayerPlayerPermissionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.TargetPlayerId != 0 {
+		n += 1 + sovQuery(uint64(m.TargetPlayerId))
+	}
+	if m.PlayerId != 0 {
+		n += 1 + sovQuery(uint64(m.PlayerId))
+	}
+	return n
+}
+
+func (m *QueryAllPlayerPermissionRequest) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
 	if m.Pagination != nil {
 		l = m.Pagination.Size()
 		n += 1 + l + sovQuery(uint64(l))
@@ -4370,6 +6311,259 @@ func sovQuery(x uint64) (n int) {
 }
 func sozQuery(x uint64) (n int) {
 	return sovQuery(uint64((x << 1) ^ uint64((int64(x) >> 63))))
+}
+func (m *QueryPermissionResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryPermissionResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryPermissionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ObjectId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ObjectId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PlayerId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PermissionRecord", wireType)
+			}
+			m.PermissionRecord = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PermissionRecord |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetMultiplePermissionResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetMultiplePermissionResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetMultiplePermissionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Permission", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Permission = append(m.Permission, &QueryPermissionResponse{})
+			if err := m.Permission[len(m.Permission)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
 }
 func (m *QueryParamsRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
@@ -4862,6 +7056,285 @@ func (m *QueryAllReactorResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *QueryGetReactorPermissionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetReactorPermissionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetReactorPermissionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReactorId", wireType)
+			}
+			m.ReactorId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ReactorId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetReactorPlayerPermissionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetReactorPlayerPermissionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetReactorPlayerPermissionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReactorId", wireType)
+			}
+			m.ReactorId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ReactorId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
+			}
+			m.PlayerId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PlayerId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllReactorPermissionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllReactorPermissionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllReactorPermissionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *QueryGetSubstationRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -5194,6 +7667,285 @@ func (m *QueryAllSubstationResponse) Unmarshal(dAtA []byte) error {
 			}
 			if m.Pagination == nil {
 				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetSubstationPermissionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetSubstationPermissionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetSubstationPermissionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubstationId", wireType)
+			}
+			m.SubstationId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SubstationId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetSubstationPlayerPermissionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetSubstationPlayerPermissionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetSubstationPlayerPermissionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubstationId", wireType)
+			}
+			m.SubstationId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SubstationId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
+			}
+			m.PlayerId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PlayerId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllSubstationPermissionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllSubstationPermissionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllSubstationPermissionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
 			}
 			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err
@@ -6012,6 +8764,285 @@ func (m *QueryAllGuildResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
+func (m *QueryGetGuildPermissionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetGuildPermissionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetGuildPermissionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
+			}
+			m.GuildId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.GuildId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetGuildPlayerPermissionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetGuildPlayerPermissionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetGuildPlayerPermissionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
+			}
+			m.GuildId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.GuildId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
+			}
+			m.PlayerId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PlayerId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllGuildPermissionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllGuildPermissionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllGuildPermissionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
 func (m *QueryGetPlayerRequest) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
@@ -6344,6 +9375,285 @@ func (m *QueryAllPlayerResponse) Unmarshal(dAtA []byte) error {
 			}
 			if m.Pagination == nil {
 				m.Pagination = &query.PageResponse{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetPlayerPermissionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetPlayerPermissionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetPlayerPermissionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
+			}
+			m.PlayerId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PlayerId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
+			}
+			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryGetPlayerPlayerPermissionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryGetPlayerPlayerPermissionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryGetPlayerPlayerPermissionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field TargetPlayerId", wireType)
+			}
+			m.TargetPlayerId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.TargetPlayerId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
+			}
+			m.PlayerId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PlayerId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipQuery(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *QueryAllPlayerPermissionRequest) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowQuery
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: QueryAllPlayerPermissionRequest: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: QueryAllPlayerPermissionRequest: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Pagination", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowQuery
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthQuery
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthQuery
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Pagination == nil {
+				m.Pagination = &query.PageRequest{}
 			}
 			if err := m.Pagination.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
 				return err

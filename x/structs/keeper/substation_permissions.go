@@ -9,6 +9,7 @@ import (
 
 	//sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strconv"
+	"strings"
 )
 
 
@@ -44,6 +45,10 @@ func (k Keeper) SubstationSetPlayerPermissionsByBytes(ctx sdk.Context, permissio
 	binary.BigEndian.PutUint64(bz, uint64(permissions))
 
 	store.Set(permissionRecord, bz)
+
+    keys := strings.Split(string(permissionRecord), "-")
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventSubstationPermission{Body: &types.EventPermissionBodyKeyPair{ObjectId: keys[0], PlayerId: keys[1], Value: uint64(permissions)}})
+
 
 	return permissions
 }
