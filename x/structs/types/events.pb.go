@@ -1149,6 +1149,286 @@ func (m *EventPermissionBodyKeyPair) GetValue() uint64 {
 	return 0
 }
 
+type EventAllocationDelete struct {
+	AllocationId uint64 `protobuf:"varint,1,opt,name=allocationId,proto3" json:"allocationId,omitempty"`
+}
+
+func (m *EventAllocationDelete) Reset()         { *m = EventAllocationDelete{} }
+func (m *EventAllocationDelete) String() string { return proto.CompactTextString(m) }
+func (*EventAllocationDelete) ProtoMessage()    {}
+func (*EventAllocationDelete) Descriptor() ([]byte, []int) {
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{25}
+}
+func (m *EventAllocationDelete) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventAllocationDelete) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventAllocationDelete.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventAllocationDelete) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventAllocationDelete.Merge(m, src)
+}
+func (m *EventAllocationDelete) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventAllocationDelete) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventAllocationDelete.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventAllocationDelete proto.InternalMessageInfo
+
+func (m *EventAllocationDelete) GetAllocationId() uint64 {
+	if m != nil {
+		return m.AllocationId
+	}
+	return 0
+}
+
+type EventGuildDelete struct {
+	GuildId uint64 `protobuf:"varint,1,opt,name=guildId,proto3" json:"guildId,omitempty"`
+}
+
+func (m *EventGuildDelete) Reset()         { *m = EventGuildDelete{} }
+func (m *EventGuildDelete) String() string { return proto.CompactTextString(m) }
+func (*EventGuildDelete) ProtoMessage()    {}
+func (*EventGuildDelete) Descriptor() ([]byte, []int) {
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{26}
+}
+func (m *EventGuildDelete) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventGuildDelete) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventGuildDelete.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventGuildDelete) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventGuildDelete.Merge(m, src)
+}
+func (m *EventGuildDelete) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventGuildDelete) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventGuildDelete.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventGuildDelete proto.InternalMessageInfo
+
+func (m *EventGuildDelete) GetGuildId() uint64 {
+	if m != nil {
+		return m.GuildId
+	}
+	return 0
+}
+
+type EventInfusionDelete struct {
+	DestinationType ObjectType `protobuf:"varint,1,opt,name=destinationType,proto3,enum=structs.ObjectType" json:"destinationType,omitempty"`
+	DestinationId   uint64     `protobuf:"varint,2,opt,name=destinationId,proto3" json:"destinationId,omitempty"`
+	Address         string     `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
+}
+
+func (m *EventInfusionDelete) Reset()         { *m = EventInfusionDelete{} }
+func (m *EventInfusionDelete) String() string { return proto.CompactTextString(m) }
+func (*EventInfusionDelete) ProtoMessage()    {}
+func (*EventInfusionDelete) Descriptor() ([]byte, []int) {
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{27}
+}
+func (m *EventInfusionDelete) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventInfusionDelete) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventInfusionDelete.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventInfusionDelete) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventInfusionDelete.Merge(m, src)
+}
+func (m *EventInfusionDelete) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventInfusionDelete) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventInfusionDelete.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventInfusionDelete proto.InternalMessageInfo
+
+func (m *EventInfusionDelete) GetDestinationType() ObjectType {
+	if m != nil {
+		return m.DestinationType
+	}
+	return ObjectType_guild
+}
+
+func (m *EventInfusionDelete) GetDestinationId() uint64 {
+	if m != nil {
+		return m.DestinationId
+	}
+	return 0
+}
+
+func (m *EventInfusionDelete) GetAddress() string {
+	if m != nil {
+		return m.Address
+	}
+	return ""
+}
+
+type EventReactorDelete struct {
+	ReactorId uint64 `protobuf:"varint,1,opt,name=reactorId,proto3" json:"reactorId,omitempty"`
+}
+
+func (m *EventReactorDelete) Reset()         { *m = EventReactorDelete{} }
+func (m *EventReactorDelete) String() string { return proto.CompactTextString(m) }
+func (*EventReactorDelete) ProtoMessage()    {}
+func (*EventReactorDelete) Descriptor() ([]byte, []int) {
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{28}
+}
+func (m *EventReactorDelete) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventReactorDelete) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventReactorDelete.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventReactorDelete) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventReactorDelete.Merge(m, src)
+}
+func (m *EventReactorDelete) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventReactorDelete) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventReactorDelete.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventReactorDelete proto.InternalMessageInfo
+
+func (m *EventReactorDelete) GetReactorId() uint64 {
+	if m != nil {
+		return m.ReactorId
+	}
+	return 0
+}
+
+type EventStructDelete struct {
+	StructId uint64 `protobuf:"varint,1,opt,name=structId,proto3" json:"structId,omitempty"`
+}
+
+func (m *EventStructDelete) Reset()         { *m = EventStructDelete{} }
+func (m *EventStructDelete) String() string { return proto.CompactTextString(m) }
+func (*EventStructDelete) ProtoMessage()    {}
+func (*EventStructDelete) Descriptor() ([]byte, []int) {
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{29}
+}
+func (m *EventStructDelete) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventStructDelete) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventStructDelete.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventStructDelete) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventStructDelete.Merge(m, src)
+}
+func (m *EventStructDelete) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventStructDelete) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventStructDelete.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventStructDelete proto.InternalMessageInfo
+
+func (m *EventStructDelete) GetStructId() uint64 {
+	if m != nil {
+		return m.StructId
+	}
+	return 0
+}
+
+type EventSubstationDelete struct {
+	SubstationId uint64 `protobuf:"varint,1,opt,name=substationId,proto3" json:"substationId,omitempty"`
+}
+
+func (m *EventSubstationDelete) Reset()         { *m = EventSubstationDelete{} }
+func (m *EventSubstationDelete) String() string { return proto.CompactTextString(m) }
+func (*EventSubstationDelete) ProtoMessage()    {}
+func (*EventSubstationDelete) Descriptor() ([]byte, []int) {
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{30}
+}
+func (m *EventSubstationDelete) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventSubstationDelete) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventSubstationDelete.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventSubstationDelete) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventSubstationDelete.Merge(m, src)
+}
+func (m *EventSubstationDelete) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventSubstationDelete) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventSubstationDelete.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventSubstationDelete proto.InternalMessageInfo
+
+func (m *EventSubstationDelete) GetSubstationId() uint64 {
+	if m != nil {
+		return m.SubstationId
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*EventAllocation)(nil), "structs.EventAllocation")
 	proto.RegisterType((*EventGuild)(nil), "structs.EventGuild")
@@ -1175,54 +1455,69 @@ func init() {
 	proto.RegisterType((*EventSubstationLoad)(nil), "structs.EventSubstationLoad")
 	proto.RegisterType((*EventBodyKeyPair)(nil), "structs.EventBodyKeyPair")
 	proto.RegisterType((*EventPermissionBodyKeyPair)(nil), "structs.EventPermissionBodyKeyPair")
+	proto.RegisterType((*EventAllocationDelete)(nil), "structs.EventAllocationDelete")
+	proto.RegisterType((*EventGuildDelete)(nil), "structs.EventGuildDelete")
+	proto.RegisterType((*EventInfusionDelete)(nil), "structs.EventInfusionDelete")
+	proto.RegisterType((*EventReactorDelete)(nil), "structs.EventReactorDelete")
+	proto.RegisterType((*EventStructDelete)(nil), "structs.EventStructDelete")
+	proto.RegisterType((*EventSubstationDelete)(nil), "structs.EventSubstationDelete")
 }
 
 func init() { proto.RegisterFile("structs/structs/events.proto", fileDescriptor_dd7c2ee201e0d8dd) }
 
 var fileDescriptor_dd7c2ee201e0d8dd = []byte{
-	// 664 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x55, 0x5b, 0x4f, 0xd4, 0x40,
-	0x14, 0x66, 0xe5, 0x7e, 0x50, 0x59, 0x06, 0x54, 0x58, 0xb1, 0x21, 0xd5, 0x44, 0x43, 0x02, 0x0d,
-	0x90, 0x68, 0x62, 0x8c, 0x11, 0x10, 0x0c, 0xc1, 0x04, 0x1c, 0x7c, 0xf2, 0x6d, 0x76, 0xf7, 0xd0,
-	0x14, 0xba, 0x9d, 0x75, 0x3a, 0x25, 0xf6, 0x5f, 0xf8, 0xb3, 0x7c, 0xe4, 0xd1, 0x47, 0x03, 0x7f,
-	0xc4, 0x74, 0x66, 0xda, 0x0e, 0xe5, 0x92, 0xd0, 0xec, 0x53, 0x2f, 0xdf, 0xa5, 0xf3, 0x9d, 0x33,
-	0x3d, 0x03, 0x8b, 0xb1, 0x14, 0x49, 0x47, 0xc6, 0x5e, 0x7e, 0xc5, 0x33, 0x8c, 0x64, 0xbc, 0xda,
-	0x17, 0x5c, 0x72, 0x32, 0x6e, 0xde, 0xb6, 0xe6, 0x7c, 0xee, 0x73, 0xf5, 0xce, 0xcb, 0xee, 0x34,
-	0xdc, 0x5a, 0xf4, 0x39, 0xf7, 0x43, 0xf4, 0x58, 0x3f, 0xf0, 0x58, 0x14, 0x71, 0xc9, 0x64, 0xc0,
-	0x23, 0x23, 0x6e, 0x2d, 0x77, 0x78, 0xdc, 0xe3, 0xb1, 0xd7, 0x66, 0x31, 0x7a, 0x3f, 0x13, 0x14,
-	0xa9, 0x77, 0xb6, 0xd6, 0x46, 0xc9, 0xd6, 0xbc, 0x3e, 0xf3, 0x83, 0x48, 0x91, 0x73, 0xa7, 0xea,
-	0x32, 0xfa, 0x4c, 0xb0, 0x5e, 0xee, 0xd4, 0xaa, 0xa2, 0xa7, 0x98, 0xe6, 0xd8, 0x52, 0x15, 0x63,
-	0x61, 0xc8, 0x3b, 0xb6, 0xf7, 0xf3, 0x2a, 0xc3, 0x4f, 0x82, 0xb0, 0x6b, 0x40, 0xa7, 0x0a, 0x06,
-	0xd1, 0x71, 0x12, 0xdf, 0xb5, 0xb0, 0x90, 0x45, 0x28, 0xef, 0x40, 0x53, 0x14, 0x06, 0x7d, 0x51,
-	0x45, 0x05, 0xb2, 0x8e, 0xe4, 0xe2, 0x36, 0xb1, 0xbe, 0xde, 0x96, 0x2b, 0x4e, 0xda, 0xb1, 0xb4,
-	0x72, 0xb9, 0xbb, 0x30, 0xbd, 0x93, 0x35, 0x6b, 0xb3, 0x08, 0x4c, 0x36, 0x00, 0xca, 0xf8, 0xf3,
-	0x8d, 0xa5, 0xc6, 0x9b, 0xa9, 0xf5, 0xd9, 0x55, 0xe3, 0xb0, 0x5a, 0x12, 0xa9, 0x45, 0x73, 0xd7,
-	0x01, 0x94, 0xcf, 0x97, 0xac, 0x2c, 0xe4, 0x15, 0x8c, 0xaa, 0xfa, 0x18, 0xf5, 0xe3, 0x42, 0xad,
-	0x60, 0xaa, 0x41, 0xf7, 0x00, 0xe6, 0x4a, 0xcd, 0x21, 0x8a, 0x5e, 0x10, 0x67, 0x45, 0x23, 0xef,
-	0x60, 0xa4, 0xcd, 0xbb, 0xa9, 0x11, 0xbf, 0x2c, 0xc4, 0x8a, 0x5c, 0xf2, 0xb6, 0x78, 0x37, 0xdd,
-	0xc7, 0xf4, 0x90, 0x05, 0x82, 0x2a, 0x81, 0xfb, 0x11, 0x1e, 0x29, 0xce, 0x9e, 0x29, 0x3f, 0x59,
-	0x81, 0x89, 0xbc, 0x15, 0xc6, 0x6d, 0xa6, 0x70, 0xcb, 0x49, 0xb4, 0xa0, 0xb8, 0x6f, 0x61, 0x4a,
-	0x7f, 0x43, 0xb5, 0x87, 0xbc, 0x86, 0x31, 0xdd, 0x28, 0xa3, 0x9d, 0x2e, 0xb4, 0x9a, 0x40, 0x0d,
-	0xec, 0xee, 0x43, 0xcb, 0xd2, 0x51, 0x3c, 0x0e, 0x22, 0xec, 0x61, 0x24, 0xb7, 0x79, 0x12, 0x49,
-	0xb2, 0x72, 0x25, 0xce, 0xc2, 0xd5, 0x38, 0xd7, 0x43, 0x7c, 0x86, 0x59, 0xcb, 0xec, 0x40, 0x60,
-	0x2d, 0x17, 0x2b, 0x4a, 0x8a, 0xc2, 0x44, 0x49, 0x51, 0xdc, 0x14, 0x25, 0x45, 0x41, 0x0d, 0xec,
-	0x1e, 0xc2, 0x13, 0x4b, 0x37, 0x88, 0xa6, 0x7c, 0x32, 0x3b, 0x4c, 0x3b, 0x7e, 0xe5, 0xac, 0x7b,
-	0xdf, 0x2c, 0xef, 0xe1, 0xa1, 0x42, 0xa8, 0xde, 0xf9, 0x64, 0x19, 0xc6, 0xcd, 0x4f, 0x60, 0x1c,
-	0x9a, 0x85, 0x83, 0xa1, 0xd0, 0x9c, 0xe0, 0x7e, 0x83, 0xa7, 0xb6, 0x76, 0x10, 0x81, 0x36, 0xa1,
-	0x69, 0x5b, 0xee, 0x26, 0x18, 0xde, 0x37, 0xd1, 0x36, 0x10, 0xdb, 0x62, 0x27, 0x42, 0xe1, 0xa7,
-	0xf7, 0x35, 0xa9, 0xac, 0xa3, 0x4e, 0x65, 0x3f, 0x98, 0x5d, 0x72, 0xa4, 0x68, 0x64, 0x05, 0x26,
-	0xb5, 0x20, 0x11, 0x78, 0x6d, 0xa3, 0x68, 0x0e, 0x2d, 0x19, 0x45, 0x67, 0x35, 0x52, 0xa7, 0x0e,
-	0x5b, 0x30, 0x63, 0x39, 0xd4, 0x2b, 0xc3, 0xd5, 0x55, 0xd4, 0xa9, 0x42, 0x3e, 0x03, 0x8f, 0x8a,
-	0xe1, 0x98, 0xcd, 0xc0, 0x72, 0x54, 0x5e, 0x9b, 0x81, 0x25, 0x91, 0x5a, 0x34, 0xf7, 0x3b, 0x2c,
-	0x54, 0x7c, 0x06, 0xb1, 0xdd, 0x76, 0xcd, 0x1f, 0x59, 0xba, 0xd6, 0xab, 0x53, 0x3e, 0x57, 0x4a,
-	0x9f, 0x7a, 0xff, 0x62, 0xb3, 0x8a, 0x90, 0x26, 0x0c, 0x9f, 0xa2, 0x76, 0x18, 0xa1, 0xd9, 0x2d,
-	0x99, 0x83, 0xd1, 0x33, 0x16, 0x26, 0x38, 0xff, 0x40, 0xbd, 0xd3, 0x0f, 0xee, 0x49, 0x3e, 0x26,
-	0x6f, 0x4a, 0x4b, 0x5a, 0x30, 0xc1, 0xdb, 0x27, 0xd8, 0x91, 0x7b, 0xfa, 0xd8, 0x98, 0xa4, 0xc5,
-	0x73, 0x86, 0xe9, 0xf9, 0xb4, 0xd7, 0x55, 0x96, 0x93, 0xb4, 0x78, 0x2e, 0xbf, 0x35, 0x6c, 0x7d,
-	0x6b, 0x6b, 0xed, 0xcf, 0x85, 0xd3, 0x38, 0xbf, 0x70, 0x1a, 0xff, 0x2e, 0x9c, 0xc6, 0xef, 0x4b,
-	0x67, 0xe8, 0xfc, 0xd2, 0x19, 0xfa, 0x7b, 0xe9, 0x0c, 0xfd, 0x78, 0x96, 0x9f, 0x85, 0xbf, 0x8a,
-	0x53, 0x51, 0xa6, 0x7d, 0x8c, 0xdb, 0x63, 0xea, 0x44, 0xdc, 0xf8, 0x1f, 0x00, 0x00, 0xff, 0xff,
-	0xd1, 0x23, 0x7a, 0xc1, 0xce, 0x08, 0x00, 0x00,
+	// 802 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x56, 0x5b, 0x4f, 0xe3, 0x38,
+	0x14, 0xa6, 0x4b, 0xb9, 0xf4, 0x70, 0x2b, 0x81, 0xdd, 0x85, 0x2e, 0x5b, 0xa1, 0x2c, 0xd2, 0xae,
+	0xd0, 0x42, 0x04, 0x48, 0xbb, 0xd2, 0xdc, 0x34, 0x5c, 0x47, 0x88, 0x91, 0x60, 0x0c, 0x4f, 0xf3,
+	0x96, 0x36, 0x87, 0x2a, 0x90, 0xc6, 0x1d, 0xc7, 0x41, 0x93, 0x7f, 0x31, 0x0f, 0xf3, 0xa3, 0xe6,
+	0x91, 0xc7, 0x79, 0x1c, 0xc1, 0x1f, 0x19, 0xc5, 0x76, 0x6c, 0x37, 0x5c, 0x24, 0x2a, 0x9e, 0xda,
+	0xf8, 0xbb, 0xc4, 0xdf, 0xb1, 0x7d, 0x1c, 0x58, 0x4a, 0x38, 0x4b, 0xdb, 0x3c, 0xf1, 0x8a, 0x5f,
+	0xbc, 0xc2, 0x98, 0x27, 0xeb, 0x3d, 0x46, 0x39, 0x75, 0xc6, 0xd4, 0x68, 0x63, 0xbe, 0x43, 0x3b,
+	0x54, 0x8c, 0x79, 0xf9, 0x3f, 0x09, 0x37, 0x96, 0x3a, 0x94, 0x76, 0x22, 0xf4, 0xfc, 0x5e, 0xe8,
+	0xf9, 0x71, 0x4c, 0xb9, 0xcf, 0x43, 0x1a, 0x2b, 0x71, 0x63, 0xb5, 0x4d, 0x93, 0x2e, 0x4d, 0xbc,
+	0x96, 0x9f, 0xa0, 0xf7, 0x29, 0x45, 0x96, 0x79, 0x57, 0x1b, 0x2d, 0xe4, 0xfe, 0x86, 0xd7, 0xf3,
+	0x3b, 0x61, 0x2c, 0xc8, 0x85, 0x53, 0x79, 0x1a, 0x3d, 0x9f, 0xf9, 0xdd, 0xc2, 0xa9, 0x51, 0x46,
+	0x2f, 0x31, 0x2b, 0xb0, 0xe5, 0x32, 0xe6, 0x47, 0x11, 0x6d, 0xdb, 0xde, 0x7f, 0x94, 0x19, 0x9d,
+	0x34, 0x8c, 0x02, 0x05, 0x36, 0xcb, 0x60, 0x18, 0x9f, 0xa7, 0xc9, 0x63, 0x13, 0x8b, 0xfc, 0x18,
+	0xf9, 0x23, 0x68, 0x86, 0x4c, 0xa1, 0x7f, 0x96, 0x51, 0x86, 0x7e, 0x9b, 0x53, 0xf6, 0x90, 0x58,
+	0xfe, 0x3e, 0x94, 0x2b, 0x49, 0x5b, 0x09, 0xb7, 0x72, 0xb9, 0x07, 0x30, 0xb3, 0x9f, 0x2f, 0xd6,
+	0xb6, 0x0e, 0xec, 0x6c, 0x01, 0x98, 0xf8, 0x0b, 0x95, 0xe5, 0xca, 0x3f, 0x13, 0x9b, 0x73, 0xeb,
+	0xca, 0x61, 0xdd, 0x10, 0x89, 0x45, 0x73, 0x37, 0x01, 0x84, 0xcf, 0xbb, 0xbc, 0x2c, 0xce, 0x0a,
+	0x8c, 0x88, 0xfa, 0x28, 0xf5, 0xb4, 0x56, 0x0b, 0x98, 0x48, 0xd0, 0x3d, 0x86, 0x79, 0xa3, 0x39,
+	0x41, 0xd6, 0x0d, 0x93, 0xbc, 0x68, 0xce, 0xff, 0x50, 0x6d, 0xd1, 0x20, 0x53, 0xe2, 0xbf, 0xb4,
+	0x58, 0x90, 0x0d, 0x6f, 0x87, 0x06, 0xd9, 0x11, 0x66, 0x27, 0x7e, 0xc8, 0x88, 0x10, 0xb8, 0x6f,
+	0x60, 0x4a, 0x70, 0x0e, 0x55, 0xf9, 0x9d, 0x35, 0x18, 0x2f, 0x96, 0x42, 0xb9, 0xcd, 0x6a, 0xb7,
+	0x82, 0x44, 0x34, 0xc5, 0xfd, 0x0f, 0x26, 0xe4, 0x3b, 0xc4, 0xf2, 0x38, 0x7f, 0xc3, 0xa8, 0x5c,
+	0x28, 0xa5, 0x9d, 0xd1, 0x5a, 0x49, 0x20, 0x0a, 0x76, 0x8f, 0xa0, 0x61, 0xe9, 0x08, 0x9e, 0x87,
+	0x31, 0x76, 0x31, 0xe6, 0xbb, 0x34, 0x8d, 0xb9, 0xb3, 0xd6, 0x17, 0x67, 0xb1, 0x3f, 0xce, 0xdd,
+	0x10, 0x7b, 0x30, 0x67, 0x99, 0x1d, 0x33, 0x1c, 0xc8, 0xc5, 0x8a, 0x92, 0x21, 0x53, 0x51, 0x32,
+	0x64, 0xf7, 0x45, 0xc9, 0x90, 0x11, 0x05, 0xbb, 0x27, 0xf0, 0xab, 0xa5, 0x7b, 0x8e, 0x45, 0x79,
+	0xab, 0x76, 0x98, 0x74, 0x7c, 0x4f, 0xfd, 0xe0, 0xa9, 0x59, 0x5e, 0xc0, 0xa4, 0x40, 0x88, 0xdc,
+	0xf9, 0xce, 0x2a, 0x8c, 0xa9, 0x43, 0xa0, 0x1c, 0xea, 0xda, 0x41, 0x51, 0x48, 0x41, 0x70, 0x3f,
+	0xc0, 0x6f, 0xb6, 0xf6, 0x39, 0x02, 0x6d, 0x43, 0xdd, 0xb6, 0x3c, 0x48, 0x31, 0x7a, 0x6a, 0xa2,
+	0x5d, 0x70, 0x6c, 0x8b, 0xfd, 0x18, 0x59, 0x27, 0x7b, 0xaa, 0x49, 0x69, 0x1e, 0x83, 0x54, 0xf6,
+	0x95, 0xda, 0x25, 0xa7, 0x82, 0xe6, 0xac, 0x41, 0x4d, 0x0a, 0x52, 0x86, 0x77, 0x36, 0x8a, 0xe4,
+	0x10, 0xc3, 0xd0, 0x2b, 0x2b, 0x91, 0x41, 0xea, 0xb0, 0x03, 0xb3, 0x96, 0xc3, 0x60, 0x65, 0xe8,
+	0x9f, 0xc5, 0x20, 0x55, 0x28, 0x7a, 0xe0, 0xa9, 0x6e, 0x8e, 0x79, 0x0f, 0x34, 0xad, 0xf2, 0x4e,
+	0x0f, 0x34, 0x44, 0x62, 0xd1, 0xdc, 0x33, 0x58, 0x2c, 0xf9, 0x3c, 0xc7, 0x76, 0x3b, 0x50, 0x27,
+	0xd2, 0xb8, 0x0e, 0x56, 0xa7, 0xa2, 0xaf, 0x18, 0x9f, 0xc1, 0xce, 0x62, 0xbd, 0x8c, 0x38, 0x75,
+	0x18, 0xbe, 0x44, 0xe9, 0x50, 0x25, 0xf9, 0x5f, 0x67, 0x1e, 0x46, 0xae, 0xfc, 0x28, 0xc5, 0x85,
+	0x5f, 0xc4, 0x98, 0x7c, 0x70, 0x2f, 0x8a, 0x36, 0x79, 0x5f, 0x5a, 0xa7, 0x01, 0xe3, 0xb4, 0x75,
+	0x81, 0x6d, 0x7e, 0x28, 0xaf, 0x8d, 0x1a, 0xd1, 0xcf, 0x39, 0x26, 0xfb, 0xd3, 0x61, 0x20, 0x2c,
+	0x6b, 0x44, 0x3f, 0x9b, 0x77, 0x0d, 0xdb, 0xef, 0x7a, 0xa9, 0xaa, 0x66, 0xae, 0xab, 0x3d, 0x8c,
+	0x90, 0xa3, 0xe3, 0xc2, 0xa4, 0xb9, 0xb6, 0xd4, 0xab, 0xaa, 0xa4, 0x6f, 0xcc, 0xfd, 0x57, 0x85,
+	0x14, 0x17, 0x93, 0xd2, 0x2d, 0xc0, 0x98, 0xb8, 0xb5, 0xb4, 0xa4, 0x78, 0x74, 0xbf, 0x56, 0x54,
+	0x65, 0x8b, 0x1b, 0x45, 0x29, 0x5e, 0xc3, 0x4c, 0x80, 0x09, 0x57, 0xdf, 0x28, 0x67, 0x59, 0x4f,
+	0x9e, 0xa9, 0x69, 0x6b, 0x23, 0xc9, 0x80, 0x39, 0x44, 0xca, 0x5c, 0x67, 0x05, 0xa6, 0xac, 0x21,
+	0x15, 0xbc, 0x4a, 0xfa, 0x07, 0xf3, 0x69, 0xf9, 0x41, 0xc0, 0x30, 0x49, 0x44, 0xfe, 0x1a, 0x29,
+	0x1e, 0xdd, 0xcd, 0xfe, 0x1e, 0xa3, 0x26, 0xb5, 0x04, 0x35, 0xd5, 0x1a, 0x75, 0x10, 0x33, 0xe0,
+	0x7a, 0x7d, 0xe7, 0x51, 0x49, 0x1a, 0x30, 0x2e, 0xe7, 0xab, 0x15, 0xfa, 0x59, 0x97, 0xd9, 0x6c,
+	0x2a, 0x53, 0x66, 0x73, 0x32, 0x4c, 0x99, 0xed, 0xb1, 0x9d, 0x8d, 0x6f, 0x37, 0xcd, 0xca, 0xf5,
+	0x4d, 0xb3, 0xf2, 0xe3, 0xa6, 0x59, 0xf9, 0x72, 0xdb, 0x1c, 0xba, 0xbe, 0x6d, 0x0e, 0x7d, 0xbf,
+	0x6d, 0x0e, 0x7d, 0xfc, 0xbd, 0xf8, 0x5e, 0xf9, 0xac, 0xbf, 0x5c, 0x78, 0xd6, 0xc3, 0xa4, 0x35,
+	0x2a, 0xbe, 0x5a, 0xb6, 0x7e, 0x06, 0x00, 0x00, 0xff, 0xff, 0x4c, 0xcb, 0x89, 0x65, 0x72, 0x0a,
+	0x00, 0x00,
 }
 
 func (m *EventAllocation) Marshal() (dAtA []byte, err error) {
@@ -2105,6 +2400,186 @@ func (m *EventPermissionBodyKeyPair) MarshalToSizedBuffer(dAtA []byte) (int, err
 	return len(dAtA) - i, nil
 }
 
+func (m *EventAllocationDelete) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventAllocationDelete) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventAllocationDelete) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.AllocationId != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.AllocationId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *EventGuildDelete) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventGuildDelete) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventGuildDelete) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.GuildId != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.GuildId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *EventInfusionDelete) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventInfusionDelete) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventInfusionDelete) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Address)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.DestinationId != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.DestinationId))
+		i--
+		dAtA[i] = 0x10
+	}
+	if m.DestinationType != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.DestinationType))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *EventReactorDelete) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventReactorDelete) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventReactorDelete) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.ReactorId != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.ReactorId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *EventStructDelete) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventStructDelete) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventStructDelete) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.StructId != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.StructId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *EventSubstationDelete) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *EventSubstationDelete) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *EventSubstationDelete) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.SubstationId != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.SubstationId))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintEvents(dAtA []byte, offset int, v uint64) int {
 	offset -= sovEvents(v)
 	base := offset
@@ -2446,6 +2921,85 @@ func (m *EventPermissionBodyKeyPair) Size() (n int) {
 	}
 	if m.Value != 0 {
 		n += 1 + sovEvents(uint64(m.Value))
+	}
+	return n
+}
+
+func (m *EventAllocationDelete) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.AllocationId != 0 {
+		n += 1 + sovEvents(uint64(m.AllocationId))
+	}
+	return n
+}
+
+func (m *EventGuildDelete) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.GuildId != 0 {
+		n += 1 + sovEvents(uint64(m.GuildId))
+	}
+	return n
+}
+
+func (m *EventInfusionDelete) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.DestinationType != 0 {
+		n += 1 + sovEvents(uint64(m.DestinationType))
+	}
+	if m.DestinationId != 0 {
+		n += 1 + sovEvents(uint64(m.DestinationId))
+	}
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	return n
+}
+
+func (m *EventReactorDelete) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.ReactorId != 0 {
+		n += 1 + sovEvents(uint64(m.ReactorId))
+	}
+	return n
+}
+
+func (m *EventStructDelete) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.StructId != 0 {
+		n += 1 + sovEvents(uint64(m.StructId))
+	}
+	return n
+}
+
+func (m *EventSubstationDelete) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.SubstationId != 0 {
+		n += 1 + sovEvents(uint64(m.SubstationId))
 	}
 	return n
 }
@@ -4630,6 +5184,471 @@ func (m *EventPermissionBodyKeyPair) Unmarshal(dAtA []byte) error {
 				b := dAtA[iNdEx]
 				iNdEx++
 				m.Value |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvents(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventAllocationDelete) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvents
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventAllocationDelete: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventAllocationDelete: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AllocationId", wireType)
+			}
+			m.AllocationId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AllocationId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvents(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventGuildDelete) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvents
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventGuildDelete: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventGuildDelete: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
+			}
+			m.GuildId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.GuildId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvents(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventInfusionDelete) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvents
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventInfusionDelete: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventInfusionDelete: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DestinationType", wireType)
+			}
+			m.DestinationType = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.DestinationType |= ObjectType(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DestinationId", wireType)
+			}
+			m.DestinationId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.DestinationId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvents(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventReactorDelete) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvents
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventReactorDelete: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventReactorDelete: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReactorId", wireType)
+			}
+			m.ReactorId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ReactorId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvents(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventStructDelete) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvents
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventStructDelete: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventStructDelete: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StructId", wireType)
+			}
+			m.StructId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.StructId |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvents(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventSubstationDelete) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvents
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventSubstationDelete: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventSubstationDelete: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubstationId", wireType)
+			}
+			m.SubstationId = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SubstationId |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}

@@ -101,6 +101,8 @@ func (k Keeper) GetAllocation(ctx sdk.Context, id uint64) (val types.Allocation,
 func (k Keeper) RemoveAllocation(ctx sdk.Context, id uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AllocationKey))
 	store.Delete(GetAllocationIDBytes(id))
+
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventAllocationDelete{AllocationId: id})
 }
 
 // GetAllAllocation returns all allocation

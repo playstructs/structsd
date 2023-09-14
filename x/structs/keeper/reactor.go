@@ -140,6 +140,8 @@ func (k Keeper) GetReactorByBytes(ctx sdk.Context, id []byte, full bool) (val ty
 func (k Keeper) RemoveReactor(ctx sdk.Context, id uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorKey))
 	store.Delete(GetReactorIDBytes(id))
+
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventReactorDelete{ReactorId: id})
 }
 
 // GetAllReactor returns all reactor

@@ -109,6 +109,8 @@ func (k Keeper) GetSubstation(ctx sdk.Context, id uint64, full bool) (val types.
 func (k Keeper) RemoveSubstation(ctx sdk.Context, id uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationKey))
 	store.Delete(GetSubstationIDBytes(id))
+
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventSubstationDelete{SubstationId: id})
 }
 
 // GetAllSubstation returns all substation

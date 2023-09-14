@@ -128,5 +128,29 @@ message EventPermissionBodyKeyPair {
 }
 
 
+message EventAllocationDelete {
+  uint64 allocationId = 1;
+}
 
+message EventGuildDelete {
+  uint64 guildId = 1;
+}
+
+message EventInfusionDelete {
+  objectType  destinationType   = 1;
+  uint64      destinationId     = 2;
+  string      address           = 3;
+}
+
+message EventReactorDelete {
+  uint64 reactorId = 1;
+}
+
+message EventStructDelete {
+  uint64 structId  = 1;
+}
+
+message EventSubstationDelete {
+  uint64 substationId = 1;
+}
 

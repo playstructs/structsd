@@ -100,6 +100,8 @@ func (k Keeper) GetStruct(ctx sdk.Context, id uint64) (val types.Struct, found b
 func (k Keeper) RemoveStruct(ctx sdk.Context, id uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructKey))
 	store.Delete(GetStructIDBytes(id))
+
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventStructDelete{StructId: id})
 }
 
 // GetAllStruct returns all struct
