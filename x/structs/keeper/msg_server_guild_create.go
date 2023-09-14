@@ -57,5 +57,8 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
     player.SetGuild(guild.Id)
     k.SetPlayer(ctx, player)
 
+    reactor.SetGuildId(guild.Id)
+    k.SetReactor(ctx, reactor)
+
 	return &types.MsgGuildCreateResponse{GuildId: guild.Id}, nil
 }

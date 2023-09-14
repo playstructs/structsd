@@ -31,17 +31,22 @@ func (k Keeper) SetPlayerIdForAddress(ctx sdk.Context, address string, playerId 
 
 	store.Set(types.KeyPrefix(address), bz)
 
+
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventAddressAssociation{Address: &types.EventAddressBody{Address: address, PlayerId: playerId}})
+
+
 }
 
 
 func (k Keeper) AddressSetRegisterRequest(ctx sdk.Context, player types.Player, address string) {
-    	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressRegistrationKey))
+    store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressRegistrationKey))
 
-    	bz := make([]byte, 8)
-    	binary.BigEndian.PutUint64(bz, player.Id)
+    bz := make([]byte, 8)
+    binary.BigEndian.PutUint64(bz, player.Id)
 
-    	store.Set(types.KeyPrefix(address), bz)
+    store.Set(types.KeyPrefix(address), bz)
 
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventAddressRegistrationRequest{Address: &types.EventAddressBody{Address: address, PlayerId: player.Id}})
 }
 
 func (k Keeper) AddressApproveRegisterRequest(ctx sdk.Context, player types.Player, address string, permissions types.AddressPermission) {
@@ -104,12 +109,16 @@ func (k Keeper) AddressSetPlayerPermissions(ctx sdk.Context, address string, per
 
 	store.Set(types.KeyPrefix(address), bz)
 
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventAddressPermissionChange{Address: &types.EventAddressPermissionBody{Address: address, PermissionRecord: uint64(permissions)}})
+
 	return permissions
 }
 
 func (k Keeper) AddressPermissionClearAll(ctx sdk.Context, address string) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressPermissionKey))
 	store.Delete(types.KeyPrefix(address))
+
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventAddressPermissionChange{Address: &types.EventAddressPermissionBody{Address: address, PermissionRecord: uint64(0)}})
 }
 
 func (k Keeper) AddressPermissionAdd(ctx sdk.Context, address string, flag types.AddressPermission) types.AddressPermission {

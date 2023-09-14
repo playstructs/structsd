@@ -21,7 +21,7 @@ func (k Keeper) AppendInfusion(
 	infusionId := GetInfusionId(infusion.DestinationType, infusion.DestinationId, infusion.Address)
 	store.Set(GetInfusionIDBytes(infusionId), appendedValue)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectName: infusionId, ObjectType: types.ObjectType_infusion})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventInfusion{Infusion: &infusion})
 
 	return infusionId
 }
@@ -33,7 +33,7 @@ func (k Keeper) SetInfusion(ctx sdk.Context, infusion types.Infusion) {
 	infusionId := GetInfusionId(infusion.DestinationType, infusion.DestinationId, infusion.Address)
 	store.Set(GetInfusionIDBytes(infusionId), b)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectName: infusionId, ObjectType: types.ObjectType_infusion})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventInfusion{Infusion: &infusion})
 }
 
 // GetInfusion returns a infusion from its id
@@ -140,6 +140,8 @@ func (k Keeper) RemoveInfusion(ctx sdk.Context, destinationType types.ObjectType
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.InfusionKey))
 	infusionId := GetInfusionId(destinationType, destinationId, address)
 	store.Delete(GetInfusionIDBytes(infusionId))
+
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventInfusionDelete{DestinationType: destinationType, DestinationId: destinationId, Address: address})
 }
 
 // GetAllInfusion returns all infusion

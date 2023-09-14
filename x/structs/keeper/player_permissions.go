@@ -9,6 +9,7 @@ import (
 
 	//sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strconv"
+	"strings"
 )
 
 
@@ -45,12 +46,22 @@ func (k Keeper) PlayerSetPlayerPermissionsByBytes(ctx sdk.Context, permissionRec
 
 	store.Set(permissionRecord, bz)
 
+    keys := strings.Split(string(permissionRecord), "-")
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventPlayerPermission{Body: &types.EventPermissionBodyKeyPair{ObjectId: keys[0], PlayerId: keys[1], Value: uint64(permissions)}})
+
+
 	return permissions
 }
 
 func (k Keeper) PlayerPermissionClearAll(ctx sdk.Context, PlayerId uint64, playerId uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerPermissionKey))
-	store.Delete(GetPlayerPermissionIDBytes(PlayerId, playerId))
+
+	permissionId := GetPlayerPermissionIDBytes(PlayerId, playerId)
+	store.Delete(permissionId)
+
+    keys := strings.Split(string(permissionId), "-")
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventPlayerPermission{Body: &types.EventPermissionBodyKeyPair{ObjectId: keys[0], PlayerId: keys[1], Value: uint64(0)}})
+
 }
 
 func (k Keeper) PlayerPermissionAdd(ctx sdk.Context, targetPlayerId uint64, playerId uint64, flag types.PlayerPermission) types.PlayerPermission {

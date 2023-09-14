@@ -6,6 +6,9 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 	"strconv"
+	"strings"
+
+
 )
 
 
@@ -42,12 +45,21 @@ func (k Keeper) ReactorSetPlayerPermissionsByBytes(ctx sdk.Context, permissionRe
 
 	store.Set(permissionRecord, bz)
 
+	keys := strings.Split(string(permissionRecord), "-")
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventReactorPermission{Body: &types.EventPermissionBodyKeyPair{ObjectId: keys[0], PlayerId: keys[1], Value: uint64(permissions)}})
+
 	return permissions
 }
 
 func (k Keeper) ReactorPermissionClearAll(ctx sdk.Context, reactorId uint64, playerId uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorPermissionKey))
-	store.Delete(GetReactorPermissionIDBytes(reactorId, playerId))
+
+	permissionId := GetReactorPermissionIDBytes(reactorId, playerId)
+	store.Delete(permissionId)
+
+    keys := strings.Split(string(permissionId), "-")
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventReactorPermission{Body: &types.EventPermissionBodyKeyPair{ObjectId: keys[0], PlayerId: keys[1], Value: uint64(0)}})
+
 }
 
 func (k Keeper) ReactorPermissionAdd(ctx sdk.Context, reactorId uint64, playerId uint64, flag types.ReactorPermission) types.ReactorPermission {

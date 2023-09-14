@@ -81,7 +81,7 @@ func (k Keeper) AppendReactor(
 	// Update reactor count
 	k.SetReactorCount(ctx, count+1)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: reactor.Id, ObjectType: types.ObjectType_reactor})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventReactor{Reactor: &reactor})
 
 
 	return count
@@ -93,7 +93,7 @@ func (k Keeper) SetReactor(ctx sdk.Context, reactor types.Reactor) {
 	b := k.cdc.MustMarshal(&reactor)
 	store.Set(GetReactorIDBytes(reactor.Id), b)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: reactor.Id, ObjectType: types.ObjectType_reactor})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventReactor{Reactor: &reactor})
 }
 
 // GetReactor returns a reactor from its id
@@ -140,6 +140,8 @@ func (k Keeper) GetReactorByBytes(ctx sdk.Context, id []byte, full bool) (val ty
 func (k Keeper) RemoveReactor(ctx sdk.Context, id uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorKey))
 	store.Delete(GetReactorIDBytes(id))
+
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventReactorDelete{ReactorId: id})
 }
 
 // GetAllReactor returns all reactor
@@ -257,7 +259,7 @@ func (k Keeper) ReactorSetLoad(ctx sdk.Context, id uint64, amount uint64) {
 	binary.BigEndian.PutUint64(bz, amount)
 
 	store.Set(GetReactorIDBytes(id), bz)
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: id, ObjectType: types.ObjectType_reactor})
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventReactorLoad{Body: &types.EventBodyKeyPair{Key: id, Value: amount}})
 }
 
 // ReactorRebuildLoad - Rebuilds the current load by iterating through all related allocations
@@ -318,7 +320,7 @@ func (k Keeper) ReactorSetEnergy(ctx sdk.Context, id uint64, amount uint64) {
     fmt.Printf("Reactor (%d) Setting Energy record to (%d)...", id, amount)
 	store.Set(GetReactorIDBytes(id), bz)
 	fmt.Printf("Reactor (%d) Energy Set\n", id)
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: id, ObjectType: types.ObjectType_reactor})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventReactorEnergy{Body: &types.EventBodyKeyPair{Key: id, Value: amount}})
 }
 
 
@@ -357,7 +359,8 @@ func (k Keeper) ReactorSetFuel(ctx sdk.Context, id uint64, amount uint64) {
     fmt.Printf("Reactor (%d) Setting Fuel record to (%d) ...", id, amount)
 	store.Set(GetReactorIDBytes(id), bz)
 	fmt.Printf("Reactor (%d) Fuel Set\n", id)
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: id, ObjectType: types.ObjectType_reactor})
+
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventReactorFuel{Body: &types.EventBodyKeyPair{Key: id, Value: amount}})
 }
 
 

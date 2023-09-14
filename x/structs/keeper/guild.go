@@ -8,6 +8,7 @@ import (
 	"structs/x/structs/types"
 
 	"strconv"
+	"strings"
 )
 
 // GetGuildCount get the total number of guild
@@ -64,7 +65,7 @@ func (k Keeper) AppendGuild(
 	k.SetGuildCount(ctx, count+1)
     k.GuildPermissionAdd(ctx, guild.Id, player.Id, types.GuildPermissionAll)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: guild.Id, ObjectType: types.ObjectType_guild})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventGuild{Guild: &guild})
 
 	return guild
 }
@@ -75,7 +76,7 @@ func (k Keeper) SetGuild(ctx sdk.Context, guild types.Guild) {
 	b := k.cdc.MustMarshal(&guild)
 	store.Set(GetGuildIDBytes(guild.Id), b)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: guild.Id, ObjectType: types.ObjectType_guild})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventGuild{Guild: &guild})
 }
 
 // GetGuild returns a guild from its id
@@ -93,6 +94,8 @@ func (k Keeper) GetGuild(ctx sdk.Context, id uint64) (val types.Guild, found boo
 func (k Keeper) RemoveGuild(ctx sdk.Context, id uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GuildKey))
 	store.Delete(GetGuildIDBytes(id))
+
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventGuildDelete{GuildId: id})
 }
 
 // GetAllGuild returns all guild
@@ -221,12 +224,20 @@ func (k Keeper) GuildSetPlayerPermissionsByBytes(ctx sdk.Context, permissionReco
 
 	store.Set(permissionRecord, bz)
 
+    keys := strings.Split(string(permissionRecord), "-")
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventGuildPermission{Body: &types.EventPermissionBodyKeyPair{ObjectId: keys[0], PlayerId: keys[1], Value: uint64(permissions)}})
+
 	return permissions
 }
 
 func (k Keeper) GuildPermissionClearAll(ctx sdk.Context, guildId uint64, playerId uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GuildPermissionKey))
-	store.Delete(GetGuildPermissionIDBytes(guildId, playerId))
+	permissionId := GetGuildPermissionIDBytes(guildId, playerId)
+	store.Delete(permissionId)
+
+    keys := strings.Split(string(permissionId), "-")
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventGuildPermission{Body: &types.EventPermissionBodyKeyPair{ObjectId: keys[0], PlayerId: keys[1], Value: uint64(0)}})
+
 }
 
 func (k Keeper) GuildPermissionAdd(ctx sdk.Context, guildId uint64, playerId uint64, flag types.GuildPermission) types.GuildPermission {

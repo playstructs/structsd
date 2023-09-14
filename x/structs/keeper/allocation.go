@@ -51,7 +51,7 @@ func (k Keeper) AppendAllocation(
 	// Update allocation count
 	k.SetAllocationCount(ctx, count+1)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: allocation.Id, ObjectType: types.ObjectType_allocation})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventAllocation{Allocation: &allocation})
 
 	return count
 }
@@ -62,7 +62,7 @@ func (k Keeper) SetAllocation(ctx sdk.Context, allocation types.Allocation) {
 	b := k.cdc.MustMarshal(&allocation)
 	store.Set(GetAllocationIDBytes(allocation.Id), b)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventCacheInvalidation{ObjectId: allocation.Id, ObjectType: types.ObjectType_allocation})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventAllocation{Allocation: &allocation})
 
     // Update Source Load
     switch allocation.SourceType {
@@ -101,6 +101,8 @@ func (k Keeper) GetAllocation(ctx sdk.Context, id uint64) (val types.Allocation,
 func (k Keeper) RemoveAllocation(ctx sdk.Context, id uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AllocationKey))
 	store.Delete(GetAllocationIDBytes(id))
+
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventAllocationDelete{AllocationId: id})
 }
 
 // GetAllAllocation returns all allocation

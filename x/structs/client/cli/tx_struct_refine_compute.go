@@ -14,6 +14,7 @@ import (
 
 	"context"
 	"fmt"
+	"time"
 
     "crypto/sha256"
     "encoding/hex"
@@ -42,6 +43,7 @@ func CmdStructRefineCompute() *cobra.Command {
 				return err
 			}
 
+            difficultyTargetStart, _ := cmd.Flags().GetInt("difficulty_target_start")
 
 			queryClient := types.NewQueryClient(clientCtx)
 
@@ -101,6 +103,13 @@ COMPUTE:
                         fmt.Printf("Difficulty Change: %d \n", currentDifficulty)
                     }
 
+                    if (difficultyTargetStart > 0 ) {
+                        if (difficultyTargetStart > currentDifficulty) {
+                            time.Sleep(5 * time.Minute)
+                            goto COMPUTE
+                        }
+                    }
+
                 }
 				newHash := sha256.New()
 
@@ -133,6 +142,7 @@ COMPUTE:
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
+    cmd.Flags().IntP("difficulty_target_start", "D", 0, "Do not start the compute process until difficulty reaches this level (1-64)")
 
 	return cmd
 }

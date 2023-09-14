@@ -10,6 +10,11 @@ import (
 func (k msgServer) GuildApproveRegister(goCtx context.Context, msg *types.MsgGuildApproveRegister) (*types.MsgGuildApproveRegisterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+	err := msg.ValidateBasic()
+	if err != nil {
+		return nil, err
+	}
+
     player, playerFound := k.GetPlayer(ctx, k.GetPlayerIdFromAddress(ctx, msg.Creator))
 
 

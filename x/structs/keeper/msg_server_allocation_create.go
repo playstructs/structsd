@@ -7,6 +7,7 @@ import (
 )
 
 func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocationCreate) (*types.MsgAllocationCreateResponse, error) {
+
 	/*
 	 * This section is a little repetitive due to the fact that I can't
 	 * just have a generic source variable that can switch between types

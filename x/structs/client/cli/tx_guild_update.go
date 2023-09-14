@@ -19,7 +19,7 @@ var _ = strconv.Itoa(0)
 func CmdGuildUpdate() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "guild-update [guild id] [owner id] [endpoint] [entry substation id] [guild join type] [infusion join minimum]",
-		Short: "Broadcast message guild-create",
+		Short: "Broadcast message guild-update",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argGuildId, err := cast.ToUint64E(args[0])

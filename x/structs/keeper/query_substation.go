@@ -10,6 +10,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"structs/x/structs/types"
+
+    "encoding/binary"
+    "strings"
+    "strconv"
 )
 
 func (k Keeper) SubstationAll(goCtx context.Context, req *types.QueryAllSubstationRequest) (*types.QueryAllSubstationResponse, error) {
@@ -56,4 +60,97 @@ func (k Keeper) Substation(goCtx context.Context, req *types.QueryGetSubstationR
 	}
 
 	return &types.QueryGetSubstationResponse{Substation: substation}, nil
+}
+
+
+
+func (k Keeper) SubstationPermission(goCtx context.Context, req *types.QueryGetSubstationPermissionRequest) (*types.QueryGetMultiplePermissionResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+    substationId := strconv.FormatUint(req.SubstationId, 10)
+
+
+    var permissions []*types.QueryPermissionResponse
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	store := ctx.KVStore(k.storeKey)
+	substationPermissionStore := prefix.NewStore(store, types.KeyPrefix(types.SubstationPermissionKey))
+
+	pageRes, err := query.Paginate(substationPermissionStore, req.Pagination, func(key []byte, value []byte) error {
+		var permission types.QueryPermissionResponse
+
+	    keys := strings.Split(string(key), "-")
+
+        if (keys[0] == substationId) {
+            permission.ObjectId = keys[0]
+            permission.PlayerId = keys[1]
+            permission.PermissionRecord = binary.BigEndian.Uint64(value)
+
+        	permissions = append(permissions, &permission)
+        }
+        return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryGetMultiplePermissionResponse{Permission: permissions, Pagination: pageRes}, nil
+}
+
+func (k Keeper) SubstationPlayerPermission(goCtx context.Context, req *types.QueryGetSubstationPlayerPermissionRequest) (*types.QueryPermissionResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+    substationId := strconv.FormatUint(req.SubstationId, 10)
+    playerId := strconv.FormatUint(req.PlayerId, 10)
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+    recordId := GetSubstationPermissionIDBytes(req.SubstationId, req.PlayerId)
+    permissionRecord := uint64(k.SubstationGetPlayerPermissionsByBytes(ctx, recordId))
+
+	var permission types.QueryPermissionResponse
+    permission.ObjectId = substationId
+    permission.PlayerId = playerId
+    permission.PermissionRecord = permissionRecord
+
+	return &permission, nil
+}
+
+func (k Keeper) SubstationPermissionAll(goCtx context.Context, req *types.QueryAllSubstationPermissionRequest) (*types.QueryGetMultiplePermissionResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+    var permissions []*types.QueryPermissionResponse
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	store := ctx.KVStore(k.storeKey)
+	substationPermissionStore := prefix.NewStore(store, types.KeyPrefix(types.SubstationPermissionKey))
+
+	pageRes, err := query.Paginate(substationPermissionStore, req.Pagination, func(key []byte, value []byte) error {
+		var permission types.QueryPermissionResponse
+
+	    keys := strings.Split(string(key), "-")
+
+        permission.ObjectId = keys[0]
+        permission.PlayerId = keys[1]
+        permission.PermissionRecord = binary.BigEndian.Uint64(value)
+
+        permissions = append(permissions, &permission)
+
+        return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryGetMultiplePermissionResponse{Permission: permissions, Pagination: pageRes}, nil
 }
