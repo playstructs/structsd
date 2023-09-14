@@ -55,7 +55,12 @@ func (k Keeper) SubstationSetPlayerPermissionsByBytes(ctx sdk.Context, permissio
 
 func (k Keeper) SubstationPermissionClearAll(ctx sdk.Context, SubstationId uint64, playerId uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationPermissionKey))
-	store.Delete(GetSubstationPermissionIDBytes(SubstationId, playerId))
+
+    permissionId := GetSubstationPermissionIDBytes(SubstationId, playerId)
+	store.Delete(permissionId)
+
+    keys := strings.Split(string(permissionId), "-")
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventSubstationPermission{Body: &types.EventPermissionBodyKeyPair{ObjectId: keys[0], PlayerId: keys[1], Value: uint64(0)}})
 }
 
 func (k Keeper) SubstationPermissionAdd(ctx sdk.Context, substationId uint64, playerId uint64, flag types.SubstationPermission) types.SubstationPermission {

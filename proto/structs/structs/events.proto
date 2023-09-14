@@ -154,3 +154,25 @@ message EventSubstationDelete {
   uint64 substationId = 1;
 }
 
+message EventAddressAssociation {
+  EventAddressBody address = 1;
+}
+
+message EventAddressRegistrationRequest {
+  EventAddressBody address = 1;
+}
+
+message EventAddressBody {
+  string address = 1;
+  uint64 playerId = 2;
+}
+
+message EventAddressPermissionChange {
+  EventAddressPermissionBody address = 1;
+}
+
+message EventAddressPermissionBody {
+  string address = 1;
+  uint64 permissionRecord = 2;
+}
+

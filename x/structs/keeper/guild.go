@@ -232,7 +232,12 @@ func (k Keeper) GuildSetPlayerPermissionsByBytes(ctx sdk.Context, permissionReco
 
 func (k Keeper) GuildPermissionClearAll(ctx sdk.Context, guildId uint64, playerId uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GuildPermissionKey))
-	store.Delete(GetGuildPermissionIDBytes(guildId, playerId))
+	permissionId := GetGuildPermissionIDBytes(guildId, playerId)
+	store.Delete(permissionId)
+
+    keys := strings.Split(string(permissionId), "-")
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventGuildPermission{Body: &types.EventPermissionBodyKeyPair{ObjectId: keys[0], PlayerId: keys[1], Value: uint64(0)}})
+
 }
 
 func (k Keeper) GuildPermissionAdd(ctx sdk.Context, guildId uint64, playerId uint64, flag types.GuildPermission) types.GuildPermission {
