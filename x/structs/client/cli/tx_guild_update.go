@@ -13,41 +13,44 @@ import (
 
 var _ = strconv.Itoa(0)
 
-
-
-
 func CmdGuildUpdate() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "guild-update [guild id] [owner id] [endpoint] [entry substation id] [guild join type] [infusion join minimum]",
+		Use:   "guild-update [guild id]",
 		Short: "Broadcast message guild-update",
-		Args:  cobra.ExactArgs(2),
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argGuildId, err := cast.ToUint64E(args[0])
             if err != nil {
                 return err
             }
 
-			argOwnerId, err := cast.ToUint64E(args[1])
+			argOwnerId, err := cmd.Flags().GetUint64("owner-id")
             if err != nil {
                 return err
             }
 
-			argEndpoint := args[2]
-
-			argEntrySubstationId, err := cast.ToUint64E(args[3])
+			argEndpoint, err := cmd.Flags().GetString("endpoint")
             if err != nil {
                 return err
             }
 
-			argGuildJoinType, err := cast.ToUint64E(args[4])
+			argEntrySubstationId, err := cmd.Flags().GetUint64("entry-substation-id")
             if err != nil {
                 return err
             }
 
-			argInfusionJoinMinimum, err := cast.ToUint64E(args[5])
+			argGuildJoinType, err := cmd.Flags().GetUint64("guild-join-type")
             if err != nil {
                 return err
             }
+
+			argInfusionJoinMinimum, err := cmd.Flags().GetUint64("infusion-join-minimum")
+            if err != nil {
+                return err
+            }
+
+            // If no parameters have been provided than no reason to continue
+            // TODO: Return an error
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -71,6 +74,14 @@ func CmdGuildUpdate() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
+
+	cmd.Flags().Uint64P("owner-id", "O", 0, "Change the Owner of the Guild")
+	cmd.Flags().Uint64P("entry-substation-id", "S", 0, "Change the Substation new Guild members automatically join")
+	cmd.Flags().Uint64P("guild-join-type", "T", 0, "Change how new Players are able to join the Guild")
+    cmd.Flags().Uint64P("infusion-join-minimum", "M", 0, "Change the minimum about of Alpha that must be infused in the reactor for a player to join")
+
+    cmd.Flags().StringP("endpoint", "E", "", "Change the external Guild API endpoint")
+
 
 	return cmd
 }

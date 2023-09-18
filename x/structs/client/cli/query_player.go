@@ -1,11 +1,12 @@
 package cli
 
 import (
-	"strconv"
 
+    "context"
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
+	"github.com/spf13/cast"
 	"structs/x/structs/types"
 )
 
@@ -47,25 +48,58 @@ func CmdListPlayer() *cobra.Command {
 
 func CmdShowPlayer() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "show-player [id]",
-		Short: "shows a player",
-		Args:  cobra.ExactArgs(1),
+		Use:   "show-player",
+		Short: "shows my player",
+		Args:  cobra.RangeArgs(0,1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx, err := client.GetClientQueryContext(cmd)
 			if err != nil {
 				return err
 			}
 
+            var params *types.QueryGetPlayerRequest
+
 			queryClient := types.NewQueryClient(clientCtx)
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
+			argAddress, err := cmd.Flags().GetString("address")
+            if err != nil {
+                return err
+            }
 
-			params := &types.QueryGetPlayerRequest{
-				Id: id,
-			}
+            if (argAddress != "") {
+                addressLookupRequest := &types.QueryGetAddressRequest{
+                    Address: argAddress,
+                }
+
+                addressResults, AddressLookupErr := queryClient.Address(context.Background(), addressLookupRequest)
+                if AddressLookupErr != nil {
+                    return AddressLookupErr
+                }
+
+                params = &types.QueryGetPlayerRequest{
+                    Id: addressResults.PlayerId,
+                }
+
+            } else {
+                playerId, err := cmd.Flags().GetUint64("player-id")
+                if err != nil {
+                    return err
+                }
+
+                // Backwards compatibility
+                if ((playerId == 0) && (len(args) == 1)) {
+                    playerId, err = cast.ToUint64E(args[0])
+                    if err != nil {
+                        return err
+                    }
+                }
+
+                params = &types.QueryGetPlayerRequest{
+                    Id: playerId,
+                }
+            }
+
+
 
 			res, err := queryClient.Player(cmd.Context(), params)
 			if err != nil {
@@ -77,6 +111,9 @@ func CmdShowPlayer() *cobra.Command {
 	}
 
 	flags.AddQueryFlagsToCmd(cmd)
+
+	cmd.Flags().Uint64P("player-id", "I", 0, "Lookup by Player ID")
+	cmd.Flags().StringP("address", "A", "", "Lookup by associated Player Address")
 
 	return cmd
 }
