@@ -8,6 +8,8 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/cast"
 	"structs/x/structs/types"
+
+
 )
 
 func CmdListPlayer() *cobra.Command {
@@ -86,19 +88,50 @@ func CmdShowPlayer() *cobra.Command {
                     return err
                 }
 
-                // Backwards compatibility
-                if ((playerId == 0) && (len(args) == 1)) {
-                    playerId, err = cast.ToUint64E(args[0])
-                    if err != nil {
-                        return err
-                    }
-                }
-
                 params = &types.QueryGetPlayerRequest{
                     Id: playerId,
                 }
-            }
+                // Backwards compatibility
+                if (playerId == 0) {
 
+                    if (len(args) == 1) {
+                        playerId, err = cast.ToUint64E(args[0])
+                        if err != nil {
+                            return err
+                        }
+
+                       params = &types.QueryGetPlayerRequest{
+                            Id: playerId,
+                        }
+                    } else {
+                        kb := clientCtx.Keyring
+
+                        info, err := kb.List()
+                        if err != nil {
+                            return err
+                        }
+
+                        // Change this entire query to return multiple players
+                        for index, _ := range info {
+                            keychainAddress, _ := info[index].GetAddress()
+                            argAddress = keychainAddress.String()
+
+                            addressLookupRequest := &types.QueryGetAddressRequest{ Address: argAddress,}
+
+                            addressResults, _ := queryClient.Address(context.Background(), addressLookupRequest)
+
+                            if (addressResults.PlayerId > 0) {
+                                params = &types.QueryGetPlayerRequest{ Id: addressResults.PlayerId, }
+                                break;
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
 
 
 			res, err := queryClient.Player(cmd.Context(), params)
