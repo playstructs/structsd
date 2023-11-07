@@ -26,7 +26,7 @@ func (k msgServer) PlayerCreate(goCtx context.Context, msg *types.MsgPlayerCreat
 
     switch guild.GuildJoinType {
 
-        case types.GuildJoinType_Public:
+        case types.GuildJoinType_Open:
             // If the player is already connected to a substation then leave them
             // Maybe add an option to force migration later
             if (player.SubstationId == 0) {
@@ -50,8 +50,12 @@ func (k msgServer) PlayerCreate(goCtx context.Context, msg *types.MsgPlayerCreat
             // TODO Throw error : join via delegation
             return &types.MsgPlayerCreateResponse{}, nil
 
-        case types.GuildJoinType_Private:
+        case types.GuildJoinType_Request:
             k.GuildSetRegisterRequest(ctx, guild, player)
+
+        case types.GuildJoinType_Invite:
+            // TODO Throw error : Join via invite only
+            return &types.MsgPlayerCreateResponse{}, nil
 
         default:
             // TODO Throw error : Guild config error

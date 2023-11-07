@@ -18,7 +18,13 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgSubstationPlayerConnect{}, "structs/SubstationPlayerConnect", nil)
 	cdc.RegisterConcrete(&MsgSubstationPlayerDisconnect{}, "structs/SubstationPlayerDisconnect", nil)
 	cdc.RegisterConcrete(&MsgGuildCreate{}, "structs/GuildCreate", nil)
-	cdc.RegisterConcrete(&MsgGuildUpdate{}, "structs/GuildUpdate", nil)
+	cdc.RegisterConcrete(&MsgGuildUpdateEndpoint{}, "structs/GuildUpdateEndpoint", nil)
+	cdc.RegisterConcrete(&MsgGuildUpdateEntrySubstationId{}, "structs/GuildUpdateEntrySubstationId", nil)
+	cdc.RegisterConcrete(&MsgGuildUpdateInfusionJoinMinimum{}, "structs/GuildUpdateInfusionJoinMinimum", nil)
+	cdc.RegisterConcrete(&MsgGuildUpdateJoinType{}, "structs/GuildUpdateJoinType", nil)
+	cdc.RegisterConcrete(&MsgGuildUpdateOpenSquadCreation{}, "structs/GuildUpdateOpenSquadCreation", nil)
+	cdc.RegisterConcrete(&MsgGuildUpdateOwnerId{}, "structs/GuildUpdateOwnerId", nil)
+	cdc.RegisterConcrete(&MsgGuildUpdateSquadJoinTypeMinimum{}, "structs/GuildUpdateSquadJoinTypeMinimum", nil)
 	cdc.RegisterConcrete(&MsgGuildApproveRegister{}, "structs/GuildApproveRegister", nil)
 	cdc.RegisterConcrete(&MsgPlayerCreateProxy{}, "structs/PlayerCreateProxy", nil)
 	cdc.RegisterConcrete(&MsgPlayerCreate{}, "structs/PlayerCreate", nil)
@@ -75,7 +81,25 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgGuildCreate{},
 	)
     registry.RegisterImplementations((*sdk.Msg)(nil),
-        &MsgGuildUpdate{},
+        &MsgGuildUpdateEndpoint{},
+    )
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgGuildUpdateEntrySubstationId{},
+    )
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgGuildUpdateInfusionJoinMinimum{},
+    )
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgGuildUpdateJoinType{},
+    )
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgGuildUpdateOpenSquadCreation{},
+    )
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgGuildUpdateOwnerId{},
+    )
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgGuildUpdateSquadJoinTypeMinimum{},
     )
     registry.RegisterImplementations((*sdk.Msg)(nil),
         &MsgGuildApproveRegister{},

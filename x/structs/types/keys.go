@@ -96,11 +96,28 @@ const (
 	GuildPermissionKey = "Guild/permission/"
 	GuildRegistrationKey = "Guild/registration/"
 
-	GuildJoinType_Private           = 0
+
+    // Open, Infusion, Request, Invite
+	GuildJoinType_Open              = 0
 	GuildJoinType_InfusionMinimum   = 1
-	GuildJoinType_Public            = 2
+	GuildJoinType_Request           = 2
+	GuildJoinType_Invite            = 3
+	GuildJoinType_Invalid           = 4
 )
 
+const (
+	SquadKey      = "Squad/value/"
+	SquadCountKey = "Squad/count/"
+	SquadPermissionKey = "Squad/permission/"
+	SquadRegistrationKey = "Squad/registration/"
+
+    // Open, Guild Member, Request, Invite Only
+	SquadJoinType_Open          = 0
+	SquadJoinType_GuildMember   = 1
+	SquadJoinType_Request       = 2
+	SquadJoinType_Invite        = 3
+	SquadJoinType_Invalid       = 4
+)
 const (
 	PlayerKey      = "Player/value/"
 	PlayerCountKey = "Player/count/"

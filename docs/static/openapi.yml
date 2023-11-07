@@ -47316,6 +47316,9 @@ paths:
                 items:
                   type: object
                   properties:
+                    id:
+                      type: string
+                      format: uint64
                     endpoint:
                       type: string
                     creator:
@@ -47326,16 +47329,20 @@ paths:
                     guildJoinType:
                       type: string
                       format: uint64
+                      title: Open, Infusion, Request, Invite
                     infusionJoinMinimum:
                       type: string
                       format: uint64
+                    openSquadCreation:
+                      type: boolean
+                    squadJoinTypeMinimum:
+                      type: string
+                      format: uint64
+                      title: Open, Guild Member, Request, Invite Only
                     primaryReactorId:
                       type: string
                       format: uint64
                     entrySubstationId:
-                      type: string
-                      format: uint64
-                    id:
                       type: string
                       format: uint64
               pagination:
@@ -47623,6 +47630,9 @@ paths:
               Guild:
                 type: object
                 properties:
+                  id:
+                    type: string
+                    format: uint64
                   endpoint:
                     type: string
                   creator:
@@ -47633,16 +47643,20 @@ paths:
                   guildJoinType:
                     type: string
                     format: uint64
+                    title: Open, Infusion, Request, Invite
                   infusionJoinMinimum:
                     type: string
                     format: uint64
+                  openSquadCreation:
+                    type: boolean
+                  squadJoinTypeMinimum:
+                    type: string
+                    format: uint64
+                    title: Open, Guild Member, Request, Invite Only
                   primaryReactorId:
                     type: string
                     format: uint64
                   entrySubstationId:
-                    type: string
-                    format: uint64
-                  id:
                     type: string
                     format: uint64
         default:
@@ -52456,6 +52470,9 @@ paths:
                     guildId:
                       type: string
                       format: uint64
+                    squadId:
+                      type: string
+                      format: uint64
                     substationId:
                       type: string
                       format: uint64
@@ -52773,6 +52790,9 @@ paths:
                     type: string
                     format: uint64
                   guildId:
+                    type: string
+                    format: uint64
+                  squadId:
                     type: string
                     format: uint64
                   substationId:
@@ -83062,6 +83082,9 @@ definitions:
   structs.Guild:
     type: object
     properties:
+      id:
+        type: string
+        format: uint64
       endpoint:
         type: string
       creator:
@@ -83072,16 +83095,20 @@ definitions:
       guildJoinType:
         type: string
         format: uint64
+        title: Open, Infusion, Request, Invite
       infusionJoinMinimum:
         type: string
         format: uint64
+      openSquadCreation:
+        type: boolean
+      squadJoinTypeMinimum:
+        type: string
+        format: uint64
+        title: Open, Guild Member, Request, Invite Only
       primaryReactorId:
         type: string
         format: uint64
       entrySubstationId:
-        type: string
-        format: uint64
-      id:
         type: string
         format: uint64
   structs.Infusion:
@@ -84025,6 +84052,9 @@ definitions:
       guildId:
         type: string
         format: uint64
+      squadId:
+        type: string
+        format: uint64
       substationId:
         type: string
         format: uint64
@@ -84188,6 +84218,9 @@ definitions:
         items:
           type: object
           properties:
+            id:
+              type: string
+              format: uint64
             endpoint:
               type: string
             creator:
@@ -84198,16 +84231,20 @@ definitions:
             guildJoinType:
               type: string
               format: uint64
+              title: Open, Infusion, Request, Invite
             infusionJoinMinimum:
               type: string
               format: uint64
+            openSquadCreation:
+              type: boolean
+            squadJoinTypeMinimum:
+              type: string
+              format: uint64
+              title: Open, Guild Member, Request, Invite Only
             primaryReactorId:
               type: string
               format: uint64
             entrySubstationId:
-              type: string
-              format: uint64
-            id:
               type: string
               format: uint64
       pagination:
@@ -84402,6 +84439,9 @@ definitions:
               type: string
               format: uint64
             guildId:
+              type: string
+              format: uint64
+            squadId:
               type: string
               format: uint64
             substationId:
@@ -84747,6 +84787,9 @@ definitions:
       Guild:
         type: object
         properties:
+          id:
+            type: string
+            format: uint64
           endpoint:
             type: string
           creator:
@@ -84757,16 +84800,20 @@ definitions:
           guildJoinType:
             type: string
             format: uint64
+            title: Open, Infusion, Request, Invite
           infusionJoinMinimum:
             type: string
             format: uint64
+          openSquadCreation:
+            type: boolean
+          squadJoinTypeMinimum:
+            type: string
+            format: uint64
+            title: Open, Guild Member, Request, Invite Only
           primaryReactorId:
             type: string
             format: uint64
           entrySubstationId:
-            type: string
-            format: uint64
-          id:
             type: string
             format: uint64
   structs.QueryGetInfusionResponse:
@@ -84914,6 +84961,9 @@ definitions:
             type: string
             format: uint64
           guildId:
+            type: string
+            format: uint64
+          squadId:
             type: string
             format: uint64
           substationId:

@@ -23,14 +23,16 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type Guild struct {
-	Endpoint            string `protobuf:"bytes,1,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
-	Creator             string `protobuf:"bytes,2,opt,name=creator,proto3" json:"creator,omitempty"`
-	Owner               uint64 `protobuf:"varint,3,opt,name=owner,proto3" json:"owner,omitempty"`
-	GuildJoinType       uint64 `protobuf:"varint,4,opt,name=guildJoinType,proto3" json:"guildJoinType,omitempty"`
-	InfusionJoinMinimum uint64 `protobuf:"varint,5,opt,name=infusionJoinMinimum,proto3" json:"infusionJoinMinimum,omitempty"`
-	PrimaryReactorId    uint64 `protobuf:"varint,6,opt,name=primaryReactorId,proto3" json:"primaryReactorId,omitempty"`
-	EntrySubstationId   uint64 `protobuf:"varint,7,opt,name=entrySubstationId,proto3" json:"entrySubstationId,omitempty"`
-	Id                  uint64 `protobuf:"varint,8,opt,name=id,proto3" json:"id,omitempty"`
+	Id                   uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Endpoint             string `protobuf:"bytes,2,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
+	Creator              string `protobuf:"bytes,3,opt,name=creator,proto3" json:"creator,omitempty"`
+	Owner                uint64 `protobuf:"varint,4,opt,name=owner,proto3" json:"owner,omitempty"`
+	GuildJoinType        uint64 `protobuf:"varint,5,opt,name=guildJoinType,proto3" json:"guildJoinType,omitempty"`
+	InfusionJoinMinimum  uint64 `protobuf:"varint,6,opt,name=infusionJoinMinimum,proto3" json:"infusionJoinMinimum,omitempty"`
+	OpenSquadCreation    bool   `protobuf:"varint,7,opt,name=openSquadCreation,proto3" json:"openSquadCreation,omitempty"`
+	SquadJoinTypeMinimum uint64 `protobuf:"varint,8,opt,name=squadJoinTypeMinimum,proto3" json:"squadJoinTypeMinimum,omitempty"`
+	PrimaryReactorId     uint64 `protobuf:"varint,9,opt,name=primaryReactorId,proto3" json:"primaryReactorId,omitempty"`
+	EntrySubstationId    uint64 `protobuf:"varint,10,opt,name=entrySubstationId,proto3" json:"entrySubstationId,omitempty"`
 }
 
 func (m *Guild) Reset()         { *m = Guild{} }
@@ -65,6 +67,13 @@ func (m *Guild) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_Guild proto.InternalMessageInfo
+
+func (m *Guild) GetId() uint64 {
+	if m != nil {
+		return m.Id
+	}
+	return 0
+}
 
 func (m *Guild) GetEndpoint() string {
 	if m != nil {
@@ -101,6 +110,20 @@ func (m *Guild) GetInfusionJoinMinimum() uint64 {
 	return 0
 }
 
+func (m *Guild) GetOpenSquadCreation() bool {
+	if m != nil {
+		return m.OpenSquadCreation
+	}
+	return false
+}
+
+func (m *Guild) GetSquadJoinTypeMinimum() uint64 {
+	if m != nil {
+		return m.SquadJoinTypeMinimum
+	}
+	return 0
+}
+
 func (m *Guild) GetPrimaryReactorId() uint64 {
 	if m != nil {
 		return m.PrimaryReactorId
@@ -115,13 +138,6 @@ func (m *Guild) GetEntrySubstationId() uint64 {
 	return 0
 }
 
-func (m *Guild) GetId() uint64 {
-	if m != nil {
-		return m.Id
-	}
-	return 0
-}
-
 func init() {
 	proto.RegisterType((*Guild)(nil), "structs.Guild")
 }
@@ -129,24 +145,26 @@ func init() {
 func init() { proto.RegisterFile("structs/structs/guild.proto", fileDescriptor_d57f2d07301e2fa1) }
 
 var fileDescriptor_d57f2d07301e2fa1 = []byte{
-	// 268 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x90, 0xcd, 0x4a, 0xc3, 0x40,
-	0x14, 0x85, 0x33, 0xb1, 0x69, 0xea, 0x05, 0x45, 0x47, 0xc1, 0x41, 0x61, 0x28, 0xe2, 0xa2, 0x88,
-	0xf8, 0x83, 0x6f, 0xe0, 0x46, 0x2a, 0xb8, 0x89, 0xae, 0xdc, 0xa5, 0x99, 0x51, 0x2e, 0x98, 0x99,
-	0x30, 0xb9, 0x83, 0xe6, 0x2d, 0xdc, 0xf8, 0x4e, 0x2e, 0xbb, 0x74, 0x29, 0xc9, 0x8b, 0x48, 0x47,
-	0x53, 0x90, 0xba, 0xba, 0x9c, 0xef, 0x3b, 0x70, 0xe1, 0xc0, 0x41, 0x4d, 0xce, 0x17, 0x54, 0x9f,
-	0xf5, 0xf7, 0xc9, 0xe3, 0xb3, 0x3a, 0xad, 0x9c, 0x25, 0xcb, 0xd3, 0x5f, 0x78, 0xf8, 0x1e, 0x43,
-	0x72, 0xbd, 0x10, 0x7c, 0x1f, 0x46, 0xda, 0xa8, 0xca, 0xa2, 0x21, 0xc1, 0xc6, 0x6c, 0xb2, 0x9e,
-	0x2d, 0x33, 0x17, 0x90, 0x16, 0x4e, 0xe7, 0x64, 0x9d, 0x88, 0x83, 0xea, 0x23, 0xdf, 0x85, 0xc4,
-	0xbe, 0x18, 0xed, 0xc4, 0xda, 0x98, 0x4d, 0x06, 0xd9, 0x4f, 0xe0, 0x47, 0xb0, 0x11, 0xbe, 0xdd,
-	0x58, 0x34, 0xf7, 0x4d, 0xa5, 0xc5, 0x20, 0xd8, 0xbf, 0x90, 0x9f, 0xc3, 0x0e, 0x9a, 0x47, 0x5f,
-	0xa3, 0x35, 0x0b, 0x76, 0x8b, 0x06, 0x4b, 0x5f, 0x8a, 0x24, 0x74, 0xff, 0x53, 0xfc, 0x18, 0xb6,
-	0x2a, 0x87, 0x65, 0xee, 0x9a, 0x4c, 0xe7, 0x05, 0x59, 0x37, 0x55, 0x62, 0x18, 0xea, 0x2b, 0x9c,
-	0x9f, 0xc0, 0xb6, 0x36, 0xe4, 0x9a, 0x3b, 0x3f, 0xab, 0x29, 0x27, 0xb4, 0x66, 0xaa, 0x44, 0x1a,
-	0xca, 0xab, 0x82, 0x6f, 0x42, 0x8c, 0x4a, 0x8c, 0x82, 0x8e, 0x51, 0x5d, 0x5d, 0x7c, 0xb4, 0x92,
-	0xcd, 0x5b, 0xc9, 0xbe, 0x5a, 0xc9, 0xde, 0x3a, 0x19, 0xcd, 0x3b, 0x19, 0x7d, 0x76, 0x32, 0x7a,
-	0xd8, 0xeb, 0xf7, 0x7c, 0x5d, 0x2e, 0x4b, 0x4d, 0xa5, 0xeb, 0xd9, 0x30, 0x4c, 0x7b, 0xf9, 0x1d,
-	0x00, 0x00, 0xff, 0xff, 0xf5, 0x59, 0x5d, 0x4e, 0x79, 0x01, 0x00, 0x00,
+	// 302 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x6c, 0x91, 0xcb, 0x4a, 0xf4, 0x30,
+	0x1c, 0xc5, 0x27, 0xfd, 0xe6, 0xfa, 0x87, 0x4f, 0x34, 0x0e, 0x18, 0x14, 0x42, 0x11, 0x17, 0x45,
+	0xc4, 0xeb, 0x1b, 0xe8, 0x42, 0x46, 0x70, 0xd3, 0x71, 0xe5, 0xae, 0xd3, 0x44, 0x09, 0xd8, 0x24,
+	0xe6, 0x82, 0xf6, 0x2d, 0x7c, 0x2c, 0x97, 0xb3, 0x74, 0x29, 0xed, 0x43, 0xb8, 0x95, 0x46, 0x3b,
+	0x20, 0x9d, 0x55, 0x38, 0xe7, 0x77, 0xc8, 0xf9, 0xc3, 0x81, 0x3d, 0xeb, 0x8c, 0xcf, 0x9d, 0x3d,
+	0x69, 0xdf, 0x47, 0x2f, 0x9e, 0xd8, 0xb1, 0x36, 0xca, 0x29, 0x3c, 0xfa, 0x35, 0xf7, 0xbf, 0x22,
+	0x18, 0x5c, 0x37, 0x00, 0x6f, 0x40, 0x24, 0x18, 0x41, 0x31, 0x4a, 0xfa, 0x69, 0x24, 0x18, 0xde,
+	0x85, 0x31, 0x97, 0x4c, 0x2b, 0x21, 0x1d, 0x89, 0x62, 0x94, 0x4c, 0xd2, 0x95, 0xc6, 0x04, 0x46,
+	0xb9, 0xe1, 0x99, 0x53, 0x86, 0xfc, 0x0b, 0xa8, 0x95, 0x78, 0x0a, 0x03, 0xf5, 0x22, 0xb9, 0x21,
+	0xfd, 0xf0, 0xd1, 0x8f, 0xc0, 0x07, 0xf0, 0x3f, 0xb4, 0xdf, 0x28, 0x21, 0xef, 0x4a, 0xcd, 0xc9,
+	0x20, 0xd0, 0xbf, 0x26, 0x3e, 0x85, 0x6d, 0x21, 0x1f, 0xbc, 0x15, 0x4a, 0x36, 0xde, 0xad, 0x90,
+	0xa2, 0xf0, 0x05, 0x19, 0x86, 0xec, 0x3a, 0x84, 0x8f, 0x60, 0x4b, 0x69, 0x2e, 0xe7, 0xcf, 0x3e,
+	0x63, 0x57, 0xcd, 0x05, 0x42, 0x49, 0x32, 0x8a, 0x51, 0x32, 0x4e, 0xbb, 0x00, 0x9f, 0xc3, 0xd4,
+	0x36, 0x46, 0x5b, 0xd8, 0x16, 0x8c, 0x43, 0xc1, 0x5a, 0x86, 0x0f, 0x61, 0x53, 0x1b, 0x51, 0x64,
+	0xa6, 0x4c, 0x79, 0x96, 0x3b, 0x65, 0x66, 0x8c, 0x4c, 0x42, 0xbe, 0xe3, 0x37, 0xd7, 0x70, 0xe9,
+	0x4c, 0x39, 0xf7, 0x0b, 0xeb, 0x42, 0xe5, 0x8c, 0x11, 0x08, 0xe1, 0x2e, 0xb8, 0x3c, 0x7b, 0xaf,
+	0x28, 0x5a, 0x56, 0x14, 0x7d, 0x56, 0x14, 0xbd, 0xd5, 0xb4, 0xb7, 0xac, 0x69, 0xef, 0xa3, 0xa6,
+	0xbd, 0xfb, 0x9d, 0x76, 0xb1, 0xd7, 0xd5, 0x76, 0xae, 0xd4, 0xdc, 0x2e, 0x86, 0x61, 0xbc, 0x8b,
+	0xef, 0x00, 0x00, 0x00, 0xff, 0xff, 0x26, 0xe3, 0xdf, 0x35, 0xdb, 0x01, 0x00, 0x00,
 }
 
 func (m *Guild) Marshal() (dAtA []byte, err error) {
@@ -169,49 +187,64 @@ func (m *Guild) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Id != 0 {
-		i = encodeVarintGuild(dAtA, i, uint64(m.Id))
-		i--
-		dAtA[i] = 0x40
-	}
 	if m.EntrySubstationId != 0 {
 		i = encodeVarintGuild(dAtA, i, uint64(m.EntrySubstationId))
 		i--
-		dAtA[i] = 0x38
+		dAtA[i] = 0x50
 	}
 	if m.PrimaryReactorId != 0 {
 		i = encodeVarintGuild(dAtA, i, uint64(m.PrimaryReactorId))
 		i--
-		dAtA[i] = 0x30
+		dAtA[i] = 0x48
+	}
+	if m.SquadJoinTypeMinimum != 0 {
+		i = encodeVarintGuild(dAtA, i, uint64(m.SquadJoinTypeMinimum))
+		i--
+		dAtA[i] = 0x40
+	}
+	if m.OpenSquadCreation {
+		i--
+		if m.OpenSquadCreation {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x38
 	}
 	if m.InfusionJoinMinimum != 0 {
 		i = encodeVarintGuild(dAtA, i, uint64(m.InfusionJoinMinimum))
 		i--
-		dAtA[i] = 0x28
+		dAtA[i] = 0x30
 	}
 	if m.GuildJoinType != 0 {
 		i = encodeVarintGuild(dAtA, i, uint64(m.GuildJoinType))
 		i--
-		dAtA[i] = 0x20
+		dAtA[i] = 0x28
 	}
 	if m.Owner != 0 {
 		i = encodeVarintGuild(dAtA, i, uint64(m.Owner))
 		i--
-		dAtA[i] = 0x18
+		dAtA[i] = 0x20
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
 		copy(dAtA[i:], m.Creator)
 		i = encodeVarintGuild(dAtA, i, uint64(len(m.Creator)))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x1a
 	}
 	if len(m.Endpoint) > 0 {
 		i -= len(m.Endpoint)
 		copy(dAtA[i:], m.Endpoint)
 		i = encodeVarintGuild(dAtA, i, uint64(len(m.Endpoint)))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x12
+	}
+	if m.Id != 0 {
+		i = encodeVarintGuild(dAtA, i, uint64(m.Id))
+		i--
+		dAtA[i] = 0x8
 	}
 	return len(dAtA) - i, nil
 }
@@ -233,6 +266,9 @@ func (m *Guild) Size() (n int) {
 	}
 	var l int
 	_ = l
+	if m.Id != 0 {
+		n += 1 + sovGuild(uint64(m.Id))
+	}
 	l = len(m.Endpoint)
 	if l > 0 {
 		n += 1 + l + sovGuild(uint64(l))
@@ -250,14 +286,17 @@ func (m *Guild) Size() (n int) {
 	if m.InfusionJoinMinimum != 0 {
 		n += 1 + sovGuild(uint64(m.InfusionJoinMinimum))
 	}
+	if m.OpenSquadCreation {
+		n += 2
+	}
+	if m.SquadJoinTypeMinimum != 0 {
+		n += 1 + sovGuild(uint64(m.SquadJoinTypeMinimum))
+	}
 	if m.PrimaryReactorId != 0 {
 		n += 1 + sovGuild(uint64(m.PrimaryReactorId))
 	}
 	if m.EntrySubstationId != 0 {
 		n += 1 + sovGuild(uint64(m.EntrySubstationId))
-	}
-	if m.Id != 0 {
-		n += 1 + sovGuild(uint64(m.Id))
 	}
 	return n
 }
@@ -298,6 +337,25 @@ func (m *Guild) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGuild
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Id |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Endpoint", wireType)
 			}
@@ -329,7 +387,7 @@ func (m *Guild) Unmarshal(dAtA []byte) error {
 			}
 			m.Endpoint = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 2:
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
 			}
@@ -361,7 +419,7 @@ func (m *Guild) Unmarshal(dAtA []byte) error {
 			}
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 4:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
 			}
@@ -380,7 +438,7 @@ func (m *Guild) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 4:
+		case 5:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GuildJoinType", wireType)
 			}
@@ -399,7 +457,7 @@ func (m *Guild) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 5:
+		case 6:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field InfusionJoinMinimum", wireType)
 			}
@@ -418,7 +476,46 @@ func (m *Guild) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 6:
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field OpenSquadCreation", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGuild
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.OpenSquadCreation = bool(v != 0)
+		case 8:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SquadJoinTypeMinimum", wireType)
+			}
+			m.SquadJoinTypeMinimum = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGuild
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SquadJoinTypeMinimum |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 9:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryReactorId", wireType)
 			}
@@ -437,7 +534,7 @@ func (m *Guild) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 7:
+		case 10:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EntrySubstationId", wireType)
 			}
@@ -452,25 +549,6 @@ func (m *Guild) Unmarshal(dAtA []byte) error {
 				b := dAtA[iNdEx]
 				iNdEx++
 				m.EntrySubstationId |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 8:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
-			}
-			m.Id = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGuild
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}

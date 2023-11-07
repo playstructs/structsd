@@ -10,6 +10,7 @@ import "structs/structs/reactor.proto";
 import "structs/structs/substation.proto";
 import "structs/structs/allocation.proto";
 import "structs/structs/guild.proto";
+import "structs/structs/squad.proto";
 import "structs/structs/player.proto";
 import "structs/structs/planet.proto";
 import "structs/structs/struct.proto";

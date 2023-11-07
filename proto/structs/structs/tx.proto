@@ -8,6 +8,7 @@ import "cosmos_proto/cosmos.proto";
 import "structs/structs/keys.proto";
 import "structs/structs/planet.proto";
 import "structs/structs/struct.proto";
+import "structs/structs/squad.proto";
 
 
 option go_package = "structs/x/structs/types";
@@ -24,7 +25,13 @@ service Msg {
   rpc SubstationPlayerConnect        (MsgSubstationPlayerConnect       ) returns (MsgSubstationPlayerConnectResponse       );
   rpc SubstationPlayerDisconnect     (MsgSubstationPlayerDisconnect    ) returns (MsgSubstationPlayerDisconnectResponse    );
   rpc GuildCreate                    (MsgGuildCreate                   ) returns (MsgGuildCreateResponse                   );
-  rpc GuildUpdate                    (MsgGuildUpdate                   ) returns (MsgGuildUpdateResponse                   );
+  rpc GuildUpdateOwnerId             (MsgGuildUpdateOwnerId            ) returns (MsgGuildUpdateResponse                   );
+  rpc GuildUpdateEntrySubstationId   (MsgGuildUpdateEntrySubstationId  ) returns (MsgGuildUpdateResponse                   );
+  rpc GuildUpdateEndpoint            (MsgGuildUpdateEndpoint           ) returns (MsgGuildUpdateResponse                   );
+  rpc GuildUpdateJoinType            (MsgGuildUpdateJoinType           ) returns (MsgGuildUpdateResponse                   );
+  rpc GuildUpdateInfusionJoinMinimum (MsgGuildUpdateInfusionJoinMinimum ) returns (MsgGuildUpdateResponse                  );
+  rpc GuildUpdateSquadJoinTypeMinimum (MsgGuildUpdateSquadJoinTypeMinimum ) returns (MsgGuildUpdateResponse                );
+  rpc GuildUpdateOpenSquadCreation   (MsgGuildUpdateOpenSquadCreation  ) returns (MsgGuildUpdateResponse                   );
   rpc GuildApproveRegister           (MsgGuildApproveRegister          ) returns (MsgGuildApproveRegisterResponse          );
   rpc PlayerCreateProxy              (MsgPlayerCreateProxy             ) returns (MsgPlayerCreateProxyResponse             );
   rpc PlayerCreate                   (MsgPlayerCreate                  ) returns (MsgPlayerCreateResponse                  );
@@ -45,6 +52,7 @@ service Msg {
   rpc StructRefine                   (MsgStructRefine                  ) returns (MsgStructRefineResponse                  );
   rpc StructInfuse                   (MsgStructInfuse                  ) returns (MsgStructInfuseResponse                  );
 
+  // To Remove after battle mechanics added
   rpc Sabotage                       (MsgSabotage                      ) returns (MsgSabotageResponse                      );
 }
 
@@ -138,18 +146,48 @@ message MsgGuildCreate {
 
 message MsgGuildCreateResponse { uint64 guildId = 1; }
 
-message MsgGuildUpdate {
-    string creator            = 1;
-    uint64 id                 = 2;
-    string endpoint           = 3;
-    uint64 owner              = 4;
-
-    uint64 guildJoinType       = 5;
-    uint64 infusionJoinMinimum = 6;
-
-    uint64 primaryReactorId    = 7;
-    uint64 entrySubstationId   = 8;
+message MsgGuildUpdateOwnerId {
+  string creator            = 1;
+  uint64 id                 = 2;
+  uint64 owner              = 3;
 }
+
+message MsgGuildUpdateEntrySubstationId {
+  string creator            = 1;
+  uint64 id                 = 2;
+  uint64 entrySubstationId  = 3;
+}
+
+message MsgGuildUpdateEndpoint {
+  string creator            = 1;
+  uint64 id                 = 2;
+  string endpoint           = 3;
+}
+
+message MsgGuildUpdateJoinType {
+  string creator            = 1;
+  uint64 id                 = 2;
+  uint64 guildJoinType      = 3;
+}
+
+message MsgGuildUpdateInfusionJoinMinimum {
+  string creator              = 1;
+  uint64 id                   = 2;
+  uint64 infusionJoinMinimum  = 3;
+}
+
+message MsgGuildUpdateSquadJoinTypeMinimum {
+  string creator              = 1;
+  uint64 id                   = 2;
+  uint64 squadJoinTypeMinimum = 3;
+}
+
+message MsgGuildUpdateOpenSquadCreation {
+  string creator              = 1;
+  uint64 id                   = 2;
+  bool   openSquadCreation    = 3;
+}
+
 
 message MsgGuildUpdateResponse{}
 
