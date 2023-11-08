@@ -83229,6 +83229,12 @@ definitions:
     type: object
   structs.MsgSabotageResponse:
     type: object
+  structs.MsgSquadCreateResponse:
+    type: object
+    properties:
+      squadId:
+        type: string
+        format: uint64
   structs.MsgStructActivateResponse:
     type: object
     properties:

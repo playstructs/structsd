@@ -33,6 +33,7 @@ service Msg {
   rpc GuildUpdateSquadJoinTypeMinimum (MsgGuildUpdateSquadJoinTypeMinimum ) returns (MsgGuildUpdateResponse                );
   rpc GuildUpdateOpenSquadCreation   (MsgGuildUpdateOpenSquadCreation  ) returns (MsgGuildUpdateResponse                   );
   rpc GuildApproveRegister           (MsgGuildApproveRegister          ) returns (MsgGuildApproveRegisterResponse          );
+  rpc SquadCreate                    (MsgSquadCreate                   ) returns (MsgSquadCreateResponse                   );
   rpc PlayerCreateProxy              (MsgPlayerCreateProxy             ) returns (MsgPlayerCreateProxyResponse             );
   rpc PlayerCreate                   (MsgPlayerCreate                  ) returns (MsgPlayerCreateResponse                  );
   rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse    );
@@ -190,6 +191,18 @@ message MsgGuildUpdateOpenSquadCreation {
 
 
 message MsgGuildUpdateResponse{}
+
+
+message MsgSquadCreate {
+  string creator            = 1;
+  uint64 guildId            = 2;
+  uint64 leader             = 3;
+  uint64 squadJoinType      = 4;
+  uint64 entrySubstationId  = 5;
+}
+
+message MsgSquadCreateResponse { uint64 squadId = 1; }
+
 
 message MsgPlayerCreateProxy {
   string creator      = 1;
