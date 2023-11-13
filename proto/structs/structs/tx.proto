@@ -34,6 +34,9 @@ service Msg {
   rpc GuildUpdateOpenSquadCreation   (MsgGuildUpdateOpenSquadCreation  ) returns (MsgGuildUpdateResponse                   );
   rpc GuildApproveRegister           (MsgGuildApproveRegister          ) returns (MsgGuildApproveRegisterResponse          );
   rpc SquadCreate                    (MsgSquadCreate                   ) returns (MsgSquadCreateResponse                   );
+  rpc SquadApproveLeaderProposal     (MsgSquadApproveLeaderProposal    ) returns (MsgSquadApproveLeaderProposalResponse    );
+  rpc SquadApproveInvite             (MsgSquadApproveInvite            ) returns (MsgSquadApproveInviteResponse            );
+  rpc SquadApproveJoinRequest        (MsgSquadApproveJoinRequest       ) returns (MsgSquadApproveJoinRequestResponse       );
   rpc PlayerCreateProxy              (MsgPlayerCreateProxy             ) returns (MsgPlayerCreateProxyResponse             );
   rpc PlayerCreate                   (MsgPlayerCreate                  ) returns (MsgPlayerCreateResponse                  );
   rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse    );
@@ -202,6 +205,33 @@ message MsgSquadCreate {
 }
 
 message MsgSquadCreateResponse { uint64 squadId = 1; }
+
+message MsgSquadApproveLeaderProposal {
+  string creator     = 1;
+  bool   approve     = 2;
+  uint64 squadId     = 3;
+  uint64 playerId    = 4;
+}
+
+message MsgSquadApproveLeaderProposalResponse {}
+
+message MsgSquadApproveInvite {
+  string creator     = 1;
+  bool   approve     = 2;
+  uint64 squadId     = 3;
+  uint64 playerId    = 4;
+}
+
+message MsgSquadApproveInviteResponse {}
+
+message MsgSquadApproveJoinRequest {
+  string creator     = 1;
+  bool   approve     = 2;
+  uint64 squadId     = 3;
+  uint64 playerId    = 4;
+}
+
+message MsgSquadApproveJoinRequestResponse {}
 
 
 message MsgPlayerCreateProxy {

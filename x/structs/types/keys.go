@@ -109,7 +109,9 @@ const (
 	SquadKey      = "Squad/value/"
 	SquadCountKey = "Squad/count/"
 	SquadPermissionKey = "Squad/permission/"
-	SquadRegistrationKey = "Squad/registration/"
+	SquadLeaderProposalKey = "Squad/leader/"
+	SquadInviteKey = "Squad/invite/"
+	SquadRequestKey = "Squad/request/"
 
     // Open, Guild Member, Request, Invite Only
 	SquadJoinType_Open          = 0

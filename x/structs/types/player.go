@@ -77,9 +77,11 @@ const (
 	PlayerPermissionDelete
 	// 4
 	PlayerPermissionSubstation
+	// 8
+	PlayerPermissionSquad
 )
 const (
     PlayerPermissionless PlayerPermission = 0 << iota
-	PlayerPermissionAll = PlayerPermissionUpdate |  PlayerPermissionDelete | PlayerPermissionSubstation
+	PlayerPermissionAll = PlayerPermissionUpdate |  PlayerPermissionDelete | PlayerPermissionSubstation | PlayerPermissionSquad
 )
 

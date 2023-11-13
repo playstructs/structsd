@@ -65,8 +65,12 @@ const (
 	SubstationPermissionAllocate
 	// 32
 	SubstationPermissionDelete
+	// 64
+	SubstationPermissionRouteGuild
+	// 128
+	SubstationPermissionRouteSquad
 )
 const (
     SubstationPermissionless SubstationPermission = 0 << iota
-	SubstationPermissionAll = SubstationPermissionConnectPlayer | SubstationPermissionDisconnectPlayer | SubstationPermissionConnectAllocation | SubstationPermissionDisconnectAllocation | SubstationPermissionAllocate | SubstationPermissionDelete
+	SubstationPermissionAll = SubstationPermissionConnectPlayer | SubstationPermissionDisconnectPlayer | SubstationPermissionConnectAllocation | SubstationPermissionDisconnectAllocation | SubstationPermissionAllocate | SubstationPermissionDelete | SubstationPermissionRouteGuild | SubstationPermissionRouteSquad
 )

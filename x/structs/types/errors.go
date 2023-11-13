@@ -45,6 +45,7 @@ var (
 	ErrPermissionManagePlayer               = sdkerrors.Register(ModuleName, 1604, "Permission error during player management action")
     ErrPermissionManageGuild                = sdkerrors.Register(ModuleName, 1605, "Permission error during guild management action")
     ErrPermissionManageEnergy               = sdkerrors.Register(ModuleName, 1606, "Permission error during asset management action")
+    ErrPermissionManageSquad                = sdkerrors.Register(ModuleName, 1607, "Permission error during squad management action")
 
     ErrPermissionGuildRegister              = sdkerrors.Register(ModuleName, 1611, "Guild permission error during player register")
 
@@ -60,6 +61,7 @@ var (
     ErrPermissionSubstationPlayerDisconnect     = sdkerrors.Register(ModuleName, 1636, "Substation permission error during player disconnection")
 
     ErrPermissionPlayerPlay                     = sdkerrors.Register(ModuleName, 1641, "Player cannot play other players yet (no sudo yo)")
+    ErrPermissionPlayerSquad                    = sdkerrors.Register(ModuleName, 1642, "Player cannot update other players squad status")
 
     ErrPlanetNotFound                           = sdkerrors.Register(ModuleName,  1710, "planet specified does not exist")
     ErrPlanetExploration                        = sdkerrors.Register(ModuleName,  1711, "planet exploration failed")

@@ -38,11 +38,11 @@ func (k Keeper) SetSquadCount(ctx sdk.Context, count uint64) {
 // AppendSquad appends a squad in the store with a new id and update the count
 func (k Keeper) AppendSquad(
 	ctx sdk.Context,
-	guildId uint64,
-    entrySubstationId uint64,
-	squadJoinType uint64,
-	leader uint64,
 	creator string,
+	guildId uint64,
+	leader uint64,
+	squadJoinType uint64,
+    entrySubstationId uint64,
 ) (squad types.Squad) {
     squad = types.CreateEmptySquad()
 
@@ -51,8 +51,8 @@ func (k Keeper) AppendSquad(
 
 	// Set the ID of the appended value
 	squad.Id = count
-	squad.SetGuildId(guildId)
 	squad.SetCreator(creator)
+	squad.SetGuildId(guildId)
 	squad.SetLeader(leader)
 	squad.SetSquadJoinType(squadJoinType)
 	squad.SetEntrySubstationId(entrySubstationId)
@@ -63,7 +63,6 @@ func (k Keeper) AppendSquad(
 
 	// Update squad count
 	k.SetSquadCount(ctx, count+1)
-    k.SquadPermissionAdd(ctx, squad.Id, leader, types.SquadPermissionAll)
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventSquad{Squad: &squad})
 
@@ -128,31 +127,29 @@ func GetSquadIDFromBytes(bz []byte) uint64 {
 
 
 
-func (k Keeper) SquadSetRegisterRequest(ctx sdk.Context, squad types.Squad, player types.Player) {
-    	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadRegistrationKey))
+func (k Keeper) SquadSetLeaderProposalRequest(ctx sdk.Context, squad types.Squad, player types.Player) {
+    	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadLeaderProposalKey))
 
     	bz := make([]byte, 8)
-    	binary.BigEndian.PutUint64(bz, squad.Id)
+    	binary.BigEndian.PutUint64(bz, player.Id)
 
-    	store.Set(GetPlayerIDBytes(player.Id), bz)
+    	store.Set(GetSquadIDBytes(squad.Id), bz)
 }
 
-func (k Keeper) SquadApproveRegisterRequest(ctx sdk.Context, squad types.Squad, player types.Player) {
+func (k Keeper) SquadApproveLeaderProposalRequest(ctx sdk.Context, squad types.Squad, player types.Player) (bool) {
 
-    registrationSquad, registrationFound := k.SquadGetRegisterRequest(ctx, player)
-    if ((registrationFound) && (registrationSquad.Id == squad.Id)) {
-            // look up destination substation
-            substation, substationFound := k.GetSubstation(ctx, squad.EntrySubstationId, true)
+    proposalPlayer, proposalFound := k.SquadGetLeaderProposalRequest(ctx, squad)
+    if ((proposalFound) && (proposalPlayer.Id == player.Id)) {
 
-            // If the player is already connected to a substation then leave them
-            // Maybe add an option to force migration later
-            if (player.SubstationId == 0) {
-                if (substationFound) {
-                    // Check if the substation has room
-                    if substation.HasPlayerCapacity() {
-                        // Connect Player to Substation
-                        k.SubstationConnectPlayer(ctx, substation, player)
-                    }
+            // Proposal Found, Players Match
+
+            // Check to see if the player is part of a squad already
+            if ((player.SquadId > 0) && (player.SquadId != squad.Id) {
+                oldSquad, _ := k.GetSquad(ctx, player.SquadId)
+                if (oldSquad.Leader == player.Id) {
+                    // Shouldn't happen
+                    // May need to alter this function to throw errors
+                    return false
                 }
             }
 
@@ -160,34 +157,87 @@ func (k Keeper) SquadApproveRegisterRequest(ctx sdk.Context, squad types.Squad, 
             player.SetSquad(squad.Id)
             k.SetPlayer(ctx, player)
 
-            store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadRegistrationKey))
-            store.Delete(GetPlayerIDBytes(player.Id))
+            squad.SetLeader(player.Id)
+            k.SetSquad(ctx, squad)
+
+            k.SquadPermissionAdd(ctx, squad.Id, player.Id, types.SquadPermissionAll)
+
+            store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadLeaderProposalKey))
+            store.Delete(GetSquadIDBytes(squad.Id))
     }
+
+    return true
 
 }
 
-func (k Keeper) SquadDenyRegisterRequest(ctx sdk.Context, squad types.Squad, player types.Player) {
-    registrationSquad, registrationFound := k.SquadGetRegisterRequest(ctx, player)
-    if ((registrationFound) && (registrationSquad.Id == squad.Id)) {
-            store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadRegistrationKey))
-            store.Delete(GetPlayerIDBytes(player.Id))
+func (k Keeper) SquadDenyLeaderProposalRequest(ctx sdk.Context, squad types.Squad, player types.Player) {
+    proposalPlayer, proposalFound := k.SquadGetLeaderProposalRequest(ctx, squad)
+    if ((proposalFound) && (proposalPlayer.Id == player.Id)) {
+            store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadPlayerProposalKey))
+            store.Delete(GetSquadIDBytes(squad.Id))
     }
 }
 
-func (k Keeper) SquadGetRegisterRequest(ctx sdk.Context, player types.Player) (squad types.Squad, found bool) {
-    	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadRegistrationKey))
+func (k Keeper) SquadDeleteLeaderProposalRequest(ctx sdk.Context, squad types.Squad) {
+    store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadPlayerProposalKey))
+    store.Delete(GetSquadIDBytes(squad.Id))
+}
 
-    	bz := store.Get(GetPlayerIDBytes(player.Id))
+func (k Keeper) SquadGetLeaderProposalRequest(ctx sdk.Context, squad types.Squad) (player types.Player, found bool) {
+    	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadLeaderProposalKey))
+
+    	bz := store.Get(GetSquadIDBytes(squad.Id))
 
     	// Substation Capacity Not in Memory: no element
     	if bz == nil {
     		return types.Squad{}, false
     	}
 
-    	squad, found = k.GetSquad(ctx, binary.BigEndian.Uint64(bz))
+    	player, found = k.GetPlayer(ctx, binary.BigEndian.Uint64(bz))
 
-    	return squad, found
+    	return player, found
 
+}
+
+/*
+ * Join Requests
+ * ID based on Player ID
+ *
+ * Requires a Squad and Player
+ * A player can only have one join request
+ *
+ * /
+
+// SquadSetJoinRequest
+// SquadApproveJoinRequest
+// SquadDenyJoinRequest
+// SquadDeleteJoinRequest
+// SquadGetJoinRequest
+
+
+/*
+ * Join Invite
+ *
+ * ID Based on Squad and Player
+ *    ex: <squadId>-<playerId> = 1
+ *
+ * Require a Squad and Player
+ * A player can only have multiple invites
+ * /
+
+// SquadSetJoinInvite
+// SquadApproveJoinInvite
+// SquadDenyJoinInvite
+// SquadDeleteJoinInvite
+// SquadGetJoinInvite
+
+
+// GetSquadPermissionIDBytes returns the byte representation of the squad and player id pair
+func GetSquadPlayerIDBytes(squadId uint64, playerId uint64) []byte {
+	squadIdString  := strconv.FormatUint(squadId, 10)
+	playerIdString := strconv.FormatUint(playerId, 10)
+
+	return []byte(squadIdString + "-" + playerIdString)
 }
 
 
