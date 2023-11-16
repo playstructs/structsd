@@ -83229,6 +83229,12 @@ definitions:
     type: object
   structs.MsgSabotageResponse:
     type: object
+  structs.MsgSquadApproveInviteResponse:
+    type: object
+  structs.MsgSquadApproveJoinRequestResponse:
+    type: object
+  structs.MsgSquadApproveLeaderProposalResponse:
+    type: object
   structs.MsgSquadCreateResponse:
     type: object
     properties:

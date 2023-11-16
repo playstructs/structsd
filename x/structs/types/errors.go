@@ -79,6 +79,16 @@ var (
     ErrStructAllocationCreate                   = sdkerrors.Register(ModuleName,  1730, "Allocation of power from struct failed")
     ErrStructActivate                           = sdkerrors.Register(ModuleName,  1731, "Struct activation failed")
 
-    ErrSabotage                                 = sdkerrors.Register(ModuleName,  1800, "Sabotage failed")
+    ErrSquadNotFound                            = sdkerrors.Register(ModuleName,  1810, "Squad not found")
+
+    ErrSquadLeaderProposalNotFound              = sdkerrors.Register(ModuleName,  1820, "Squad leader proposal not found")
+    ErrSquadLeaderProposalGuildMismatch         = sdkerrors.Register(ModuleName,  1821, "Attempted to add squad leader from outside guild")
+    ErrSquadLeaderProposalPlayerMismatch        = sdkerrors.Register(ModuleName,  1822, "Attempting to accept a squad leader position for another player")
+    ErrSquadLeaderProposalPlayerIneligible      = sdkerrors.Register(ModuleName,  1823, "Attempted to add a squad leader who cannot be squad leader")
+
+    ErrPermissionSquadCreation                  = sdkerrors.Register(ModuleName,  1830, "Squad creation failed")
+
+
+    ErrSabotage                                 = sdkerrors.Register(ModuleName,  3800, "Sabotage failed")
 
 )

@@ -15,7 +15,7 @@ func (k msgServer) SquadCreate(goCtx context.Context, msg *types.MsgSquadCreate)
 		return nil, err
 	}
 
-    squadLeader = msg.Leader
+    squadLeader := msg.Leader
 
     // look up transaction creator player object
     txPlayerId := k.GetPlayerIdFromAddress(ctx, msg.Creator)
@@ -37,11 +37,7 @@ func (k msgServer) SquadCreate(goCtx context.Context, msg *types.MsgSquadCreate)
 
     if (txPlayer.Id == leaderPlayer.Id) {
         if (guild.OpenSquadCreation) {
-            if (
-                (txPlayer.GuildId != Guild.Id)
-                &&
-                (!k.GuildPermissionHasOneOf(ctx, guild.Id, txPlayer.Id, types.GuildPermissionSquadCreate))
-               ) {
+            if ( (txPlayer.GuildId != guild.Id) && (!k.GuildPermissionHasOneOf(ctx, guild.Id, txPlayer.Id, types.GuildPermissionSquadCreate))) {
                 return &types.MsgSquadCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSquadCreation, "Calling player (%d) must be a member of Guild (%d) and does not have Squad Create permissions", txPlayer.Id, guild.Id)
             }
 
@@ -61,7 +57,7 @@ func (k msgServer) SquadCreate(goCtx context.Context, msg *types.MsgSquadCreate)
 
         // Make sure the player is in the Guild
         // Otherwise they cannot be added to a squad, especially as leader
-        if (leaderPlayer.GuildId != Guild.Id) {
+        if (leaderPlayer.GuildId != guild.Id) {
             return &types.MsgSquadCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSquadCreation, "Proposed Leader player (%d) for Squad must be a member of Guild (%d)", leaderPlayer.Id, guild.Id)
         }
 
@@ -78,7 +74,7 @@ func (k msgServer) SquadCreate(goCtx context.Context, msg *types.MsgSquadCreate)
 
     if (msg.EntrySubstationId > 0) {
         // look up destination substation
-    	substation, substationFound := k.GetSubstation(ctx, guild.EntrySubstationId, true)
+    	_, substationFound := k.GetSubstation(ctx, guild.EntrySubstationId, true)
 
         if (!substationFound) {
             return &types.MsgSquadCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSquadCreation, "Proposed Entry Substation (%d) for Squad does not exist", msg.EntrySubstationId)
@@ -102,8 +98,8 @@ func (k msgServer) SquadCreate(goCtx context.Context, msg *types.MsgSquadCreate)
             // Check their old squad
             oldSquad, _ := k.GetSquad(ctx, leaderPlayer.SquadId)
 
-            if (oldSquad.Leader == playerLeader.Id) {
-                return &types.MsgSquadCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSquadCreation, "Proposed Leader Player (%d) is already a Squad (%d) Leader ", leaderPlayer.Id, oldGuild.Leader)
+            if (oldSquad.Leader == leaderPlayer.Id) {
+                return &types.MsgSquadCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSquadCreation, "Proposed Leader Player (%d) is already a Squad (%d) Leader ", leaderPlayer.Id, oldSquad.Leader)
             }
         }
     }
@@ -119,7 +115,7 @@ func (k msgServer) SquadCreate(goCtx context.Context, msg *types.MsgSquadCreate)
         leaderPlayer.SetSquad(squad.Id)
         k.SetPlayer(ctx, leaderPlayer)
 
-        k.SquadPermissionAdd(ctx, squad.Id, leader.Id, types.SquadPermissionAll)
+        k.SquadPermissionAdd(ctx, squad.Id, leaderPlayer.Id, types.SquadPermissionAll)
     }
 
     // If the leader player needed a proposal sent, add this now

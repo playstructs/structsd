@@ -136,50 +136,28 @@ func (k Keeper) SquadSetLeaderProposalRequest(ctx sdk.Context, squad types.Squad
     	store.Set(GetSquadIDBytes(squad.Id), bz)
 }
 
-func (k Keeper) SquadApproveLeaderProposalRequest(ctx sdk.Context, squad types.Squad, player types.Player) (bool) {
+func (k Keeper) SquadApproveLeaderProposalRequest(ctx sdk.Context, squad types.Squad, player types.Player) {
 
-    proposalPlayer, proposalFound := k.SquadGetLeaderProposalRequest(ctx, squad)
-    if ((proposalFound) && (proposalPlayer.Id == player.Id)) {
+    // Add player to the squad
+    player.SetSquad(squad.Id)
+    k.SetPlayer(ctx, player)
 
-            // Proposal Found, Players Match
+    squad.SetLeader(player.Id)
+    k.SetSquad(ctx, squad)
 
-            // Check to see if the player is part of a squad already
-            if ((player.SquadId > 0) && (player.SquadId != squad.Id) {
-                oldSquad, _ := k.GetSquad(ctx, player.SquadId)
-                if (oldSquad.Leader == player.Id) {
-                    // Shouldn't happen
-                    // May need to alter this function to throw errors
-                    return false
-                }
-            }
+    k.SquadPermissionAdd(ctx, squad.Id, player.Id, types.SquadPermissionAll)
 
-            // Add player to the squad
-            player.SetSquad(squad.Id)
-            k.SetPlayer(ctx, player)
-
-            squad.SetLeader(player.Id)
-            k.SetSquad(ctx, squad)
-
-            k.SquadPermissionAdd(ctx, squad.Id, player.Id, types.SquadPermissionAll)
-
-            store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadLeaderProposalKey))
-            store.Delete(GetSquadIDBytes(squad.Id))
-    }
-
-    return true
-
+    store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadLeaderProposalKey))
+    store.Delete(GetSquadIDBytes(squad.Id))
 }
 
 func (k Keeper) SquadDenyLeaderProposalRequest(ctx sdk.Context, squad types.Squad, player types.Player) {
-    proposalPlayer, proposalFound := k.SquadGetLeaderProposalRequest(ctx, squad)
-    if ((proposalFound) && (proposalPlayer.Id == player.Id)) {
-            store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadPlayerProposalKey))
-            store.Delete(GetSquadIDBytes(squad.Id))
-    }
+    store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadLeaderProposalKey))
+    store.Delete(GetSquadIDBytes(squad.Id))
 }
 
 func (k Keeper) SquadDeleteLeaderProposalRequest(ctx sdk.Context, squad types.Squad) {
-    store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadPlayerProposalKey))
+    store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadLeaderProposalKey))
     store.Delete(GetSquadIDBytes(squad.Id))
 }
 
@@ -190,7 +168,7 @@ func (k Keeper) SquadGetLeaderProposalRequest(ctx sdk.Context, squad types.Squad
 
     	// Substation Capacity Not in Memory: no element
     	if bz == nil {
-    		return types.Squad{}, false
+    		return types.Player{}, false
     	}
 
     	player, found = k.GetPlayer(ctx, binary.BigEndian.Uint64(bz))
@@ -206,7 +184,7 @@ func (k Keeper) SquadGetLeaderProposalRequest(ctx sdk.Context, squad types.Squad
  * Requires a Squad and Player
  * A player can only have one join request
  *
- * /
+ */
 
 // SquadSetJoinRequest
 // SquadApproveJoinRequest
@@ -223,7 +201,7 @@ func (k Keeper) SquadGetLeaderProposalRequest(ctx sdk.Context, squad types.Squad
  *
  * Require a Squad and Player
  * A player can only have multiple invites
- * /
+ */
 
 // SquadSetJoinInvite
 // SquadApproveJoinInvite

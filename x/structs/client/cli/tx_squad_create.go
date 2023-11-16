@@ -9,6 +9,7 @@ import (
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
 	"github.com/spf13/cast"
+    "context"
 )
 
 var _ = strconv.Itoa(0)
@@ -61,7 +62,7 @@ func CmdSquadCreate() *cobra.Command {
                 return AddressLookupErr
             }
 
-            playerLookupRequest = &types.QueryGetPlayerRequest{
+            playerLookupRequest := &types.QueryGetPlayerRequest{
                 Id: addressResults.PlayerId,
             }
 
@@ -70,8 +71,8 @@ func CmdSquadCreate() *cobra.Command {
                 return playerLookupErr
             }
 
-            guildLookupRequest = &types.QueryGetGuildRequest{
-                Id: playerResults.GuildId,
+            guildLookupRequest := &types.QueryGetGuildRequest{
+                Id: playerResults.Player.GuildId,
             }
 
             guildResults, guildLookupErr := queryClient.Guild(context.Background(), guildLookupRequest)
@@ -88,7 +89,7 @@ func CmdSquadCreate() *cobra.Command {
             }
 
             if (argGuildId == 0) {
-                argGuildId = playerResults.GuildId
+                argGuildId = playerResults.Player.GuildId
             }
 
             argLeader, err := cmd.Flags().GetUint64("leader")
@@ -97,7 +98,7 @@ func CmdSquadCreate() *cobra.Command {
             }
 
             if (argLeader == 0) {
-                argLeader = playerResults.Id
+                argLeader = playerResults.Player.Id
             }
 
             argSquadJoinType, err := cmd.Flags().GetUint64("join-type")
@@ -106,7 +107,7 @@ func CmdSquadCreate() *cobra.Command {
             }
 
             if (argSquadJoinType == types.SquadJoinType_Invalid) {
-                argSquadJoinType = guildResults.SquadJoinTypeMinimum
+                argSquadJoinType = guildResults.Guild.SquadJoinTypeMinimum
             }
 
 
