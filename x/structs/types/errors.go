@@ -88,6 +88,7 @@ var (
     ErrSquadLeaderProposalPlayerCannotLeadHarder = sdkerrors.Register(ModuleName,  1824, "Proposed Leader is already leader of the squad, they cannot leader any harder")
 
     ErrPermissionSquadCreation                  = sdkerrors.Register(ModuleName,  1830, "Squad creation failed")
+    ErrPermissionSquadLeaderProposal            = sdkerrors.Register(ModuleName,  1831, "Squad leader proposal failed")
 
 
     ErrSabotage                                 = sdkerrors.Register(ModuleName,  3800, "Sabotage failed")

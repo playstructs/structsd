@@ -15,8 +15,6 @@ func (k msgServer) SquadLeaderProposal(goCtx context.Context, msg *types.MsgSqua
 		return nil, err
 	}
 
-    squadLeader := msg.Leader
-
     // look up transaction creator player object
     txPlayerId := k.GetPlayerIdFromAddress(ctx, msg.Creator)
     if (txPlayerId == 0) {
@@ -41,7 +39,7 @@ func (k msgServer) SquadLeaderProposal(goCtx context.Context, msg *types.MsgSqua
 
 
 	// look up destination guild
-	guild, guildFound := k.GetGuild(ctx, msg.GuildId)
+	guild, guildFound := k.GetGuild(ctx, squad.GuildId)
 
     if (!guildFound) {
         return &types.MsgSquadLeaderProposalResponse{}, sdkerrors.Wrapf(types.ErrGuildNotFound, "Referenced Guild (%d) not found", squad.GuildId)
@@ -51,7 +49,7 @@ func (k msgServer) SquadLeaderProposal(goCtx context.Context, msg *types.MsgSqua
     // Calling address (msg.Creator) must have permissions to perform the Squad Management task
     // AddressPermissionManageSquad
     if (!k.AddressPermissionHasOneOf(ctx, msg.Creator, types.AddressPermissionManageSquad)) {
-        return &types.MsgSquadLeaderProposalResponse{}, sdkerrors.Wrapf(types.ErrPermissionSquadLeaderProposal, "Calling Address (%s) must have Squad Management permissions", msg.Creator)
+        return &types.MsgSquadLeaderProposalResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageSquad, "Calling Address (%s) must have Squad Management permissions", msg.Creator)
     }
 
     // Calling player (txPlayer) needs to have certain permissions to complete the task
