@@ -83241,6 +83241,8 @@ definitions:
       squadId:
         type: string
         format: uint64
+  structs.MsgSquadDeleteLeaderProposalResponse:
+    type: object
   structs.MsgSquadLeaderProposalResponse:
     type: object
   structs.MsgStructActivateResponse:

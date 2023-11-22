@@ -36,6 +36,7 @@ service Msg {
   rpc SquadCreate                    (MsgSquadCreate                   ) returns (MsgSquadCreateResponse                   );
   rpc SquadLeaderProposal            (MsgSquadLeaderProposal           ) returns (MsgSquadLeaderProposalResponse           );
   rpc SquadApproveLeaderProposal     (MsgSquadApproveLeaderProposal    ) returns (MsgSquadApproveLeaderProposalResponse    );
+  rpc SquadDeleteLeaderProposal      (MsgSquadDeleteLeaderProposal     ) returns (MsgSquadDeleteLeaderProposalResponse     );
   rpc SquadApproveInvite             (MsgSquadApproveInvite            ) returns (MsgSquadApproveInviteResponse            );
   rpc SquadApproveJoinRequest        (MsgSquadApproveJoinRequest       ) returns (MsgSquadApproveJoinRequestResponse       );
   rpc PlayerCreateProxy              (MsgPlayerCreateProxy             ) returns (MsgPlayerCreateProxyResponse             );
@@ -223,6 +224,13 @@ message MsgSquadApproveLeaderProposal {
 }
 
 message MsgSquadApproveLeaderProposalResponse {}
+
+message MsgSquadDeleteLeaderProposal {
+  string creator     = 1;
+  uint64 squadId     = 2;
+}
+
+message MsgSquadDeleteLeaderProposalResponse {}
 
 message MsgSquadApproveInvite {
   string creator     = 1;

@@ -13,37 +13,26 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdSquadApproveLeaderProposal() *cobra.Command {
+func CmdSquadDeleteLeaderProposal() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "squad-approve-leader-proposal [Squad Id] [Player Id] [Decision]",
-		Short: "Approve or Deny a Squad Leader Proposal",
-		Args:  cobra.ExactArgs(3),
+		Use:   "squad-delete-leader-proposal [Squad Id]",
+		Short: "Delete a Squad Leader Proposal",
+		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
             argSquadId, err := cast.ToUint64E(args[0])
             if err != nil {
                 return err
             }
 
-			argPlayerId, err := cast.ToUint64E(args[1])
-			if err != nil {
-				return err
-			}
-
-			argApproved, err := strconv.ParseBool(args[2])
-			if err != nil {
-				return err
-			}
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgSquadApproveLeaderProposal(
+			msg := types.NewMsgSquadDeleteLeaderProposal(
 				clientCtx.GetFromAddress().String(),
 				argSquadId,
-				argPlayerId,
-				argApproved,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

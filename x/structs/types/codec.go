@@ -30,6 +30,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgSquadCreate{}, "structs/SquadCreate", nil)
     cdc.RegisterConcrete(&MsgSquadLeaderProposal{}, "structs/SquadLeaderProposal", nil)
 	cdc.RegisterConcrete(&MsgSquadApproveLeaderProposal{}, "structs/SquadApproveLeaderProposal", nil)
+	cdc.RegisterConcrete(&MsgSquadDeleteLeaderProposal{}, "structs/SquadDeleteLeaderProposal", nil)
 
 
 	cdc.RegisterConcrete(&MsgPlayerCreateProxy{}, "structs/PlayerCreateProxy", nil)
@@ -118,6 +119,10 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 
     registry.RegisterImplementations((*sdk.Msg)(nil),
         &MsgSquadApproveLeaderProposal{},
+    )
+
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgSquadDeleteLeaderProposal{},
     )
 
     registry.RegisterImplementations((*sdk.Msg)(nil),
