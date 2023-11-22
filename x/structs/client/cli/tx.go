@@ -56,7 +56,9 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(CmdGuildApproveRegister())
 
 	cmd.AddCommand(CmdSquadCreate())
+	cmd.AddCommand(CmdSquadLeaderProposal())
 	cmd.AddCommand(CmdSquadApproveLeaderProposal())
+
 
 
 	cmd.AddCommand(CmdPlayerCreateProxy())

@@ -85,6 +85,7 @@ var (
     ErrSquadLeaderProposalGuildMismatch         = sdkerrors.Register(ModuleName,  1821, "Attempted to add squad leader from outside guild")
     ErrSquadLeaderProposalPlayerMismatch        = sdkerrors.Register(ModuleName,  1822, "Attempting to accept a squad leader position for another player")
     ErrSquadLeaderProposalPlayerIneligible      = sdkerrors.Register(ModuleName,  1823, "Attempted to add a squad leader who cannot be squad leader")
+    ErrSquadLeaderProposalPlayerCannotLeadHarder = sdkerrors.Register(ModuleName,  1824, "Proposed Leader is already leader of the squad, they cannot leader any harder")
 
     ErrPermissionSquadCreation                  = sdkerrors.Register(ModuleName,  1830, "Squad creation failed")
 

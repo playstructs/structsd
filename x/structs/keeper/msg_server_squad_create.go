@@ -31,7 +31,7 @@ func (k msgServer) SquadCreate(goCtx context.Context, msg *types.MsgSquadCreate)
 	guild, guildFound := k.GetGuild(ctx, msg.GuildId)
 
     if (!guildFound) {
-        return &types.MsgSquadCreateResponse{}, sdkerrors.Wrapf(types.ErrGuildNotFound, "Referenced Guild (%d) not found", guild.Id)
+        return &types.MsgSquadCreateResponse{}, sdkerrors.Wrapf(types.ErrGuildNotFound, "Referenced Guild (%d) not found", msg.GuildId)
     }
 
 

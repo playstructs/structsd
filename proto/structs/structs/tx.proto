@@ -34,6 +34,7 @@ service Msg {
   rpc GuildUpdateOpenSquadCreation   (MsgGuildUpdateOpenSquadCreation  ) returns (MsgGuildUpdateResponse                   );
   rpc GuildApproveRegister           (MsgGuildApproveRegister          ) returns (MsgGuildApproveRegisterResponse          );
   rpc SquadCreate                    (MsgSquadCreate                   ) returns (MsgSquadCreateResponse                   );
+  rpc SquadLeaderProposal            (MsgSquadLeaderProposal           ) returns (MsgSquadLeaderProposalResponse           );
   rpc SquadApproveLeaderProposal     (MsgSquadApproveLeaderProposal    ) returns (MsgSquadApproveLeaderProposalResponse    );
   rpc SquadApproveInvite             (MsgSquadApproveInvite            ) returns (MsgSquadApproveInviteResponse            );
   rpc SquadApproveJoinRequest        (MsgSquadApproveJoinRequest       ) returns (MsgSquadApproveJoinRequestResponse       );
@@ -205,6 +206,14 @@ message MsgSquadCreate {
 }
 
 message MsgSquadCreateResponse { uint64 squadId = 1; }
+
+message MsgSquadLeaderProposal {
+  string creator            = 1;
+  uint64 squadId            = 2;
+  uint64 leader             = 3;
+}
+
+message MsgSquadLeaderProposalResponse { }
 
 message MsgSquadApproveLeaderProposal {
   string creator     = 1;
