@@ -37,8 +37,12 @@ service Msg {
   rpc SquadLeaderProposal            (MsgSquadLeaderProposal           ) returns (MsgSquadLeaderProposalResponse           );
   rpc SquadApproveLeaderProposal     (MsgSquadApproveLeaderProposal    ) returns (MsgSquadApproveLeaderProposalResponse    );
   rpc SquadDeleteLeaderProposal      (MsgSquadDeleteLeaderProposal     ) returns (MsgSquadDeleteLeaderProposalResponse     );
+  rpc SquadInvite                    (MsgSquadInvite                   ) returns (MsgSquadInviteResponse                   );
   rpc SquadApproveInvite             (MsgSquadApproveInvite            ) returns (MsgSquadApproveInviteResponse            );
+  rpc SquadDeleteInvite              (MsgSquadDeleteInvite             ) returns (MsgSquadDeleteInviteResponse             );
+  rpc SquadJoinRequest               (MsgSquadJoinRequest              ) returns (MsgSquadJoinRequestResponse              );
   rpc SquadApproveJoinRequest        (MsgSquadApproveJoinRequest       ) returns (MsgSquadApproveJoinRequestResponse       );
+  rpc SquadDeleteJoinRequest         (MsgSquadDeleteJoinRequest        ) returns (MsgSquadDeleteJoinRequestResponse        );
   rpc PlayerCreateProxy              (MsgPlayerCreateProxy             ) returns (MsgPlayerCreateProxyResponse             );
   rpc PlayerCreate                   (MsgPlayerCreate                  ) returns (MsgPlayerCreateResponse                  );
   rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse    );
@@ -232,6 +236,14 @@ message MsgSquadDeleteLeaderProposal {
 
 message MsgSquadDeleteLeaderProposalResponse {}
 
+message MsgSquadInvite {
+  string creator     = 1;
+  uint64 squadId     = 2;
+  uint64 playerId    = 3;
+}
+
+message MsgSquadInviteResponse {}
+
 message MsgSquadApproveInvite {
   string creator     = 1;
   bool   approve     = 2;
@@ -240,6 +252,23 @@ message MsgSquadApproveInvite {
 }
 
 message MsgSquadApproveInviteResponse {}
+
+message MsgSquadDeleteInvite {
+  string creator     = 1;
+  uint64 squadId     = 2;
+  uint64 playerId    = 3;
+}
+
+message MsgSquadDeleteInviteResponse {}
+
+
+message MsgSquadJoinRequest {
+  string creator     = 1;
+  uint64 squadId     = 2;
+  uint64 playerId    = 3;
+}
+
+message MsgSquadJoinRequestResponse {}
 
 message MsgSquadApproveJoinRequest {
   string creator     = 1;
@@ -250,6 +279,13 @@ message MsgSquadApproveJoinRequest {
 
 message MsgSquadApproveJoinRequestResponse {}
 
+message MsgSquadDeleteJoinRequest {
+  string creator     = 1;
+  uint64 squadId     = 2;
+  uint64 playerId    = 3;
+}
+
+message MsgSquadDeleteJoinRequestResponse {}
 
 message MsgPlayerCreateProxy {
   string creator      = 1;

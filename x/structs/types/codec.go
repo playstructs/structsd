@@ -31,7 +31,12 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
     cdc.RegisterConcrete(&MsgSquadLeaderProposal{}, "structs/SquadLeaderProposal", nil)
 	cdc.RegisterConcrete(&MsgSquadApproveLeaderProposal{}, "structs/SquadApproveLeaderProposal", nil)
 	cdc.RegisterConcrete(&MsgSquadDeleteLeaderProposal{}, "structs/SquadDeleteLeaderProposal", nil)
-
+    cdc.RegisterConcrete(&MsgSquadInvite{}, "structs/SquadInvite", nil)
+    cdc.RegisterConcrete(&MsgSquadApproveInvite{}, "structs/SquadApproveInvite", nil)
+    cdc.RegisterConcrete(&MsgSquadDeleteInvite{}, "structs/SquadDeleteInvite", nil)
+    cdc.RegisterConcrete(&MsgSquadJoinRequest{}, "structs/SquadJoinRequest", nil)
+    cdc.RegisterConcrete(&MsgSquadApproveJoinRequest{}, "structs/SquadApproveJoinRequest", nil)
+    cdc.RegisterConcrete(&MsgSquadDeleteJoinRequest{}, "structs/SquadDeleteJoinRequest", nil)
 
 	cdc.RegisterConcrete(&MsgPlayerCreateProxy{}, "structs/PlayerCreateProxy", nil)
 	cdc.RegisterConcrete(&MsgPlayerCreate{}, "structs/PlayerCreate", nil)
@@ -123,6 +128,30 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 
     registry.RegisterImplementations((*sdk.Msg)(nil),
         &MsgSquadDeleteLeaderProposal{},
+    )
+
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgSquadInvite{},
+    )
+
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgSquadApproveInvite{},
+    )
+
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgSquadDeleteInvite{},
+    )
+
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgSquadJoinRequest{},
+    )
+
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgSquadApproveJoinRequest{},
+    )
+
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgSquadDeleteJoinRequest{},
     )
 
     registry.RegisterImplementations((*sdk.Msg)(nil),
