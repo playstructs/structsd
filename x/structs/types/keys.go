@@ -111,7 +111,7 @@ const (
 	SquadPermissionKey = "Squad/permission/"
 	SquadLeaderProposalKey = "Squad/leader/"
 	SquadInviteKey = "Squad/invite/"
-	SquadRequestKey = "Squad/request/"
+	SquadJoinRequestKey = "Squad/request/"
 
     // Open, Guild Member, Request, Invite Only
 	SquadJoinType_Open          = 0
@@ -119,6 +119,9 @@ const (
 	SquadJoinType_Request       = 2
 	SquadJoinType_Invite        = 3
 	SquadJoinType_Invalid       = 4
+
+	SquadInviteStatus_Invalid   = 0
+	SquadInviteStatus_Pending   = 1
 )
 const (
 	PlayerKey      = "Player/value/"

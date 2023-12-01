@@ -177,6 +177,105 @@ func (k Keeper) SquadGetLeaderProposalRequest(ctx sdk.Context, squad types.Squad
 
 }
 
+// GetSquadIDPlayerIDBytes returns the byte representation of the squad id and player id pair
+func GetSquadIDPlayerIDBytes(squadId uint64, playerId uint64) []byte {
+	squadIdString  := strconv.FormatUint(squadId, 10)
+	playerIdString := strconv.FormatUint(playerId, 10)
+
+	return []byte(squadIdString + "-" + playerIdString)
+}
+
+
+func (k Keeper) SquadSetInvite(ctx sdk.Context, squad types.Squad, player types.Player) {
+    	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadInviteKey))
+
+    	bz := make([]byte, 8)
+    	binary.BigEndian.PutUint64(bz, types.SquadInviteStatus_Pending)
+
+    	store.Set(GetSquadIDPlayerIDBytes(squad.Id, player.Id), bz)
+}
+
+func (k Keeper) SquadApproveInvite(ctx sdk.Context, squad types.Squad, player types.Player) {
+
+    // Add player to the squad
+    player.SetSquad(squad.Id)
+    k.SetPlayer(ctx, player)
+
+    store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadInviteKey))
+    store.Delete(GetSquadIDPlayerIDBytes(squad.Id, player.Id))
+}
+
+func (k Keeper) SquadDenyInvite(ctx sdk.Context, squad types.Squad, player types.Player) {
+    store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadInviteKey))
+    store.Delete(GetSquadIDPlayerIDBytes(squad.Id, player.Id))
+}
+
+func (k Keeper) SquadDeleteInvite(ctx sdk.Context, squad types.Squad) {
+    store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadInviteKey))
+    store.Delete(GetSquadIDPlayerIDBytes(squad.Id, player.Id))
+}
+
+func (k Keeper) SquadGetInvite(ctx sdk.Context, squad types.Squad, player types.Player) (squadInviteStatus uint64, bool) {
+    	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadInviteKey))
+
+    	bz := store.Get(GetSquadIDPlayerIDBytes(squad.Id, player.Id))
+
+    	// Invitation not in the keeper: no element
+    	if bz == nil {
+    		return types.SquadInviteStatus_Invalid, false
+    	}
+
+        // should be returning SquadInviteStatus_Pending
+    	return types.binary.BigEndian.Uint64(bz), true
+
+}
+
+
+func (k Keeper) SquadSetJoinRequest(ctx sdk.Context, squad types.Squad, player types.Player) {
+    	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadJoinRequestKey))
+
+    	bz := make([]byte, 8)
+    	binary.BigEndian.PutUint64(bz, types.SquadInviteStatus_Pending)
+
+    	store.Set(GetSquadIDPlayerIDBytes(squad.Id, player.Id), bz)
+}
+
+func (k Keeper) SquadApproveJoinRequest(ctx sdk.Context, squad types.Squad, player types.Player) {
+
+    // Add player to the squad
+    player.SetSquad(squad.Id)
+    k.SetPlayer(ctx, player)
+
+    store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadJoinRequestKey))
+    store.Delete(GetSquadIDPlayerIDBytes(squad.Id, player.Id))
+}
+
+func (k Keeper) SquadDenyInvite(ctx sdk.Context, squad types.Squad, player types.Player) {
+    store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadJoinRequestKey))
+    store.Delete(GetSquadIDPlayerIDBytes(squad.Id, player.Id))
+}
+
+func (k Keeper) SquadDeleteInvite(ctx sdk.Context, squad types.Squad) {
+    store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadJoinRequestKey))
+    store.Delete(GetSquadIDPlayerIDBytes(squad.Id, player.Id))
+}
+
+func (k Keeper) SquadGetInvite(ctx sdk.Context, squad types.Squad, player types.Player) (squadInviteStatus uint64, bool) {
+    	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadJoinRequestKey))
+
+    	bz := store.Get(GetSquadIDPlayerIDBytes(squad.Id, player.Id))
+
+    	// Invitation not in the keeper: no element
+    	if bz == nil {
+    		return types.SquadInviteStatus_Invalid, false
+    	}
+
+        // should be returning SquadInviteStatus_Pending
+    	return types.binary.BigEndian.Uint64(bz), true
+
+}
+
+
 /*
  * Join Requests
  * ID based on Player ID
