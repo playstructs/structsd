@@ -235,7 +235,7 @@ func (k Keeper) SquadSetJoinRequest(ctx sdk.Context, squad types.Squad, player t
     	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadJoinRequestKey))
 
     	bz := make([]byte, 8)
-    	binary.BigEndian.PutUint64(bz, types.SquadInviteStatus_Pending)
+    	binary.BigEndian.PutUint64(bz, types.SquadJoinRequestStatus_Pending)
 
     	store.Set(GetSquadIDPlayerIDBytes(squad.Id, player.Id), bz)
 }
@@ -250,27 +250,27 @@ func (k Keeper) SquadApproveJoinRequest(ctx sdk.Context, squad types.Squad, play
     store.Delete(GetSquadIDPlayerIDBytes(squad.Id, player.Id))
 }
 
-func (k Keeper) SquadDenyInvite(ctx sdk.Context, squad types.Squad, player types.Player) {
+func (k Keeper) SquadDenyJoinRequest(ctx sdk.Context, squad types.Squad, player types.Player) {
     store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadJoinRequestKey))
     store.Delete(GetSquadIDPlayerIDBytes(squad.Id, player.Id))
 }
 
-func (k Keeper) SquadDeleteInvite(ctx sdk.Context, squad types.Squad) {
+func (k Keeper) SquadDeleteJoinRequest(ctx sdk.Context, squad types.Squad) {
     store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadJoinRequestKey))
     store.Delete(GetSquadIDPlayerIDBytes(squad.Id, player.Id))
 }
 
-func (k Keeper) SquadGetInvite(ctx sdk.Context, squad types.Squad, player types.Player) (squadInviteStatus uint64, bool) {
+func (k Keeper) SquadGetJoinRequest(ctx sdk.Context, squad types.Squad, player types.Player) (squadInviteStatus uint64, bool) {
     	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SquadJoinRequestKey))
 
     	bz := store.Get(GetSquadIDPlayerIDBytes(squad.Id, player.Id))
 
-    	// Invitation not in the keeper: no element
+    	// Join Request not in the keeper: no element
     	if bz == nil {
-    		return types.SquadInviteStatus_Invalid, false
+    		return types.SquadJoinRequestStatus_Invalid, false
     	}
 
-        // should be returning SquadInviteStatus_Pending
+        // should be returning SquadJoinRequestStatus_Pending
     	return types.binary.BigEndian.Uint64(bz), true
 
 }

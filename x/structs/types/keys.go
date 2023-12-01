@@ -122,7 +122,11 @@ const (
 
 	SquadInviteStatus_Invalid   = 0
 	SquadInviteStatus_Pending   = 1
+
+    SquadJoinRequestStatus_Invalid   = 0
+    SquadJoinRequestStatus_Pending   = 1
 )
+
 const (
 	PlayerKey      = "Player/value/"
 	PlayerCountKey = "Player/count/"
