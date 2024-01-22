@@ -78,10 +78,8 @@ func (k msgServer) SquadInvite(goCtx context.Context, msg *types.MsgSquadInvite)
         k.SetPlayer(ctx, targetPlayer)
 
     } else {
-        // Create a proposal rather than forcing
-        // their ascent to squad leader
-
-        k.SquadAddInvite(ctx, squad, targetPlayer)
+        // Create an invite rather than forcing
+        k.SquadSetInvite(ctx, squad, targetPlayer)
     }
 
 
