@@ -18,7 +18,7 @@ func (k msgServer) SquadLeaderProposal(goCtx context.Context, msg *types.MsgSqua
     // look up transaction creator player object
     txPlayerId := k.GetPlayerIdFromAddress(ctx, msg.Creator)
     if (txPlayerId == 0) {
-        return &types.MsgSquadLeaderProposalResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Squad creation requires Player account but none associated with %s", msg.Creator)
+        return &types.MsgSquadLeaderProposalResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Squad management requires Player account but none associated with %s", msg.Creator)
     }
     txPlayer, _ := k.GetPlayer(ctx, txPlayerId)
 

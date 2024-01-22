@@ -69,10 +69,12 @@ const (
 	SquadPermissionUpdateEntrySubstation
 	// 16
 	SquadPermissionUpdateJoinType
+	//32
+	SquadInvite
 
 )
 const (
     SquadPermissionless SquadPermission = 0 << iota
-	SquadPermissionAll = SquadPermissionDelete | SquadPermissionRegisterPlayer | SquadPermissionUpdateLeader | SquadPermissionUpdateEntrySubstation | SquadPermissionUpdateJoinType
+	SquadPermissionAll = SquadPermissionDelete | SquadPermissionRegisterPlayer | SquadPermissionUpdateLeader | SquadPermissionUpdateEntrySubstation | SquadPermissionUpdateJoinType | SquadInvite
 )
 
