@@ -105,29 +105,6 @@ const (
 	GuildJoinType_Invalid           = 4
 )
 
-const (
-	SquadKey      = "Squad/value/"
-	SquadCountKey = "Squad/count/"
-	SquadPermissionKey = "Squad/permission/"
-	SquadLeaderProposalKey = "Squad/leader/"
-	SquadInviteKey = "Squad/invite/"
-	SquadJoinRequestKey = "Squad/joinRequest/"
-
-    // Open, Guild Member, Request, Invite Only
-	SquadJoinType_Open          = 0
-	SquadJoinType_GuildMember   = 1
-	SquadJoinType_Request       = 2
-	SquadJoinType_Invite        = 3
-	SquadJoinType_Invalid       = 4
-
-    // Invalid, Pending
-	SquadInviteStatus_Invalid   = 0
-	SquadInviteStatus_Pending   = 1
-
-    // Invalid, Pending
-    SquadJoinRequestStatus_Invalid   = 0
-    SquadJoinRequestStatus_Pending   = 1
-)
 
 const (
 	PlayerKey      = "Player/value/"
@@ -153,7 +130,6 @@ const (
 	// TODO Make these dynamic in the future
 	PlanetStartingOre = 5
 	PlanetStartingSlots = 4
-
 )
 
 const (
@@ -162,7 +138,6 @@ const (
 	StructLoadKey      = "Struct/load/"
     StructEnergyKey    = "Struct/energy/"
     StructFuelKey      = "Struct/fuel/"
-
 
 	StructFuelToEnergyConversion = 200
 )

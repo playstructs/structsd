@@ -45,7 +45,6 @@ var (
 	ErrPermissionManagePlayer               = sdkerrors.Register(ModuleName, 1604, "Permission error during player management action")
     ErrPermissionManageGuild                = sdkerrors.Register(ModuleName, 1605, "Permission error during guild management action")
     ErrPermissionManageEnergy               = sdkerrors.Register(ModuleName, 1606, "Permission error during asset management action")
-    ErrPermissionManageSquad                = sdkerrors.Register(ModuleName, 1607, "Permission error during squad management action")
 
     ErrPermissionGuildRegister              = sdkerrors.Register(ModuleName, 1611, "Guild permission error during player register")
 
@@ -79,17 +78,6 @@ var (
     ErrStructAllocationCreate                   = sdkerrors.Register(ModuleName,  1730, "Allocation of power from struct failed")
     ErrStructActivate                           = sdkerrors.Register(ModuleName,  1731, "Struct activation failed")
 
-    ErrSquadNotFound                            = sdkerrors.Register(ModuleName,  1810, "Squad not found")
-
-    ErrSquadLeaderProposalNotFound              = sdkerrors.Register(ModuleName,  1820, "Squad leader proposal not found")
-    ErrSquadLeaderProposalGuildMismatch         = sdkerrors.Register(ModuleName,  1821, "Attempted to add squad leader from outside guild")
-    ErrSquadLeaderProposalPlayerMismatch        = sdkerrors.Register(ModuleName,  1822, "Attempting to accept a squad leader position for another player")
-    ErrSquadLeaderProposalPlayerIneligible      = sdkerrors.Register(ModuleName,  1823, "Attempted to add a squad leader who cannot be squad leader")
-    ErrSquadLeaderProposalPlayerCannotLeadHarder = sdkerrors.Register(ModuleName,  1824, "Proposed Leader is already leader of the squad, they cannot leader any harder")
-    ErrSquadPlayerCannotSquadHarder             = sdkerrors.Register(ModuleName,  1825, "Proposed player is already in the squad, they cannot leader any harder")
-    ErrSquadPlayerGuildMismatch                 = sdkerrors.Register(ModuleName,  1826, "Proposed player is not in the guild")
-    ErrPermissionSquadCreation                  = sdkerrors.Register(ModuleName,  1830, "Squad creation failed")
-    ErrPermissionSquadLeaderProposal            = sdkerrors.Register(ModuleName,  1831, "Squad leader proposal failed")
 
 
     ErrSabotage                                 = sdkerrors.Register(ModuleName,  3800, "Sabotage failed")

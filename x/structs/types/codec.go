@@ -22,21 +22,8 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgGuildUpdateEntrySubstationId{}, "structs/GuildUpdateEntrySubstationId", nil)
 	cdc.RegisterConcrete(&MsgGuildUpdateInfusionJoinMinimum{}, "structs/GuildUpdateInfusionJoinMinimum", nil)
 	cdc.RegisterConcrete(&MsgGuildUpdateJoinType{}, "structs/GuildUpdateJoinType", nil)
-	cdc.RegisterConcrete(&MsgGuildUpdateOpenSquadCreation{}, "structs/GuildUpdateOpenSquadCreation", nil)
 	cdc.RegisterConcrete(&MsgGuildUpdateOwnerId{}, "structs/GuildUpdateOwnerId", nil)
-	cdc.RegisterConcrete(&MsgGuildUpdateSquadJoinTypeMinimum{}, "structs/GuildUpdateSquadJoinTypeMinimum", nil)
 	cdc.RegisterConcrete(&MsgGuildApproveRegister{}, "structs/GuildApproveRegister", nil)
-
-	cdc.RegisterConcrete(&MsgSquadCreate{}, "structs/SquadCreate", nil)
-    cdc.RegisterConcrete(&MsgSquadLeaderProposal{}, "structs/SquadLeaderProposal", nil)
-	cdc.RegisterConcrete(&MsgSquadApproveLeaderProposal{}, "structs/SquadApproveLeaderProposal", nil)
-	cdc.RegisterConcrete(&MsgSquadDeleteLeaderProposal{}, "structs/SquadDeleteLeaderProposal", nil)
-    cdc.RegisterConcrete(&MsgSquadInvite{}, "structs/SquadInvite", nil)
-    cdc.RegisterConcrete(&MsgSquadApproveInvite{}, "structs/SquadApproveInvite", nil)
-    cdc.RegisterConcrete(&MsgSquadDeleteInvite{}, "structs/SquadDeleteInvite", nil)
-    cdc.RegisterConcrete(&MsgSquadJoinRequest{}, "structs/SquadJoinRequest", nil)
-    cdc.RegisterConcrete(&MsgSquadApproveJoinRequest{}, "structs/SquadApproveJoinRequest", nil)
-    cdc.RegisterConcrete(&MsgSquadDeleteJoinRequest{}, "structs/SquadDeleteJoinRequest", nil)
 
 	cdc.RegisterConcrete(&MsgPlayerCreateProxy{}, "structs/PlayerCreateProxy", nil)
 	cdc.RegisterConcrete(&MsgPlayerCreate{}, "structs/PlayerCreate", nil)
@@ -105,54 +92,9 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
         &MsgGuildUpdateJoinType{},
     )
     registry.RegisterImplementations((*sdk.Msg)(nil),
-        &MsgGuildUpdateOpenSquadCreation{},
-    )
-    registry.RegisterImplementations((*sdk.Msg)(nil),
         &MsgGuildUpdateOwnerId{},
     )
-    registry.RegisterImplementations((*sdk.Msg)(nil),
-        &MsgGuildUpdateSquadJoinTypeMinimum{},
-    )
 
-    registry.RegisterImplementations((*sdk.Msg)(nil),
-        &MsgSquadCreate{},
-    )
-
-    registry.RegisterImplementations((*sdk.Msg)(nil),
-        &MsgSquadLeaderProposal{},
-    )
-
-    registry.RegisterImplementations((*sdk.Msg)(nil),
-        &MsgSquadApproveLeaderProposal{},
-    )
-
-    registry.RegisterImplementations((*sdk.Msg)(nil),
-        &MsgSquadDeleteLeaderProposal{},
-    )
-
-    registry.RegisterImplementations((*sdk.Msg)(nil),
-        &MsgSquadInvite{},
-    )
-
-    registry.RegisterImplementations((*sdk.Msg)(nil),
-        &MsgSquadApproveInvite{},
-    )
-
-    registry.RegisterImplementations((*sdk.Msg)(nil),
-        &MsgSquadDeleteInvite{},
-    )
-
-    registry.RegisterImplementations((*sdk.Msg)(nil),
-        &MsgSquadJoinRequest{},
-    )
-
-    registry.RegisterImplementations((*sdk.Msg)(nil),
-        &MsgSquadApproveJoinRequest{},
-    )
-
-    registry.RegisterImplementations((*sdk.Msg)(nil),
-        &MsgSquadDeleteJoinRequest{},
-    )
 
     registry.RegisterImplementations((*sdk.Msg)(nil),
         &MsgGuildApproveRegister{},

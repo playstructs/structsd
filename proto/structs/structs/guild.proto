@@ -12,8 +12,6 @@ message Guild {
 
   uint64 guildJoinType        = 5; // Open, Infusion, Request, Invite
   uint64 infusionJoinMinimum  = 6;
-  bool   openSquadCreation    = 7;
-  uint64 squadJoinTypeMinimum = 8; // Open, Guild Member, Request, Invite Only
 
   uint64 primaryReactorId    = 9;
   uint64 entrySubstationId   = 10;

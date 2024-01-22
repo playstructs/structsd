@@ -49,19 +49,6 @@ func (guild *Guild) SetGuildJoinType(guildJoinType uint64) error {
 	return nil
 }
 
-func (guild *Guild) SetSquadJoinTypeMinimum(squadJoinTypeMinimum uint64) error {
-	guild.SquadJoinTypeMinimum = squadJoinTypeMinimum
-
-	return nil
-}
-
-func (guild *Guild) SetOpenSquadCreation(openSquadCreation bool) error {
-
-	guild.OpenSquadCreation = openSquadCreation
-
-	return nil
-}
-
 func (guild *Guild) SetInfusionJoinMinimum(infusionJoinMinimum uint64) error {
 
 	guild.InfusionJoinMinimum = infusionJoinMinimum
@@ -76,8 +63,6 @@ func CreateEmptyGuild() Guild {
 		Owner: 0,
 	    GuildJoinType: 0,
         InfusionJoinMinimum: 0,
-        OpenSquadCreation: true,
-        SquadJoinTypeMinimum: SquadJoinType_GuildMember,
         PrimaryReactorId: 0,
         EntrySubstationId: 0,
 	}
@@ -94,15 +79,10 @@ const (
 	GuildPermissionRegisterPlayer
 	// 4
 	GuildPermissionDelete
-	// 8
-	GuildPermissionSquadCreate
-	// 16
-	GuildPermissionSquadUpdate
-	// 32
-	GuildPermissionSquadDelete
+
 )
 const (
     GuildPermissionless GuildPermission = 0 << iota
-	GuildPermissionAll = GuildPermissionUpdate | GuildPermissionRegisterPlayer | GuildPermissionDelete | GuildPermissionSquadCreate | GuildPermissionSquadUpdate | GuildPermissionSquadDelete
+	GuildPermissionAll = GuildPermissionUpdate | GuildPermissionRegisterPlayer | GuildPermissionDelete
 )
 

@@ -34,12 +34,6 @@ func (player *Player) SetGuild(guildId uint64) error {
 	return nil
 }
 
-func (player *Player) SetSquad(squadId uint64) error {
-
-	player.SquadId = squadId
-
-	return nil
-}
 
 func (player *Player) SetPlanetId(planetId uint64) error {
 
@@ -77,11 +71,10 @@ const (
 	PlayerPermissionDelete
 	// 4
 	PlayerPermissionSubstation
-	// 8
-	PlayerPermissionSquad
+
 )
 const (
     PlayerPermissionless PlayerPermission = 0 << iota
-	PlayerPermissionAll = PlayerPermissionUpdate |  PlayerPermissionDelete | PlayerPermissionSubstation | PlayerPermissionSquad
+	PlayerPermissionAll = PlayerPermissionUpdate |  PlayerPermissionDelete | PlayerPermissionSubstation
 )
 

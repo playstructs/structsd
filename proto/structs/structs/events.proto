@@ -10,7 +10,6 @@ import "structs/structs/keys.proto";
 
 import "structs/structs/allocation.proto";
 import "structs/structs/guild.proto";
-import "structs/structs/squad.proto";
 import "structs/structs/infusion.proto";
 import "structs/structs/planet.proto";
 import "structs/structs/player.proto";
@@ -32,14 +31,6 @@ message EventGuild {
 }
 
 message EventGuildPermission {
-  EventPermissionBodyKeyPair body = 1;
-}
-
-message EventSquad {
-  Squad squad = 1;
-}
-
-message EventSquadPermission {
   EventPermissionBodyKeyPair body = 1;
 }
 

@@ -157,94 +157,6 @@ func (m *EventGuildPermission) GetBody() *EventPermissionBodyKeyPair {
 	return nil
 }
 
-type EventSquad struct {
-	Squad *Squad `protobuf:"bytes,1,opt,name=squad,proto3" json:"squad,omitempty"`
-}
-
-func (m *EventSquad) Reset()         { *m = EventSquad{} }
-func (m *EventSquad) String() string { return proto.CompactTextString(m) }
-func (*EventSquad) ProtoMessage()    {}
-func (*EventSquad) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{3}
-}
-func (m *EventSquad) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *EventSquad) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_EventSquad.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *EventSquad) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventSquad.Merge(m, src)
-}
-func (m *EventSquad) XXX_Size() int {
-	return m.Size()
-}
-func (m *EventSquad) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventSquad.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_EventSquad proto.InternalMessageInfo
-
-func (m *EventSquad) GetSquad() *Squad {
-	if m != nil {
-		return m.Squad
-	}
-	return nil
-}
-
-type EventSquadPermission struct {
-	Body *EventPermissionBodyKeyPair `protobuf:"bytes,1,opt,name=body,proto3" json:"body,omitempty"`
-}
-
-func (m *EventSquadPermission) Reset()         { *m = EventSquadPermission{} }
-func (m *EventSquadPermission) String() string { return proto.CompactTextString(m) }
-func (*EventSquadPermission) ProtoMessage()    {}
-func (*EventSquadPermission) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{4}
-}
-func (m *EventSquadPermission) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *EventSquadPermission) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_EventSquadPermission.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *EventSquadPermission) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventSquadPermission.Merge(m, src)
-}
-func (m *EventSquadPermission) XXX_Size() int {
-	return m.Size()
-}
-func (m *EventSquadPermission) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventSquadPermission.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_EventSquadPermission proto.InternalMessageInfo
-
-func (m *EventSquadPermission) GetBody() *EventPermissionBodyKeyPair {
-	if m != nil {
-		return m.Body
-	}
-	return nil
-}
-
 type EventInfusion struct {
 	Infusion *Infusion `protobuf:"bytes,1,opt,name=infusion,proto3" json:"infusion,omitempty"`
 }
@@ -253,7 +165,7 @@ func (m *EventInfusion) Reset()         { *m = EventInfusion{} }
 func (m *EventInfusion) String() string { return proto.CompactTextString(m) }
 func (*EventInfusion) ProtoMessage()    {}
 func (*EventInfusion) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{5}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{3}
 }
 func (m *EventInfusion) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -297,7 +209,7 @@ func (m *EventPlanet) Reset()         { *m = EventPlanet{} }
 func (m *EventPlanet) String() string { return proto.CompactTextString(m) }
 func (*EventPlanet) ProtoMessage()    {}
 func (*EventPlanet) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{6}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{4}
 }
 func (m *EventPlanet) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -341,7 +253,7 @@ func (m *EventPlanetRefinementCount) Reset()         { *m = EventPlanetRefinemen
 func (m *EventPlanetRefinementCount) String() string { return proto.CompactTextString(m) }
 func (*EventPlanetRefinementCount) ProtoMessage()    {}
 func (*EventPlanetRefinementCount) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{7}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{5}
 }
 func (m *EventPlanetRefinementCount) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -385,7 +297,7 @@ func (m *EventPlanetOreCount) Reset()         { *m = EventPlanetOreCount{} }
 func (m *EventPlanetOreCount) String() string { return proto.CompactTextString(m) }
 func (*EventPlanetOreCount) ProtoMessage()    {}
 func (*EventPlanetOreCount) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{8}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{6}
 }
 func (m *EventPlanetOreCount) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -429,7 +341,7 @@ func (m *EventPlayer) Reset()         { *m = EventPlayer{} }
 func (m *EventPlayer) String() string { return proto.CompactTextString(m) }
 func (*EventPlayer) ProtoMessage()    {}
 func (*EventPlayer) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{9}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{7}
 }
 func (m *EventPlayer) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -473,7 +385,7 @@ func (m *EventPlayerPermission) Reset()         { *m = EventPlayerPermission{} }
 func (m *EventPlayerPermission) String() string { return proto.CompactTextString(m) }
 func (*EventPlayerPermission) ProtoMessage()    {}
 func (*EventPlayerPermission) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{10}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{8}
 }
 func (m *EventPlayerPermission) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -517,7 +429,7 @@ func (m *EventPlayerLoad) Reset()         { *m = EventPlayerLoad{} }
 func (m *EventPlayerLoad) String() string { return proto.CompactTextString(m) }
 func (*EventPlayerLoad) ProtoMessage()    {}
 func (*EventPlayerLoad) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{11}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{9}
 }
 func (m *EventPlayerLoad) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -561,7 +473,7 @@ func (m *EventReactor) Reset()         { *m = EventReactor{} }
 func (m *EventReactor) String() string { return proto.CompactTextString(m) }
 func (*EventReactor) ProtoMessage()    {}
 func (*EventReactor) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{12}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{10}
 }
 func (m *EventReactor) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -605,7 +517,7 @@ func (m *EventReactorPermission) Reset()         { *m = EventReactorPermission{}
 func (m *EventReactorPermission) String() string { return proto.CompactTextString(m) }
 func (*EventReactorPermission) ProtoMessage()    {}
 func (*EventReactorPermission) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{13}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{11}
 }
 func (m *EventReactorPermission) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -649,7 +561,7 @@ func (m *EventReactorFuel) Reset()         { *m = EventReactorFuel{} }
 func (m *EventReactorFuel) String() string { return proto.CompactTextString(m) }
 func (*EventReactorFuel) ProtoMessage()    {}
 func (*EventReactorFuel) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{14}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{12}
 }
 func (m *EventReactorFuel) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -693,7 +605,7 @@ func (m *EventReactorEnergy) Reset()         { *m = EventReactorEnergy{} }
 func (m *EventReactorEnergy) String() string { return proto.CompactTextString(m) }
 func (*EventReactorEnergy) ProtoMessage()    {}
 func (*EventReactorEnergy) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{15}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{13}
 }
 func (m *EventReactorEnergy) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -737,7 +649,7 @@ func (m *EventReactorLoad) Reset()         { *m = EventReactorLoad{} }
 func (m *EventReactorLoad) String() string { return proto.CompactTextString(m) }
 func (*EventReactorLoad) ProtoMessage()    {}
 func (*EventReactorLoad) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{16}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{14}
 }
 func (m *EventReactorLoad) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -781,7 +693,7 @@ func (m *EventStruct) Reset()         { *m = EventStruct{} }
 func (m *EventStruct) String() string { return proto.CompactTextString(m) }
 func (*EventStruct) ProtoMessage()    {}
 func (*EventStruct) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{17}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{15}
 }
 func (m *EventStruct) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -825,7 +737,7 @@ func (m *EventStructFuel) Reset()         { *m = EventStructFuel{} }
 func (m *EventStructFuel) String() string { return proto.CompactTextString(m) }
 func (*EventStructFuel) ProtoMessage()    {}
 func (*EventStructFuel) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{18}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{16}
 }
 func (m *EventStructFuel) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -869,7 +781,7 @@ func (m *EventStructEnergy) Reset()         { *m = EventStructEnergy{} }
 func (m *EventStructEnergy) String() string { return proto.CompactTextString(m) }
 func (*EventStructEnergy) ProtoMessage()    {}
 func (*EventStructEnergy) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{19}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{17}
 }
 func (m *EventStructEnergy) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -913,7 +825,7 @@ func (m *EventStructLoad) Reset()         { *m = EventStructLoad{} }
 func (m *EventStructLoad) String() string { return proto.CompactTextString(m) }
 func (*EventStructLoad) ProtoMessage()    {}
 func (*EventStructLoad) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{20}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{18}
 }
 func (m *EventStructLoad) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -957,7 +869,7 @@ func (m *EventSubstation) Reset()         { *m = EventSubstation{} }
 func (m *EventSubstation) String() string { return proto.CompactTextString(m) }
 func (*EventSubstation) ProtoMessage()    {}
 func (*EventSubstation) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{21}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{19}
 }
 func (m *EventSubstation) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1001,7 +913,7 @@ func (m *EventSubstationPermission) Reset()         { *m = EventSubstationPermis
 func (m *EventSubstationPermission) String() string { return proto.CompactTextString(m) }
 func (*EventSubstationPermission) ProtoMessage()    {}
 func (*EventSubstationPermission) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{22}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{20}
 }
 func (m *EventSubstationPermission) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1045,7 +957,7 @@ func (m *EventSubstationEnergy) Reset()         { *m = EventSubstationEnergy{} }
 func (m *EventSubstationEnergy) String() string { return proto.CompactTextString(m) }
 func (*EventSubstationEnergy) ProtoMessage()    {}
 func (*EventSubstationEnergy) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{23}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{21}
 }
 func (m *EventSubstationEnergy) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1089,7 +1001,7 @@ func (m *EventSubstationLoad) Reset()         { *m = EventSubstationLoad{} }
 func (m *EventSubstationLoad) String() string { return proto.CompactTextString(m) }
 func (*EventSubstationLoad) ProtoMessage()    {}
 func (*EventSubstationLoad) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{24}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{22}
 }
 func (m *EventSubstationLoad) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1134,7 +1046,7 @@ func (m *EventBodyKeyPair) Reset()         { *m = EventBodyKeyPair{} }
 func (m *EventBodyKeyPair) String() string { return proto.CompactTextString(m) }
 func (*EventBodyKeyPair) ProtoMessage()    {}
 func (*EventBodyKeyPair) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{25}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{23}
 }
 func (m *EventBodyKeyPair) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1187,7 +1099,7 @@ func (m *EventPermissionBodyKeyPair) Reset()         { *m = EventPermissionBodyK
 func (m *EventPermissionBodyKeyPair) String() string { return proto.CompactTextString(m) }
 func (*EventPermissionBodyKeyPair) ProtoMessage()    {}
 func (*EventPermissionBodyKeyPair) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{26}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{24}
 }
 func (m *EventPermissionBodyKeyPair) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1245,7 +1157,7 @@ func (m *EventAllocationDelete) Reset()         { *m = EventAllocationDelete{} }
 func (m *EventAllocationDelete) String() string { return proto.CompactTextString(m) }
 func (*EventAllocationDelete) ProtoMessage()    {}
 func (*EventAllocationDelete) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{27}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{25}
 }
 func (m *EventAllocationDelete) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1289,7 +1201,7 @@ func (m *EventGuildDelete) Reset()         { *m = EventGuildDelete{} }
 func (m *EventGuildDelete) String() string { return proto.CompactTextString(m) }
 func (*EventGuildDelete) ProtoMessage()    {}
 func (*EventGuildDelete) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{28}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{26}
 }
 func (m *EventGuildDelete) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1333,7 +1245,7 @@ func (m *EventSquadDelete) Reset()         { *m = EventSquadDelete{} }
 func (m *EventSquadDelete) String() string { return proto.CompactTextString(m) }
 func (*EventSquadDelete) ProtoMessage()    {}
 func (*EventSquadDelete) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{29}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{27}
 }
 func (m *EventSquadDelete) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1379,7 +1291,7 @@ func (m *EventInfusionDelete) Reset()         { *m = EventInfusionDelete{} }
 func (m *EventInfusionDelete) String() string { return proto.CompactTextString(m) }
 func (*EventInfusionDelete) ProtoMessage()    {}
 func (*EventInfusionDelete) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{30}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{28}
 }
 func (m *EventInfusionDelete) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1437,7 +1349,7 @@ func (m *EventReactorDelete) Reset()         { *m = EventReactorDelete{} }
 func (m *EventReactorDelete) String() string { return proto.CompactTextString(m) }
 func (*EventReactorDelete) ProtoMessage()    {}
 func (*EventReactorDelete) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{31}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{29}
 }
 func (m *EventReactorDelete) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1481,7 +1393,7 @@ func (m *EventStructDelete) Reset()         { *m = EventStructDelete{} }
 func (m *EventStructDelete) String() string { return proto.CompactTextString(m) }
 func (*EventStructDelete) ProtoMessage()    {}
 func (*EventStructDelete) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{32}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{30}
 }
 func (m *EventStructDelete) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1525,7 +1437,7 @@ func (m *EventSubstationDelete) Reset()         { *m = EventSubstationDelete{} }
 func (m *EventSubstationDelete) String() string { return proto.CompactTextString(m) }
 func (*EventSubstationDelete) ProtoMessage()    {}
 func (*EventSubstationDelete) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{33}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{31}
 }
 func (m *EventSubstationDelete) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1569,7 +1481,7 @@ func (m *EventAddressAssociation) Reset()         { *m = EventAddressAssociation
 func (m *EventAddressAssociation) String() string { return proto.CompactTextString(m) }
 func (*EventAddressAssociation) ProtoMessage()    {}
 func (*EventAddressAssociation) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{34}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{32}
 }
 func (m *EventAddressAssociation) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1613,7 +1525,7 @@ func (m *EventAddressRegistrationRequest) Reset()         { *m = EventAddressReg
 func (m *EventAddressRegistrationRequest) String() string { return proto.CompactTextString(m) }
 func (*EventAddressRegistrationRequest) ProtoMessage()    {}
 func (*EventAddressRegistrationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{35}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{33}
 }
 func (m *EventAddressRegistrationRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1658,7 +1570,7 @@ func (m *EventAddressBody) Reset()         { *m = EventAddressBody{} }
 func (m *EventAddressBody) String() string { return proto.CompactTextString(m) }
 func (*EventAddressBody) ProtoMessage()    {}
 func (*EventAddressBody) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{36}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{34}
 }
 func (m *EventAddressBody) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1709,7 +1621,7 @@ func (m *EventAddressPermissionChange) Reset()         { *m = EventAddressPermis
 func (m *EventAddressPermissionChange) String() string { return proto.CompactTextString(m) }
 func (*EventAddressPermissionChange) ProtoMessage()    {}
 func (*EventAddressPermissionChange) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{37}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{35}
 }
 func (m *EventAddressPermissionChange) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1754,7 +1666,7 @@ func (m *EventAddressPermissionBody) Reset()         { *m = EventAddressPermissi
 func (m *EventAddressPermissionBody) String() string { return proto.CompactTextString(m) }
 func (*EventAddressPermissionBody) ProtoMessage()    {}
 func (*EventAddressPermissionBody) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{38}
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{36}
 }
 func (m *EventAddressPermissionBody) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1801,8 +1713,6 @@ func init() {
 	proto.RegisterType((*EventAllocation)(nil), "structs.EventAllocation")
 	proto.RegisterType((*EventGuild)(nil), "structs.EventGuild")
 	proto.RegisterType((*EventGuildPermission)(nil), "structs.EventGuildPermission")
-	proto.RegisterType((*EventSquad)(nil), "structs.EventSquad")
-	proto.RegisterType((*EventSquadPermission)(nil), "structs.EventSquadPermission")
 	proto.RegisterType((*EventInfusion)(nil), "structs.EventInfusion")
 	proto.RegisterType((*EventPlanet)(nil), "structs.EventPlanet")
 	proto.RegisterType((*EventPlanetRefinementCount)(nil), "structs.EventPlanetRefinementCount")
@@ -1842,67 +1752,65 @@ func init() {
 func init() { proto.RegisterFile("structs/structs/events.proto", fileDescriptor_dd7c2ee201e0d8dd) }
 
 var fileDescriptor_dd7c2ee201e0d8dd = []byte{
-	// 949 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x56, 0x5d, 0x4f, 0x1b, 0x47,
-	0x17, 0xc6, 0x6f, 0x9c, 0x80, 0x4f, 0x3e, 0x70, 0x36, 0xbc, 0x0d, 0x71, 0xa9, 0x1b, 0x6d, 0x22,
-	0xb5, 0x42, 0x85, 0x15, 0x44, 0x6a, 0xa5, 0x7e, 0xa9, 0x40, 0x42, 0x8b, 0x52, 0x35, 0x74, 0x88,
-	0x7a, 0x51, 0xa9, 0x17, 0x63, 0xfb, 0x64, 0xbb, 0x89, 0xd9, 0x31, 0x33, 0xb3, 0xa8, 0xfb, 0x2f,
-	0x7a, 0xd1, 0x1f, 0xd5, 0xcb, 0x5c, 0xf6, 0xb2, 0x82, 0x3f, 0x52, 0xed, 0x7c, 0xef, 0xda, 0x20,
-	0x61, 0x71, 0x65, 0xcf, 0x3c, 0xcf, 0x79, 0xf6, 0x9c, 0x33, 0xe7, 0x9c, 0x19, 0x58, 0x13, 0x92,
-	0x17, 0x43, 0x29, 0x12, 0xfb, 0x8b, 0xa7, 0x98, 0x4b, 0xb1, 0x39, 0xe1, 0x4c, 0xb2, 0x68, 0xd1,
-	0xec, 0xf6, 0x56, 0x52, 0x96, 0x32, 0xb5, 0x97, 0x54, 0xff, 0x34, 0xdc, 0x5b, 0x4b, 0x19, 0x4b,
-	0xc7, 0x98, 0xd0, 0x49, 0x96, 0xd0, 0x3c, 0x67, 0x92, 0xca, 0x8c, 0xe5, 0xc6, 0xb8, 0xb7, 0x3e,
-	0x64, 0xe2, 0x98, 0x89, 0x64, 0x40, 0x05, 0x26, 0x27, 0x05, 0xf2, 0x32, 0x39, 0xdd, 0x1a, 0xa0,
-	0xa4, 0x5b, 0xc9, 0x84, 0xa6, 0x59, 0xae, 0xc8, 0x56, 0xa9, 0xe9, 0xc6, 0x84, 0x72, 0x7a, 0x6c,
-	0x95, 0x7a, 0x4d, 0xf4, 0x1d, 0x96, 0x16, 0x7b, 0xdc, 0xc4, 0xe8, 0x78, 0xcc, 0x86, 0xa1, 0xf6,
-	0x87, 0x4d, 0x46, 0x5a, 0x64, 0xe3, 0xd1, 0x45, 0xa0, 0x38, 0x29, 0xa8, 0x05, 0xfb, 0x4d, 0x30,
-	0xcb, 0xdf, 0x14, 0xe2, 0x32, 0xaf, 0xc7, 0x34, 0x47, 0x79, 0x09, 0x5a, 0x22, 0x37, 0xe8, 0x47,
-	0x4d, 0x94, 0x23, 0x1d, 0x4a, 0xc6, 0x2f, 0x32, 0xd6, 0xbf, 0x17, 0x05, 0x2d, 0x8a, 0x81, 0x90,
-	0x41, 0xd0, 0xf1, 0x3e, 0x2c, 0xbf, 0xa8, 0x4e, 0x72, 0xc7, 0x65, 0x23, 0x7a, 0x06, 0xe0, 0x73,
-	0xb3, 0xda, 0x7a, 0xdc, 0xfa, 0xf4, 0xf6, 0xf6, 0x83, 0x4d, 0xa3, 0xb0, 0xe9, 0x89, 0x24, 0xa0,
-	0xc5, 0xdb, 0x00, 0x4a, 0xe7, 0xfb, 0x2a, 0x67, 0xd1, 0x53, 0xb8, 0xa9, 0x92, 0x67, 0xac, 0xef,
-	0x39, 0x6b, 0x05, 0x13, 0x0d, 0xc6, 0xaf, 0x60, 0xc5, 0xdb, 0x1c, 0x22, 0x3f, 0xce, 0x44, 0x95,
-	0xb4, 0xe8, 0x0b, 0x68, 0x0f, 0xd8, 0xa8, 0x34, 0xc6, 0x4f, 0x9c, 0xb1, 0x22, 0x7b, 0xde, 0x2e,
-	0x1b, 0x95, 0x2f, 0xb1, 0x3c, 0xa4, 0x19, 0x27, 0xca, 0xc0, 0x39, 0x71, 0x54, 0x9d, 0x4d, 0xe5,
-	0x84, 0x3a, 0xa4, 0x29, 0x27, 0x14, 0x4c, 0x34, 0xe8, 0x9c, 0x50, 0x9b, 0xd7, 0xe1, 0xc4, 0xb7,
-	0x70, 0x57, 0x71, 0x0e, 0x4c, 0x0d, 0x44, 0x1b, 0xb0, 0x64, 0xeb, 0xc1, 0xa8, 0xdd, 0x77, 0x6a,
-	0x96, 0x44, 0x1c, 0x25, 0xfe, 0x1c, 0x6e, 0xeb, 0x6f, 0xa8, 0x1a, 0x89, 0x3e, 0x81, 0x5b, 0xba,
-	0x5a, 0x8c, 0xed, 0xb2, 0xb3, 0xd5, 0x04, 0x62, 0xe0, 0xf8, 0x25, 0xf4, 0x02, 0x3b, 0x82, 0x6f,
-	0xb2, 0x1c, 0x8f, 0x31, 0x97, 0x7b, 0xac, 0xc8, 0x65, 0xb4, 0x51, 0x0b, 0xe7, 0x51, 0x3d, 0x9c,
-	0xe9, 0x20, 0x9e, 0xc3, 0x83, 0x40, 0xec, 0x15, 0xc7, 0xb9, 0x54, 0x82, 0x50, 0x4a, 0xe4, 0x26,
-	0x94, 0x12, 0xf9, 0xac, 0x50, 0x4a, 0xe4, 0xc4, 0xc0, 0xf1, 0x21, 0xfc, 0x3f, 0xb0, 0xbb, 0x8e,
-	0x43, 0xf9, 0xce, 0x94, 0xb9, 0x56, 0xfc, 0x91, 0xd1, 0xd1, 0x55, 0x63, 0xf9, 0x12, 0xee, 0x28,
-	0x84, 0xe8, 0xf6, 0x8b, 0xd6, 0x61, 0xd1, 0x74, 0xa2, 0x51, 0xe8, 0x3a, 0x05, 0x43, 0x21, 0x96,
-	0x10, 0xff, 0x0c, 0x1f, 0x84, 0xb6, 0xd7, 0x11, 0xd0, 0x0e, 0x74, 0x43, 0xc9, 0xfd, 0x02, 0xc7,
-	0x57, 0x8d, 0x68, 0x0f, 0xa2, 0x50, 0xe2, 0x45, 0x8e, 0x3c, 0x2d, 0xaf, 0x2a, 0xd2, 0xf0, 0x63,
-	0x9e, 0xcc, 0x7e, 0x6d, 0xaa, 0xe4, 0x48, 0xd1, 0xa2, 0x0d, 0xe8, 0x68, 0x83, 0x82, 0xe3, 0x54,
-	0xa1, 0x68, 0x0e, 0xf1, 0x0c, 0x77, 0xb2, 0x1a, 0x99, 0x27, 0x0f, 0xbb, 0x70, 0x3f, 0x50, 0x98,
-	0x2f, 0x0d, 0x75, 0x2f, 0xe6, 0xc9, 0x82, 0x1d, 0xc4, 0x47, 0x6e, 0x42, 0x57, 0x83, 0xd8, 0xcf,
-	0xeb, 0xa9, 0x41, 0xec, 0x89, 0x24, 0xa0, 0xc5, 0xaf, 0xe1, 0x51, 0x43, 0xe7, 0x3a, 0xca, 0x6d,
-	0xdf, 0x74, 0xa4, 0x57, 0x9d, 0x2f, 0x4f, 0x76, 0xae, 0x78, 0x9d, 0xf9, 0x7a, 0xb1, 0xdb, 0x44,
-	0xa2, 0x2e, 0xdc, 0x78, 0x87, 0x5a, 0xa1, 0x4d, 0xaa, 0xbf, 0xd1, 0x0a, 0xdc, 0x3c, 0xa5, 0xe3,
-	0x02, 0x57, 0xff, 0xa7, 0xf6, 0xf4, 0x22, 0x7e, 0x6b, 0xc7, 0xe4, 0xac, 0x68, 0xa3, 0x1e, 0x2c,
-	0xb1, 0xc1, 0x5b, 0x1c, 0xca, 0x03, 0x7d, 0x6d, 0x74, 0x88, 0x5b, 0x57, 0x98, 0x9e, 0x4f, 0x07,
-	0x23, 0x25, 0xd9, 0x21, 0x6e, 0xed, 0xbf, 0x75, 0x23, 0xfc, 0xd6, 0x57, 0x26, 0x6b, 0xfe, 0xce,
-	0x7c, 0x8e, 0x63, 0x94, 0x18, 0xc5, 0x70, 0xc7, 0xdf, 0x9d, 0xe6, 0x53, 0x6d, 0x52, 0xdb, 0x8b,
-	0x3f, 0x33, 0x41, 0xaa, 0xdb, 0xd1, 0xd8, 0xad, 0xc2, 0xa2, 0xba, 0x3a, 0x9d, 0x89, 0x5d, 0x3a,
-	0xb6, 0xba, 0xc6, 0x3c, 0x5b, 0x2d, 0x3d, 0xdb, 0x2c, 0xe3, 0xbf, 0x5a, 0xe6, 0x1c, 0xec, 0xfd,
-	0x63, 0x2c, 0xbe, 0x81, 0xe5, 0x11, 0x0a, 0x69, 0xde, 0x5c, 0xaf, 0xcb, 0x89, 0xee, 0xc0, 0x7b,
-	0x41, 0xd9, 0xe9, 0x74, 0x54, 0x10, 0x69, 0x72, 0xa3, 0xa7, 0x70, 0x37, 0xd8, 0x32, 0x69, 0x6a,
-	0x93, 0xfa, 0x66, 0xe5, 0x16, 0x1d, 0x8d, 0x38, 0x0a, 0xa1, 0xb2, 0xd5, 0x21, 0x76, 0x19, 0x6f,
-	0xd7, 0x27, 0x92, 0x71, 0x6a, 0x0d, 0x3a, 0x66, 0x90, 0xba, 0x40, 0xfc, 0x46, 0x9c, 0xd4, 0xba,
-	0xd7, 0x98, 0xf4, 0x60, 0x49, 0xfb, 0xeb, 0x2c, 0xdc, 0xda, 0x1d, 0x8a, 0x2f, 0x41, 0x7f, 0x28,
-	0xbe, 0x8f, 0xfc, 0xa1, 0x84, 0x7b, 0xf1, 0x4f, 0xf0, 0x50, 0x9f, 0xa8, 0xf6, 0x78, 0x47, 0x08,
-	0x36, 0xcc, 0x6c, 0xb7, 0xba, 0xb0, 0x66, 0x96, 0xb1, 0x31, 0xa9, 0xaa, 0xcd, 0x47, 0xfc, 0x0b,
-	0x7c, 0x1c, 0x82, 0x04, 0xd3, 0x4c, 0x48, 0xae, 0xbb, 0x1a, 0x4f, 0x0a, 0x14, 0x72, 0x3e, 0xdd,
-	0x1f, 0x4c, 0x39, 0x04, 0x60, 0x98, 0xf7, 0x56, 0x2d, 0xef, 0x53, 0x95, 0xdd, 0xf6, 0x95, 0x1d,
-	0xff, 0x06, 0x6b, 0xa1, 0x92, 0x6f, 0x9b, 0xbd, 0xdf, 0x69, 0x9e, 0x56, 0x25, 0xd3, 0x70, 0xef,
-	0xc9, 0x4c, 0xf7, 0xea, 0xed, 0xe6, 0x1d, 0x1d, 0x98, 0x76, 0x9c, 0x49, 0xbb, 0xc4, 0xe5, 0x75,
-	0xe8, 0x4e, 0x1c, 0x97, 0xe0, 0x90, 0x71, 0xeb, 0xfa, 0xd4, 0xfe, 0xee, 0xd6, 0xdf, 0x67, 0xfd,
-	0xd6, 0xfb, 0xb3, 0x7e, 0xeb, 0xdf, 0xb3, 0x7e, 0xeb, 0xcf, 0xf3, 0xfe, 0xc2, 0xfb, 0xf3, 0xfe,
-	0xc2, 0x3f, 0xe7, 0xfd, 0x85, 0x5f, 0x1f, 0xda, 0x77, 0xf1, 0x1f, 0xee, 0x85, 0x2c, 0xcb, 0x09,
-	0x8a, 0xc1, 0x2d, 0xf5, 0x3a, 0x7e, 0xf6, 0x5f, 0x00, 0x00, 0x00, 0xff, 0xff, 0x57, 0xcc, 0x89,
-	0xbf, 0xf7, 0x0c, 0x00, 0x00,
+	// 922 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x56, 0xcb, 0x6e, 0xdb, 0x46,
+	0x14, 0xb5, 0x1a, 0x25, 0xb6, 0x6e, 0x1e, 0x56, 0x18, 0xb7, 0x71, 0x54, 0x57, 0x0d, 0x98, 0x00,
+	0x2d, 0x8c, 0xda, 0x84, 0x1d, 0xa0, 0x05, 0xfa, 0x42, 0x6d, 0x27, 0x6e, 0x8d, 0x14, 0x8d, 0x3b,
+	0x0e, 0xba, 0x28, 0xd0, 0x05, 0x25, 0xdd, 0xb0, 0x4c, 0x64, 0x8e, 0x3c, 0x33, 0x34, 0xca, 0xbf,
+	0xe8, 0xa2, 0x1f, 0xd5, 0x65, 0x96, 0x5d, 0x16, 0xf6, 0x8f, 0x04, 0x9c, 0xb9, 0x9c, 0x19, 0x52,
+	0x8a, 0x01, 0x0b, 0x5e, 0x49, 0x33, 0xf7, 0x9c, 0xc3, 0xfb, 0x26, 0x61, 0x4d, 0x2a, 0x91, 0x0f,
+	0x95, 0x8c, 0xaa, 0x5f, 0x3c, 0xc5, 0x4c, 0xc9, 0xcd, 0x89, 0xe0, 0x8a, 0x07, 0x8b, 0x74, 0xdb,
+	0x5b, 0x49, 0x78, 0xc2, 0xf5, 0x5d, 0x54, 0xfe, 0x33, 0xe6, 0xde, 0x5a, 0xc2, 0x79, 0x32, 0xc6,
+	0x28, 0x9e, 0xa4, 0x51, 0x9c, 0x65, 0x5c, 0xc5, 0x2a, 0xe5, 0x19, 0x91, 0x7b, 0xeb, 0x43, 0x2e,
+	0x8f, 0xb9, 0x8c, 0x06, 0xb1, 0xc4, 0xe8, 0x24, 0x47, 0x51, 0x44, 0xa7, 0x5b, 0x03, 0x54, 0xf1,
+	0x56, 0x34, 0x89, 0x93, 0x34, 0xd3, 0xe0, 0x4a, 0xa9, 0xe9, 0xc6, 0x24, 0x16, 0xf1, 0x71, 0xa5,
+	0xd4, 0x6b, 0x5a, 0xdf, 0x60, 0x51, 0xd9, 0x1e, 0x36, 0x6d, 0xf1, 0x78, 0xcc, 0x87, 0xbe, 0xf6,
+	0xc7, 0x4d, 0x44, 0x92, 0xa7, 0xe3, 0x11, 0x19, 0xfb, 0x4d, 0x63, 0x9a, 0xbd, 0xca, 0xe5, 0x45,
+	0x8e, 0x8d, 0xe3, 0x0c, 0xd5, 0x05, 0xd6, 0x02, 0x05, 0x59, 0x3f, 0x69, 0x5a, 0x05, 0xc6, 0x43,
+	0xc5, 0xc5, 0xfb, 0xc8, 0xe6, 0xf7, 0x7d, 0x71, 0xc9, 0x7c, 0x20, 0x95, 0x17, 0x57, 0xb8, 0x0f,
+	0xcb, 0xcf, 0xca, 0x62, 0xed, 0xd8, 0x80, 0x83, 0x27, 0x00, 0x2e, 0xfc, 0xd5, 0xd6, 0xc3, 0xd6,
+	0xe7, 0x37, 0xb7, 0xef, 0x6d, 0x92, 0xc2, 0xa6, 0x03, 0x32, 0x0f, 0x16, 0x6e, 0x03, 0x68, 0x9d,
+	0x1f, 0xcb, 0xb4, 0x04, 0x8f, 0xe1, 0xba, 0xce, 0x0f, 0xb1, 0xef, 0x58, 0xb6, 0x36, 0x33, 0x63,
+	0x0c, 0x5f, 0xc0, 0x8a, 0xe3, 0x1c, 0xa2, 0x38, 0x4e, 0x65, 0x99, 0xb4, 0xe0, 0x2b, 0x68, 0x0f,
+	0xf8, 0xa8, 0x20, 0xf2, 0x23, 0x4b, 0xd6, 0x60, 0x87, 0xdb, 0xe5, 0xa3, 0xe2, 0x39, 0x16, 0x87,
+	0x71, 0x2a, 0x98, 0x26, 0x84, 0xdf, 0xc3, 0x6d, 0x8d, 0x39, 0xa0, 0xf4, 0x07, 0x1b, 0xb0, 0x54,
+	0x95, 0x82, 0xd4, 0xee, 0x5a, 0xb5, 0x0a, 0xc4, 0x2c, 0x24, 0xfc, 0x12, 0x6e, 0x9a, 0x67, 0xe8,
+	0xf2, 0x04, 0x9f, 0xc1, 0x0d, 0x53, 0x28, 0xe2, 0x2e, 0x5b, 0xae, 0x01, 0x30, 0x32, 0x87, 0xcf,
+	0xa1, 0xe7, 0xf1, 0x18, 0xbe, 0x4a, 0x33, 0x3c, 0xc6, 0x4c, 0xed, 0xf1, 0x3c, 0x53, 0xc1, 0x46,
+	0x2d, 0x9c, 0x07, 0xf5, 0x70, 0xa6, 0x83, 0x78, 0x0a, 0xf7, 0x3c, 0xb1, 0x17, 0x02, 0xe7, 0x52,
+	0xf1, 0x42, 0x29, 0x50, 0x50, 0x28, 0x05, 0x8a, 0x59, 0xa1, 0x14, 0x28, 0x18, 0x99, 0xc3, 0x43,
+	0xf8, 0xd0, 0xe3, 0x5d, 0x45, 0x51, 0x7e, 0xa0, 0x0e, 0x33, 0x8a, 0x3f, 0xf3, 0x78, 0x74, 0xd9,
+	0x58, 0xbe, 0x86, 0x5b, 0xda, 0xc2, 0x4c, 0xe7, 0x07, 0xeb, 0xb0, 0x48, 0x43, 0x40, 0x0a, 0x5d,
+	0xab, 0x40, 0x10, 0x56, 0x01, 0xc2, 0x5f, 0xe1, 0x23, 0x9f, 0x7b, 0x15, 0x01, 0xed, 0x40, 0xd7,
+	0x97, 0xdc, 0xcf, 0x71, 0x7c, 0xd9, 0x88, 0xf6, 0x20, 0xf0, 0x25, 0x9e, 0x65, 0x28, 0x92, 0xe2,
+	0xb2, 0x22, 0x0d, 0x3f, 0xe6, 0xc9, 0xec, 0xb7, 0xd4, 0x25, 0x47, 0x1a, 0x16, 0x6c, 0x40, 0xc7,
+	0x10, 0x72, 0x81, 0x53, 0x8d, 0x62, 0x30, 0xcc, 0x21, 0x6c, 0x65, 0x8d, 0x65, 0x9e, 0x3c, 0xec,
+	0xc2, 0x5d, 0x4f, 0x61, 0xbe, 0x34, 0xd4, 0xbd, 0x98, 0x27, 0x0b, 0xd5, 0x0e, 0x3c, 0xb2, 0xcb,
+	0xb1, 0xdc, 0x81, 0x6e, 0x55, 0x4e, 0xed, 0x40, 0x07, 0x64, 0x1e, 0x2c, 0x7c, 0x09, 0x0f, 0x1a,
+	0x3a, 0x57, 0xd1, 0x6e, 0xfb, 0x34, 0x91, 0x4e, 0x75, 0xbe, 0x3c, 0x55, 0x7b, 0xc5, 0xe9, 0xcc,
+	0x37, 0x8b, 0xdd, 0xa6, 0x25, 0xe8, 0xc2, 0xb5, 0x37, 0x68, 0x14, 0xda, 0xac, 0xfc, 0x1b, 0xac,
+	0xc0, 0xf5, 0xd3, 0x78, 0x9c, 0xe3, 0xea, 0x07, 0xfa, 0xce, 0x1c, 0xc2, 0xd7, 0xd5, 0x9a, 0x9c,
+	0x15, 0x6d, 0xd0, 0x83, 0x25, 0x3e, 0x78, 0x8d, 0x43, 0x75, 0x60, 0x5e, 0x1b, 0x1d, 0x66, 0xcf,
+	0xa5, 0xcd, 0xec, 0xa7, 0x83, 0x91, 0x96, 0xec, 0x30, 0x7b, 0x76, 0xcf, 0xba, 0xe6, 0x3f, 0xeb,
+	0x1b, 0xca, 0x9a, 0x7b, 0x5d, 0x3d, 0xc5, 0x31, 0x2a, 0x0c, 0x42, 0xb8, 0xe5, 0x5e, 0x5b, 0xf4,
+	0xa8, 0x36, 0xab, 0xdd, 0x85, 0x5f, 0x50, 0x90, 0xfa, 0xc5, 0x44, 0xbc, 0x55, 0x58, 0xd4, 0x6f,
+	0x2d, 0x4b, 0xa9, 0x8e, 0x16, 0x7d, 0x74, 0x92, 0xc7, 0x1e, 0x5a, 0x1f, 0x1d, 0x9a, 0x8e, 0xe1,
+	0x3f, 0x2d, 0xaa, 0x43, 0xf5, 0xfe, 0x21, 0xc6, 0x77, 0xb0, 0x3c, 0x42, 0xa9, 0xe8, 0x8b, 0xe6,
+	0x65, 0x31, 0x31, 0x13, 0x78, 0xc7, 0x6b, 0x3b, 0x93, 0x8e, 0xd2, 0xc4, 0x9a, 0xd8, 0xe0, 0x31,
+	0xdc, 0xf6, 0xae, 0x28, 0x4d, 0x6d, 0x56, 0xbf, 0x2c, 0xdd, 0x8a, 0x47, 0x23, 0x81, 0x52, 0xea,
+	0x6c, 0x75, 0x58, 0x75, 0x0c, 0xb7, 0xeb, 0x1b, 0x89, 0x9c, 0x5a, 0x83, 0x0e, 0x2d, 0x52, 0x1b,
+	0x88, 0xbb, 0x08, 0xa3, 0xda, 0xf4, 0x12, 0xa5, 0x07, 0x4b, 0xc6, 0x5f, 0xcb, 0xb0, 0x67, 0x5b,
+	0x14, 0xd7, 0x82, 0xae, 0x28, 0x6e, 0x8e, 0x5c, 0x51, 0xfc, 0xbb, 0xf0, 0x17, 0xb8, 0x6f, 0x2a,
+	0x6a, 0x3c, 0xde, 0x91, 0x92, 0x0f, 0xd3, 0x6a, 0x5a, 0x6d, 0x58, 0x33, 0xdb, 0x98, 0x28, 0x65,
+	0xb7, 0xb9, 0x88, 0x7f, 0x83, 0x4f, 0x7d, 0x23, 0xc3, 0x24, 0x95, 0x4a, 0x98, 0xa9, 0xc6, 0x93,
+	0x1c, 0xa5, 0x9a, 0x4f, 0xf7, 0x27, 0x6a, 0x07, 0xcf, 0xe8, 0xe7, 0xbd, 0x55, 0xcb, 0xfb, 0x54,
+	0x67, 0xb7, 0x5d, 0x67, 0x87, 0x7f, 0xc0, 0x9a, 0xaf, 0xe4, 0xc6, 0x66, 0xef, 0xcf, 0x38, 0x4b,
+	0xca, 0x96, 0x69, 0xb8, 0xf7, 0x68, 0xa6, 0x7b, 0xf5, 0x71, 0x73, 0x8e, 0x0e, 0x68, 0x1c, 0x67,
+	0xc2, 0x2e, 0x70, 0x79, 0x1d, 0xba, 0x13, 0x8b, 0x65, 0x38, 0xe4, 0xa2, 0x72, 0x7d, 0xea, 0x7e,
+	0x77, 0xeb, 0xdf, 0xb3, 0x7e, 0xeb, 0xed, 0x59, 0xbf, 0xf5, 0xff, 0x59, 0xbf, 0xf5, 0xf7, 0x79,
+	0x7f, 0xe1, 0xed, 0x79, 0x7f, 0xe1, 0xbf, 0xf3, 0xfe, 0xc2, 0xef, 0xf7, 0xab, 0x4f, 0xd2, 0xbf,
+	0xec, 0xc7, 0xa9, 0x2a, 0x26, 0x28, 0x07, 0x37, 0xf4, 0x87, 0xe9, 0x93, 0x77, 0x01, 0x00, 0x00,
+	0xff, 0xff, 0x65, 0x49, 0x06, 0x00, 0x55, 0x0c, 0x00, 0x00,
 }
 
 func (m *EventAllocation) Marshal() (dAtA []byte, err error) {
@@ -1991,76 +1899,6 @@ func (m *EventGuildPermission) MarshalTo(dAtA []byte) (int, error) {
 }
 
 func (m *EventGuildPermission) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Body != nil {
-		{
-			size, err := m.Body.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintEvents(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *EventSquad) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *EventSquad) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *EventSquad) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Squad != nil {
-		{
-			size, err := m.Squad.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintEvents(dAtA, i, uint64(size))
-		}
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *EventSquadPermission) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *EventSquadPermission) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *EventSquadPermission) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -3288,32 +3126,6 @@ func (m *EventGuildPermission) Size() (n int) {
 	return n
 }
 
-func (m *EventSquad) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.Squad != nil {
-		l = m.Squad.Size()
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	return n
-}
-
-func (m *EventSquadPermission) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.Body != nil {
-		l = m.Body.Size()
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	return n
-}
-
 func (m *EventInfusion) Size() (n int) {
 	if m == nil {
 		return 0
@@ -3976,178 +3788,6 @@ func (m *EventGuildPermission) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: EventGuildPermission: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Body", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Body == nil {
-				m.Body = &EventPermissionBodyKeyPair{}
-			}
-			if err := m.Body.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipEvents(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *EventSquad) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowEvents
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: EventSquad: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventSquad: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Squad", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Squad == nil {
-				m.Squad = &Squad{}
-			}
-			if err := m.Squad.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipEvents(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *EventSquadPermission) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowEvents
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: EventSquadPermission: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventSquadPermission: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:

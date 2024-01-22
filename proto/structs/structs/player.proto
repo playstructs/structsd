@@ -10,7 +10,6 @@ import "gogoproto/gogo.proto";
 message Player {
   uint64 id             = 1;
   uint64 guildId        = 2;
-  uint64 squadId        = 3;
   uint64 substationId   = 4;
 
   string creator        = 5;

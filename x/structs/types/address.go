@@ -25,10 +25,9 @@ const (
 	AddressPermissionManagePlayer
 	// 64
 	AddressPermissionManageGuild
-    // 128
-	AddressPermissionManageSquad
+
 )
 const (
     AddressPermissionless AddressPermission = 0 << iota
-	AddressPermissionAll = AddressPermissionAssociate | AddressPermissionRevoke | AddressPermissionManageEnergy | AddressPermissionPlay |  AddressPermissionManageAssets | AddressPermissionManagePlayer | AddressPermissionManageGuild | AddressPermissionManageSquad
+	AddressPermissionAll = AddressPermissionAssociate | AddressPermissionRevoke | AddressPermissionManageEnergy | AddressPermissionPlay |  AddressPermissionManageAssets | AddressPermissionManagePlayer | AddressPermissionManageGuild
 )

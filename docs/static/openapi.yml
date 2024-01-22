@@ -47333,12 +47333,6 @@ paths:
                     infusionJoinMinimum:
                       type: string
                       format: uint64
-                    openSquadCreation:
-                      type: boolean
-                    squadJoinTypeMinimum:
-                      type: string
-                      format: uint64
-                      title: Open, Guild Member, Request, Invite Only
                     primaryReactorId:
                       type: string
                       format: uint64
@@ -47647,12 +47641,6 @@ paths:
                   infusionJoinMinimum:
                     type: string
                     format: uint64
-                  openSquadCreation:
-                    type: boolean
-                  squadJoinTypeMinimum:
-                    type: string
-                    format: uint64
-                    title: Open, Guild Member, Request, Invite Only
                   primaryReactorId:
                     type: string
                     format: uint64
@@ -52470,9 +52458,6 @@ paths:
                     guildId:
                       type: string
                       format: uint64
-                    squadId:
-                      type: string
-                      format: uint64
                     substationId:
                       type: string
                       format: uint64
@@ -52790,9 +52775,6 @@ paths:
                     type: string
                     format: uint64
                   guildId:
-                    type: string
-                    format: uint64
-                  squadId:
                     type: string
                     format: uint64
                   substationId:
@@ -83099,12 +83081,6 @@ definitions:
       infusionJoinMinimum:
         type: string
         format: uint64
-      openSquadCreation:
-        type: boolean
-      squadJoinTypeMinimum:
-        type: string
-        format: uint64
-        title: Open, Guild Member, Request, Invite Only
       primaryReactorId:
         type: string
         format: uint64
@@ -83228,22 +83204,6 @@ definitions:
   structs.MsgPlayerUpdatePrimaryAddressResponse:
     type: object
   structs.MsgSabotageResponse:
-    type: object
-  structs.MsgSquadApproveInviteResponse:
-    type: object
-  structs.MsgSquadApproveJoinRequestResponse:
-    type: object
-  structs.MsgSquadApproveLeaderProposalResponse:
-    type: object
-  structs.MsgSquadCreateResponse:
-    type: object
-    properties:
-      squadId:
-        type: string
-        format: uint64
-  structs.MsgSquadDeleteLeaderProposalResponse:
-    type: object
-  structs.MsgSquadLeaderProposalResponse:
     type: object
   structs.MsgStructActivateResponse:
     type: object
@@ -84068,9 +84028,6 @@ definitions:
       guildId:
         type: string
         format: uint64
-      squadId:
-        type: string
-        format: uint64
       substationId:
         type: string
         format: uint64
@@ -84251,12 +84208,6 @@ definitions:
             infusionJoinMinimum:
               type: string
               format: uint64
-            openSquadCreation:
-              type: boolean
-            squadJoinTypeMinimum:
-              type: string
-              format: uint64
-              title: Open, Guild Member, Request, Invite Only
             primaryReactorId:
               type: string
               format: uint64
@@ -84455,9 +84406,6 @@ definitions:
               type: string
               format: uint64
             guildId:
-              type: string
-              format: uint64
-            squadId:
               type: string
               format: uint64
             substationId:
@@ -84820,12 +84768,6 @@ definitions:
           infusionJoinMinimum:
             type: string
             format: uint64
-          openSquadCreation:
-            type: boolean
-          squadJoinTypeMinimum:
-            type: string
-            format: uint64
-            title: Open, Guild Member, Request, Invite Only
           primaryReactorId:
             type: string
             format: uint64
@@ -84977,9 +84919,6 @@ definitions:
             type: string
             format: uint64
           guildId:
-            type: string
-            format: uint64
-          squadId:
             type: string
             format: uint64
           substationId:
