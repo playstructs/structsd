@@ -102,7 +102,8 @@ const (
 	GuildJoinType_InfusionMinimum   = 1
 	GuildJoinType_Request           = 2
 	GuildJoinType_Invite            = 3
-	GuildJoinType_Invalid           = 4
+	GuildJoinType_Proxy             = 4
+	GuildJoinType_Invalid           = 5
 )
 
 

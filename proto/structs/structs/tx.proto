@@ -177,8 +177,10 @@ message MsgGuildUpdateResponse{}
 
 
 message MsgPlayerCreateProxy {
-  string creator      = 1;
-  string address      = 2;
+  string creator          = 1;
+  string address          = 2;
+  bool substationOverride = 3;
+  uint64 substationId     = 4;
 }
 
 message MsgPlayerCreateProxyResponse {}
