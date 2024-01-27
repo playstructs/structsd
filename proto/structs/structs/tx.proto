@@ -27,8 +27,9 @@ service Msg {
   rpc GuildUpdateOwnerId             (MsgGuildUpdateOwnerId            ) returns (MsgGuildUpdateResponse                   );
   rpc GuildUpdateEntrySubstationId   (MsgGuildUpdateEntrySubstationId  ) returns (MsgGuildUpdateResponse                   );
   rpc GuildUpdateEndpoint            (MsgGuildUpdateEndpoint           ) returns (MsgGuildUpdateResponse                   );
-  rpc GuildUpdateJoinType            (MsgGuildUpdateJoinType           ) returns (MsgGuildUpdateResponse                   );
-  rpc GuildUpdateInfusionJoinMinimum (MsgGuildUpdateInfusionJoinMinimum ) returns (MsgGuildUpdateResponse                  );
+  rpc GuildUpdateJoinInfusionMinimum (MsgGuildUpdateJoinInfusionMinimum ) returns (MsgGuildUpdateResponse                  );
+  rpc GuildUpdateJoinInfusionMinimumBypassByInvite  (MsgGuildUpdateJoinInfusionMinimumBypassByInvite  ) returns (MsgGuildUpdateResponse );
+  rpc GuildUpdateJoinInfusionMinimumBypassByRequest (MsgGuildUpdateJoinInfusionMinimumBypassByRequest ) returns (MsgGuildUpdateResponse );
   rpc GuildApproveRegister           (MsgGuildApproveRegister          ) returns (MsgGuildApproveRegisterResponse          );
   rpc PlayerCreateProxy              (MsgPlayerCreateProxy             ) returns (MsgPlayerCreateProxyResponse             );
   rpc PlayerCreate                   (MsgPlayerCreate                  ) returns (MsgPlayerCreateResponse                  );
@@ -161,17 +162,25 @@ message MsgGuildUpdateEndpoint {
   string endpoint           = 3;
 }
 
-message MsgGuildUpdateJoinType {
-  string creator            = 1;
-  uint64 id                 = 2;
-  uint64 guildJoinType      = 3;
-}
 
-message MsgGuildUpdateInfusionJoinMinimum {
+message MsgGuildUpdateJoinInfusionMinimum {
   string creator              = 1;
   uint64 id                   = 2;
-  uint64 infusionJoinMinimum  = 3;
+  uint64 joinInfusionMinimum  = 3;
 }
+
+message MsgGuildUpdateJoinInfusionMinimumBypassByRequest {
+  string creator                = 1;
+  uint64 id                     = 2;
+  uint64 guildJoinBypassLevel   = 3;
+}
+
+message MsgGuildUpdateJoinInfusionMinimumBypassByInvite {
+  string creator                = 1;
+  uint64 id                     = 2;
+  uint64 guildJoinBypassLevel   = 3;
+}
+
 
 message MsgGuildUpdateResponse{}
 
@@ -179,8 +188,7 @@ message MsgGuildUpdateResponse{}
 message MsgPlayerCreateProxy {
   string creator          = 1;
   string address          = 2;
-  bool substationOverride = 3;
-  uint64 substationId     = 4;
+  uint64 substationId     = 3;
 }
 
 message MsgPlayerCreateProxyResponse {}

@@ -23,6 +23,10 @@ func (k msgServer) PlayerCreateProxy(goCtx context.Context, msg *types.MsgPlayer
         return &types.MsgPlayerCreateProxyResponse{}, sdkerrors.Wrapf(types.ErrGuildNotFound, "Referenced Guild (%d) not found", guild.Id)
     }
 
+    // Check on the Guild Join Type
+    // The Guild can either openly allow GuildJoinType_Proxy (or any more open join type)
+    // Or, if the Guild acceptance is locked down then we'll look to player permissions
+
     // Check to make sure the player has permissions on the guild
     if (!k.GuildPermissionHasOneOf(ctx, guild.Id, proxyPlayer.Id, types.GuildPermissionRegisterPlayer)) {
         return &types.MsgPlayerCreateProxyResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%d) has no Player Registration permissions ", proxyPlayer.Id)

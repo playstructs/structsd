@@ -8,7 +8,7 @@ import (
 	"structs/x/structs/types"
 )
 
-func (k msgServer) GuildUpdateInfusionJoinMinimum(goCtx context.Context, msg *types.MsgGuildUpdateInfusionJoinMinimum) (*types.MsgGuildUpdateResponse, error) {
+func (k msgServer) GuildUpdateJoinInfusionMinimum(goCtx context.Context, msg *types.MsgGuildUpdateJoinInfusionMinimum) (*types.MsgGuildUpdateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	err := msg.ValidateBasic()
@@ -31,8 +31,8 @@ func (k msgServer) GuildUpdateInfusionJoinMinimum(goCtx context.Context, msg *ty
         return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrGuildUpdate, "Calling player (%d) has no permissions to update guild", player.Id)
     }
 
-    if (msg.InfusionJoinMinimum != guild.InfusionJoinMinimum) {
-        guild.SetInfusionJoinMinimum(msg.InfusionJoinMinimum)
+    if (msg.JoinInfusionMinimum != guild.JoinInfusionMinimum) {
+        guild.SetJoinInfusionMinimum(msg.JoinInfusionMinimum)
         k.SetGuild(ctx, guild)
     }
 

@@ -47326,11 +47326,13 @@ paths:
                     owner:
                       type: string
                       format: uint64
-                    guildJoinType:
+                    joinInfusionMinimum:
                       type: string
                       format: uint64
-                      title: Open, Infusion, Request, Invite
-                    infusionJoinMinimum:
+                    joinInfusionMinimumBypassByRequest:
+                      type: string
+                      format: uint64
+                    joinInfusionMinimumBypassByInvite:
                       type: string
                       format: uint64
                     primaryReactorId:
@@ -47634,11 +47636,13 @@ paths:
                   owner:
                     type: string
                     format: uint64
-                  guildJoinType:
+                  joinInfusionMinimum:
                     type: string
                     format: uint64
-                    title: Open, Infusion, Request, Invite
-                  infusionJoinMinimum:
+                  joinInfusionMinimumBypassByRequest:
+                    type: string
+                    format: uint64
+                  joinInfusionMinimumBypassByInvite:
                     type: string
                     format: uint64
                   primaryReactorId:
@@ -83074,11 +83078,13 @@ definitions:
       owner:
         type: string
         format: uint64
-      guildJoinType:
+      joinInfusionMinimum:
         type: string
         format: uint64
-        title: Open, Infusion, Request, Invite
-      infusionJoinMinimum:
+      joinInfusionMinimumBypassByRequest:
+        type: string
+        format: uint64
+      joinInfusionMinimumBypassByInvite:
         type: string
         format: uint64
       primaryReactorId:
@@ -84201,11 +84207,13 @@ definitions:
             owner:
               type: string
               format: uint64
-            guildJoinType:
+            joinInfusionMinimum:
               type: string
               format: uint64
-              title: Open, Infusion, Request, Invite
-            infusionJoinMinimum:
+            joinInfusionMinimumBypassByRequest:
+              type: string
+              format: uint64
+            joinInfusionMinimumBypassByInvite:
               type: string
               format: uint64
             primaryReactorId:
@@ -84761,11 +84769,13 @@ definitions:
           owner:
             type: string
             format: uint64
-          guildJoinType:
+          joinInfusionMinimum:
             type: string
             format: uint64
-            title: Open, Infusion, Request, Invite
-          infusionJoinMinimum:
+          joinInfusionMinimumBypassByRequest:
+            type: string
+            format: uint64
+          joinInfusionMinimumBypassByInvite:
             type: string
             format: uint64
           primaryReactorId:

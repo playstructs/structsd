@@ -6,39 +6,39 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
-
+	"github.com/spf13/cast"
 )
 
 var _ = strconv.Itoa(0)
 
-func CmdPlayerCreateProxy() *cobra.Command {
+func CmdGuildUpdateJoinType() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "player-create-proxy [Address]",
-		Short: "Broadcast message player-create-proxy",
-		Args:  cobra.ExactArgs(1),
+		Use:   "guild-update-join-infusion-minimum-bypass-by-invite [guild id] [Bypass Level]",
+		Short: "Update how Invitations are allowed to bypass the Infusion Minimum",
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-		    argAddress := args[0]
-
-            argSubstationId, err := cmd.Flags().GetUint64("substation-id")
+			argGuildId, err := cast.ToUint64E(args[0])
             if err != nil {
                 return err
             }
 
+			argJoinType, err := cast.ToUint64E(args[1])
+            if err != nil {
+                return err
+            }
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
 				return err
 			}
 
-			msg := types.NewMsgPlayerCreateProxy(
+			msg := types.NewMsgGuildUpdateJoinType(
 				clientCtx.GetFromAddress().String(),
-				argAddress,
-				argSubstationId,
+				argGuildId,
+				argJoinType,
 			)
-
 			if err := msg.ValidateBasic(); err != nil {
 				return err
 			}
@@ -47,7 +47,6 @@ func CmdPlayerCreateProxy() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().Uint64P("substation-id", "S", 0, "Override the Guild Substation with this Substation ID during proxy player creation")
 
 	return cmd
 }

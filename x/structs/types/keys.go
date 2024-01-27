@@ -97,13 +97,12 @@ const (
 	GuildRegistrationKey = "Guild/registration/"
 
 
-    // Open, Infusion, Request, Invite
-	GuildJoinType_Open              = 0
-	GuildJoinType_InfusionMinimum   = 1
-	GuildJoinType_Request           = 2
-	GuildJoinType_Invite            = 3
-	GuildJoinType_Proxy             = 4
-	GuildJoinType_Invalid           = 5
+    // Guild Membership Features
+	GuildJoinBypassLevel_Closed        = 0 // Feature off
+	GuildJoinBypassLevel_Permissioned  = 1 // Only those with permissions can do it
+	GuildJoinBypassLevel_Member        = 2 // All members of the guild can contribute
+	GuildJoinBypassLevel_Invalid       = 3 // All values this and above are invalid
+
 )
 
 

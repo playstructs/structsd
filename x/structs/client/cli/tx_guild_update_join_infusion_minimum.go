@@ -13,10 +13,10 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdGuildUpdateInfusionJoinMinimum() *cobra.Command {
+func CmdGuildUpdateJoinInfusionMinimum() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "guild-update-infusion-join-minimum [guild id] [infusion join minimum]",
-		Short: "Update the Infusion Join Minimum of a Guild",
+		Use:   "guild-update-join-infusion-minimum [guild id] [infusion join minimum]",
+		Short: "Update the Join Infusion Minimum of a Guild",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argGuildId, err := cast.ToUint64E(args[0])
@@ -24,7 +24,7 @@ func CmdGuildUpdateInfusionJoinMinimum() *cobra.Command {
                 return err
             }
 
-			argInfusionJoinMinimum, err := cast.ToUint64E(args[1])
+			argJoinInfusionMinimum, err := cast.ToUint64E(args[1])
             if err != nil {
                 return err
             }
@@ -34,10 +34,10 @@ func CmdGuildUpdateInfusionJoinMinimum() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgGuildUpdateInfusionJoinMinimum(
+			msg := types.NewMsgGuildUpdateJoinInfusionMinimum(
 				clientCtx.GetFromAddress().String(),
 				argGuildId,
-				argInfusionJoinMinimum,
+				argJoinInfusionMinimum,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

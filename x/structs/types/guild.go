@@ -49,9 +49,23 @@ func (guild *Guild) SetGuildJoinType(guildJoinType uint64) error {
 	return nil
 }
 
-func (guild *Guild) SetInfusionJoinMinimum(infusionJoinMinimum uint64) error {
+func (guild *Guild) SetJoinInfusionMinimum(joinInfusionMinimum uint64) error {
 
-	guild.InfusionJoinMinimum = infusionJoinMinimum
+	guild.JoinInfusionMinimum = joinInfusionMinimum
+
+	return nil
+}
+
+func (guild *Guild) SetJoinInfusionMinimumBypassByInvite(guildJoinBypassLevel uint64) error {
+
+	guild.JoinInfusionMinimumBypassByInvite = guildJoinBypassLevel
+
+	return nil
+}
+
+func (guild *Guild) SetJoinInfusionMinimumBypassByRequest(guildJoinBypassLevel uint64) error {
+
+	guild.JoinInfusionMinimumBypassByRequest = guildJoinBypassLevel
 
 	return nil
 }
@@ -61,8 +75,9 @@ func CreateEmptyGuild() Guild {
 		Endpoint: "",
 		Creator:  "",
 		Owner: 0,
-	    GuildJoinType: 0,
-        InfusionJoinMinimum: 0,
+        JoinInfusionMinimum: 0,
+        JoinInfusionMinimumBypassByInvite: GuildJoinBypassLevel_Closed,
+        JoinInfusionMinimumBypassByRequest: GuildJoinBypassLevel_Closed,
         PrimaryReactorId: 0,
         EntrySubstationId: 0,
 	}

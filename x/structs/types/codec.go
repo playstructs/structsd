@@ -20,7 +20,7 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgGuildCreate{}, "structs/GuildCreate", nil)
 	cdc.RegisterConcrete(&MsgGuildUpdateEndpoint{}, "structs/GuildUpdateEndpoint", nil)
 	cdc.RegisterConcrete(&MsgGuildUpdateEntrySubstationId{}, "structs/GuildUpdateEntrySubstationId", nil)
-	cdc.RegisterConcrete(&MsgGuildUpdateInfusionJoinMinimum{}, "structs/GuildUpdateInfusionJoinMinimum", nil)
+	cdc.RegisterConcrete(&MsgGuildUpdateJoinInfusionMinimum{}, "structs/GuildUpdateJoinInfusionMinimum", nil)
 	cdc.RegisterConcrete(&MsgGuildUpdateJoinType{}, "structs/GuildUpdateJoinType", nil)
 	cdc.RegisterConcrete(&MsgGuildUpdateOwnerId{}, "structs/GuildUpdateOwnerId", nil)
 	cdc.RegisterConcrete(&MsgGuildApproveRegister{}, "structs/GuildApproveRegister", nil)
