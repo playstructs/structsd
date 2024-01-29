@@ -23,6 +23,29 @@ func (k msgServer) PlayerCreate(goCtx context.Context, msg *types.MsgPlayerCreat
 	// look up destination substation
 	substation, substationFound := k.GetSubstation(ctx, guild.EntrySubstationId, true)
 
+    if (!substationFound) {
+        // Error substation not found for guild
+    }
+
+    if (!substation.HasPlayerCapacity()) {
+        // error substation does not have capacity for another player to join
+    }
+
+
+    if (guild.JoinInfusionMinimum > 0)
+
+    // check the guild infusion minimum
+        // does the player not meet it?
+            // if BypassByRequest is allowed
+                k.GuildSetRegisterRequest(ctx, guild, player)
+            // else
+                // error, doesn't meet infusion minimum. No BypassRequest allowed
+        // else
+            // add the user to the guild
+
+
+
+
 
     switch guild.GuildJoinType {
 
@@ -35,7 +58,9 @@ func (k msgServer) PlayerCreate(goCtx context.Context, msg *types.MsgPlayerCreat
                     if substation.HasPlayerCapacity() {
                         // Connect Player to Substation
                         k.SubstationConnectPlayer(ctx, substation, player)
-                    }
+                    } else {
+                        // error that the substation cannot accept a new player
+                        }
                 } else {
                     // TODO Throw Error : No entry substation found for public guild
                     return &types.MsgPlayerCreateResponse{}, nil

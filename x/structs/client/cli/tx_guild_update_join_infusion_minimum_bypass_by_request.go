@@ -13,10 +13,10 @@ import (
 
 var _ = strconv.Itoa(0)
 
-func CmdGuildUpdateJoinType() *cobra.Command {
+func CmdGuildUpdateJoinInfusionMinimumBypassByRequest() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "guild-update-join-type [guild id] [join type]",
-		Short: "Update the Join Type of a Guild",
+		Use:   "guild-update-join-infusion-minimum-bypass-by-request [guild id] [Bypass Level]",
+		Short: "Update how Requests are allowed to bypass the Infusion Minimum",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argGuildId, err := cast.ToUint64E(args[0])
@@ -24,7 +24,7 @@ func CmdGuildUpdateJoinType() *cobra.Command {
                 return err
             }
 
-			argJoinType, err := cast.ToUint64E(args[1])
+			argGuildJoinBypassLevel, err := cast.ToUint64E(args[1])
             if err != nil {
                 return err
             }
@@ -34,10 +34,10 @@ func CmdGuildUpdateJoinType() *cobra.Command {
 				return err
 			}
 
-			msg := types.NewMsgGuildUpdateJoinType(
+			msg := types.NewMsgGuildUpdateJoinInfusionMinimumBypassByRequest(
 				clientCtx.GetFromAddress().String(),
 				argGuildId,
-				argJoinType,
+				argGuildJoinBypassLevel,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

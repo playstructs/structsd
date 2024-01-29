@@ -21,7 +21,8 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgGuildUpdateEndpoint{}, "structs/GuildUpdateEndpoint", nil)
 	cdc.RegisterConcrete(&MsgGuildUpdateEntrySubstationId{}, "structs/GuildUpdateEntrySubstationId", nil)
 	cdc.RegisterConcrete(&MsgGuildUpdateJoinInfusionMinimum{}, "structs/GuildUpdateJoinInfusionMinimum", nil)
-	cdc.RegisterConcrete(&MsgGuildUpdateJoinType{}, "structs/GuildUpdateJoinType", nil)
+	cdc.RegisterConcrete(&MsgGuildUpdateJoinInfusionMinimumBypassByInvite{}, "structs/GuildUpdateJoinInfusionMinimumBypassByInvite", nil)
+	cdc.RegisterConcrete(&MsgGuildUpdateJoinInfusionMinimumBypassByRequest{}, "structs/GuildUpdateJoinInfusionMinimumBypassByRequest", nil)
 	cdc.RegisterConcrete(&MsgGuildUpdateOwnerId{}, "structs/GuildUpdateOwnerId", nil)
 	cdc.RegisterConcrete(&MsgGuildApproveRegister{}, "structs/GuildApproveRegister", nil)
 
@@ -86,10 +87,13 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
         &MsgGuildUpdateEntrySubstationId{},
     )
     registry.RegisterImplementations((*sdk.Msg)(nil),
-        &MsgGuildUpdateInfusionJoinMinimum{},
+        &MsgGuildUpdateJoinInfusionMinimum{},
     )
     registry.RegisterImplementations((*sdk.Msg)(nil),
-        &MsgGuildUpdateJoinType{},
+        &MsgGuildUpdateJoinInfusionMinimumBypassByInvite{},
+    )
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgGuildUpdateJoinInfusionMinimumBypassByRequest{},
     )
     registry.RegisterImplementations((*sdk.Msg)(nil),
         &MsgGuildUpdateOwnerId{},

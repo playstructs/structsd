@@ -48,7 +48,8 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(CmdGuildUpdateEndpoint())
 	cmd.AddCommand(CmdGuildUpdateEntrySubstationId())
 	cmd.AddCommand(CmdGuildUpdateJoinInfusionMinimum())
-	cmd.AddCommand(CmdGuildUpdateJoinType())
+	cmd.AddCommand(CmdGuildUpdateJoinInfusionMinimumBypassByInvite())
+	cmd.AddCommand(CmdGuildUpdateJoinInfusionMinimumBypassByRequest())
 	cmd.AddCommand(CmdGuildUpdateOwnerId())
 
 	cmd.AddCommand(CmdGuildApproveRegister())

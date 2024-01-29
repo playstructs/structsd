@@ -42,13 +42,6 @@ func (guild *Guild) SetOwner(playerId uint64) error {
 }
 
 
-func (guild *Guild) SetGuildJoinType(guildJoinType uint64) error {
-
-	guild.GuildJoinType = guildJoinType
-
-	return nil
-}
-
 func (guild *Guild) SetJoinInfusionMinimum(joinInfusionMinimum uint64) error {
 
 	guild.JoinInfusionMinimum = joinInfusionMinimum
