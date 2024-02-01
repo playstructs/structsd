@@ -7,8 +7,6 @@ import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "structs/structs/keys.proto";
 
-
-
 message Infusion {
   objectType  destinationType               = 1;
   uint64      destinationId                 = 2;
