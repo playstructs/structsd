@@ -1,9 +1,11 @@
 syntax = "proto3";
 package structs;
 
+option go_package = "structs/x/structs/types";
+
+import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "structs/structs/keys.proto";
-option go_package = "structs/x/structs/types";
 
 
 
@@ -14,10 +16,22 @@ message Infusion {
   uint64      fuel                          = 3;
   uint64      energy                        = 4;
 
-  uint64      linkedOwnerAllocationId       = 5;
-  uint64      linkedCommissionAllocationId  = 6;
+  string      generationRate                = 5 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+  ];
 
-  string      address                       = 7;
+  string      commission                    = 6 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.nullable)   = false
+  ];
+
+  uint64      ownerAllocationId             = 7;
+  uint64      commissionAllocationId        = 8;
+
+  string      address                       = 9;
 }
 
 
