@@ -78,7 +78,6 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
 	/* Does this Reactor exist? */
 	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
 	if !reactorBytesFound {
-
         return
 	}
     reactor, _ := k.GetReactorByBytes(ctx, reactorBytes, false)
