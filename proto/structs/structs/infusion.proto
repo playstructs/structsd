@@ -14,22 +14,14 @@ message Infusion {
   uint64      fuel                          = 3;
   uint64      energy                        = 4;
 
-  string      generationRate                = 5 [
+  string      commission                    = 5 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];
 
-  string      commission                    = 6 [
-    (cosmos_proto.scalar)  = "cosmos.Dec",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable)   = false
-  ];
-
-  uint64      ownerAllocationId             = 7;
-  uint64      commissionAllocationId        = 8;
-
-  string      address                       = 9;
+  uint64      playerId                      = 6;
+  string      address                       = 7;
 }
 
 
