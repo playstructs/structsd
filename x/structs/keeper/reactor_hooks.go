@@ -86,38 +86,15 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
 
     delegation, delegationFound := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
 
+
     if (delegationFound) {
 
         delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
 
-        _, sourceAllocation, withDynamicSourceAllocation, playerAllocation, withDynamicPlayerAllocation := k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String(), delegationShare.Uint64(), reactor.AutomatedAllocations, reactor.DelegateTaxOnAllocations)
+        player := k.UpsertPlayer(ctx, playerAddress.String())
 
-        if (reactor.AutomatedAllocations && withDynamicSourceAllocation) {
+        _, newInfusionEnergy, oldInfusionEnergy, newCommissionEnergy, oldCommissionEnergy, newPlayerEnergy, oldPlayerEnergy, err := k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, player, delegationShare.Uint64(), reactor.DefaultCommission)
 
-            // Connect Allocation to Substation
-            serviceSubstation, _ := k.GetSubstation(ctx, reactor.ServiceSubstationId, true)
-            k.SubstationConnectAllocation(ctx, serviceSubstation, sourceAllocation)
-        }
-
-        if (reactor.AutomatedAllocations && withDynamicPlayerAllocation) {
-
-            player := k.UpsertPlayer(ctx, playerAddress.String())
-
-            // Now let's get the player some power
-            if (player.SubstationId == 0) {
-
-                substation := k.AppendSubstation(ctx, types.InitialSubstationOwnerEnergy, player)
-
-
-                // Connect Allocation to Substation
-                k.SubstationConnectAllocation(ctx, substation, playerAllocation)
-
-
-                // Connect Player to Substation
-                k.SubstationConnectPlayer(ctx, substation, player)
-
-            }
-        }
     }
 
 
@@ -125,8 +102,10 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
     // need to define a guild or reactor parameter for minimum contributions before allocations are allowed
 
 
-	// Update the connected Substations with the new details
-	k.CascadeReactorAllocationFailure(ctx, reactor)
+	//  Update the connected Substations with the new details
+
+	MOVE TO Infusion Upsert
+	//k.CascadeReactorAllocationFailure(ctx, reactor)
 
 
 

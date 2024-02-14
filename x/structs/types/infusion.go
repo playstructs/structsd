@@ -60,6 +60,34 @@ func (a *Infusion) SetFuel(newFuel uint64) (
 
 }
 
+func (a *Infusion) SetFuelAndCommission(newFuel uint64, newCommission sdk.Dec) (
+                                    newInfusionEnergy uint64,
+                                    oldInfusionEnergy uint64,
+                                    newCommissionEnergy uint64,
+                                    oldCommissionEnergy uint64,
+                                    newPlayerEnergy uint64,
+                                    oldPlayerEnergy uint64,
+                                    err error)  {
+
+    oldInfusionEnergy       = a.Energy
+    oldCommissionEnergy     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(oldInfusionEnergy))).RoundInt().Uint64()
+    oldPlayerEnergy         = a.Energy - oldCommissionEnergy
+
+
+    newInfusionEnergy       = CalculateInfusionEnergy(a.DestinationType, a.Fuel)
+    newCommissionEnergy     = newCommission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(newInfusionEnergy))).RoundInt().Uint64()
+    newPlayerEnergy         = newInfusionEnergy - newCommissionEnergy
+
+
+    a.Commission    = newCommission
+    a.Fuel          = newFuel
+	a.Energy        = newInfusionEnergy
+
+    err         = nil
+	return
+
+}
+
 func (a *Infusion) getEnergyDistribution() (infusionEnergy uint64, commissionEnergy uint64, playerEnergy uint64) {
         infusionEnergy       = a.Energy
         commissionEnergy     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(infusionEnergy))).RoundInt().Uint64()

@@ -48,72 +48,45 @@ func (k Keeper) GetInfusion(ctx sdk.Context, destinationType types.ObjectType, d
 	return val, true
 }
 
-func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType, destinationId uint64, address string, fuel uint64, automatedAllocation bool, delegateTaxOnAllocations sdk.Dec) (infusion types.Infusion, sourceAllocation types.Allocation, withDynamicSourceAllocation bool, playerAllocation types.Allocation, withDynamicPlayerAllocation bool){
+func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType, destinationId uint64, player types.Player, fuel uint64, commission sdk.Dec)
+                    (
+                        infusion types.Infusion,
+                        newInfusionEnergy uint64,
+                        oldInfusionEnergy uint64,
+                        newCommissionEnergy uint64,
+                        oldCommissionEnergy uint64,
+                        newPlayerEnergy uint64,
+                        oldPlayerEnergy uint64,
+                        err error
+                    ){
 
-    infusion, infusionFound := k.GetInfusion(ctx, destinationType, destinationId, address)
+    infusion, infusionFound := k.GetInfusion(ctx, destinationType, destinationId, player.Address)
     if (infusionFound) {
-        infusion.SetFuel(fuel)
+         newInfusionEnergy, oldInfusionEnergy, newCommissionEnergy, oldCommissionEnergy, newPlayerEnergy, oldPlayerEnergy, err = infusion.SetFuelAndCommission(fuel, commission)
     } else {
-        infusion = types.CreateNewInfusion(destinationType, destinationId, address, fuel)
+        infusion = types.CreateNewInfusion(destinationType, destinationId, player.Address, fuel, commission)
+
+        // Should already be the value, but let's be safe
+        oldPlayerEnergy = 0
+        oldCommissionEnergy = 0
+        oldInfusionEnergy = 0
+
+        newInfusionEnergy, newCommissionEnergy, newPlayerEnergy = infusion.getEnergyDistribution()
     }
 
 
-    if (automatedAllocation) {
+    // TODO HERE
+    BREAKING COMMMENT
 
-        energyToPortion := infusion.Energy
-        if (delegateTaxOnAllocations.GT(math.LegacyZeroDec())) {
-           withDynamicSourceAllocation = true
+    // Need to Set Destination (case below)
+    // Need to Set player power
 
-           sourceAllocation = types.CreateEmptyAllocation(destinationType)
+    // need to update automated allocations on destination
+    // need to update automated allocations on player
 
-            if (infusion.LinkedSourceAllocationId > 0) {
-                sourceAllocation.SetId(infusion.LinkedSourceAllocationId)
-            } else {
-                sourceAllocation.SetId(0)
-            }
+    // need to cascade failures to both possibly
 
-            sourceAllocation.SetCreator(address)
-            sourceAllocation.SetSource(destinationId)
-
-            sourcePortion := delegateTaxOnAllocations.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(energyToPortion)))
-            sourceAllocation.SetPower(sourcePortion.RoundInt().Uint64())
-            energyToPortion = energyToPortion - sourceAllocation.Power
-
-            sourceAllocation.SetLinkedInfusion(address)
-
-            withDynamicPlayerAllocation = true
-            sourceAllocation = k.UpsertAllocation(ctx, sourceAllocation)
-
-            infusion.SetLinkedSourceAllocation(sourceAllocation.Id)
-        } else {
-            withDynamicSourceAllocation = false
-        }
-
-        playerAllocation = types.CreateEmptyAllocation(destinationType)
-
-        if (infusion.LinkedPlayerAllocationId > 0) {
-            playerAllocation.SetId(infusion.LinkedPlayerAllocationId)
-        } else {
-            playerAllocation.SetId(0)
-        }
-
-        playerAllocation.SetCreator(address)
-        playerAllocation.SetController(address)
-        playerAllocation.SetSource(destinationId)
-
-        // TODO actual fuel to energy ratio
-        // apply tax
-        playerAllocation.SetPower(energyToPortion)
-
-        playerAllocation.SetLinkedInfusion(address)
-
-        withDynamicPlayerAllocation = true
-        playerAllocation = k.UpsertAllocation(ctx, playerAllocation)
-        infusion.SetLinkedPlayerAllocation(playerAllocation.Id)
-     } else {
-         withDynamicSourceAllocation = false
-         withDynamicPlayerAllocation = false
-     }
+    // need to write some events
 
      k.SetInfusion(ctx, infusion)
 

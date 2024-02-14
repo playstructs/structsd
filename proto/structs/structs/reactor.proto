@@ -21,24 +21,13 @@ message Reactor {
 
   uint64  guildId                   = 6;
 
-  bool    automatedAllocations      = 7;
-  bool    allowManualAllocations    = 8;
-  bool    allowExternalAllocations  = 9;
-  bool    allowUncappedAllocations  = 10;
-
-  string  delegateMinimumBeforeAllowedAllocations = 11 [
+  string  defaultCommission = 7 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
     (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
     (gogoproto.nullable)   = false
   ];
 
-  string  delegateTaxOnAllocations = 12 [
-    (cosmos_proto.scalar)  = "cosmos.Dec",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
-    (gogoproto.nullable)   = false
-  ];
+  bytes   rawAddress                = 8;
 
-  bytes   rawAddress                = 13;
-
-  uint64  serviceSubstationId       = 14;
+  uint64  serviceSubstationId       = 9;
 }
