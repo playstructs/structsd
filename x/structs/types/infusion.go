@@ -34,6 +34,8 @@ func (a *Infusion) SetCommission(newCommission sdk.Dec) (
 }
 
 func (a *Infusion) SetFuel(newFuel uint64) (
+                                    newInfusionFuel uint64,
+                                    oldInfusionFuel uint64,
                                     newInfusionEnergy uint64,
                                     oldInfusionEnergy uint64,
                                     newCommissionEnergy uint64,
@@ -42,12 +44,13 @@ func (a *Infusion) SetFuel(newFuel uint64) (
                                     oldPlayerEnergy uint64,
                                     err error)  {
 
+    oldInfusionFuel         = a.Fuel
     oldInfusionEnergy       = a.Energy
     oldCommissionEnergy     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(oldInfusionEnergy))).RoundInt().Uint64()
     oldPlayerEnergy         = a.Energy - oldCommissionEnergy
 
-
-    newInfusionEnergy       = CalculateInfusionEnergy(a.DestinationType, a.Fuel)
+    newInfusionFuel         = newFuel
+    newInfusionEnergy       = CalculateInfusionEnergy(a.DestinationType, newInfusionFuel)
     newCommissionEnergy     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(newInfusionEnergy))).RoundInt().Uint64()
     newPlayerEnergy         = newInfusionEnergy - newCommissionEnergy
 
@@ -61,6 +64,8 @@ func (a *Infusion) SetFuel(newFuel uint64) (
 }
 
 func (a *Infusion) SetFuelAndCommission(newFuel uint64, newCommission sdk.Dec) (
+                                    newInfusionFuel uint64,
+                                    oldInfusionFuel uint64,
                                     newInfusionEnergy uint64,
                                     oldInfusionEnergy uint64,
                                     newCommissionEnergy uint64,
@@ -69,12 +74,13 @@ func (a *Infusion) SetFuelAndCommission(newFuel uint64, newCommission sdk.Dec) (
                                     oldPlayerEnergy uint64,
                                     err error)  {
 
+    oldInfusionFuel         = a.Fuel
     oldInfusionEnergy       = a.Energy
     oldCommissionEnergy     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(oldInfusionEnergy))).RoundInt().Uint64()
     oldPlayerEnergy         = a.Energy - oldCommissionEnergy
 
-
-    newInfusionEnergy       = CalculateInfusionEnergy(a.DestinationType, a.Fuel)
+    newInfusionFuel         = newFuel
+    newInfusionEnergy       = CalculateInfusionEnergy(a.DestinationType, newInfusionFuel)
     newCommissionEnergy     = newCommission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(newInfusionEnergy))).RoundInt().Uint64()
     newPlayerEnergy         = newInfusionEnergy - newCommissionEnergy
 

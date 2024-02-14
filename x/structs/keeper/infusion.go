@@ -51,6 +51,8 @@ func (k Keeper) GetInfusion(ctx sdk.Context, destinationType types.ObjectType, d
 func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType, destinationId uint64, player types.Player, fuel uint64, commission sdk.Dec)
                     (
                         infusion types.Infusion,
+                        newInfusionFuel uint64,
+                        oldInfusionFuel uint64,
                         newInfusionEnergy uint64,
                         oldInfusionEnergy uint64,
                         newCommissionEnergy uint64,
@@ -62,15 +64,17 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
 
     infusion, infusionFound := k.GetInfusion(ctx, destinationType, destinationId, player.Address)
     if (infusionFound) {
-         newInfusionEnergy, oldInfusionEnergy, newCommissionEnergy, oldCommissionEnergy, newPlayerEnergy, oldPlayerEnergy, err = infusion.SetFuelAndCommission(fuel, commission)
+         newInfusionFuel, oldInfusionFuel, newInfusionEnergy, oldInfusionEnergy, newCommissionEnergy, oldCommissionEnergy, newPlayerEnergy, oldPlayerEnergy, err = infusion.SetFuelAndCommission(fuel, commission)
     } else {
         infusion = types.CreateNewInfusion(destinationType, destinationId, player.Address, fuel, commission)
 
         // Should already be the value, but let's be safe
+        oldInfusionFuel = 0
         oldPlayerEnergy = 0
         oldCommissionEnergy = 0
         oldInfusionEnergy = 0
 
+        newInfusionFuel = fuel
         newInfusionEnergy, newCommissionEnergy, newPlayerEnergy = infusion.getEnergyDistribution()
     }
 
@@ -78,7 +82,22 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
     // TODO HERE
     BREAKING COMMMENT
 
+
+    // TODO move into case
     // Need to Set Destination (case below)
+    if (oldCommissionEnergy != newCommissionEnergy) {
+        currentReactorEnergy    := k.ReactorGetEnergy(ctx, destinationId)
+        newReactorEnergy        := currentReactorEnergy - oldCommissionEnergy
+        newReactorEnergy         = newReactorEnergy     + newCommissionEnergy
+
+
+
+        if (oldCommissionEnergy > newCommissionEnergy) {
+            // TODO will currently fail, no reactor
+            k.CascadeReactorAllocationFailure(ctx, reactor)
+        }
+    }
+
     // Need to Set player power
 
     // need to update automated allocations on destination
@@ -92,13 +111,11 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
 
     switch infusion.DestinationType {
         case types.ObjectType_reactor:
-            newFuel, newEnergy := k.ReactorRebuildInfusions(ctx, destinationId)
-            k.ReactorSetFuel(ctx, destinationId, newFuel)
-            k.ReactorSetEnergy(ctx, destinationId, newEnergy)
+            k.ReactorAlterEnergy(ctx, destinationId, newEnergy)
+            k.ReactorAlterEnergy(ctx, destinationId, newEnergy)
         case types.ObjectType_struct:
-            newFuel, newEnergy := k.StructRebuildInfusions(ctx, destinationId)
-            k.StructSetFuel(ctx, destinationId, newFuel)
-            k.StructSetEnergy(ctx, destinationId, newEnergy)
+            k.StructAlterFuel(ctx, destinationId, newFuel)
+            k.StructAlterEnergy(ctx, destinationId, newEnergy)
 
 
 
