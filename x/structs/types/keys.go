@@ -159,3 +159,15 @@ var ObjectType_enum = map[string]ObjectType{
 	"infusion":   ObjectType_infusion,
 }
 
+// Doing the same for GridAttributeType
+var GridAttributeType_enum = map[string]GridAttributeType{
+	"fuel":                     GridAttributeType_fuel,
+	"capacity":                 GridAttributeType_capacity,
+	"load":                     GridAttributeType_load,
+	"connectionCapacity":       GridAttributeType_connectionCapacity,
+	"connectionCount":          GridAttributeType_connectionCount,
+	"allocationPointerStart":   GridAttributeType_allocationPointerStart,
+	"allocationPointerEnd":     GridAttributeType_allocationPointerEnd,
+}
+
+

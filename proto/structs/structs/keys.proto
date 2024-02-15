@@ -18,3 +18,13 @@ enum objectType {
     allocation     = 6;
     infusion       = 7;
 }
+
+enum gridAttributeType {
+    fuel                    = 0;
+    capacity                = 1;
+    load                    = 2;
+    connectionCapacity      = 3;
+    connectionCount         = 4;
+    allocationPointerStart  = 5;
+    allocationPointerEnd    = 6;
+}
