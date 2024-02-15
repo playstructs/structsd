@@ -111,11 +111,13 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
 
     switch infusion.DestinationType {
         case types.ObjectType_reactor:
-            k.ReactorAlterEnergy(ctx, destinationId, newEnergy)
-            k.ReactorAlterEnergy(ctx, destinationId, newEnergy)
+            k.ReactorAlterFuel(ctx, destinationId, oldInfusionFuel, newInfusionFuel)
+            k.ReactorAlterEnergy(ctx, destinationId, oldCommissionEnergy, newCommissionEnergy)
+
+
         case types.ObjectType_struct:
-            k.StructAlterFuel(ctx, destinationId, newFuel)
-            k.StructAlterEnergy(ctx, destinationId, newEnergy)
+            k.StructAlterFuel(ctx, destinationId, oldInfusionFuel, newInfusionFuel)
+            k.StructAlterEnergy(ctx, destinationId, oldCommissionEnergy, newCommissionEnergy)
 
 
 
