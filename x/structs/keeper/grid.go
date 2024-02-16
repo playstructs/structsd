@@ -26,9 +26,9 @@ func GetGridAttributeIDBytes(gridAttributeType types.GridAttributeType, objectTy
 	return []byte(id)
 }
 
-// GetGridAttributeIDBytesByGridQueueId returns the byte representation of the ID
-func GetGridAttributeIDBytesByGridQueueId(gridAttributeType types.GridAttributeType, gridQueueId []byte) []byte {
-    id := fmt.Sprintf("%d-%s", gridAttributeType, string(gridQueueId))
+// GetGridAttributeIDBytesByObjectId returns the byte representation of the ID
+func GetGridAttributeIDBytesByObjectId(gridAttributeType types.GridAttributeType, objectId []byte) []byte {
+    id := fmt.Sprintf("%d-%s", gridAttributeType, string(objectId))
 	return []byte(id)
 }
 
@@ -145,14 +145,14 @@ func (k Keeper) GridCascade(ctx sdk.Context) {
         }
 
         // For each Queue Item
-        for _, queueId := range gridQueue {
-            allocationPointer    = k.GetGridAttributeAllocationPointerStart(ctx, queueId)
-            allocationPointerEnd = k.GetGridAttributeAllocationPointerEnd(ctx, queueId)
-            for k.GetGridAttributeLoad(ctx, queueId)) > k.GetGridAttributeCapacity(ctx, queueId))
+        for _, objectId := range gridQueue {
+            allocationPointer    = k.GetGridAttributeAllocationPointerStart(ctx, objectId)
+            allocationPointerEnd = k.GetGridAttributeAllocationPointerEnd(ctx, objectId)
+            for k.GetGridAttributeLoad(ctx, queueId)) > k.GetGridAttributeCapacity(ctx, objectId))
 
                 // Iterate through the allocationPointer until we successfully delete an allocation
                 for {
-                    allocationDestroyed = k.DestroyAllocation(ctx, GetAllocationIDBytesByGridQueueId(queueId, allocationPointer))
+                    allocationDestroyed = k.DestroyAllocation(ctx, GetAllocationIDBytesByObjectId(objectId, allocationPointer))
                     allocationPointer   = allocationPointer + 1
 
                     if ((allocationDestroyed) || (allocationPointer > allocationPointerEnd)) {
@@ -180,19 +180,18 @@ func (k Keeper) GridCascade(ctx sdk.Context) {
  * Probably moved out to it's own file eventually.
  */
 
-func (k Keeper) GetGridAttributeCapacity(ctx sdk.Context, queueId []byte) (uint64) {
-    return GetGridAttribute(ctx,GetGridAttributeIDBytesByGridQueueId(GridAttributeType_capacity, queueId))
+func (k Keeper) GetGridAttributeCapacity(ctx sdk.Context, objectId []byte) (uint64) {
+    return GetGridAttribute(ctx, GetGridAttributeIDBytesByObjectId(types.GridAttributeType_capacity, objectId))
 }
 
-
-func (k Keeper) GetGridAttributeLoad(ctx sdk.Context, queueId []byte) (uint64) {
-    return GetGridAttribute(ctx,GetGridAttributeIDBytesByGridQueueId(GridAttributeType_load, queueId))
+func (k Keeper) GetGridAttributeLoad(ctx sdk.Context, objectId []byte) (uint64) {
+    return GetGridAttribute(ctx, GetGridAttributeIDBytesByObjectId(types.GridAttributeType_load, objectId))
 }
 
-func (k Keeper) GetGridAttributeAllocationPointerStart(ctx sdk.Context, queueId []byte) (uint64) {
-    return GetGridAttribute(ctx,GetGridAttributeIDBytesByGridQueueId(GridAttributeType_allocationPointerStart, queueId))
+func (k Keeper) GetGridAttributeAllocationPointerStart(ctx sdk.Context, objectId []byte) (uint64) {
+    return GetGridAttribute(ctx, GetGridAttributeIDBytesByObjectId(types.GridAttributeType_allocationPointerStart, objectId))
 }
 
-func (k Keeper) GetGridAttributeAllocationPointerEnd(ctx sdk.Context, queueId []byte) (uint64) {
-    return GetGridAttribute(ctx,GetGridAttributeIDBytesByGridQueueId(GridAttributeType_allocationPointerEnd, queueId))
+func (k Keeper) GetGridAttributeAllocationPointerEnd(ctx sdk.Context, objectId []byte) (uint64) {
+    return GetGridAttribute(ctx, GetGridAttributeIDBytesByObjectId(types.GridAttributeType_allocationPointerEnd, objectId))
 }
