@@ -58,7 +58,7 @@ func (k Keeper) AppendStruct(
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructKey))
 	appendedValue := k.cdc.MustMarshal(&structure)
-	store.Set(GetStructIDBytes(structure.Id), appendedValue)
+	store.Set(GetObjectIDBytes(types.ObjectType_struct, structure.Id), appendedValue)
 
 	// Update struct count
 	k.SetStructCount(ctx, count+1)
@@ -73,7 +73,7 @@ func (k Keeper) AppendStruct(
 func (k Keeper) SetStruct(ctx sdk.Context, structure types.Struct) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructKey))
 	b := k.cdc.MustMarshal(&structure)
-	store.Set(GetStructIDBytes(structure.Id), b)
+	store.Set(GetObjectIDBytes(types.ObjectType_struct, structure.Id), b)
 
     _ = ctx.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})
 }
@@ -99,7 +99,7 @@ func (k Keeper) GetStruct(ctx sdk.Context, id uint64) (val types.Struct, found b
 // RemoveStruct removes a struct from the store
 func (k Keeper) RemoveStruct(ctx sdk.Context, id uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructKey))
-	store.Delete(GetStructIDBytes(id))
+	store.Delete(GetObjectIDBytes(types.ObjectType_struct, id))
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventStructDelete{StructId: id})
 }
@@ -127,185 +127,9 @@ func (k Keeper) GetAllStruct(ctx sdk.Context) (list []types.Struct) {
 	return
 }
 
-// GetStructIDBytes returns the byte representation of the ID
-func GetStructIDBytes(id uint64) []byte {
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, id)
-	return bz
-}
-
-// GetStructIDFromBytes returns ID in uint64 format from a byte array
-func GetStructIDFromBytes(bz []byte) uint64 {
-	return binary.BigEndian.Uint64(bz)
-}
 
 
 
-// StructRebuildInfusions - Rebuilds the current load by iterating through all related infusions
-func (k Keeper) StructRebuildInfusions(ctx sdk.Context, id uint64) (fuel uint64, energy uint64) {
-	infusions := k.GetAllStructInfusions(ctx, id)
-
-	for _, infusion := range infusions {
-	    // TODO ADD A REAL RATIO CALC
-	    fuel += infusion.Fuel
-		energy += types.CalculateStructEnergy(infusion.Fuel)
-	}
-
-	return
-}
-
-
-// ReactorSetFuel - Sets the in-memory representation of the struct energy production
-func (k Keeper) StructSetFuel(ctx sdk.Context, id uint64, amount uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructFuelKey))
-
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, amount)
-
-	store.Set(GetStructIDBytes(id), bz)
-    _ = ctx.EventManager().EmitTypedEvent(&types.EventStructFuel{Body: &types.EventBodyKeyPair{Key: id, Value: amount}})
-}
-
-
-// StructSetEnergy- Sets the in-memory representation of the Struct energy production
-func (k Keeper) StructSetEnergy(ctx sdk.Context, id uint64, amount uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructEnergyKey))
-
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, amount)
-
-	store.Set(GetStructIDBytes(id), bz)
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventStructEnergy{Body: &types.EventBodyKeyPair{Key: id, Value: amount}})
-}
-
-// StructGetEnergy returns the current energy production of the struct
-// Go to memory first, but then fall back to rebuilding from storage
-func (k Keeper) StructGetEnergy(ctx sdk.Context, id uint64) (energy uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructEnergyKey))
-
-	bz := store.Get(GetStructIDBytes(id))
-
-	// Struct Energy Not in Memory: no element
-	if bz == nil {
-
-	    // may as well set both since we've got to perform the
-	    // iteration on the infusions
-		fuel, energy := k.StructRebuildInfusions(ctx, id)
-		k.StructSetFuel(ctx, id, fuel)
-		k.StructSetEnergy(ctx, id, energy)
-
-	} else {
-		energy = binary.BigEndian.Uint64(bz)
-	}
-
-	return energy
-}
-
-
-
-// StructGetFuel returns the current fuel infused in the Struct
-// Go to memory first, but then fall back to rebuilding from storage
-func (k Keeper) StructGetFuel(ctx sdk.Context, id uint64) (fuel uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructFuelKey))
-
-	bz := store.Get(GetStructIDBytes(id))
-
-	// Reactor Energy Not in Memory: no element
-	if bz == nil {
-
-	    // may as well set both since we've got to perform the
-	    // iteration on the infusions
-		fuel, energy := k.StructRebuildInfusions(ctx, id)
-		k.StructSetFuel(ctx, id, fuel)
-		k.StructSetEnergy(ctx, id, energy)
-
-	} else {
-		fuel = binary.BigEndian.Uint64(bz)
-	}
-
-	return fuel
-}
-
-// StructRebuildLoad - Rebuilds the current load by iterating through all related allocations
-func (k Keeper) StructRebuildLoad(ctx sdk.Context, id uint64) (load uint64) {
-	allocations := k.GetAllStructAllocations(ctx, id)
-
-	for _, allocation := range allocations {
-		load += allocation.Power
-	}
-
-	return
-}
-
-
-// StructGetLoad returns the current load of all allocations
-// Go to memory first, but then fall back to rebuilding from allocations
-func (k Keeper) StructGetLoad(ctx sdk.Context, id uint64) (load uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructLoadKey))
-
-	bz := store.Get(GetStructIDBytes(id))
-
-	// Struct Capacity Not in Memory: no element
-	if bz == nil {
-		load = k.StructRebuildLoad(ctx, id)
-		k.StructSetLoad(ctx, id, load)
-
-	} else {
-		load = binary.BigEndian.Uint64(bz)
-	}
-
-	return load
-}
-
-// StructSetLoad - Sets the in-memory representation of the aggregate load of all associated allocations
-func (k Keeper) StructSetLoad(ctx sdk.Context, id uint64, amount uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructLoadKey))
-
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, amount)
-
-	store.Set(GetStructIDBytes(id), bz)
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventStructLoad{Body: &types.EventBodyKeyPair{Key: id, Value: amount}})
-}
-
-
-func (k Keeper) StructDecrementLoad(ctx sdk.Context, id uint64, amount uint64) (new uint64, err error) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructLoadKey))
-
-	current := k.StructGetLoad(ctx, id)
-
-	if amount > current {
-		// this really shouldn't happen. Throw an error I guess but yeesh, this is a problem.
-	} else {
-		new = current - amount
-	}
-
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, new)
-	store.Set(GetStructIDBytes(id), bz)
-
-	return
-}
-
-func (k Keeper) StructIncrementLoad(ctx sdk.Context, id uint64, amount uint64) (uint64, error) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructLoadKey))
-
-	current := k.StructGetLoad(ctx, id)
-
-	new := current + amount
-
-	structEnergy := k.StructGetEnergy(ctx, id)
-
-	if new > structEnergy {
-		return 0, sdkerrors.Wrapf(types.ErrReactorAvailableCapacityInsufficient, "source (struct-%d) used for allocation not sufficient", id)
-	}
-
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, new)
-	store.Set(GetStructIDBytes(id), bz)
-
-	return new, nil
-}
 
 func (k Keeper) StructDeactivate(ctx sdk.Context, structId uint64) {
     structure, structureFound := k.GetStruct(ctx, structId)
@@ -334,12 +158,7 @@ func (k Keeper) StructDeactivate(ctx sdk.Context, structId uint64) {
     }
 }
 
-func (k Keeper) StructDestroyAllocations(ctx sdk.Context, structId uint64) {
-    allocations := k.GetAllStructAllocations(ctx, structId)
-    for _, allocation := range allocations {
-        k.AllocationDestroy(ctx, allocation)
-    }
-}
+
 
 func (k Keeper) StructDestroyInfusions(ctx sdk.Context, structId uint64) {
     infusions := k.GetAllStructInfusions(ctx, structId)
