@@ -18,8 +18,9 @@ message Player {
   uint64 planetId       = 7;
 
   uint64 load           = 8;
+  uint64 capacity       = 9;
 
-  cosmos.base.v1beta1.Coin storage = 9
+  cosmos.base.v1beta1.Coin storage = 10
     [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
   
 }

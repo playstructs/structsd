@@ -16,7 +16,7 @@ message Substation {
     string creator                      = 4;
 
     uint64 load                         = 5;
-    uint64 energy                       = 6;
+    uint64 capacity                     = 6;
     uint64 connectedPlayerCount         = 7;
 }
 

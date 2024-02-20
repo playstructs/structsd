@@ -15,8 +15,7 @@ message Reactor {
 
   uint64  fuel                      = 3;
 
-  uint64  energy                    = 4;
-
+  uint64  capacity                  = 4;
   uint64  load                      = 5;
 
   uint64  guildId                   = 6;
