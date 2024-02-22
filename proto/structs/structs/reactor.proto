@@ -28,5 +28,4 @@ message Reactor {
 
   bytes   rawAddress                = 8;
 
-  uint64  serviceSubstationId       = 9;
 }

@@ -12,7 +12,7 @@ message Infusion {
   uint64      destinationId                 = 2;
 
   uint64      fuel                          = 3;
-  uint64      energy                        = 4;
+  uint64      power                         = 4;
 
   string      commission                    = 5 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
