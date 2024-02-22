@@ -13,7 +13,7 @@ message Allocation {
   uint64      sourceId            = 2;
   uint64      index               = 3;
   uint64      destinationId       = 4;
-  uint64      power               = 5;
+  uint64      potential           = 5;
 
   // Who does this currently belong to
   string      creator             = 6;
