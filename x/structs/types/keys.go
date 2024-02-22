@@ -83,6 +83,7 @@ const (
 const (
 	AllocationKey      = "Allocation/value/"
 	AllocationCountKey = "Allocation/count/"
+	AllocationAutoResizeKey = "Allocation/autoResize/"
 )
 
 const (
@@ -164,6 +165,7 @@ var GridAttributeType_enum = map[string]GridAttributeType{
 	"fuel":                     GridAttributeType_fuel,
 	"capacity":                 GridAttributeType_capacity,
 	"load":                     GridAttributeType_load,
+	"power":                    GridAttributeType_power,
 	"connectionCapacity":       GridAttributeType_connectionCapacity,
 	"connectionCount":          GridAttributeType_connectionCount,
 	"allocationPointerStart":   GridAttributeType_allocationPointerStart,

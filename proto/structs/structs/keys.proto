@@ -23,8 +23,9 @@ enum gridAttributeType {
     fuel                    = 0;
     capacity                = 1;
     load                    = 2;
-    connectionCapacity      = 3;
-    connectionCount         = 4;
-    allocationPointerStart  = 5;
-    allocationPointerEnd    = 6;
+    power                   = 4;
+    connectionCapacity      = 5;
+    connectionCount         = 6;
+    allocationPointerStart  = 7;
+    allocationPointerEnd    = 8;
 }

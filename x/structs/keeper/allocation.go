@@ -97,7 +97,7 @@ func (k Keeper) SetAllocation(ctx sdk.Context, allocation types.Allocation) {
 
     if (previousAllocation.Power != allocation.Power) {
         // Alter the Capacity of the Allocation Source
-        k.SetGridAttributeDelta(ctx, GetGridAttributeIDBytesByGridQueueId(types.GridAttributeType_load, GetObjectIDBytes(allocation.SourceType, allocation.SourceId)), previousAllocation.Power, allocation.Power)
+        k.SetGridAttributeDelta(ctx, GetGridAttributeIDBytesByObjectId(types.GridAttributeType_load, GetObjectIDBytes(allocation.SourceType, allocation.SourceId)), previousAllocation.Power, allocation.Power)
     }
 
     /* Possible Destination Changes
@@ -116,17 +116,20 @@ func (k Keeper) SetAllocation(ctx sdk.Context, allocation types.Allocation) {
             * decrement of old power on previous destination
      */
 
-    destinationCapacityIDBytes          := GetGridAttributeIDBytesByObjectId(types.GridAttributeType_capacity, GetObjectIDBytes(types.ObjectType_substation, allocation.DestinationId))
-    previousDestinationCapacityIdBytes  := GetGridAttributeIDBytesByObjectId(types.GridAttributeType_capacity, GetObjectIDBytes(types.ObjectType_substation, previousAllocation.DestinationId))
+    destinationIdBytes                  := GetObjectIDBytes(types.ObjectType_substation, allocation.DestinationId)
+    destinationCapacityIdBytes          := GetGridAttributeIDBytesByObjectId(types.GridAttributeType_capacity, destinationIdBytes)
+
+    previousDestinationIdBytes          := GetObjectIDBytes(types.ObjectType_substation, previousAllocation.DestinationId)
+    previousDestinationCapacityIdBytes  := GetGridAttributeIDBytesByObjectId(types.GridAttributeType_capacity, previousDestinationIdBytes)
 
     if (previousAllocation.DestinationId == allocation.DestinationId) {
         if ((allocation.DestinationId > 0) && (previousAllocation.Power != allocation.Power)) {
 
-            k.SetGridAttributeDelta(ctx, destinationCapacityIDBytes, previousAllocation.Power, allocation.Power)
+            k.SetGridAttributeDelta(6ctx, destinationCapacityIdBytes, previousAllocation.Power, allocation.Power)
 
             if (previousAllocation.Power > allocation.Power) {
                 // Add Destination to the Grid Queue
-                k.AppendGridCascadeQueue(ctx, destinationCapacityIDBytes)
+                k.AppendGridCascadeQueue(ctx, destinationIdBytes)
             }
         }
 
@@ -137,7 +140,7 @@ func (k Keeper) SetAllocation(ctx sdk.Context, allocation types.Allocation) {
             // Decrease the Capacity of the old Destination
             k.SetGridAttributeDecrement(ctx, previousDestinationCapacityIdBytes, previousAllocation.Power)
             // Add old Destination to the Grid Queue
-            k.AppendGridCascadeQueue(ctx, previousDestinationCapacityIdBytes)
+            k.AppendGridCascadeQueue(ctx, previousDestinationIdBytes)
 
         }
 
@@ -146,7 +149,7 @@ func (k Keeper) SetAllocation(ctx sdk.Context, allocation types.Allocation) {
             // We know that destination is greater than zero here because they're not equal to previousAllocation
 
             // Increment the Capacity of the new Destination
-            k.SetGridAttributeIncrement(ctx, destinationCapacityIDBytes, allocation.Power)
+            k.SetGridAttributeIncrement(ctx, destinationCapacityIdBytes, allocation.Power)
         }
     }
 
@@ -170,17 +173,24 @@ func (k Keeper) RemoveAllocation(ctx sdk.Context, id string) {
 
 // DestroyAllocation updates grid attributes before calling RemoveAllocation
 func (k Keeper) DestroyAllocation(ctx sdk.Context, allocationId []byte) (destroyed bool){
-    allocation, allocationFound := k.GetAllocation(ctx, allocationId)
+    allocation, allocationFound := k.GetAllocation(ctx, string(allocationId))
 
     if allocationFound {
         // Decrease the Load of the Source
         k.SetGridAttributeDecrement(ctx,GetGridAttributeIDBytesByGridQueueId(types.GridAttributeType_load, GetObjectIDBytes(allocation.SourceType, allocation.SourceId)), allocation.Power)
 
         // Decrease the Capacity of the Destination
-        destinationIdBytes := GetGridAttributeIDBytesByGridQueueId(types.GridAttributeType_capacity, GetObjectIDBytes(ObjectType_substation, allocation.DestinationId))
+        destinationIdBytes := GetObjectIDBytes(types.ObjectType_substation, allocation.DestinationId)
+        destinationCapacityIdBytes := GetGridAttributeIDBytesByGridQueueId(types.GridAttributeType_capacity, destinationIdBytes)
+
         k.SetGridAttributeDecrement(ctx, destinationIdBytes, allocation.Power)
         // Add Destination to the Grid Queue
         k.AppendGridCascadeQueue(ctx, destinationIdBytes)
+
+        // TODO FIX THIS WRONG CODE - Allocation.Type does not exist yet
+        if (allocation.Type == Automated ) {
+            k.ClearAutoResizeAllocationBySource(ctx sdk.Context, allocationId)
+        }
 
     	k.RemoveAllocation(ctx, allocation.Id)
 
@@ -239,4 +249,55 @@ func (k Keeper) GetAllocationsFromSource(ctx sdk.Context, sourceType types.Objec
 	return
 }
 
+/*
+ * Helper functions for the Allocation Auto-Resizing Capabilities
+ *
+ * This allows for Allocations to be automatically updated when
+ * the capacity of the source is updated elsewhere.
+ *
+ * Some rules:
+ * - The Allocation must be defined as automatic during creation.
+ * - The Allocation must be the other allocation on the source.
+ * - If the source is a Substation, it must not allow player connections.
+ *
+ */
 
+func (k Keeper) SetAutoResizeAllocationSource(ctx sdk.Context, allocationIdBytes []byte, sourceObjectId []byte) {
+  	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AllocationAutoResizeKey))
+
+  	store.Set(sourceObjectId, allocationIdBytes)
+}
+
+func (k Keeper) GetAutoResizeAllocationBySource(ctx sdk.Context, sourceObjectId []byte) (allocationIdBytes []byte, allocationFound bool)  {
+    	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AllocationAutoResizeKey))
+    	allocationIdBytes = store.Get(sourceObjectId)
+    	if allocationIdBytes == nil {
+    		return allocationIdBytes, false
+    	}
+    	return allocationIdBytes, true
+}
+
+
+func (k Keeper) ClearAutoResizeAllocationBySource(ctx sdk.Context, sourceObjectId []byte) {
+    	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AllocationAutoResizeKey))
+    	store.Delete(sourceObjectId)
+}
+
+
+func (k Keeper) AutoResizeAllocation(ctx sdk.Context, allocationIdBytes []byte, sourceIdBytes []byte, oldPower uint64, newPower uint64) {
+    allocation, allocationFound := k.GetAllocation(ctx, string(allocationIdBytes))
+
+    // Update Allocation Power
+    k.SetGridAttribute(ctx, GetGridAttributeIDBytesByGridQueueId(types.GridAttributeType_power, allocationIdBytes), newPower)
+
+    // Update Source Load
+    k.SetGridAttribute(ctx, GetGridAttributeIDBytesByGridQueueId(types.GridAttributeType_load, sourceIdBytes), newPower)
+
+    // Update Destination Capacity
+    destinationIdBytes := GetObjectIDBytes(types.ObjectType_substation, allocation.DestinationId)
+    k.SetGridAttributeDelta(ctx, GetGridAttributeIDBytesByGridQueueId(types.GridAttributeType_capacity, destinationIdBytes), oldPower, newPower)
+    if (oldPower > newPower) {
+        k.AppendGridCascadeQueue(ctx, destinationIdBytes)
+    }
+
+}

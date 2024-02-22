@@ -53,76 +53,75 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
                         infusion types.Infusion,
                         newInfusionFuel uint64,
                         oldInfusionFuel uint64,
-                        newInfusionEnergy uint64,
-                        oldInfusionEnergy uint64,
-                        newCommissionEnergy uint64,
-                        oldCommissionEnergy uint64,
-                        newPlayerEnergy uint64,
-                        oldPlayerEnergy uint64,
+                        newInfusionPower uint64,
+                        oldInfusionPower uint64,
+                        newCommissionPower uint64,
+                        oldCommissionPower uint64,
+                        newPlayerPower uint64,
+                        oldPlayerPower uint64,
                         err error
                     ){
 
     infusion, infusionFound := k.GetInfusion(ctx, destinationType, destinationId, player.Address)
     if (infusionFound) {
-         newInfusionFuel, oldInfusionFuel, newInfusionEnergy, oldInfusionEnergy, newCommissionEnergy, oldCommissionEnergy, newPlayerEnergy, oldPlayerEnergy, err = infusion.SetFuelAndCommission(fuel, commission)
+         newInfusionFuel, oldInfusionFuel, newInfusionPower, oldInfusionPower, newCommissionPower, oldCommissionPower, newPlayerPower, oldPlayerPower, err = infusion.SetFuelAndCommission(fuel, commission)
     } else {
         infusion = types.CreateNewInfusion(destinationType, destinationId, player.Address, fuel, commission)
 
         // Should already be the value, but let's be safe
         oldInfusionFuel = 0
-        oldPlayerEnergy = 0
-        oldCommissionEnergy = 0
-        oldInfusionEnergy = 0
+        oldPlayerPower = 0
+        oldCommissionPower = 0
+        oldInfusionPower = 0
 
         newInfusionFuel = fuel
-        newInfusionEnergy, newCommissionEnergy, newPlayerEnergy = infusion.getEnergyDistribution()
+        newInfusionPower, newCommissionPower, newPlayerPower = infusion.getPowerDistribution()
     }
 
+    k.SetInfusion(ctx, infusion)
 
-    // TODO HERE
-    BREAKING COMMMENT
+    destinationIdBytes  := GetObjectIDBytes(destinationType, destinationId)
+    playerIdBytes       := GetObjectIDBytes(types.ObjectType_player, player.Id)
 
+    // Update the Fuel record on the Destination
+    if (oldInfusionFuel != newInfusionFuel) {
+        k.SetGridAttributeDelta(ctx, GetGridAttributeIDBytesByObjectId(types.GridAttributeType_fuel, destinationIdBytes), oldInfusionFuel, newInfusionFuel)
+    }
 
-    // TODO move into case
-    // Need to Set Destination (case below)
-    if (oldCommissionEnergy != newCommissionEnergy) {
-        currentReactorEnergy    := k.ReactorGetEnergy(ctx, destinationId)
-        newReactorEnergy        := currentReactorEnergy - oldCommissionEnergy
-        newReactorEnergy         = newReactorEnergy     + newCommissionEnergy
+    // Update the Commissioned Power on the Destination
+    if (oldCommissionPower != newCommissionPower) {
+        k.SetGridAttributeDelta(ctx, GetGridAttributeIDBytesByObjectId(types.GridAttributeType_capacity, destinationIdBytes), oldCommissionPower, newCommissionPower)
 
+        // Check for an automated allocation
+        destinationAllocationId, destinationAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(destinationIdBytes)
+        if (destinationAutoResizeAllocationFound) {
+            k.AutoResizeAllocation(ctx, destinationAllocationId, destinationIdBytes, oldCommissionPower, newCommissionPower)
+        }
 
-
-        if (oldCommissionEnergy > newCommissionEnergy) {
-            // TODO will currently fail, no reactor
-            k.CascadeReactorAllocationFailure(ctx, reactor)
+        // This might be able to be an else from the above statement, but I need more coffee before committing
+        if (oldCommissionPower > newCommissionPower) {
+            k.AppendGridCascadeQueue(ctx, destinationIdBytes)
         }
     }
 
-    // Need to Set player power
+    // Update the Player's Power Capacity
+    if (oldPlayerPower != newPlayerPower) {
+        k.SetGridAttributeDelta(ctx, GetGridAttributeIDBytesByObjectId(types.GridAttributeType_capacity, playerIdBytes), oldPlayerPower, newPlayerPower)
 
-    // need to update automated allocations on destination
-    // need to update automated allocations on player
+        // Check for an automated allocation
+        playerAllocationId, playerAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(playerIdBytes)
+        if (playerAutoResizeAllocationFound) {
+            k.AutoResizeAllocation(ctx, playerAllocationId, playerIdBytes, oldPlayerPower, newPlayerPower)
+        }
 
-    // need to cascade failures to both possibly
-
-    // need to write some events
-
-     k.SetInfusion(ctx, infusion)
-
-    switch infusion.DestinationType {
-        case types.ObjectType_reactor:
-            k.ReactorAlterFuel(ctx, destinationId, oldInfusionFuel, newInfusionFuel)
-            k.ReactorAlterEnergy(ctx, destinationId, oldCommissionEnergy, newCommissionEnergy)
-
-
-        case types.ObjectType_struct:
-            k.StructAlterFuel(ctx, destinationId, oldInfusionFuel, newInfusionFuel)
-            k.StructAlterEnergy(ctx, destinationId, oldCommissionEnergy, newCommissionEnergy)
-
-
+        // This might be able to be an else from the above statement, but I need more coffee before committing
+        if (oldPlayerPower > newPlayerPower) {
+            k.AppendGridCascadeQueue(ctx, playerIdBytes)
+        }
 
     }
 
+    // need to write some events
 
      return
 }

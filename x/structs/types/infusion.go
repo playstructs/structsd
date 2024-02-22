@@ -8,25 +8,25 @@ import (
 
 func (a *Infusion) SetCommission(newCommission sdk.Dec) (
                                                 newInfusionEnergy uint64,
-                                                oldInfusionEnergy uint64,
-                                                newCommissionEnergy uint64,
-                                                oldCommissionEnergy uint64,
-                                                newPlayerEnergy uint64,
-                                                oldPlayerEnergy uint64,
+                                                oldInfusionPower uint64,
+                                                newCommissionPower uint64,
+                                                oldCommissionPower uint64,
+                                                newPlayerPower uint64,
+                                                oldPlayerPower uint64,
                                                 err error)  {
 
-    oldInfusionEnergy       = a.Energy
-    oldCommissionEnergy     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(oldInfusionEnergy))).RoundInt().Uint64()
-    oldPlayerEnergy         = a.Energy - oldCommissionEnergy
+    oldInfusionPower       = a.Power
+    oldCommissionPower     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(oldInfusionPower))).RoundInt().Uint64()
+    oldPlayerPower         = a.Power - oldCommissionPower
 
 
-    newInfusionEnergy       = CalculateInfusionEnergy(a.DestinationType, a.Fuel)
-    newCommissionEnergy     = newCommission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(newInfusionEnergy))).RoundInt().Uint64()
-    newPlayerEnergy         = newInfusionEnergy - newCommissionEnergy
+    newInfusionPower       = CalculateInfusionPower(a.DestinationType, a.Fuel)
+    newCommissionPower     = newCommission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(newInfusionPower))).RoundInt().Uint64()
+    newPlayerPower         = newInfusionPower - newCommissionPower
 
 
 	a.Commission  = newCommission
-	a.Energy      = newInfusionEnergy
+	a.Power      = newInfusionPower
 
     err           = nil
 	return
@@ -36,27 +36,27 @@ func (a *Infusion) SetCommission(newCommission sdk.Dec) (
 func (a *Infusion) SetFuel(newFuel uint64) (
                                     newInfusionFuel uint64,
                                     oldInfusionFuel uint64,
-                                    newInfusionEnergy uint64,
-                                    oldInfusionEnergy uint64,
-                                    newCommissionEnergy uint64,
-                                    oldCommissionEnergy uint64,
-                                    newPlayerEnergy uint64,
-                                    oldPlayerEnergy uint64,
+                                    newInfusionPower uint64,
+                                    oldInfusionPower uint64,
+                                    newCommissionPower uint64,
+                                    oldCommissionPower uint64,
+                                    newPlayerPower uint64,
+                                    oldPlayerPower uint64,
                                     err error)  {
 
     oldInfusionFuel         = a.Fuel
-    oldInfusionEnergy       = a.Energy
-    oldCommissionEnergy     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(oldInfusionEnergy))).RoundInt().Uint64()
-    oldPlayerEnergy         = a.Energy - oldCommissionEnergy
+    oldInfusionPower       = a.Power
+    oldCommissionPower     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(oldInfusionPower))).RoundInt().Uint64()
+    oldPlayerPower         = a.Power - oldCommissionPower
 
     newInfusionFuel         = newFuel
-    newInfusionEnergy       = CalculateInfusionEnergy(a.DestinationType, newInfusionFuel)
-    newCommissionEnergy     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(newInfusionEnergy))).RoundInt().Uint64()
-    newPlayerEnergy         = newInfusionEnergy - newCommissionEnergy
+    newInfusionPower       = CalculateInfusionPower(a.DestinationType, newInfusionFuel)
+    newCommissionPower     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(newInfusionPower))).RoundInt().Uint64()
+    newPlayerPower         = newInfusionPower - newCommissionPower
 
 
     a.Fuel      = newFuel
-	a.Energy    = newInfusionEnergy
+	a.Power    = newInfusionPower
 
     err         = nil
 	return
@@ -66,48 +66,48 @@ func (a *Infusion) SetFuel(newFuel uint64) (
 func (a *Infusion) SetFuelAndCommission(newFuel uint64, newCommission sdk.Dec) (
                                     newInfusionFuel uint64,
                                     oldInfusionFuel uint64,
-                                    newInfusionEnergy uint64,
-                                    oldInfusionEnergy uint64,
-                                    newCommissionEnergy uint64,
-                                    oldCommissionEnergy uint64,
-                                    newPlayerEnergy uint64,
-                                    oldPlayerEnergy uint64,
+                                    newInfusionPower uint64,
+                                    oldInfusionPower uint64,
+                                    newCommissionPower uint64,
+                                    oldCommissionPower uint64,
+                                    newPlayerPower uint64,
+                                    oldPlayerPower uint64,
                                     err error)  {
 
     oldInfusionFuel         = a.Fuel
-    oldInfusionEnergy       = a.Energy
-    oldCommissionEnergy     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(oldInfusionEnergy))).RoundInt().Uint64()
-    oldPlayerEnergy         = a.Energy - oldCommissionEnergy
+    oldInfusionPower       = a.Power
+    oldCommissionPower     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(oldInfusionPower))).RoundInt().Uint64()
+    oldPlayerPower         = a.Power - oldCommissionPower
 
     newInfusionFuel         = newFuel
-    newInfusionEnergy       = CalculateInfusionEnergy(a.DestinationType, newInfusionFuel)
-    newCommissionEnergy     = newCommission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(newInfusionEnergy))).RoundInt().Uint64()
-    newPlayerEnergy         = newInfusionEnergy - newCommissionEnergy
+    newInfusionPower       = CalculateInfusionPower(a.DestinationType, newInfusionFuel)
+    newCommissionPower     = newCommission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(newInfusionPower))).RoundInt().Uint64()
+    newPlayerPower         = newInfusionPower - newCommissionPower
 
 
     a.Commission    = newCommission
     a.Fuel          = newFuel
-	a.Energy        = newInfusionEnergy
+	a.Power        = newInfusionPower
 
     err         = nil
 	return
 
 }
 
-func (a *Infusion) getEnergyDistribution() (infusionEnergy uint64, commissionEnergy uint64, playerEnergy uint64) {
-        infusionEnergy       = a.Energy
-        commissionEnergy     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(infusionEnergy))).RoundInt().Uint64()
-        playerEnergy         = infusionEnergy - commissionEnergy
+func (a *Infusion) getPowerDistribution() (infusionPower uint64, commissionPower uint64, playerPower uint64) {
+        infusionPower       = a.Power
+        commissionPower     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(infusionPower))).RoundInt().Uint64()
+        playerPower         = infusionPower - commissionPower
 
         return
 }
 
-func CalculateInfusionEnergy(destinationType ObjectType, fuel uint64) (energy uint64) {
+func CalculateInfusionPower(destinationType ObjectType, fuel uint64) (energy uint64) {
     switch destinationType {
         case ObjectType_reactor:
-            energy = CalculateReactorEnergy(fuel)
+            energy = CalculateReactorPower(fuel)
         case ObjectType_struct:
-            energy = CalculateStructEnergy(fuel)
+            energy = CalculateStructPower(fuel)
     }
 
     return
@@ -119,7 +119,7 @@ func CreateNewInfusion(destinationType ObjectType, destinationId uint64, playerA
 		DestinationId: destinationId,
 		Commission: commission,
 		Fuel: fuel,
-		Energy: CalculateInfusionEnergy(destinationType, fuel),
+		Power: CalculateInfusionPower(destinationType, fuel),
 		Address: playerAddress,
 		PlayerId: playerId,
 	}
