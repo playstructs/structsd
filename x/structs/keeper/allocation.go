@@ -245,19 +245,23 @@ func (k Keeper) DestroyAllocation(ctx sdk.Context, allocationId []byte) (destroy
     allocation, allocationFound := k.GetAllocation(ctx, string(allocationId))
 
     if allocationFound {
+        allocation.Power = k.GetGridAttribute(ctx, GetGridAttributeIDBytesByObjectId(types.GridAttributeType_power, []byte(allocation.Id)))
+
         // Decrease the Load of the Source
         k.SetGridAttributeDecrement(ctx,GetGridAttributeIDBytesByGridQueueId(types.GridAttributeType_load, GetObjectIDBytes(allocation.SourceType, allocation.SourceId)), allocation.Power)
 
         // Decrease the Capacity of the Destination
-        destinationIdBytes := GetObjectIDBytes(types.ObjectType_substation, allocation.DestinationId)
-        destinationCapacityIdBytes := GetGridAttributeIDBytesByGridQueueId(types.GridAttributeType_capacity, destinationIdBytes)
+        if (allocation.DestinationId > 0){
+            destinationIdBytes := GetObjectIDBytes(types.ObjectType_substation, allocation.DestinationId)
+            destinationCapacityIdBytes := GetGridAttributeIDBytesByGridQueueId(types.GridAttributeType_capacity, destinationIdBytes)
 
-        k.SetGridAttributeDecrement(ctx, destinationIdBytes, allocation.Power)
-        // Add Destination to the Grid Queue
-        k.AppendGridCascadeQueue(ctx, destinationIdBytes)
+            k.SetGridAttributeDecrement(ctx, destinationIdBytes, allocation.Power)
+            // Add Destination to the Grid Queue
+            k.AppendGridCascadeQueue(ctx, destinationIdBytes)
+        }
 
-        // TODO FIX THIS WRONG CODE - Allocation.Type does not exist yet
-        if (allocation.Type == Automated ) {
+        // Clear the AutoResize hook on the source
+        if (allocation.Type == types.AllocationType_automated ) {
             k.ClearAutoResizeAllocationBySource(ctx sdk.Context, allocationId)
         }
 
