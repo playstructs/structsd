@@ -5,21 +5,6 @@ import (
     "strconv"
 )
 
-func (a *Allocation) SetId(id uint64) error {
-
-	a.Id = id
-
-	return nil
-}
-
-
-func (a *Allocation) SetCreator(creator string) error {
-
-	a.Creator = creator
-
-	return nil
-}
-
 
 func (a *Allocation) SetPower(newPower uint64) error {
 
@@ -31,13 +16,6 @@ func (a *Allocation) SetPower(newPower uint64) error {
 func (a *Allocation) SetController(controller string) error {
 
 	a.Controller = controller
-
-	return nil
-}
-
-func (a *Allocation) SetSource(sourceId uint64) error {
-
-	a.SourceId = sourceId
 
 	return nil
 }
@@ -58,35 +36,20 @@ func (a *Allocation) SetDestinationId(destinationSubstationId uint64) error {
 	return nil
 }
 
-func (a *Allocation) SetLinkedInfusion(address string) error {
-    a.HasLinkedInfusion = true
-
-    sourceId := strconv.FormatUint(a.SourceId , 10)
-    a.LinkedInfusion = a.SourceType.String() + "-" + sourceId + "-" + address
-
-    return nil
-}
-
-func (a *Allocation) ClearLinkedInfusion() error {
-    a.HasLinkedInfusion = false
-    a.LinkedInfusion = ""
-
-    return nil
-}
 
 
-func CreateEmptyAllocation(sourceType ObjectType) Allocation {
+func CreateAllocation(allocationType AllocationType, sourceType ObjectType, sourceId uint64, index uint64, power uint64, creator string, controller string ) Allocation {
 	return Allocation{
-		Id: 0,
+	    Id: GetAllocationIDString(sourceType, sourceId, index),
+		Type: allocationType,
 		SourceType: sourceType,
-		SourceId: 0,
+		SourceId: sourceId,
+		Index: index,
 		DestinationId: 0,
-		Power: 0,
-		Creator: "",
-		Controller: "",
+		Power: power,
+		Creator: creator,
+		Controller: controller,
 		Locked: false,
-		HasLinkedInfusion: false,
-		LinkedInfusion: "",
 	}
 }
 
@@ -102,7 +65,7 @@ func CreateEmptyAllocation(sourceType ObjectType) Allocation {
  * Use this function anytime a user is providing the objectType of the source objectType
  */
 func IsValidAllocationConnectionType(objectType ObjectType) bool {
-	for _, a := range []ObjectType{ObjectType_reactor, ObjectType_struct, ObjectType_substation} {
+	for _, a := range []ObjectType{ObjectType_player, ObjectType_reactor, ObjectType_struct, ObjectType_substation} {
 		if a == objectType {
 			return true
 		}

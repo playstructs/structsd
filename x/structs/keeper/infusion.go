@@ -208,31 +208,41 @@ func GetInfusionIDFromBytes(bz []byte) string {
 
 func (k Keeper) DestroyInfusion(ctx sdk.Context, infusion types.Infusion) {
 
+    infusionPower, commissionPower, playerPower := infusion.getPowerDistribution()
 
+    // Quiet the go lords
+    _ = infusionPower
 
+    destinationIdBytes  := GetObjectIDBytes(infusion.DestinationType, infusion.DestinationId)
+    playerIdBytes       := GetObjectIDBytes(types.ObjectType_player, infusion.PlayerId)
 
-    if (infusion.LinkedPlayerAllocationId > 0) {
-        playerAllocation, _ := k.GetAllocation(ctx, infusion.LinkedPlayerAllocationId)
-        k.AllocationDestroy(ctx, playerAllocation)
+    // update destination fuel
+    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDBytesByObjectId(types.GridAttributeType_fuel, destinationIdBytes), infusion.Fuel)
+
+    // Update destination commission capacity
+    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDBytesByObjectId(types.GridAttributeType_capacity, destinationIdBytes), commissionPower)
+
+    // Check for an automated allocation on the destination
+    destinationAllocationId, destinationAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(destinationIdBytes)
+    if (destinationAutoResizeAllocationFound) {
+        k.AutoResizeAllocation(ctx, destinationAllocationId, destinationIdBytes, commissionPower, 0)
+    } else {
+        k.AppendGridCascadeQueue(ctx, destinationIdBytes)
     }
 
-    if (infusion.LinkedSourceAllocationId > 0) {
-        sourceAllocation, _ := k.GetAllocation(ctx, infusion.LinkedSourceAllocationId)
-        k.AllocationDestroy(ctx, sourceAllocation)
+
+    // update player capacity
+    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDBytesByObjectId(types.GridAttributeType_capacity, playerIdBytes), playerPower)
+
+    // Check for an automated allocation on the player
+    playerAllocationId, playerAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(playerIdBytes)
+    if (playerAutoResizeAllocationFound) {
+        k.AutoResizeAllocation(ctx, playerAllocationId, playerIdBytes, playerPower, 0)
+    } else {
+        k.AppendGridCascadeQueue(ctx, playerIdBytes)
     }
 
+    // Remove the Infusion record from the store
 	k.RemoveInfusion(ctx, infusion.DestinationType, infusion.DestinationId, infusion.Address)
-
-	// Figure out what the infusion source is and update the energy load
-	switch infusion.DestinationType {
-	    case types.ObjectType_reactor:
-            newFuel, newEnergy := k.ReactorRebuildInfusions(ctx, infusion.DestinationId)
-            k.ReactorSetFuel(ctx, infusion.DestinationId, newFuel)
-            k.ReactorSetEnergy(ctx, infusion.DestinationId, newEnergy)
-        case types.ObjectType_struct:
-            newFuel, newEnergy := k.StructRebuildInfusions(ctx, infusion.DestinationId)
-            k.StructSetFuel(ctx, infusion.DestinationId, newFuel)
-            k.StructSetEnergy(ctx, infusion.DestinationId, newEnergy)
-	}
 
 }

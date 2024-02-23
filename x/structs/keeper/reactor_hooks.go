@@ -142,14 +142,9 @@ func (k Keeper) ReactorRemoveInfusion(ctx sdk.Context, unbondingId uint64) {
         reactorBytes, _ := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
         reactor, _ := k.GetReactorByBytes(ctx, reactorBytes, false)
 
-
         if (unbondingDelegationFound) {
             unbondingInfusion, _ := k.GetInfusion(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String())
             k.DestroyInfusion(ctx, unbondingInfusion)
         }
-
-        k.CascadeReactorAllocationFailure(ctx, reactor)
-
     }
-
 }

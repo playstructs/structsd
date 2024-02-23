@@ -23,4 +23,6 @@ message Allocation {
   bool        locked              = 8;
 
   string      id                  = 9;
+
+  allocationType type             = 10;
 }

@@ -29,3 +29,9 @@ enum gridAttributeType {
     allocationPointerStart  = 7;
     allocationPointerEnd    = 8;
 }
+
+enum allocationType {
+    static         = 0;
+    dynamic        = 1;
+    automated      = 2;
+}
