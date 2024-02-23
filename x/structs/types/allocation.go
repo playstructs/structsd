@@ -20,8 +20,6 @@ func (a *Allocation) SetController(controller string) error {
 	return nil
 }
 
-
-
 func (a *Allocation) Disconnect() error {
 
 	a.DestinationId = 0
@@ -35,8 +33,6 @@ func (a *Allocation) SetDestinationId(destinationSubstationId uint64) error {
 
 	return nil
 }
-
-
 
 func CreateAllocation(allocationType AllocationType, sourceType ObjectType, sourceId uint64, index uint64, power uint64, creator string, controller string ) Allocation {
 	return Allocation{
@@ -54,13 +50,9 @@ func CreateAllocation(allocationType AllocationType, sourceType ObjectType, sour
 }
 
 
-
 /*
- * Currently, only Reactors and Structs (Power Plants) can have
+ * Currently, only Players, Reactors, Structs (Power Plants), and Substations can have
  * power allocated from them to a substation.
- *
- * Substations cannot connect to Substations. ObjectType_substation would need
- * be added to the list below to enable such a connection.
  *
  * Use this function anytime a user is providing the objectType of the source objectType
  */
