@@ -96,11 +96,10 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
         destinationAllocationId, destinationAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(destinationIdBytes)
         if (destinationAutoResizeAllocationFound) {
             k.AutoResizeAllocation(ctx, destinationAllocationId, destinationIdBytes, oldCommissionPower, newCommissionPower)
-        }
-
-        // This might be able to be an else from the above statement, but I need more coffee before committing
-        if (oldCommissionPower > newCommissionPower) {
-            k.AppendGridCascadeQueue(ctx, destinationIdBytes)
+        } else {
+            if (oldCommissionPower > newCommissionPower) {
+                k.AppendGridCascadeQueue(ctx, destinationIdBytes)
+            }
         }
     }
 
@@ -112,13 +111,12 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
         playerAllocationId, playerAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(playerIdBytes)
         if (playerAutoResizeAllocationFound) {
             k.AutoResizeAllocation(ctx, playerAllocationId, playerIdBytes, oldPlayerPower, newPlayerPower)
+        } else {
+            // This might be able to be an else from the above statement, but I need more coffee before committing
+            if (oldPlayerPower > newPlayerPower) {
+                k.AppendGridCascadeQueue(ctx, playerIdBytes)
+            }
         }
-
-        // This might be able to be an else from the above statement, but I need more coffee before committing
-        if (oldPlayerPower > newPlayerPower) {
-            k.AppendGridCascadeQueue(ctx, playerIdBytes)
-        }
-
     }
 
     // need to write some events
@@ -208,7 +206,10 @@ func GetInfusionIDFromBytes(bz []byte) string {
 	return string(bz)
 }
 
-func (k Keeper) InfusionDestroy(ctx sdk.Context, infusion types.Infusion) {
+func (k Keeper) DestroyInfusion(ctx sdk.Context, infusion types.Infusion) {
+
+
+
 
     if (infusion.LinkedPlayerAllocationId > 0) {
         playerAllocation, _ := k.GetAllocation(ctx, infusion.LinkedPlayerAllocationId)

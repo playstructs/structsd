@@ -93,22 +93,24 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
 
         player := k.UpsertPlayer(ctx, playerAddress.String())
 
-        _, newInfusionEnergy, oldInfusionEnergy, newCommissionEnergy, oldCommissionEnergy, newPlayerEnergy, oldPlayerEnergy, err := k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, player, delegationShare.Uint64(), reactor.DefaultCommission)
+
+        /*
+         * Returns if needed (
+               infusion types.Infusion,
+               newInfusionFuel uint64,
+               oldInfusionFuel uint64,
+               newInfusionPower uint64,
+               oldInfusionPower uint64,
+               newCommissionPower uint64,
+               oldCommissionPower uint64,
+               newPlayerPower uint64,
+               oldPlayerPower uint64,
+               err error
+           )
+        */
+        k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, player, delegationShare.Uint64(), reactor.DefaultCommission)
 
     }
-
-
-    // need to define a guild or reactor parameter for allowed allocation of contributions
-    // need to define a guild or reactor parameter for minimum contributions before allocations are allowed
-
-
-	//  Update the connected Substations with the new details
-
-	MOVE TO Infusion Upsert
-	//k.CascadeReactorAllocationFailure(ctx, reactor)
-
-
-
 }
 
 
@@ -143,7 +145,7 @@ func (k Keeper) ReactorRemoveInfusion(ctx sdk.Context, unbondingId uint64) {
 
         if (unbondingDelegationFound) {
             unbondingInfusion, _ := k.GetInfusion(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String())
-            k.InfusionDestroy(ctx, unbondingInfusion)
+            k.DestroyInfusion(ctx, unbondingInfusion)
         }
 
         k.CascadeReactorAllocationFailure(ctx, reactor)
