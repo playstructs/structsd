@@ -48,7 +48,7 @@ func (k Keeper) AppendPlayer(
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
 	appendedValue := k.cdc.MustMarshal(&player)
-	store.Set(GetPlayerIDBytes(player.Id), appendedValue)
+	store.Set(GetObjectIDBytes(player.Id), appendedValue)
 
 	// Update player count
 	k.SetPlayerCount(ctx, count+1)
@@ -77,7 +77,7 @@ func (k Keeper) SetPlayer(ctx sdk.Context, player types.Player) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
 	b := k.cdc.MustMarshal(&player)
 
-	store.Set(GetPlayerIDBytes(player.Id), b)
+	store.Set(GetObjectIDBytes(player.Id), b)
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlayer{Player: &player})
 }
@@ -85,7 +85,7 @@ func (k Keeper) SetPlayer(ctx sdk.Context, player types.Player) {
 // GetPlayer returns a player from its id
 func (k Keeper) GetPlayer(ctx sdk.Context, id uint64) (val types.Player, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
-	b := store.Get(GetPlayerIDBytes(id))
+	b := store.Get(GetObjectIDBytes(id))
 	if b == nil {
 		return val, false
 	}
@@ -101,7 +101,7 @@ func (k Keeper) GetPlayer(ctx sdk.Context, id uint64) (val types.Player, found b
 // RemovePlayer removes a player from the store
 func (k Keeper) RemovePlayer(ctx sdk.Context, id uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
-	store.Delete(GetPlayerIDBytes(id))
+	store.Delete(GetObjectIDBytes(id))
 }
 
 // GetAllPlayer returns all player
@@ -148,19 +148,6 @@ func (k Keeper) GetAllPlayerBySubstation(ctx sdk.Context, substationId uint64) (
 	return
 }
 
-// GetPlayerIDBytes returns the byte representation of the ID
-func GetPlayerIDBytes(id uint64) []byte {
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, id)
-	return bz
-}
-
-// GetPlayerIDFromBytes returns ID in uint64 format from a byte array
-func GetPlayerIDFromBytes(bz []byte) uint64 {
-	return binary.BigEndian.Uint64(bz)
-}
-
-
 // Technically more of an InGet than an UpSert
 func (k Keeper) UpsertPlayer(ctx sdk.Context, playerAddress string ) (player types.Player) {
     playerId := k.GetPlayerIdFromAddress(ctx, playerAddress)
@@ -184,92 +171,3 @@ func (k Keeper) UpsertPlayer(ctx sdk.Context, playerAddress string ) (player typ
 
 
 
-
-
-// the current total load of the player structs
-// Go to memory first, but then fall back to rebuilding from storage
-func (k Keeper) PlayerGetLoad(ctx sdk.Context, id uint64) (load uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerLoadKey))
-
-	bz := store.Get(GetPlayerIDBytes(id))
-
-	// Substation Capacity Not in Memory: no element
-	if bz == nil {
-		load = k.PlayerRebuildLoad(ctx, id)
-		k.PlayerSetLoad(ctx, id, load)
-
-	} else {
-		load = binary.BigEndian.Uint64(bz)
-	}
-
-	return load
-}
-
-
-// Sets the in-memory representation of the aggregate load for the player
-func (k Keeper) PlayerSetLoad(ctx sdk.Context, id uint64, amount uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerLoadKey))
-
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, amount)
-
-	store.Set(GetPlayerIDBytes(id), bz)
-
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlayerLoad{Body: &types.EventBodyKeyPair{Key: id, Value: amount}})
-}
-
-
-// Rebuilds the current load by iterating through all player objects
-func (k Keeper) PlayerRebuildLoad(ctx sdk.Context, playerId uint64) (load uint64) {
-
-    // Add the static player draw
-	load = types.PlayerPassiveDraw
-
-    // Add all the active Structs
-	structures := k.GetAllStruct(ctx)
-    for _, structure := range structures {
-        if (structure.Owner == playerId) {
-            if (structure.Status == "ACTIVE") {
-                load += structure.PassiveDraw
-            }
-        }
-    }
-
-	return
-}
-
-
-func (k Keeper) PlayerDecrementLoad(ctx sdk.Context, id uint64, amount uint64) (newLoad uint64, err error) {
-	currentLoad := k.PlayerGetLoad(ctx, id)
-
-	if amount > currentLoad {
-		// this really shouldn't happen. Throw an error I guess but yeesh, this is a problem.
-	} else {
-		newLoad = currentLoad - amount
-	}
-
-	k.PlayerSetLoad(ctx, id, newLoad)
-
-	return newLoad, err
-}
-
-
-func (k Keeper) PlayerIncrementLoad(ctx sdk.Context, player types.Player, amount uint64) (uint64, error) {
-
-	currentLoad := k.PlayerGetLoad(ctx, player.Id)
-	newLoad := currentLoad + amount
-
-    substation, substationFound := k.GetSubstation(ctx, player.SubstationId, false)
-    if (!substationFound) {
-    	return 0, sdkerrors.Wrapf(types.ErrSubstationNotFound, "Player substation (substation-%d) no longer exists (that's bad)", substation.Id)
-    }
-
-
-	if newLoad > substation.PlayerConnectionAllocation {
-		return 0, sdkerrors.Wrapf(types.ErrSubstationAvailableCapacityInsufficient, "source (substation-%d) used for allocation insufficient", substation.Id)
-	}
-
-	k.PlayerSetLoad(ctx, player.Id, newLoad)
-
-	return newLoad, nil
-}
