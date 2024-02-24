@@ -5,3 +5,8 @@ import (
 )
 
 type Permission uint64
+
+const (
+    Permissionless Permission = 0 << iota
+)
+

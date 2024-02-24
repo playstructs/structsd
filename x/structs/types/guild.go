@@ -78,7 +78,7 @@ func CreateEmptyGuild() Guild {
 
 
 
-type GuildPermission uint64
+type GuildPermission Permission
 
 const (
     // 1

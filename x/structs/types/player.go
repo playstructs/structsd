@@ -62,7 +62,7 @@ func CreateEmptyPlayer() Player {
 
 
 
-type PlayerPermission uint64
+type PlayerPermission Permission
 
 const (
     // 1
