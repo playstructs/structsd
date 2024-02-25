@@ -14,13 +14,17 @@ import (
 
 
 
-// GetPermissionIDBytes returns the byte representation of the object and player id pair
-func GetPermissionIDBytes(objectId []byte, playerId uint64) []byte {
+// GetObjectPermissionIDBytes returns the byte representation of the object and player id pair
+func GetObjectPermissionIDBytes(objectId []byte, playerId uint64) []byte {
 	 id := fmt.Sprintf("%s@%d", string(objectId), playerId)
 	 return []byte(id)
-
 }
 
+// GetAddressPermissionIDBytes returns the byte representation of the Address, based on ObjectType
+func GetAddressPermissionIDBytes(address string) []byte {
+    id := fmt.Sprintf("%d-%s@0", types.ObjectType_address, objectId)
+	return []byte(id)
+}
 
 func (k Keeper) GetPermissionsByBytes(ctx sdk.Context, permissionId []byte) (types.Permission) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PermissionKey))
@@ -51,46 +55,35 @@ func (k Keeper) SetPermissionsByBytes(ctx sdk.Context, permissionId []byte, perm
 	return permissions
 }
 
-func (k Keeper) PermissionClearAll(ctx sdk.Context, objectId []byte, playerId uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerPermissionKey))
+func (k Keeper) PermissionClearAll(ctx sdk.Context, permissionId []byte) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PermissionKey))
 
-	permissionId := GetPermissionIDBytes(objectId, playerId)
 	store.Delete(permissionId)
 
     keys := strings.Split(string(permissionId), "@")
-    _ = ctx.EventManager().EmitTypedEvent(&types.EventPlayerPermission{Body: &types.EventPermissionBodyKeyPair{ObjectId: keys[0], PlayerId: keys[1], Value: uint64(0)}})
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventPermission{Body: &types.EventPermissionBodyKeyPair{ObjectId: keys[0], PlayerId: keys[1], Value: uint64(0)}})
 
 }
 
-func (k Keeper) PermissionAdd(ctx sdk.Context, objectId []byte, playerId uint64, flag types.Permission) types.PlayerPermission {
-    permissionRecord := GetPermissionIDBytes(objectId, playerId)
-
-    currentPermission := k.GetPermissionsByBytes(ctx, permissionRecord)
-    newPermissions := k.SetPermissionsByBytes(ctx, permissionRecord, currentPermission | flag)
+func (k Keeper) PermissionAdd(ctx sdk.Context, permissionId []byte, flag types.Permission) types.Permission {
+    currentPermission := k.GetPermissionsByBytes(ctx, permissionId)
+    newPermissions := k.SetPermissionsByBytes(ctx, permissionId, currentPermission | flag)
 	return newPermissions
 }
 
-func (k Keeper) PermissionRemove(ctx sdk.Context, objectId []byte, playerId uint64, flag types.Permission) types.Permission {
-    permissionRecord := GetPermissionIDBytes(objectId, playerId)
-
-    currentPermission := k.GetPermissionsByBytes(ctx, permissionRecord)
-    newPermissions := k.SetPermissionsByBytes(ctx, permissionRecord, currentPermission &^ flag)
+func (k Keeper) PermissionRemove(ctx sdk.Context, permissionId []byte, flag types.Permission) types.Permission {
+    currentPermission := k.GetPermissionsByBytes(ctx, permissionId)
+    newPermissions := k.SetPermissionsByBytes(ctx, permissionId, currentPermission &^ flag)
 	return newPermissions
 }
 
-func (k Keeper) PermissionHasAll(ctx sdk.Context, objectId []byte, playerId uint64, flag types.Permission) bool {
-    permissionRecord := GetPermissionIDBytes(objectId, playerId)
-
-    currentPermission := k.GetPermissionsByBytes(ctx, permissionRecord)
-
+func (k Keeper) PermissionHasAll(ctx sdk.Context, permissionId []byte, flag types.Permission) bool {
+    currentPermission := k.GetPermissionsByBytes(ctx, permissionId)
 	return currentPermission&flag == flag
 }
 
-func (k Keeper) PermissionHasOneOf(ctx sdk.Context, objectId []byte, playerId uint64, flag types.Permission) bool {
-    permissionRecord := GetPermissionIDBytes(objectId, playerId)
-
-    currentPermission := k.GetPermissionsByBytes(ctx, permissionRecord)
-
+func (k Keeper) PermissionHasOneOf(ctx sdk.Context, permissionId []byte, flag types.Permission) bool {
+    currentPermission := k.GetPermissionsByBytes(ctx, permissionId)
 	return currentPermission&flag != 0
 }
 

@@ -158,6 +158,7 @@ var ObjectType_enum = map[string]ObjectType{
 	"struct":     ObjectType_struct,
 	"allocation": ObjectType_allocation,
 	"infusion":   ObjectType_infusion,
+	"address":    ObjectType_address,
 }
 
 // Doing the same for GridAttributeType

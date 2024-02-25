@@ -27,13 +27,26 @@ func (k msgServer) GuildUpdateEntrySubstationId(goCtx context.Context, msg *type
          return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrGuildNotFound, "Guild wasn't found. Can't update that which does not exist", msg.Id)
     }
 
-    if (!k.GuildPermissionHasOneOf(ctx, msg.Id, player.Id, types.GuildPermissionUpdate)) {
-     return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrGuildUpdate, "Calling player (%d) has no permissions to update guild", player.Id)
+    guildObjectId           := GetObjectIDBytes(types.ObjectType_guild, msg.GuildId)
+    guildObjectPermissionId := GetObjectPermissionIDBytes(guildObjectId, player.Id)
+    addressPermissionId     := GetAddressPermissionIDBytes(msd.Creator)
+
+    if (!k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.Permission(types.GuildPermissionUpdate))) {
+        return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrGuildUpdate, "Calling player (%d) has no permissions to update guild", player.Id)
+    }
+
+    // Make sure the address calling this has Associate permissions
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManageGuild))) {
+        return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
     }
 
     if (msg.EntrySubstationId > 0 ) {
+
+        substationObjectId              := GetObjectIDBytes(types.ObjectType_substation, msg.EntrySubstationId)
+        substationObjectPermissionId    := GetObjectPermissionIDBytes(substationObjectId, player.Id)
+
         // check that the calling player has substation permissions
-        if (!k.SubstationPermissionHasOneOf(ctx, msg.EntrySubstationId, player.Id, types.SubstationPermissionConnectPlayer)) {
+        if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.Permission(types.SubstationPermissionConnectPlayer))) {
             return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%d) has no Substation Connect Player permissions ", player.Id)
         }
         guild.SetEntrySubstationId(msg.EntrySubstationId)

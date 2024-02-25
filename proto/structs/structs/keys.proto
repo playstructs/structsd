@@ -17,6 +17,7 @@ enum objectType {
     struct         = 5;
     allocation     = 6;
     infusion       = 7;
+    address        = 8;
 }
 
 enum gridAttributeType {

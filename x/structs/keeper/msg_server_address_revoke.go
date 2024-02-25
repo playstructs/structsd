@@ -13,12 +13,10 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
 
     player, playerFound := k.GetPlayer(ctx, k.GetPlayerIdFromAddress(ctx, msg.Creator))
 
-
-    playerPermissions := k.AddressGetPlayerPermissions(ctx, msg.Creator)
+    addressPermissionId := GetAddressPermissionIDBytes(msd.Creator)
 
     // Make sure the address calling this has Revoke permissions
-    if (playerPermissions&types.AddressPermissionRevoke == 0) {
-        // TODO permission error
+    if (k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionRevoke))) {
         return &types.MsgAddressRevokeResponse{}, sdkerrors.Wrapf(types.ErrPermissionRevoke, "Calling address (%s) has no Revoke permissions ", msg.Creator)
     }
 

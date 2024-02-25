@@ -27,15 +27,18 @@ func (k msgServer) GuildApproveRegister(goCtx context.Context, msg *types.MsgGui
         return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrGuildNotFound, "Referenced Guild (%d) not found", guild.Id)
     }
 
+
+    guildObjectId           := GetObjectIDBytes(types.ObjectType_guild, msg.GuildId)
+    guildObjectPermissionId := GetObjectPermissionIDBytes(guildObjectId, player.Id)
+    addressPermissionId     := GetAddressPermissionIDBytes(msd.Creator)
+
     // Check to make sure the player has permissions on the guild
-    if (!k.GuildPermissionHasOneOf(ctx, guild.Id, player.Id, types.GuildPermissionRegisterPlayer)) {
+    if (!k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.Permission(types.GuildPermissionRegisterPlayer))) {
         return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%d) has no Player Registration permissions ", player.Id)
     }
 
-    playerPermissions := k.AddressGetPlayerPermissions(ctx, msg.Creator)
     // Make sure the address calling this has Associate permissions
-    if (playerPermissions&types.AddressPermissionManageGuild == 0) {
-        // TODO permission error
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManageGuild))) {
         return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
     }
 
