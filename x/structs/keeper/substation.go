@@ -49,65 +49,78 @@ func (k Keeper) SetSubstationCount(ctx sdk.Context, count uint64) {
 // AppendSubstation appends a substation in the store with a new id and update the count
 func (k Keeper) AppendSubstation(
 	ctx sdk.Context,
-	//substation types.Substation,
-	playerConnectionAllocation uint64,
+    allocation types.Allocation
     player types.Player,
-) (types.Substation) {
-	substation := types.CreateEmptySubstation()
-
+) (substation types.Substation, allocation types.Allocation, err error) {
 	// Set the ID of the appended value
-    substation.SetId(k.GetNextSubstationId(ctx))
+    substation.Id = GetObjectId(types.ObjectType_substation, k.GetNextSubstationId(ctx))
+
+    // Update the allocations new destination
+    allocation.DestinationId = substation.Id
+    updatedAllocation, err := k.SetAllocation(ctx, allocation)
+    if (err != nil) {
+        return substation, updatedAllocation, err
+    }
 
     // Setup some Substation details
-    substation.SetOwner(player.Id)
-    substation.SetCreator(player.Creator)
-    substation.SetPlayerConnectionAllocation(playerConnectionAllocation)
-    k.SubstationPermissionAdd(ctx, substation.Id, player.Id, types.SubstationPermissionAll)
+    substation.Owner    = player.Id
+    substation.Creator  = player.Creator
+
+    permissionId := GetObjectPermissionIDBytes(substation.Id, player.Id)
+    k.PermissionAdd(ctx, permissionId, types.Permission(types.SubstationPermissionAll))
 
 
     // actually commit to the store
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationKey))
 	appendedValue := k.cdc.MustMarshal(&substation)
-	store.Set(GetObjectID(types.ObjectType_substation, substation.Id), appendedValue)
+	store.Set([]byte(substation.Id), appendedValue)
 
 
     // Cache invalidation event
     _ = ctx.EventManager().EmitTypedEvent(&types.EventSubstation{Substation: &substation})
 
-	return substation
+	return substation, allocation, err
 }
 
 // SetSubstation set a specific substation in the store
 func (k Keeper) SetSubstation(ctx sdk.Context, substation types.Substation) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationKey))
 	b := k.cdc.MustMarshal(&substation)
-	store.Set(GetObjectID(types.ObjectType_substation, substation.Id), b)
+	store.Set([]byte(substation.Id), b)
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventSubstation{Substation: &substation})
 
 }
 
 // RemoveSubstation removes a substation from the store
-func (k Keeper) RemoveSubstation(ctx sdk.Context, id uint64) {
+func (k Keeper) RemoveSubstation(ctx sdk.Context, substationId string) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationKey))
-	store.Delete(GetObjectID(types.ObjectType_substation, id))
+
+	// TODO
+	// Destroy allocations out
+	// Disconnect allocations in
+	// Disconnect Players
+	// Clear out Grid attributes
+
+	store.Delete(string(substationId))
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventSubstationDelete{SubstationId: id})
 }
 
 // GetSubstation returns a substation from its id
-func (k Keeper) GetSubstation(ctx sdk.Context, id uint64, full bool) (val types.Substation, found bool) {
+func (k Keeper) GetSubstation(ctx sdk.Context, substationId string, full bool) (val types.Substation, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationKey))
-	b := store.Get(GetObjectID(types.ObjectType_substation, id))
+	b := store.Get([]byte(substationId))
 	if b == nil {
 		return val, false
 	}
 	k.cdc.MustUnmarshal(b, &val)
 
 	if full {
-		val.Load = k.SubstationGetLoad(ctx, val.Id)
-		val.Energy = k.SubstationGetEnergy(ctx, val.Id)
-		val.ConnectedPlayerCount = k.SubstationGetConnectedPlayerCount(ctx, val.Id)
+        val.Load                = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
+        val.Capacity            = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
+        val.ConnectedCount      = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, val.Id))
+        val.ConnectedCapacity   = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, val.Id))
 	}
 
 	return val, true
@@ -125,9 +138,10 @@ func (k Keeper) GetAllSubstation(ctx sdk.Context, full bool) (list []types.Subst
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
 		if full {
-			val.Load = k.SubstationGetLoad(ctx, val.Id)
-			val.Energy = k.SubstationGetEnergy(ctx, val.Id)
-			val.ConnectedPlayerCount = k.SubstationGetConnectedPlayerCount(ctx, val.Id)
+			val.Load                = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
+			val.Capacity            = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
+			val.ConnectedCount      = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, val.Id))
+			val.ConnectedCapacity   = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, val.Id))
 		}
 
 		list = append(list, val)
@@ -155,27 +169,3 @@ func (k Keeper) SubstationConnectPlayer(ctx sdk.Context, substation types.Substa
 
 }
 
-func (k Keeper) SubstationConnectAllocation(ctx sdk.Context, substation types.Substation, allocation types.Allocation)  (error) {
-
-    // Check to see if already connected
-    if (allocation.DestinationId == substation.Id) {
-        // TODO add real error
-        return nil
-    }
-
-	// Check to see if there is already a destination Substation using this.
-	// Disconnect it if so
-	if (allocation.DestinationId > 0) {
-		_ = k.SubstationDecrementEnergy(ctx, allocation.DestinationId, allocation.Power)
-		k.CascadeSubstationAllocationFailure(ctx, allocation.DestinationId)
-	}
-
-	allocation.SetDestinationId(substation.Id)
-	k.SetAllocation(ctx, allocation)
-
-    return nil
-}
-
-func (k Keeper) SubstationIsOnline(ctx sdk.Context, substationId uint64) (bool) {
-    return (k.SubstationGetEnergy(ctx, substationId) >= k.SubstationGetLoad(ctx, substationId))
-}

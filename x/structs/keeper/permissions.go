@@ -15,8 +15,8 @@ import (
 
 
 // GetObjectPermissionIDBytes returns the byte representation of the object and player id pair
-func GetObjectPermissionIDBytes(objectId []byte, playerId uint64) []byte {
-	 id := fmt.Sprintf("%s@%d", string(objectId), playerId)
+func GetObjectPermissionIDBytes(objectId string, playerId uint64) []byte {
+	 id := fmt.Sprintf("%s@%d", objectId, playerId)
 	 return []byte(id)
 }
 

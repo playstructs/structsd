@@ -8,15 +8,15 @@ import "structs/structs/allocation.proto";
 option go_package = "structs/x/structs/types";
 
 message Substation {
-    uint64 id                           = 1;
+    string id                           = 1;
 
-    uint64 playerConnectionAllocation   = 2;
+    uint64 owner                        = 2;
+    string creator                      = 3;
 
-    uint64 owner                        = 3;
-    string creator                      = 4;
+    uint64 load                         = 4;
+    uint64 capacity                     = 5;
 
-    uint64 load                         = 5;
-    uint64 capacity                     = 6;
-    uint64 connectedPlayerCount         = 7;
+    uint64 connectionCount              = 6;
+    uint64 connectionCapacity           = 7;
 }
 
