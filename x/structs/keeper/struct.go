@@ -58,7 +58,7 @@ func (k Keeper) AppendStruct(
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructKey))
 	appendedValue := k.cdc.MustMarshal(&structure)
-	store.Set(GetObjectIDBytes(types.ObjectType_struct, structure.Id), appendedValue)
+	store.Set(GetObjectID(types.ObjectType_struct, structure.Id), appendedValue)
 
 	// Update struct count
 	k.SetStructCount(ctx, count+1)
@@ -73,7 +73,7 @@ func (k Keeper) AppendStruct(
 func (k Keeper) SetStruct(ctx sdk.Context, structure types.Struct) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructKey))
 	b := k.cdc.MustMarshal(&structure)
-	store.Set(GetObjectIDBytes(types.ObjectType_struct, structure.Id), b)
+	store.Set(GetObjectID(types.ObjectType_struct, structure.Id), b)
 
     _ = ctx.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})
 }
@@ -99,7 +99,7 @@ func (k Keeper) GetStruct(ctx sdk.Context, id uint64) (val types.Struct, found b
 // RemoveStruct removes a struct from the store
 func (k Keeper) RemoveStruct(ctx sdk.Context, id uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructKey))
-	store.Delete(GetObjectIDBytes(types.ObjectType_struct, id))
+	store.Delete(GetObjectID(types.ObjectType_struct, id))
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventStructDelete{StructId: id})
 }

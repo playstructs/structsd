@@ -27,7 +27,7 @@ func (k msgServer) GuildUpdateJoinInfusionMinimumBypassByRequest(goCtx context.C
             return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrGuildNotFound, "Guild wasn't found. Can't update that which does not exist", msg.Id)
     }
 
-    guildObjectId           := GetObjectIDBytes(types.ObjectType_guild, msg.GuildId)
+    guildObjectId           := GetObjectID(types.ObjectType_guild, msg.GuildId)
     guildObjectPermissionId := GetObjectPermissionIDBytes(guildObjectId, player.Id)
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
 

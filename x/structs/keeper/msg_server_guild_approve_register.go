@@ -28,7 +28,7 @@ func (k msgServer) GuildApproveRegister(goCtx context.Context, msg *types.MsgGui
     }
 
 
-    guildObjectId           := GetObjectIDBytes(types.ObjectType_guild, msg.GuildId)
+    guildObjectId           := GetObjectID(types.ObjectType_guild, msg.GuildId)
     guildObjectPermissionId := GetObjectPermissionIDBytes(guildObjectId, player.Id)
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
 

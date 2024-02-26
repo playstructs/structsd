@@ -8,13 +8,13 @@ option go_package = "structs/x/structs/types";
 
 
 message Allocation {
-  bytes           id              = 1;
+  string          id              = 1;
   allocationType  type            = 2;
 
   // Core allocation details
-  bytes       sourceObjectId      = 3;
+  string      sourceObjectId      = 3;
   uint64      index               = 4;
-  bytes       destinationObjectId = 5;
+  string      destinationObjectId = 5;
   uint64      power               = 6;
 
   // Who does this currently belong to

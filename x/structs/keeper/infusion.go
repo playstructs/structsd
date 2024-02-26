@@ -80,17 +80,17 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
 
     k.SetInfusion(ctx, infusion)
 
-    destinationIdBytes  := GetObjectIDBytes(destinationType, destinationId)
-    playerIdBytes       := GetObjectIDBytes(types.ObjectType_player, player.Id)
+    destinationIdBytes  := GetObjectID(destinationType, destinationId)
+    playerIdBytes       := GetObjectID(types.ObjectType_player, player.Id)
 
     // Update the Fuel record on the Destination
     if (oldInfusionFuel != newInfusionFuel) {
-        k.SetGridAttributeDelta(ctx, GetGridAttributeIDBytesByObjectId(types.GridAttributeType_fuel, destinationIdBytes), oldInfusionFuel, newInfusionFuel)
+        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, destinationIdBytes), oldInfusionFuel, newInfusionFuel)
     }
 
     // Update the Commissioned Power on the Destination
     if (oldCommissionPower != newCommissionPower) {
-        k.SetGridAttributeDelta(ctx, GetGridAttributeIDBytesByObjectId(types.GridAttributeType_capacity, destinationIdBytes), oldCommissionPower, newCommissionPower)
+        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, destinationIdBytes), oldCommissionPower, newCommissionPower)
 
         // Check for an automated allocation
         destinationAllocationId, destinationAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(destinationIdBytes)
@@ -105,7 +105,7 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
 
     // Update the Player's Power Capacity
     if (oldPlayerPower != newPlayerPower) {
-        k.SetGridAttributeDelta(ctx, GetGridAttributeIDBytesByObjectId(types.GridAttributeType_capacity, playerIdBytes), oldPlayerPower, newPlayerPower)
+        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, playerIdBytes), oldPlayerPower, newPlayerPower)
 
         // Check for an automated allocation
         playerAllocationId, playerAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(playerIdBytes)
@@ -213,14 +213,14 @@ func (k Keeper) DestroyInfusion(ctx sdk.Context, infusion types.Infusion) {
     // Quiet the go lords
     _ = infusionPower
 
-    destinationIdBytes  := GetObjectIDBytes(infusion.DestinationType, infusion.DestinationId)
-    playerIdBytes       := GetObjectIDBytes(types.ObjectType_player, infusion.PlayerId)
+    destinationIdBytes  := GetObjectID(infusion.DestinationType, infusion.DestinationId)
+    playerIdBytes       := GetObjectID(types.ObjectType_player, infusion.PlayerId)
 
     // update destination fuel
-    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDBytesByObjectId(types.GridAttributeType_fuel, destinationIdBytes), infusion.Fuel)
+    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, destinationIdBytes), infusion.Fuel)
 
     // Update destination commission capacity
-    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDBytesByObjectId(types.GridAttributeType_capacity, destinationIdBytes), commissionPower)
+    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, destinationIdBytes), commissionPower)
 
     // Check for an automated allocation on the destination
     destinationAllocationId, destinationAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(destinationIdBytes)
@@ -232,7 +232,7 @@ func (k Keeper) DestroyInfusion(ctx sdk.Context, infusion types.Infusion) {
 
 
     // update player capacity
-    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDBytesByObjectId(types.GridAttributeType_capacity, playerIdBytes), playerPower)
+    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, playerIdBytes), playerPower)
 
     // Check for an automated allocation on the player
     playerAllocationId, playerAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(playerIdBytes)

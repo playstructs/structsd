@@ -48,7 +48,7 @@ func (k Keeper) AppendPlayer(
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
 	appendedValue := k.cdc.MustMarshal(&player)
-	store.Set(GetObjectIDBytes(player.Id), appendedValue)
+	store.Set(GetObjectID(player.Id), appendedValue)
 
 	// Update player count
 	k.SetPlayerCount(ctx, count+1)
@@ -77,7 +77,7 @@ func (k Keeper) SetPlayer(ctx sdk.Context, player types.Player) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
 	b := k.cdc.MustMarshal(&player)
 
-	store.Set(GetObjectIDBytes(player.Id), b)
+	store.Set(GetObjectID(player.Id), b)
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlayer{Player: &player})
 }
@@ -85,7 +85,7 @@ func (k Keeper) SetPlayer(ctx sdk.Context, player types.Player) {
 // GetPlayer returns a player from its id
 func (k Keeper) GetPlayer(ctx sdk.Context, id uint64) (val types.Player, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
-	b := store.Get(GetObjectIDBytes(id))
+	b := store.Get(GetObjectID(id))
 	if b == nil {
 		return val, false
 	}
@@ -101,7 +101,7 @@ func (k Keeper) GetPlayer(ctx sdk.Context, id uint64) (val types.Player, found b
 // RemovePlayer removes a player from the store
 func (k Keeper) RemovePlayer(ctx sdk.Context, id uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
-	store.Delete(GetObjectIDBytes(id))
+	store.Delete(GetObjectID(id))
 }
 
 // GetAllPlayer returns all player

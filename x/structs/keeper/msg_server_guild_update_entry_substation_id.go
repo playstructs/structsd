@@ -27,7 +27,7 @@ func (k msgServer) GuildUpdateEntrySubstationId(goCtx context.Context, msg *type
          return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrGuildNotFound, "Guild wasn't found. Can't update that which does not exist", msg.Id)
     }
 
-    guildObjectId           := GetObjectIDBytes(types.ObjectType_guild, msg.GuildId)
+    guildObjectId           := GetObjectID(types.ObjectType_guild, msg.GuildId)
     guildObjectPermissionId := GetObjectPermissionIDBytes(guildObjectId, player.Id)
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
 
@@ -42,7 +42,7 @@ func (k msgServer) GuildUpdateEntrySubstationId(goCtx context.Context, msg *type
 
     if (msg.EntrySubstationId > 0 ) {
 
-        substationObjectId              := GetObjectIDBytes(types.ObjectType_substation, msg.EntrySubstationId)
+        substationObjectId              := GetObjectID(types.ObjectType_substation, msg.EntrySubstationId)
         substationObjectPermissionId    := GetObjectPermissionIDBytes(substationObjectId, player.Id)
 
         // check that the calling player has substation permissions

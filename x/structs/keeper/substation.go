@@ -68,7 +68,7 @@ func (k Keeper) AppendSubstation(
     // actually commit to the store
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationKey))
 	appendedValue := k.cdc.MustMarshal(&substation)
-	store.Set(GetObjectIDBytes(types.ObjectType_substation, substation.Id), appendedValue)
+	store.Set(GetObjectID(types.ObjectType_substation, substation.Id), appendedValue)
 
 
     // Cache invalidation event
@@ -81,7 +81,7 @@ func (k Keeper) AppendSubstation(
 func (k Keeper) SetSubstation(ctx sdk.Context, substation types.Substation) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationKey))
 	b := k.cdc.MustMarshal(&substation)
-	store.Set(GetObjectIDBytes(types.ObjectType_substation, substation.Id), b)
+	store.Set(GetObjectID(types.ObjectType_substation, substation.Id), b)
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventSubstation{Substation: &substation})
 
@@ -90,7 +90,7 @@ func (k Keeper) SetSubstation(ctx sdk.Context, substation types.Substation) {
 // RemoveSubstation removes a substation from the store
 func (k Keeper) RemoveSubstation(ctx sdk.Context, id uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationKey))
-	store.Delete(GetObjectIDBytes(types.ObjectType_substation, id))
+	store.Delete(GetObjectID(types.ObjectType_substation, id))
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventSubstationDelete{SubstationId: id})
 }
@@ -98,7 +98,7 @@ func (k Keeper) RemoveSubstation(ctx sdk.Context, id uint64) {
 // GetSubstation returns a substation from its id
 func (k Keeper) GetSubstation(ctx sdk.Context, id uint64, full bool) (val types.Substation, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationKey))
-	b := store.Get(GetObjectIDBytes(types.ObjectType_substation, id))
+	b := store.Get(GetObjectID(types.ObjectType_substation, id))
 	if b == nil {
 		return val, false
 	}
