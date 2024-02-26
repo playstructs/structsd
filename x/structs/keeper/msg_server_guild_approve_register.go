@@ -30,7 +30,7 @@ func (k msgServer) GuildApproveRegister(goCtx context.Context, msg *types.MsgGui
 
     guildObjectId           := GetObjectIDBytes(types.ObjectType_guild, msg.GuildId)
     guildObjectPermissionId := GetObjectPermissionIDBytes(guildObjectId, player.Id)
-    addressPermissionId     := GetAddressPermissionIDBytes(msd.Creator)
+    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
 
     // Check to make sure the player has permissions on the guild
     if (!k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.Permission(types.GuildPermissionRegisterPlayer))) {

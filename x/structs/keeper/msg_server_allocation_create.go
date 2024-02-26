@@ -39,7 +39,7 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
 
     sourceObjectId := []byte(msg.SourceObjectId)
     sourceObjectPermissionId := GetObjectPermissionIDBytes(sourceObjectId, player.Id)
-    addressPermissionId := GetAddressPermissionIDBytes(msd.Creator)
+    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
 
 
     // check that the player has permissions

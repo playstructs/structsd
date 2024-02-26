@@ -24,8 +24,16 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
 
     playerPermissions := k.AddressGetPlayerPermissions(ctx, msg.Creator)
     if ((playerPermissions&types.AddressPermissionPlay) == 0) {
+
+    }
+
+    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
+
+    // Make sure the address calling this has Play permissions
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionPlay))) {
         return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
     }
+
 
     if (!k.SubstationIsOnline(ctx, player.SubstationId)){
         return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The players substation (%d) is offline ",player.SubstationId)

@@ -29,7 +29,7 @@ func (k msgServer) GuildUpdateOwnerId(goCtx context.Context, msg *types.MsgGuild
 
     guildObjectId           := GetObjectIDBytes(types.ObjectType_guild, msg.GuildId)
     guildObjectPermissionId := GetObjectPermissionIDBytes(guildObjectId, player.Id)
-    addressPermissionId     := GetAddressPermissionIDBytes(msd.Creator)
+    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
 
     if (!k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.Permission(types.GuildPermissionUpdate))) {
         return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrGuildUpdate, "Calling player (%d) has no permissions to update guild", player.Id)

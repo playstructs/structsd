@@ -14,7 +14,7 @@ func (k msgServer) AddressApproveRegister(goCtx context.Context, msg *types.MsgA
     player, playerFound := k.GetPlayer(ctx, k.GetPlayerIdFromAddress(ctx, msg.Creator))
 
 
-    addressPermissionId := GetAddressPermissionIDBytes(msd.Creator)
+    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
 
     // Make sure the address calling this has Associate permissions
     if (k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManageGuild))) {
