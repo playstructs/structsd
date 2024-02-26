@@ -12,7 +12,7 @@ import (
 )
 
 
-// GetObjectID returns the byte representation of the ID, based on ObjectType
+// GetObjectID returns the string representation of the ID, based on ObjectType
 // This is the unified objectId model across the system
 func GetObjectID(objectType types.ObjectType, objectId uint64) string {
     id := fmt.Sprintf("%d-%d", objectType, objectId)
@@ -20,13 +20,13 @@ func GetObjectID(objectType types.ObjectType, objectId uint64) string {
 }
 
 
-// GetGridAttributeID returns the byte representation of the ID
+// GetGridAttributeID returns the string representation of the ID
 func GetGridAttributeID(gridAttributeType types.GridAttributeType, objectType types.ObjectType, objectId uint64) string {
     id := fmt.Sprintf("%d-%d-%d", gridAttributeType, objectType, objectId)
 	return id
 }
 
-// GetGridAttributeIDByObjectId returns the byte representation of the ID
+// GetGridAttributeIDByObjectId returns the string representation of the ID
 func GetGridAttributeIDByObjectId(gridAttributeType types.GridAttributeType, objectId string) string {
     id := fmt.Sprintf("%d-%s", gridAttributeType, objectId)
 	return id

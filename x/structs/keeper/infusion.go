@@ -80,41 +80,41 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
 
     k.SetInfusion(ctx, infusion)
 
-    destinationIdBytes  := GetObjectID(destinationType, destinationId)
-    playerIdBytes       := GetObjectID(types.ObjectType_player, player.Id)
+    destinationObjectId  := GetObjectID(destinationType, destinationId)
+    playerObjectId       := GetObjectID(types.ObjectType_player, player.Id)
 
     // Update the Fuel record on the Destination
     if (oldInfusionFuel != newInfusionFuel) {
-        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, destinationIdBytes), oldInfusionFuel, newInfusionFuel)
+        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, destinationObjectId), oldInfusionFuel, newInfusionFuel)
     }
 
     // Update the Commissioned Power on the Destination
     if (oldCommissionPower != newCommissionPower) {
-        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, destinationIdBytes), oldCommissionPower, newCommissionPower)
+        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, destinationObjectId), oldCommissionPower, newCommissionPower)
 
         // Check for an automated allocation
-        destinationAllocationId, destinationAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(destinationIdBytes)
+        destinationAllocationId, destinationAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(ctx, destinationObjectId)
         if (destinationAutoResizeAllocationFound) {
-            k.AutoResizeAllocation(ctx, destinationAllocationId, destinationIdBytes, oldCommissionPower, newCommissionPower)
+            k.AutoResizeAllocation(ctx, destinationAllocationId, destinationObjectId, oldCommissionPower, newCommissionPower)
         } else {
             if (oldCommissionPower > newCommissionPower) {
-                k.AppendGridCascadeQueue(ctx, destinationIdBytes)
+                k.AppendGridCascadeQueue(ctx, destinationObjectId)
             }
         }
     }
 
     // Update the Player's Power Capacity
     if (oldPlayerPower != newPlayerPower) {
-        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, playerIdBytes), oldPlayerPower, newPlayerPower)
+        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, playerObjectId), oldPlayerPower, newPlayerPower)
 
         // Check for an automated allocation
-        playerAllocationId, playerAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(playerIdBytes)
+        playerAllocationId, playerAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(ctx, playerObjectId)
         if (playerAutoResizeAllocationFound) {
-            k.AutoResizeAllocation(ctx, playerAllocationId, playerIdBytes, oldPlayerPower, newPlayerPower)
+            k.AutoResizeAllocation(ctx, playerAllocationId, playerObjectId, oldPlayerPower, newPlayerPower)
         } else {
             // This might be able to be an else from the above statement, but I need more coffee before committing
             if (oldPlayerPower > newPlayerPower) {
-                k.AppendGridCascadeQueue(ctx, playerIdBytes)
+                k.AppendGridCascadeQueue(ctx, playerObjectId)
             }
         }
     }
@@ -196,16 +196,6 @@ func GetInfusionId(destinationType types.ObjectType, destinationId uint64, addre
     return
 }
 
-// GetInfusionIDBytes returns the byte representation of the ID
-func GetInfusionIDBytes(id string) []byte {
-	return []byte(id)
-}
-
-// GetInfusionIDFromBytes returns ID in uint64 format from a byte array
-func GetInfusionIDFromBytes(bz []byte) string {
-	return string(bz)
-}
-
 func (k Keeper) DestroyInfusion(ctx sdk.Context, infusion types.Infusion) {
 
     infusionPower, commissionPower, playerPower := infusion.getPowerDistribution()
@@ -213,33 +203,33 @@ func (k Keeper) DestroyInfusion(ctx sdk.Context, infusion types.Infusion) {
     // Quiet the go lords
     _ = infusionPower
 
-    destinationIdBytes  := GetObjectID(infusion.DestinationType, infusion.DestinationId)
-    playerIdBytes       := GetObjectID(types.ObjectType_player, infusion.PlayerId)
+    destinationObjectId  := GetObjectID(infusion.DestinationType, infusion.DestinationId)
+    playerObjectId       := GetObjectID(types.ObjectType_player, infusion.PlayerId)
 
     // update destination fuel
-    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, destinationIdBytes), infusion.Fuel)
+    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, destinationObjectId), infusion.Fuel)
 
     // Update destination commission capacity
-    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, destinationIdBytes), commissionPower)
+    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, destinationObjectId), commissionPower)
 
     // Check for an automated allocation on the destination
-    destinationAllocationId, destinationAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(destinationIdBytes)
+    destinationAllocationId, destinationAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(ctx, destinationObjectId)
     if (destinationAutoResizeAllocationFound) {
-        k.AutoResizeAllocation(ctx, destinationAllocationId, destinationIdBytes, commissionPower, 0)
+        k.AutoResizeAllocation(ctx, destinationAllocationId, destinationObjectId, commissionPower, 0)
     } else {
-        k.AppendGridCascadeQueue(ctx, destinationIdBytes)
+        k.AppendGridCascadeQueue(ctx, destinationObjectId)
     }
 
 
     // update player capacity
-    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, playerIdBytes), playerPower)
+    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, playerObjectId), playerPower)
 
     // Check for an automated allocation on the player
-    playerAllocationId, playerAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(playerIdBytes)
+    playerAllocationId, playerAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(ctx, playerObjectId)
     if (playerAutoResizeAllocationFound) {
-        k.AutoResizeAllocation(ctx, playerAllocationId, playerIdBytes, playerPower, 0)
+        k.AutoResizeAllocation(ctx, playerAllocationId, playerObjectId, playerPower, 0)
     } else {
-        k.AppendGridCascadeQueue(ctx, playerIdBytes)
+        k.AppendGridCascadeQueue(ctx, playerObjectId)
     }
 
     // Remove the Infusion record from the store
