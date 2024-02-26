@@ -27,10 +27,20 @@ func (k msgServer) PlayerCreateProxy(goCtx context.Context, msg *types.MsgPlayer
     // The Guild can either openly allow GuildJoinType_Proxy (or any more open join type)
     // Or, if the Guild acceptance is locked down then we'll look to player permissions
 
+    guildObjectId           := GetObjectIDBytes(types.ObjectType_guild, guild.Id)
+    guildObjectPermissionId := GetObjectPermissionIDBytes(guildObjectId, proxyPlayer.Id)
+    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
+
     // Check to make sure the player has permissions on the guild
-    if (!k.GuildPermissionHasOneOf(ctx, guild.Id, proxyPlayer.Id, types.GuildPermissionRegisterPlayer)) {
+    if (!k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.Permission(types.GuildPermissionRegisterPlayer))) {
         return &types.MsgPlayerCreateProxyResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%d) has no Player Registration permissions ", proxyPlayer.Id)
     }
+
+    // Make sure the address calling this has Associate permissions
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManageGuild))) {
+        return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
+    }
+
 
 	// look up destination substation
 	substation, substationFound := k.GetSubstation(ctx, guild.EntrySubstationId, true)

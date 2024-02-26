@@ -82,7 +82,6 @@ const (
 
 const (
 	AllocationKey      = "Allocation/value/"
-	AllocationCountKey = "Allocation/count/"
 	AllocationAutoResizeKey = "Allocation/autoResize/"
 )
 

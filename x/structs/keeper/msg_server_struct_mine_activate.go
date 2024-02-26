@@ -25,9 +25,10 @@ func (k msgServer) StructMineActivate(goCtx context.Context, msg *types.MsgStruc
         return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The players substation (%d) is offline ",player.SubstationId)
     }
 
-    playerPermissions := k.AddressGetPlayerPermissions(ctx, msg.Creator)
-    if ((playerPermissions&types.AddressPermissionPlay) == 0) {
-        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
+    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
+    // Make sure the address calling this has Play permissions
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionPlay))) {
+        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
     }
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)

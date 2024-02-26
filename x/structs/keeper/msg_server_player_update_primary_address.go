@@ -22,10 +22,12 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
     callingPlayer, _ := k.GetPlayer(ctx, callingPlayerId)
 
 
-    playerPermissions := k.AddressGetPlayerPermissions(ctx, msg.Creator)
-    if ((playerPermissions&types.AddressPermissionManagePlayer) == 0) {
+    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
+    // Make sure the address calling this has Manage Player permissions
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManagePlayer))) {
         return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPermissionManagePlayer, "Calling address (%s) has no Manage Player permissions ", msg.Creator)
     }
+
 
     _ , addressValidationError := sdk.AccAddressFromBech32(msg.PrimaryAddress)
     if (addressValidationError != nil){

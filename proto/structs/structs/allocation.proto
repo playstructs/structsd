@@ -8,21 +8,20 @@ option go_package = "structs/x/structs/types";
 
 
 message Allocation {
+  bytes           id              = 1;
+  allocationType  type            = 2;
+
   // Core allocation details
-  objectType  sourceType          = 1;
-  uint64      sourceId            = 2;
-  uint64      index               = 3;
-  uint64      destinationId       = 4;
-  uint64      power               = 5;
+  bytes       sourceObjectId      = 3;
+  uint64      index               = 4;
+  bytes       destinationObjectId = 5;
+  uint64      power               = 6;
 
   // Who does this currently belong to
-  string      creator             = 6;
-  string      controller          = 7;
+  string      creator             = 7;
+  string      controller          = 8;
 
   // Locking will be needed for IBC
-  bool        locked              = 8;
+  bool        locked              = 9;
 
-  string      id                  = 9;
-
-  allocationType type             = 10;
 }

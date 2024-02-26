@@ -8,9 +8,6 @@ import (
 
 func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocationCreate) (*types.MsgAllocationCreateResponse, error) {
 
-
-// TODO turn this into a single allocation system now that source IDs are generalized
-
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	err := msg.ValidateBasic()
@@ -18,29 +15,15 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
 		return nil, err
 	}
 
-    // TODO This sucks
-    // should be using CreateAllocation
-	allocation := types.Allocation{
-		SourceType: types.ObjectType_substation,
-		SourceId:   msg.SourceId,
-		//DestinationId: 0,
-		Power:      0,
-		Locked:     false,
-		Creator:    msg.Creator,
-		Controller: msg.Creator,
-	}
-
+	allocation := types.CreateAllocationStub(msg.AllocationType, msg.SourceObjectId, msg.Power, msg.Creator, msg.Controller)
 
     player, playerFound := k.GetPlayer(ctx, k.GetPlayerIdFromAddress(ctx, msg.Creator))
     if (!playerFound) {
         return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrPlayerNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)
     }
 
-
-    sourceObjectId := []byte(msg.SourceObjectId)
-    sourceObjectPermissionId := GetObjectPermissionIDBytes(sourceObjectId, player.Id)
+    sourceObjectPermissionId := GetObjectPermissionIDBytes(msg.SourceObjectId, player.Id)
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-
 
     // check that the player has permissions
     if (!k.PermissionHasOneOf(ctx, sourceObjectPermissionId, types.Permission(types.SubstationPermissionAllocate))) {
@@ -52,27 +35,10 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
         return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
     }
 
-
-	// Check to see if the Substation has the Power available
-	// Calling SubstationIncrementAllocationLoad will update the Memory store so the change has already been applied if successful
-	//
-	// Maybe this will change but currently a new allocation can't be created without the
-	// available capacity to bring it online. In the future, we could allow for this and it would
-	// blow up older allocations until it hits the threshold, but that feels overly destructive.
-	_, incrementLoadError := k.SubstationIncrementAllocationLoad(ctx, msg.SourceId, msg.Power)
-	if incrementLoadError != nil {
-		return nil, incrementLoadError
-	}
-
-	allocation.SetPower(msg.Power)
-	allocation.SetController(msg.Controller)
-
-	allocationId := k.AppendAllocation(ctx, allocation)
-
+	allocationId, err := k.AppendAllocation(ctx, allocation)
 
 	return &types.MsgAllocationCreateResponse{
 		AllocationId: allocationId,
-	}, nil
-
+	}, err
 
 }

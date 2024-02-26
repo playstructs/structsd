@@ -5,43 +5,13 @@ import (
     "strconv"
 )
 
-
-func (a *Allocation) SetPower(newPower uint64) error {
-
-	a.Power = newPower
-
-	return nil
-}
-
-func (a *Allocation) SetController(controller string) error {
-
-	a.Controller = controller
-
-	return nil
-}
-
-func (a *Allocation) Disconnect() error {
-
-	a.DestinationId = 0
-
-	return nil
-}
-
-func (a *Allocation) SetDestinationId(destinationSubstationId uint64) error {
-
-	a.DestinationId = destinationSubstationId
-
-	return nil
-}
-
-func CreateAllocation(allocationType AllocationType, sourceType ObjectType, sourceId uint64, index uint64, power uint64, creator string, controller string ) Allocation {
+func CreateAllocationStub(allocationType AllocationType, sourceObjectId []byte, power uint64, creator string, controller string ) Allocation {
 	return Allocation{
-	    Id: GetAllocationIDString(sourceType, sourceId, index),
+	    Id: nil,
 		Type: allocationType,
-		SourceType: sourceType,
-		SourceId: sourceId,
-		Index: index,
-		DestinationId: 0,
+		SourceObjectId: sourceObjectId,
+		Index: 0,
+		DestinationObjectId: nil,
 		Power: power,
 		Creator: creator,
 		Controller: controller,
