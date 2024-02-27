@@ -174,3 +174,18 @@ func (k Keeper) GridCascade(ctx sdk.Context) {
     }
 }
 
+func (k Keeper) UpdateGridConnectionCapacity(ctx sdk.Context, objectId string) {
+    capacity := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId))
+    load     := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId))
+
+    if (capacity > load) {
+        availableCapacity = capacity - load
+
+        connectionCount = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectCount, objectId))
+        if (connectionCount == 0) { connectionCount = 1 }
+
+        k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, objectId), availableCapacity / connectionCount)
+    } else {
+        k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, objectId), 0)
+    }
+}

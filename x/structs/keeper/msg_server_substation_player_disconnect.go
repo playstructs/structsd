@@ -41,10 +41,9 @@ func (k msgServer) SubstationPlayerDisconnect(goCtx context.Context, msg *types.
     }
 
 
-    k.SubstationDecrementConnectedPlayerLoad(ctx, player.SubstationId, 1)
-
-    player.SetSubstation(0)
-    k.SetPlayer(ctx, player)
+	// connect to new substation
+	// This call handles the disconnection from other substations as well
+    k.SubstationDisconnectPlayer(ctx, targetPlayer)
 
 	return &types.MsgSubstationPlayerDisconnectResponse{}, nil
 }

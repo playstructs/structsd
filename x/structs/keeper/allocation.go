@@ -57,6 +57,8 @@ func (k Keeper) AppendAllocation(
 
     // Update the Source Load
     k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, allocation.SourceObjectId), allocation.Power)
+    // Update Connection Capacity
+    k.UpdateGridConnectionCapacity(ctx, allocation.SourceObjectId)
 
     // Set the Allocation Power
     k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocation.Id), newPower)
@@ -65,7 +67,10 @@ func (k Keeper) AppendAllocation(
     //
     // Permission checks on this connection should be done in the calling function
     if (allocation.DestinationObjectId > 0) {
-        k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, allocation.DestinationObjectId), allocation.Power)
+        newCapacity := k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, allocation.DestinationObjectId), allocation.Power)
+
+        // Update Connection Capacity
+        k.UpdateGridConnectionCapacity(ctx, allocation.DestinationObjectId)
     }
 
     // Increase the Index Pointer
@@ -136,10 +141,16 @@ func (k Keeper) SetAllocation(ctx sdk.Context, allocation types.Allocation) (all
     destinationCapacityId          := GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, allocation.DestinationObjectId)
     previousDestinationCapacityId  := GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, previousAllocation.DestinationObjectId)
 
+    var newCapacity uint64
+    var connectionCount uint64
+
     if (previousAllocation.DestinationObjectId == allocation.DestinationObjectId) {
         if ((allocation.DestinationObjectId != "") && (previousAllocation.Power != allocation.Power)) {
 
             k.SetGridAttributeDelta(ctx, destinationCapacityId, previousAllocation.Power, allocation.Power)
+
+            // Update Connection Capacity
+            k.UpdateGridConnectionCapacity(ctx, allocation.DestinationObjectId)
 
             if (previousAllocation.Power > allocation.Power) {
                 // Add Destination to the Grid Queue
@@ -152,7 +163,11 @@ func (k Keeper) SetAllocation(ctx sdk.Context, allocation types.Allocation) (all
         // Deal with the previous Destination first
         if (previousAllocation.DestinationObjectId != "") {
             // Decrease the Capacity of the old Destination
-            k.SetGridAttributeDecrement(ctx, previousDestinationCapacityId, previousAllocation.Power)
+            newCapacity = k.SetGridAttributeDecrement(ctx, previousDestinationCapacityId, previousAllocation.Power)
+
+            // Deal with the player connection capacity
+            k.UpdateGridConnectionCapacity(ctx, previousAllocation.DestinationObjectId)
+
             // Add old Destination to the Grid Queue
             k.AppendGridCascadeQueue(ctx, previousAllocation.DestinationObjectId)
 
@@ -192,10 +207,15 @@ func (k Keeper) DestroyAllocation(ctx sdk.Context, allocationId string) (destroy
     if allocationFound {
         // Decrease the Load of the Source
         k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, allocation.SourceObjectId), allocation.Power)
+        // Update Connection Capacity
+        k.UpdateGridConnectionCapacity(ctx, allocation.SourceObjectId)
 
         // Decrease the Capacity of the Destination
-        if (allocation.DestinationId > 0){
+        if (allocation.DestinationObjectId != ""){
             destinationCapacityId := GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, allocation.DestinationObjectId)
+
+            // Update Connection Capacity
+            k.UpdateGridConnectionCapacity(ctx, allocation.DestinationObjectId)
 
             k.SetGridAttributeDecrement(ctx, destinationCapacityId, allocation.Power)
             // Add Destination to the Grid Queue
@@ -319,9 +339,15 @@ func (k Keeper) AutoResizeAllocation(ctx sdk.Context, allocationId string, sourc
     k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, sourceId), newPower)
 
     // Update Destination Capacity
-    k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, allocation.DestinationId), oldPower, newPower)
+    k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, allocation.DestinationObjectId), oldPower, newPower)
+
+    // Update Connection Capacity
+    k.UpdateGridConnectionCapacity(ctx, allocation.DestinationObjectId)
+
+    // Check to see if we need to check on the Destination
     if (oldPower > newPower) {
-        k.AppendGridCascadeQueue(ctx, allocation.DestinationId)
+        k.AppendGridCascadeQueue(ctx, allocation.DestinationObjectId)
     }
 
 }
+

@@ -44,7 +44,6 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
         }
     }
 
-
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // check that the account has energy management permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManageEnergy))) {
@@ -54,7 +53,6 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
     substation, allocation, err := k.AppendSubstation(ctx, allocation, player)
 
     if (connectPlayer) {
-        // TODO - need to likely do some player work next
         k.SubstationConnectPlayer(ctx, substation, player)
     }
 

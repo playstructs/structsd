@@ -155,17 +155,40 @@ func (k Keeper) GetAllSubstation(ctx sdk.Context, full bool) (list []types.Subst
 func (k Keeper) SubstationConnectPlayer(ctx sdk.Context, substation types.Substation, player types.Player) (error) {
 
     // If the player is already on a substation then disconnect them from it first
-    if (player.SubstationId > 0) {
+    if (player.SubstationId != "") {
         k.SubstationDecrementConnectedPlayerLoad(ctx, player.SubstationId, 1)
+        // Update Connection Capacity for the old Substation
+        k.UpdateGridConnectionCapacity(ctx, player.SubstationId)
     }
 
-    // Connect Player to Substation
-    k.SubstationIncrementConnectedPlayerLoad(ctx, substation.Id, 1)
-
-    player.SetSubstation(substation.Id)
+    // Update the player record
+    player.Substation = substation.Id
+    // Commit the player changes
     k.SetPlayer(ctx, player)
+
+
+    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, player.SubstationId), 1)
+    // Update Connection Capacity
+    k.UpdateGridConnectionCapacity(ctx, player.SubstationId)
+
 
     return nil
 
 }
 
+func (k Keeper) SubstationDisconnectPlayer(ctx sdk.Context, player types.Player) (error) {
+
+    // If the player is already on a substation then disconnect them from it first
+    if (player.SubstationId != "") {
+        k.SubstationDecrementConnectedPlayerLoad(ctx, player.SubstationId, 1)
+        // Update Connection Capacity for the old Substation
+        k.UpdateGridConnectionCapacity(ctx, player.SubstationId)
+    }
+
+    // Update the player record
+    player.Substation = ""
+    // Commit the player changes
+    k.SetPlayer(ctx, player)
+
+    return nil
+}
