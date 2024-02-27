@@ -27,7 +27,7 @@ func (k Keeper) Address(goCtx context.Context, req *types.QueryGetAddressRequest
 
 	var permission types.QueryAddressResponse
     permission.Address  = req.Address
-    permission.PlayerId = k.GetPlayerIdFromAddress(ctx, permission.Address)
+    permission.PlayerId = k.GetPlayerIndexFromAddress(ctx, permission.Address)
     permission.PermissionRecord = permissionRecord
 
 	return &permission, nil
@@ -49,7 +49,7 @@ func (k Keeper) AddressAll(goCtx context.Context, req *types.QueryAllAddressRequ
 		var permission types.QueryAddressResponse
 
         permission.Address = string(key)
-        permission.PlayerId = k.GetPlayerIdFromAddress(ctx, permission.Address)
+        permission.PlayerId = k.GetPlayerIndexFromAddress(ctx, permission.Address)
         permission.PermissionRecord = binary.BigEndian.Uint64(value)
 
         permissions = append(permissions, &permission)
@@ -81,9 +81,9 @@ func (k Keeper) AddressAllByPlayer(goCtx context.Context, req *types.QueryAllAdd
 	pageRes, err := query.Paginate(addressPermissionStore, req.Pagination, func(key []byte, value []byte) error {
 		var permission types.QueryAddressResponse
 
-        if (k.GetPlayerIdFromAddress(ctx, string(key)) == req.PlayerId) {
+        if (k.GetPlayerIndexFromAddress(ctx, string(key)) == req.PlayerId) {
             permission.Address = string(key)
-            permission.PlayerId = k.GetPlayerIdFromAddress(ctx, permission.Address)
+            permission.PlayerId = k.GetPlayerIndexFromAddress(ctx, permission.Address)
             permission.PermissionRecord = binary.BigEndian.Uint64(value)
 
             permissions = append(permissions, &permission)

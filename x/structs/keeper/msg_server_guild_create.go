@@ -36,13 +36,13 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
         // that includes a validator as an associated address, it's able to perform this step
 
 
-    playerId := k.GetPlayerIdFromAddress(ctx, msg.Creator)
-    if (playerId == 0) {
+    playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
+    if (playerIndex == 0) {
         // should really never get here as player creation is triggered
         // during reactor initialization
         return &types.MsgGuildCreateResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Guild creation requires Player account but none associated with %s", msg.Creator)
     }
-    player, _ := k.GetPlayer(ctx, playerId)
+    player, _ := k.GetPlayerFromIndex(ctx, playerIndex, false)
 
 
     if (msg.EntrySubstationId > 0 ) {

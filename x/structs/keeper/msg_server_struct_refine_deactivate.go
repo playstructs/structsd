@@ -15,11 +15,11 @@ func (k msgServer) StructRefineDeactivate(goCtx context.Context, msg *types.MsgS
 		return nil, err
 	}
 
-    playerId := k.GetPlayerIdFromAddress(ctx, msg.Creator)
-    if (playerId == 0) {
+    playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
+    if (playerIndex == 0) {
         return &types.MsgStructRefineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build initialization requires Player account but none associated with %s", msg.Creator)
     }
-    player, _ := k.GetPlayer(ctx, playerId)
+    player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
     if (!k.SubstationIsOnline(ctx, player.SubstationId)){
         return &types.MsgStructRefineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The players substation (%d) is offline ",player.SubstationId)

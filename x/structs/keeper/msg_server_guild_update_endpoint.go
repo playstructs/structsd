@@ -16,11 +16,11 @@ func (k msgServer) GuildUpdateEndpoint(goCtx context.Context, msg *types.MsgGuil
 		return nil, err
 	}
 
-    playerId := k.GetPlayerIdFromAddress(ctx, msg.Creator)
+    playerId := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
     if (playerId == 0) {
         return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Guild update requires Player account but none associated with %s", msg.Creator)
     }
-    player, _ := k.GetPlayer(ctx, playerId)
+    player, _ := k.GetPlayerFromIndex(ctx, playerId, false)
 
     guild, guildFound := k.GetGuild(ctx, msg.GuildId)
     if (!guildFound) {

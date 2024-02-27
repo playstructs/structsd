@@ -15,11 +15,11 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
 		return nil, err
 	}
 
-    playerId := k.GetPlayerIdFromAddress(ctx, msg.Creator)
-    if (playerId == 0) {
+    playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
+    if (playerIndex == 0) {
         return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Planet Exploration requires Player account but none associated with %s", msg.Creator)
     }
-    player, _ := k.GetPlayer(ctx, playerId)
+    player, _ := k.GetPlayerFromIndex(ctx, playerIndex, false)
 
 
     playerPermissions := k.AddressGetPlayerPermissions(ctx, msg.Creator)

@@ -51,16 +51,15 @@ func KeyPrefix(p string) []byte {
 	return []byte(p)
 }
 
+
+const (
+    PermissionKey = "Permission/value/"
+)
 const (
 	ReactorKey          = "Reactor/value/"
 	ReactorCountKey     = "Reactor/count/"
 	ReactorValidatorKey = "Reactor/validator/"
-	ReactorCapacityKey  = "Reactor/capacity/"
-	ReactorLoadKey      = "Reactor/load/"
-	ReactorEnergyKey    = "Reactor/energy/"
-	ReactorFuelKey      = "Reactor/fuel/"
 
-	ReactorPermissionKey = "Reactor/permission/"
 
 	ReactorFuelToEnergyConversion = 100
 )
@@ -69,15 +68,6 @@ const (
 	SubstationKey       = "Substation/value/"
 	SubstationCountKey  = "Substation/count/"
 	SubstationStatusKey = "Substation/status/"
-
-	SubstationLoadKey                = "Substation/load/"
-	SubstationAllocationLoadKey      = "Substation/allocationLoad/"
-	SubstationConnectedPlayerLoadKey = "Substation/connectedPlayerLoad/"
-	SubstationConnectedPlayerCount   = "Substation/connectedPlayerCount/"
-
-	SubstationEnergyKey = "Substation/energy/"
-
-	SubstationPermissionKey = "Substation/permission/"
 )
 
 const (
@@ -93,7 +83,6 @@ const (
 const (
 	GuildKey      = "Guild/value/"
 	GuildCountKey = "Guild/count/"
-	GuildPermissionKey = "Guild/permission/"
 	GuildRegistrationKey = "Guild/registration/"
 
 
@@ -109,15 +98,12 @@ const (
 const (
 	PlayerKey      = "Player/value/"
 	PlayerCountKey = "Player/count/"
-	PlayerPermissionKey = "Player/permission/"
-	PlayerLoadKey = "Player/load/"
 
 	PlayerPassiveDraw = 25
 )
 
 const (
 	AddressPlayerKey = "Address/player/"
-	AddressPermissionKey = "Address/permission/"
 	AddressRegistrationKey = "Address/registration/"
 )
 
@@ -135,9 +121,6 @@ const (
 const (
 	StructKey      = "Struct/value/"
 	StructCountKey  = "Struct/count/"
-	StructLoadKey      = "Struct/load/"
-    StructEnergyKey    = "Struct/energy/"
-    StructFuelKey      = "Struct/fuel/"
 
 	StructFuelToEnergyConversion = 200
 )

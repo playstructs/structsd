@@ -11,7 +11,7 @@ func (k msgServer) PlayerCreate(goCtx context.Context, msg *types.MsgPlayerCreat
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// Look up requesting account
-	player := k.UpsertPlayer(ctx, msg.Creator)
+	player := k.UpsertPlayer(ctx, msg.Creator, true)
 
 	// look up destination guild
 	guild, guildFound := k.GetGuild(ctx, msg.GuildId)

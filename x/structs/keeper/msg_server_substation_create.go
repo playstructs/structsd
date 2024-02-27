@@ -26,10 +26,14 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
     }
 
 	// Check to see if ths calling address is a player and if it relates to the allocation
-    allocationPlayer, AllocationPlayerFound := k.GetPlayer(ctx, k.GetPlayerIdFromAddress(ctx, allocation.Controller))
+	//
+	// If the allocation doesn't have a player associated with it, then we will use this as
+	// a player creation point, initiating their player account and connecting it to this newly
+	// formed substation later on in the function call.
+    allocationPlayer, AllocationPlayerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, allocation.Controller), true)
     if (!AllocationPlayerFound) {
         if (allocation.Controller == msg.Creator){
-            player := k.UpsertPlayer(ctx, msg.Creator)
+            player := k.UpsertPlayer(ctx, msg.Creator, true)
             connectPlayer = true
         } else {
             return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation not controlled by player ", player.Id)

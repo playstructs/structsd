@@ -39,23 +39,26 @@ func (k Keeper) SetPlayerCount(ctx sdk.Context, count uint64) {
 func (k Keeper) AppendPlayer(
 	ctx sdk.Context,
 	player types.Player,
-) uint64 {
+) types.Player {
 	// Create the player
 	count := k.GetPlayerCount(ctx)
 
 	// Set the ID of the appended value
-	player.Id = count
+	player.Id = GetObjectId(types.ObjectType_player, count)
+	player.Index = count
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
 	appendedValue := k.cdc.MustMarshal(&player)
-	store.Set(GetObjectID(player.Id), appendedValue)
+	store.Set([]byte(player.Id), appendedValue)
 
 	// Update player count
 	k.SetPlayerCount(ctx, count+1)
 
 	//Add Address records
-	k.SetPlayerIdForAddress(ctx, player.Creator, player.Id)
-	k.AddressPermissionAdd(ctx, player.Creator, types.AddressPermissionAll)
+	k.SetPlayerIndexForAddress(ctx, player.Creator, player.Index)
+
+	addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
+	k.PermissionAdd(ctx, addressPermissionId, types.Permission(types.AddressPermissionAll))
 
 	// Add the Account keeper record
 	// This is needed for the proxy account creation
@@ -66,10 +69,12 @@ func (k Keeper) AppendPlayer(
         k.accountKeeper.SetAccount(ctx, playerAuthAccount)
     }
 
+    // Add the initial Player Load
+    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, player.Id), types.PlayerPassiveDraw)
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlayer{Player: &player})
 
-	return count
+	return player
 }
 
 // SetPlayer set a specific player in the store
@@ -83,19 +88,28 @@ func (k Keeper) SetPlayer(ctx sdk.Context, player types.Player) {
 }
 
 // GetPlayer returns a player from its id
-func (k Keeper) GetPlayer(ctx sdk.Context, id uint64) (val types.Player, found bool) {
+func (k Keeper) GetPlayer(ctx sdk.Context, playerId string, full bool) (val types.Player, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
-	b := store.Get(GetObjectID(id))
+	b := store.Get([]byte(playerId))
 	if b == nil {
 		return val, false
 	}
 	k.cdc.MustUnmarshal(b, &val)
 
-	val.Load = k.PlayerGetLoad(ctx, val.Id)
-	playerAcc, _ := sdk.AccAddressFromBech32(val.PrimaryAddress)
-    val.Storage = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
+    if (full) {
+        val.Load      = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
+        val.Capacity  = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
+
+    	playerAcc, _ := sdk.AccAddressFromBech32(val.PrimaryAddress)
+    	val.Storage   = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
+    }
 
 	return val, true
+}
+
+func (k Keeper) GetPlayerFromIndex(ctx sdk.Context, playerIndex uint64, full bool) (val types.Player, found bool) {
+    val, found = GetPlayer(ctx, GetObjectId(types.ObjectType_player, playerIndex), full)
+    return
 }
 
 // RemovePlayer removes a player from the store
@@ -105,7 +119,7 @@ func (k Keeper) RemovePlayer(ctx sdk.Context, id uint64) {
 }
 
 // GetAllPlayer returns all player
-func (k Keeper) GetAllPlayer(ctx sdk.Context) (list []types.Player) {
+func (k Keeper) GetAllPlayer(ctx sdk.Context, full bool) (list []types.Player) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
@@ -115,9 +129,14 @@ func (k Keeper) GetAllPlayer(ctx sdk.Context) (list []types.Player) {
 		var val types.Player
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
-		val.Load = k.PlayerGetLoad(ctx, val.Id)
-		playerAcc, _ := sdk.AccAddressFromBech32(val.PrimaryAddress)
-		val.Storage = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
+
+        if (full) {
+            val.Load      = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
+            val.Capacity  = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
+
+            playerAcc, _ := sdk.AccAddressFromBech32(val.PrimaryAddress)
+            val.Storage   = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
+        }
 
 		list = append(list, val)
 	}
@@ -126,7 +145,7 @@ func (k Keeper) GetAllPlayer(ctx sdk.Context) (list []types.Player) {
 }
 
 // GetAllPlayer returns all player
-func (k Keeper) GetAllPlayerBySubstation(ctx sdk.Context, substationId uint64) (list []types.Player) {
+func (k Keeper) GetAllPlayerBySubstation(ctx sdk.Context, substationId string, full bool) (list []types.Player) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
@@ -137,9 +156,14 @@ func (k Keeper) GetAllPlayerBySubstation(ctx sdk.Context, substationId uint64) (
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
         if (val.SubstationId == substationId) {
-            val.Load = k.PlayerGetLoad(ctx, val.Id)
-            playerAcc, _ := sdk.AccAddressFromBech32(val.PrimaryAddress)
-            val.Storage = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
+
+            if (full) {
+                val.Load      = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
+                val.Capacity  = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
+
+                playerAcc, _ := sdk.AccAddressFromBech32(val.PrimaryAddress)
+                val.Storage   = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
+            }
 
             list = append(list, val)
 		}
@@ -149,18 +173,18 @@ func (k Keeper) GetAllPlayerBySubstation(ctx sdk.Context, substationId uint64) (
 }
 
 // Technically more of an InGet than an UpSert
-func (k Keeper) UpsertPlayer(ctx sdk.Context, playerAddress string ) (player types.Player) {
-    playerId := k.GetPlayerIdFromAddress(ctx, playerAddress)
+func (k Keeper) UpsertPlayer(ctx sdk.Context, playerAddress string, full bool) (player types.Player) {
+    playerIndex := k.GetPlayerIndexFromAddress(ctx, playerAddress)
 
-    if (playerId == 0) {
+    if (playerIndex == 0) {
         // No Player Found, Creating..
-        player = types.CreateEmptyPlayer()
-        player.SetCreator(playerAddress)
-        playerId = k.AppendPlayer(ctx, player)
-        player.SetId(playerId)
+        player.Creator = playerAddress
+        player.PrimaryAddress = playerAddress
+
+        player = k.AppendPlayer(ctx, player)
 
     } else {
-        player, _ = k.GetPlayer(ctx, playerId)
+        player, _ = k.GetPlayer(ctx, GetObjectId(types.ObjectType_player, playerIndex, full)
     }
 
     return player

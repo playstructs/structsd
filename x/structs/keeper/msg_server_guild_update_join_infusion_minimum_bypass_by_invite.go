@@ -16,11 +16,11 @@ func (k msgServer) GuildUpdateJoinInfusionMinimumBypassByInvite(goCtx context.Co
 		return nil, err
 	}
 
-    playerId := k.GetPlayerIdFromAddress(ctx, msg.Creator)
-    if (playerId == 0) {
+    playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
+    if (playerIndex == 0) {
         return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Guild update requires Player account but none associated with %s", msg.Creator)
     }
-    player, _ := k.GetPlayer(ctx, playerId)
+    player, _ := k.GetPlayerFromIndex(ctx, playerIndex, false)
 
     guild, guildFound := k.GetGuild(ctx, msg.Id)
     if (!guildFound) {

@@ -19,11 +19,11 @@ func (k msgServer) StructRefine(goCtx context.Context, msg *types.MsgStructRefin
 		return nil, err
 	}
 
-    playerId := k.GetPlayerIdFromAddress(ctx, msg.Creator)
-    if (playerId == 0) {
+    playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
+    if (playerIndex == 0) {
         return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct refine requires Player account but none associated with %s", msg.Creator)
     }
-    player, _ := k.GetPlayer(ctx, playerId)
+    player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
     if (!k.SubstationIsOnline(ctx, player.SubstationId)){
         return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The players substation (%d) is offline ",player.SubstationId)

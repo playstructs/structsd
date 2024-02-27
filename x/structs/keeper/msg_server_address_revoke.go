@@ -11,7 +11,7 @@ import (
 func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRevoke) (*types.MsgAddressRevokeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-    player, playerFound := k.GetPlayer(ctx, k.GetPlayerIdFromAddress(ctx, msg.Creator))
+    player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator), false)
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
 
@@ -23,9 +23,8 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
 
     if (playerFound) {
         // TODO Add address proof signature verification
-        playerId := k.GetPlayerIdFromAddress(ctx, msg.Address)
-        if (playerId == player.Id) {
-            // TODO check permissions that the specific address has revoke capabilities
+        playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Address)
+        if (playerIndex == player.Index) {
             k.AddressPermissionClearAll(ctx, msg.Address)
         }
     }

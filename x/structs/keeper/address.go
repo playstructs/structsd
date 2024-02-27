@@ -13,7 +13,7 @@ import (
 
 
 
-func (k Keeper) GetPlayerIdFromAddress(ctx sdk.Context, address string) (uint64) {
+func (k Keeper) GetPlayerIndexFromAddress(ctx sdk.Context, address string) (uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressPlayerKey))
 
 	bz := store.Get(types.KeyPrefix(address))
@@ -26,11 +26,11 @@ func (k Keeper) GetPlayerIdFromAddress(ctx sdk.Context, address string) (uint64)
 	return binary.BigEndian.Uint64(bz)
 }
 
-func (k Keeper) SetPlayerIdForAddress(ctx sdk.Context, address string, playerId uint64)  {
+func (k Keeper) SetPlayerIndexForAddress(ctx sdk.Context, address string, playerIndex uint64)  {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressPlayerKey))
 
 	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, playerId)
+	binary.BigEndian.PutUint64(bz, playerIndex)
 
 	store.Set(types.KeyPrefix(address), bz)
 
@@ -45,7 +45,7 @@ func (k Keeper) AddressSetRegisterRequest(ctx sdk.Context, player types.Player, 
     store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressRegistrationKey))
 
     bz := make([]byte, 8)
-    binary.BigEndian.PutUint64(bz, player.Id)
+    binary.BigEndian.PutUint64(bz, player.Index)
 
     store.Set(types.KeyPrefix(address), bz)
 
@@ -55,7 +55,7 @@ func (k Keeper) AddressSetRegisterRequest(ctx sdk.Context, player types.Player, 
 func (k Keeper) AddressApproveRegisterRequest(ctx sdk.Context, player types.Player, address string, permissions types.AddressPermission) {
 
     registrationPlayer, registrationFound := k.AddressGetRegisterRequest(ctx, address)
-    if ((registrationFound) && (registrationPlayer.Id == player.Id)) {
+    if ((registrationFound) && (registrationPlayer.Index == player.Index)) {
             k.AddressPermissionAdd(ctx, address, permissions)
 
             store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressRegistrationKey))

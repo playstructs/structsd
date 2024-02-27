@@ -15,7 +15,7 @@ func (k msgServer) GuildApproveRegister(goCtx context.Context, msg *types.MsgGui
 		return nil, err
 	}
 
-    player, playerFound := k.GetPlayer(ctx, k.GetPlayerIdFromAddress(ctx, msg.Creator))
+    player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator), false)
 
 
     if (!playerFound) {

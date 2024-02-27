@@ -15,11 +15,11 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
 		return nil, err
 	}
 
-    callingPlayerId := k.GetPlayerIdFromAddress(ctx, msg.Creator)
-    if (callingPlayerId == 0) {
+    callingPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
+    if (callingPlayerIndex == 0) {
         return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Player Management requires Player account but none associated with %s", msg.Creator)
     }
-    callingPlayer, _ := k.GetPlayer(ctx, callingPlayerId)
+    callingPlayer, _ := k.GetPlayerFromIndex(ctx, callingPlayerIndex, true)
 
 
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
@@ -34,16 +34,16 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
         return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPlayerUpdate, "New Primary Address provided (%s) couldn't be validated as a real address. Update aborted. ", msg.PrimaryAddress)
     }
 
-    relatedPlayerId := k.GetPlayerIdFromAddress(ctx, msg.PrimaryAddress)
-    if (relatedPlayerId == 0) {
+    relatedPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.PrimaryAddress)
+    if (relatedPlayerIndex == 0) {
         return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPlayerUpdate, "New Primary Address provided (%s) is not associated with a player, register it with the player before setting it as Primary. Update aborted.", msg.PrimaryAddress, relatedPlayerId, callingPlayerId)
     }
 
-    if (relatedPlayerId != callingPlayerId) {
+    if (relatedPlayerIndex != callingPlayerIndex) {
         return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPlayerUpdate, "New Primary Address provided (%s) is associated with Player %d instead of Player %d. Update aborted.", msg.PrimaryAddress, relatedPlayerId, callingPlayerId)
     }
 
-    callingPlayer.SetPrimaryAddress(msg.PrimaryAddress)
+    callingPlayer.PrimaryAddress = msg.PrimaryAddress
     k.SetPlayer(ctx, callingPlayer)
 
 	return &types.MsgPlayerUpdatePrimaryAddressResponse{}, nil

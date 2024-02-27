@@ -5,52 +5,6 @@ import (
 )
 
 
-func (player *Player) SetId(id uint64) error {
-
-	player.Id = id
-
-	return nil
-}
-
-func (player *Player) SetCreator(creator string) error {
-
-	player.Creator = creator
-	player.PrimaryAddress = creator
-
-	return nil
-}
-
-func (player *Player) SetPrimaryAddress(primaryAddress string) error {
-	player.PrimaryAddress = primaryAddress
-
-	return nil
-}
-
-
-func (player *Player) SetGuild(guildId uint64) error {
-
-	player.GuildId = guildId
-
-	return nil
-}
-
-
-func (player *Player) SetPlanetId(planetId uint64) error {
-
-	player.PlanetId = planetId
-
-	return nil
-}
-
-
-func (player *Player) SetSubstation(substationId uint64) error {
-
-	player.SubstationId = substationId
-
-	return nil
-}
-
-
 func CreateEmptyPlayer() Player {
 	return Player{
 	    Id:             0,

@@ -14,7 +14,7 @@ func (k msgServer) PlayerCreateProxy(goCtx context.Context, msg *types.MsgPlayer
 	// Basically, the player will need to provide some sort of signature that can then be verified here
 
 	// Look up requesting account
-	proxyPlayer := k.UpsertPlayer(ctx, msg.Creator)
+	proxyPlayer := k.UpsertPlayer(ctx, msg.Creator, true)
 
 	// look up destination guild
 	guild, guildFound := k.GetGuild(ctx, proxyPlayer.GuildId)
@@ -50,7 +50,7 @@ func (k msgServer) PlayerCreateProxy(goCtx context.Context, msg *types.MsgPlayer
     }
 
 	// create new player
-    player := k.UpsertPlayer(ctx, msg.Address)
+    player := k.UpsertPlayer(ctx, msg.Address, true)
 
     // Add player to the guild
     player.SetGuild(guild.Id)

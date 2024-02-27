@@ -10,12 +10,12 @@ import (
 func (k msgServer) SubstationPlayerConnect(goCtx context.Context, msg *types.MsgSubstationPlayerConnect) (*types.MsgSubstationPlayerConnectResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	player, playerFound := k.GetPlayer(ctx, k.GetPlayerIdFromAddress(ctx, msg.Creator))
+	player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator), true)
     if (!playerFound) {
         return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrPlayerNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)
     }
 
-	targetPlayer, targetPlayerFound := k.GetPlayer(ctx, msg.PlayerId)
+	targetPlayer, targetPlayerFound := k.GetPlayer(ctx, msg.PlayerId, true)
     if (!targetPlayerFound) {
         return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrPlayerNotFound, "Target player (%d) could be be found", player.Id)
     }

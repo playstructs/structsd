@@ -11,7 +11,7 @@ import (
 func (k msgServer) AddressApproveRegister(goCtx context.Context, msg *types.MsgAddressApproveRegister) (*types.MsgAddressRegisterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-    player, playerFound := k.GetPlayer(ctx, k.GetPlayerIdFromAddress(ctx, msg.Creator))
+    player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator), false)
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
 
@@ -25,11 +25,8 @@ func (k msgServer) AddressApproveRegister(goCtx context.Context, msg *types.MsgA
         return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionAssociation, "Calling address (%s) does not have permissions needed to allow address association of higher functionality ", msg.Creator)
     }
 
-
     if (playerFound) {
         if (msg.Approve) {
-            // TODO permission checking to see if this specific account has the ability to grant these permissions
-
             k.AddressApproveRegisterRequest(ctx, player, msg.Address, desiredPermissions)
         } else {
             k.AddressDenyRegisterRequest(ctx, player, msg.Address)
