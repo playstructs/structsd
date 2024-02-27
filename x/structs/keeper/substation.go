@@ -51,13 +51,13 @@ func (k Keeper) AppendSubstation(
 	ctx sdk.Context,
     allocation types.Allocation,
     player types.Player,
-) (substation types.Substation, allocation types.Allocation, err error) {
+) (substation types.Substation, updatedAllocation types.Allocation, err error) {
 	// Set the ID of the appended value
     substation.Id = GetObjectId(types.ObjectType_substation, k.GetNextSubstationId(ctx))
 
     // Update the allocations new destination
     allocation.DestinationId = substation.Id
-    updatedAllocation, err := k.SetAllocation(ctx, allocation)
+    updatedAllocation, err = k.SetAllocation(ctx, allocation)
     if (err != nil) {
         return substation, updatedAllocation, err
     }
@@ -79,7 +79,7 @@ func (k Keeper) AppendSubstation(
     // Cache invalidation event
     _ = ctx.EventManager().EmitTypedEvent(&types.EventSubstation{Substation: &substation})
 
-	return substation, allocation, err
+	return substation, updatedAllocation, err
 }
 
 // SetSubstation set a specific substation in the store

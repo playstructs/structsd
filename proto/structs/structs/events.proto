@@ -130,16 +130,13 @@ message EventPermissionBodyKeyPair {
 
 
 message EventAllocationDelete {
-  uint64 allocationId = 1;
+  string allocationId = 1;
 }
 
 message EventGuildDelete {
   uint64 guildId = 1;
 }
 
-message EventSquadDelete {
-  uint64 SquadId = 1;
-}
 
 message EventInfusionDelete {
   objectType  destinationType   = 1;

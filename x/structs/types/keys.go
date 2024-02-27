@@ -55,6 +55,12 @@ func KeyPrefix(p string) []byte {
 const (
     PermissionKey = "Permission/value/"
 )
+
+const (
+    GridAttributeKey = "Grid/attribute/"
+    GridCascadeQueue = "Grid/cascadeQueue/"
+)
+
 const (
 	ReactorKey          = "Reactor/value/"
 	ReactorCountKey     = "Reactor/count/"
@@ -124,6 +130,8 @@ const (
 
 	StructFuelToEnergyConversion = 200
 )
+
+
 
 /*
  * Additional code needed for ObjectType enumeration that the proto

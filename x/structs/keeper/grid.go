@@ -33,7 +33,7 @@ func GetGridAttributeIDByObjectId(gridAttributeType types.GridAttributeType, obj
 }
 
 
-func (k Keeper) GetGridAttribute(ctx sdk.Context, gridAttributeId string) (amount uint64, err error) {
+func (k Keeper) GetGridAttribute(ctx sdk.Context, gridAttributeId string) (amount uint64) {
 	gridAttributeStore := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GridAttributeKey))
 
 	bz := gridAttributeStore.Get([]byte(gridAttributeId))
@@ -57,7 +57,8 @@ func (k Keeper) SetGridAttribute(ctx sdk.Context, gridAttributeId string, amount
 	binary.BigEndian.PutUint64(bz, amount)
 
 	store.Set([]byte(gridAttributeId), bz)
-    _ = ctx.EventManager().EmitTypedEvent(&types.EventGridUpdate{Body: &types.EventBodyKeyPair{Key: gridAttributeId, Value: amount}})
+
+    //_ = ctx.EventManager().EmitTypedEvent(&types.EventGridUpdate{Body: &types.EventBodyKeyPair{Key: gridAttributeId, Value: amount}})
 }
 
 func (k Keeper) SetGridAttributeDelta(ctx sdk.Context, gridAttributeId string, oldAmount uint64, newAmount uint64) (amount uint64, err error) {
@@ -67,7 +68,7 @@ func (k Keeper) SetGridAttributeDelta(ctx sdk.Context, gridAttributeId string, o
         // An error that should never happen
     }
 
-    resetAmount = currentAmount - oldAmount
+    resetAmount := currentAmount - oldAmount
     amount = resetAmount + newAmount
 
     k.SetGridAttribute(ctx, gridAttributeId, amount)
@@ -123,6 +124,8 @@ func (k Keeper) AppendGridCascadeQueue(ctx sdk.Context, queueId string) (err err
 	binary.BigEndian.PutBool(bz, bool(true))
 
 	gridCascadeQueueStore.Set([]byte(queueId), bz)
+
+	return err
 }
 
 func (k Keeper) GridCascade(ctx sdk.Context) {
@@ -149,11 +152,11 @@ func (k Keeper) GridCascade(ctx sdk.Context) {
             allocationPointer    = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerStart, objectId))
             allocationPointerEnd = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerEnd, objectId))
 
-            for (k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, queueId)) > k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId))) {
+            for (k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)) > k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId))) {
 
                 // Iterate through the allocationPointer until we successfully delete an allocation
                 for {
-                    allocationDestroyed = k.DestroyAllocation(ctx, GetAllocationIDByObjectId(objectId, allocationPointer))
+                    allocationDestroyed = k.DestroyAllocation(ctx, GetAllocationID(objectId, allocationPointer))
                     allocationPointer   = allocationPointer + 1
 
                     if ((allocationDestroyed) || (allocationPointer > allocationPointerEnd)) {
@@ -178,9 +181,9 @@ func (k Keeper) UpdateGridConnectionCapacity(ctx sdk.Context, objectId string) {
     load     := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId))
 
     if (capacity > load) {
-        availableCapacity = capacity - load
+        availableCapacity := capacity - load
 
-        connectionCount = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectCount, objectId))
+        connectionCount := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectCount, objectId))
         if (connectionCount == 0) { connectionCount = 1 }
 
         k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, objectId), availableCapacity / connectionCount)

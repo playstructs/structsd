@@ -20,6 +20,8 @@ var (
 	ErrAllocationSourceNotFound             = sdkerrors.Register(ModuleName, 1513, "source not found")
 	ErrAllocationSourceNotOnline            = sdkerrors.Register(ModuleName, 1514, "source not online")
 	ErrAllocationConnectionChangeImpossible = sdkerrors.Register(ModuleName, 1515, "allocation connection change attempted is impossible")
+	ErrAllocationSet                        = sdkerrors.Register(ModuleName, 1516, "allocation could not be updated")
+	ErrAllocationAppend                     = sdkerrors.Register(ModuleName, 1517, "allocation could not be created")
 
     ErrPlayerRequired                       = sdkerrors.Register(ModuleName, 1530, "player account required for this action")
     ErrPlayerNotFound                       = sdkerrors.Register(ModuleName, 1531, "player account specified does not exist")

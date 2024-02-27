@@ -34,8 +34,7 @@ func (k Keeper) SetPlayerIndexForAddress(ctx sdk.Context, address string, player
 
 	store.Set(types.KeyPrefix(address), bz)
 
-
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventAddressAssociation{Address: &types.EventAddressBody{Address: address, PlayerId: playerId}})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventAddressAssociation{Address: &types.EventAddressBody{Address: address, PlayerId: playerIndex}})
 
 
 }
@@ -49,14 +48,16 @@ func (k Keeper) AddressSetRegisterRequest(ctx sdk.Context, player types.Player, 
 
     store.Set(types.KeyPrefix(address), bz)
 
-    _ = ctx.EventManager().EmitTypedEvent(&types.EventAddressRegistrationRequest{Address: &types.EventAddressBody{Address: address, PlayerId: player.Id}})
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventAddressRegistrationRequest{Address: &types.EventAddressBody{Address: address, PlayerId: player.Index}})
 }
 
 func (k Keeper) AddressApproveRegisterRequest(ctx sdk.Context, player types.Player, address string, permissions types.AddressPermission) {
 
     registrationPlayer, registrationFound := k.AddressGetRegisterRequest(ctx, address)
     if ((registrationFound) && (registrationPlayer.Index == player.Index)) {
-            k.AddressPermissionAdd(ctx, address, permissions)
+
+            addressPermissionId := GetAddressPermissionIDBytes(address)
+            k.PermissionAdd(ctx, addressPermissionId, types.Permission(permissions))
 
             store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressRegistrationKey))
             store.Delete(types.KeyPrefix(address))
@@ -82,7 +83,7 @@ func (k Keeper) AddressGetRegisterRequest(ctx sdk.Context, address string) (play
     		return types.Player{}, false
     	}
 
-    	player, found = k.GetPlayer(ctx, binary.BigEndian.Uint64(bz))
+    	player, found = k.GetPlayerFromIndex(ctx, binary.BigEndian.Uint64(bz), false)
 
     	return player, found
 
