@@ -63,16 +63,16 @@ message MsgSubstationCreateResponse {
 
 message MsgSubstationDelete {
   string creator               = 1;
-  uint64 substationId          = 2;
-  uint64 migrationSubstationId = 3;
+  string substationId          = 2;
+  string migrationSubstationId = 3;
 }
 
 message MsgSubstationDeleteResponse {}
 
 message MsgSubstationAllocationConnect {
   string creator                 = 1;
-  uint64 allocationId            = 2;
-  uint64 destinationSubstationId = 3;
+  string allocationId            = 2;
+  string destinationSubstationId = 3;
 }
 
 message MsgSubstationAllocationConnectResponse {}

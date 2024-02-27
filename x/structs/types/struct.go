@@ -75,7 +75,7 @@ func (structure *Struct) SetRefiningSystemActivationBlock(block uint64) error {
 //
 // This will need some work later on to be more dynamic in
 // relation to other system state, but for now it is static.
-func CalculateStructEnergy(fuel uint64) (energy uint64) {
+func CalculateStructPower(fuel uint64) (energy uint64) {
     return fuel * StructFuelToEnergyConversion
 }
 

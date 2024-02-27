@@ -48,19 +48,7 @@ func (k Keeper) GetInfusion(ctx sdk.Context, destinationType types.ObjectType, d
 	return val, true
 }
 
-func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType, destinationId uint64, player types.Player, fuel uint64, commission sdk.Dec)
-                    (
-                        infusion types.Infusion,
-                        newInfusionFuel uint64,
-                        oldInfusionFuel uint64,
-                        newInfusionPower uint64,
-                        oldInfusionPower uint64,
-                        newCommissionPower uint64,
-                        oldCommissionPower uint64,
-                        newPlayerPower uint64,
-                        oldPlayerPower uint64,
-                        err error
-                    ){
+func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType, destinationId uint64, player types.Player, fuel uint64, commission sdk.Dec) (infusion types.Infusion, newInfusionFuel uint64, oldInfusionFuel uint64, newInfusionPower uint64, oldInfusionPower uint64, newCommissionPower uint64, oldCommissionPower uint64, newPlayerPower uint64, oldPlayerPower uint64, err error) {
 
     infusion, infusionFound := k.GetInfusion(ctx, destinationType, destinationId, player.Address)
     if (infusionFound) {

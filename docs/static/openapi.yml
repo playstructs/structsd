@@ -46743,25 +46743,23 @@ paths:
                 items:
                   type: object
                   properties:
-                    sourceType:
-                      title: Core allocation details
+                    id:
+                      type: string
+                    type:
                       type: string
                       enum:
-                        - guild
-                        - player
-                        - planet
-                        - reactor
-                        - substation
-                        - struct
-                        - allocation
-                        - infusion
-                      default: guild
-                    sourceId:
+                        - static
+                        - dynamic
+                        - automated
+                      default: static
+                    sourceObjectId:
+                      type: string
+                      title: Core allocation details
+                    index:
                       type: string
                       format: uint64
-                    destinationId:
+                    destinationObjectId:
                       type: string
-                      format: uint64
                     power:
                       type: string
                       format: uint64
@@ -46773,14 +46771,6 @@ paths:
                     locked:
                       type: boolean
                       title: Locking will be needed for IBC
-                    HasLinkedInfusion:
-                      type: boolean
-                      title: '"dynamic" might be a better name for this'
-                    linkedInfusion:
-                      type: string
-                    id:
-                      type: string
-                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -47071,25 +47061,23 @@ paths:
               Allocation:
                 type: object
                 properties:
-                  sourceType:
-                    title: Core allocation details
+                  id:
+                    type: string
+                  type:
                     type: string
                     enum:
-                      - guild
-                      - player
-                      - planet
-                      - reactor
-                      - substation
-                      - struct
-                      - allocation
-                      - infusion
-                    default: guild
-                  sourceId:
+                      - static
+                      - dynamic
+                      - automated
+                    default: static
+                  sourceObjectId:
+                    type: string
+                    title: Core allocation details
+                  index:
                     type: string
                     format: uint64
-                  destinationId:
+                  destinationObjectId:
                     type: string
-                    format: uint64
                   power:
                     type: string
                     format: uint64
@@ -47101,14 +47089,6 @@ paths:
                   locked:
                     type: boolean
                     title: Locking will be needed for IBC
-                  HasLinkedInfusion:
-                    type: boolean
-                    title: '"dynamic" might be a better name for this'
-                  linkedInfusion:
-                    type: string
-                  id:
-                    type: string
-                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -47869,6 +47849,7 @@ paths:
                         - struct
                         - allocation
                         - infusion
+                        - address
                       default: guild
                     destinationId:
                       type: string
@@ -47876,13 +47857,12 @@ paths:
                     fuel:
                       type: string
                       format: uint64
-                    energy:
+                    power:
                       type: string
                       format: uint64
-                    linkedSourceAllocationId:
+                    commission:
                       type: string
-                      format: uint64
-                    linkedPlayerAllocationId:
+                    playerId:
                       type: string
                       format: uint64
                     address:
@@ -48188,6 +48168,7 @@ paths:
                       - struct
                       - allocation
                       - infusion
+                      - address
                     default: guild
                   destinationId:
                     type: string
@@ -48195,13 +48176,12 @@ paths:
                   fuel:
                     type: string
                     format: uint64
-                  energy:
+                  power:
                     type: string
                     format: uint64
-                  linkedSourceAllocationId:
+                  commission:
                     type: string
-                    format: uint64
-                  linkedPlayerAllocationId:
+                  playerId:
                     type: string
                     format: uint64
                   address:
@@ -52458,21 +52438,23 @@ paths:
                   properties:
                     id:
                       type: string
+                    index:
+                      type: string
                       format: uint64
                     guildId:
                       type: string
-                      format: uint64
                     substationId:
                       type: string
-                      format: uint64
                     creator:
                       type: string
                     primaryAddress:
                       type: string
                     planetId:
                       type: string
-                      format: uint64
                     load:
+                      type: string
+                      format: uint64
+                    capacity:
                       type: string
                       format: uint64
                     storage:
@@ -52777,21 +52759,23 @@ paths:
                 properties:
                   id:
                     type: string
+                  index:
+                    type: string
                     format: uint64
                   guildId:
                     type: string
-                    format: uint64
                   substationId:
                     type: string
-                    format: uint64
                   creator:
                     type: string
                   primaryAddress:
                     type: string
                   planetId:
                     type: string
-                    format: uint64
                   load:
+                    type: string
+                    format: uint64
+                  capacity:
                     type: string
                     format: uint64
                   storage:
@@ -53024,7 +53008,7 @@ paths:
                     fuel:
                       type: string
                       format: uint64
-                    energy:
+                    capacity:
                       type: string
                       format: uint64
                     load:
@@ -53033,24 +53017,11 @@ paths:
                     guildId:
                       type: string
                       format: uint64
-                    automatedAllocations:
-                      type: boolean
-                    allowManualAllocations:
-                      type: boolean
-                    allowExternalAllocations:
-                      type: boolean
-                    allowUncappedAllocations:
-                      type: boolean
-                    delegateMinimumBeforeAllowedAllocations:
-                      type: string
-                    delegateTaxOnAllocations:
+                    defaultCommission:
                       type: string
                     rawAddress:
                       type: string
                       format: byte
-                    serviceSubstationId:
-                      type: string
-                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -53344,7 +53315,7 @@ paths:
                   fuel:
                     type: string
                     format: uint64
-                  energy:
+                  capacity:
                     type: string
                     format: uint64
                   load:
@@ -53353,24 +53324,11 @@ paths:
                   guildId:
                     type: string
                     format: uint64
-                  automatedAllocations:
-                    type: boolean
-                  allowManualAllocations:
-                    type: boolean
-                  allowExternalAllocations:
-                    type: boolean
-                  allowUncappedAllocations:
-                    type: boolean
-                  delegateMinimumBeforeAllowedAllocations:
-                    type: string
-                  delegateTaxOnAllocations:
+                  defaultCommission:
                     type: string
                   rawAddress:
                     type: string
                     format: byte
-                  serviceSubstationId:
-                    type: string
-                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -53645,7 +53603,7 @@ paths:
                     powerSystemFuel:
                       type: string
                       format: uint64
-                    powerSystemEnergy:
+                    powerSystemCapacity:
                       type: string
                       format: uint64
                     powerSystemLoad:
@@ -54006,7 +53964,7 @@ paths:
                   powerSystemFuel:
                     type: string
                     format: uint64
-                  powerSystemEnergy:
+                  powerSystemCapacity:
                     type: string
                     format: uint64
                   powerSystemLoad:
@@ -54224,10 +54182,6 @@ paths:
                   properties:
                     id:
                       type: string
-                      format: uint64
-                    playerConnectionAllocation:
-                      type: string
-                      format: uint64
                     owner:
                       type: string
                       format: uint64
@@ -54236,10 +54190,13 @@ paths:
                     load:
                       type: string
                       format: uint64
-                    energy:
+                    capacity:
                       type: string
                       format: uint64
-                    connectedPlayerCount:
+                    connectionCount:
+                      type: string
+                      format: uint64
+                    connectionCapacity:
                       type: string
                       format: uint64
               pagination:
@@ -54529,10 +54486,6 @@ paths:
                 properties:
                   id:
                     type: string
-                    format: uint64
-                  playerConnectionAllocation:
-                    type: string
-                    format: uint64
                   owner:
                     type: string
                     format: uint64
@@ -54541,10 +54494,13 @@ paths:
                   load:
                     type: string
                     format: uint64
-                  energy:
+                  capacity:
                     type: string
                     format: uint64
-                  connectedPlayerCount:
+                  connectionCount:
+                    type: string
+                    format: uint64
+                  connectionCapacity:
                     type: string
                     format: uint64
         default:
@@ -83027,25 +82983,23 @@ definitions:
   structs.Allocation:
     type: object
     properties:
-      sourceType:
-        title: Core allocation details
+      id:
+        type: string
+      type:
         type: string
         enum:
-          - guild
-          - player
-          - planet
-          - reactor
-          - substation
-          - struct
-          - allocation
-          - infusion
-        default: guild
-      sourceId:
+          - static
+          - dynamic
+          - automated
+        default: static
+      sourceObjectId:
+        type: string
+        title: Core allocation details
+      index:
         type: string
         format: uint64
-      destinationId:
+      destinationObjectId:
         type: string
-        format: uint64
       power:
         type: string
         format: uint64
@@ -83057,14 +83011,6 @@ definitions:
       locked:
         type: boolean
         title: Locking will be needed for IBC
-      HasLinkedInfusion:
-        type: boolean
-        title: '"dynamic" might be a better name for this'
-      linkedInfusion:
-        type: string
-      id:
-        type: string
-        format: uint64
   structs.Guild:
     type: object
     properties:
@@ -83107,6 +83053,7 @@ definitions:
           - struct
           - allocation
           - infusion
+          - address
         default: guild
       destinationId:
         type: string
@@ -83114,13 +83061,12 @@ definitions:
       fuel:
         type: string
         format: uint64
-      energy:
+      power:
         type: string
         format: uint64
-      linkedSourceAllocationId:
+      commission:
         type: string
-        format: uint64
-      linkedPlayerAllocationId:
+      playerId:
         type: string
         format: uint64
       address:
@@ -83134,7 +83080,6 @@ definitions:
     properties:
       allocationId:
         type: string
-        format: uint64
   structs.MsgGuildApproveRegisterResponse:
     type: object
   structs.MsgGuildCreateResponse:
@@ -83284,7 +83229,7 @@ definitions:
           powerSystemFuel:
             type: string
             format: uint64
-          powerSystemEnergy:
+          powerSystemCapacity:
             type: string
             format: uint64
           powerSystemLoad:
@@ -83366,7 +83311,7 @@ definitions:
           powerSystemFuel:
             type: string
             format: uint64
-          powerSystemEnergy:
+          powerSystemCapacity:
             type: string
             format: uint64
           powerSystemLoad:
@@ -83448,7 +83393,7 @@ definitions:
           powerSystemFuel:
             type: string
             format: uint64
-          powerSystemEnergy:
+          powerSystemCapacity:
             type: string
             format: uint64
           powerSystemLoad:
@@ -83532,7 +83477,7 @@ definitions:
           powerSystemFuel:
             type: string
             format: uint64
-          powerSystemEnergy:
+          powerSystemCapacity:
             type: string
             format: uint64
           powerSystemLoad:
@@ -83614,7 +83559,7 @@ definitions:
           powerSystemFuel:
             type: string
             format: uint64
-          powerSystemEnergy:
+          powerSystemCapacity:
             type: string
             format: uint64
           powerSystemLoad:
@@ -83696,7 +83641,7 @@ definitions:
           powerSystemFuel:
             type: string
             format: uint64
-          powerSystemEnergy:
+          powerSystemCapacity:
             type: string
             format: uint64
           powerSystemLoad:
@@ -83778,7 +83723,7 @@ definitions:
           powerSystemFuel:
             type: string
             format: uint64
-          powerSystemEnergy:
+          powerSystemCapacity:
             type: string
             format: uint64
           powerSystemLoad:
@@ -83860,7 +83805,7 @@ definitions:
           powerSystemFuel:
             type: string
             format: uint64
-          powerSystemEnergy:
+          powerSystemCapacity:
             type: string
             format: uint64
           powerSystemLoad:
@@ -83942,7 +83887,7 @@ definitions:
           powerSystemFuel:
             type: string
             format: uint64
-          powerSystemEnergy:
+          powerSystemCapacity:
             type: string
             format: uint64
           powerSystemLoad:
@@ -83960,7 +83905,6 @@ definitions:
     properties:
       substationId:
         type: string
-        format: uint64
   structs.MsgSubstationDeleteResponse:
     type: object
   structs.MsgSubstationPlayerConnectResponse:
@@ -84030,21 +83974,23 @@ definitions:
     properties:
       id:
         type: string
+      index:
+        type: string
         format: uint64
       guildId:
         type: string
-        format: uint64
       substationId:
         type: string
-        format: uint64
       creator:
         type: string
       primaryAddress:
         type: string
       planetId:
         type: string
-        format: uint64
       load:
+        type: string
+        format: uint64
+      capacity:
         type: string
         format: uint64
       storage:
@@ -84120,25 +84066,23 @@ definitions:
         items:
           type: object
           properties:
-            sourceType:
-              title: Core allocation details
+            id:
+              type: string
+            type:
               type: string
               enum:
-                - guild
-                - player
-                - planet
-                - reactor
-                - substation
-                - struct
-                - allocation
-                - infusion
-              default: guild
-            sourceId:
+                - static
+                - dynamic
+                - automated
+              default: static
+            sourceObjectId:
+              type: string
+              title: Core allocation details
+            index:
               type: string
               format: uint64
-            destinationId:
+            destinationObjectId:
               type: string
-              format: uint64
             power:
               type: string
               format: uint64
@@ -84150,14 +84094,6 @@ definitions:
             locked:
               type: boolean
               title: Locking will be needed for IBC
-            HasLinkedInfusion:
-              type: boolean
-              title: '"dynamic" might be a better name for this'
-            linkedInfusion:
-              type: string
-            id:
-              type: string
-              format: uint64
       pagination:
         type: object
         properties:
@@ -84267,6 +84203,7 @@ definitions:
                 - struct
                 - allocation
                 - infusion
+                - address
               default: guild
             destinationId:
               type: string
@@ -84274,13 +84211,12 @@ definitions:
             fuel:
               type: string
               format: uint64
-            energy:
+            power:
               type: string
               format: uint64
-            linkedSourceAllocationId:
+            commission:
               type: string
-              format: uint64
-            linkedPlayerAllocationId:
+            playerId:
               type: string
               format: uint64
             address:
@@ -84412,21 +84348,23 @@ definitions:
           properties:
             id:
               type: string
+            index:
+              type: string
               format: uint64
             guildId:
               type: string
-              format: uint64
             substationId:
               type: string
-              format: uint64
             creator:
               type: string
             primaryAddress:
               type: string
             planetId:
               type: string
-              format: uint64
             load:
+              type: string
+              format: uint64
+            capacity:
               type: string
               format: uint64
             storage:
@@ -84486,7 +84424,7 @@ definitions:
             fuel:
               type: string
               format: uint64
-            energy:
+            capacity:
               type: string
               format: uint64
             load:
@@ -84495,24 +84433,11 @@ definitions:
             guildId:
               type: string
               format: uint64
-            automatedAllocations:
-              type: boolean
-            allowManualAllocations:
-              type: boolean
-            allowExternalAllocations:
-              type: boolean
-            allowUncappedAllocations:
-              type: boolean
-            delegateMinimumBeforeAllowedAllocations:
-              type: string
-            delegateTaxOnAllocations:
+            defaultCommission:
               type: string
             rawAddress:
               type: string
               format: byte
-            serviceSubstationId:
-              type: string
-              format: uint64
       pagination:
         type: object
         properties:
@@ -84614,7 +84539,7 @@ definitions:
             powerSystemFuel:
               type: string
               format: uint64
-            powerSystemEnergy:
+            powerSystemCapacity:
               type: string
               format: uint64
             powerSystemLoad:
@@ -84659,10 +84584,6 @@ definitions:
           properties:
             id:
               type: string
-              format: uint64
-            playerConnectionAllocation:
-              type: string
-              format: uint64
             owner:
               type: string
               format: uint64
@@ -84671,10 +84592,13 @@ definitions:
             load:
               type: string
               format: uint64
-            energy:
+            capacity:
               type: string
               format: uint64
-            connectedPlayerCount:
+            connectionCount:
+              type: string
+              format: uint64
+            connectionCapacity:
               type: string
               format: uint64
       pagination:
@@ -84715,25 +84639,23 @@ definitions:
       Allocation:
         type: object
         properties:
-          sourceType:
-            title: Core allocation details
+          id:
+            type: string
+          type:
             type: string
             enum:
-              - guild
-              - player
-              - planet
-              - reactor
-              - substation
-              - struct
-              - allocation
-              - infusion
-            default: guild
-          sourceId:
+              - static
+              - dynamic
+              - automated
+            default: static
+          sourceObjectId:
+            type: string
+            title: Core allocation details
+          index:
             type: string
             format: uint64
-          destinationId:
+          destinationObjectId:
             type: string
-            format: uint64
           power:
             type: string
             format: uint64
@@ -84745,14 +84667,6 @@ definitions:
           locked:
             type: boolean
             title: Locking will be needed for IBC
-          HasLinkedInfusion:
-            type: boolean
-            title: '"dynamic" might be a better name for this'
-          linkedInfusion:
-            type: string
-          id:
-            type: string
-            format: uint64
   structs.QueryGetGuildResponse:
     type: object
     properties:
@@ -84801,6 +84715,7 @@ definitions:
               - struct
               - allocation
               - infusion
+              - address
             default: guild
           destinationId:
             type: string
@@ -84808,13 +84723,12 @@ definitions:
           fuel:
             type: string
             format: uint64
-          energy:
+          power:
             type: string
             format: uint64
-          linkedSourceAllocationId:
+          commission:
             type: string
-            format: uint64
-          linkedPlayerAllocationId:
+          playerId:
             type: string
             format: uint64
           address:
@@ -84927,21 +84841,23 @@ definitions:
         properties:
           id:
             type: string
+          index:
+            type: string
             format: uint64
           guildId:
             type: string
-            format: uint64
           substationId:
             type: string
-            format: uint64
           creator:
             type: string
           primaryAddress:
             type: string
           planetId:
             type: string
-            format: uint64
           load:
+            type: string
+            format: uint64
+          capacity:
             type: string
             format: uint64
           storage:
@@ -84973,7 +84889,7 @@ definitions:
           fuel:
             type: string
             format: uint64
-          energy:
+          capacity:
             type: string
             format: uint64
           load:
@@ -84982,24 +84898,11 @@ definitions:
           guildId:
             type: string
             format: uint64
-          automatedAllocations:
-            type: boolean
-          allowManualAllocations:
-            type: boolean
-          allowExternalAllocations:
-            type: boolean
-          allowUncappedAllocations:
-            type: boolean
-          delegateMinimumBeforeAllowedAllocations:
-            type: string
-          delegateTaxOnAllocations:
+          defaultCommission:
             type: string
           rawAddress:
             type: string
             format: byte
-          serviceSubstationId:
-            type: string
-            format: uint64
   structs.QueryGetStructResponse:
     type: object
     properties:
@@ -85073,7 +84976,7 @@ definitions:
           powerSystemFuel:
             type: string
             format: uint64
-          powerSystemEnergy:
+          powerSystemCapacity:
             type: string
             format: uint64
           powerSystemLoad:
@@ -85090,10 +84993,6 @@ definitions:
         properties:
           id:
             type: string
-            format: uint64
-          playerConnectionAllocation:
-            type: string
-            format: uint64
           owner:
             type: string
             format: uint64
@@ -85102,10 +85001,13 @@ definitions:
           load:
             type: string
             format: uint64
-          energy:
+          capacity:
             type: string
             format: uint64
-          connectedPlayerCount:
+          connectionCount:
+            type: string
+            format: uint64
+          connectionCapacity:
             type: string
             format: uint64
   structs.QueryParamsResponse:
@@ -85137,7 +85039,7 @@ definitions:
       fuel:
         type: string
         format: uint64
-      energy:
+      capacity:
         type: string
         format: uint64
       load:
@@ -85146,24 +85048,11 @@ definitions:
       guildId:
         type: string
         format: uint64
-      automatedAllocations:
-        type: boolean
-      allowManualAllocations:
-        type: boolean
-      allowExternalAllocations:
-        type: boolean
-      allowUncappedAllocations:
-        type: boolean
-      delegateMinimumBeforeAllowedAllocations:
-        type: string
-      delegateTaxOnAllocations:
+      defaultCommission:
         type: string
       rawAddress:
         type: string
         format: byte
-      serviceSubstationId:
-        type: string
-        format: uint64
   structs.Struct:
     type: object
     properties:
@@ -85234,7 +85123,7 @@ definitions:
       powerSystemFuel:
         type: string
         format: uint64
-      powerSystemEnergy:
+      powerSystemCapacity:
         type: string
         format: uint64
       powerSystemLoad:
@@ -85248,10 +85137,6 @@ definitions:
     properties:
       id:
         type: string
-        format: uint64
-      playerConnectionAllocation:
-        type: string
-        format: uint64
       owner:
         type: string
         format: uint64
@@ -85260,12 +85145,22 @@ definitions:
       load:
         type: string
         format: uint64
-      energy:
+      capacity:
         type: string
         format: uint64
-      connectedPlayerCount:
+      connectionCount:
         type: string
         format: uint64
+      connectionCapacity:
+        type: string
+        format: uint64
+  structs.allocationType:
+    type: string
+    enum:
+      - static
+      - dynamic
+      - automated
+    default: static
   structs.objectType:
     type: string
     enum:
@@ -85277,4 +85172,5 @@ definitions:
       - struct
       - allocation
       - infusion
+      - address
     default: guild

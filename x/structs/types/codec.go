@@ -9,10 +9,8 @@ import (
 
 func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgAllocationCreate{}, "structs/AllocationCreate", nil)
-	cdc.RegisterConcrete(&MsgReactorAllocationCreate{}, "structs/ReactorAllocationCreate", nil)
 	cdc.RegisterConcrete(&MsgSubstationCreate{}, "structs/SubstationCreate", nil)
 	cdc.RegisterConcrete(&MsgSubstationDelete{}, "structs/SubstationDelete", nil)
-	cdc.RegisterConcrete(&MsgSubstationAllocationCreate{}, "structs/SubstationAllocationCreate", nil)
 	cdc.RegisterConcrete(&MsgSubstationAllocationConnect{}, "structs/SubstationAllocationConnect", nil)
 	cdc.RegisterConcrete(&MsgSubstationAllocationDisconnect{}, "structs/SubstationAllocationDisconnect", nil)
 	cdc.RegisterConcrete(&MsgSubstationPlayerConnect{}, "structs/SubstationPlayerConnect", nil)
@@ -33,7 +31,6 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgAddressRevoke{}, "structs/AddressRevoke", nil)
 	cdc.RegisterConcrete(&MsgPlanetExplore{}, "structs/PlanetExplore", nil)
 	cdc.RegisterConcrete(&MsgStructActivate{}, "structs/StructActivate", nil)
-	cdc.RegisterConcrete(&MsgStructAllocationCreate{}, "structs/StructAllocationCreate", nil)
 	cdc.RegisterConcrete(&MsgStructBuildInitiate{}, "structs/StructBuildInitiate", nil)
 	cdc.RegisterConcrete(&MsgStructBuildComplete{}, "structs/StructBuildComplete", nil)
 	cdc.RegisterConcrete(&MsgStructMineActivate{}, "structs/StructMineActivate", nil)
@@ -54,16 +51,10 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 		&MsgAllocationCreate{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgReactorAllocationCreate{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgSubstationCreate{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgSubstationDelete{},
-	)
-	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgSubstationAllocationCreate{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
 		&MsgSubstationAllocationConnect{},
@@ -126,9 +117,6 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     )
     registry.RegisterImplementations((*sdk.Msg)(nil),
         &MsgStructActivate{},
-    )
-    registry.RegisterImplementations((*sdk.Msg)(nil),
-        &MsgStructAllocationCreate{},
     )
     registry.RegisterImplementations((*sdk.Msg)(nil),
         &MsgStructBuildInitiate{},

@@ -146,10 +146,10 @@ func (k Keeper) GridCascade(ctx sdk.Context) {
 
         // For each Queue Item
         for _, objectId := range gridQueue {
-            allocationPointer    = k.GetGridAttribute(ctx, GetGridAttributeID(types.GridAttributeType_allocationPointerStart, objectId))
-            allocationPointerEnd = k.GetGridAttribute(ctx, GetGridAttributeID(types.GridAttributeType_allocationPointerEnd, objectId))
+            allocationPointer    = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerStart, objectId))
+            allocationPointerEnd = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerEnd, objectId))
 
-            for k.GetGridAttributeLoad(ctx, queueId)) > k.GetGridAttribute(ctx, GetGridAttributeID(types.GridAttributeType_capacity, objectId))
+            for (k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, queueId)) > k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId))) {
 
                 // Iterate through the allocationPointer until we successfully delete an allocation
                 for {
@@ -168,7 +168,6 @@ func (k Keeper) GridCascade(ctx sdk.Context) {
                         // This would be a bandaid on a bug though.
                     break
                 }
-
             }
         }
     }

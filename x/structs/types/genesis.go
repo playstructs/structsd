@@ -41,27 +41,27 @@ func (gs GenesisState) Validate() error {
 		reactorIdMap[elem.Id] = true
 	}
 	// Check for duplicated ID in substation
-	substationIdMap := make(map[uint64]bool)
-	substationCount := gs.GetSubstationCount()
+	substationIdMap := make(map[string]bool)
+	//substationCount := gs.GetSubstationCount()
 	for _, elem := range gs.SubstationList {
 		if _, ok := substationIdMap[elem.Id]; ok {
 			return fmt.Errorf("duplicated id for substation")
 		}
-		if elem.Id >= substationCount {
-			return fmt.Errorf("substation id should be lower or equal than the last id")
-		}
+		//if elem.Id >= substationCount {
+		//	return fmt.Errorf("substation id should be lower or equal than the last id")
+		//}
 		substationIdMap[elem.Id] = true
 	}
 	// Check for duplicated ID in allocation
-	allocationIdMap := make(map[uint64]bool)
-	allocationCount := gs.GetAllocationCount()
+	allocationIdMap := make(map[string]bool)
+	//allocationCount := gs.GetAllocationCount()
 	for _, elem := range gs.AllocationList {
 		if _, ok := allocationIdMap[elem.Id]; ok {
 			return fmt.Errorf("duplicated id for allocation")
 		}
-		if elem.Id >= allocationCount {
-			return fmt.Errorf("allocation id should be lower or equal than the last id")
-		}
+		//if elem.Id >= allocationCount {
+		//	return fmt.Errorf("allocation id should be lower or equal than the last id")
+		//}
 		allocationIdMap[elem.Id] = true
 	}
 
@@ -78,13 +78,13 @@ func (gs GenesisState) Validate() error {
 		guildIdMap[elem.Id] = true
 	}
 	// Check for duplicated ID in player
-	playerIdMap := make(map[uint64]bool)
+	playerIdMap := make(map[string]bool)
 	playerCount := gs.GetPlayerCount()
 	for _, elem := range gs.PlayerList {
 		if _, ok := playerIdMap[elem.Id]; ok {
 			return fmt.Errorf("duplicated id for player")
 		}
-		if elem.Id >= playerCount {
+		if elem.Index >= playerCount {
 			return fmt.Errorf("player id should be lower or equal than the last id")
 		}
 		playerIdMap[elem.Id] = true

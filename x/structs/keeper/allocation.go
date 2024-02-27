@@ -224,7 +224,7 @@ func (k Keeper) DestroyAllocation(ctx sdk.Context, allocationId string) (destroy
 
         // Clear the AutoResize hook on the source
         if (allocation.Type == types.AllocationType_automated ) {
-            k.ClearAutoResizeAllocationBySource(ctx sdk.Context, allocationId)
+            k.ClearAutoResizeAllocationBySource(ctx, allocationId)
         }
 
     	k.RemoveAllocation(ctx, allocation.Id)

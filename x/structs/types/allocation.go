@@ -2,16 +2,16 @@ package types
 
 import (
 	//sdk "github.com/cosmos/cosmos-sdk/types"
-    "strconv"
+    //"strconv"
 )
 
-func CreateAllocationStub(allocationType AllocationType, sourceObjectId []byte, power uint64, creator string, controller string ) Allocation {
+func CreateAllocationStub(allocationType AllocationType, sourceObjectId string, power uint64, creator string, controller string ) Allocation {
 	return Allocation{
-	    Id: nil,
+	    Id: "",
 		Type: allocationType,
 		SourceObjectId: sourceObjectId,
 		Index: 0,
-		DestinationObjectId: nil,
+		DestinationObjectId: "",
 		Power: power,
 		Creator: creator,
 		Controller: controller,

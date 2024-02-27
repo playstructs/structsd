@@ -6,17 +6,12 @@ import (
 
 func CreateEmptyReactor() Reactor {
 	return Reactor{
-		Energy:    0,
+		Load:       0,
+		Capacity:   0,
 		Fuel:       0,
 		Validator: "",
 		RawAddress: nil,
-		AutomatedAllocations: true,
-		AllowManualAllocations: false,
-		AllowExternalAllocations: false,
-		AllowUncappedAllocations: false,
-		DelegateMinimumBeforeAllowedAllocations: math.LegacyOneDec(),
-		DelegateTaxOnAllocations: math.LegacyZeroDec(),
-		ServiceSubstationId: 0,
+		DefaultCommission: math.LegacyZeroDec(),
         GuildId: 0,
 	}
 }
@@ -39,15 +34,12 @@ func (reactor *Reactor) SetGuildId(guildId uint64) {
 	reactor.GuildId = guildId
 }
 
-func (reactor *Reactor) SetServiceSubstationId(serviceSubstationId uint64) {
-	reactor.ServiceSubstationId = serviceSubstationId
-}
 
 // Take an amount of fuel and return the energy it will generate
 //
 // This will need some work later on to be more dynamic in
 // relation to other system state, but for now it is static.
-func CalculateReactorEnergy(fuel uint64) (energy uint64) {
+func CalculateReactorPower(fuel uint64) (energy uint64) {
     return fuel * ReactorFuelToEnergyConversion
 }
 

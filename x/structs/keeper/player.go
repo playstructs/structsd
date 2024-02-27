@@ -184,7 +184,7 @@ func (k Keeper) UpsertPlayer(ctx sdk.Context, playerAddress string, full bool) (
         player = k.AppendPlayer(ctx, player)
 
     } else {
-        player, _ = k.GetPlayer(ctx, GetObjectId(types.ObjectType_player, playerIndex, full)
+        player, _ = k.GetPlayerFromIndex(ctx, playerIndex, full)
     }
 
     return player

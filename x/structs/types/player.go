@@ -5,17 +5,6 @@ import (
 )
 
 
-func CreateEmptyPlayer() Player {
-	return Player{
-	    Id:             0,
-		GuildId:        0,
-		SubstationId:   0,
-		Creator:        "",
-	}
-}
-
-
-
 type PlayerPermission Permission
 
 const (

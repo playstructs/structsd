@@ -7,7 +7,7 @@ import (
 )
 
 func (a *Infusion) SetCommission(newCommission sdk.Dec) (
-                                                newInfusionEnergy uint64,
+                                                newInfusionPower uint64,
                                                 oldInfusionPower uint64,
                                                 newCommissionPower uint64,
                                                 oldCommissionPower uint64,

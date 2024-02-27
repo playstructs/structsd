@@ -49,7 +49,7 @@ func (k Keeper) SetSubstationCount(ctx sdk.Context, count uint64) {
 // AppendSubstation appends a substation in the store with a new id and update the count
 func (k Keeper) AppendSubstation(
 	ctx sdk.Context,
-    allocation types.Allocation
+    allocation types.Allocation,
     player types.Player,
 ) (substation types.Substation, allocation types.Allocation, err error) {
 	// Set the ID of the appended value

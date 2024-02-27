@@ -32,7 +32,7 @@ func (k msgServer) PlayerCreate(goCtx context.Context, msg *types.MsgPlayerCreat
     }
 
 
-    if (guild.JoinInfusionMinimum > 0)
+    if (guild.JoinInfusionMinimum > 0) {
 
     // check the guild infusion minimum
         // does the player not meet it?
@@ -43,6 +43,8 @@ func (k msgServer) PlayerCreate(goCtx context.Context, msg *types.MsgPlayerCreat
         // else
             // add the user to the guild
 
+
+    }
 
 
 
