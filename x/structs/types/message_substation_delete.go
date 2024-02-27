@@ -9,7 +9,7 @@ const TypeMsgSubstationDelete = "substation_delete"
 
 var _ sdk.Msg = &MsgSubstationDelete{}
 
-func NewMsgSubstationDelete(creator string, substationId uint64, migrationSubstationId uint64) *MsgSubstationDelete {
+func NewMsgSubstationDelete(creator string, substationId string, migrationSubstationId string) *MsgSubstationDelete {
 	return &MsgSubstationDelete{
 		Creator:               creator,
 		SubstationId:          substationId,

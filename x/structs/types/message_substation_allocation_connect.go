@@ -9,7 +9,7 @@ const TypeMsgSubstationAllocationConnect = "substation_allocation_connect"
 
 var _ sdk.Msg = &MsgSubstationAllocationConnect{}
 
-func NewMsgSubstationAllocationConnect(creator string, allocationId uint64, destinationSubstationId uint64) *MsgSubstationAllocationConnect {
+func NewMsgSubstationAllocationConnect(creator string, allocationId string, destinationSubstationId string) *MsgSubstationAllocationConnect {
 	return &MsgSubstationAllocationConnect{
 		Creator:                 creator,
 		AllocationId:            allocationId,

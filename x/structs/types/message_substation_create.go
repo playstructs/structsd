@@ -9,11 +9,11 @@ const TypeMsgSubstationCreate = "substation_create"
 
 var _ sdk.Msg = &MsgSubstationCreate{}
 
-func NewMsgSubstationCreate(creator string, owner uint64, playerConnectionAllocation uint64) *MsgSubstationCreate {
+func NewMsgSubstationCreate(creator string, owner string, allocationId string) *MsgSubstationCreate {
 	return &MsgSubstationCreate{
-		Creator:                    creator,
-		Owner:                      owner,
-		PlayerConnectionAllocation: playerConnectionAllocation,
+		Creator:      creator,
+		Owner:        owner,
+		AllocationId: allocationId,
 	}
 }
 

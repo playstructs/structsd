@@ -9,7 +9,7 @@ const TypeMsgGuildApproveRegister = "guild_approve_register"
 
 var _ sdk.Msg = &MsgGuildApproveRegister{}
 
-func NewMsgGuildApproveRegister(creator string, approve bool, guildId uint64, playerId uint64) *MsgGuildApproveRegister {
+func NewMsgGuildApproveRegister(creator string, approve bool, guildId uint64, playerId string) *MsgGuildApproveRegister {
 	return &MsgGuildApproveRegister{
 		Creator:     creator,
 		Approve:     approve,

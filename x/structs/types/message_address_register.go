@@ -10,7 +10,7 @@ const TypeMsgAddressRegister = "address_register"
 
 var _ sdk.Msg = &MsgAddressRegister{}
 
-func NewMsgAddressRegister(creator string, playerId uint64,address string) *MsgAddressRegister {
+func NewMsgAddressRegister(creator string, playerId string, address string) *MsgAddressRegister {
 	return &MsgAddressRegister{
 		Creator:     creator,
 		PlayerId:    playerId,

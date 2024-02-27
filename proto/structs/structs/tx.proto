@@ -52,13 +52,13 @@ service Msg {
 }
 
 message MsgSubstationCreate {
-  string creator                    = 1;
-  uint64 owner                      = 2;
-  uint64 playerConnectionAllocation = 3;
+  string creator      = 1;
+  string owner        = 2;
+  string allocationId = 3;
 }
 
 message MsgSubstationCreateResponse {
-  uint64 substationId = 1;
+  string substationId = 1;
 }
 
 message MsgSubstationDelete {
@@ -79,22 +79,22 @@ message MsgSubstationAllocationConnectResponse {}
 
 message MsgSubstationAllocationDisconnect {
   string creator      = 1;
-  uint64 allocationId = 2;
+  string allocationId = 2;
 }
 
 message MsgSubstationAllocationDisconnectResponse {}
 
 message MsgSubstationPlayerConnect {
   string creator      = 1;
-  uint64 substationId = 2;
-  uint64 playerId     = 3;
+  string substationId = 2;
+  string playerId     = 3;
 }
 
 message MsgSubstationPlayerConnectResponse {}
 
 message MsgSubstationPlayerDisconnect {
   string creator  = 1;
-  uint64 playerId = 2;
+  string playerId = 2;
 }
 
 message MsgSubstationPlayerDisconnectResponse {}
@@ -103,20 +103,20 @@ message MsgSubstationPlayerDisconnectResponse {}
 message MsgAllocationCreate {
   string          creator        = 1;
   string          controller     = 2;
-  bytes           sourceObjectId = 3;
+  string          sourceObjectId = 3;
   allocationType  allocationType = 4;
   uint64          power          = 5;
 }
 
 message MsgAllocationCreateResponse {
-  uint64 allocationId = 1;
+  string allocationId = 1;
 }
 
 
 message MsgGuildCreate {
   string creator  = 1;
   string endpoint = 2;
-  uint64 entrySubstationId = 3;
+  string entrySubstationId = 3;
 }
 
 message MsgGuildCreateResponse { uint64 guildId = 1; }
@@ -130,7 +130,7 @@ message MsgGuildUpdateOwnerId {
 message MsgGuildUpdateEntrySubstationId {
   string creator            = 1;
   uint64 id                 = 2;
-  uint64 entrySubstationId  = 3;
+  string entrySubstationId  = 3;
 }
 
 message MsgGuildUpdateEndpoint {
@@ -165,7 +165,7 @@ message MsgGuildUpdateResponse{}
 message MsgPlayerCreateProxy {
   string creator          = 1;
   string address          = 2;
-  uint64 substationId     = 3;
+  string substationId     = 3;
 }
 
 message MsgPlayerCreateProxyResponse {}
@@ -180,15 +180,14 @@ message MsgPlayerCreateResponse {}
 message MsgAddressApproveRegister {
   string creator     = 1;
   bool   approve     = 2;
-  string addressType = 3;
-  string address     = 4;
-  uint64 permissions = 5;
+  string address     = 3;
+  uint64 permissions = 4;
 }
 
 
 message MsgAddressRegister {
   string creator     = 1;
-  uint64 playerId    = 2;
+  string playerId    = 2;
   string address     = 3;
 
 }
@@ -206,7 +205,7 @@ message MsgGuildApproveRegister {
   string creator     = 1;
   bool   approve     = 2;
   uint64 guildId     = 3;
-  uint64 playerId    = 4;
+  string playerId    = 4;
 }
 
 message MsgGuildApproveRegisterResponse {}

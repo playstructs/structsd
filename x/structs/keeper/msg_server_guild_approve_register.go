@@ -43,7 +43,7 @@ func (k msgServer) GuildApproveRegister(goCtx context.Context, msg *types.MsgGui
     }
 
 
-    registeringPlayer, registeringPlayerFound := k.GetPlayer(ctx, msg.PlayerId)
+    registeringPlayer, registeringPlayerFound := k.GetPlayer(ctx, msg.PlayerId, true)
 
 
 

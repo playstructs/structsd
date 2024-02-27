@@ -9,7 +9,7 @@ const TypeMsgSubstationPlayerConnect = "substation_player_connect"
 
 var _ sdk.Msg = &MsgSubstationPlayerConnect{}
 
-func NewMsgSubstationPlayerConnect(creator string, substationId uint64, playerId uint64) *MsgSubstationPlayerConnect {
+func NewMsgSubstationPlayerConnect(creator string, substationId string, playerId string) *MsgSubstationPlayerConnect {
 	return &MsgSubstationPlayerConnect{
 		Creator:      creator,
 		SubstationId: substationId,

@@ -9,7 +9,7 @@ const TypeMsgSubstationPlayerDisconnect = "substation_player_disconnect"
 
 var _ sdk.Msg = &MsgSubstationPlayerDisconnect{}
 
-func NewMsgSubstationPlayerDisconnect(creator string, playerId uint64) *MsgSubstationPlayerDisconnect {
+func NewMsgSubstationPlayerDisconnect(creator string, playerId string) *MsgSubstationPlayerDisconnect {
 	return &MsgSubstationPlayerDisconnect{
 		Creator:  creator,
 		PlayerId: playerId,

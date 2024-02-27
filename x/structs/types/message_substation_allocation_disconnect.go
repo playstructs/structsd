@@ -9,7 +9,7 @@ const TypeMsgSubstationAllocationDisconnect = "substation_allocation_disconnect"
 
 var _ sdk.Msg = &MsgSubstationAllocationDisconnect{}
 
-func NewMsgSubstationAllocationDisconnect(creator string, allocationId uint64) *MsgSubstationAllocationDisconnect {
+func NewMsgSubstationAllocationDisconnect(creator string, allocationId string) *MsgSubstationAllocationDisconnect {
 	return &MsgSubstationAllocationDisconnect{
 		Creator:      creator,
 		AllocationId: allocationId,

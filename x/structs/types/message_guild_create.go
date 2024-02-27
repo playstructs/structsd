@@ -9,7 +9,7 @@ const TypeMsgGuildCreate = "guild_create"
 
 var _ sdk.Msg = &MsgGuildCreate{}
 
-func NewMsgGuildCreate(creator string, endpoint string, substationId uint64) *MsgGuildCreate {
+func NewMsgGuildCreate(creator string, endpoint string, substationId string) *MsgGuildCreate {
 	return &MsgGuildCreate{
 		Creator:  creator,
 		Endpoint: endpoint,
