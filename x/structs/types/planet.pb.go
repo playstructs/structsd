@@ -23,16 +23,16 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type Planet struct {
-	Id           uint64   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Id           string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	MaxOre       uint64   `protobuf:"varint,2,opt,name=maxOre,proto3" json:"maxOre,omitempty"`
 	OreRemaining uint64   `protobuf:"varint,3,opt,name=OreRemaining,proto3" json:"OreRemaining,omitempty"`
 	OreStored    uint64   `protobuf:"varint,4,opt,name=OreStored,proto3" json:"OreStored,omitempty"`
 	Creator      string   `protobuf:"bytes,5,opt,name=creator,proto3" json:"creator,omitempty"`
-	Owner        uint64   `protobuf:"varint,6,opt,name=owner,proto3" json:"owner,omitempty"`
-	Space        []uint64 `protobuf:"varint,7,rep,packed,name=space,proto3" json:"space,omitempty"`
-	Sky          []uint64 `protobuf:"varint,8,rep,packed,name=sky,proto3" json:"sky,omitempty"`
-	Land         []uint64 `protobuf:"varint,9,rep,packed,name=land,proto3" json:"land,omitempty"`
-	Water        []uint64 `protobuf:"varint,10,rep,packed,name=water,proto3" json:"water,omitempty"`
+	Owner        string   `protobuf:"bytes,6,opt,name=owner,proto3" json:"owner,omitempty"`
+	Space        []string `protobuf:"bytes,7,rep,name=space,proto3" json:"space,omitempty"`
+	Sky          []string `protobuf:"bytes,8,rep,name=sky,proto3" json:"sky,omitempty"`
+	Land         []string `protobuf:"bytes,9,rep,name=land,proto3" json:"land,omitempty"`
+	Water        []string `protobuf:"bytes,10,rep,name=water,proto3" json:"water,omitempty"`
 	SpaceSlots   uint64   `protobuf:"varint,11,opt,name=spaceSlots,proto3" json:"spaceSlots,omitempty"`
 	SkySlots     uint64   `protobuf:"varint,12,opt,name=skySlots,proto3" json:"skySlots,omitempty"`
 	LandSlots    uint64   `protobuf:"varint,13,opt,name=landSlots,proto3" json:"landSlots,omitempty"`
@@ -73,11 +73,11 @@ func (m *Planet) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Planet proto.InternalMessageInfo
 
-func (m *Planet) GetId() uint64 {
+func (m *Planet) GetId() string {
 	if m != nil {
 		return m.Id
 	}
-	return 0
+	return ""
 }
 
 func (m *Planet) GetMaxOre() uint64 {
@@ -108,35 +108,35 @@ func (m *Planet) GetCreator() string {
 	return ""
 }
 
-func (m *Planet) GetOwner() uint64 {
+func (m *Planet) GetOwner() string {
 	if m != nil {
 		return m.Owner
 	}
-	return 0
+	return ""
 }
 
-func (m *Planet) GetSpace() []uint64 {
+func (m *Planet) GetSpace() []string {
 	if m != nil {
 		return m.Space
 	}
 	return nil
 }
 
-func (m *Planet) GetSky() []uint64 {
+func (m *Planet) GetSky() []string {
 	if m != nil {
 		return m.Sky
 	}
 	return nil
 }
 
-func (m *Planet) GetLand() []uint64 {
+func (m *Planet) GetLand() []string {
 	if m != nil {
 		return m.Land
 	}
 	return nil
 }
 
-func (m *Planet) GetWater() []uint64 {
+func (m *Planet) GetWater() []string {
 	if m != nil {
 		return m.Water
 	}
@@ -185,27 +185,27 @@ func init() {
 func init() { proto.RegisterFile("structs/structs/planet.proto", fileDescriptor_6d6079b21199cebc) }
 
 var fileDescriptor_6d6079b21199cebc = []byte{
-	// 314 bytes of a gzipped FileDescriptorProto
+	// 315 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x54, 0x91, 0xc1, 0x4e, 0x3a, 0x31,
 	0x10, 0xc6, 0x29, 0x0b, 0x0b, 0xcc, 0x9f, 0x3f, 0x9a, 0x89, 0xd1, 0x89, 0x21, 0x0d, 0xe1, 0xc4,
 	0x49, 0x63, 0x7c, 0x03, 0x5f, 0x00, 0x03, 0x37, 0x6f, 0x95, 0x6d, 0xcc, 0x06, 0xd8, 0x6e, 0xda,
 	0x12, 0xe0, 0x05, 0x3c, 0xfb, 0x58, 0x1e, 0x39, 0x7a, 0x34, 0xf0, 0x22, 0xa6, 0x53, 0x58, 0xf4,
-	0xb4, 0xfd, 0x7e, 0xdf, 0xce, 0x37, 0x99, 0x19, 0xe8, 0x3b, 0x6f, 0x57, 0x33, 0xef, 0xee, 0x4f,
-	0xdf, 0x72, 0xa1, 0x0a, 0xed, 0xef, 0x4a, 0x6b, 0xbc, 0xc1, 0xd6, 0x91, 0x0e, 0xdf, 0x13, 0x48,
-	0x9f, 0xd9, 0xc1, 0x1e, 0xd4, 0xf3, 0x8c, 0xc4, 0x40, 0x8c, 0x1a, 0x93, 0x7a, 0x9e, 0xe1, 0x35,
-	0xa4, 0x4b, 0xb5, 0x19, 0x5b, 0x4d, 0x75, 0x66, 0x47, 0x85, 0x43, 0xe8, 0x8e, 0xad, 0x9e, 0xe8,
-	0xa5, 0xca, 0x8b, 0xbc, 0x78, 0xa3, 0x84, 0xdd, 0x3f, 0x0c, 0xfb, 0xd0, 0x19, 0x5b, 0x3d, 0xf5,
-	0xc6, 0xea, 0x8c, 0x1a, 0xfc, 0xc3, 0x19, 0x20, 0x41, 0x6b, 0x66, 0xb5, 0xf2, 0xc6, 0x52, 0x73,
-	0x20, 0x46, 0x9d, 0xc9, 0x49, 0xe2, 0x15, 0x34, 0xcd, 0xba, 0xd0, 0x96, 0x52, 0xae, 0x89, 0x22,
+	0xb4, 0xfd, 0x7e, 0xdf, 0xf6, 0x9b, 0xce, 0x0c, 0xf4, 0x9d, 0xb7, 0xab, 0x99, 0x77, 0xf7, 0xa7,
+	0x6f, 0xb9, 0x50, 0x85, 0xf6, 0x77, 0xa5, 0x35, 0xde, 0x60, 0xeb, 0x48, 0x87, 0xef, 0x09, 0xa4,
+	0xcf, 0xec, 0x60, 0x0f, 0xea, 0x79, 0x46, 0x62, 0x20, 0x46, 0x9d, 0x49, 0x3d, 0xcf, 0xf0, 0x1a,
+	0xd2, 0xa5, 0xda, 0x8c, 0xad, 0xa6, 0xfa, 0x40, 0x8c, 0x1a, 0x93, 0xa3, 0xc2, 0x21, 0x74, 0xc7,
+	0x56, 0x4f, 0xf4, 0x52, 0xe5, 0x45, 0x5e, 0xbc, 0x51, 0xc2, 0xee, 0x1f, 0x86, 0x7d, 0xe8, 0x8c,
+	0xad, 0x9e, 0x7a, 0x63, 0x75, 0x46, 0x0d, 0xfe, 0xe1, 0x0c, 0x90, 0xa0, 0x35, 0xb3, 0x5a, 0x79,
+	0x63, 0xa9, 0xc9, 0xe5, 0x4e, 0x12, 0xaf, 0xa0, 0x69, 0xd6, 0x85, 0xb6, 0x94, 0x32, 0x8f, 0x22,
 	0x50, 0x57, 0xaa, 0x99, 0xa6, 0xd6, 0x20, 0x09, 0x94, 0x05, 0x5e, 0x42, 0xe2, 0xe6, 0x5b, 0x6a,
-	0x33, 0x0b, 0x4f, 0x44, 0x68, 0x2c, 0x54, 0x91, 0x51, 0x87, 0x11, 0xbf, 0x43, 0xed, 0x5a, 0x79,
-	0x6d, 0x09, 0x62, 0x2d, 0x0b, 0x94, 0x00, 0x1c, 0x32, 0x5d, 0x18, 0xef, 0xe8, 0x1f, 0x37, 0xfb,
-	0x45, 0xf0, 0x16, 0xda, 0x6e, 0xbe, 0x8d, 0x6e, 0x97, 0xdd, 0x4a, 0x87, 0xd9, 0x42, 0x72, 0x34,
-	0xff, 0xc7, 0xd9, 0x2a, 0x10, 0x92, 0xb9, 0x45, 0xb4, 0x7b, 0x31, 0xf9, 0x4c, 0xc2, 0x56, 0x9d,
-	0x57, 0x7e, 0xe5, 0xe8, 0x22, 0x6e, 0x35, 0xaa, 0xa7, 0x87, 0xcf, 0xbd, 0x14, 0xbb, 0xbd, 0x14,
-	0xdf, 0x7b, 0x29, 0x3e, 0x0e, 0xb2, 0xb6, 0x3b, 0xc8, 0xda, 0xd7, 0x41, 0xd6, 0x5e, 0x6e, 0x4e,
-	0x17, 0xdc, 0x54, 0xb7, 0xf4, 0xdb, 0x52, 0xbb, 0xd7, 0x94, 0x6f, 0xf9, 0xf8, 0x13, 0x00, 0x00,
-	0xff, 0xff, 0x44, 0x3d, 0xc7, 0x80, 0xeb, 0x01, 0x00, 0x00,
+	0x33, 0x0b, 0x47, 0x44, 0x68, 0x2c, 0x54, 0x91, 0x51, 0x87, 0x11, 0x9f, 0xc3, 0xdd, 0xb5, 0xf2,
+	0xda, 0x12, 0xc4, 0xbb, 0x2c, 0x50, 0x02, 0x70, 0xc8, 0x74, 0x61, 0xbc, 0xa3, 0x7f, 0xfc, 0xc0,
+	0x5f, 0x04, 0x6f, 0xa1, 0xed, 0xe6, 0xdb, 0xe8, 0x76, 0xd9, 0xad, 0x74, 0xe8, 0x2d, 0x24, 0x47,
+	0xf3, 0x7f, 0xec, 0xad, 0x02, 0x21, 0x99, 0x4b, 0x44, 0xbb, 0x17, 0x93, 0xcf, 0x24, 0x4c, 0xd5,
+	0x79, 0xe5, 0x57, 0x8e, 0x2e, 0xe2, 0x54, 0xa3, 0x7a, 0x7a, 0xf8, 0xdc, 0x4b, 0xb1, 0xdb, 0x4b,
+	0xf1, 0xbd, 0x97, 0xe2, 0xe3, 0x20, 0x6b, 0xbb, 0x83, 0xac, 0x7d, 0x1d, 0x64, 0xed, 0xe5, 0xe6,
+	0xb4, 0xc1, 0x4d, 0xb5, 0x4b, 0xbf, 0x2d, 0xb5, 0x7b, 0x4d, 0x79, 0x97, 0x8f, 0x3f, 0x01, 0x00,
+	0x00, 0xff, 0xff, 0x5a, 0xbb, 0x7b, 0x46, 0xeb, 0x01, 0x00, 0x00,
 }
 
 func (m *Planet) Marshal() (dAtA []byte, err error) {
@@ -254,81 +254,47 @@ func (m *Planet) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		dAtA[i] = 0x58
 	}
 	if len(m.Water) > 0 {
-		dAtA2 := make([]byte, len(m.Water)*10)
-		var j1 int
-		for _, num := range m.Water {
-			for num >= 1<<7 {
-				dAtA2[j1] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j1++
-			}
-			dAtA2[j1] = uint8(num)
-			j1++
+		for iNdEx := len(m.Water) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Water[iNdEx])
+			copy(dAtA[i:], m.Water[iNdEx])
+			i = encodeVarintPlanet(dAtA, i, uint64(len(m.Water[iNdEx])))
+			i--
+			dAtA[i] = 0x52
 		}
-		i -= j1
-		copy(dAtA[i:], dAtA2[:j1])
-		i = encodeVarintPlanet(dAtA, i, uint64(j1))
-		i--
-		dAtA[i] = 0x52
 	}
 	if len(m.Land) > 0 {
-		dAtA4 := make([]byte, len(m.Land)*10)
-		var j3 int
-		for _, num := range m.Land {
-			for num >= 1<<7 {
-				dAtA4[j3] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j3++
-			}
-			dAtA4[j3] = uint8(num)
-			j3++
+		for iNdEx := len(m.Land) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Land[iNdEx])
+			copy(dAtA[i:], m.Land[iNdEx])
+			i = encodeVarintPlanet(dAtA, i, uint64(len(m.Land[iNdEx])))
+			i--
+			dAtA[i] = 0x4a
 		}
-		i -= j3
-		copy(dAtA[i:], dAtA4[:j3])
-		i = encodeVarintPlanet(dAtA, i, uint64(j3))
-		i--
-		dAtA[i] = 0x4a
 	}
 	if len(m.Sky) > 0 {
-		dAtA6 := make([]byte, len(m.Sky)*10)
-		var j5 int
-		for _, num := range m.Sky {
-			for num >= 1<<7 {
-				dAtA6[j5] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j5++
-			}
-			dAtA6[j5] = uint8(num)
-			j5++
+		for iNdEx := len(m.Sky) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Sky[iNdEx])
+			copy(dAtA[i:], m.Sky[iNdEx])
+			i = encodeVarintPlanet(dAtA, i, uint64(len(m.Sky[iNdEx])))
+			i--
+			dAtA[i] = 0x42
 		}
-		i -= j5
-		copy(dAtA[i:], dAtA6[:j5])
-		i = encodeVarintPlanet(dAtA, i, uint64(j5))
-		i--
-		dAtA[i] = 0x42
 	}
 	if len(m.Space) > 0 {
-		dAtA8 := make([]byte, len(m.Space)*10)
-		var j7 int
-		for _, num := range m.Space {
-			for num >= 1<<7 {
-				dAtA8[j7] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j7++
-			}
-			dAtA8[j7] = uint8(num)
-			j7++
+		for iNdEx := len(m.Space) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.Space[iNdEx])
+			copy(dAtA[i:], m.Space[iNdEx])
+			i = encodeVarintPlanet(dAtA, i, uint64(len(m.Space[iNdEx])))
+			i--
+			dAtA[i] = 0x3a
 		}
-		i -= j7
-		copy(dAtA[i:], dAtA8[:j7])
-		i = encodeVarintPlanet(dAtA, i, uint64(j7))
-		i--
-		dAtA[i] = 0x3a
 	}
-	if m.Owner != 0 {
-		i = encodeVarintPlanet(dAtA, i, uint64(m.Owner))
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintPlanet(dAtA, i, uint64(len(m.Owner)))
 		i--
-		dAtA[i] = 0x30
+		dAtA[i] = 0x32
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -352,10 +318,12 @@ func (m *Planet) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x10
 	}
-	if m.Id != 0 {
-		i = encodeVarintPlanet(dAtA, i, uint64(m.Id))
+	if len(m.Id) > 0 {
+		i -= len(m.Id)
+		copy(dAtA[i:], m.Id)
+		i = encodeVarintPlanet(dAtA, i, uint64(len(m.Id)))
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -377,8 +345,9 @@ func (m *Planet) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Id != 0 {
-		n += 1 + sovPlanet(uint64(m.Id))
+	l = len(m.Id)
+	if l > 0 {
+		n += 1 + l + sovPlanet(uint64(l))
 	}
 	if m.MaxOre != 0 {
 		n += 1 + sovPlanet(uint64(m.MaxOre))
@@ -393,36 +362,33 @@ func (m *Planet) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovPlanet(uint64(l))
 	}
-	if m.Owner != 0 {
-		n += 1 + sovPlanet(uint64(m.Owner))
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovPlanet(uint64(l))
 	}
 	if len(m.Space) > 0 {
-		l = 0
-		for _, e := range m.Space {
-			l += sovPlanet(uint64(e))
+		for _, s := range m.Space {
+			l = len(s)
+			n += 1 + l + sovPlanet(uint64(l))
 		}
-		n += 1 + sovPlanet(uint64(l)) + l
 	}
 	if len(m.Sky) > 0 {
-		l = 0
-		for _, e := range m.Sky {
-			l += sovPlanet(uint64(e))
+		for _, s := range m.Sky {
+			l = len(s)
+			n += 1 + l + sovPlanet(uint64(l))
 		}
-		n += 1 + sovPlanet(uint64(l)) + l
 	}
 	if len(m.Land) > 0 {
-		l = 0
-		for _, e := range m.Land {
-			l += sovPlanet(uint64(e))
+		for _, s := range m.Land {
+			l = len(s)
+			n += 1 + l + sovPlanet(uint64(l))
 		}
-		n += 1 + sovPlanet(uint64(l)) + l
 	}
 	if len(m.Water) > 0 {
-		l = 0
-		for _, e := range m.Water {
-			l += sovPlanet(uint64(e))
+		for _, s := range m.Water {
+			l = len(s)
+			n += 1 + l + sovPlanet(uint64(l))
 		}
-		n += 1 + sovPlanet(uint64(l)) + l
 	}
 	if m.SpaceSlots != 0 {
 		n += 1 + sovPlanet(uint64(m.SpaceSlots))
@@ -478,10 +444,10 @@ func (m *Planet) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
-			m.Id = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowPlanet
@@ -491,11 +457,24 @@ func (m *Planet) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPlanet
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPlanet
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Id = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 2:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MaxOre", wireType)
@@ -586,10 +565,10 @@ func (m *Planet) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 6:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
 			}
-			m.Owner = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowPlanet
@@ -599,315 +578,152 @@ func (m *Planet) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Owner |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPlanet
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPlanet
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Owner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 7:
-			if wireType == 0 {
-				var v uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowPlanet
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				m.Space = append(m.Space, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowPlanet
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthPlanet
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthPlanet
-				}
-				if postIndex > l {
-					return io.ErrUnexpectedEOF
-				}
-				var elementCount int
-				var count int
-				for _, integer := range dAtA[iNdEx:postIndex] {
-					if integer < 128 {
-						count++
-					}
-				}
-				elementCount = count
-				if elementCount != 0 && len(m.Space) == 0 {
-					m.Space = make([]uint64, 0, elementCount)
-				}
-				for iNdEx < postIndex {
-					var v uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowPlanet
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						v |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					m.Space = append(m.Space, v)
-				}
-			} else {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Space", wireType)
 			}
-		case 8:
-			if wireType == 0 {
-				var v uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowPlanet
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPlanet
 				}
-				m.Sky = append(m.Sky, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowPlanet
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthPlanet
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthPlanet
-				}
-				if postIndex > l {
+				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				var elementCount int
-				var count int
-				for _, integer := range dAtA[iNdEx:postIndex] {
-					if integer < 128 {
-						count++
-					}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
 				}
-				elementCount = count
-				if elementCount != 0 && len(m.Sky) == 0 {
-					m.Sky = make([]uint64, 0, elementCount)
-				}
-				for iNdEx < postIndex {
-					var v uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowPlanet
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						v |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					m.Sky = append(m.Sky, v)
-				}
-			} else {
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPlanet
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPlanet
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Space = append(m.Space, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		case 8:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Sky", wireType)
 			}
-		case 9:
-			if wireType == 0 {
-				var v uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowPlanet
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPlanet
 				}
-				m.Land = append(m.Land, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowPlanet
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthPlanet
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthPlanet
-				}
-				if postIndex > l {
+				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				var elementCount int
-				var count int
-				for _, integer := range dAtA[iNdEx:postIndex] {
-					if integer < 128 {
-						count++
-					}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
 				}
-				elementCount = count
-				if elementCount != 0 && len(m.Land) == 0 {
-					m.Land = make([]uint64, 0, elementCount)
-				}
-				for iNdEx < postIndex {
-					var v uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowPlanet
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						v |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					m.Land = append(m.Land, v)
-				}
-			} else {
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPlanet
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPlanet
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Sky = append(m.Sky, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		case 9:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Land", wireType)
 			}
-		case 10:
-			if wireType == 0 {
-				var v uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowPlanet
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPlanet
 				}
-				m.Water = append(m.Water, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowPlanet
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthPlanet
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthPlanet
-				}
-				if postIndex > l {
+				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				var elementCount int
-				var count int
-				for _, integer := range dAtA[iNdEx:postIndex] {
-					if integer < 128 {
-						count++
-					}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
 				}
-				elementCount = count
-				if elementCount != 0 && len(m.Water) == 0 {
-					m.Water = make([]uint64, 0, elementCount)
-				}
-				for iNdEx < postIndex {
-					var v uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowPlanet
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						v |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					m.Water = append(m.Water, v)
-				}
-			} else {
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPlanet
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPlanet
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Land = append(m.Land, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		case 10:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Water", wireType)
 			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowPlanet
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthPlanet
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthPlanet
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Water = append(m.Water, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
 		case 11:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SpaceSlots", wireType)

@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/spf13/cast"
+
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
 )
@@ -19,15 +19,9 @@ func CmdSubstationAllocationConnect() *cobra.Command {
 		Short: "Broadcast message substation-allocation-connect",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argAllocationId, err := cast.ToUint64E(args[0])
-			if err != nil {
-				return err
-			}
+			argAllocationId := args[0]
 
-			argDestinationSubstationId, err := cast.ToUint64E(args[1])
-			if err != nil {
-				return err
-			}
+			argDestinationSubstationId := args[1]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

@@ -24,23 +24,22 @@ func (k msgServer) GuildUpdateEndpoint(goCtx context.Context, msg *types.MsgGuil
 
     guild, guildFound := k.GetGuild(ctx, msg.GuildId)
     if (!guildFound) {
-            return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrGuildNotFound, "Guild wasn't found. Can't update that which does not exist", msg.Id)
+            return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrGuildNotFound, "Guild (%s) wasn't found. Can't update that which does not exist", msg.GuildId)
     }
 
-    guildObjectId           := GetObjectID(types.ObjectType_guild, msg.GuildId)
-    guildObjectPermissionId := GetObjectPermissionIDBytes(guildObjectId, player.Id)
+    guildObjectPermissionId := GetObjectPermissionIDBytes(msg.GuildId, player.Id)
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
 
     if (!k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.Permission(types.GuildPermissionUpdate))) {
-        return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrGuildUpdate, "Calling player (%d) has no permissions to update guild", player.Id)
+        return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrGuildUpdate, "Calling player (%s) has no permissions to update guild", player.Id)
     }
 
     // Make sure the address calling this has Associate permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManageGuild))) {
-        return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
+        return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
     }
 
-    guild.SetEndpoint(msg.Endpoint)
+    guild.Endpoint = msg.Endpoint
 
     k.SetGuild(ctx, guild)
 

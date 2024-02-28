@@ -9,10 +9,10 @@ const TypeMsgGuildUpdateJoinInfusionMinimum = "guild_update_join_infusion_minimu
 
 var _ sdk.Msg = &MsgGuildUpdateJoinInfusionMinimum{}
 
-func NewMsgGuildUpdateJoinInfusionMinimum(creator string, id uint64,  joinInfusionMinimum uint64) *MsgGuildUpdateJoinInfusionMinimum {
+func NewMsgGuildUpdateJoinInfusionMinimum(creator string, guildId string,  joinInfusionMinimum uint64) *MsgGuildUpdateJoinInfusionMinimum {
 	return &MsgGuildUpdateJoinInfusionMinimum{
 		Creator:  creator,
-		Id: id,
+		GuildId: guildId,
 		JoinInfusionMinimum: joinInfusionMinimum,
 	}
 }

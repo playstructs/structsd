@@ -9,7 +9,7 @@ const TypeMsgStructMineActivate = "struct_mine_activate"
 
 var _ sdk.Msg = &MsgStructMineActivate{}
 
-func NewMsgStructMineActivate(creator string, structId uint64) *MsgStructMineActivate {
+func NewMsgStructMineActivate(creator string, structId string) *MsgStructMineActivate {
 	return &MsgStructMineActivate{
 		Creator:  creator,
 		StructId: structId,

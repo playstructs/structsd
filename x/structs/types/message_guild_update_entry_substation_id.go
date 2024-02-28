@@ -9,10 +9,10 @@ const TypeMsgGuildUpdateEntrySubstationId = "guild_update_entry_substation_id"
 
 var _ sdk.Msg = &MsgGuildUpdateEntrySubstationId{}
 
-func NewMsgGuildUpdateEntrySubstationId(creator string, id uint64, substationId string) *MsgGuildUpdateEntrySubstationId {
+func NewMsgGuildUpdateEntrySubstationId(creator string, guildId string, substationId string) *MsgGuildUpdateEntrySubstationId {
 	return &MsgGuildUpdateEntrySubstationId{
 		Creator:  creator,
-		Id: id,
+		GuildId: guildId,
 		EntrySubstationId: substationId,
 	}
 }

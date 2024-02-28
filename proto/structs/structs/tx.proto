@@ -119,42 +119,42 @@ message MsgGuildCreate {
   string entrySubstationId = 3;
 }
 
-message MsgGuildCreateResponse { uint64 guildId = 1; }
+message MsgGuildCreateResponse { string guildId = 1; }
 
 message MsgGuildUpdateOwnerId {
   string creator            = 1;
-  uint64 id                 = 2;
-  uint64 owner              = 3;
+  string guildId            = 2;
+  string owner              = 3;
 }
 
 message MsgGuildUpdateEntrySubstationId {
   string creator            = 1;
-  uint64 id                 = 2;
+  string guildId            = 2;
   string entrySubstationId  = 3;
 }
 
 message MsgGuildUpdateEndpoint {
   string creator            = 1;
-  uint64 id                 = 2;
+  string guildId            = 2;
   string endpoint           = 3;
 }
 
 
 message MsgGuildUpdateJoinInfusionMinimum {
   string creator              = 1;
-  uint64 id                   = 2;
+  string guildId              = 2;
   uint64 joinInfusionMinimum  = 3;
 }
 
 message MsgGuildUpdateJoinInfusionMinimumBypassByRequest {
   string creator                = 1;
-  uint64 id                     = 2;
+  string guildId                = 2;
   uint64 guildJoinBypassLevel   = 3;
 }
 
 message MsgGuildUpdateJoinInfusionMinimumBypassByInvite {
   string creator                = 1;
-  uint64 id                     = 2;
+  string guildId                = 2;
   uint64 guildJoinBypassLevel   = 3;
 }
 
@@ -172,7 +172,7 @@ message MsgPlayerCreateProxyResponse {}
 
 message MsgPlayerCreate {
   string creator = 1;
-  uint64 guildId = 2;
+  string guildId = 2;
 }
 
 message MsgPlayerCreateResponse {}
@@ -204,7 +204,7 @@ message MsgAddressRevokeResponse {}
 message MsgGuildApproveRegister {
   string creator     = 1;
   bool   approve     = 2;
-  uint64 guildId     = 3;
+  string guildId     = 3;
   string playerId    = 4;
 }
 
@@ -223,7 +223,7 @@ message MsgPlanetExploreResponse {
 
 message MsgStructActivate {
   string creator      = 1;
-  uint64 structId     = 2;
+  string structId     = 2;
 }
 
 message MsgStructActivateResponse {
@@ -234,7 +234,7 @@ message MsgStructBuildInitiate {
   string creator      = 1;
 
   string structType   = 2;
-  uint64 planetId     = 3;
+  string planetId     = 3;
   uint64 slot         = 4;
 
 
@@ -246,7 +246,7 @@ message MsgStructBuildInitiateResponse {
 
 message MsgStructBuildComplete {
   string creator      = 1;
-  uint64 structId     = 2;
+  string structId     = 2;
   string proof        = 3;
   string nonce        = 4;
 
@@ -259,7 +259,7 @@ message MsgStructBuildCompleteResponse {
 
 message MsgStructMineActivate {
   string creator      = 1;
-  uint64 structId     = 2;
+  string structId     = 2;
 }
 
 message MsgStructMineActivateResponse {
@@ -268,7 +268,7 @@ message MsgStructMineActivateResponse {
 
 message MsgStructMineDeactivate {
   string creator      = 1;
-  uint64 structId     = 2;
+  string structId     = 2;
 }
 
 message MsgStructMineDeactivateResponse {
@@ -277,7 +277,7 @@ message MsgStructMineDeactivateResponse {
 
 message MsgStructMine {
   string creator      = 1;
-  uint64 structId     = 2;
+  string structId     = 2;
   string proof        = 3;
   string nonce        = 4;
 }
@@ -288,7 +288,7 @@ message MsgStructMineResponse {
 
 message MsgStructRefineActivate {
   string creator      = 1;
-  uint64 structId     = 2;
+  string structId     = 2;
 }
 
 message MsgStructRefineActivateResponse {
@@ -297,7 +297,7 @@ message MsgStructRefineActivateResponse {
 
 message MsgStructRefineDeactivate {
   string creator      = 1;
-  uint64 structId     = 2;
+  string structId     = 2;
 }
 
 message MsgStructRefineDeactivateResponse {
@@ -306,7 +306,7 @@ message MsgStructRefineDeactivateResponse {
 
 message MsgStructRefine {
   string creator      = 1;
-  uint64 structId     = 2;
+  string structId     = 2;
   string proof        = 3;
   string nonce        = 4;
 }
@@ -324,7 +324,7 @@ message MsgPlayerUpdatePrimaryAddressResponse {}
 
 message MsgStructInfuse{
   string creator        = 1;
-  uint64 structId       = 2;
+  string structId       = 2;
   string infuseAmount   = 3;
 }
 
@@ -333,7 +333,7 @@ message MsgStructInfuseResponse {}
 
 message MsgSabotage {
   string creator      = 1;
-  uint64 structId     = 2;
+  string structId     = 2;
   string proof        = 3;
   string nonce        = 4;
 }

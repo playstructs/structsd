@@ -27,8 +27,7 @@ func (k msgServer) PlayerCreateProxy(goCtx context.Context, msg *types.MsgPlayer
     // The Guild can either openly allow GuildJoinType_Proxy (or any more open join type)
     // Or, if the Guild acceptance is locked down then we'll look to player permissions
 
-    guildObjectId           := GetObjectID(types.ObjectType_guild, guild.Id)
-    guildObjectPermissionId := GetObjectPermissionIDBytes(guildObjectId, proxyPlayer.Id)
+    guildObjectPermissionId := GetObjectPermissionIDBytes(guild.Id, proxyPlayer.Id)
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
 
     // Check to make sure the player has permissions on the guild

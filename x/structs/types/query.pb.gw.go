@@ -85,7 +85,7 @@ func request_Query_Reactor_0(ctx context.Context, marshaler runtime.Marshaler, c
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.Id, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
@@ -112,7 +112,7 @@ func local_request_Query_Reactor_0(ctx context.Context, marshaler runtime.Marsha
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.Id, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
@@ -179,7 +179,7 @@ func request_Query_ReactorPermission_0(ctx context.Context, marshaler runtime.Ma
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "reactorId")
 	}
 
-	protoReq.ReactorId, err = runtime.Uint64(val)
+	protoReq.ReactorId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "reactorId", err)
@@ -213,7 +213,7 @@ func local_request_Query_ReactorPermission_0(ctx context.Context, marshaler runt
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "reactorId")
 	}
 
-	protoReq.ReactorId, err = runtime.Uint64(val)
+	protoReq.ReactorId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "reactorId", err)
@@ -247,7 +247,7 @@ func request_Query_ReactorPlayerPermission_0(ctx context.Context, marshaler runt
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "reactorId")
 	}
 
-	protoReq.ReactorId, err = runtime.Uint64(val)
+	protoReq.ReactorId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "reactorId", err)
@@ -258,7 +258,7 @@ func request_Query_ReactorPlayerPermission_0(ctx context.Context, marshaler runt
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "playerId")
 	}
 
-	protoReq.PlayerId, err = runtime.Uint64(val)
+	protoReq.PlayerId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "playerId", err)
@@ -285,7 +285,7 @@ func local_request_Query_ReactorPlayerPermission_0(ctx context.Context, marshale
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "reactorId")
 	}
 
-	protoReq.ReactorId, err = runtime.Uint64(val)
+	protoReq.ReactorId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "reactorId", err)
@@ -296,7 +296,7 @@ func local_request_Query_ReactorPlayerPermission_0(ctx context.Context, marshale
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "playerId")
 	}
 
-	protoReq.PlayerId, err = runtime.Uint64(val)
+	protoReq.PlayerId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "playerId", err)
@@ -359,7 +359,7 @@ func request_Query_Substation_0(ctx context.Context, marshaler runtime.Marshaler
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.Id, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
@@ -386,7 +386,7 @@ func local_request_Query_Substation_0(ctx context.Context, marshaler runtime.Mar
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.Id, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
@@ -453,7 +453,7 @@ func request_Query_SubstationPermission_0(ctx context.Context, marshaler runtime
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "substationId")
 	}
 
-	protoReq.SubstationId, err = runtime.Uint64(val)
+	protoReq.SubstationId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "substationId", err)
@@ -487,7 +487,7 @@ func local_request_Query_SubstationPermission_0(ctx context.Context, marshaler r
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "substationId")
 	}
 
-	protoReq.SubstationId, err = runtime.Uint64(val)
+	protoReq.SubstationId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "substationId", err)
@@ -521,7 +521,7 @@ func request_Query_SubstationPlayerPermission_0(ctx context.Context, marshaler r
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "substationId")
 	}
 
-	protoReq.SubstationId, err = runtime.Uint64(val)
+	protoReq.SubstationId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "substationId", err)
@@ -532,7 +532,7 @@ func request_Query_SubstationPlayerPermission_0(ctx context.Context, marshaler r
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "playerId")
 	}
 
-	protoReq.PlayerId, err = runtime.Uint64(val)
+	protoReq.PlayerId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "playerId", err)
@@ -559,7 +559,7 @@ func local_request_Query_SubstationPlayerPermission_0(ctx context.Context, marsh
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "substationId")
 	}
 
-	protoReq.SubstationId, err = runtime.Uint64(val)
+	protoReq.SubstationId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "substationId", err)
@@ -570,7 +570,7 @@ func local_request_Query_SubstationPlayerPermission_0(ctx context.Context, marsh
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "playerId")
 	}
 
-	protoReq.PlayerId, err = runtime.Uint64(val)
+	protoReq.PlayerId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "playerId", err)
@@ -633,7 +633,7 @@ func request_Query_Allocation_0(ctx context.Context, marshaler runtime.Marshaler
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.Id, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
@@ -660,7 +660,7 @@ func local_request_Query_Allocation_0(ctx context.Context, marshaler runtime.Mar
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.Id, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
@@ -723,7 +723,7 @@ func request_Query_Guild_0(ctx context.Context, marshaler runtime.Marshaler, cli
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.Id, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
@@ -750,7 +750,7 @@ func local_request_Query_Guild_0(ctx context.Context, marshaler runtime.Marshale
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.Id, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
@@ -817,7 +817,7 @@ func request_Query_GuildPermission_0(ctx context.Context, marshaler runtime.Mars
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "guildId")
 	}
 
-	protoReq.GuildId, err = runtime.Uint64(val)
+	protoReq.GuildId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "guildId", err)
@@ -851,7 +851,7 @@ func local_request_Query_GuildPermission_0(ctx context.Context, marshaler runtim
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "guildId")
 	}
 
-	protoReq.GuildId, err = runtime.Uint64(val)
+	protoReq.GuildId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "guildId", err)
@@ -885,7 +885,7 @@ func request_Query_GuildPlayerPermission_0(ctx context.Context, marshaler runtim
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "guildId")
 	}
 
-	protoReq.GuildId, err = runtime.Uint64(val)
+	protoReq.GuildId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "guildId", err)
@@ -896,7 +896,7 @@ func request_Query_GuildPlayerPermission_0(ctx context.Context, marshaler runtim
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "playerId")
 	}
 
-	protoReq.PlayerId, err = runtime.Uint64(val)
+	protoReq.PlayerId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "playerId", err)
@@ -923,7 +923,7 @@ func local_request_Query_GuildPlayerPermission_0(ctx context.Context, marshaler 
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "guildId")
 	}
 
-	protoReq.GuildId, err = runtime.Uint64(val)
+	protoReq.GuildId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "guildId", err)
@@ -934,7 +934,7 @@ func local_request_Query_GuildPlayerPermission_0(ctx context.Context, marshaler 
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "playerId")
 	}
 
-	protoReq.PlayerId, err = runtime.Uint64(val)
+	protoReq.PlayerId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "playerId", err)
@@ -997,7 +997,7 @@ func request_Query_Player_0(ctx context.Context, marshaler runtime.Marshaler, cl
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.Id, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
@@ -1024,7 +1024,7 @@ func local_request_Query_Player_0(ctx context.Context, marshaler runtime.Marshal
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.Id, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
@@ -1091,7 +1091,7 @@ func request_Query_PlayerPermission_0(ctx context.Context, marshaler runtime.Mar
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "playerId")
 	}
 
-	protoReq.PlayerId, err = runtime.Uint64(val)
+	protoReq.PlayerId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "playerId", err)
@@ -1125,7 +1125,7 @@ func local_request_Query_PlayerPermission_0(ctx context.Context, marshaler runti
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "playerId")
 	}
 
-	protoReq.PlayerId, err = runtime.Uint64(val)
+	protoReq.PlayerId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "playerId", err)
@@ -1159,7 +1159,7 @@ func request_Query_PlayerPlayerPermission_0(ctx context.Context, marshaler runti
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "targetPlayerId")
 	}
 
-	protoReq.TargetPlayerId, err = runtime.Uint64(val)
+	protoReq.TargetPlayerId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "targetPlayerId", err)
@@ -1170,7 +1170,7 @@ func request_Query_PlayerPlayerPermission_0(ctx context.Context, marshaler runti
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "playerId")
 	}
 
-	protoReq.PlayerId, err = runtime.Uint64(val)
+	protoReq.PlayerId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "playerId", err)
@@ -1197,7 +1197,7 @@ func local_request_Query_PlayerPlayerPermission_0(ctx context.Context, marshaler
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "targetPlayerId")
 	}
 
-	protoReq.TargetPlayerId, err = runtime.Uint64(val)
+	protoReq.TargetPlayerId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "targetPlayerId", err)
@@ -1208,7 +1208,7 @@ func local_request_Query_PlayerPlayerPermission_0(ctx context.Context, marshaler
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "playerId")
 	}
 
-	protoReq.PlayerId, err = runtime.Uint64(val)
+	protoReq.PlayerId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "playerId", err)
@@ -1266,23 +1266,12 @@ func request_Query_Infusion_0(ctx context.Context, marshaler runtime.Marshaler, 
 		_   = err
 	)
 
-	val, ok = pathParams["destinationType"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "destinationType")
-	}
-
-	protoReq.DestinationType, err = runtime.String(val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "destinationType", err)
-	}
-
 	val, ok = pathParams["destinationId"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "destinationId")
 	}
 
-	protoReq.DestinationId, err = runtime.Uint64(val)
+	protoReq.DestinationId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "destinationId", err)
@@ -1315,23 +1304,12 @@ func local_request_Query_Infusion_0(ctx context.Context, marshaler runtime.Marsh
 		_   = err
 	)
 
-	val, ok = pathParams["destinationType"]
-	if !ok {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "destinationType")
-	}
-
-	protoReq.DestinationType, err = runtime.String(val)
-
-	if err != nil {
-		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "destinationType", err)
-	}
-
 	val, ok = pathParams["destinationId"]
 	if !ok {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "destinationId")
 	}
 
-	protoReq.DestinationId, err = runtime.Uint64(val)
+	protoReq.DestinationId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "destinationId", err)
@@ -1405,7 +1383,7 @@ func request_Query_Planet_0(ctx context.Context, marshaler runtime.Marshaler, cl
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.Id, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
@@ -1432,7 +1410,7 @@ func local_request_Query_Planet_0(ctx context.Context, marshaler runtime.Marshal
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.Id, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
@@ -1495,7 +1473,7 @@ func request_Query_Struct_0(ctx context.Context, marshaler runtime.Marshaler, cl
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.Id, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
@@ -1522,7 +1500,7 @@ func local_request_Query_Struct_0(ctx context.Context, marshaler runtime.Marshal
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "id")
 	}
 
-	protoReq.Id, err = runtime.Uint64(val)
+	protoReq.Id, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "id", err)
@@ -1679,7 +1657,7 @@ func request_Query_AddressAllByPlayer_0(ctx context.Context, marshaler runtime.M
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "playerId")
 	}
 
-	protoReq.PlayerId, err = runtime.Uint64(val)
+	protoReq.PlayerId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "playerId", err)
@@ -1713,7 +1691,7 @@ func local_request_Query_AddressAllByPlayer_0(ctx context.Context, marshaler run
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "missing parameter %s", "playerId")
 	}
 
-	protoReq.PlayerId, err = runtime.Uint64(val)
+	protoReq.PlayerId, err = runtime.String(val)
 
 	if err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "type mismatch, parameter: %s, error: %v", "playerId", err)
@@ -3249,7 +3227,7 @@ var (
 
 	pattern_Query_PlayerPermissionAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 2, 2}, []string{"structs", "permission", "player"}, "", runtime.AssumeColonVerbOpt(true)))
 
-	pattern_Query_Infusion_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3, 1, 0, 4, 1, 5, 4}, []string{"structs", "infusion", "destinationType", "destinationId", "address"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_Query_Infusion_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1, 1, 0, 4, 1, 5, 2, 1, 0, 4, 1, 5, 3}, []string{"structs", "infusion", "destinationId", "address"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_Query_InfusionAll_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"structs", "infusion"}, "", runtime.AssumeColonVerbOpt(true)))
 

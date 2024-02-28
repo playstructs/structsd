@@ -22,7 +22,7 @@ func CmdPlayerCreateProxy() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 		    argAddress := args[0]
 
-            argSubstationId, err := cmd.Flags().GetUint64("substation-id")
+            argSubstationId, err := cmd.Flags().GetString("substation-id")
             if err != nil {
                 return err
             }
@@ -47,7 +47,7 @@ func CmdPlayerCreateProxy() *cobra.Command {
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
-	cmd.Flags().Uint64P("substation-id", "S", 0, "Override the Guild Substation with this Substation ID during proxy player creation")
+	cmd.Flags().StringP("substation-id", "S", "", "Override the Guild Substation with this Substation ID during proxy player creation")
 
 	return cmd
 }

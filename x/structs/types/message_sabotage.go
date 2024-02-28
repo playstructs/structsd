@@ -10,7 +10,7 @@ const TypeMsgSabotage = "sabotage"
 var _ sdk.Msg = &MsgSabotage{}
 
 
-func NewMsgSabotage(creator string, structId uint64, proof string, nonce string) *MsgSabotage {
+func NewMsgSabotage(creator string, structId string, proof string, nonce string) *MsgSabotage {
 	return &MsgSabotage{
 		Creator:  creator,
 		StructId: structId,

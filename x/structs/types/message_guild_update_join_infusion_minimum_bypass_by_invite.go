@@ -9,10 +9,10 @@ const TypeMsgGuildUpdateJoinInfusionMinimumBypassByInvite = "guild_update_join_i
 
 var _ sdk.Msg = &MsgGuildUpdateJoinInfusionMinimumBypassByInvite{}
 
-func NewMsgGuildUpdateJoinInfusionMinimumBypassByInvite(creator string, id uint64, guildJoinBypassLevel uint64) *MsgGuildUpdateJoinInfusionMinimumBypassByInvite {
+func NewMsgGuildUpdateJoinInfusionMinimumBypassByInvite(creator string, guildId string, guildJoinBypassLevel uint64) *MsgGuildUpdateJoinInfusionMinimumBypassByInvite {
 	return &MsgGuildUpdateJoinInfusionMinimumBypassByInvite{
 		Creator:  creator,
-		Id: id,
+		GuildId: guildId,
 		GuildJoinBypassLevel: guildJoinBypassLevel,
 	}
 }

@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/spf13/cast"
+
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
 
@@ -30,10 +30,7 @@ func CmdStructRefineCompute() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
-			argStructId, err := cast.ToUint64E(args[0])
-			if err != nil {
-				return err
-			}
+			argStructId := args[0]
 
 			var argProof string
 			var argNonce string
@@ -62,10 +59,10 @@ func CmdStructRefineCompute() *cobra.Command {
 			var performingStructure types.Struct
 			performingStructure = performing_structure_res.Struct
 
-            fmt.Printf("Loaded Struct (%d) for mining process \n", performingStructure.Id)
+            fmt.Printf("Loaded Struct (%s) for mining process \n", performingStructure.Id)
 
             if (performingStructure.RefiningSystemStatus != "ACTIVE") {
-                fmt.Printf("Struct (%d) has no Active refining system \n", performingStructure.Id)
+                fmt.Printf("Struct (%s) has no Active refining system \n", performingStructure.Id)
                 return nil
             }
 
@@ -77,7 +74,6 @@ func CmdStructRefineCompute() *cobra.Command {
             fmt.Printf("Refining difficulty is %d \n", currentDifficulty)
 
 
-            structIdString                  := strconv.FormatUint(performingStructure.Id, 10)
             activeRefiningSystemBlockString := strconv.FormatUint(performingStructure.ActiveRefiningSystemBlock , 10)
             fmt.Println("Starting Refining...")
 
@@ -113,7 +109,7 @@ COMPUTE:
                 }
 				newHash := sha256.New()
 
-                newInput := structIdString + "REFINE" + activeRefiningSystemBlockString + "NONCE" + strconv.Itoa(i)
+                newInput := performingStructure.Id + "REFINE" + activeRefiningSystemBlockString + "NONCE" + strconv.Itoa(i)
 				newHash.Write([]byte(newInput))
 				newHashOutput := hex.EncodeToString(newHash.Sum(nil))
 

@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/spf13/cast"
+
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
 
@@ -30,10 +30,7 @@ func CmdSabotageCompute() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
-			argStructId, err := cast.ToUint64E(args[0])
-			if err != nil {
-				return err
-			}
+			argStructId := args[0]
 
 			var argProof string
 			var argNonce string
@@ -62,7 +59,7 @@ func CmdSabotageCompute() *cobra.Command {
 			var performingStructure types.Struct
 			performingStructure = performing_structure_res.Struct
 
-            fmt.Printf("Loaded Struct (%d) as target for sabotage \n", performingStructure.Id)
+            fmt.Printf("Loaded Struct (%s) as target for sabotage \n", performingStructure.Id)
 
 
             currentBlockResponse, _ := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
@@ -89,7 +86,6 @@ func CmdSabotageCompute() *cobra.Command {
 
 
             fmt.Printf("Sabotage difficulty is %d \n", currentDifficulty)
-            structIdString := strconv.FormatUint(performingStructure.Id, 10)
 
             fmt.Println("Starting sabotage mission...")
 
@@ -135,7 +131,7 @@ COMPUTE:
 
 				newHash := sha256.New()
 
-                newInput := structIdString + "SABOTAGE" + blockString + "NONCE" + strconv.Itoa(i)
+                newInput := performingStructure.Id + "SABOTAGE" + blockString + "NONCE" + strconv.Itoa(i)
 				newHash.Write([]byte(newInput))
 				newHashOutput := hex.EncodeToString(newHash.Sum(nil))
 

@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/spf13/cast"
+
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
 )
@@ -19,10 +19,8 @@ func CmdAddressRegister() *cobra.Command {
 		Short: "Broadcast message address-register",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argPlayerId, err := cast.ToUint64E(args[0])
-			if err != nil {
-				return err
-			}
+
+			argPlayerId := args[0]
 			argAddress := args[1]
 
 			clientCtx, err := client.GetClientTxContext(cmd)

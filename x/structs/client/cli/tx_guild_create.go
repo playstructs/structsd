@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
-	"github.com/spf13/cast"
+
 )
 
 var _ = strconv.Itoa(0)
@@ -21,10 +21,7 @@ func CmdGuildCreate() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 			argEndpoint := args[0]
 
-			argEntrySubstationId, err := cast.ToUint64E(args[1])
-            if err != nil {
-                return err
-            }
+			argEntrySubstationId := args[1]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

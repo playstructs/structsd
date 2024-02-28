@@ -10,7 +10,6 @@ import (
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
 var _ = strconv.Itoa(0)
@@ -27,27 +26,20 @@ var _ = strconv.Itoa(0)
 
 func CmdAllocationCreate() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "allocation-create [source-type] [source-id] [power] [controller]",
+		Use:   "allocation-create [source-id] [power] [controller]",
 		Short: "Broadcast message allocation-create",
-		Args:  cobra.RangeArgs(3, 4),
+		Args:  cobra.RangeArgs(2, 3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
-			argSourceType := types.ObjectType_enum[args[0]]
-			if !types.IsValidAllocationConnectionType(argSourceType) {
-				return sdkerrors.Wrapf(types.ErrAllocationSourceType, "source type (%s) not valid for allocation", argSourceType.String())
-			}
 
-			argSourceId, err := cast.ToUint64E(args[1])
+			argSourceId := args[0]
+
+			argPower, err := cast.ToUint64E(args[1])
 			if err != nil {
 				return err
 			}
 
-			argPower, err := cast.ToUint64E(args[2])
-			if err != nil {
-				return err
-			}
-
-			argController := args[3]
+			argController := args[2]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -57,7 +49,6 @@ func CmdAllocationCreate() *cobra.Command {
 			msg := types.NewMsgAllocationCreate(
 				clientCtx.GetFromAddress().String(),
 				argController,
-				argSourceType,
 				argSourceId,
 				argPower,
 			)

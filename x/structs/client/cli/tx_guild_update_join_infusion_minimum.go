@@ -19,10 +19,7 @@ func CmdGuildUpdateJoinInfusionMinimum() *cobra.Command {
 		Short: "Update the Join Infusion Minimum of a Guild",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argGuildId, err := cast.ToUint64E(args[0])
-            if err != nil {
-                return err
-            }
+			argGuildId := args[0]
 
 			argJoinInfusionMinimum, err := cast.ToUint64E(args[1])
             if err != nil {

@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
-	"github.com/spf13/cast"
+
 )
 
 var _ = strconv.Itoa(0)
@@ -19,12 +19,9 @@ func CmdGuildUpdateEndpoint() *cobra.Command {
 		Short: "Update the Endpoint of a Guild",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argGuildId, err := cast.ToUint64E(args[0])
-            if err != nil {
-                return err
-            }
+			argGuildId := args[0]
 
-			argEndpoint := args[0]
+			argEndpoint := args[1]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

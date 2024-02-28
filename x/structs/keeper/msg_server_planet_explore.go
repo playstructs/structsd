@@ -22,11 +22,6 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
     player, _ := k.GetPlayerFromIndex(ctx, playerIndex, false)
 
 
-    playerPermissions := k.AddressGetPlayerPermissions(ctx, msg.Creator)
-    if ((playerPermissions&types.AddressPermissionPlay) == 0) {
-
-    }
-
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
 
     // Make sure the address calling this has Play permissions
@@ -40,7 +35,7 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
     }
 
 
-    if (player.PlanetId > 0) {
+    if (player.PlanetId != "") {
         // Check to see if the planet can be completed
         currentPlanet, currentPlanetFound := k.GetPlanet(ctx, player.PlanetId)
         if (!currentPlanetFound) {
@@ -53,7 +48,8 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
     }
 
     planet := k.AppendPlanet(ctx, player)
-    player.SetPlanetId(planet.Id)
+    player.PlanetId = planet.Id
+
     k.SetPlayer(ctx, player)
 
 	return &types.MsgPlanetExploreResponse{Planet: planet}, nil

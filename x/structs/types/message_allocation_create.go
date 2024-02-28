@@ -3,6 +3,7 @@ package types
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	"strings"
 )
 
 const TypeMsgAllocationCreate = "allocation_create"
@@ -44,5 +45,12 @@ func (msg *MsgAllocationCreate) ValidateBasic() error {
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
 	}
+
+	sourceSplit := strings.Split(msg.SourceObjectId, "-")
+    sourceType := ObjectType_enum[sourceSplit[0]]
+    if !IsValidAllocationConnectionType(sourceType) {
+        return sdkerrors.Wrapf(ErrAllocationSourceType, "source type (%s) not valid for allocation", sourceType.String())
+    }
+
 	return nil
 }

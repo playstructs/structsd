@@ -54,7 +54,7 @@ func (k msgServer) PlayerCreate(goCtx context.Context, msg *types.MsgPlayerCreat
         case types.GuildJoinType_Open:
             // If the player is already connected to a substation then leave them
             // Maybe add an option to force migration later
-            if (player.SubstationId == 0) {
+            if (player.SubstationId == "") {
                 if (substationFound) {
                     // Check if the substation has room
                     if substation.HasPlayerCapacity() {

@@ -130,7 +130,7 @@ service Query {
 
   // Queries a list of Allocation items.
   rpc Infusion    (QueryGetInfusionRequest) returns (QueryGetInfusionResponse) {
-    option (google.api.http).get = "/structs/infusion/{destinationType}/{destinationId}/{address}";
+    option (google.api.http).get = "/structs/infusion/{destinationId}/{address}";
   }
 
   rpc InfusionAll (QueryAllInfusionRequest) returns (QueryAllInfusionResponse) {
@@ -195,7 +195,7 @@ message QueryParamsResponse {
 }
 
 message QueryGetReactorRequest {
-  uint64 id = 1;
+  string id = 1;
 }
 
 message QueryGetReactorResponse {
@@ -213,13 +213,13 @@ message QueryAllReactorResponse {
 
 
 message QueryGetReactorPermissionRequest {
-  uint64 reactorId = 1;
+  string reactorId = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 message QueryGetReactorPlayerPermissionRequest {
-  uint64 reactorId = 1;
-  uint64 playerId  = 2;
+  string reactorId = 1;
+  string playerId  = 2;
 }
 
 message QueryAllReactorPermissionRequest {
@@ -229,7 +229,7 @@ message QueryAllReactorPermissionRequest {
 
 
 message QueryGetSubstationRequest {
-  uint64 id = 1;
+  string id = 1;
 }
 
 message QueryGetSubstationResponse {
@@ -246,13 +246,13 @@ message QueryAllSubstationResponse {
 }
 
 message QueryGetSubstationPermissionRequest {
-  uint64 substationId = 1;
+  string substationId = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 message QueryGetSubstationPlayerPermissionRequest {
-  uint64 substationId = 1;
-  uint64 playerId  = 2;
+  string substationId = 1;
+  string playerId  = 2;
 }
 
 message QueryAllSubstationPermissionRequest {
@@ -260,7 +260,7 @@ message QueryAllSubstationPermissionRequest {
 }
 
 message QueryGetAllocationRequest {
-  uint64 id = 1;
+  string id = 1;
 }
 
 message QueryGetAllocationResponse {
@@ -278,7 +278,7 @@ message QueryAllAllocationResponse {
 }
 
 message QueryGetGuildRequest {
-  uint64 id = 1;
+  string id = 1;
 }
 
 message QueryGetGuildResponse {
@@ -295,13 +295,13 @@ message QueryAllGuildResponse {
 }
 
 message QueryGetGuildPermissionRequest {
-  uint64 guildId = 1;
+  string guildId = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 message QueryGetGuildPlayerPermissionRequest {
-  uint64 guildId = 1;
-  uint64 playerId  = 2;
+  string guildId = 1;
+  string playerId  = 2;
 }
 
 message QueryAllGuildPermissionRequest {
@@ -309,7 +309,7 @@ message QueryAllGuildPermissionRequest {
 }
 
 message QueryGetPlayerRequest {
-  uint64 id = 1;
+  string id = 1;
 }
 
 message QueryGetPlayerResponse {
@@ -326,13 +326,13 @@ message QueryAllPlayerResponse {
 }
 
 message QueryGetPlayerPermissionRequest {
-  uint64 playerId = 1;
+  string playerId = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 message QueryGetPlayerPlayerPermissionRequest {
-  uint64 targetPlayerId = 1;
-  uint64 playerId  = 2;
+  string targetPlayerId = 1;
+  string playerId  = 2;
 }
 
 message QueryAllPlayerPermissionRequest {
@@ -342,9 +342,8 @@ message QueryAllPlayerPermissionRequest {
 
 
 message QueryGetInfusionRequest {
-  string destinationType      = 1;
-  uint64 destinationId        = 2;
-  string address              = 3;
+  string destinationId        = 1;
+  string address              = 2;
 }
 
 message QueryGetInfusionResponse {
@@ -364,7 +363,7 @@ message QueryAllInfusionResponse {
 
 
 message QueryGetPlanetRequest {
-  uint64 id = 1;
+  string id = 1;
 }
 
 message QueryGetPlanetResponse {
@@ -382,7 +381,7 @@ message QueryAllPlanetResponse {
 
 
 message QueryGetStructRequest {
-  uint64 id = 1;
+  string id = 1;
 }
 
 message QueryGetStructResponse {
@@ -412,13 +411,13 @@ message QueryAllAddressRequest {
 }
 
 message QueryAllAddressByPlayerRequest {
-  uint64 playerId = 1;
+  string playerId = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
 message QueryAddressResponse {
   string address          = 1;
-  uint64 playerId         = 2;
+  string playerId         = 2;
   uint64 permissionRecord = 3;
 }
 

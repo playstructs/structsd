@@ -9,10 +9,10 @@ const TypeMsgGuildUpdateEndpoint = "guild_update_endpoint"
 
 var _ sdk.Msg = &MsgGuildUpdateEndpoint{}
 
-func NewMsgGuildUpdateEndpoint(creator string, id uint64, endpoint string) *MsgGuildUpdateEndpoint {
+func NewMsgGuildUpdateEndpoint(creator string, guildId string, endpoint string) *MsgGuildUpdateEndpoint {
 	return &MsgGuildUpdateEndpoint{
 		Creator:  creator,
-		Id: id,
+		GuildId: guildId,
 		Endpoint: endpoint,
 	}
 }

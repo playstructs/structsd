@@ -70,7 +70,7 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
         oldInfusionPower = 0
 
         newInfusionFuel = fuel
-        newInfusionPower, newCommissionPower, newPlayerPower = infusion.getPowerDistribution()
+        newInfusionPower, newCommissionPower, newPlayerPower = infusion.GetPowerDistribution()
     }
 
     k.SetInfusion(ctx, infusion)
@@ -184,7 +184,7 @@ func (k Keeper) GetAllStructInfusions(ctx sdk.Context, structId string) (list []
 
 func (k Keeper) DestroyInfusion(ctx sdk.Context, infusion types.Infusion) {
 
-    infusionPower, commissionPower, playerPower := infusion.getPowerDistribution()
+    infusionPower, commissionPower, playerPower := infusion.GetPowerDistribution()
 
     // Quiet the go lords
     _ = infusionPower

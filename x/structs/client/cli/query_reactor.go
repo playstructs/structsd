@@ -2,7 +2,6 @@ package cli
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -56,10 +55,7 @@ func CmdShowReactor() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
+			id := args[0]
 
 			params := &types.QueryGetReactorRequest{
 				Id: id,

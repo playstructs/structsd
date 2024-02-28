@@ -43,22 +43,22 @@ func (k Keeper) AppendStruct(
 	planet types.Planet,
 	slot uint64,
 ) (structure types.Struct) {
-    structure = types.CreateBaseStruct(structType )
+    structure = types.CreateBaseStruct(structType)
 
 	// Create the struct
 	count := k.GetStructCount(ctx)
 
 	// Set the ID of the appended value
-	structure.Id = count
-	structure.SetCreator(player.Creator)
-	structure.SetOwner(player.Id)
+	structure.Id = GetObjectId(types.ObjectType_struct, count)
+	structure.Creator = player.Creator
+	structure.Owner   = player.Id
 	structure.SetPlanetId(planet.Id)
 	structure.SetSlot(slot)
 	structure.SetBuildStartBlock(uint64(ctx.BlockHeight()))
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructKey))
 	appendedValue := k.cdc.MustMarshal(&structure)
-	store.Set(GetObjectID(types.ObjectType_struct, structure.Id), appendedValue)
+	store.Set([]byte(structure.Id), appendedValue)
 
 	// Update struct count
 	k.SetStructCount(ctx, count+1)
@@ -73,15 +73,15 @@ func (k Keeper) AppendStruct(
 func (k Keeper) SetStruct(ctx sdk.Context, structure types.Struct) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructKey))
 	b := k.cdc.MustMarshal(&structure)
-	store.Set(GetObjectID(types.ObjectType_struct, structure.Id), b)
+	store.Set([]byte(structure.Id), b)
 
     _ = ctx.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})
 }
 
 // GetStruct returns a struct from its id
-func (k Keeper) GetStruct(ctx sdk.Context, id uint64) (val types.Struct, found bool) {
+func (k Keeper) GetStruct(ctx sdk.Context, structId string) (val types.Struct, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructKey))
-	b := store.Get(GetStructIDBytes(id))
+	b := store.Get([]byte(structId))
 	if b == nil {
 		return val, false
 	}
@@ -97,11 +97,11 @@ func (k Keeper) GetStruct(ctx sdk.Context, id uint64) (val types.Struct, found b
 }
 
 // RemoveStruct removes a struct from the store
-func (k Keeper) RemoveStruct(ctx sdk.Context, id uint64) {
+func (k Keeper) RemoveStruct(ctx sdk.Context, structId string) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructKey))
-	store.Delete(GetObjectID(types.ObjectType_struct, id))
+	store.Delete([]byte(structId))
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventStructDelete{StructId: id})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventStructDelete{StructId: structId})
 }
 
 // GetAllStruct returns all struct
@@ -160,7 +160,7 @@ func (k Keeper) StructDeactivate(ctx sdk.Context, structId uint64) {
 
 
 
-func (k Keeper) StructDestroyInfusions(ctx sdk.Context, structId uint64) {
+func (k Keeper) StructDestroyInfusions(ctx sdk.Context, structId string) {
     infusions := k.GetAllStructInfusions(ctx, structId)
     for _, infusion := range infusions {
         k.InfusionDestroy(ctx, infusion)

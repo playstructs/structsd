@@ -9,10 +9,10 @@ const TypeMsgGuildUpdateOwnerId = "guild_update_owner_id"
 
 var _ sdk.Msg = &MsgGuildUpdateOwnerId{}
 
-func NewMsgGuildUpdateOwnerId(creator string, id uint64, ownerId uint64) *MsgGuildUpdateOwnerId {
+func NewMsgGuildUpdateOwnerId(creator string, guildId string, ownerId string) *MsgGuildUpdateOwnerId {
 	return &MsgGuildUpdateOwnerId{
 		Creator:  creator,
-		Id: id,
+		GuildId: guildId,
 		Owner: ownerId,
 	}
 }

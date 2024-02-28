@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/spf13/cast"
+
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
 
@@ -30,10 +30,7 @@ func CmdStructBuildCompute() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
-			argStructId, err := cast.ToUint64E(args[0])
-			if err != nil {
-				return err
-			}
+			argStructId := args[0]
 
 			var argProof string
 			var argNonce string
@@ -62,10 +59,10 @@ func CmdStructBuildCompute() *cobra.Command {
 			var performingStructure types.Struct
 			performingStructure = performing_structure_res.Struct
 
-            fmt.Printf("Loaded Struct (%d) for building process \n", performingStructure.Id)
+            fmt.Printf("Loaded Struct (%s) for building process \n", performingStructure.Id)
 
             if (performingStructure.Status != "BUILDING") {
-                fmt.Printf("Struct (%d) is already built \n", performingStructure.Id)
+                fmt.Printf("Struct (%s) is already built \n", performingStructure.Id)
                 return nil
             }
 
@@ -78,7 +75,6 @@ func CmdStructBuildCompute() *cobra.Command {
             fmt.Printf("Building difficulty is %d \n", currentDifficulty)
 
 
-            structIdString                  := strconv.FormatUint(performingStructure.Id, 10)
             buildStartBlockString           := strconv.FormatUint(performingStructure.BuildStartBlock , 10)
             fmt.Println("Starting Building...")
 
@@ -113,7 +109,7 @@ COMPUTE:
                 }
 				newHash := sha256.New()
 
-                newInput := structIdString + "BUILD" + buildStartBlockString + "NONCE" + strconv.Itoa(i)
+                newInput := performingStructure.Id + "BUILD" + buildStartBlockString + "NONCE" + strconv.Itoa(i)
 				newHash.Write([]byte(newInput))
 				newHashOutput := hex.EncodeToString(newHash.Sum(nil))
 

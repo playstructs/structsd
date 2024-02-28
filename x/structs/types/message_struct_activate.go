@@ -10,7 +10,7 @@ const TypeMsgStructActivate = "struct_activate"
 var _ sdk.Msg = &MsgStructActivate{}
 
 
-func NewMsgStructActivate(creator string, structId uint64) *MsgStructActivate {
+func NewMsgStructActivate(creator string, structId string) *MsgStructActivate {
 	return &MsgStructActivate{
 		Creator:  creator,
 		StructId: structId,

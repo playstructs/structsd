@@ -25,10 +25,7 @@ func CmdStructBuildInitiate() *cobra.Command {
 
             argStructType := args[0]
 
-			argPlanetId, err := cast.ToUint64E(args[1])
-			if err != nil {
-				return err
-			}
+			argPlanetId := args[1]
 
 			argSlot, err := cast.ToUint64E(args[2])
 			if err != nil {

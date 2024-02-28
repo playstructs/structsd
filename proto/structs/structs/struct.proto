@@ -7,10 +7,10 @@ option go_package = "structs/x/structs/types";
 // This will all need to be reworked but let's
 // do some super basic crap here to get testnet up
 message Struct {
-  uint64 id         = 1;
+  string id         = 1;
 
   string creator    = 2;
-  uint64 owner      = 3;
+  string owner      = 3;
 
   string status     = 4;
   uint64 maxHealth  = 5;
@@ -24,7 +24,7 @@ message Struct {
 
   // Where it is
   string ambit      = 9;
-  uint64 planetId   = 10;   // No fleet stuff yet
+  string planetId   = 10;   // No fleet stuff yet
   uint64 slot       = 11;
 
   // Struct Features

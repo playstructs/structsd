@@ -14,6 +14,8 @@ func (k *Keeper) BeginBlocker(ctx sdk.Context) {
 
 // Called every block, update validator set
 func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error) {
-	k.UpdateSubstationStatus(sdk.UnwrapSDKContext(ctx))
+	//k.UpdateSubstationStatus(sdk.UnwrapSDKContext(ctx))
+
+	// TODO Cascade
 	return []abci.ValidatorUpdate{}, nil
 }

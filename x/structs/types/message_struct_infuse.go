@@ -10,7 +10,7 @@ const TypeMsgStructInfuse = "struct_infuse"
 var _ sdk.Msg = &MsgStructInfuse{}
 
 
-func NewMsgStructInfuse(creator string, structId uint64, infuseAmount string) *MsgStructInfuse {
+func NewMsgStructInfuse(creator string, structId string, infuseAmount string) *MsgStructInfuse {
 	return &MsgStructInfuse{
 		Creator:  creator,
 		StructId: structId,

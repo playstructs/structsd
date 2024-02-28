@@ -6,9 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
-	"github.com/spf13/cast"
 	"structs/x/structs/types"
-
 
 )
 
@@ -83,7 +81,7 @@ func CmdShowPlayer() *cobra.Command {
                 }
 
             } else {
-                playerId, err := cmd.Flags().GetUint64("player-id")
+                playerId, err := cmd.Flags().GetString("player-id")
                 if err != nil {
                     return err
                 }
@@ -92,13 +90,10 @@ func CmdShowPlayer() *cobra.Command {
                     Id: playerId,
                 }
                 // Backwards compatibility
-                if (playerId == 0) {
+                if (playerId == "") {
 
                     if (len(args) == 1) {
-                        playerId, err = cast.ToUint64E(args[0])
-                        if err != nil {
-                            return err
-                        }
+                        playerId = args[0]
 
                        params = &types.QueryGetPlayerRequest{
                             Id: playerId,
@@ -120,7 +115,7 @@ func CmdShowPlayer() *cobra.Command {
 
                             addressResults, _ := queryClient.Address(context.Background(), addressLookupRequest)
 
-                            if (addressResults.PlayerId > 0) {
+                            if (addressResults.PlayerId != "") {
                                 params = &types.QueryGetPlayerRequest{ Id: addressResults.PlayerId, }
                                 break;
                             }
@@ -145,7 +140,7 @@ func CmdShowPlayer() *cobra.Command {
 
 	flags.AddQueryFlagsToCmd(cmd)
 
-	cmd.Flags().Uint64P("player-id", "I", 0, "Lookup by Player ID")
+	cmd.Flags().StringP("player-id", "I", "", "Lookup by Player ID")
 	cmd.Flags().StringP("address", "A", "", "Lookup by associated Player Address")
 
 	return cmd

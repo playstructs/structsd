@@ -45944,7 +45944,6 @@ paths:
                       type: string
                     playerId:
                       type: string
-                      format: uint64
                     permissionRecord:
                       type: string
                       format: uint64
@@ -46234,7 +46233,6 @@ paths:
                 type: string
               playerId:
                 type: string
-                format: uint64
               permissionRecord:
                 type: string
                 format: uint64
@@ -46448,7 +46446,6 @@ paths:
                       type: string
                     playerId:
                       type: string
-                      format: uint64
                     permissionRecord:
                       type: string
                       format: uint64
@@ -46670,7 +46667,6 @@ paths:
           in: path
           required: true
           type: string
-          format: uint64
         - name: pagination.key
           description: |-
             key is a value returned in PageResponse.next_key to begin
@@ -47279,7 +47275,6 @@ paths:
           in: path
           required: true
           type: string
-          format: uint64
       tags:
         - Query
   /structs/guild:
@@ -47819,7 +47814,6 @@ paths:
           in: path
           required: true
           type: string
-          format: uint64
       tags:
         - Query
   /structs/infusion:
@@ -48140,7 +48134,7 @@ paths:
           type: boolean
       tags:
         - Query
-  /structs/infusion/{destinationType}/{destinationId}/{address}:
+  /structs/infusion/{destinationId}/{address}:
     get:
       summary: Queries a list of Allocation items.
       operationId: StructsInfusion
@@ -48366,15 +48360,10 @@ paths:
                           "value": "1.212s"
                         }
       parameters:
-        - name: destinationType
-          in: path
-          required: true
-          type: string
         - name: destinationId
           in: path
           required: true
           type: string
-          format: uint64
         - name: address
           in: path
           required: true
@@ -49119,7 +49108,6 @@ paths:
           in: path
           required: true
           type: string
-          format: uint64
         - name: pagination.key
           description: |-
             key is a value returned in PageResponse.next_key to begin
@@ -49385,12 +49373,10 @@ paths:
           in: path
           required: true
           type: string
-          format: uint64
         - name: playerId
           in: path
           required: true
           type: string
-          format: uint64
       tags:
         - Query
   /structs/permission/player:
@@ -49928,7 +49914,6 @@ paths:
           in: path
           required: true
           type: string
-          format: uint64
         - name: pagination.key
           description: |-
             key is a value returned in PageResponse.next_key to begin
@@ -50194,12 +50179,10 @@ paths:
           in: path
           required: true
           type: string
-          format: uint64
         - name: playerId
           in: path
           required: true
           type: string
-          format: uint64
       tags:
         - Query
   /structs/permission/reactor:
@@ -50737,7 +50720,6 @@ paths:
           in: path
           required: true
           type: string
-          format: uint64
         - name: pagination.key
           description: |-
             key is a value returned in PageResponse.next_key to begin
@@ -51003,12 +50985,10 @@ paths:
           in: path
           required: true
           type: string
-          format: uint64
         - name: playerId
           in: path
           required: true
           type: string
-          format: uint64
       tags:
         - Query
   /structs/permission/substation:
@@ -51546,7 +51526,6 @@ paths:
           in: path
           required: true
           type: string
-          format: uint64
         - name: pagination.key
           description: |-
             key is a value returned in PageResponse.next_key to begin
@@ -51812,12 +51791,10 @@ paths:
           in: path
           required: true
           type: string
-          format: uint64
         - name: playerId
           in: path
           required: true
           type: string
-          format: uint64
       tags:
         - Query
   /structs/planet:
@@ -51836,7 +51813,6 @@ paths:
                   properties:
                     id:
                       type: string
-                      format: uint64
                     maxOre:
                       type: string
                       format: uint64
@@ -51850,27 +51826,22 @@ paths:
                       type: string
                     owner:
                       type: string
-                      format: uint64
                     space:
                       type: array
                       items:
                         type: string
-                        format: uint64
                     sky:
                       type: array
                       items:
                         type: string
-                        format: uint64
                     land:
                       type: array
                       items:
                         type: string
-                        format: uint64
                     water:
                       type: array
                       items:
                         type: string
-                        format: uint64
                     spaceSlots:
                       type: string
                       format: uint64
@@ -52173,7 +52144,6 @@ paths:
                 properties:
                   id:
                     type: string
-                    format: uint64
                   maxOre:
                     type: string
                     format: uint64
@@ -52187,27 +52157,22 @@ paths:
                     type: string
                   owner:
                     type: string
-                    format: uint64
                   space:
                     type: array
                     items:
                       type: string
-                      format: uint64
                   sky:
                     type: array
                     items:
                       type: string
-                      format: uint64
                   land:
                     type: array
                     items:
                       type: string
-                      format: uint64
                   water:
                     type: array
                     items:
                       type: string
-                      format: uint64
                   spaceSlots:
                     type: string
                     format: uint64
@@ -52413,7 +52378,6 @@ paths:
           in: path
           required: true
           type: string
-          format: uint64
       tags:
         - Query
   /structs/player:
@@ -52977,7 +52941,6 @@ paths:
           in: path
           required: true
           type: string
-          format: uint64
       tags:
         - Query
   /structs/reactor:
@@ -53509,7 +53472,6 @@ paths:
           in: path
           required: true
           type: string
-          format: uint64
       tags:
         - Query
   /structs/struct:
@@ -53528,12 +53490,10 @@ paths:
                   properties:
                     id:
                       type: string
-                      format: uint64
                     creator:
                       type: string
                     owner:
                       type: string
-                      format: uint64
                     status:
                       type: string
                     maxHealth:
@@ -53553,7 +53513,6 @@ paths:
                       title: Where it is
                     planetId:
                       type: string
-                      format: uint64
                       title: No fleet stuff yet
                     slot:
                       type: string
@@ -53889,12 +53848,10 @@ paths:
                 properties:
                   id:
                     type: string
-                    format: uint64
                   creator:
                     type: string
                   owner:
                     type: string
-                    format: uint64
                   status:
                     type: string
                   maxHealth:
@@ -53914,7 +53871,6 @@ paths:
                     title: Where it is
                   planetId:
                     type: string
-                    format: uint64
                     title: No fleet stuff yet
                   slot:
                     type: string
@@ -54153,7 +54109,6 @@ paths:
           in: path
           required: true
           type: string
-          format: uint64
       tags:
         - Query
   /structs/substation:
@@ -54683,7 +54638,6 @@ paths:
           in: path
           required: true
           type: string
-          format: uint64
       tags:
         - Query
 definitions:
@@ -83074,7 +83028,6 @@ definitions:
     properties:
       guildId:
         type: string
-        format: uint64
   structs.MsgGuildUpdateResponse:
     type: object
   structs.MsgPlanetExploreResponse:
@@ -83085,7 +83038,6 @@ definitions:
         properties:
           id:
             type: string
-            format: uint64
           maxOre:
             type: string
             format: uint64
@@ -83099,27 +83051,22 @@ definitions:
             type: string
           owner:
             type: string
-            format: uint64
           space:
             type: array
             items:
               type: string
-              format: uint64
           sky:
             type: array
             items:
               type: string
-              format: uint64
           land:
             type: array
             items:
               type: string
-              format: uint64
           water:
             type: array
             items:
               type: string
-              format: uint64
           spaceSlots:
             type: string
             format: uint64
@@ -83151,12 +83098,10 @@ definitions:
         properties:
           id:
             type: string
-            format: uint64
           creator:
             type: string
           owner:
             type: string
-            format: uint64
           status:
             type: string
           maxHealth:
@@ -83176,7 +83121,6 @@ definitions:
             title: Where it is
           planetId:
             type: string
-            format: uint64
             title: No fleet stuff yet
           slot:
             type: string
@@ -83233,12 +83177,10 @@ definitions:
         properties:
           id:
             type: string
-            format: uint64
           creator:
             type: string
           owner:
             type: string
-            format: uint64
           status:
             type: string
           maxHealth:
@@ -83258,7 +83200,6 @@ definitions:
             title: Where it is
           planetId:
             type: string
-            format: uint64
             title: No fleet stuff yet
           slot:
             type: string
@@ -83315,12 +83256,10 @@ definitions:
         properties:
           id:
             type: string
-            format: uint64
           creator:
             type: string
           owner:
             type: string
-            format: uint64
           status:
             type: string
           maxHealth:
@@ -83340,7 +83279,6 @@ definitions:
             title: Where it is
           planetId:
             type: string
-            format: uint64
             title: No fleet stuff yet
           slot:
             type: string
@@ -83399,12 +83337,10 @@ definitions:
         properties:
           id:
             type: string
-            format: uint64
           creator:
             type: string
           owner:
             type: string
-            format: uint64
           status:
             type: string
           maxHealth:
@@ -83424,7 +83360,6 @@ definitions:
             title: Where it is
           planetId:
             type: string
-            format: uint64
             title: No fleet stuff yet
           slot:
             type: string
@@ -83481,12 +83416,10 @@ definitions:
         properties:
           id:
             type: string
-            format: uint64
           creator:
             type: string
           owner:
             type: string
-            format: uint64
           status:
             type: string
           maxHealth:
@@ -83506,7 +83439,6 @@ definitions:
             title: Where it is
           planetId:
             type: string
-            format: uint64
             title: No fleet stuff yet
           slot:
             type: string
@@ -83563,12 +83495,10 @@ definitions:
         properties:
           id:
             type: string
-            format: uint64
           creator:
             type: string
           owner:
             type: string
-            format: uint64
           status:
             type: string
           maxHealth:
@@ -83588,7 +83518,6 @@ definitions:
             title: Where it is
           planetId:
             type: string
-            format: uint64
             title: No fleet stuff yet
           slot:
             type: string
@@ -83645,12 +83574,10 @@ definitions:
         properties:
           id:
             type: string
-            format: uint64
           creator:
             type: string
           owner:
             type: string
-            format: uint64
           status:
             type: string
           maxHealth:
@@ -83670,7 +83597,6 @@ definitions:
             title: Where it is
           planetId:
             type: string
-            format: uint64
             title: No fleet stuff yet
           slot:
             type: string
@@ -83727,12 +83653,10 @@ definitions:
         properties:
           id:
             type: string
-            format: uint64
           creator:
             type: string
           owner:
             type: string
-            format: uint64
           status:
             type: string
           maxHealth:
@@ -83752,7 +83676,6 @@ definitions:
             title: Where it is
           planetId:
             type: string
-            format: uint64
             title: No fleet stuff yet
           slot:
             type: string
@@ -83809,12 +83732,10 @@ definitions:
         properties:
           id:
             type: string
-            format: uint64
           creator:
             type: string
           owner:
             type: string
-            format: uint64
           status:
             type: string
           maxHealth:
@@ -83834,7 +83755,6 @@ definitions:
             title: Where it is
           planetId:
             type: string
-            format: uint64
             title: No fleet stuff yet
           slot:
             type: string
@@ -83906,7 +83826,6 @@ definitions:
     properties:
       id:
         type: string
-        format: uint64
       maxOre:
         type: string
         format: uint64
@@ -83920,27 +83839,22 @@ definitions:
         type: string
       owner:
         type: string
-        format: uint64
       space:
         type: array
         items:
           type: string
-          format: uint64
       sky:
         type: array
         items:
           type: string
-          format: uint64
       land:
         type: array
         items:
           type: string
-          format: uint64
       water:
         type: array
         items:
           type: string
-          format: uint64
       spaceSlots:
         type: string
         format: uint64
@@ -83999,7 +83913,6 @@ definitions:
         type: string
       playerId:
         type: string
-        format: uint64
       permissionRecord:
         type: string
         format: uint64
@@ -84015,7 +83928,6 @@ definitions:
               type: string
             playerId:
               type: string
-              format: uint64
             permissionRecord:
               type: string
               format: uint64
@@ -84246,7 +84158,6 @@ definitions:
           properties:
             id:
               type: string
-              format: uint64
             maxOre:
               type: string
               format: uint64
@@ -84260,27 +84171,22 @@ definitions:
               type: string
             owner:
               type: string
-              format: uint64
             space:
               type: array
               items:
                 type: string
-                format: uint64
             sky:
               type: array
               items:
                 type: string
-                format: uint64
             land:
               type: array
               items:
                 type: string
-                format: uint64
             water:
               type: array
               items:
                 type: string
-                format: uint64
             spaceSlots:
               type: string
               format: uint64
@@ -84456,12 +84362,10 @@ definitions:
           properties:
             id:
               type: string
-              format: uint64
             creator:
               type: string
             owner:
               type: string
-              format: uint64
             status:
               type: string
             maxHealth:
@@ -84481,7 +84385,6 @@ definitions:
               title: Where it is
             planetId:
               type: string
-              format: uint64
               title: No fleet stuff yet
             slot:
               type: string
@@ -84762,7 +84665,6 @@ definitions:
         properties:
           id:
             type: string
-            format: uint64
           maxOre:
             type: string
             format: uint64
@@ -84776,27 +84678,22 @@ definitions:
             type: string
           owner:
             type: string
-            format: uint64
           space:
             type: array
             items:
               type: string
-              format: uint64
           sky:
             type: array
             items:
               type: string
-              format: uint64
           land:
             type: array
             items:
               type: string
-              format: uint64
           water:
             type: array
             items:
               type: string
-              format: uint64
           spaceSlots:
             type: string
             format: uint64
@@ -84888,12 +84785,10 @@ definitions:
         properties:
           id:
             type: string
-            format: uint64
           creator:
             type: string
           owner:
             type: string
-            format: uint64
           status:
             type: string
           maxHealth:
@@ -84913,7 +84808,6 @@ definitions:
             title: Where it is
           planetId:
             type: string
-            format: uint64
             title: No fleet stuff yet
           slot:
             type: string
@@ -85033,12 +84927,10 @@ definitions:
     properties:
       id:
         type: string
-        format: uint64
       creator:
         type: string
       owner:
         type: string
-        format: uint64
       status:
         type: string
       maxHealth:
@@ -85058,7 +84950,6 @@ definitions:
         title: Where it is
       planetId:
         type: string
-        format: uint64
         title: No fleet stuff yet
       slot:
         type: string

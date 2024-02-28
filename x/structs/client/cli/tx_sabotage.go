@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/spf13/cast"
+
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
 
@@ -24,10 +24,7 @@ func CmdSabotage() *cobra.Command {
 		Args:  cobra.ExactArgs(3),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
-			argStructId, err := cast.ToUint64E(args[0])
-			if err != nil {
-				return err
-			}
+			argStructId := args[0]
 
 		    argProof := args[1]
 			argNonce := args[2]

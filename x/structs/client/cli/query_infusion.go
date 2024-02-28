@@ -2,7 +2,6 @@ package cli
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
@@ -48,25 +47,19 @@ func CmdListInfusion() *cobra.Command {
 
 func CmdShowInfusion() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "show-infusion [destination type] [destination id] [address]",
+		Use:   "show-infusion [destination id] [address]",
 		Short: "shows a infusion",
-		Args:  cobra.ExactArgs(3),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			clientCtx := client.GetClientContextFromCmd(cmd)
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-            destinationType := args[0]
+			destinationId := args[0]
 
-			destinationId, err := strconv.ParseUint(args[1], 10, 64)
-			if err != nil {
-				return err
-			}
-
-            address := args[2]
+            address := args[1]
 
 			params := &types.QueryGetInfusionRequest{
-				DestinationType: destinationType,
 				DestinationId: destinationId,
 				Address: address,
 			}

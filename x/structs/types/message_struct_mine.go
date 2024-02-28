@@ -10,7 +10,7 @@ const TypeMsgStructMine = "struct_mine"
 var _ sdk.Msg = &MsgStructMine{}
 
 
-func NewMsgStructMine(creator string, structId uint64, proof string, nonce string) *MsgStructMine {
+func NewMsgStructMine(creator string, structId string, proof string, nonce string) *MsgStructMine {
 	return &MsgStructMine{
 		Creator:  creator,
 		StructId: structId,

@@ -94,7 +94,7 @@ func (a *Infusion) SetFuelAndCommission(newFuel uint64, newCommission sdk.Dec) (
 
 }
 
-func (a *Infusion) getPowerDistribution() (infusionPower uint64, commissionPower uint64, playerPower uint64) {
+func (a *Infusion) GetPowerDistribution() (infusionPower uint64, commissionPower uint64, playerPower uint64) {
         infusionPower       = a.Power
         commissionPower     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(infusionPower))).RoundInt().Uint64()
         playerPower         = infusionPower - commissionPower

@@ -9,7 +9,7 @@ const TypeMsgPlayerCreate = "player_create"
 
 var _ sdk.Msg = &MsgPlayerCreate{}
 
-func NewMsgPlayerCreate(creator string, guildId uint64) *MsgPlayerCreate {
+func NewMsgPlayerCreate(creator string, guildId string) *MsgPlayerCreate {
 	return &MsgPlayerCreate{
 		Creator: creator,
 		GuildId: guildId,

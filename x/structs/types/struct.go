@@ -11,16 +11,7 @@ import (
  *
  */
 
-func (structure *Struct) SetCreator(creator string) error {
-	structure.Creator = creator
-	return nil
-}
 
-
-func (structure *Struct) SetOwner(playerId uint64) error {
-	structure.Owner = playerId
-	return nil
-}
 
 
 func (structure *Struct) SetStatus(status string) error {
@@ -46,7 +37,7 @@ func (structure *Struct) SetSlot(slot uint64) error {
 	return nil
 }
 
-func (structure *Struct) SetPlanetId(planetId uint64) error {
+func (structure *Struct) SetPlanetId(planetId string) error {
 	structure.PlanetId = planetId
 	return nil
 }
@@ -138,7 +129,7 @@ func CreateBaseStruct(structType string) Struct {
 
 	return Struct{
 		Creator:  "",
-		Owner: 0,
+		Owner: "",
 		Status: "BUILDING",
 
 		MaxHealth: 3,

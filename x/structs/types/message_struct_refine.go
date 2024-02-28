@@ -10,7 +10,7 @@ const TypeMsgStructRefine = "struct_refine"
 var _ sdk.Msg = &MsgStructRefine{}
 
 
-func NewMsgStructRefine(creator string, structId uint64, proof string, nonce string) *MsgStructRefine {
+func NewMsgStructRefine(creator string, structId string, proof string, nonce string) *MsgStructRefine {
 	return &MsgStructRefine{
 		Creator:  creator,
 		StructId: structId,

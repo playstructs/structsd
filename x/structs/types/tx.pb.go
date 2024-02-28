@@ -785,7 +785,7 @@ func (m *MsgGuildCreate) GetEntrySubstationId() string {
 }
 
 type MsgGuildCreateResponse struct {
-	GuildId uint64 `protobuf:"varint,1,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	GuildId string `protobuf:"bytes,1,opt,name=guildId,proto3" json:"guildId,omitempty"`
 }
 
 func (m *MsgGuildCreateResponse) Reset()         { *m = MsgGuildCreateResponse{} }
@@ -821,17 +821,17 @@ func (m *MsgGuildCreateResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgGuildCreateResponse proto.InternalMessageInfo
 
-func (m *MsgGuildCreateResponse) GetGuildId() uint64 {
+func (m *MsgGuildCreateResponse) GetGuildId() string {
 	if m != nil {
 		return m.GuildId
 	}
-	return 0
+	return ""
 }
 
 type MsgGuildUpdateOwnerId struct {
 	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Id      uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
-	Owner   uint64 `protobuf:"varint,3,opt,name=owner,proto3" json:"owner,omitempty"`
+	GuildId string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	Owner   string `protobuf:"bytes,3,opt,name=owner,proto3" json:"owner,omitempty"`
 }
 
 func (m *MsgGuildUpdateOwnerId) Reset()         { *m = MsgGuildUpdateOwnerId{} }
@@ -874,23 +874,23 @@ func (m *MsgGuildUpdateOwnerId) GetCreator() string {
 	return ""
 }
 
-func (m *MsgGuildUpdateOwnerId) GetId() uint64 {
+func (m *MsgGuildUpdateOwnerId) GetGuildId() string {
 	if m != nil {
-		return m.Id
+		return m.GuildId
 	}
-	return 0
+	return ""
 }
 
-func (m *MsgGuildUpdateOwnerId) GetOwner() uint64 {
+func (m *MsgGuildUpdateOwnerId) GetOwner() string {
 	if m != nil {
 		return m.Owner
 	}
-	return 0
+	return ""
 }
 
 type MsgGuildUpdateEntrySubstationId struct {
 	Creator           string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Id                uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	GuildId           string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
 	EntrySubstationId string `protobuf:"bytes,3,opt,name=entrySubstationId,proto3" json:"entrySubstationId,omitempty"`
 }
 
@@ -934,11 +934,11 @@ func (m *MsgGuildUpdateEntrySubstationId) GetCreator() string {
 	return ""
 }
 
-func (m *MsgGuildUpdateEntrySubstationId) GetId() uint64 {
+func (m *MsgGuildUpdateEntrySubstationId) GetGuildId() string {
 	if m != nil {
-		return m.Id
+		return m.GuildId
 	}
-	return 0
+	return ""
 }
 
 func (m *MsgGuildUpdateEntrySubstationId) GetEntrySubstationId() string {
@@ -950,7 +950,7 @@ func (m *MsgGuildUpdateEntrySubstationId) GetEntrySubstationId() string {
 
 type MsgGuildUpdateEndpoint struct {
 	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Id       uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	GuildId  string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
 	Endpoint string `protobuf:"bytes,3,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
 }
 
@@ -994,11 +994,11 @@ func (m *MsgGuildUpdateEndpoint) GetCreator() string {
 	return ""
 }
 
-func (m *MsgGuildUpdateEndpoint) GetId() uint64 {
+func (m *MsgGuildUpdateEndpoint) GetGuildId() string {
 	if m != nil {
-		return m.Id
+		return m.GuildId
 	}
-	return 0
+	return ""
 }
 
 func (m *MsgGuildUpdateEndpoint) GetEndpoint() string {
@@ -1010,7 +1010,7 @@ func (m *MsgGuildUpdateEndpoint) GetEndpoint() string {
 
 type MsgGuildUpdateJoinInfusionMinimum struct {
 	Creator             string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Id                  uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	GuildId             string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
 	JoinInfusionMinimum uint64 `protobuf:"varint,3,opt,name=joinInfusionMinimum,proto3" json:"joinInfusionMinimum,omitempty"`
 }
 
@@ -1054,11 +1054,11 @@ func (m *MsgGuildUpdateJoinInfusionMinimum) GetCreator() string {
 	return ""
 }
 
-func (m *MsgGuildUpdateJoinInfusionMinimum) GetId() uint64 {
+func (m *MsgGuildUpdateJoinInfusionMinimum) GetGuildId() string {
 	if m != nil {
-		return m.Id
+		return m.GuildId
 	}
-	return 0
+	return ""
 }
 
 func (m *MsgGuildUpdateJoinInfusionMinimum) GetJoinInfusionMinimum() uint64 {
@@ -1070,7 +1070,7 @@ func (m *MsgGuildUpdateJoinInfusionMinimum) GetJoinInfusionMinimum() uint64 {
 
 type MsgGuildUpdateJoinInfusionMinimumBypassByRequest struct {
 	Creator              string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Id                   uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	GuildId              string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
 	GuildJoinBypassLevel uint64 `protobuf:"varint,3,opt,name=guildJoinBypassLevel,proto3" json:"guildJoinBypassLevel,omitempty"`
 }
 
@@ -1118,11 +1118,11 @@ func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) GetCreator() string {
 	return ""
 }
 
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) GetId() uint64 {
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) GetGuildId() string {
 	if m != nil {
-		return m.Id
+		return m.GuildId
 	}
-	return 0
+	return ""
 }
 
 func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) GetGuildJoinBypassLevel() uint64 {
@@ -1134,7 +1134,7 @@ func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) GetGuildJoinBypassLev
 
 type MsgGuildUpdateJoinInfusionMinimumBypassByInvite struct {
 	Creator              string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Id                   uint64 `protobuf:"varint,2,opt,name=id,proto3" json:"id,omitempty"`
+	GuildId              string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
 	GuildJoinBypassLevel uint64 `protobuf:"varint,3,opt,name=guildJoinBypassLevel,proto3" json:"guildJoinBypassLevel,omitempty"`
 }
 
@@ -1182,11 +1182,11 @@ func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) GetCreator() string {
 	return ""
 }
 
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) GetId() uint64 {
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) GetGuildId() string {
 	if m != nil {
-		return m.Id
+		return m.GuildId
 	}
-	return 0
+	return ""
 }
 
 func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) GetGuildJoinBypassLevel() uint64 {
@@ -1330,7 +1330,7 @@ var xxx_messageInfo_MsgPlayerCreateProxyResponse proto.InternalMessageInfo
 
 type MsgPlayerCreate struct {
 	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	GuildId uint64 `protobuf:"varint,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	GuildId string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
 }
 
 func (m *MsgPlayerCreate) Reset()         { *m = MsgPlayerCreate{} }
@@ -1373,11 +1373,11 @@ func (m *MsgPlayerCreate) GetCreator() string {
 	return ""
 }
 
-func (m *MsgPlayerCreate) GetGuildId() uint64 {
+func (m *MsgPlayerCreate) GetGuildId() string {
 	if m != nil {
 		return m.GuildId
 	}
-	return 0
+	return ""
 }
 
 type MsgPlayerCreateResponse struct {
@@ -1671,7 +1671,7 @@ var xxx_messageInfo_MsgAddressRevokeResponse proto.InternalMessageInfo
 type MsgGuildApproveRegister struct {
 	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	Approve  bool   `protobuf:"varint,2,opt,name=approve,proto3" json:"approve,omitempty"`
-	GuildId  uint64 `protobuf:"varint,3,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	GuildId  string `protobuf:"bytes,3,opt,name=guildId,proto3" json:"guildId,omitempty"`
 	PlayerId string `protobuf:"bytes,4,opt,name=playerId,proto3" json:"playerId,omitempty"`
 }
 
@@ -1722,11 +1722,11 @@ func (m *MsgGuildApproveRegister) GetApprove() bool {
 	return false
 }
 
-func (m *MsgGuildApproveRegister) GetGuildId() uint64 {
+func (m *MsgGuildApproveRegister) GetGuildId() string {
 	if m != nil {
 		return m.GuildId
 	}
-	return 0
+	return ""
 }
 
 func (m *MsgGuildApproveRegister) GetPlayerId() string {
@@ -1862,7 +1862,7 @@ func (m *MsgPlanetExploreResponse) GetPlanet() Planet {
 
 type MsgStructActivate struct {
 	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId uint64 `protobuf:"varint,2,opt,name=structId,proto3" json:"structId,omitempty"`
+	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
 }
 
 func (m *MsgStructActivate) Reset()         { *m = MsgStructActivate{} }
@@ -1905,11 +1905,11 @@ func (m *MsgStructActivate) GetCreator() string {
 	return ""
 }
 
-func (m *MsgStructActivate) GetStructId() uint64 {
+func (m *MsgStructActivate) GetStructId() string {
 	if m != nil {
 		return m.StructId
 	}
-	return 0
+	return ""
 }
 
 type MsgStructActivateResponse struct {
@@ -1959,7 +1959,7 @@ func (m *MsgStructActivateResponse) GetStruct() Struct {
 type MsgStructBuildInitiate struct {
 	Creator    string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	StructType string `protobuf:"bytes,2,opt,name=structType,proto3" json:"structType,omitempty"`
-	PlanetId   uint64 `protobuf:"varint,3,opt,name=planetId,proto3" json:"planetId,omitempty"`
+	PlanetId   string `protobuf:"bytes,3,opt,name=planetId,proto3" json:"planetId,omitempty"`
 	Slot       uint64 `protobuf:"varint,4,opt,name=slot,proto3" json:"slot,omitempty"`
 }
 
@@ -2010,11 +2010,11 @@ func (m *MsgStructBuildInitiate) GetStructType() string {
 	return ""
 }
 
-func (m *MsgStructBuildInitiate) GetPlanetId() uint64 {
+func (m *MsgStructBuildInitiate) GetPlanetId() string {
 	if m != nil {
 		return m.PlanetId
 	}
-	return 0
+	return ""
 }
 
 func (m *MsgStructBuildInitiate) GetSlot() uint64 {
@@ -2070,7 +2070,7 @@ func (m *MsgStructBuildInitiateResponse) GetStruct() Struct {
 
 type MsgStructBuildComplete struct {
 	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId uint64 `protobuf:"varint,2,opt,name=structId,proto3" json:"structId,omitempty"`
+	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
 	Proof    string `protobuf:"bytes,3,opt,name=proof,proto3" json:"proof,omitempty"`
 	Nonce    string `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
 }
@@ -2115,11 +2115,11 @@ func (m *MsgStructBuildComplete) GetCreator() string {
 	return ""
 }
 
-func (m *MsgStructBuildComplete) GetStructId() uint64 {
+func (m *MsgStructBuildComplete) GetStructId() string {
 	if m != nil {
 		return m.StructId
 	}
-	return 0
+	return ""
 }
 
 func (m *MsgStructBuildComplete) GetProof() string {
@@ -2182,7 +2182,7 @@ func (m *MsgStructBuildCompleteResponse) GetStruct() Struct {
 
 type MsgStructMineActivate struct {
 	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId uint64 `protobuf:"varint,2,opt,name=structId,proto3" json:"structId,omitempty"`
+	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
 }
 
 func (m *MsgStructMineActivate) Reset()         { *m = MsgStructMineActivate{} }
@@ -2225,11 +2225,11 @@ func (m *MsgStructMineActivate) GetCreator() string {
 	return ""
 }
 
-func (m *MsgStructMineActivate) GetStructId() uint64 {
+func (m *MsgStructMineActivate) GetStructId() string {
 	if m != nil {
 		return m.StructId
 	}
-	return 0
+	return ""
 }
 
 type MsgStructMineActivateResponse struct {
@@ -2278,7 +2278,7 @@ func (m *MsgStructMineActivateResponse) GetStruct() Struct {
 
 type MsgStructMineDeactivate struct {
 	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId uint64 `protobuf:"varint,2,opt,name=structId,proto3" json:"structId,omitempty"`
+	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
 }
 
 func (m *MsgStructMineDeactivate) Reset()         { *m = MsgStructMineDeactivate{} }
@@ -2321,11 +2321,11 @@ func (m *MsgStructMineDeactivate) GetCreator() string {
 	return ""
 }
 
-func (m *MsgStructMineDeactivate) GetStructId() uint64 {
+func (m *MsgStructMineDeactivate) GetStructId() string {
 	if m != nil {
 		return m.StructId
 	}
-	return 0
+	return ""
 }
 
 type MsgStructMineDeactivateResponse struct {
@@ -2374,7 +2374,7 @@ func (m *MsgStructMineDeactivateResponse) GetStruct() Struct {
 
 type MsgStructMine struct {
 	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId uint64 `protobuf:"varint,2,opt,name=structId,proto3" json:"structId,omitempty"`
+	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
 	Proof    string `protobuf:"bytes,3,opt,name=proof,proto3" json:"proof,omitempty"`
 	Nonce    string `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
 }
@@ -2419,11 +2419,11 @@ func (m *MsgStructMine) GetCreator() string {
 	return ""
 }
 
-func (m *MsgStructMine) GetStructId() uint64 {
+func (m *MsgStructMine) GetStructId() string {
 	if m != nil {
 		return m.StructId
 	}
-	return 0
+	return ""
 }
 
 func (m *MsgStructMine) GetProof() string {
@@ -2486,7 +2486,7 @@ func (m *MsgStructMineResponse) GetStruct() Struct {
 
 type MsgStructRefineActivate struct {
 	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId uint64 `protobuf:"varint,2,opt,name=structId,proto3" json:"structId,omitempty"`
+	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
 }
 
 func (m *MsgStructRefineActivate) Reset()         { *m = MsgStructRefineActivate{} }
@@ -2529,11 +2529,11 @@ func (m *MsgStructRefineActivate) GetCreator() string {
 	return ""
 }
 
-func (m *MsgStructRefineActivate) GetStructId() uint64 {
+func (m *MsgStructRefineActivate) GetStructId() string {
 	if m != nil {
 		return m.StructId
 	}
-	return 0
+	return ""
 }
 
 type MsgStructRefineActivateResponse struct {
@@ -2582,7 +2582,7 @@ func (m *MsgStructRefineActivateResponse) GetStruct() Struct {
 
 type MsgStructRefineDeactivate struct {
 	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId uint64 `protobuf:"varint,2,opt,name=structId,proto3" json:"structId,omitempty"`
+	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
 }
 
 func (m *MsgStructRefineDeactivate) Reset()         { *m = MsgStructRefineDeactivate{} }
@@ -2625,11 +2625,11 @@ func (m *MsgStructRefineDeactivate) GetCreator() string {
 	return ""
 }
 
-func (m *MsgStructRefineDeactivate) GetStructId() uint64 {
+func (m *MsgStructRefineDeactivate) GetStructId() string {
 	if m != nil {
 		return m.StructId
 	}
-	return 0
+	return ""
 }
 
 type MsgStructRefineDeactivateResponse struct {
@@ -2678,7 +2678,7 @@ func (m *MsgStructRefineDeactivateResponse) GetStruct() Struct {
 
 type MsgStructRefine struct {
 	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId uint64 `protobuf:"varint,2,opt,name=structId,proto3" json:"structId,omitempty"`
+	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
 	Proof    string `protobuf:"bytes,3,opt,name=proof,proto3" json:"proof,omitempty"`
 	Nonce    string `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
 }
@@ -2723,11 +2723,11 @@ func (m *MsgStructRefine) GetCreator() string {
 	return ""
 }
 
-func (m *MsgStructRefine) GetStructId() uint64 {
+func (m *MsgStructRefine) GetStructId() string {
 	if m != nil {
 		return m.StructId
 	}
-	return 0
+	return ""
 }
 
 func (m *MsgStructRefine) GetProof() string {
@@ -2878,7 +2878,7 @@ var xxx_messageInfo_MsgPlayerUpdatePrimaryAddressResponse proto.InternalMessageI
 
 type MsgStructInfuse struct {
 	Creator      string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId     uint64 `protobuf:"varint,2,opt,name=structId,proto3" json:"structId,omitempty"`
+	StructId     string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
 	InfuseAmount string `protobuf:"bytes,3,opt,name=infuseAmount,proto3" json:"infuseAmount,omitempty"`
 }
 
@@ -2922,11 +2922,11 @@ func (m *MsgStructInfuse) GetCreator() string {
 	return ""
 }
 
-func (m *MsgStructInfuse) GetStructId() uint64 {
+func (m *MsgStructInfuse) GetStructId() string {
 	if m != nil {
 		return m.StructId
 	}
-	return 0
+	return ""
 }
 
 func (m *MsgStructInfuse) GetInfuseAmount() string {
@@ -2974,7 +2974,7 @@ var xxx_messageInfo_MsgStructInfuseResponse proto.InternalMessageInfo
 
 type MsgSabotage struct {
 	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId uint64 `protobuf:"varint,2,opt,name=structId,proto3" json:"structId,omitempty"`
+	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
 	Proof    string `protobuf:"bytes,3,opt,name=proof,proto3" json:"proof,omitempty"`
 	Nonce    string `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
 }
@@ -3019,11 +3019,11 @@ func (m *MsgSabotage) GetCreator() string {
 	return ""
 }
 
-func (m *MsgSabotage) GetStructId() uint64 {
+func (m *MsgSabotage) GetStructId() string {
 	if m != nil {
 		return m.StructId
 	}
-	return 0
+	return ""
 }
 
 func (m *MsgSabotage) GetProof() string {
@@ -3142,116 +3142,116 @@ func init() {
 func init() { proto.RegisterFile("structs/structs/tx.proto", fileDescriptor_38fd6c203bede659) }
 
 var fileDescriptor_38fd6c203bede659 = []byte{
-	// 1743 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x5a, 0x4f, 0x73, 0x13, 0xc7,
-	0x12, 0xf7, 0xda, 0x02, 0xfb, 0xb5, 0xc1, 0xc0, 0xda, 0xd8, 0xf2, 0x62, 0x64, 0x33, 0x80, 0xf1,
-	0xe3, 0x8f, 0xcd, 0xf3, 0x7b, 0x07, 0xde, 0x25, 0x29, 0x1b, 0x03, 0x11, 0x15, 0xc5, 0x8e, 0x08,
-	0x50, 0x49, 0xa5, 0x42, 0xad, 0xa5, 0xb1, 0xb2, 0x58, 0xda, 0x59, 0x76, 0x57, 0xc6, 0xca, 0x25,
-	0xa9, 0xe4, 0x44, 0x71, 0x08, 0xc7, 0x7c, 0x24, 0x4e, 0x29, 0x8e, 0x39, 0xa5, 0x52, 0xf0, 0x0d,
-	0xf2, 0x09, 0x52, 0x9a, 0xd9, 0x1d, 0xcd, 0xec, 0xce, 0xec, 0x4a, 0xb2, 0x8b, 0x93, 0x3d, 0xd3,
-	0xdd, 0xbf, 0xfe, 0x4d, 0xcf, 0x4c, 0xef, 0x74, 0x97, 0xa0, 0x18, 0x84, 0x7e, 0xbb, 0x16, 0x06,
-	0x6b, 0xf1, 0xdf, 0xf0, 0x70, 0xd5, 0xf3, 0x49, 0x48, 0xcc, 0xf1, 0x68, 0xc6, 0x9a, 0x69, 0x90,
-	0x06, 0xa1, 0x73, 0x6b, 0xdd, 0xff, 0x98, 0xd8, 0x9a, 0x6f, 0x10, 0xd2, 0x68, 0xe2, 0x35, 0x3a,
-	0xda, 0x6d, 0xef, 0xad, 0xd9, 0x6e, 0x27, 0x16, 0xd5, 0x48, 0xd0, 0x22, 0xc1, 0x33, 0x66, 0xc3,
-	0x06, 0x91, 0xc8, 0x4a, 0xba, 0xdb, 0xc7, 0x9d, 0x58, 0xb6, 0x90, 0x94, 0x79, 0x4d, 0xdb, 0xc5,
-	0xa1, 0x4e, 0xca, 0xfe, 0x32, 0x29, 0x72, 0x60, 0xba, 0x12, 0x34, 0x1e, 0xb5, 0x77, 0x83, 0xd0,
-	0x0e, 0x1d, 0xe2, 0xde, 0xf5, 0xb1, 0x1d, 0x62, 0xb3, 0x08, 0xe3, 0xb5, 0xee, 0x7f, 0xc4, 0x2f,
-	0x1a, 0x4b, 0xc6, 0xca, 0xbf, 0xaa, 0xf1, 0xd0, 0x9c, 0x81, 0x13, 0xe4, 0xa5, 0x8b, 0xfd, 0xe2,
-	0x28, 0x9d, 0x67, 0x03, 0x13, 0xc1, 0x29, 0xbb, 0xd9, 0x24, 0x35, 0x8a, 0x51, 0xae, 0x17, 0xc7,
-	0xa8, 0x50, 0x9a, 0x43, 0x1b, 0x70, 0x41, 0xe1, 0xaa, 0x8a, 0x03, 0x8f, 0xb8, 0x01, 0xee, 0x42,
-	0x04, 0x5c, 0x56, 0xae, 0x47, 0x7e, 0xa5, 0x39, 0xf4, 0xca, 0x48, 0xd0, 0xdd, 0xc2, 0x4d, 0x9c,
-	0x49, 0x37, 0x89, 0x3a, 0x9a, 0x46, 0x35, 0xff, 0x07, 0xe7, 0x5b, 0x4e, 0xc3, 0xa7, 0xc3, 0x47,
-	0xa2, 0x32, 0x5b, 0x85, 0x5a, 0x88, 0x2e, 0x26, 0x96, 0xc3, 0xa8, 0xc4, 0xcb, 0x41, 0xbf, 0x19,
-	0x50, 0x92, 0xe4, 0x1b, 0x3c, 0x16, 0x77, 0x89, 0xeb, 0xe2, 0x5a, 0x98, 0xcd, 0x5a, 0x0a, 0xe7,
-	0x68, 0x3a, 0x9c, 0xe6, 0x1d, 0x98, 0xab, 0xe3, 0x20, 0x74, 0x5c, 0x1d, 0x6f, 0x9d, 0x18, 0xad,
-	0xc0, 0x72, 0x36, 0x33, 0xbe, 0x08, 0x1b, 0x2e, 0x69, 0x34, 0xb7, 0x9c, 0xa0, 0x76, 0x1c, 0xcb,
-	0x40, 0x37, 0xe0, 0xdf, 0xb9, 0x2e, 0x38, 0x9f, 0x03, 0xb0, 0x24, 0xe5, 0x9d, 0xa6, 0xdd, 0xc1,
-	0x7e, 0x5f, 0xf1, 0xcc, 0x3d, 0x05, 0x16, 0x4c, 0x78, 0x14, 0x8e, 0x07, 0x90, 0x8f, 0xd1, 0x15,
-	0x40, 0x7a, 0xbf, 0x9c, 0xdd, 0x63, 0xb8, 0xa8, 0xd0, 0xea, 0x2b, 0x52, 0xa2, 0xf3, 0xd1, 0x84,
-	0xf3, 0x6b, 0x70, 0x35, 0x13, 0x96, 0xfb, 0xff, 0x9d, 0xdd, 0x0e, 0x61, 0x3b, 0xf3, 0x2e, 0x73,
-	0x09, 0xa0, 0x46, 0xdc, 0xd0, 0x27, 0xcd, 0x26, 0xbf, 0xd1, 0xc2, 0x8c, 0xb9, 0x0c, 0x53, 0x01,
-	0x69, 0xfb, 0x35, 0xbc, 0xbd, 0xfb, 0x1c, 0xd7, 0x42, 0x1e, 0x99, 0xc4, 0xac, 0xf9, 0x29, 0x4c,
-	0xf5, 0x36, 0xf5, 0xab, 0x8e, 0x87, 0x8b, 0x85, 0x25, 0x63, 0x65, 0x6a, 0x7d, 0x6e, 0x35, 0x4a,
-	0x3a, 0xab, 0xb2, 0xb8, 0x9a, 0x50, 0xef, 0x66, 0x15, 0x8f, 0xbc, 0xc4, 0x7e, 0xf1, 0xc4, 0x92,
-	0xb1, 0x52, 0xa8, 0xb2, 0x41, 0x94, 0x31, 0x92, 0xeb, 0x11, 0x33, 0x86, 0x74, 0xbc, 0x0c, 0xc5,
-	0xf1, 0x0a, 0x61, 0xaa, 0x12, 0x34, 0x1e, 0xb4, 0x9d, 0x66, 0x3d, 0x37, 0x1a, 0x16, 0x4c, 0x60,
-	0xb7, 0xee, 0x11, 0xc7, 0x0d, 0xe3, 0x4d, 0x88, 0xc7, 0xe6, 0x4d, 0x38, 0x87, 0xdd, 0xd0, 0xef,
-	0x28, 0xee, 0x59, 0x5a, 0x80, 0xd6, 0x61, 0x56, 0xf6, 0xca, 0x39, 0x17, 0x61, 0xbc, 0xd1, 0x9d,
-	0x8e, 0xe8, 0x16, 0xaa, 0xf1, 0x10, 0x3d, 0x85, 0xf3, 0xb1, 0xcd, 0x63, 0xaf, 0x6e, 0x87, 0x78,
-	0xbb, 0x9b, 0x59, 0xcb, 0xf5, 0x0c, 0xc2, 0x53, 0x30, 0xea, 0xb0, 0xf3, 0x52, 0xa8, 0x8e, 0x3a,
-	0xf5, 0x5e, 0x6e, 0x1e, 0x63, 0x51, 0xa4, 0x03, 0xd4, 0x81, 0x45, 0x19, 0xf8, 0x5e, 0x92, 0xef,
-	0x00, 0x2e, 0x06, 0x8b, 0xc3, 0x77, 0xbd, 0x38, 0xc4, 0xae, 0xa3, 0x78, 0xf6, 0xef, 0x51, 0xdc,
-	0x95, 0x31, 0x79, 0x57, 0xd0, 0x8f, 0x34, 0x3f, 0x09, 0xf8, 0x0f, 0x89, 0xe3, 0x96, 0xdd, 0xbd,
-	0x76, 0xe0, 0x10, 0xb7, 0xe2, 0xb8, 0x4e, 0xab, 0xdd, 0x1a, 0xc0, 0xd5, 0x6d, 0x98, 0x7e, 0x9e,
-	0x06, 0x88, 0xa2, 0xa9, 0x12, 0xa1, 0x37, 0x06, 0xdc, 0xce, 0x65, 0xb0, 0xd9, 0xf1, 0xec, 0x20,
-	0xd8, 0xec, 0x54, 0xf1, 0x8b, 0x36, 0x0e, 0x06, 0x59, 0xfb, 0x3a, 0xcc, 0xd0, 0xe3, 0xd1, 0x05,
-	0x65, 0x28, 0x9f, 0xe3, 0x03, 0xdc, 0x8c, 0x18, 0x29, 0x65, 0xe8, 0x57, 0x03, 0xd6, 0xfa, 0xa6,
-	0x54, 0x76, 0x0f, 0x9c, 0xcc, 0x3b, 0x71, 0x1c, 0x8c, 0x8a, 0xc9, 0x53, 0xc0, 0x33, 0x96, 0x0b,
-	0x33, 0x95, 0xa0, 0x11, 0x65, 0x53, 0x7a, 0x51, 0x76, 0x7c, 0x72, 0xd8, 0xc9, 0xe0, 0x53, 0x84,
-	0x71, 0xbb, 0x5e, 0xf7, 0x71, 0x10, 0x44, 0x57, 0x34, 0x1e, 0xa6, 0x72, 0xfc, 0x98, 0xe2, 0xfd,
-	0x50, 0x82, 0x05, 0x95, 0x3f, 0xce, 0xe7, 0x1e, 0x9c, 0x49, 0xc8, 0xb3, 0xa9, 0xc4, 0x57, 0x79,
-	0x54, 0xbe, 0xca, 0xf3, 0x30, 0x97, 0x80, 0xe1, 0x1e, 0x5e, 0x1b, 0x30, 0xdf, 0xcd, 0x69, 0x8c,
-	0xf4, 0x86, 0xe7, 0xf9, 0xe4, 0x00, 0x57, 0x71, 0xc3, 0x09, 0x42, 0xec, 0xe7, 0xac, 0x9b, 0x29,
-	0x53, 0x67, 0x13, 0xd5, 0x78, 0x28, 0x46, 0x64, 0x4c, 0x8e, 0xc8, 0x12, 0x4c, 0x7a, 0xd8, 0x6f,
-	0x39, 0x41, 0x77, 0xe3, 0x03, 0x9a, 0x92, 0x0b, 0x55, 0x71, 0x0a, 0xd5, 0xc1, 0xec, 0x91, 0xe9,
-	0x83, 0x45, 0xc6, 0x67, 0x4a, 0xcf, 0x03, 0x2d, 0xd0, 0xaf, 0x76, 0xc2, 0x0b, 0x8f, 0xc8, 0x7d,
-	0x38, 0x2b, 0x4a, 0x0f, 0xc8, 0x3e, 0x1e, 0x66, 0xff, 0x91, 0x05, 0xc5, 0x24, 0x0e, 0xf7, 0xf1,
-	0x8b, 0x41, 0x77, 0x84, 0x1e, 0xc1, 0x63, 0x8a, 0x79, 0xbc, 0xf5, 0x63, 0xd2, 0xd6, 0x4b, 0x11,
-	0x2a, 0x24, 0x3e, 0xe4, 0x97, 0x7a, 0x89, 0x38, 0x41, 0x82, 0x13, 0xbd, 0x49, 0x83, 0xb1, 0x43,
-	0xdf, 0xef, 0xf7, 0x0e, 0xbd, 0x26, 0xf1, 0x33, 0x82, 0x81, 0xca, 0x74, 0xc9, 0x92, 0x36, 0xff,
-	0xd0, 0xdc, 0x82, 0x93, 0xac, 0x0c, 0xa0, 0x46, 0x93, 0xeb, 0x67, 0xf8, 0xa7, 0x98, 0xe9, 0x6f,
-	0x16, 0xde, 0xfe, 0xb9, 0x38, 0x52, 0x8d, 0x94, 0x50, 0x19, 0xce, 0x75, 0x1f, 0x19, 0x54, 0x65,
-	0xa3, 0x16, 0x3a, 0x07, 0xb9, 0x9f, 0x4a, 0x06, 0xc7, 0x0f, 0x3f, 0x1f, 0xa3, 0x87, 0xf4, 0x84,
-	0xcb, 0x50, 0x22, 0x2d, 0xa6, 0x98, 0xa2, 0xc5, 0x0c, 0x62, 0x5a, 0x6c, 0x16, 0xfd, 0x6c, 0xd0,
-	0xdc, 0x11, 0xc9, 0x68, 0x8c, 0x5d, 0x27, 0x74, 0x72, 0x5f, 0x35, 0xcc, 0x9c, 0xbe, 0x44, 0xa2,
-	0x57, 0x4d, 0x6f, 0x26, 0xda, 0x23, 0x17, 0x87, 0x7c, 0xfb, 0xf8, 0xd8, 0x34, 0xa1, 0x10, 0x34,
-	0x49, 0x18, 0x5d, 0x16, 0xfa, 0x3f, 0xda, 0x66, 0x2f, 0xf9, 0x34, 0x87, 0x61, 0x57, 0xf5, 0x43,
-	0x72, 0x51, 0x77, 0x49, 0xcb, 0xcb, 0x29, 0x64, 0x32, 0x22, 0x4e, 0x5f, 0x4f, 0x3e, 0x21, 0x7b,
-	0xd1, 0xc5, 0x63, 0x83, 0xee, 0xac, 0x4b, 0xdc, 0x1a, 0x8e, 0xce, 0x21, 0x1b, 0xa4, 0x17, 0x13,
-	0xfb, 0x1e, 0x76, 0x31, 0x15, 0xfa, 0x6e, 0x61, 0xa2, 0x8a, 0xe3, 0xe2, 0x23, 0x9e, 0x9e, 0x2f,
-	0xd8, 0x23, 0x3a, 0x05, 0x37, 0x2c, 0xbd, 0x6d, 0x7a, 0xf3, 0x7b, 0x78, 0x5b, 0xd8, 0x3e, 0x1a,
-	0xc1, 0x1d, 0x7a, 0x8b, 0x55, 0x80, 0xc3, 0x52, 0x7c, 0x01, 0xa7, 0x25, 0xc4, 0x8f, 0x70, 0x0a,
-	0xee, 0x27, 0x36, 0xed, 0x38, 0xa2, 0x5b, 0xc5, 0x7b, 0x47, 0xdf, 0x7e, 0x31, 0xba, 0x32, 0xe0,
-	0xb0, 0x14, 0xbf, 0x14, 0xd2, 0x11, 0x43, 0x3c, 0xf2, 0x11, 0xa8, 0xb2, 0xb2, 0x58, 0x09, 0x39,
-	0x2c, 0xcd, 0x80, 0x3e, 0x3d, 0x44, 0xcc, 0x8f, 0x70, 0x0c, 0x3e, 0x4b, 0x6d, 0xdf, 0xb0, 0xf4,
-	0x6d, 0x7a, 0x6d, 0xd9, 0x93, 0x87, 0x3d, 0xf2, 0x76, 0x7c, 0xa7, 0x65, 0xfb, 0x9d, 0xe8, 0x83,
-	0x9c, 0xb1, 0x98, 0x65, 0x98, 0xf2, 0x24, 0xdd, 0x28, 0x65, 0x27, 0x66, 0xa3, 0x3a, 0x58, 0xef,
-	0x82, 0x7f, 0x44, 0xf7, 0x85, 0x50, 0xd2, 0x77, 0xef, 0xb0, 0xa1, 0x44, 0x70, 0xca, 0xa1, 0xf6,
-	0x1b, 0x2d, 0xd2, 0xe6, 0xe5, 0x87, 0x34, 0x17, 0xbd, 0xf5, 0x44, 0x67, 0x9c, 0x07, 0x81, 0xc9,
-	0xae, 0xc8, 0xde, 0x25, 0xa1, 0xdd, 0xf8, 0x18, 0xdb, 0x79, 0x9e, 0x75, 0xc7, 0x22, 0x87, 0x31,
-	0x8f, 0xf5, 0xbf, 0x8b, 0x30, 0x56, 0x09, 0x1a, 0xe6, 0x13, 0x38, 0x9b, 0xea, 0x0d, 0x2c, 0xf0,
-	0x6d, 0x55, 0x54, 0xda, 0xd6, 0x95, 0x2c, 0x29, 0x3f, 0x2a, 0x4f, 0xe0, 0x6c, 0xaa, 0x81, 0x28,
-	0xe1, 0x26, 0xa5, 0x32, 0xae, 0xb6, 0x23, 0x28, 0xe1, 0x46, 0x9d, 0x3e, 0x0d, 0x2e, 0x93, 0xea,
-	0x70, 0xe5, 0xd6, 0x9c, 0xf9, 0x12, 0x2e, 0x64, 0xb5, 0xe5, 0xae, 0xa9, 0x41, 0x52, 0x8a, 0xd6,
-	0x5a, 0x9f, 0x8a, 0xdc, 0xf1, 0x4f, 0x06, 0x94, 0x72, 0x9a, 0x69, 0xd7, 0xf3, 0x30, 0x7b, 0xba,
-	0xd6, 0x7a, 0xff, 0xba, 0x9c, 0xc2, 0x3e, 0xcc, 0xe9, 0xda, 0x67, 0x97, 0xd5, 0x70, 0x92, 0x92,
-	0x75, 0xa3, 0x0f, 0x25, 0xee, 0x2c, 0x04, 0x2b, 0xa3, 0x1b, 0xb6, 0x9c, 0x05, 0x25, 0x2c, 0x73,
-	0xb5, 0x3f, 0x3d, 0xee, 0xf5, 0x01, 0x4c, 0x8a, 0xfd, 0x9e, 0x39, 0xd1, 0x5c, 0x10, 0x58, 0x8b,
-	0x1a, 0x01, 0x07, 0x7a, 0x0c, 0xa6, 0xa2, 0x1d, 0x53, 0x4a, 0x99, 0x49, 0x72, 0x05, 0xac, 0x5c,
-	0xf4, 0x9a, 0x0e, 0x2c, 0x64, 0x36, 0x63, 0x56, 0x34, 0x00, 0x29, 0xcd, 0x7c, 0x57, 0x4f, 0x61,
-	0x5a, 0xd5, 0x7c, 0x59, 0xd4, 0x7a, 0x60, 0x0a, 0xf9, 0xc0, 0x2d, 0x28, 0xe5, 0x74, 0x5d, 0xae,
-	0x6b, 0x20, 0x14, 0xba, 0xf9, 0xee, 0x5e, 0x19, 0x70, 0x73, 0xa0, 0x86, 0xc6, 0x9d, 0xfe, 0xbd,
-	0xcb, 0x96, 0xf9, 0x5c, 0x5e, 0x1b, 0x70, 0x6b, 0xb0, 0x7e, 0xcf, 0xff, 0x07, 0x27, 0x13, 0x99,
-	0xe6, 0xb3, 0xd9, 0x85, 0x19, 0x65, 0x55, 0xbb, 0x94, 0x32, 0x4c, 0x68, 0x58, 0x2b, 0x79, 0x1a,
-	0xdc, 0xc7, 0xd7, 0x70, 0x2e, 0xdd, 0xa2, 0xb9, 0x28, 0x9a, 0xa7, 0xc4, 0xd6, 0xd5, 0x4c, 0x31,
-	0x87, 0x7e, 0x08, 0xa7, 0xe4, 0x6e, 0x8b, 0xce, 0xcc, 0x5a, 0xd2, 0x49, 0xc4, 0x6c, 0x93, 0xf1,
-	0xfe, 0x58, 0x4e, 0xdb, 0xab, 0xf4, 0xe4, 0x6c, 0x93, 0xff, 0xd8, 0x30, 0x1f, 0xc1, 0x99, 0x64,
-	0xff, 0xe4, 0x82, 0xf4, 0xd5, 0x94, 0x85, 0xd6, 0xe5, 0x0c, 0x21, 0x07, 0xb5, 0x61, 0x56, 0xd3,
-	0x21, 0x42, 0x0a, 0xf3, 0xe4, 0xce, 0xf6, 0xe5, 0xa2, 0x02, 0xa7, 0xe5, 0x9e, 0xcb, 0xbc, 0xd2,
-	0xaa, 0x2b, 0xb2, 0x2e, 0x69, 0x45, 0x22, 0x9c, 0xdc, 0xb5, 0x98, 0x4f, 0xc4, 0xb1, 0x27, 0x92,
-	0xe1, 0xd4, 0xdd, 0x8b, 0x1d, 0x98, 0x4a, 0xf4, 0x22, 0x2c, 0xe9, 0x2b, 0x20, 0xc9, 0x2c, 0xa4,
-	0x97, 0x71, 0xc4, 0x67, 0x30, 0xad, 0xea, 0x22, 0x2c, 0xa6, 0x4d, 0x25, 0x05, 0xeb, 0x5a, 0x8e,
-	0x82, 0xc6, 0x01, 0xaf, 0xe8, 0x75, 0x0e, 0x62, 0x05, 0xad, 0x83, 0x54, 0x5d, 0xfe, 0x2d, 0x98,
-	0x8a, 0x2a, 0xbb, 0x94, 0x36, 0x17, 0xe5, 0xd6, 0x72, 0xb6, 0x5c, 0x4c, 0x24, 0xca, 0x22, 0x79,
-	0x49, 0x6d, 0xdf, 0xd3, 0x90, 0x13, 0x49, 0x66, 0x5d, 0xbc, 0x05, 0x20, 0x54, 0xb9, 0xb3, 0x6a,
-	0x3b, 0x4b, 0xb3, 0xa2, 0x34, 0xd3, 0x44, 0xc1, 0xa9, 0x60, 0x2a, 0x6b, 0xa8, 0x98, 0x6a, 0x6a,
-	0xcc, 0xef, 0x61, 0x56, 0x53, 0x31, 0x22, 0x1d, 0x86, 0x10, 0x91, 0xeb, 0xf9, 0x3a, 0x62, 0x06,
-	0x94, 0x8b, 0x3e, 0x9d, 0xad, 0xa5, 0x5d, 0x5f, 0x1a, 0x2b, 0xae, 0x7a, 0xd2, 0x16, 0x4c, 0xa2,
-	0xc2, 0x92, 0x8b, 0x17, 0xf3, 0x13, 0x98, 0xe0, 0x95, 0xcb, 0x8c, 0xa4, 0x1d, 0xcd, 0x5a, 0x0b,
-	0xaa, 0xd9, 0xd8, 0x7e, 0xf3, 0x3f, 0x6f, 0xdf, 0x97, 0x8c, 0x77, 0xef, 0x4b, 0xc6, 0x5f, 0xef,
-	0x4b, 0xc6, 0x9b, 0x0f, 0xa5, 0x91, 0x77, 0x1f, 0x4a, 0x23, 0x7f, 0x7c, 0x28, 0x8d, 0x7c, 0x33,
-	0x17, 0xff, 0x10, 0xe1, 0xb0, 0xf7, 0xdb, 0x89, 0x8e, 0x87, 0x83, 0xdd, 0x93, 0xf4, 0x27, 0x09,
-	0xff, 0xfd, 0x27, 0x00, 0x00, 0xff, 0xff, 0xdf, 0x87, 0xa5, 0xe0, 0x5b, 0x21, 0x00, 0x00,
+	// 1729 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xbc, 0x5a, 0x4f, 0x73, 0xd4, 0xc6,
+	0x12, 0xb7, 0x6c, 0x03, 0x7e, 0x6d, 0x30, 0x20, 0x1b, 0x7b, 0x2d, 0xcc, 0xda, 0x1e, 0xc0, 0xf8,
+	0xf1, 0xc7, 0xe6, 0xf9, 0xe5, 0x40, 0x2e, 0x49, 0xd9, 0x18, 0xc8, 0x52, 0xd9, 0xd8, 0x59, 0x02,
+	0xa9, 0xa4, 0x52, 0x45, 0xc9, 0xbb, 0xe3, 0x45, 0x78, 0x57, 0x23, 0x24, 0xad, 0xf1, 0xe6, 0x94,
+	0x0a, 0x27, 0x8a, 0x4b, 0x8e, 0x49, 0x3e, 0x11, 0xa7, 0x14, 0xc7, 0x9c, 0x52, 0x29, 0xf8, 0x06,
+	0xf9, 0x04, 0xa9, 0x9d, 0x91, 0x66, 0x67, 0xa4, 0x19, 0x69, 0x2d, 0xbb, 0x38, 0x79, 0x67, 0xba,
+	0xfb, 0xd7, 0xbf, 0xe9, 0x19, 0xf5, 0x4c, 0x77, 0x19, 0x4a, 0x41, 0xe8, 0x77, 0xea, 0x61, 0xb0,
+	0x1a, 0xff, 0x0d, 0x0f, 0x56, 0x3c, 0x9f, 0x84, 0xc4, 0x3c, 0x15, 0xcd, 0x58, 0x53, 0x4d, 0xd2,
+	0x24, 0x74, 0x6e, 0xb5, 0xf7, 0x8b, 0x89, 0xad, 0xd9, 0x26, 0x21, 0xcd, 0x16, 0x5e, 0xa5, 0xa3,
+	0x9d, 0xce, 0xee, 0xaa, 0xed, 0x76, 0x63, 0x51, 0x9d, 0x04, 0x6d, 0x12, 0x3c, 0x65, 0x36, 0x6c,
+	0x10, 0x89, 0xac, 0xa4, 0xbb, 0x3d, 0xdc, 0x8d, 0x65, 0x73, 0x49, 0x99, 0xd7, 0xb2, 0x5d, 0x1c,
+	0xea, 0xa4, 0xec, 0x2f, 0x93, 0x22, 0x07, 0x26, 0xab, 0x41, 0xf3, 0x51, 0x67, 0x27, 0x08, 0xed,
+	0xd0, 0x21, 0xee, 0x5d, 0x1f, 0xdb, 0x21, 0x36, 0x4b, 0x70, 0xaa, 0xde, 0xfb, 0x45, 0xfc, 0x92,
+	0xb1, 0x60, 0x2c, 0xff, 0xa7, 0x16, 0x0f, 0xcd, 0x29, 0x38, 0x41, 0x5e, 0xba, 0xd8, 0x2f, 0x0d,
+	0xd3, 0x79, 0x36, 0x30, 0x11, 0x9c, 0xb6, 0x5b, 0x2d, 0x52, 0xa7, 0x18, 0x95, 0x46, 0x69, 0x84,
+	0x0a, 0xa5, 0x39, 0xb4, 0x0e, 0x17, 0x15, 0xae, 0x6a, 0x38, 0xf0, 0x88, 0x1b, 0xe0, 0x1e, 0x44,
+	0xc0, 0x65, 0x95, 0x46, 0xe4, 0x57, 0x9a, 0x43, 0xaf, 0x8d, 0x04, 0xdd, 0x4d, 0xdc, 0xc2, 0x99,
+	0x74, 0x93, 0xa8, 0xc3, 0x69, 0x54, 0xf3, 0x13, 0xb8, 0xd0, 0x76, 0x9a, 0x3e, 0x1d, 0x3e, 0x12,
+	0x95, 0xd9, 0x2a, 0xd4, 0x42, 0x74, 0x29, 0xb1, 0x1c, 0x46, 0x25, 0x5e, 0x0e, 0xfa, 0xd5, 0x80,
+	0xb2, 0x24, 0x5f, 0xe7, 0xb1, 0xb8, 0x4b, 0x5c, 0x17, 0xd7, 0xc3, 0x6c, 0xd6, 0x52, 0x38, 0x87,
+	0xd3, 0xe1, 0x34, 0xef, 0xc0, 0x4c, 0x03, 0x07, 0xa1, 0xe3, 0xea, 0x78, 0xeb, 0xc4, 0x68, 0x19,
+	0x96, 0xb2, 0x99, 0xf1, 0x45, 0xd8, 0xb0, 0xa8, 0xd1, 0xdc, 0x74, 0x82, 0xfa, 0x71, 0x2c, 0x03,
+	0xdd, 0x80, 0xff, 0xe6, 0xba, 0xe0, 0x7c, 0xf6, 0xc1, 0x92, 0x94, 0xb7, 0x5b, 0x76, 0x17, 0xfb,
+	0x03, 0xc5, 0x33, 0xf7, 0x14, 0x58, 0x30, 0xe6, 0x51, 0x38, 0x1e, 0x40, 0x3e, 0x46, 0x57, 0x00,
+	0xe9, 0xfd, 0x72, 0x76, 0x8f, 0xe1, 0x92, 0x42, 0x6b, 0xa0, 0x48, 0x89, 0xce, 0x87, 0x13, 0xce,
+	0xaf, 0xc1, 0xd5, 0x4c, 0x58, 0xee, 0xff, 0x0f, 0xf6, 0x75, 0x08, 0xdb, 0x99, 0xf7, 0x31, 0x97,
+	0x01, 0xea, 0xc4, 0x0d, 0x7d, 0xd2, 0x6a, 0xf1, 0x2f, 0x5a, 0x98, 0x31, 0x97, 0x60, 0x22, 0x20,
+	0x1d, 0xbf, 0x8e, 0xb7, 0x76, 0x9e, 0xe3, 0x7a, 0xc8, 0x23, 0x93, 0x98, 0x35, 0x3f, 0x87, 0x89,
+	0xfe, 0xa6, 0x7e, 0xd3, 0xf5, 0x70, 0x69, 0x74, 0xc1, 0x58, 0x9e, 0x58, 0x9b, 0x59, 0x89, 0x92,
+	0xce, 0x8a, 0x2c, 0xae, 0x25, 0xd4, 0x7b, 0x59, 0xc5, 0x23, 0x2f, 0xb1, 0x5f, 0x3a, 0xb1, 0x60,
+	0x2c, 0x8f, 0xd6, 0xd8, 0x20, 0xca, 0x18, 0xc9, 0xf5, 0x88, 0x19, 0x43, 0x3a, 0x5e, 0x86, 0xe2,
+	0x78, 0x85, 0x30, 0x51, 0x0d, 0x9a, 0x0f, 0x3a, 0x4e, 0xab, 0x91, 0x1b, 0x0d, 0x0b, 0xc6, 0xb0,
+	0xdb, 0xf0, 0x88, 0xe3, 0x86, 0xf1, 0x26, 0xc4, 0x63, 0xf3, 0x26, 0x9c, 0xc7, 0x6e, 0xe8, 0x77,
+	0x15, 0xdf, 0x59, 0x5a, 0x80, 0xd6, 0x60, 0x5a, 0xf6, 0xca, 0x39, 0x97, 0xe0, 0x54, 0xb3, 0x37,
+	0xcd, 0xe9, 0xc6, 0x43, 0x64, 0xc3, 0x85, 0xd8, 0xe6, 0xb1, 0xd7, 0xb0, 0x43, 0xbc, 0xd5, 0xcb,
+	0xac, 0x95, 0x46, 0x06, 0x61, 0x01, 0x6c, 0x58, 0x02, 0xeb, 0x67, 0xe9, 0x11, 0x21, 0x4b, 0xa3,
+	0x57, 0x06, 0xcc, 0xcb, 0x3e, 0xee, 0x25, 0xa9, 0x17, 0xf2, 0x76, 0xb8, 0xe0, 0x3c, 0xeb, 0x07,
+	0x27, 0x26, 0x11, 0x05, 0xb9, 0x88, 0x6f, 0x71, 0xd3, 0x46, 0xe4, 0x4d, 0xeb, 0x5d, 0x17, 0x8b,
+	0xb2, 0xab, 0x87, 0xc4, 0x71, 0x2b, 0xee, 0x6e, 0x27, 0x70, 0x88, 0x5b, 0x75, 0x5c, 0xa7, 0xdd,
+	0x69, 0x17, 0xf2, 0x7a, 0x1b, 0x26, 0x9f, 0xa7, 0xa1, 0x28, 0x81, 0xd1, 0x9a, 0x4a, 0x84, 0x7e,
+	0x37, 0xe0, 0x76, 0x2e, 0x97, 0x8d, 0xae, 0x67, 0x07, 0xc1, 0x46, 0xb7, 0x86, 0x5f, 0x74, 0x70,
+	0x50, 0x2c, 0x20, 0x6b, 0x30, 0x45, 0x7f, 0xf6, 0xe0, 0x19, 0xde, 0x97, 0x78, 0x1f, 0xb7, 0x22,
+	0x6e, 0x4a, 0x19, 0xfa, 0xcd, 0x80, 0xd5, 0x81, 0xc9, 0x55, 0xdc, 0x7d, 0x27, 0xf3, 0x3b, 0x3a,
+	0x5e, 0x6e, 0xa5, 0xe4, 0x71, 0xe1, 0xf9, 0xce, 0x85, 0xa9, 0x6a, 0xd0, 0x8c, 0x72, 0x31, 0xfd,
+	0xcc, 0xb6, 0x7d, 0x72, 0xd0, 0xcd, 0x66, 0x66, 0x37, 0x1a, 0x3e, 0x0e, 0x82, 0x98, 0x59, 0x34,
+	0x4c, 0xdd, 0x10, 0x23, 0x8a, 0xd7, 0x47, 0x19, 0xe6, 0x54, 0xfe, 0x38, 0x9f, 0x7b, 0x70, 0x36,
+	0x21, 0x2f, 0x12, 0x24, 0x34, 0x0b, 0x33, 0x09, 0x18, 0xee, 0xe1, 0x8d, 0x01, 0xb3, 0xbd, 0x8c,
+	0xc8, 0x48, 0xaf, 0x7b, 0x9e, 0x4f, 0xf6, 0x71, 0x0d, 0x37, 0x9d, 0x20, 0xc4, 0x7e, 0xce, 0xba,
+	0x99, 0x32, 0x75, 0x36, 0x56, 0x8b, 0x87, 0x62, 0x44, 0x46, 0xe4, 0x88, 0x2c, 0xc0, 0xb8, 0x87,
+	0xfd, 0xb6, 0x13, 0xf4, 0x8e, 0x40, 0x40, 0x13, 0xfa, 0x68, 0x4d, 0x9c, 0x42, 0x0d, 0x30, 0xfb,
+	0x64, 0x06, 0x60, 0x91, 0x71, 0xc9, 0xe9, 0x79, 0xa0, 0x39, 0x7a, 0xe7, 0x27, 0xbc, 0xf0, 0x88,
+	0xdc, 0x87, 0x73, 0xa2, 0x74, 0x9f, 0xec, 0xe1, 0x22, 0xfb, 0x8f, 0x2c, 0x28, 0x25, 0x71, 0xb8,
+	0x8f, 0x57, 0x06, 0xdd, 0x11, 0x7a, 0x04, 0x8f, 0x29, 0xe6, 0xf1, 0xd6, 0x8f, 0xa4, 0x92, 0x19,
+	0x8f, 0xd0, 0x68, 0xe2, 0x19, 0xb0, 0xd8, 0xcf, 0xdd, 0x09, 0x12, 0x9c, 0xe8, 0x4d, 0x1a, 0x8c,
+	0x6d, 0xfa, 0xfa, 0xbf, 0x77, 0xe0, 0xb5, 0x88, 0x9f, 0x11, 0x0c, 0x54, 0xa1, 0x4b, 0x96, 0xb4,
+	0xf9, 0x35, 0x75, 0x0b, 0x4e, 0xb2, 0x22, 0x82, 0x1a, 0x8d, 0xaf, 0x9d, 0xe5, 0x17, 0x39, 0xd3,
+	0xdf, 0x18, 0x7d, 0xfb, 0xd7, 0xfc, 0x50, 0x2d, 0x52, 0x42, 0x15, 0x38, 0xdf, 0x7b, 0xa2, 0x50,
+	0x95, 0xf5, 0x7a, 0xe8, 0xec, 0xe7, 0x5e, 0xb4, 0x0c, 0xae, 0x7f, 0x10, 0xe2, 0x31, 0x7a, 0x48,
+	0x4f, 0xb8, 0x0c, 0x25, 0xd2, 0x62, 0x8a, 0x29, 0x5a, 0xcc, 0x20, 0xa6, 0xc5, 0x66, 0xd1, 0xcf,
+	0x06, 0xcd, 0x1d, 0x91, 0x8c, 0xc6, 0xd8, 0x75, 0x42, 0x27, 0xf7, 0x4d, 0xc4, 0xcc, 0xe9, 0x3b,
+	0x26, 0x7a, 0x13, 0xf5, 0x67, 0xa2, 0x3d, 0x72, 0x71, 0x28, 0xbd, 0x13, 0xe9, 0xd8, 0x34, 0x61,
+	0x34, 0x68, 0x91, 0x30, 0xfa, 0x58, 0xe8, 0x6f, 0xb4, 0xc5, 0xea, 0x80, 0x34, 0x87, 0xa2, 0xab,
+	0xfa, 0x31, 0xb9, 0xa8, 0xbb, 0xa4, 0xed, 0xe5, 0x94, 0x41, 0x19, 0x11, 0xa7, 0x6f, 0x2f, 0x9f,
+	0x90, 0xdd, 0xf8, 0xad, 0x40, 0x07, 0xbd, 0x59, 0x97, 0xb8, 0x75, 0x1c, 0x9d, 0x43, 0x36, 0x48,
+	0x2f, 0x26, 0xf6, 0x5d, 0x74, 0x31, 0x55, 0xfa, 0xea, 0x61, 0xa2, 0xaa, 0xe3, 0xe2, 0x23, 0x9e,
+	0x9e, 0xaf, 0xd8, 0x13, 0x3c, 0x05, 0x57, 0x94, 0xde, 0x16, 0xfd, 0xf2, 0xfb, 0x78, 0x9b, 0xd8,
+	0x3e, 0x1a, 0xc1, 0x6d, 0xfa, 0x15, 0xab, 0x00, 0x8b, 0x52, 0x7c, 0x01, 0x67, 0x24, 0xc4, 0x8f,
+	0x70, 0x0a, 0xee, 0x27, 0x36, 0xed, 0x38, 0xa2, 0x5b, 0xc3, 0xbb, 0x47, 0xdf, 0x7e, 0x31, 0xba,
+	0x32, 0x60, 0x51, 0x8a, 0x5f, 0x0b, 0xe9, 0x88, 0x21, 0x1e, 0xf9, 0x08, 0xd4, 0x58, 0x51, 0xad,
+	0x84, 0x2c, 0x4a, 0x33, 0xa0, 0x4f, 0x0f, 0x11, 0xf3, 0x23, 0x1c, 0x83, 0x2f, 0x52, 0xdb, 0x57,
+	0x94, 0xbe, 0x4d, 0x3f, 0x5b, 0xf6, 0xe4, 0x61, 0x8f, 0xbc, 0x6d, 0xdf, 0x69, 0xdb, 0x7e, 0x37,
+	0xba, 0x90, 0x33, 0x16, 0xb3, 0x04, 0x13, 0x9e, 0xa4, 0x1b, 0x2d, 0x29, 0x31, 0x1b, 0x55, 0xd1,
+	0x7a, 0x17, 0xfc, 0x12, 0xdd, 0x13, 0x42, 0x49, 0x5f, 0xc0, 0x45, 0x43, 0x89, 0xe0, 0xb4, 0x43,
+	0xed, 0xd7, 0xdb, 0xa4, 0xc3, 0xab, 0x13, 0x69, 0x2e, 0x7a, 0xeb, 0x89, 0xce, 0x38, 0x0f, 0x02,
+	0xe3, 0x3d, 0x91, 0xbd, 0x43, 0x42, 0xbb, 0xf9, 0x31, 0xb6, 0xf3, 0x02, 0xeb, 0xad, 0x45, 0x0e,
+	0x63, 0x1e, 0x6b, 0xff, 0x94, 0x60, 0xa4, 0x1a, 0x34, 0xcd, 0x27, 0x70, 0x2e, 0xd5, 0x59, 0x98,
+	0xe3, 0xdb, 0xaa, 0xa8, 0xd3, 0xad, 0x2b, 0x59, 0x52, 0x7e, 0x54, 0x9e, 0xc0, 0xb9, 0x54, 0xfb,
+	0x51, 0xc2, 0x4d, 0x4a, 0x65, 0x5c, 0x6d, 0x3f, 0x51, 0xc2, 0x8d, 0xfa, 0x84, 0x1a, 0x5c, 0x26,
+	0xd5, 0xe1, 0xca, 0x8d, 0x3d, 0xf3, 0x25, 0x5c, 0xcc, 0x6a, 0xea, 0x5d, 0x53, 0x83, 0xa4, 0x14,
+	0xad, 0xd5, 0x01, 0x15, 0xb9, 0xe3, 0x9f, 0x0c, 0x28, 0xe7, 0xb4, 0xe2, 0xae, 0xe7, 0x61, 0xf6,
+	0x75, 0xad, 0xb5, 0xc1, 0x75, 0x39, 0x85, 0x3d, 0x98, 0xd1, 0x35, 0xdf, 0x2e, 0xab, 0xe1, 0x24,
+	0x25, 0xeb, 0xc6, 0x00, 0x4a, 0xdc, 0x59, 0x08, 0x56, 0x46, 0x2f, 0x6d, 0x29, 0x0b, 0x4a, 0x58,
+	0xe6, 0xca, 0x60, 0x7a, 0xdc, 0xeb, 0x03, 0x18, 0x17, 0xbb, 0x45, 0x33, 0xa2, 0xb9, 0x20, 0xb0,
+	0xe6, 0x35, 0x02, 0x0e, 0xf4, 0x18, 0x4c, 0x45, 0x33, 0xa7, 0x9c, 0x32, 0x93, 0xe4, 0x0a, 0x58,
+	0xb9, 0xe8, 0x35, 0x1d, 0x98, 0xcb, 0xec, 0xdf, 0x2c, 0x6b, 0x00, 0x52, 0x9a, 0xf9, 0xae, 0xbe,
+	0x85, 0x49, 0x55, 0x97, 0x66, 0x5e, 0xeb, 0x81, 0x29, 0xe4, 0x03, 0xb7, 0xa1, 0x9c, 0xd3, 0x93,
+	0xb9, 0xae, 0x81, 0x50, 0xe8, 0xe6, 0xbb, 0x7b, 0x6d, 0xc0, 0xcd, 0x43, 0xb5, 0x36, 0xee, 0x0c,
+	0xee, 0x5d, 0xb6, 0xcc, 0xe7, 0xf2, 0xc6, 0x80, 0x5b, 0x87, 0xeb, 0x01, 0x7d, 0x7a, 0x78, 0x32,
+	0x91, 0x69, 0x3e, 0x9b, 0x1d, 0x98, 0x52, 0x56, 0xb5, 0x0b, 0x29, 0xc3, 0x84, 0x86, 0xb5, 0x9c,
+	0xa7, 0xc1, 0x7d, 0x7c, 0x07, 0xe7, 0xd3, 0x2d, 0x9a, 0x4b, 0xa2, 0x79, 0x4a, 0x6c, 0x5d, 0xcd,
+	0x14, 0x73, 0xe8, 0x87, 0x70, 0x5a, 0xee, 0xb6, 0xe8, 0xcc, 0xac, 0x05, 0x9d, 0x44, 0xcc, 0x36,
+	0x19, 0xef, 0x8f, 0xa5, 0xb4, 0xbd, 0x4a, 0x4f, 0xce, 0x36, 0xf9, 0x8f, 0x0d, 0xf3, 0x11, 0x9c,
+	0x4d, 0xf6, 0x4f, 0x2e, 0x4a, 0xb7, 0xa6, 0x2c, 0xb4, 0x2e, 0x67, 0x08, 0x39, 0xa8, 0x0d, 0xd3,
+	0x9a, 0x0e, 0x11, 0x52, 0x98, 0x27, 0x77, 0x76, 0x20, 0x17, 0x55, 0x38, 0x23, 0xf7, 0x5c, 0x66,
+	0x95, 0x56, 0x3d, 0x91, 0xb5, 0xa8, 0x15, 0x89, 0x70, 0x72, 0xd7, 0x62, 0x36, 0x11, 0xc7, 0xbe,
+	0x48, 0x86, 0x53, 0x77, 0x2f, 0xb6, 0x61, 0x22, 0xd1, 0x8b, 0xb0, 0xa4, 0x5b, 0x40, 0x92, 0x59,
+	0x48, 0x2f, 0xe3, 0x88, 0x4f, 0x61, 0x52, 0xd5, 0x45, 0x98, 0x4f, 0x9b, 0x4a, 0x0a, 0xd6, 0xb5,
+	0x1c, 0x05, 0x8d, 0x03, 0x5e, 0xd1, 0xeb, 0x1c, 0xc4, 0x0a, 0x5a, 0x07, 0xa9, 0xba, 0xfc, 0x07,
+	0x30, 0x15, 0x55, 0x76, 0x39, 0x6d, 0x2e, 0xca, 0xad, 0xa5, 0x6c, 0xb9, 0x98, 0x48, 0x94, 0x45,
+	0xf2, 0x82, 0xda, 0xbe, 0xaf, 0x21, 0x27, 0x92, 0xcc, 0xba, 0x78, 0x13, 0x40, 0xa8, 0x72, 0xa7,
+	0xd5, 0x76, 0x96, 0x66, 0x45, 0x69, 0xa6, 0x89, 0x82, 0x53, 0xc1, 0x54, 0xd6, 0x50, 0x31, 0xd5,
+	0xd4, 0x98, 0xcf, 0x60, 0x5a, 0x53, 0x31, 0x22, 0x1d, 0x86, 0x10, 0x91, 0xeb, 0xf9, 0x3a, 0x62,
+	0x06, 0x94, 0x8b, 0x3e, 0x9d, 0xad, 0xa5, 0x5d, 0x5f, 0x1a, 0x2b, 0xae, 0x7a, 0xd2, 0x16, 0x4c,
+	0xa2, 0xc2, 0x92, 0x8b, 0x17, 0xf3, 0x33, 0x18, 0xe3, 0x95, 0xcb, 0x94, 0xa4, 0x1d, 0xcd, 0x5a,
+	0x73, 0xaa, 0xd9, 0xd8, 0x7e, 0xe3, 0x7f, 0x6f, 0xdf, 0x97, 0x8d, 0x77, 0xef, 0xcb, 0xc6, 0xdf,
+	0xef, 0xcb, 0xc6, 0x2f, 0x1f, 0xca, 0x43, 0xef, 0x3e, 0x94, 0x87, 0xfe, 0xfc, 0x50, 0x1e, 0xfa,
+	0x7e, 0x26, 0xfe, 0x37, 0x86, 0x83, 0xfe, 0x7f, 0x5e, 0x74, 0x3d, 0x1c, 0xec, 0x9c, 0xa4, 0xff,
+	0xd0, 0xf0, 0xff, 0x7f, 0x03, 0x00, 0x00, 0xff, 0xff, 0x8d, 0x15, 0x71, 0xf9, 0x99, 0x21, 0x00,
+	0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -5031,10 +5031,12 @@ func (m *MsgGuildCreateResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 	_ = i
 	var l int
 	_ = l
-	if m.GuildId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.GuildId))
+	if len(m.GuildId) > 0 {
+		i -= len(m.GuildId)
+		copy(dAtA[i:], m.GuildId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.GuildId)))
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -5059,15 +5061,19 @@ func (m *MsgGuildUpdateOwnerId) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.Owner != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.Owner))
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Owner)))
 		i--
-		dAtA[i] = 0x18
+		dAtA[i] = 0x1a
 	}
-	if m.Id != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.Id))
+	if len(m.GuildId) > 0 {
+		i -= len(m.GuildId)
+		copy(dAtA[i:], m.GuildId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.GuildId)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -5106,10 +5112,12 @@ func (m *MsgGuildUpdateEntrySubstationId) MarshalToSizedBuffer(dAtA []byte) (int
 		i--
 		dAtA[i] = 0x1a
 	}
-	if m.Id != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.Id))
+	if len(m.GuildId) > 0 {
+		i -= len(m.GuildId)
+		copy(dAtA[i:], m.GuildId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.GuildId)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -5148,10 +5156,12 @@ func (m *MsgGuildUpdateEndpoint) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 		i--
 		dAtA[i] = 0x1a
 	}
-	if m.Id != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.Id))
+	if len(m.GuildId) > 0 {
+		i -= len(m.GuildId)
+		copy(dAtA[i:], m.GuildId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.GuildId)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -5188,10 +5198,12 @@ func (m *MsgGuildUpdateJoinInfusionMinimum) MarshalToSizedBuffer(dAtA []byte) (i
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.Id != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.Id))
+	if len(m.GuildId) > 0 {
+		i -= len(m.GuildId)
+		copy(dAtA[i:], m.GuildId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.GuildId)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -5228,10 +5240,12 @@ func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) MarshalToSizedBuffer(
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.Id != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.Id))
+	if len(m.GuildId) > 0 {
+		i -= len(m.GuildId)
+		copy(dAtA[i:], m.GuildId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.GuildId)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -5268,10 +5282,12 @@ func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) MarshalToSizedBuffer(d
 		i--
 		dAtA[i] = 0x18
 	}
-	if m.Id != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.Id))
+	if len(m.GuildId) > 0 {
+		i -= len(m.GuildId)
+		copy(dAtA[i:], m.GuildId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.GuildId)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -5393,10 +5409,12 @@ func (m *MsgPlayerCreate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.GuildId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.GuildId))
+	if len(m.GuildId) > 0 {
+		i -= len(m.GuildId)
+		copy(dAtA[i:], m.GuildId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.GuildId)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -5637,10 +5655,12 @@ func (m *MsgGuildApproveRegister) MarshalToSizedBuffer(dAtA []byte) (int, error)
 		i--
 		dAtA[i] = 0x22
 	}
-	if m.GuildId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.GuildId))
+	if len(m.GuildId) > 0 {
+		i -= len(m.GuildId)
+		copy(dAtA[i:], m.GuildId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.GuildId)))
 		i--
-		dAtA[i] = 0x18
+		dAtA[i] = 0x1a
 	}
 	if m.Approve {
 		i--
@@ -5768,10 +5788,12 @@ func (m *MsgStructActivate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.StructId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.StructId))
+	if len(m.StructId) > 0 {
+		i -= len(m.StructId)
+		copy(dAtA[i:], m.StructId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.StructId)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -5841,10 +5863,12 @@ func (m *MsgStructBuildInitiate) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 		i--
 		dAtA[i] = 0x20
 	}
-	if m.PlanetId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.PlanetId))
+	if len(m.PlanetId) > 0 {
+		i -= len(m.PlanetId)
+		copy(dAtA[i:], m.PlanetId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.PlanetId)))
 		i--
-		dAtA[i] = 0x18
+		dAtA[i] = 0x1a
 	}
 	if len(m.StructType) > 0 {
 		i -= len(m.StructType)
@@ -5930,10 +5954,12 @@ func (m *MsgStructBuildComplete) MarshalToSizedBuffer(dAtA []byte) (int, error) 
 		i--
 		dAtA[i] = 0x1a
 	}
-	if m.StructId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.StructId))
+	if len(m.StructId) > 0 {
+		i -= len(m.StructId)
+		copy(dAtA[i:], m.StructId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.StructId)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -5998,10 +6024,12 @@ func (m *MsgStructMineActivate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.StructId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.StructId))
+	if len(m.StructId) > 0 {
+		i -= len(m.StructId)
+		copy(dAtA[i:], m.StructId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.StructId)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -6066,10 +6094,12 @@ func (m *MsgStructMineDeactivate) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	_ = i
 	var l int
 	_ = l
-	if m.StructId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.StructId))
+	if len(m.StructId) > 0 {
+		i -= len(m.StructId)
+		copy(dAtA[i:], m.StructId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.StructId)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -6148,10 +6178,12 @@ func (m *MsgStructMine) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if m.StructId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.StructId))
+	if len(m.StructId) > 0 {
+		i -= len(m.StructId)
+		copy(dAtA[i:], m.StructId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.StructId)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -6216,10 +6248,12 @@ func (m *MsgStructRefineActivate) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	_ = i
 	var l int
 	_ = l
-	if m.StructId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.StructId))
+	if len(m.StructId) > 0 {
+		i -= len(m.StructId)
+		copy(dAtA[i:], m.StructId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.StructId)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -6284,10 +6318,12 @@ func (m *MsgStructRefineDeactivate) MarshalToSizedBuffer(dAtA []byte) (int, erro
 	_ = i
 	var l int
 	_ = l
-	if m.StructId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.StructId))
+	if len(m.StructId) > 0 {
+		i -= len(m.StructId)
+		copy(dAtA[i:], m.StructId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.StructId)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -6366,10 +6402,12 @@ func (m *MsgStructRefine) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if m.StructId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.StructId))
+	if len(m.StructId) > 0 {
+		i -= len(m.StructId)
+		copy(dAtA[i:], m.StructId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.StructId)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -6501,10 +6539,12 @@ func (m *MsgStructInfuse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if m.StructId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.StructId))
+	if len(m.StructId) > 0 {
+		i -= len(m.StructId)
+		copy(dAtA[i:], m.StructId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.StructId)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -6573,10 +6613,12 @@ func (m *MsgSabotage) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1a
 	}
-	if m.StructId != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.StructId))
+	if len(m.StructId) > 0 {
+		i -= len(m.StructId)
+		copy(dAtA[i:], m.StructId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.StructId)))
 		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -6865,8 +6907,9 @@ func (m *MsgGuildCreateResponse) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.GuildId != 0 {
-		n += 1 + sovTx(uint64(m.GuildId))
+	l = len(m.GuildId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
@@ -6881,11 +6924,13 @@ func (m *MsgGuildUpdateOwnerId) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.Id != 0 {
-		n += 1 + sovTx(uint64(m.Id))
+	l = len(m.GuildId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.Owner != 0 {
-		n += 1 + sovTx(uint64(m.Owner))
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
@@ -6900,8 +6945,9 @@ func (m *MsgGuildUpdateEntrySubstationId) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.Id != 0 {
-		n += 1 + sovTx(uint64(m.Id))
+	l = len(m.GuildId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	l = len(m.EntrySubstationId)
 	if l > 0 {
@@ -6920,8 +6966,9 @@ func (m *MsgGuildUpdateEndpoint) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.Id != 0 {
-		n += 1 + sovTx(uint64(m.Id))
+	l = len(m.GuildId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	l = len(m.Endpoint)
 	if l > 0 {
@@ -6940,8 +6987,9 @@ func (m *MsgGuildUpdateJoinInfusionMinimum) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.Id != 0 {
-		n += 1 + sovTx(uint64(m.Id))
+	l = len(m.GuildId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	if m.JoinInfusionMinimum != 0 {
 		n += 1 + sovTx(uint64(m.JoinInfusionMinimum))
@@ -6959,8 +7007,9 @@ func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.Id != 0 {
-		n += 1 + sovTx(uint64(m.Id))
+	l = len(m.GuildId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	if m.GuildJoinBypassLevel != 0 {
 		n += 1 + sovTx(uint64(m.GuildJoinBypassLevel))
@@ -6978,8 +7027,9 @@ func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.Id != 0 {
-		n += 1 + sovTx(uint64(m.Id))
+	l = len(m.GuildId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	if m.GuildJoinBypassLevel != 0 {
 		n += 1 + sovTx(uint64(m.GuildJoinBypassLevel))
@@ -7036,8 +7086,9 @@ func (m *MsgPlayerCreate) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.GuildId != 0 {
-		n += 1 + sovTx(uint64(m.GuildId))
+	l = len(m.GuildId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
@@ -7143,8 +7194,9 @@ func (m *MsgGuildApproveRegister) Size() (n int) {
 	if m.Approve {
 		n += 2
 	}
-	if m.GuildId != 0 {
-		n += 1 + sovTx(uint64(m.GuildId))
+	l = len(m.GuildId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	l = len(m.PlayerId)
 	if l > 0 {
@@ -7196,8 +7248,9 @@ func (m *MsgStructActivate) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.StructId != 0 {
-		n += 1 + sovTx(uint64(m.StructId))
+	l = len(m.StructId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
@@ -7227,8 +7280,9 @@ func (m *MsgStructBuildInitiate) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.PlanetId != 0 {
-		n += 1 + sovTx(uint64(m.PlanetId))
+	l = len(m.PlanetId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	if m.Slot != 0 {
 		n += 1 + sovTx(uint64(m.Slot))
@@ -7257,8 +7311,9 @@ func (m *MsgStructBuildComplete) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.StructId != 0 {
-		n += 1 + sovTx(uint64(m.StructId))
+	l = len(m.StructId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	l = len(m.Proof)
 	if l > 0 {
@@ -7292,8 +7347,9 @@ func (m *MsgStructMineActivate) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.StructId != 0 {
-		n += 1 + sovTx(uint64(m.StructId))
+	l = len(m.StructId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
@@ -7319,8 +7375,9 @@ func (m *MsgStructMineDeactivate) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.StructId != 0 {
-		n += 1 + sovTx(uint64(m.StructId))
+	l = len(m.StructId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
@@ -7346,8 +7403,9 @@ func (m *MsgStructMine) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.StructId != 0 {
-		n += 1 + sovTx(uint64(m.StructId))
+	l = len(m.StructId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	l = len(m.Proof)
 	if l > 0 {
@@ -7381,8 +7439,9 @@ func (m *MsgStructRefineActivate) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.StructId != 0 {
-		n += 1 + sovTx(uint64(m.StructId))
+	l = len(m.StructId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
@@ -7408,8 +7467,9 @@ func (m *MsgStructRefineDeactivate) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.StructId != 0 {
-		n += 1 + sovTx(uint64(m.StructId))
+	l = len(m.StructId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
@@ -7435,8 +7495,9 @@ func (m *MsgStructRefine) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.StructId != 0 {
-		n += 1 + sovTx(uint64(m.StructId))
+	l = len(m.StructId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	l = len(m.Proof)
 	if l > 0 {
@@ -7496,8 +7557,9 @@ func (m *MsgStructInfuse) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.StructId != 0 {
-		n += 1 + sovTx(uint64(m.StructId))
+	l = len(m.StructId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	l = len(m.InfuseAmount)
 	if l > 0 {
@@ -7525,8 +7587,9 @@ func (m *MsgSabotage) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.StructId != 0 {
-		n += 1 + sovTx(uint64(m.StructId))
+	l = len(m.StructId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	l = len(m.Proof)
 	if l > 0 {
@@ -9140,10 +9203,10 @@ func (m *MsgGuildCreateResponse) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
 			}
-			m.GuildId = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -9153,11 +9216,24 @@ func (m *MsgGuildCreateResponse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.GuildId |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GuildId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -9241,10 +9317,10 @@ func (m *MsgGuildUpdateOwnerId) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
 			}
-			m.Id = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -9254,16 +9330,29 @@ func (m *MsgGuildUpdateOwnerId) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GuildId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 3:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
 			}
-			m.Owner = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -9273,11 +9362,24 @@ func (m *MsgGuildUpdateOwnerId) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Owner |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Owner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -9361,10 +9463,10 @@ func (m *MsgGuildUpdateEntrySubstationId) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
 			}
-			m.Id = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -9374,11 +9476,24 @@ func (m *MsgGuildUpdateEntrySubstationId) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GuildId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EntrySubstationId", wireType)
@@ -9494,10 +9609,10 @@ func (m *MsgGuildUpdateEndpoint) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
 			}
-			m.Id = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -9507,11 +9622,24 @@ func (m *MsgGuildUpdateEndpoint) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GuildId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Endpoint", wireType)
@@ -9627,10 +9755,10 @@ func (m *MsgGuildUpdateJoinInfusionMinimum) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
 			}
-			m.Id = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -9640,11 +9768,24 @@ func (m *MsgGuildUpdateJoinInfusionMinimum) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GuildId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field JoinInfusionMinimum", wireType)
@@ -9747,10 +9888,10 @@ func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Unmarshal(dAtA []byte
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
 			}
-			m.Id = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -9760,11 +9901,24 @@ func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Unmarshal(dAtA []byte
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GuildId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GuildJoinBypassLevel", wireType)
@@ -9867,10 +10021,10 @@ func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Unmarshal(dAtA []byte)
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
 			}
-			m.Id = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -9880,11 +10034,24 @@ func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Unmarshal(dAtA []byte)
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GuildId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 3:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GuildJoinBypassLevel", wireType)
@@ -10233,10 +10400,10 @@ func (m *MsgPlayerCreate) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
 			}
-			m.GuildId = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -10246,11 +10413,24 @@ func (m *MsgPlayerCreate) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.GuildId |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GuildId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -10917,10 +11097,10 @@ func (m *MsgGuildApproveRegister) Unmarshal(dAtA []byte) error {
 			}
 			m.Approve = bool(v != 0)
 		case 3:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
 			}
-			m.GuildId = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -10930,11 +11110,24 @@ func (m *MsgGuildApproveRegister) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.GuildId |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GuildId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
@@ -11265,10 +11458,10 @@ func (m *MsgStructActivate) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StructId", wireType)
 			}
-			m.StructId = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -11278,11 +11471,24 @@ func (m *MsgStructActivate) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.StructId |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.StructId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -11481,10 +11687,10 @@ func (m *MsgStructBuildInitiate) Unmarshal(dAtA []byte) error {
 			m.StructType = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PlanetId", wireType)
 			}
-			m.PlanetId = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -11494,11 +11700,24 @@ func (m *MsgStructBuildInitiate) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.PlanetId |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PlanetId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 4:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Slot", wireType)
@@ -11684,10 +11903,10 @@ func (m *MsgStructBuildComplete) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StructId", wireType)
 			}
-			m.StructId = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -11697,11 +11916,24 @@ func (m *MsgStructBuildComplete) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.StructId |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.StructId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Proof", wireType)
@@ -11932,10 +12164,10 @@ func (m *MsgStructMineActivate) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StructId", wireType)
 			}
-			m.StructId = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -11945,11 +12177,24 @@ func (m *MsgStructMineActivate) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.StructId |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.StructId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -12116,10 +12361,10 @@ func (m *MsgStructMineDeactivate) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StructId", wireType)
 			}
-			m.StructId = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -12129,11 +12374,24 @@ func (m *MsgStructMineDeactivate) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.StructId |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.StructId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -12300,10 +12558,10 @@ func (m *MsgStructMine) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StructId", wireType)
 			}
-			m.StructId = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -12313,11 +12571,24 @@ func (m *MsgStructMine) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.StructId |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.StructId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Proof", wireType)
@@ -12548,10 +12819,10 @@ func (m *MsgStructRefineActivate) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StructId", wireType)
 			}
-			m.StructId = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -12561,11 +12832,24 @@ func (m *MsgStructRefineActivate) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.StructId |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.StructId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -12732,10 +13016,10 @@ func (m *MsgStructRefineDeactivate) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StructId", wireType)
 			}
-			m.StructId = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -12745,11 +13029,24 @@ func (m *MsgStructRefineDeactivate) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.StructId |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.StructId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -12916,10 +13213,10 @@ func (m *MsgStructRefine) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StructId", wireType)
 			}
-			m.StructId = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -12929,11 +13226,24 @@ func (m *MsgStructRefine) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.StructId |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.StructId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Proof", wireType)
@@ -13328,10 +13638,10 @@ func (m *MsgStructInfuse) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StructId", wireType)
 			}
-			m.StructId = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -13341,11 +13651,24 @@ func (m *MsgStructInfuse) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.StructId |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.StructId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field InfuseAmount", wireType)
@@ -13511,10 +13834,10 @@ func (m *MsgSabotage) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StructId", wireType)
 			}
-			m.StructId = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -13524,11 +13847,24 @@ func (m *MsgSabotage) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.StructId |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.StructId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Proof", wireType)

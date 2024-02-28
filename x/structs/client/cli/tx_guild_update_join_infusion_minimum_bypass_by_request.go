@@ -19,10 +19,7 @@ func CmdGuildUpdateJoinInfusionMinimumBypassByRequest() *cobra.Command {
 		Short: "Update how Requests are allowed to bypass the Infusion Minimum",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argGuildId, err := cast.ToUint64E(args[0])
-            if err != nil {
-                return err
-            }
+			argGuildId := args[0]
 
 			argGuildJoinBypassLevel, err := cast.ToUint64E(args[1])
             if err != nil {

@@ -9,7 +9,7 @@ const TypeMsgStructRefineDeactivate = "struct_refine_deactivate"
 
 var _ sdk.Msg = &MsgStructRefineDeactivate{}
 
-func NewMsgStructRefineDeactivate(creator string, structId uint64) *MsgStructRefineDeactivate {
+func NewMsgStructRefineDeactivate(creator string, structId string) *MsgStructRefineDeactivate {
 	return &MsgStructRefineDeactivate{
 		Creator:  creator,
 		StructId: structId,

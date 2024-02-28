@@ -8,7 +8,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/tx"
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
-	"github.com/spf13/cast"
+
 )
 
 var _ = strconv.Itoa(0)
@@ -19,15 +19,9 @@ func CmdGuildUpdateOwnerId() *cobra.Command {
 		Short: "Update the Owner ID of a Guild",
 		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argGuildId, err := cast.ToUint64E(args[0])
-            if err != nil {
-                return err
-            }
+			argGuildId := args[0]
 
-			argOwnerId, err := cast.ToUint64E(args[1])
-            if err != nil {
-                return err
-            }
+			argOwnerId := args[1]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

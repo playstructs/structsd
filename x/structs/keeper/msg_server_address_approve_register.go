@@ -27,7 +27,7 @@ func (k msgServer) AddressApproveRegister(goCtx context.Context, msg *types.MsgA
 
     if (playerFound) {
         if (msg.Approve) {
-            k.AddressApproveRegisterRequest(ctx, player, msg.Address, msg.Permissions)
+            k.AddressApproveRegisterRequest(ctx, player, msg.Address, types.AddressPermission(msg.Permissions))
         } else {
             k.AddressDenyRegisterRequest(ctx, player, msg.Address)
         }

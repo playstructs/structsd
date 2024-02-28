@@ -1,8 +1,6 @@
 package cli
 
 import (
-	"strconv"
-
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
@@ -58,10 +56,7 @@ func CmdShowGuild() *cobra.Command {
 
 			queryClient := types.NewQueryClient(clientCtx)
 
-			id, err := strconv.ParseUint(args[0], 10, 64)
-			if err != nil {
-				return err
-			}
+			id := args[0]
 
 			params := &types.QueryGetGuildRequest{
 				Id: id,

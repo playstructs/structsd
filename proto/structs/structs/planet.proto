@@ -4,20 +4,20 @@ package structs;
 option go_package = "structs/x/structs/types";
 
 message Planet {
-  uint64 id             = 1;
+  string id             = 1;
 
   uint64 maxOre         = 2;
   uint64 OreRemaining   = 3;
   uint64 OreStored      = 4;
 
   string creator        = 5;
-  uint64 owner          = 6;
+  string owner          = 6;
 
 
-  repeated uint64 space = 7;
-  repeated uint64 sky   = 8;
-  repeated uint64 land  = 9;
-  repeated uint64 water = 10;
+  repeated string space = 7;
+  repeated string sky   = 8;
+  repeated string land  = 9;
+  repeated string water = 10;
 
   uint64 spaceSlots     = 11;
   uint64 skySlots       = 12;

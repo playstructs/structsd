@@ -9,7 +9,7 @@ const TypeMsgStructBuildInitiate = "struct_build_initiate"
 
 var _ sdk.Msg = &MsgStructBuildInitiate{}
 
-func NewMsgStructBuildInitiate(creator string, structType string, planetId uint64, slot uint64) *MsgStructBuildInitiate {
+func NewMsgStructBuildInitiate(creator string, structType string, planetId string, slot uint64) *MsgStructBuildInitiate {
 	return &MsgStructBuildInitiate{
 		Creator:  creator,
 		StructType: structType,

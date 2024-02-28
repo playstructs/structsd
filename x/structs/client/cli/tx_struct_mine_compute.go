@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/spf13/cast"
+
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
 
@@ -30,10 +30,7 @@ func CmdStructMineCompute() *cobra.Command {
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
-			argStructId, err := cast.ToUint64E(args[0])
-			if err != nil {
-				return err
-			}
+			argStructId := args[0]
 
 			var argProof string
 			var argNonce string
@@ -62,10 +59,10 @@ func CmdStructMineCompute() *cobra.Command {
 			var performingStructure types.Struct
 			performingStructure = performing_structure_res.Struct
 
-            fmt.Printf("Loaded Struct (%d) for mining process \n", performingStructure.Id)
+            fmt.Printf("Loaded Struct (%s) for mining process \n", performingStructure.Id)
 
             if (performingStructure.MiningSystemStatus != "ACTIVE") {
-                fmt.Printf("Struct (%d) has no Active mining system \n", performingStructure.Id)
+                fmt.Printf("Struct (%s) has no Active mining system \n", performingStructure.Id)
                 return nil
             }
 
@@ -77,7 +74,6 @@ func CmdStructMineCompute() *cobra.Command {
             fmt.Printf("Mining difficulty is %d \n", currentDifficulty)
 
 
-            structIdString                  := strconv.FormatUint(performingStructure.Id, 10)
             activeMiningSystemBlockString   := strconv.FormatUint(performingStructure.ActiveMiningSystemBlock , 10)
             fmt.Println("Starting Mining...")
 
@@ -113,7 +109,7 @@ COMPUTE:
 
 				newHash := sha256.New()
 
-                newInput := structIdString + "MINE" + activeMiningSystemBlockString + "NONCE" + strconv.Itoa(i)
+                newInput := performingStructure.Id + "MINE" + activeMiningSystemBlockString + "NONCE" + strconv.Itoa(i)
 				newHash.Write([]byte(newInput))
 				newHashOutput := hex.EncodeToString(newHash.Sum(nil))
 

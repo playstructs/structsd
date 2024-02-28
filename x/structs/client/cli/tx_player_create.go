@@ -6,7 +6,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/client"
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
-	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
 )
@@ -19,10 +18,7 @@ func CmdPlayerCreate() *cobra.Command {
 		Short: "Broadcast message player-create",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
-			argGuildId, err := cast.ToUint64E(args[0])
-			if err != nil {
-				return err
-			}
+			argGuildId := args[0]
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {

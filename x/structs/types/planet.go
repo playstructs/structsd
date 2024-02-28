@@ -11,7 +11,7 @@ func (planet *Planet) SetCreator(creator string) error {
 
 
 
-func (planet *Planet) SetOwner(playerId uint64) error {
+func (planet *Planet) SetOwner(playerId string) error {
 	planet.Owner = playerId
 	return nil
 }
@@ -32,11 +32,11 @@ func (planet *Planet) SetLandSlot(structure Struct) error {
 
 func CreateEmptyPlanet() Planet {
 
-    defaultEmptySlots := []uint64{0, 0, 0, 0}
+    defaultEmptySlots := []string{"", "", "", ""}
 
 	return Planet{
 		Creator:  "",
-		Owner: 0,
+		Owner: "",
 		Status: 0,
 
         Space: defaultEmptySlots,

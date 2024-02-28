@@ -31,8 +31,6 @@ func GetTxCmd() *cobra.Command {
 	}
 
 	cmd.AddCommand(CmdAllocationCreate())
-	cmd.AddCommand(CmdReactorAllocationCreate())
-	cmd.AddCommand(CmdSubstationAllocationCreate())
 
 	cmd.AddCommand(CmdSubstationCreate())
 	cmd.AddCommand(CmdSubstationDelete())
@@ -81,7 +79,6 @@ func GetTxCmd() *cobra.Command {
     cmd.AddCommand(CmdStructRefineCompute())
 
     cmd.AddCommand(CmdStructInfuse())
-    cmd.AddCommand(CmdStructAllocationCreate())
 
     cmd.AddCommand(CmdSabotage())
     cmd.AddCommand(CmdSabotageCompute())
