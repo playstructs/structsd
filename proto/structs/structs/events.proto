@@ -134,18 +134,18 @@ message EventAllocationDelete {
 }
 
 message EventGuildDelete {
-  uint64 guildId = 1;
+  string guildId = 1;
 }
 
 
 message EventInfusionDelete {
   objectType  destinationType   = 1;
-  uint64      destinationId     = 2;
+  string      destinationId     = 2;
   string      address           = 3;
 }
 
 message EventReactorDelete {
-  uint64 reactorId = 1;
+  string reactorId = 1;
 }
 
 message EventStructDelete {
@@ -153,7 +153,7 @@ message EventStructDelete {
 }
 
 message EventSubstationDelete {
-  uint64 substationId = 1;
+  string substationId = 1;
 }
 
 message EventAddressAssociation {
@@ -166,7 +166,7 @@ message EventAddressRegistrationRequest {
 
 message EventAddressBody {
   string address = 1;
-  uint64 playerId = 2;
+  string playerId = 2;
 }
 
 message EventAddressPermissionChange {

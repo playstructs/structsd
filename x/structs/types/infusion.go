@@ -113,7 +113,7 @@ func CalculateInfusionPower(destinationType ObjectType, fuel uint64) (energy uin
     return
 }
 
-func CreateNewInfusion(destinationType ObjectType, destinationId uint64, playerAddress string, playerId uint64, fuel uint64, commission sdk.Dec) Infusion {
+func CreateNewInfusion(destinationType ObjectType, destinationId string, playerAddress string, playerId string, fuel uint64, commission sdk.Dec) Infusion {
 	return Infusion{
 		DestinationType: destinationType,
 		DestinationId: destinationId,

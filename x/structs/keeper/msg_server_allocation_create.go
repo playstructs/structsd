@@ -4,6 +4,7 @@ import (
 	"context"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"structs/x/structs/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocationCreate) (*types.MsgAllocationCreateResponse, error) {

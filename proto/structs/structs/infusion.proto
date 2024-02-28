@@ -9,7 +9,7 @@ import "structs/structs/keys.proto";
 
 message Infusion {
   objectType  destinationType               = 1;
-  uint64      destinationId                 = 2;
+  string      destinationId                 = 2;
 
   uint64      fuel                          = 3;
   uint64      power                         = 4;
@@ -20,7 +20,7 @@ message Infusion {
     (gogoproto.nullable)   = false
   ];
 
-  uint64      playerId                      = 6;
+  string      playerId                      = 6;
   string      address                       = 7;
 }
 

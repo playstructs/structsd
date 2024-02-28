@@ -4,18 +4,19 @@ package structs;
 option go_package = "structs/x/structs/types";
 
 message Guild {
-  uint64 id                 = 1;
+  string id                 = 1;
+  uint64 index              = 2;
 
-  string endpoint           = 2;
-  string creator            = 3;
-  uint64 owner              = 4;
+  string endpoint           = 3;
+  string creator            = 4;
+  string owner              = 5;
 
-  uint64 joinInfusionMinimum = 5;
-  uint64 joinInfusionMinimumBypassByRequest   = 6;
-  uint64 joinInfusionMinimumBypassByInvite    = 7;
+  uint64 joinInfusionMinimum = 6;
+  uint64 joinInfusionMinimumBypassByRequest   = 7;
+  uint64 joinInfusionMinimumBypassByInvite    = 8;
 
 
-  uint64 primaryReactorId    = 8;
-  uint64 entrySubstationId   = 9;
+  string primaryReactorId    = 9;
+  string entrySubstationId   = 10;
 
 }

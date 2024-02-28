@@ -120,8 +120,8 @@ func (k Keeper) GetGridCascadeQueue(ctx sdk.Context, clear bool) (queue []string
 func (k Keeper) AppendGridCascadeQueue(ctx sdk.Context, queueId string) (err error) {
     gridCascadeQueueStore := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GridCascadeQueue))
 
-	bz := make([]byte, 1)
-	binary.BigEndian.PutBool(bz, bool(true))
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, 1)
 
 	gridCascadeQueueStore.Set([]byte(queueId), bz)
 
@@ -183,7 +183,7 @@ func (k Keeper) UpdateGridConnectionCapacity(ctx sdk.Context, objectId string) {
     if (capacity > load) {
         availableCapacity := capacity - load
 
-        connectionCount := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectCount, objectId))
+        connectionCount := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, objectId))
         if (connectionCount == 0) { connectionCount = 1 }
 
         k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, objectId), availableCapacity / connectionCount)

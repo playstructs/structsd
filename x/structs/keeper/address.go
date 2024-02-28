@@ -34,7 +34,7 @@ func (k Keeper) SetPlayerIndexForAddress(ctx sdk.Context, address string, player
 
 	store.Set(types.KeyPrefix(address), bz)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventAddressAssociation{Address: &types.EventAddressBody{Address: address, PlayerId: playerIndex}})
+	//_ = ctx.EventManager().EmitTypedEvent(&types.EventAddressAssociation{Address: &types.EventAddressBody{Address: address, PlayerIndex: playerIndex}})
 
 
 }
@@ -48,7 +48,7 @@ func (k Keeper) AddressSetRegisterRequest(ctx sdk.Context, player types.Player, 
 
     store.Set(types.KeyPrefix(address), bz)
 
-    _ = ctx.EventManager().EmitTypedEvent(&types.EventAddressRegistrationRequest{Address: &types.EventAddressBody{Address: address, PlayerId: player.Index}})
+   // _ = ctx.EventManager().EmitTypedEvent(&types.EventAddressRegistrationRequest{Address: &types.EventAddressBody{Address: address, PlayerId: player.Index}})
 }
 
 func (k Keeper) AddressApproveRegisterRequest(ctx sdk.Context, player types.Player, address string, permissions types.AddressPermission) {

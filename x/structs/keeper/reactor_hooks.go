@@ -108,7 +108,7 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
                err error
            )
         */
-        k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, player, delegationShare.Uint64(), reactor.DefaultCommission)
+        k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, playerAddress, player, delegationShare.Uint64(), reactor.DefaultCommission)
 
     }
 }

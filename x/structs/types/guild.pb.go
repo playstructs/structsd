@@ -23,15 +23,16 @@ var _ = math.Inf
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 type Guild struct {
-	Id                                 uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Endpoint                           string `protobuf:"bytes,2,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
-	Creator                            string `protobuf:"bytes,3,opt,name=creator,proto3" json:"creator,omitempty"`
-	Owner                              uint64 `protobuf:"varint,4,opt,name=owner,proto3" json:"owner,omitempty"`
-	JoinInfusionMinimum                uint64 `protobuf:"varint,5,opt,name=joinInfusionMinimum,proto3" json:"joinInfusionMinimum,omitempty"`
-	JoinInfusionMinimumBypassByRequest uint64 `protobuf:"varint,6,opt,name=joinInfusionMinimumBypassByRequest,proto3" json:"joinInfusionMinimumBypassByRequest,omitempty"`
-	JoinInfusionMinimumBypassByInvite  uint64 `protobuf:"varint,7,opt,name=joinInfusionMinimumBypassByInvite,proto3" json:"joinInfusionMinimumBypassByInvite,omitempty"`
-	PrimaryReactorId                   uint64 `protobuf:"varint,8,opt,name=primaryReactorId,proto3" json:"primaryReactorId,omitempty"`
-	EntrySubstationId                  uint64 `protobuf:"varint,9,opt,name=entrySubstationId,proto3" json:"entrySubstationId,omitempty"`
+	Id                                 string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Index                              uint64 `protobuf:"varint,2,opt,name=index,proto3" json:"index,omitempty"`
+	Endpoint                           string `protobuf:"bytes,3,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
+	Creator                            string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
+	Owner                              string `protobuf:"bytes,5,opt,name=owner,proto3" json:"owner,omitempty"`
+	JoinInfusionMinimum                uint64 `protobuf:"varint,6,opt,name=joinInfusionMinimum,proto3" json:"joinInfusionMinimum,omitempty"`
+	JoinInfusionMinimumBypassByRequest uint64 `protobuf:"varint,7,opt,name=joinInfusionMinimumBypassByRequest,proto3" json:"joinInfusionMinimumBypassByRequest,omitempty"`
+	JoinInfusionMinimumBypassByInvite  uint64 `protobuf:"varint,8,opt,name=joinInfusionMinimumBypassByInvite,proto3" json:"joinInfusionMinimumBypassByInvite,omitempty"`
+	PrimaryReactorId                   string `protobuf:"bytes,9,opt,name=primaryReactorId,proto3" json:"primaryReactorId,omitempty"`
+	EntrySubstationId                  string `protobuf:"bytes,10,opt,name=entrySubstationId,proto3" json:"entrySubstationId,omitempty"`
 }
 
 func (m *Guild) Reset()         { *m = Guild{} }
@@ -67,9 +68,16 @@ func (m *Guild) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_Guild proto.InternalMessageInfo
 
-func (m *Guild) GetId() uint64 {
+func (m *Guild) GetId() string {
 	if m != nil {
 		return m.Id
+	}
+	return ""
+}
+
+func (m *Guild) GetIndex() uint64 {
+	if m != nil {
+		return m.Index
 	}
 	return 0
 }
@@ -88,11 +96,11 @@ func (m *Guild) GetCreator() string {
 	return ""
 }
 
-func (m *Guild) GetOwner() uint64 {
+func (m *Guild) GetOwner() string {
 	if m != nil {
 		return m.Owner
 	}
-	return 0
+	return ""
 }
 
 func (m *Guild) GetJoinInfusionMinimum() uint64 {
@@ -116,18 +124,18 @@ func (m *Guild) GetJoinInfusionMinimumBypassByInvite() uint64 {
 	return 0
 }
 
-func (m *Guild) GetPrimaryReactorId() uint64 {
+func (m *Guild) GetPrimaryReactorId() string {
 	if m != nil {
 		return m.PrimaryReactorId
 	}
-	return 0
+	return ""
 }
 
-func (m *Guild) GetEntrySubstationId() uint64 {
+func (m *Guild) GetEntrySubstationId() string {
 	if m != nil {
 		return m.EntrySubstationId
 	}
-	return 0
+	return ""
 }
 
 func init() {
@@ -137,26 +145,26 @@ func init() {
 func init() { proto.RegisterFile("structs/structs/guild.proto", fileDescriptor_d57f2d07301e2fa1) }
 
 var fileDescriptor_d57f2d07301e2fa1 = []byte{
-	// 292 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x91, 0xbf, 0x4e, 0xc3, 0x30,
-	0x18, 0xc4, 0xe3, 0xb4, 0x69, 0x5a, 0x0f, 0x08, 0x0c, 0x12, 0x16, 0x48, 0x56, 0xe9, 0x54, 0x21,
-	0xc4, 0x1f, 0xf1, 0x06, 0x59, 0x50, 0x24, 0x60, 0x08, 0x1b, 0x5b, 0x1a, 0x1b, 0x64, 0x44, 0xec,
-	0x60, 0x7f, 0x06, 0xf2, 0x10, 0x48, 0x3c, 0x16, 0x63, 0x47, 0x46, 0x94, 0xbc, 0x08, 0xc2, 0x90,
-	0x2e, 0xad, 0x80, 0xe9, 0xd3, 0xdd, 0xfd, 0xbe, 0x5b, 0x0e, 0xef, 0x5a, 0x30, 0xae, 0x00, 0x7b,
-	0xd4, 0xdd, 0x5b, 0x27, 0xef, 0xf9, 0x61, 0x65, 0x34, 0x68, 0x12, 0xff, 0x98, 0x93, 0x97, 0x1e,
-	0x8e, 0xce, 0xbe, 0x02, 0xb2, 0x86, 0x43, 0xc9, 0x29, 0x1a, 0xa3, 0x69, 0x3f, 0x0b, 0x25, 0x27,
-	0x3b, 0x78, 0x28, 0x14, 0xaf, 0xb4, 0x54, 0x40, 0xc3, 0x31, 0x9a, 0x8e, 0xb2, 0x85, 0x26, 0x14,
-	0xc7, 0x85, 0x11, 0x39, 0x68, 0x43, 0x7b, 0x3e, 0xea, 0x24, 0xd9, 0xc2, 0x91, 0x7e, 0x52, 0xc2,
-	0xd0, 0xbe, 0x2f, 0xfa, 0x16, 0xe4, 0x18, 0x6f, 0xde, 0x69, 0xa9, 0x52, 0x75, 0xe3, 0xac, 0xd4,
-	0xea, 0x42, 0x2a, 0x59, 0xba, 0x92, 0x46, 0x9e, 0x59, 0x15, 0x91, 0x4b, 0x3c, 0x59, 0x61, 0x27,
-	0x75, 0x95, 0x5b, 0x9b, 0xd4, 0x99, 0x78, 0x70, 0xc2, 0x02, 0x1d, 0xf8, 0x82, 0x7f, 0x90, 0xe4,
-	0x1c, 0xef, 0xfd, 0x42, 0xa5, 0xea, 0x51, 0x82, 0xa0, 0xb1, 0xaf, 0xfb, 0x1b, 0x24, 0xfb, 0x78,
-	0xbd, 0x32, 0xb2, 0xcc, 0x4d, 0x9d, 0x89, 0xbc, 0x00, 0x6d, 0x52, 0x4e, 0x87, 0xfe, 0x79, 0xc9,
-	0x27, 0x07, 0x78, 0x43, 0x28, 0x30, 0xf5, 0x95, 0x9b, 0x59, 0xc8, 0x41, 0x6a, 0x95, 0x72, 0x3a,
-	0xf2, 0xf0, 0x72, 0x90, 0x9c, 0xbc, 0x35, 0x0c, 0xcd, 0x1b, 0x86, 0x3e, 0x1a, 0x86, 0x5e, 0x5b,
-	0x16, 0xcc, 0x5b, 0x16, 0xbc, 0xb7, 0x2c, 0xb8, 0xde, 0xee, 0x76, 0x7c, 0x5e, 0x2c, 0x0a, 0x75,
-	0x25, 0xec, 0x6c, 0xe0, 0x27, 0x3d, 0xfd, 0x0c, 0x00, 0x00, 0xff, 0xff, 0x53, 0x5a, 0x1f, 0xd7,
-	0xf1, 0x01, 0x00, 0x00,
+	// 304 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x91, 0xcd, 0x4a, 0x3b, 0x31,
+	0x14, 0xc5, 0x9b, 0x7e, 0xf7, 0x2e, 0xfe, 0xfc, 0x8d, 0x82, 0x41, 0x21, 0xd4, 0xae, 0x8a, 0x88,
+	0x1f, 0xf8, 0x06, 0xdd, 0xc8, 0x80, 0xba, 0x18, 0x77, 0xee, 0xa6, 0x4d, 0x94, 0x2b, 0x36, 0x19,
+	0x93, 0x1b, 0xed, 0xbc, 0x85, 0xef, 0xe0, 0xcb, 0xb8, 0xec, 0xd2, 0xa5, 0xb4, 0x2f, 0x22, 0x4d,
+	0x9d, 0x6e, 0x5a, 0xd4, 0x55, 0x38, 0xe7, 0xfc, 0x38, 0xe1, 0x72, 0x60, 0xdf, 0x93, 0x0b, 0x23,
+	0xf2, 0x27, 0xe5, 0x7b, 0x1f, 0xf0, 0x51, 0x1d, 0xe7, 0xce, 0x92, 0xe5, 0xad, 0x6f, 0xb3, 0xf7,
+	0x56, 0x83, 0xc6, 0xc5, 0x22, 0xe0, 0xff, 0xa0, 0x8a, 0x4a, 0xb0, 0x2e, 0xeb, 0x77, 0xd2, 0x2a,
+	0x2a, 0xbe, 0x03, 0x0d, 0x34, 0x4a, 0x4f, 0x44, 0xb5, 0xcb, 0xfa, 0xf5, 0x74, 0x29, 0xf8, 0x1e,
+	0xb4, 0xb5, 0x51, 0xb9, 0x45, 0x43, 0xa2, 0x16, 0xd9, 0x95, 0xe6, 0x02, 0x5a, 0x23, 0xa7, 0x33,
+	0xb2, 0x4e, 0xd4, 0x63, 0x54, 0xca, 0x45, 0x97, 0x7d, 0x31, 0xda, 0x89, 0x46, 0xf4, 0x97, 0x82,
+	0x9f, 0xc2, 0xf6, 0x83, 0x45, 0x93, 0x98, 0xbb, 0xe0, 0xd1, 0x9a, 0x2b, 0x34, 0x38, 0x0e, 0x63,
+	0xd1, 0x8c, 0xff, 0x6d, 0x8a, 0xf8, 0x35, 0xf4, 0x36, 0xd8, 0x83, 0x22, 0xcf, 0xbc, 0x1f, 0x14,
+	0xa9, 0x7e, 0x0a, 0xda, 0x93, 0x68, 0xc5, 0x82, 0x3f, 0x90, 0xfc, 0x12, 0x0e, 0x7e, 0xa0, 0x12,
+	0xf3, 0x8c, 0xa4, 0x45, 0x3b, 0xd6, 0xfd, 0x0e, 0xf2, 0x43, 0xf8, 0x9f, 0x3b, 0x1c, 0x67, 0xae,
+	0x48, 0x75, 0x36, 0x22, 0xeb, 0x12, 0x25, 0x3a, 0xf1, 0xe0, 0x35, 0x9f, 0x1f, 0xc1, 0x96, 0x36,
+	0xe4, 0x8a, 0x9b, 0x30, 0xf4, 0x94, 0x11, 0x5a, 0x93, 0x28, 0x01, 0x11, 0x5e, 0x0f, 0x06, 0x67,
+	0xef, 0x33, 0xc9, 0xa6, 0x33, 0xc9, 0x3e, 0x67, 0x92, 0xbd, 0xce, 0x65, 0x65, 0x3a, 0x97, 0x95,
+	0x8f, 0xb9, 0xac, 0xdc, 0xee, 0x96, 0xeb, 0x4e, 0x56, 0x3b, 0x53, 0x91, 0x6b, 0x3f, 0x6c, 0xc6,
+	0xa1, 0xcf, 0xbf, 0x02, 0x00, 0x00, 0xff, 0xff, 0x06, 0x81, 0xa0, 0xbf, 0x07, 0x02, 0x00, 0x00,
 }
 
 func (m *Guild) Marshal() (dAtA []byte, err error) {
@@ -179,54 +187,67 @@ func (m *Guild) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.EntrySubstationId != 0 {
-		i = encodeVarintGuild(dAtA, i, uint64(m.EntrySubstationId))
+	if len(m.EntrySubstationId) > 0 {
+		i -= len(m.EntrySubstationId)
+		copy(dAtA[i:], m.EntrySubstationId)
+		i = encodeVarintGuild(dAtA, i, uint64(len(m.EntrySubstationId)))
 		i--
-		dAtA[i] = 0x48
+		dAtA[i] = 0x52
 	}
-	if m.PrimaryReactorId != 0 {
-		i = encodeVarintGuild(dAtA, i, uint64(m.PrimaryReactorId))
+	if len(m.PrimaryReactorId) > 0 {
+		i -= len(m.PrimaryReactorId)
+		copy(dAtA[i:], m.PrimaryReactorId)
+		i = encodeVarintGuild(dAtA, i, uint64(len(m.PrimaryReactorId)))
 		i--
-		dAtA[i] = 0x40
+		dAtA[i] = 0x4a
 	}
 	if m.JoinInfusionMinimumBypassByInvite != 0 {
 		i = encodeVarintGuild(dAtA, i, uint64(m.JoinInfusionMinimumBypassByInvite))
 		i--
-		dAtA[i] = 0x38
+		dAtA[i] = 0x40
 	}
 	if m.JoinInfusionMinimumBypassByRequest != 0 {
 		i = encodeVarintGuild(dAtA, i, uint64(m.JoinInfusionMinimumBypassByRequest))
 		i--
-		dAtA[i] = 0x30
+		dAtA[i] = 0x38
 	}
 	if m.JoinInfusionMinimum != 0 {
 		i = encodeVarintGuild(dAtA, i, uint64(m.JoinInfusionMinimum))
 		i--
-		dAtA[i] = 0x28
+		dAtA[i] = 0x30
 	}
-	if m.Owner != 0 {
-		i = encodeVarintGuild(dAtA, i, uint64(m.Owner))
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintGuild(dAtA, i, uint64(len(m.Owner)))
 		i--
-		dAtA[i] = 0x20
+		dAtA[i] = 0x2a
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
 		copy(dAtA[i:], m.Creator)
 		i = encodeVarintGuild(dAtA, i, uint64(len(m.Creator)))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x22
 	}
 	if len(m.Endpoint) > 0 {
 		i -= len(m.Endpoint)
 		copy(dAtA[i:], m.Endpoint)
 		i = encodeVarintGuild(dAtA, i, uint64(len(m.Endpoint)))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x1a
 	}
-	if m.Id != 0 {
-		i = encodeVarintGuild(dAtA, i, uint64(m.Id))
+	if m.Index != 0 {
+		i = encodeVarintGuild(dAtA, i, uint64(m.Index))
 		i--
-		dAtA[i] = 0x8
+		dAtA[i] = 0x10
+	}
+	if len(m.Id) > 0 {
+		i -= len(m.Id)
+		copy(dAtA[i:], m.Id)
+		i = encodeVarintGuild(dAtA, i, uint64(len(m.Id)))
+		i--
+		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
@@ -248,8 +269,12 @@ func (m *Guild) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Id != 0 {
-		n += 1 + sovGuild(uint64(m.Id))
+	l = len(m.Id)
+	if l > 0 {
+		n += 1 + l + sovGuild(uint64(l))
+	}
+	if m.Index != 0 {
+		n += 1 + sovGuild(uint64(m.Index))
 	}
 	l = len(m.Endpoint)
 	if l > 0 {
@@ -259,8 +284,9 @@ func (m *Guild) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovGuild(uint64(l))
 	}
-	if m.Owner != 0 {
-		n += 1 + sovGuild(uint64(m.Owner))
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovGuild(uint64(l))
 	}
 	if m.JoinInfusionMinimum != 0 {
 		n += 1 + sovGuild(uint64(m.JoinInfusionMinimum))
@@ -271,11 +297,13 @@ func (m *Guild) Size() (n int) {
 	if m.JoinInfusionMinimumBypassByInvite != 0 {
 		n += 1 + sovGuild(uint64(m.JoinInfusionMinimumBypassByInvite))
 	}
-	if m.PrimaryReactorId != 0 {
-		n += 1 + sovGuild(uint64(m.PrimaryReactorId))
+	l = len(m.PrimaryReactorId)
+	if l > 0 {
+		n += 1 + l + sovGuild(uint64(l))
 	}
-	if m.EntrySubstationId != 0 {
-		n += 1 + sovGuild(uint64(m.EntrySubstationId))
+	l = len(m.EntrySubstationId)
+	if l > 0 {
+		n += 1 + l + sovGuild(uint64(l))
 	}
 	return n
 }
@@ -316,10 +344,10 @@ func (m *Guild) Unmarshal(dAtA []byte) error {
 		}
 		switch fieldNum {
 		case 1:
-			if wireType != 0 {
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
 			}
-			m.Id = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowGuild
@@ -329,12 +357,44 @@ func (m *Guild) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Id |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGuild
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGuild
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Id = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Index", wireType)
+			}
+			m.Index = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGuild
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Index |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Endpoint", wireType)
 			}
@@ -366,7 +426,7 @@ func (m *Guild) Unmarshal(dAtA []byte) error {
 			}
 			m.Endpoint = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
 			}
@@ -398,11 +458,11 @@ func (m *Guild) Unmarshal(dAtA []byte) error {
 			}
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
-			if wireType != 0 {
+		case 5:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
 			}
-			m.Owner = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowGuild
@@ -412,12 +472,25 @@ func (m *Guild) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Owner |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 5:
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGuild
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGuild
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Owner = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 6:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field JoinInfusionMinimum", wireType)
 			}
@@ -436,7 +509,7 @@ func (m *Guild) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 6:
+		case 7:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field JoinInfusionMinimumBypassByRequest", wireType)
 			}
@@ -455,7 +528,7 @@ func (m *Guild) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 7:
+		case 8:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field JoinInfusionMinimumBypassByInvite", wireType)
 			}
@@ -474,11 +547,11 @@ func (m *Guild) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 8:
-			if wireType != 0 {
+		case 9:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryReactorId", wireType)
 			}
-			m.PrimaryReactorId = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowGuild
@@ -488,16 +561,29 @@ func (m *Guild) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.PrimaryReactorId |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 9:
-			if wireType != 0 {
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGuild
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGuild
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PrimaryReactorId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 10:
+			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field EntrySubstationId", wireType)
 			}
-			m.EntrySubstationId = 0
+			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowGuild
@@ -507,11 +593,24 @@ func (m *Guild) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.EntrySubstationId |= uint64(b&0x7F) << shift
+				stringLen |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthGuild
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthGuild
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.EntrySubstationId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipGuild(dAtA[iNdEx:])

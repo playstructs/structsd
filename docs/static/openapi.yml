@@ -47298,6 +47298,8 @@ paths:
                   properties:
                     id:
                       type: string
+                    index:
+                      type: string
                       format: uint64
                     endpoint:
                       type: string
@@ -47305,7 +47307,6 @@ paths:
                       type: string
                     owner:
                       type: string
-                      format: uint64
                     joinInfusionMinimum:
                       type: string
                       format: uint64
@@ -47317,10 +47318,8 @@ paths:
                       format: uint64
                     primaryReactorId:
                       type: string
-                      format: uint64
                     entrySubstationId:
                       type: string
-                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -47608,6 +47607,8 @@ paths:
                 properties:
                   id:
                     type: string
+                  index:
+                    type: string
                     format: uint64
                   endpoint:
                     type: string
@@ -47615,7 +47616,6 @@ paths:
                     type: string
                   owner:
                     type: string
-                    format: uint64
                   joinInfusionMinimum:
                     type: string
                     format: uint64
@@ -47627,10 +47627,8 @@ paths:
                     format: uint64
                   primaryReactorId:
                     type: string
-                    format: uint64
                   entrySubstationId:
                     type: string
-                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -47853,7 +47851,6 @@ paths:
                       default: guild
                     destinationId:
                       type: string
-                      format: uint64
                     fuel:
                       type: string
                       format: uint64
@@ -47864,7 +47861,6 @@ paths:
                       type: string
                     playerId:
                       type: string
-                      format: uint64
                     address:
                       type: string
               pagination:
@@ -48172,7 +48168,6 @@ paths:
                     default: guild
                   destinationId:
                     type: string
-                    format: uint64
                   fuel:
                     type: string
                     format: uint64
@@ -48183,7 +48178,6 @@ paths:
                     type: string
                   playerId:
                     type: string
-                    format: uint64
                   address:
                     type: string
         default:
@@ -53002,7 +52996,6 @@ paths:
                   properties:
                     id:
                       type: string
-                      format: uint64
                     validator:
                       type: string
                     fuel:
@@ -53016,7 +53009,6 @@ paths:
                       format: uint64
                     guildId:
                       type: string
-                      format: uint64
                     defaultCommission:
                       type: string
                     rawAddress:
@@ -53309,7 +53301,6 @@ paths:
                 properties:
                   id:
                     type: string
-                    format: uint64
                   validator:
                     type: string
                   fuel:
@@ -53323,7 +53314,6 @@ paths:
                     format: uint64
                   guildId:
                     type: string
-                    format: uint64
                   defaultCommission:
                     type: string
                   rawAddress:
@@ -83016,6 +83006,8 @@ definitions:
     properties:
       id:
         type: string
+      index:
+        type: string
         format: uint64
       endpoint:
         type: string
@@ -83023,7 +83015,6 @@ definitions:
         type: string
       owner:
         type: string
-        format: uint64
       joinInfusionMinimum:
         type: string
         format: uint64
@@ -83035,10 +83026,8 @@ definitions:
         format: uint64
       primaryReactorId:
         type: string
-        format: uint64
       entrySubstationId:
         type: string
-        format: uint64
   structs.Infusion:
     type: object
     properties:
@@ -83057,7 +83046,6 @@ definitions:
         default: guild
       destinationId:
         type: string
-        format: uint64
       fuel:
         type: string
         format: uint64
@@ -83068,7 +83056,6 @@ definitions:
         type: string
       playerId:
         type: string
-        format: uint64
       address:
         type: string
   structs.MsgAddressRegisterResponse:
@@ -84135,6 +84122,8 @@ definitions:
           properties:
             id:
               type: string
+            index:
+              type: string
               format: uint64
             endpoint:
               type: string
@@ -84142,7 +84131,6 @@ definitions:
               type: string
             owner:
               type: string
-              format: uint64
             joinInfusionMinimum:
               type: string
               format: uint64
@@ -84154,10 +84142,8 @@ definitions:
               format: uint64
             primaryReactorId:
               type: string
-              format: uint64
             entrySubstationId:
               type: string
-              format: uint64
       pagination:
         type: object
         properties:
@@ -84207,7 +84193,6 @@ definitions:
               default: guild
             destinationId:
               type: string
-              format: uint64
             fuel:
               type: string
               format: uint64
@@ -84218,7 +84203,6 @@ definitions:
               type: string
             playerId:
               type: string
-              format: uint64
             address:
               type: string
       pagination:
@@ -84418,7 +84402,6 @@ definitions:
           properties:
             id:
               type: string
-              format: uint64
             validator:
               type: string
             fuel:
@@ -84432,7 +84415,6 @@ definitions:
               format: uint64
             guildId:
               type: string
-              format: uint64
             defaultCommission:
               type: string
             rawAddress:
@@ -84675,6 +84657,8 @@ definitions:
         properties:
           id:
             type: string
+          index:
+            type: string
             format: uint64
           endpoint:
             type: string
@@ -84682,7 +84666,6 @@ definitions:
             type: string
           owner:
             type: string
-            format: uint64
           joinInfusionMinimum:
             type: string
             format: uint64
@@ -84694,10 +84677,8 @@ definitions:
             format: uint64
           primaryReactorId:
             type: string
-            format: uint64
           entrySubstationId:
             type: string
-            format: uint64
   structs.QueryGetInfusionResponse:
     type: object
     properties:
@@ -84719,7 +84700,6 @@ definitions:
             default: guild
           destinationId:
             type: string
-            format: uint64
           fuel:
             type: string
             format: uint64
@@ -84730,7 +84710,6 @@ definitions:
             type: string
           playerId:
             type: string
-            format: uint64
           address:
             type: string
   structs.QueryGetMultiplePermissionResponse:
@@ -84883,7 +84862,6 @@ definitions:
         properties:
           id:
             type: string
-            format: uint64
           validator:
             type: string
           fuel:
@@ -84897,7 +84875,6 @@ definitions:
             format: uint64
           guildId:
             type: string
-            format: uint64
           defaultCommission:
             type: string
           rawAddress:
@@ -85033,7 +85010,6 @@ definitions:
     properties:
       id:
         type: string
-        format: uint64
       validator:
         type: string
       fuel:
@@ -85047,7 +85023,6 @@ definitions:
         format: uint64
       guildId:
         type: string
-        format: uint64
       defaultCommission:
         type: string
       rawAddress:

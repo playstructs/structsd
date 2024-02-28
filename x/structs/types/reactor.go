@@ -12,27 +12,13 @@ func CreateEmptyReactor() Reactor {
 		Validator: "",
 		RawAddress: nil,
 		DefaultCommission: math.LegacyZeroDec(),
-        GuildId: 0,
+        GuildId: "",
 	}
 }
 
 
-func (reactor *Reactor) SetValidator(validatorAddress string) error {
-	reactor.Validator = validatorAddress
-	return nil
-}
 
-func (reactor *Reactor) SetRawAddress(rawAddress []byte) {
-	reactor.RawAddress = rawAddress
-}
 
-func (reactor *Reactor) SetId(id uint64) {
-	reactor.Id = id
-}
-
-func (reactor *Reactor) SetGuildId(guildId uint64) {
-	reactor.GuildId = guildId
-}
 
 
 // Take an amount of fuel and return the energy it will generate

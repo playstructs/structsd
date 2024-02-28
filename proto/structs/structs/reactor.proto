@@ -9,7 +9,7 @@ import "gogoproto/gogo.proto";
 message Reactor {
   option (gogoproto.equal) = true;
 
-  uint64  id                        = 1;
+  string  id                        = 1;
 
   string  validator                 = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
 
@@ -18,7 +18,7 @@ message Reactor {
   uint64  capacity                  = 4;
   uint64  load                      = 5;
 
-  uint64  guildId                   = 6;
+  string  guildId                   = 6;
 
   string  defaultCommission = 7 [
     (cosmos_proto.scalar)  = "cosmos.Dec",

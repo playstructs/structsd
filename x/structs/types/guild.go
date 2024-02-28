@@ -18,7 +18,7 @@ func (guild *Guild) SetEndpoint(endpoint string) error {
 	return nil
 }
 
-func (guild *Guild) SetEntrySubstationId(substationId uint64) error {
+func (guild *Guild) SetEntrySubstationId(substationId string) error {
 
 	guild.EntrySubstationId = substationId
 
@@ -26,7 +26,7 @@ func (guild *Guild) SetEntrySubstationId(substationId uint64) error {
 }
 
 
-func (guild *Guild) SetPrimaryReactorId(reactorId uint64) error {
+func (guild *Guild) SetPrimaryReactorId(reactorId string) error {
 
 	guild.PrimaryReactorId = reactorId
 
@@ -34,7 +34,7 @@ func (guild *Guild) SetPrimaryReactorId(reactorId uint64) error {
 }
 
 
-func (guild *Guild) SetOwner(playerId uint64) error {
+func (guild *Guild) SetOwner(playerId string) error {
 
 	guild.Owner = playerId
 
@@ -67,12 +67,12 @@ func CreateEmptyGuild() Guild {
 	return Guild{
 		Endpoint: "",
 		Creator:  "",
-		Owner: 0,
+		Owner: "",
         JoinInfusionMinimum: 0,
         JoinInfusionMinimumBypassByInvite: GuildJoinBypassLevel_Closed,
         JoinInfusionMinimumBypassByRequest: GuildJoinBypassLevel_Closed,
-        PrimaryReactorId: 0,
-        EntrySubstationId: 0,
+        PrimaryReactorId: "",
+        EntrySubstationId: "",
 	}
 }
 

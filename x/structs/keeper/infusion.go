@@ -11,6 +11,11 @@ import (
 )
 
 
+func GetInfusionID(destinationId string, address string) (id string) {
+    id = destinationId + "-" + address
+    return
+}
+
 // AppendInfusion appends a infusion in the store
 func (k Keeper) AppendInfusion(
 	ctx sdk.Context,
@@ -19,8 +24,8 @@ func (k Keeper) AppendInfusion(
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.InfusionKey))
 	appendedValue := k.cdc.MustMarshal(&infusion)
-	infusionId := GetInfusionId(infusion.DestinationType, infusion.DestinationId, infusion.Address)
-	store.Set(GetInfusionIDBytes(infusionId), appendedValue)
+	infusionId := GetInfusionID(infusion.DestinationId, infusion.Address)
+	store.Set([]byte(infusionId), appendedValue)
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventInfusion{Infusion: &infusion})
 
@@ -31,17 +36,17 @@ func (k Keeper) AppendInfusion(
 func (k Keeper) SetInfusion(ctx sdk.Context, infusion types.Infusion) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.InfusionKey))
 	b := k.cdc.MustMarshal(&infusion)
-	infusionId := GetInfusionId(infusion.DestinationType, infusion.DestinationId, infusion.Address)
-	store.Set(GetInfusionIDBytes(infusionId), b)
+	infusionId := GetInfusionID(infusion.DestinationId, infusion.Address)
+	store.Set([]byte(infusionId), b)
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventInfusion{Infusion: &infusion})
 }
 
 // GetInfusion returns a infusion from its id
-func (k Keeper) GetInfusion(ctx sdk.Context, destinationType types.ObjectType, destinationId uint64, address string) (val types.Infusion, found bool) {
+func (k Keeper) GetInfusion(ctx sdk.Context, destinationId string, address string) (val types.Infusion, found bool) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.InfusionKey))
-	infusionId := GetInfusionId(destinationType, destinationId, address)
-	b := store.Get(GetInfusionIDBytes(infusionId))
+	infusionId := GetInfusionID(destinationId, address)
+	b := store.Get([]byte(infusionId))
 	if b == nil {
 		return val, false
 	}
@@ -49,13 +54,14 @@ func (k Keeper) GetInfusion(ctx sdk.Context, destinationType types.ObjectType, d
 	return val, true
 }
 
-func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType, destinationId uint64, player types.Player, fuel uint64, commission sdk.Dec) (infusion types.Infusion, newInfusionFuel uint64, oldInfusionFuel uint64, newInfusionPower uint64, oldInfusionPower uint64, newCommissionPower uint64, oldCommissionPower uint64, newPlayerPower uint64, oldPlayerPower uint64, err error) {
+func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType, destinationId string, address string, player types.Player, fuel uint64, commission sdk.Dec) (infusion types.Infusion, newInfusionFuel uint64, oldInfusionFuel uint64, newInfusionPower uint64, oldInfusionPower uint64, newCommissionPower uint64, oldCommissionPower uint64, newPlayerPower uint64, oldPlayerPower uint64, err error) {
 
-    infusion, infusionFound := k.GetInfusion(ctx, destinationType, destinationId, player.Address)
+    infusion, infusionFound := k.GetInfusion(ctx, destinationId, address)
     if (infusionFound) {
          newInfusionFuel, oldInfusionFuel, newInfusionPower, oldInfusionPower, newCommissionPower, oldCommissionPower, newPlayerPower, oldPlayerPower, err = infusion.SetFuelAndCommission(fuel, commission)
     } else {
-        infusion = types.CreateNewInfusion(destinationType, destinationId, player.Address, fuel, commission)
+
+        infusion = types.CreateNewInfusion(destinationType, destinationId, address, player.Id, fuel, commission)
 
         // Should already be the value, but let's be safe
         oldInfusionFuel = 0
@@ -69,41 +75,38 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
 
     k.SetInfusion(ctx, infusion)
 
-    destinationObjectId  := GetObjectID(destinationType, destinationId)
-    playerObjectId       := GetObjectID(types.ObjectType_player, player.Id)
-
     // Update the Fuel record on the Destination
     if (oldInfusionFuel != newInfusionFuel) {
-        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, destinationObjectId), oldInfusionFuel, newInfusionFuel)
+        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, destinationId), oldInfusionFuel, newInfusionFuel)
     }
 
     // Update the Commissioned Power on the Destination
     if (oldCommissionPower != newCommissionPower) {
-        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, destinationObjectId), oldCommissionPower, newCommissionPower)
+        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, destinationId), oldCommissionPower, newCommissionPower)
 
         // Check for an automated allocation
-        destinationAllocationId, destinationAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(ctx, destinationObjectId)
+        destinationAllocationId, destinationAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(ctx, destinationId)
         if (destinationAutoResizeAllocationFound) {
-            k.AutoResizeAllocation(ctx, destinationAllocationId, destinationObjectId, oldCommissionPower, newCommissionPower)
+            k.AutoResizeAllocation(ctx, destinationAllocationId, destinationId, oldCommissionPower, newCommissionPower)
         } else {
             if (oldCommissionPower > newCommissionPower) {
-                k.AppendGridCascadeQueue(ctx, destinationObjectId)
+                k.AppendGridCascadeQueue(ctx, destinationId)
             }
         }
     }
 
     // Update the Player's Power Capacity
     if (oldPlayerPower != newPlayerPower) {
-        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, playerObjectId), oldPlayerPower, newPlayerPower)
+        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id), oldPlayerPower, newPlayerPower)
 
         // Check for an automated allocation
-        playerAllocationId, playerAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(ctx, playerObjectId)
+        playerAllocationId, playerAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(ctx, player.Id)
         if (playerAutoResizeAllocationFound) {
-            k.AutoResizeAllocation(ctx, playerAllocationId, playerObjectId, oldPlayerPower, newPlayerPower)
+            k.AutoResizeAllocation(ctx, playerAllocationId, player.Id, oldPlayerPower, newPlayerPower)
         } else {
             // This might be able to be an else from the above statement, but I need more coffee before committing
             if (oldPlayerPower > newPlayerPower) {
-                k.AppendGridCascadeQueue(ctx, playerObjectId)
+                k.AppendGridCascadeQueue(ctx, player.Id)
             }
         }
     }
@@ -114,12 +117,12 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
 }
 
 // RemoveInfusion removes a infusion from the store
-func (k Keeper) RemoveInfusion(ctx sdk.Context, destinationType types.ObjectType, destinationId uint64, address string) {
+func (k Keeper) RemoveInfusion(ctx sdk.Context, destinationId string, address string) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.InfusionKey))
-	infusionId := GetInfusionId(destinationType, destinationId, address)
-	store.Delete(GetInfusionIDBytes(infusionId))
+	infusionId := GetInfusionID(destinationId, address)
+	store.Delete([]byte(infusionId))
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventInfusionDelete{DestinationType: destinationType, DestinationId: destinationId, Address: address})
+	//_ = ctx.EventManager().EmitTypedEvent(&types.EventInfusionDelete{ DestinationId: destinationId, Address: address})
 }
 
 // GetAllInfusion returns all infusion
@@ -140,7 +143,7 @@ func (k Keeper) GetAllInfusion(ctx sdk.Context) (list []types.Infusion) {
 
 
 // GetAllReactorInfusions returns all infusion relating to a reactor
-func (k Keeper) GetAllReactorInfusions(ctx sdk.Context, reactorId uint64) (list []types.Infusion) {
+func (k Keeper) GetAllReactorInfusions(ctx sdk.Context, reactorId string) (list []types.Infusion) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.InfusionKey))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
@@ -159,7 +162,7 @@ func (k Keeper) GetAllReactorInfusions(ctx sdk.Context, reactorId uint64) (list 
 }
 
 // GetAllReactorInfusions returns all infusion relating to a struct
-func (k Keeper) GetAllStructInfusions(ctx sdk.Context, structId uint64) (list []types.Infusion) {
+func (k Keeper) GetAllStructInfusions(ctx sdk.Context, structId string) (list []types.Infusion) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.InfusionKey))
 	iterator := sdk.KVStorePrefixIterator(store, []byte{})
 
@@ -178,12 +181,6 @@ func (k Keeper) GetAllStructInfusions(ctx sdk.Context, structId uint64) (list []
 }
 
 
-func GetInfusionId(destinationType types.ObjectType, destinationId uint64, address string) (id string) {
-    destinationIdString := strconv.FormatUint(destinationId , 10)
-    id = destinationType.String() + "-" + destinationIdString + "-" + address
-
-    return
-}
 
 func (k Keeper) DestroyInfusion(ctx sdk.Context, infusion types.Infusion) {
 
@@ -192,36 +189,34 @@ func (k Keeper) DestroyInfusion(ctx sdk.Context, infusion types.Infusion) {
     // Quiet the go lords
     _ = infusionPower
 
-    destinationObjectId  := GetObjectID(infusion.DestinationType, infusion.DestinationId)
-    playerObjectId       := GetObjectID(types.ObjectType_player, infusion.PlayerId)
 
     // update destination fuel
-    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, destinationObjectId), infusion.Fuel)
+    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, infusion.DestinationId), infusion.Fuel)
 
     // Update destination commission capacity
-    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, destinationObjectId), commissionPower)
+    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, infusion.DestinationId), commissionPower)
 
     // Check for an automated allocation on the destination
-    destinationAllocationId, destinationAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(ctx, destinationObjectId)
+    destinationAllocationId, destinationAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(ctx, infusion.DestinationId)
     if (destinationAutoResizeAllocationFound) {
-        k.AutoResizeAllocation(ctx, destinationAllocationId, destinationObjectId, commissionPower, 0)
+        k.AutoResizeAllocation(ctx, destinationAllocationId, infusion.DestinationId, commissionPower, 0)
     } else {
-        k.AppendGridCascadeQueue(ctx, destinationObjectId)
+        k.AppendGridCascadeQueue(ctx, infusion.DestinationId)
     }
 
 
     // update player capacity
-    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, playerObjectId), playerPower)
+    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, infusion.PlayerId), playerPower)
 
     // Check for an automated allocation on the player
-    playerAllocationId, playerAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(ctx, playerObjectId)
+    playerAllocationId, playerAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(ctx, infusion.PlayerId)
     if (playerAutoResizeAllocationFound) {
-        k.AutoResizeAllocation(ctx, playerAllocationId, playerObjectId, playerPower, 0)
+        k.AutoResizeAllocation(ctx, playerAllocationId, infusion.PlayerId, playerPower, 0)
     } else {
-        k.AppendGridCascadeQueue(ctx, playerObjectId)
+        k.AppendGridCascadeQueue(ctx, infusion.PlayerId)
     }
 
     // Remove the Infusion record from the store
-	k.RemoveInfusion(ctx, infusion.DestinationType, infusion.DestinationId, infusion.Address)
+	k.RemoveInfusion(ctx, infusion.DestinationId, infusion.Address)
 
 }

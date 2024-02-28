@@ -82,7 +82,7 @@ func (k msgServer) StructInfuse(goCtx context.Context, msg *types.MsgStructInfus
 
     var newInfusionAmount uint64
 
-    infusion, infusionFound := k.GetInfusion(ctx, types.ObjectType_struct, structure.Id, player.PrimaryAddress)
+    infusion, infusionFound := k.GetInfusion(ctx, structure.Id, player.PrimaryAddress)
     if (infusionFound) {
         newInfusionAmount = infusionAmount[0].Amount.Uint64() + infusion.Fuel
     } else {
@@ -104,7 +104,7 @@ func (k msgServer) StructInfuse(goCtx context.Context, msg *types.MsgStructInfus
            err error
        )
     */
-    k.UpsertInfusion(ctx, types.ObjectType_struct, structure.Id, player, newInfusionAmount, math.LegacyZeroDec() )
+    k.UpsertInfusion(ctx, types.ObjectType_struct, structure.Id, player.PrimaryAddress, player, newInfusionAmount, math.LegacyZeroDec() )
 
 	return &types.MsgStructInfuseResponse{}, nil
 }

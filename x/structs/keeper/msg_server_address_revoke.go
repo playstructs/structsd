@@ -25,7 +25,8 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
         // TODO Add address proof signature verification
         playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Address)
         if (playerIndex == player.Index) {
-            k.AddressPermissionClearAll(ctx, msg.Address)
+            addressClearPermissionId := GetAddressPermissionIDBytes(msg.Address)
+            k.PermissionClearAll(ctx, addressClearPermissionId)
         }
     }
 
