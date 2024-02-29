@@ -100,6 +100,9 @@ func (k Keeper) GetPlayer(ctx sdk.Context, playerId string, full bool) (val type
         val.Load      = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
         val.Capacity  = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
 
+        val.StructsLoad           = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, val.Id))
+        val.CapacitySecondary    = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, val.SubstationId))
+
     	playerAcc, _ := sdk.AccAddressFromBech32(val.PrimaryAddress)
     	val.Storage   = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
     }
@@ -134,6 +137,9 @@ func (k Keeper) GetAllPlayer(ctx sdk.Context, full bool) (list []types.Player) {
             val.Load      = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
             val.Capacity  = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
 
+            val.StructsLoad           = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, val.Id))
+            val.CapacitySecondary    = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, val.SubstationId))
+
             playerAcc, _ := sdk.AccAddressFromBech32(val.PrimaryAddress)
             val.Storage   = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
         }
@@ -160,6 +166,10 @@ func (k Keeper) GetAllPlayerBySubstation(ctx sdk.Context, substationId string, f
             if (full) {
                 val.Load      = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
                 val.Capacity  = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
+
+                val.StructsLoad           = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, val.Id))
+                val.CapacitySecondary    = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, val.SubstationId))
+
 
                 playerAcc, _ := sdk.AccAddressFromBech32(val.PrimaryAddress)
                 val.Storage   = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")

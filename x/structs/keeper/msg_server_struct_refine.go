@@ -25,8 +25,8 @@ func (k msgServer) StructRefine(goCtx context.Context, msg *types.MsgStructRefin
     }
     player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
-    if (!k.SubstationIsOnline(ctx, player.SubstationId)){
-        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The players substation (%d) is offline ",player.SubstationId)
+    if (!player.IsOnline()){
+        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The player (%s) is offline ",player.Id)
     }
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
@@ -37,40 +37,40 @@ func (k msgServer) StructRefine(goCtx context.Context, msg *types.MsgStructRefin
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
-        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%d) not found", msg.StructId)
+        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%s) not found", msg.StructId)
     }
 
     if (structure.Type != "Refinery") {
-        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "This struct (%d) has no refining systems", msg.StructId)
+        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "This struct (%s) has no refining systems", msg.StructId)
     }
 
     if (structure.Status != "ACTIVE") {
-        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "This struct (%d) is not online", msg.StructId)
+        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "This struct (%s) is not online", msg.StructId)
     }
 
 
     if (structure.RefiningSystemStatus != "ACTIVE") {
-        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "This Refining System for struct (%d) is inactive", msg.StructId)
+        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "This Refining System for struct (%s) is inactive", msg.StructId)
     }
 
     /*
      * Until we let players give out Play permissions, this can't happened
      */
     if (player.Id != structure.Owner) {
-       return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo structs, no permission for action on Struct (%d)", structure.Owner)
+       return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo structs, no permission for action on Struct (%s)", structure.Owner)
     }
 
     planet, planetFound := k.GetPlanet(ctx, structure.PlanetId)
     if (!planetFound) {
-        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%d) was not found, which is actually a pretty big problem. Please tell an adult", structure.PlanetId)
+        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%s) was not found, which is actually a pretty big problem. Please tell an adult", structure.PlanetId)
     }
 
     if (planet.Status != 0) {
-        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Planet (%d) is already complete. Move on bud, no work to be done here", structure.PlanetId)
+        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Planet (%s) is already complete. Move on bud, no work to be done here", structure.PlanetId)
     }
 
     if (k.GetPlanetOreCount(ctx, planet.Id) == 0) {
-        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Planet (%d) is empty, nothing to refine", structure.PlanetId)
+        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Planet (%s) is empty, nothing to refine", structure.PlanetId)
     }
 
     structIdString := strconv.FormatUint(structure.Id, 10)
@@ -79,7 +79,7 @@ func (k msgServer) StructRefine(goCtx context.Context, msg *types.MsgStructRefin
 
     currentAge := uint64(ctx.BlockHeight()) - structure.ActiveRefiningSystemBlock
     if (!types.HashBuildAndCheckActionDifficulty(hashInput, msg.Proof, currentAge)) {
-       return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Work failure for input (%s) when trying to refine on Struct %d", hashInput, structure.Id)
+       return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Work failure for input (%s) when trying to refine on Struct %s", hashInput, structure.Id)
     }
 
     // decrement the balance of ore for the planet

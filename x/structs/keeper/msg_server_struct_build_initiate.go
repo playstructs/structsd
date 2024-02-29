@@ -21,8 +21,8 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     }
     player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
-    if (!k.SubstationIsOnline(ctx, player.SubstationId)){
-        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The players substation (%d) is offline ",player.SubstationId)
+    if (!player.IsOnline()){
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The players substation (%s) is offline ",player.Id)
     }
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
@@ -36,22 +36,22 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
      * Until we let players give out Play permissions, this can't happened
      */
     if (player.PlanetId != msg.PlanetId) {
-        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo build structs for others, you should be building at %d", player.PlanetId)
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo build structs for others, you should be building at %s", player.PlanetId)
     }
 
     planet, planetFound := k.GetPlanet(ctx, msg.PlanetId)
     if (!planetFound) {
-        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%d) was ot found. Building a Struct in a void might be tough", msg.PlanetId)
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%s) was ot found. Building a Struct in a void might be tough", msg.PlanetId)
     }
 
 
     /* More garbage clown code rushed to make the testnet more interesting */
     if (msg.Slot >= planet.LandSlots) {
-        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet (%d) specified doesn't have that slot available to build on", msg.PlanetId)
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet (%s) specified doesn't have that slot available to build on", msg.PlanetId)
     }
 
-    if (planet.Land[msg.Slot] > 0) {
-        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet (%d) specified already has a struct on that slot", msg.PlanetId)
+    if (planet.Land[msg.Slot] != "") {
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet (%s) specified already has a struct on that slot", msg.PlanetId)
     }
 
 

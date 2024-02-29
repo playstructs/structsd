@@ -23,8 +23,8 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
     }
     player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
-    if (!k.SubstationIsOnline(ctx, player.SubstationId)){
-        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The players substation (%d) is offline ",player.SubstationId)
+    if (!player.IsOnline()){
+        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The player (%s) is offline ",player.Id)
     }
 
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
@@ -35,11 +35,11 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
-        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%d) not found", msg.StructId)
+        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%s) not found", msg.StructId)
     }
 
     if (structure.Status == "ACTIVE") {
-        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrStructActivate, "This struct (%d) is already online", msg.StructId)
+        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrStructActivate, "This struct (%s) is already online", msg.StructId)
     }
 
 
@@ -47,13 +47,13 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
      * Until we let players give out Play permissions, this can't happened
      */
     if (player.Id != structure.Owner) {
-       return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo structs, no permission for action on Struct (%d)", structure.Owner)
+       return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo structs, no permission for action on Struct (%s)", structure.Owner)
     }
 
      // Try to bring online if there is room in the energy cap
     _, err = k.PlayerIncrementLoad(ctx, player, structure.PassiveDraw)
     if (err != nil) {
-        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrStructActivate, "Could not bring Struct %d online, player %d does not have enough power",structure.Id, player.Id)
+        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrStructActivate, "Could not bring Struct %s online, player %s does not have enough power",structure.Id, player.Id)
     }
 
     // Reset difficulty block

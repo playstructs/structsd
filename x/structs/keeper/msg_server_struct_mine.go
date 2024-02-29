@@ -25,8 +25,8 @@ func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (
     }
     player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
-    if (!k.SubstationIsOnline(ctx, player.SubstationId)){
-        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The players substation (%d) is offline ",player.SubstationId)
+    if (!player.IsOnline()){
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The player (%s) is offline ",player.Id)
     }
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
@@ -37,40 +37,40 @@ func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
-        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%d) not found", msg.StructId)
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%s) not found", msg.StructId)
     }
 
     if (structure.Type != "Mining Rig") {
-        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "This struct (%d) has no mining systems", msg.StructId)
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "This struct (%s) has no mining systems", msg.StructId)
     }
 
     if (structure.Status != "ACTIVE") {
-        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "This struct (%d) is not online", msg.StructId)
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "This struct (%s) is not online", msg.StructId)
     }
 
 
     if (structure.MiningSystemStatus != "ACTIVE") {
-        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "This Mining System for struct (%d) is inactive", msg.StructId)
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "This Mining System for struct (%s) is inactive", msg.StructId)
     }
 
     /*
      * Until we let players give out Play permissions, this can't happened
      */
     if (player.Id != structure.Owner) {
-       return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo structs, no permission for action on Struct (%d)", structure.Owner)
+       return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo structs, no permission for action on Struct (%s)", structure.Owner)
     }
 
     planet, planetFound := k.GetPlanet(ctx, structure.PlanetId)
     if (!planetFound) {
-        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%d) was not found, which is actually a pretty big problem. Please tell an adult", structure.PlanetId)
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%s) was not found, which is actually a pretty big problem. Please tell an adult", structure.PlanetId)
     }
 
     if (planet.Status != 0) {
-        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Planet (%d) is already complete. Move on bud, no work to be done here", structure.PlanetId)
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Planet (%s) is already complete. Move on bud, no work to be done here", structure.PlanetId)
     }
 
     if (planet.OreRemaining == 0) {
-        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Planet (%d) is empty, nothing to mine", structure.PlanetId)
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Planet (%s) is empty, nothing to mine", structure.PlanetId)
     }
 
     structIdString                  := strconv.FormatUint(structure.Id, 10)
@@ -79,7 +79,7 @@ func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (
 
     currentAge := uint64(ctx.BlockHeight()) - structure.ActiveMiningSystemBlock
     if (!types.HashBuildAndCheckActionDifficulty(hashInput, msg.Proof, currentAge)) {
-       return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Work failure for input (%s) when trying to mine on Struct %d", hashInput, structure.Id)
+       return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Work failure for input (%s) when trying to mine on Struct %s", hashInput, structure.Id)
     }
 
     // Got this far, let's reward the player with some Ore

@@ -22,14 +22,14 @@ func (k msgServer) Sabotage(goCtx context.Context, msg *types.MsgSabotage) (*typ
     }
     player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
-    if (!k.SubstationIsOnline(ctx, player.SubstationId)){
-        return &types.MsgSabotageResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The players substation (%d) is offline ",player.SubstationId)
+    if (!player.IsOnline()){
+        return &types.MsgSabotageResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The player (%s) is offline ",player.Id)
     }
 
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
-        return &types.MsgSabotageResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%d) not found", msg.StructId)
+        return &types.MsgSabotageResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%s) not found", msg.StructId)
     }
 
 
@@ -45,7 +45,7 @@ func (k msgServer) Sabotage(goCtx context.Context, msg *types.MsgSabotage) (*typ
 
                 currentAge := uint64(ctx.BlockHeight()) - structure.ActiveMiningSystemBlock
                 if (!types.HashBuildAndCheckActionDifficultySabotage(hashInput, msg.Proof, currentAge, types.DifficultySabotageRangeMine)) {
-                    return &types.MsgSabotageResponse{}, sdkerrors.Wrapf(types.ErrSabotage, "Work failure for input (%s) when trying to sabotage Struct %d", hashInput, structure.Id)
+                    return &types.MsgSabotageResponse{}, sdkerrors.Wrapf(types.ErrSabotage, "Work failure for input (%s) when trying to sabotage Struct %s", hashInput, structure.Id)
                 }
 
                 structure.SetMiningSystemStatus("INACTIVE")

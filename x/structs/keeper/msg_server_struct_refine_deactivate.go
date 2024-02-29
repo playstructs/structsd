@@ -21,8 +21,8 @@ func (k msgServer) StructRefineDeactivate(goCtx context.Context, msg *types.MsgS
     }
     player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
-    if (!k.SubstationIsOnline(ctx, player.SubstationId)){
-        return &types.MsgStructRefineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The players substation (%d) is offline ",player.SubstationId)
+    if (!player.IsOnline()){
+        return &types.MsgStructRefineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The player (%s) is offline ",player.Id)
     }
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
@@ -33,27 +33,27 @@ func (k msgServer) StructRefineDeactivate(goCtx context.Context, msg *types.MsgS
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
-        return &types.MsgStructRefineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%d) not found", msg.StructId)
+        return &types.MsgStructRefineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%s) not found", msg.StructId)
     }
 
     if (structure.Type != "Refinery") {
-        return &types.MsgStructRefineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructRefineDeactivate, "This struct (%d) has no refining systems", msg.StructId)
+        return &types.MsgStructRefineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructRefineDeactivate, "This struct (%s) has no refining systems", msg.StructId)
     }
 
     if (structure.Status != "ACTIVE") {
-        return &types.MsgStructRefineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructRefineDeactivate, "This struct (%d) is not online", msg.StructId)
+        return &types.MsgStructRefineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructRefineDeactivate, "This struct (%s) is not online", msg.StructId)
     }
 
 
     if (structure.RefiningSystemStatus == "INACTIVE") {
-        return &types.MsgStructRefineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructRefineDeactivate, "This Refining System for struct (%d) is already inactive", msg.StructId)
+        return &types.MsgStructRefineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructRefineDeactivate, "This Refining System for struct (%s) is already inactive", msg.StructId)
     }
 
     /*
      * Until we let players give out Play permissions, this can't happened
      */
     if (player.Id != structure.Owner) {
-       return &types.MsgStructRefineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you (%d) can't sudo structs, no permission for action on Struct (%d)", structure.Owner, structure.Id)
+       return &types.MsgStructRefineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you (%s) can't sudo structs, no permission for action on Struct (%s)", structure.Owner, structure.Id)
     }
 
     _, _ = k.PlayerDecrementLoad(ctx, player.Id, structure.ActiveRefiningSystemDraw)

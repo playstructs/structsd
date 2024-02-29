@@ -52,17 +52,18 @@ func (k msgServer) PlayerCreateProxy(goCtx context.Context, msg *types.MsgPlayer
     player := k.UpsertPlayer(ctx, msg.Address, true)
 
     // Add player to the guild
-    player.SetGuild(guild.Id)
+    player.GuildId = guild.Id
 
     // Connect player to the substation
     // Now let's get the player some power
-    if (player.SubstationId == 0) {
+    if (player.SubstationId == "") {
         // Connect Player to Substation
         k.SubstationConnectPlayer(ctx, substation, player)
     }
 
     // Give this user (aka the guild) the ability to update their substation
-    k.PlayerPermissionAdd(ctx, player.Id, proxyPlayer.Id, types.PlayerPermissionSubstation)
+    playerObjectPermissionId := GetObjectPermissionIDBytes(player.Id, proxyPlayer.Id)
+    k.PermissionAdd(ctx, playerObjectPermissionId, types.Permission(types.PlayerPermissionSubstation))
 
 
 	return &types.MsgPlayerCreateProxyResponse{}, nil

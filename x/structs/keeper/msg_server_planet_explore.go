@@ -30,8 +30,8 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
     }
 
 
-    if (!k.SubstationIsOnline(ctx, player.SubstationId)){
-        return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The players substation (%d) is offline ",player.SubstationId)
+    if (!player.IsOnline()){
+        return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The player (%s) is offline ",player.Id)
     }
 
 
@@ -39,11 +39,11 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
         // Check to see if the planet can be completed
         currentPlanet, currentPlanetFound := k.GetPlanet(ctx, player.PlanetId)
         if (!currentPlanetFound) {
-            return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%d) was not found which in this case is extremely bad. Something horrible has happened", player.PlanetId)
+            return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%s) was not found which in this case is extremely bad. Something horrible has happened", player.PlanetId)
         }
 
         if (!k.PlanetComplete(ctx, currentPlanet)) {
-             return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrPlanetExploration, "New Planet cannot be explored while current planet (%d) has Ore available for mining", player.PlanetId)
+             return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrPlanetExploration, "New Planet cannot be explored while current planet (%s) has Ore available for mining", player.PlanetId)
         }
     }
 

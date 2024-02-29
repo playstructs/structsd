@@ -27,10 +27,6 @@ func (k msgServer) PlayerCreate(goCtx context.Context, msg *types.MsgPlayerCreat
         // Error substation not found for guild
     }
 
-    if (!substation.HasPlayerCapacity()) {
-        // error substation does not have capacity for another player to join
-    }
-
 
     if (guild.JoinInfusionMinimum > 0) {
 
@@ -55,23 +51,14 @@ func (k msgServer) PlayerCreate(goCtx context.Context, msg *types.MsgPlayerCreat
             // If the player is already connected to a substation then leave them
             // Maybe add an option to force migration later
             if (player.SubstationId == "") {
-                if (substationFound) {
-                    // Check if the substation has room
-                    if substation.HasPlayerCapacity() {
-                        // Connect Player to Substation
-                        k.SubstationConnectPlayer(ctx, substation, player)
-                    } else {
-                        // error that the substation cannot accept a new player
-                        }
-                } else {
+                if (!substationFound) {
                     // TODO Throw Error : No entry substation found for public guild
                     return &types.MsgPlayerCreateResponse{}, nil
                 }
-            }
 
-            // Add player to the guild
-            player.SetGuild(guild.Id)
-            k.SetPlayer(ctx, player)
+                player.GuildId = guild.Id
+                k.SubstationConnectPlayer(ctx, substation, player)
+            }
 
         case types.GuildJoinType_InfusionMinimum:
             // TODO Throw error : join via delegation

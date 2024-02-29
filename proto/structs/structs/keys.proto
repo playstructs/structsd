@@ -24,6 +24,7 @@ enum gridAttributeType {
     fuel                    = 0;
     capacity                = 1;
     load                    = 2;
+    structsLoad             = 3;
     power                   = 4;
     connectionCapacity      = 5;
     connectionCount         = 6;

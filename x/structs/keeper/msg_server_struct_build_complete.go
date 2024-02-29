@@ -22,8 +22,8 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     }
     player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
-    if (!k.SubstationIsOnline(ctx, player.SubstationId)){
-        return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The players substation (%d) is offline ",player.SubstationId)
+    if (!player.IsOnline()){
+        return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The player (%s) is offline ",player.Id)
     }
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
@@ -34,7 +34,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
-        return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%d) not found", msg.StructId)
+        return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%s) not found", msg.StructId)
     }
 
 
@@ -62,7 +62,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     // Try to bring online if there is room in the energy cap
     _, err = k.PlayerIncrementLoad(ctx, player, structure.PassiveDraw)
     if (err != nil) {
-        return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrStructBuildComplete, "Could not bring Struct %d online, player %d does not have enough power",structure.Id, player.Id)
+        return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrStructBuildComplete, "Could not bring Struct %s online, player %s does not have enough power",structure.Id, player.Id)
     }
 
     structure.SetStatus("ACTIVE")

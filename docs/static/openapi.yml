@@ -52415,6 +52415,12 @@ paths:
                     capacity:
                       type: string
                       format: uint64
+                    capacitySecondary:
+                      type: string
+                      format: uint64
+                    structsLoad:
+                      type: string
+                      format: uint64
                     storage:
                       type: object
                       properties:
@@ -52734,6 +52740,12 @@ paths:
                     type: string
                     format: uint64
                   capacity:
+                    type: string
+                    format: uint64
+                  capacitySecondary:
+                    type: string
+                    format: uint64
+                  structsLoad:
                     type: string
                     format: uint64
                   storage:
@@ -83894,6 +83906,12 @@ definitions:
       capacity:
         type: string
         format: uint64
+      capacitySecondary:
+        type: string
+        format: uint64
+      structsLoad:
+        type: string
+        format: uint64
       storage:
         type: object
         properties:
@@ -84255,6 +84273,12 @@ definitions:
               type: string
               format: uint64
             capacity:
+              type: string
+              format: uint64
+            capacitySecondary:
+              type: string
+              format: uint64
+            structsLoad:
               type: string
               format: uint64
             storage:
@@ -84734,6 +84758,12 @@ definitions:
             type: string
             format: uint64
           capacity:
+            type: string
+            format: uint64
+          capacitySecondary:
+            type: string
+            format: uint64
+          structsLoad:
             type: string
             format: uint64
           storage:

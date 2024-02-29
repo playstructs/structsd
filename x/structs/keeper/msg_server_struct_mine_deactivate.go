@@ -22,8 +22,8 @@ func (k msgServer) StructMineDeactivate(goCtx context.Context, msg *types.MsgStr
     }
     player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
-    if (!k.SubstationIsOnline(ctx, player.SubstationId)){
-        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The players substation (%d) is offline ",player.SubstationId)
+    if (!player.IsOnline()){
+        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The player (%s) is offline ",player.Id)
     }
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
@@ -34,27 +34,27 @@ func (k msgServer) StructMineDeactivate(goCtx context.Context, msg *types.MsgStr
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
-        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%d) not found", msg.StructId)
+        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%s) not found", msg.StructId)
     }
 
     if (structure.Type != "Mining Rig") {
-        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineDeactivate, "This struct (%d) has no mining systems", msg.StructId)
+        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineDeactivate, "This struct (%s) has no mining systems", msg.StructId)
     }
 
     if (structure.Status != "ACTIVE") {
-        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineDeactivate, "This struct (%d) is not online", msg.StructId)
+        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineDeactivate, "This struct (%s) is not online", msg.StructId)
     }
 
 
     if (structure.MiningSystemStatus == "INACTIVE") {
-        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineDeactivate, "This Mining System for struct (%d) is already inactive", msg.StructId)
+        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineDeactivate, "This Mining System for struct (%s) is already inactive", msg.StructId)
     }
 
     /*
      * Until we let players give out Play permissions, this can't happened
      */
     if (player.Id != structure.Owner) {
-       return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you (%d) can't sudo structs, no permission for action on Struct (%d)", structure.Owner, msg.StructId)
+       return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you (%s) can't sudo structs, no permission for action on Struct (%s)", structure.Owner, msg.StructId)
     }
 
     _, _ = k.PlayerDecrementLoad(ctx, player.Id, structure.ActiveMiningSystemDraw)

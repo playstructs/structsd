@@ -5,6 +5,15 @@ import (
 )
 
 
+func (player *Player) IsOnline() (online bool){
+    if ((player.Load + player.StructsLoad) <= (player.Capacity + player.CapacitySecondary)) {
+        online = true
+    } else {
+        online = false
+    }
+    return
+}
+
 type PlayerPermission Permission
 
 const (

@@ -33,15 +33,15 @@ func (k msgServer) StructInfuse(goCtx context.Context, msg *types.MsgStructInfus
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
-        return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%d) not found", msg.StructId)
+        return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%s) not found", msg.StructId)
     }
 
     if (structure.Type != "Small Generator") {
-        return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrStructInfuse, "This struct (%d) has no power systems", msg.StructId)
+        return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrStructInfuse, "This struct (%s) has no power systems", msg.StructId)
     }
 
     if (structure.Status != "ACTIVE") {
-        return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrStructInfuse, "This struct (%d) is not online", msg.StructId)
+        return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrStructInfuse, "This struct (%s) is not online", msg.StructId)
     }
 
 
@@ -49,16 +49,16 @@ func (k msgServer) StructInfuse(goCtx context.Context, msg *types.MsgStructInfus
      * Until we let players give out Play permissions, this can't happened
      */
     if (player.Id != structure.Owner) {
-       return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo structs, no permission for action on Struct (%d)", structure.Owner)
+       return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo structs, no permission for action on Struct (%s)", structure.Owner)
     }
 
     planet, planetFound := k.GetPlanet(ctx, structure.PlanetId)
     if (!planetFound) {
-        return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%d) was not found, which is actually a pretty big problem. Please tell an adult", structure.PlanetId)
+        return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%s) was not found, which is actually a pretty big problem. Please tell an adult", structure.PlanetId)
     }
 
     if (planet.Status != 0) {
-        return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrStructInfuse, "Planet (%d) is already complete. Move on bud, no work to be done here", structure.PlanetId)
+        return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrStructInfuse, "Planet (%s) is already complete. Move on bud, no work to be done here", structure.PlanetId)
     }
 
     // Mint the new Alpha to the module

@@ -20,8 +20,10 @@ message Player {
 
   uint64 load           = 8;
   uint64 capacity       = 9;
+  uint64 capacitySecondary  = 10;
+  uint64 structsLoad        = 11;
 
-  cosmos.base.v1beta1.Coin storage = 10
+  cosmos.base.v1beta1.Coin storage = 12
     [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
   
 }
