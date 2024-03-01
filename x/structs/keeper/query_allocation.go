@@ -46,7 +46,7 @@ func (k Keeper) Allocation(goCtx context.Context, req *types.QueryGetAllocationR
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	allocation, found := k.GetAllocation(ctx, req.Id)
+	allocation, found := k.GetAllocation(ctx, req.Id, true)
 	if !found {
 		return nil, sdkerrors.ErrKeyNotFound
 	}

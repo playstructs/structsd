@@ -88,9 +88,9 @@ func (k Keeper) GetStruct(ctx sdk.Context, structId string) (val types.Struct, f
 	k.cdc.MustUnmarshal(b, &val)
 
     if (val.PowerSystem == 1) {
-        val.PowerSystemFuel = k.StructGetFuel(ctx, val.Id)
-        val.PowerSystemEnergy = k.StructGetEnergy(ctx, val.Id)
-        val.PowerSystemLoad = k.StructGetLoad(ctx, val.Id)
+        val.PowerSystemFuel = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, val.Id))
+        val.PowerSystemCapacity = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
+        val.PowerSystemLoad = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
     }
 
 	return val, true
@@ -116,9 +116,10 @@ func (k Keeper) GetAllStruct(ctx sdk.Context) (list []types.Struct) {
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
         if (val.PowerSystem == 1) {
-            val.PowerSystemFuel = k.StructGetFuel(ctx, val.Id)
-            val.PowerSystemEnergy = k.StructGetEnergy(ctx, val.Id)
-            val.PowerSystemLoad = k.StructGetLoad(ctx, val.Id)
+            val.PowerSystemFuel = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, val.Id))
+            val.PowerSystemCapacity = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
+            val.PowerSystemLoad = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
+
         }
 
 		list = append(list, val)
@@ -184,13 +185,13 @@ func (k Keeper) StructDestroy(ctx sdk.Context, structure types.Struct) {
     k.StructDestroyInfusions(ctx, structure.Id)
 
     storeLoad := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructLoadKey))
-    storeLoad.Delete(GetStructIDBytes(structure.Id))
+    storeLoad.Delete([]byte(structure.Id))
 
     storeEnergy := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructEnergyKey))
-    storeEnergy.Delete(GetStructIDBytes(structure.Id))
+    storeEnergy.Delete([]byte(structure.Id))
 
     storeFuel := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructFuelKey))
-    storeFuel.Delete(GetStructIDBytes(structure.Id))
+    storeFuel.Delete([]byte(structure.Id))
 
     k.RemoveStruct(ctx, structure.Id)
 

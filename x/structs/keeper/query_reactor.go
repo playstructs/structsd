@@ -33,10 +33,10 @@ func (k Keeper) ReactorAll(goCtx context.Context, req *types.QueryAllReactorRequ
 			return err
 		}
 
-        reactor.Energy = k.ReactorGetEnergy(ctx, reactor.Id)
-        reactor.Fuel = k.ReactorGetFuel(ctx, reactor.Id)
+        reactor.Load        = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, reactor.Id))
+        reactor.Capacity    = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, reactor.Id))
+        reactor.Fuel        = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, reactor.Id))
 
-		reactor.Load = k.ReactorGetLoad(ctx, reactor.Id)
 
 		reactors = append(reactors, reactor)
 		return nil
@@ -63,7 +63,7 @@ func (k Keeper) Reactor(goCtx context.Context, req *types.QueryGetReactorRequest
 	return &types.QueryGetReactorResponse{Reactor: reactor}, nil
 }
 
-
+/*
 func (k Keeper) ReactorPermission(goCtx context.Context, req *types.QueryGetReactorPermissionRequest) (*types.QueryGetMultiplePermissionResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
@@ -154,3 +154,4 @@ func (k Keeper) ReactorPermissionAll(goCtx context.Context, req *types.QueryAllR
 
 	return &types.QueryGetMultiplePermissionResponse{Permission: permissions, Pagination: pageRes}, nil
 }
+*/

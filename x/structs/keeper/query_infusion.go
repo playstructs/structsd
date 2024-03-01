@@ -46,7 +46,7 @@ func (k Keeper) Infusion(goCtx context.Context, req *types.QueryGetInfusionReque
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	infusion, found := k.GetInfusion(ctx, types.ObjectType_enum[req.DestinationType], req.DestinationId, req.Address)
+	infusion, found := k.GetInfusion(ctx, req.DestinationId, req.Address)
 	if !found {
 		return nil, sdkerrors.ErrKeyNotFound
 	}

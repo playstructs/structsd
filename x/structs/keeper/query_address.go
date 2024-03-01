@@ -23,16 +23,20 @@ func (k Keeper) Address(goCtx context.Context, req *types.QueryGetAddressRequest
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-    permissionRecord := uint64(k.AddressGetPlayerPermissions(ctx, req.Address))
+    addressPermissionId := GetAddressPermissionIDBytes(req.Address)
+    permissionRecord := uint64(k.GetPermissionsByBytes(ctx, addressPermissionId))
 
 	var permission types.QueryAddressResponse
     permission.Address  = req.Address
-    permission.PlayerId = k.GetPlayerIndexFromAddress(ctx, permission.Address)
+    permission.PlayerId = GetObjectID(types.ObjectType_player, k.GetPlayerIndexFromAddress(ctx, permission.Address))
     permission.PermissionRecord = permissionRecord
 
 	return &permission, nil
 }
 
+
+// TODO this function is broken
+// It once relied on the address permission store, but in the unified permission store this is no longer effective
 func (k Keeper) AddressAll(goCtx context.Context, req *types.QueryAllAddressRequest) (*types.QueryAllAddressResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
@@ -43,13 +47,13 @@ func (k Keeper) AddressAll(goCtx context.Context, req *types.QueryAllAddressRequ
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	store := ctx.KVStore(k.storeKey)
-	addressPermissionStore := prefix.NewStore(store, types.KeyPrefix(types.AddressPermissionKey))
+	permissionStore := prefix.NewStore(store, types.KeyPrefix(types.PermissionKey))
 
-	pageRes, err := query.Paginate(addressPermissionStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(permissionStore, req.Pagination, func(key []byte, value []byte) error {
 		var permission types.QueryAddressResponse
 
         permission.Address = string(key)
-        permission.PlayerId = k.GetPlayerIndexFromAddress(ctx, permission.Address)
+        permission.PlayerId = GetObjectID(types.ObjectType_player, k.GetPlayerIndexFromAddress(ctx, permission.Address))
         permission.PermissionRecord = binary.BigEndian.Uint64(value)
 
         permissions = append(permissions, &permission)
@@ -64,8 +68,8 @@ func (k Keeper) AddressAll(goCtx context.Context, req *types.QueryAllAddressRequ
 	return &types.QueryAllAddressResponse{Address: permissions, Pagination: pageRes}, nil
 }
 
-
-
+// TODO re-write this function
+// This function is broken for similar reasons as the above function
 func (k Keeper) AddressAllByPlayer(goCtx context.Context, req *types.QueryAllAddressByPlayerRequest) (*types.QueryAllAddressResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
@@ -76,14 +80,14 @@ func (k Keeper) AddressAllByPlayer(goCtx context.Context, req *types.QueryAllAdd
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	store := ctx.KVStore(k.storeKey)
-	addressPermissionStore := prefix.NewStore(store, types.KeyPrefix(types.AddressPermissionKey))
+	permissionStore := prefix.NewStore(store, types.KeyPrefix(types.PermissionKey))
 
-	pageRes, err := query.Paginate(addressPermissionStore, req.Pagination, func(key []byte, value []byte) error {
+	pageRes, err := query.Paginate(permissionStore, req.Pagination, func(key []byte, value []byte) error {
 		var permission types.QueryAddressResponse
 
-        if (k.GetPlayerIndexFromAddress(ctx, string(key)) == req.PlayerId) {
+        if (GetObjectID(types.ObjectType_player, k.GetPlayerIndexFromAddress(ctx, string(key))) == req.PlayerId) {
             permission.Address = string(key)
-            permission.PlayerId = k.GetPlayerIndexFromAddress(ctx, permission.Address)
+            permission.PlayerId = GetObjectID(types.ObjectType_player, k.GetPlayerIndexFromAddress(ctx, permission.Address))
             permission.PermissionRecord = binary.BigEndian.Uint64(value)
 
             permissions = append(permissions, &permission)

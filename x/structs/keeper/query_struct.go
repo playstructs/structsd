@@ -30,9 +30,10 @@ func (k Keeper) StructAll(goCtx context.Context, req *types.QueryAllStructReques
 		}
 
         if (structure.PowerSystem == 1) {
-            structure.PowerSystemFuel = k.StructGetFuel(ctx, structure.Id)
-            structure.PowerSystemEnergy = k.StructGetEnergy(ctx, structure.Id)
-            structure.PowerSystemLoad = k.StructGetLoad(ctx, structure.Id)
+            structure.PowerSystemFuel = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, structure.Id))
+            structure.PowerSystemCapacity = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, structure.Id))
+            structure.PowerSystemLoad = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, structure.Id))
+
         }
 
 		structures = append(structures, structure)

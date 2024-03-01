@@ -39,7 +39,7 @@ service Query {
   rpc ReactorAll (QueryAllReactorRequest) returns (QueryAllReactorResponse) {
     option (google.api.http).get = "/structs/reactor";
   }
-
+/*
   // Queries a list of Reactor Permission items.
   rpc ReactorPermission    (QueryGetReactorPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
     option (google.api.http).get = "/structs/permission/reactor/{reactorId}";
@@ -52,7 +52,7 @@ service Query {
   rpc ReactorPermissionAll (QueryAllReactorPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
     option (google.api.http).get = "/structs/permission/reactor";
   }
-
+*/
   
   // Queries a list of Substation items.
   rpc Substation    (QueryGetSubstationRequest) returns (QueryGetSubstationResponse) {
@@ -62,7 +62,7 @@ service Query {
   rpc SubstationAll (QueryAllSubstationRequest) returns (QueryAllSubstationResponse) {
     option (google.api.http).get = "/structs/substation";
   }
-
+/*
   // Queries a list of Substation Permission items.
   rpc SubstationPermission    (QueryGetSubstationPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
     option (google.api.http).get = "/structs/permission/substation/{substationId}";
@@ -74,7 +74,7 @@ service Query {
   rpc SubstationPermissionAll (QueryAllSubstationPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
     option (google.api.http).get = "/structs/permission/substation";
   }
-
+*/
   // Queries a list of Allocation items.
   rpc Allocation    (QueryGetAllocationRequest) returns (QueryGetAllocationResponse) {
     option (google.api.http).get = "/structs/allocation/{id}";
@@ -114,7 +114,7 @@ service Query {
   rpc PlayerAll (QueryAllPlayerRequest) returns (QueryAllPlayerResponse) {
     option (google.api.http).get = "/structs/player";
   }
-
+/*
   // Queries a list of Player Permission items.
   rpc PlayerPermission    (QueryGetPlayerPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
     option (google.api.http).get = "/structs/permission/player/{playerId}";
@@ -127,7 +127,7 @@ service Query {
   rpc PlayerPermissionAll (QueryAllPlayerPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
     option (google.api.http).get = "/structs/permission/player";
   }
-
+*/
   // Queries a list of Allocation items.
   rpc Infusion    (QueryGetInfusionRequest) returns (QueryGetInfusionResponse) {
     option (google.api.http).get = "/structs/infusion/{destinationId}/{address}";

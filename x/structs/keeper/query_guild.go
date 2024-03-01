@@ -58,13 +58,12 @@ func (k Keeper) Guild(goCtx context.Context, req *types.QueryGetGuildRequest) (*
 	return &types.QueryGetGuildResponse{Guild: guild}, nil
 }
 
-
+// TODO fix to new permission system
 func (k Keeper) GuildPermission(goCtx context.Context, req *types.QueryGetGuildPermissionRequest) (*types.QueryGetMultiplePermissionResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-    guildId := strconv.FormatUint(req.GuildId, 10)
 
 
     var permissions []*types.QueryPermissionResponse
@@ -72,14 +71,14 @@ func (k Keeper) GuildPermission(goCtx context.Context, req *types.QueryGetGuildP
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	store := ctx.KVStore(k.storeKey)
-	guildPermissionStore := prefix.NewStore(store, types.KeyPrefix(types.GuildPermissionKey))
+	guildPermissionStore := prefix.NewStore(store, types.KeyPrefix(types.PermissionKey))
 
 	pageRes, err := query.Paginate(guildPermissionStore, req.Pagination, func(key []byte, value []byte) error {
 		var permission types.QueryPermissionResponse
 
 	    keys := strings.Split(string(key), "-")
 
-        if (keys[0] == guildId) {
+        if (keys[0] == req.GuildId) {
             permission.ObjectId = keys[0]
             permission.PlayerId = keys[1]
             permission.PermissionRecord = binary.BigEndian.Uint64(value)
@@ -96,27 +95,28 @@ func (k Keeper) GuildPermission(goCtx context.Context, req *types.QueryGetGuildP
 	return &types.QueryGetMultiplePermissionResponse{Permission: permissions, Pagination: pageRes}, nil
 }
 
+// TODO resolve to new permission system
 func (k Keeper) GuildPlayerPermission(goCtx context.Context, req *types.QueryGetGuildPlayerPermissionRequest) (*types.QueryPermissionResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-    guildId := strconv.FormatUint(req.GuildId, 10)
-    playerId := strconv.FormatUint(req.PlayerId, 10)
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-    recordId := GetGuildPermissionIDBytes(req.GuildId, req.PlayerId)
-    permissionRecord := uint64(k.GuildGetPlayerPermissionsByBytes(ctx, recordId))
+    recordId := GetObjectPermissionIDBytes(req.GuildId, req.PlayerId)
+    permissionRecord := uint64(k.GetPermissionsByBytes(ctx, recordId))
 
 	var permission types.QueryPermissionResponse
-    permission.ObjectId = guildId
-    permission.PlayerId = playerId
+    permission.ObjectId = req.GuildId
+    permission.PlayerId = req.PlayerId
     permission.PermissionRecord = permissionRecord
 
 	return &permission, nil
 }
 
+
+//TODO resolve to new system
 func (k Keeper) GuildPermissionAll(goCtx context.Context, req *types.QueryAllGuildPermissionRequest) (*types.QueryGetMultiplePermissionResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
@@ -127,7 +127,7 @@ func (k Keeper) GuildPermissionAll(goCtx context.Context, req *types.QueryAllGui
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	store := ctx.KVStore(k.storeKey)
-	guildPermissionStore := prefix.NewStore(store, types.KeyPrefix(types.GuildPermissionKey))
+	guildPermissionStore := prefix.NewStore(store, types.KeyPrefix(types.PermissionKey))
 
 	pageRes, err := query.Paginate(guildPermissionStore, req.Pagination, func(key []byte, value []byte) error {
 		var permission types.QueryPermissionResponse

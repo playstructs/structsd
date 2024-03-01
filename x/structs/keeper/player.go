@@ -116,9 +116,9 @@ func (k Keeper) GetPlayerFromIndex(ctx sdk.Context, playerIndex uint64, full boo
 }
 
 // RemovePlayer removes a player from the store
-func (k Keeper) RemovePlayer(ctx sdk.Context, id uint64) {
+func (k Keeper) RemovePlayer(ctx sdk.Context, playerId string) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
-	store.Delete([]byte(id))
+	store.Delete([]byte(playerId))
 }
 
 // GetAllPlayer returns all player
