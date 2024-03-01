@@ -169,7 +169,7 @@ message EventAddressBody {
   string playerId = 2;
 }
 
-message EventAddressPermissionChange {
+message EventPermissionChange {
   EventAddressPermissionBody address = 1;
 }
 

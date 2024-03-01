@@ -49,7 +49,7 @@ func (k Keeper) AppendStruct(
 	count := k.GetStructCount(ctx)
 
 	// Set the ID of the appended value
-	structure.Id = GetObjectId(types.ObjectType_struct, count)
+	structure.Id = GetObjectID(types.ObjectType_struct, count)
 	structure.Creator = player.Creator
 	structure.Owner   = player.Id
 	structure.SetPlanetId(planet.Id)

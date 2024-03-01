@@ -34,7 +34,7 @@ func CmdGuildUpdateJoinInfusionMinimumBypassByRequest() *cobra.Command {
 			msg := types.NewMsgGuildUpdateJoinInfusionMinimumBypassByRequest(
 				clientCtx.GetFromAddress().String(),
 				argGuildId,
-				argGuildJoinBypassLevel,
+				types.GuildJoinBypassLevel(argGuildJoinBypassLevel),
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err

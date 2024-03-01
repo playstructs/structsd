@@ -37,3 +37,10 @@ enum allocationType {
     dynamic        = 1;
     automated      = 2;
 }
+
+
+enum guildJoinBypassLevel {
+    closed        = 0; // Feature off
+    permissioned  = 1; // Only those with permissions can do it
+    member        = 2; // All members of the guild can contribute
+}

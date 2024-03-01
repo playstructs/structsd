@@ -1,6 +1,7 @@
 syntax = "proto3";
 package structs;
 
+import "structs/structs/keys.proto";
 option go_package = "structs/x/structs/types";
 
 message Guild {
@@ -12,8 +13,8 @@ message Guild {
   string owner              = 5;
 
   uint64 joinInfusionMinimum = 6;
-  uint64 joinInfusionMinimumBypassByRequest   = 7;
-  uint64 joinInfusionMinimumBypassByInvite    = 8;
+  guildJoinBypassLevel joinInfusionMinimumBypassByRequest   = 7;
+  guildJoinBypassLevel joinInfusionMinimumBypassByInvite    = 8;
 
 
   string primaryReactorId    = 9;

@@ -31,18 +31,17 @@ func (k msgServer) SubstationAllocationDisconnect(goCtx context.Context, msg *ty
         return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPlayerNotFound, "Could not perform substation action with non-player address (%s)", allocation.Controller)
     }
     if (allocationPlayer.Id != player.Id) {
-        return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation not controlled by player ", player.Id)
+        sourceObjectPermissionId := GetObjectPermissionIDBytes(allocation.DestinationObjectId, player.Id)
+        // check that the player has reactor permissions
+        if (!k.PermissionHasOneOf(ctx, sourceObjectPermissionId, types.Permission(types.SubstationPermissionDisconnectAllocation))) {
+            // technically both correct. Refactor this to be clearer
+            return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationDisconnect, "Calling player (%d) has no Substation Disconnect Allocation permissions ", player.Id)
+            return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation not controlled by player ", player.Id)
+        }
+
     }
 
-
-    sourceObjectPermissionId := GetObjectPermissionIDBytes(substation.Id, player.Id)
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-
-	// check that the player has reactor permissions
-    if (!k.PermissionHasOneOf(ctx, sourceObjectPermissionId, types.Permission(types.SubstationPermissionDisconnectAllocation))) {
-        return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationDisconnect, "Calling player (%d) has no Substation Disconnect Allocation permissions ", player.Id)
-    }
-
 
     // check that the account has energy management permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManageEnergy))) {

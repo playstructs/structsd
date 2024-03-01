@@ -69,7 +69,7 @@ func (k Keeper) AppendReactor(
 	count := k.GetReactorCount(ctx)
 
 	// Set the ID of the appended value
-	reactor.Id = GetObjectId(types.ObjectType_reactor, count)
+	reactor.Id = GetObjectID(types.ObjectType_reactor, count)
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorKey))
 	appendedValue := k.cdc.MustMarshal(&reactor)

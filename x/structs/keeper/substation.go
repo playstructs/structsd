@@ -53,7 +53,7 @@ func (k Keeper) AppendSubstation(
     player types.Player,
 ) (substation types.Substation, updatedAllocation types.Allocation, err error) {
 	// Set the ID of the appended value
-    substation.Id = GetObjectId(types.ObjectType_substation, k.GetNextSubstationId(ctx))
+    substation.Id = GetObjectID(types.ObjectType_substation, k.GetNextSubstationId(ctx))
 
     // Update the allocations new destination
     allocation.DestinationId = substation.Id

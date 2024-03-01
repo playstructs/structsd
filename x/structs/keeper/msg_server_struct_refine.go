@@ -32,7 +32,7 @@ func (k msgServer) StructRefine(goCtx context.Context, msg *types.MsgStructRefin
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has Play permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionPlay))) {
-        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
+        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
     }
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
@@ -73,9 +73,8 @@ func (k msgServer) StructRefine(goCtx context.Context, msg *types.MsgStructRefin
         return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Planet (%s) is empty, nothing to refine", structure.PlanetId)
     }
 
-    structIdString := strconv.FormatUint(structure.Id, 10)
     activeRefiningSystemBlockString := strconv.FormatUint(structure.ActiveRefiningSystemBlock , 10)
-    hashInput := structIdString + "REFINE" + activeRefiningSystemBlockString + "NONCE" + msg.Nonce
+    hashInput := structure.Id + "REFINE" + activeRefiningSystemBlockString + "NONCE" + msg.Nonce
 
     currentAge := uint64(ctx.BlockHeight()) - structure.ActiveRefiningSystemBlock
     if (!types.HashBuildAndCheckActionDifficulty(hashInput, msg.Proof, currentAge)) {

@@ -47307,10 +47307,26 @@ paths:
                       format: uint64
                     joinInfusionMinimumBypassByRequest:
                       type: string
-                      format: uint64
+                      enum:
+                        - closed
+                        - permissioned
+                        - member
+                      default: closed
+                      title: |-
+                        - closed: Feature off
+                         - permissioned: Only those with permissions can do it
+                         - member: All members of the guild can contribute
                     joinInfusionMinimumBypassByInvite:
                       type: string
-                      format: uint64
+                      enum:
+                        - closed
+                        - permissioned
+                        - member
+                      default: closed
+                      title: |-
+                        - closed: Feature off
+                         - permissioned: Only those with permissions can do it
+                         - member: All members of the guild can contribute
                     primaryReactorId:
                       type: string
                     entrySubstationId:
@@ -47616,10 +47632,26 @@ paths:
                     format: uint64
                   joinInfusionMinimumBypassByRequest:
                     type: string
-                    format: uint64
+                    enum:
+                      - closed
+                      - permissioned
+                      - member
+                    default: closed
+                    title: |-
+                      - closed: Feature off
+                       - permissioned: Only those with permissions can do it
+                       - member: All members of the guild can contribute
                   joinInfusionMinimumBypassByInvite:
                     type: string
-                    format: uint64
+                    enum:
+                      - closed
+                      - permissioned
+                      - member
+                    default: closed
+                    title: |-
+                      - closed: Feature off
+                       - permissioned: Only those with permissions can do it
+                       - member: All members of the guild can contribute
                   primaryReactorId:
                     type: string
                   entrySubstationId:
@@ -82986,10 +83018,26 @@ definitions:
         format: uint64
       joinInfusionMinimumBypassByRequest:
         type: string
-        format: uint64
+        enum:
+          - closed
+          - permissioned
+          - member
+        default: closed
+        title: |-
+          - closed: Feature off
+           - permissioned: Only those with permissions can do it
+           - member: All members of the guild can contribute
       joinInfusionMinimumBypassByInvite:
         type: string
-        format: uint64
+        enum:
+          - closed
+          - permissioned
+          - member
+        default: closed
+        title: |-
+          - closed: Feature off
+           - permissioned: Only those with permissions can do it
+           - member: All members of the guild can contribute
       primaryReactorId:
         type: string
       entrySubstationId:
@@ -84066,10 +84114,26 @@ definitions:
               format: uint64
             joinInfusionMinimumBypassByRequest:
               type: string
-              format: uint64
+              enum:
+                - closed
+                - permissioned
+                - member
+              default: closed
+              title: |-
+                - closed: Feature off
+                 - permissioned: Only those with permissions can do it
+                 - member: All members of the guild can contribute
             joinInfusionMinimumBypassByInvite:
               type: string
-              format: uint64
+              enum:
+                - closed
+                - permissioned
+                - member
+              default: closed
+              title: |-
+                - closed: Feature off
+                 - permissioned: Only those with permissions can do it
+                 - member: All members of the guild can contribute
             primaryReactorId:
               type: string
             entrySubstationId:
@@ -84598,10 +84662,26 @@ definitions:
             format: uint64
           joinInfusionMinimumBypassByRequest:
             type: string
-            format: uint64
+            enum:
+              - closed
+              - permissioned
+              - member
+            default: closed
+            title: |-
+              - closed: Feature off
+               - permissioned: Only those with permissions can do it
+               - member: All members of the guild can contribute
           joinInfusionMinimumBypassByInvite:
             type: string
-            format: uint64
+            enum:
+              - closed
+              - permissioned
+              - member
+            default: closed
+            title: |-
+              - closed: Feature off
+               - permissioned: Only those with permissions can do it
+               - member: All members of the guild can contribute
           primaryReactorId:
             type: string
           entrySubstationId:
@@ -85057,6 +85137,17 @@ definitions:
       - dynamic
       - automated
     default: static
+  structs.guildJoinBypassLevel:
+    type: string
+    enum:
+      - closed
+      - permissioned
+      - member
+    default: closed
+    title: |-
+      - closed: Feature off
+       - permissioned: Only those with permissions can do it
+       - member: All members of the guild can contribute
   structs.objectType:
     type: string
     enum:

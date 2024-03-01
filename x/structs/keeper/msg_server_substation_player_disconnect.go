@@ -21,23 +21,25 @@ func (k msgServer) SubstationPlayerDisconnect(goCtx context.Context, msg *types.
         return &types.MsgSubstationPlayerDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPlayerNotFound, "Target player (%d) could be be found", msg.PlayerId)
     }
 
+    substationObjectPermissionId := GetObjectPermissionIDBytes(player.SubstationId, player.Id)
     // check that the calling player has substation permissions
-    if (!k.SubstationPermissionHasOneOf(ctx, targetPlayer.SubstationId, player.Id, types.SubstationPermissionConnectPlayer)) {
+    if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.Permission(types.SubstationPermissionConnectPlayer))) {
         return &types.MsgSubstationPlayerDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%d) has no Substation Connect Player permissions ", player.Id)
     }
 
 
+
     if (player.Id != msg.PlayerId) {
-        // check that the calling player has target player permissions
-        if (!k.PlayerPermissionHasOneOf(ctx, msg.PlayerId, player.Id, types.PlayerPermissionSubstation)) {
+        playerObjectPermissionId := GetObjectPermissionIDBytes(msg.PlayerId, player.Id)
+        if (!k.PermissionHasOneOf(ctx, playerObjectPermissionId, types.Permission(types.PlayerPermissionSubstation))) {
             return &types.MsgSubstationPlayerDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%d) has no Player Substation permissions ", player.Id)
         }
     }
 
     // check that the account has energy management permissions
-    playerPermissions := k.AddressGetPlayerPermissions(ctx, msg.Creator)
-    if (playerPermissions&types.AddressPermissionManageEnergy == 0) {
-        return &types.MsgSubstationPlayerDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
+    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManageEnergy))) {
+       return &types.MsgSubstationPlayerDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
     }
 
 

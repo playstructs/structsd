@@ -90,14 +90,6 @@ const (
 	GuildKey      = "Guild/value/"
 	GuildCountKey = "Guild/count/"
 	GuildRegistrationKey = "Guild/registration/"
-
-
-    // Guild Membership Features
-	GuildJoinBypassLevel_Closed        = 0 // Feature off
-	GuildJoinBypassLevel_Permissioned  = 1 // Only those with permissions can do it
-	GuildJoinBypassLevel_Member        = 2 // All members of the guild can contribute
-	GuildJoinBypassLevel_Invalid       = 3 // All values this and above are invalid
-
 )
 
 
@@ -175,3 +167,9 @@ var allocationType_enum = map[string]AllocationType{
 
 }
 
+
+var guildJoinBypassLevel_enum = map[string]GuildJoinBypassLevel {
+	"closed":        GuildJoinBypassLevel_closed,
+	"permissioned":  GuildJoinBypassLevel_permissioned,
+	"member":        GuildJoinBypassLevel_member,
+}

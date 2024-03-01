@@ -28,7 +28,7 @@ func (k msgServer) StructRefineDeactivate(goCtx context.Context, msg *types.MsgS
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has Play permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionPlay))) {
-        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
+        return &types.MsgStructRefineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
     }
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
@@ -56,7 +56,7 @@ func (k msgServer) StructRefineDeactivate(goCtx context.Context, msg *types.MsgS
        return &types.MsgStructRefineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you (%s) can't sudo structs, no permission for action on Struct (%s)", structure.Owner, structure.Id)
     }
 
-    _, _ = k.PlayerDecrementLoad(ctx, player.Id, structure.ActiveRefiningSystemDraw)
+    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, player.Id), structure.ActiveRefiningSystemDraw)
 
 
     structure.SetRefiningSystemStatus("INACTIVE")

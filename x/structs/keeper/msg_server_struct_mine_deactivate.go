@@ -29,7 +29,7 @@ func (k msgServer) StructMineDeactivate(goCtx context.Context, msg *types.MsgStr
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has Play permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionPlay))) {
-        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
+        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
     }
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
@@ -57,8 +57,7 @@ func (k msgServer) StructMineDeactivate(goCtx context.Context, msg *types.MsgStr
        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you (%s) can't sudo structs, no permission for action on Struct (%s)", structure.Owner, msg.StructId)
     }
 
-    _, _ = k.PlayerDecrementLoad(ctx, player.Id, structure.ActiveMiningSystemDraw)
-
+    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, player.Id), structure.ActiveMiningSystemDraw)
 
     structure.SetMiningSystemStatus("INACTIVE")
     structure.SetMiningSystemActivationBlock(0)

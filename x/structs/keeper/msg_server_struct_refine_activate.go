@@ -29,7 +29,7 @@ func (k msgServer) StructRefineActivate(goCtx context.Context, msg *types.MsgStr
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has Play permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionPlay))) {
-        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
+        return &types.MsgStructRefineActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
     }
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
@@ -57,11 +57,13 @@ func (k msgServer) StructRefineActivate(goCtx context.Context, msg *types.MsgStr
        return &types.MsgStructRefineActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you (%s) can't sudo structs, no permission for action on Struct (%s)", structure.Owner, msg.StructId)
     }
 
-    _, err = k.PlayerIncrementLoad(ctx, player, structure.ActiveRefiningSystemDraw)
-
-    if (err != nil) {
+    // Try to bring online if there is room in the energy cap
+    if (!player.CanSupportNewLoad(structure.ActiveRefiningSystemDraw)) {
         return &types.MsgStructRefineActivateResponse{}, sdkerrors.Wrapf(types.ErrStructRefineActivate, "Not enough power to bring Refining System online for Struct (%s)", msg.StructId)
     }
+
+    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, player.Id), structure.ActiveRefiningSystemDraw)
+
 
     structure.SetRefiningSystemStatus("ACTIVE")
     structure.SetRefiningSystemActivationBlock(uint64(ctx.BlockHeight()))

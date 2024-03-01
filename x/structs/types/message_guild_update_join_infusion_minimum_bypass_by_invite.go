@@ -9,7 +9,7 @@ const TypeMsgGuildUpdateJoinInfusionMinimumBypassByInvite = "guild_update_join_i
 
 var _ sdk.Msg = &MsgGuildUpdateJoinInfusionMinimumBypassByInvite{}
 
-func NewMsgGuildUpdateJoinInfusionMinimumBypassByInvite(creator string, guildId string, guildJoinBypassLevel uint64) *MsgGuildUpdateJoinInfusionMinimumBypassByInvite {
+func NewMsgGuildUpdateJoinInfusionMinimumBypassByInvite(creator string, guildId string, guildJoinBypassLevel GuildJoinBypassLevel) *MsgGuildUpdateJoinInfusionMinimumBypassByInvite {
 	return &MsgGuildUpdateJoinInfusionMinimumBypassByInvite{
 		Creator:  creator,
 		GuildId: guildId,
@@ -42,10 +42,6 @@ func (msg *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) ValidateBasic() erro
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)
-	}
-
-	if (msg.GuildJoinBypassLevel <= GuildJoinBypassLevel_Invalid) {
-	    return sdkerrors.Wrapf(ErrInvalidGuildJoinBypassLevel, "Invalid guild join bypass level (%d), cannot be equal to or greater than (%d)", msg.GuildJoinBypassLevel, GuildJoinBypassLevel_Invalid )
 	}
 
 	return nil

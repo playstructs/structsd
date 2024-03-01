@@ -23,61 +23,33 @@ func (k msgServer) PlayerCreate(goCtx context.Context, msg *types.MsgPlayerCreat
 	// look up destination substation
 	substation, substationFound := k.GetSubstation(ctx, guild.EntrySubstationId, true)
 
-    if (!substationFound) {
-        // Error substation not found for guild
-    }
-
-
     if (guild.JoinInfusionMinimum > 0) {
 
-    // check the guild infusion minimum
-        // does the player not meet it?
-            // if BypassByRequest is allowed
-                k.GuildSetRegisterRequest(ctx, guild, player)
-            // else
-                // error, doesn't meet infusion minimum. No BypassRequest allowed
-        // else
-            // add the user to the guild
+        // Check to see the delegation of the player
+        if (false) {
 
+        } else if (guild.JoinInfusionMinimumBypassByRequest != types.GuildJoinBypassLevel_closed) {
+            k.GuildSetRegisterRequest(ctx, guild, player)
+            return &types.MsgPlayerCreateResponse{}, nil
+        } else {
+            return &types.MsgPlayerCreateResponse{}, nil
+            // return error
+                // does not meet the delegation minimums and requests are closed
+        }
 
-    }
-
-
-
-
-    switch guild.GuildJoinType {
-
-        case types.GuildJoinType_Open:
-            // If the player is already connected to a substation then leave them
-            // Maybe add an option to force migration later
-            if (player.SubstationId == "") {
-                if (!substationFound) {
-                    // TODO Throw Error : No entry substation found for public guild
-                    return &types.MsgPlayerCreateResponse{}, nil
-                }
-
-                player.GuildId = guild.Id
-                k.SubstationConnectPlayer(ctx, substation, player)
+    } else {
+        // If the player is already connected to a substation then leave them
+        // Maybe add an option to force migration later
+        if (player.SubstationId == "") {
+            if (!substationFound) {
+                // TODO Throw Error : No entry substation found for public guild
+                return &types.MsgPlayerCreateResponse{}, nil
             }
 
-        case types.GuildJoinType_InfusionMinimum:
-            // TODO Throw error : join via delegation
-            return &types.MsgPlayerCreateResponse{}, nil
-
-        case types.GuildJoinType_Request:
-            k.GuildSetRegisterRequest(ctx, guild, player)
-
-        case types.GuildJoinType_Invite:
-            // TODO Throw error : Join via invite only
-            return &types.MsgPlayerCreateResponse{}, nil
-
-        default:
-            // TODO Throw error : Guild config error
-            // What type of join rule is even set if we got to here?
-            return &types.MsgPlayerCreateResponse{}, nil
+            player.GuildId = guild.Id
+            k.SubstationConnectPlayer(ctx, substation, player)
+        }
     }
-
-
 
 	return &types.MsgPlayerCreateResponse{}, nil
 }

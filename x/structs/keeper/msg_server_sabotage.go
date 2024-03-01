@@ -33,21 +33,19 @@ func (k msgServer) Sabotage(goCtx context.Context, msg *types.MsgSabotage) (*typ
     }
 
 
-    /* More garbage clown code rushed to make the testnet more interesting */
-    structIdString := strconv.FormatUint(structure.Id, 10)
-
     switch structure.Type {
         case "Mining Rig":
             if (structure.MiningSystemStatus == "ACTIVE") {
 
                 activeMiningSystemBlockString := strconv.FormatUint(structure.ActiveMiningSystemBlock , 10)
-                hashInput := structIdString + "SABOTAGE" + activeMiningSystemBlockString + "NONCE" + msg.Nonce
+                hashInput := structure.Id + "SABOTAGE" + activeMiningSystemBlockString + "NONCE" + msg.Nonce
 
                 currentAge := uint64(ctx.BlockHeight()) - structure.ActiveMiningSystemBlock
                 if (!types.HashBuildAndCheckActionDifficultySabotage(hashInput, msg.Proof, currentAge, types.DifficultySabotageRangeMine)) {
                     return &types.MsgSabotageResponse{}, sdkerrors.Wrapf(types.ErrSabotage, "Work failure for input (%s) when trying to sabotage Struct %s", hashInput, structure.Id)
                 }
 
+                k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, structure.Owner), structure.ActiveMiningSystemDraw)
                 structure.SetMiningSystemStatus("INACTIVE")
                 structure.SetMiningSystemActivationBlock(0)
                 k.SetStruct(ctx, structure)
@@ -56,7 +54,7 @@ func (k msgServer) Sabotage(goCtx context.Context, msg *types.MsgSabotage) (*typ
             if (structure.RefiningSystemStatus == "ACTIVE") {
 
                 activeRefiningSystemBlockString := strconv.FormatUint(structure.ActiveRefiningSystemBlock , 10)
-                hashInput := structIdString + "SABOTAGE" + activeRefiningSystemBlockString + "NONCE" + msg.Nonce
+                hashInput := structure.Id + "SABOTAGE" + activeRefiningSystemBlockString + "NONCE" + msg.Nonce
 
                 currentAge := uint64(ctx.BlockHeight()) - structure.ActiveRefiningSystemBlock
                 if (!types.HashBuildAndCheckActionDifficultySabotage(hashInput, msg.Proof, currentAge, types.DifficultySabotageRangeRefine)) {
@@ -70,7 +68,7 @@ func (k msgServer) Sabotage(goCtx context.Context, msg *types.MsgSabotage) (*typ
             }
         case "Small Generator":
             buildStartBlockString := strconv.FormatUint(structure.BuildStartBlock , 10)
-            hashInput := structIdString + "SABOTAGE" + buildStartBlockString + "NONCE" + msg.Nonce
+            hashInput := structure.Id + "SABOTAGE" + buildStartBlockString + "NONCE" + msg.Nonce
 
             currentAge := uint64(ctx.BlockHeight()) - structure.BuildStartBlock
             if (!types.HashBuildAndCheckActionDifficultySabotage(hashInput, msg.Proof, currentAge, types.DifficultySabotageRangePower )) {

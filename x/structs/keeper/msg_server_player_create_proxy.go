@@ -37,7 +37,7 @@ func (k msgServer) PlayerCreateProxy(goCtx context.Context, msg *types.MsgPlayer
 
     // Make sure the address calling this has Associate permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManageGuild))) {
-        return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
+        return &types.MsgPlayerCreateProxyResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
     }
 
 

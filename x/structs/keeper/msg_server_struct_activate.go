@@ -51,7 +51,7 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
     }
 
     // Try to bring online if there is room in the energy cap
-    if (player.CanSupportNewLoad(structure.PassiveDraw)) {
+    if (!player.CanSupportNewLoad(structure.PassiveDraw)) {
         return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrStructActivate, "Could not bring Struct %s online, player %s does not have enough power",structure.Id, player.Id)
     }
 

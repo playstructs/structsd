@@ -28,7 +28,7 @@ func (k msgServer) StructMineActivate(goCtx context.Context, msg *types.MsgStruc
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has Play permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionPlay))) {
-        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
+        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
     }
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
@@ -56,11 +56,12 @@ func (k msgServer) StructMineActivate(goCtx context.Context, msg *types.MsgStruc
        return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo structs, no permission for action on Struct (%s)", structure.Id)
     }
 
-    _, err = k.PlayerIncrementLoad(ctx, player, structure.ActiveMiningSystemDraw)
-
-    if (err != nil) {
+    // Try to bring online if there is room in the energy cap
+    if (!player.CanSupportNewLoad(structure.ActiveMiningSystemDraw)) {
         return &types.MsgStructMineActivateResponse{}, sdkerrors.Wrapf(types.ErrStructMineActivate, "Not enough power to bring Mining System online for Struct (%s)", msg.StructId)
     }
+
+    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, player.Id), structure.ActiveMiningSystemDraw)
 
     structure.SetMiningSystemStatus("ACTIVE")
     structure.SetMiningSystemActivationBlock(uint64(ctx.BlockHeight()))

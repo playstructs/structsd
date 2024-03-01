@@ -29,7 +29,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has Play permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionPlay))) {
-        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
+        return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
     }
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
@@ -48,22 +48,23 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 
     /* More garbage clown code rushed to make the testnet more interesting */
     // Check the Proof
-    structIdString                  := strconv.FormatUint(structure.Id, 10)
     buildStartBlockString           := strconv.FormatUint(structure.BuildStartBlock , 10)
-    hashInput                       := structIdString + "BUILD" + buildStartBlockString + "NONCE" + msg.Nonce
+    hashInput                       := structure.Id + "BUILD" + buildStartBlockString + "NONCE" + msg.Nonce
 
     currentAge := uint64(ctx.BlockHeight()) - structure.BuildStartBlock
 
 
     if (!types.HashBuildAndCheckBuildDifficulty(hashInput, msg.Proof, currentAge)) {
-       return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrStructBuildComplete, "Work failure for input (%s) when trying to build Struct %d", hashInput, structure.Id)
+       return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrStructBuildComplete, "Work failure for input (%s) when trying to build Struct %s", hashInput, structure.Id)
     }
 
     // Try to bring online if there is room in the energy cap
-    _, err = k.PlayerIncrementLoad(ctx, player, structure.PassiveDraw)
-    if (err != nil) {
+    if (!player.CanSupportNewLoad(structure.PassiveDraw)) {
         return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrStructBuildComplete, "Could not bring Struct %s online, player %s does not have enough power",structure.Id, player.Id)
     }
+
+    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, player.Id), structure.PassiveDraw)
+
 
     structure.SetStatus("ACTIVE")
     k.SetStruct(ctx, structure)

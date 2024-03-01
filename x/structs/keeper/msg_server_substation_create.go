@@ -33,14 +33,14 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
     allocationPlayer, AllocationPlayerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, allocation.Controller), true)
     if (!AllocationPlayerFound) {
         if (allocation.Controller == msg.Creator){
-            player := k.UpsertPlayer(ctx, msg.Creator, true)
+            player = k.UpsertPlayer(ctx, msg.Creator, true)
             connectPlayer = true
         } else {
-            return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation not controlled by player ", player.Id)
+            return &types.MsgSubstationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation not controlled by player ", player.Id)
         }
     } else {
         if (allocationPlayer.Id != player.Id) {
-            return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation not controlled by player ", player.Id)
+            return &types.MsgSubstationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation not controlled by player ", player.Id)
         }
     }
 

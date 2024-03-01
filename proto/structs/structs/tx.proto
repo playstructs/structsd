@@ -72,7 +72,7 @@ message MsgSubstationDeleteResponse {}
 message MsgSubstationAllocationConnect {
   string creator                 = 1;
   string allocationId            = 2;
-  string destinationSubstationId = 3;
+  string destinationId = 3;
 }
 
 message MsgSubstationAllocationConnectResponse {}
@@ -149,13 +149,13 @@ message MsgGuildUpdateJoinInfusionMinimum {
 message MsgGuildUpdateJoinInfusionMinimumBypassByRequest {
   string creator                = 1;
   string guildId                = 2;
-  uint64 guildJoinBypassLevel   = 3;
+  guildJoinBypassLevel guildJoinBypassLevel   = 3;
 }
 
 message MsgGuildUpdateJoinInfusionMinimumBypassByInvite {
   string creator                = 1;
   string guildId                = 2;
-  uint64 guildJoinBypassLevel   = 3;
+  guildJoinBypassLevel guildJoinBypassLevel   = 3;
 }
 
 

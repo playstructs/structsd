@@ -10,6 +10,7 @@ import (
 	//sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strconv"
 	"strings"
+	"fmt"
 )
 
 
@@ -22,7 +23,7 @@ func GetObjectPermissionIDBytes(objectId string, playerId string) []byte {
 
 // GetAddressPermissionIDBytes returns the byte representation of the Address, based on ObjectType
 func GetAddressPermissionIDBytes(address string) []byte {
-    id := fmt.Sprintf("%d-%s@0", types.ObjectType_address, objectId)
+    id := fmt.Sprintf("%d-%s@0", types.ObjectType_address, address)
 	return []byte(id)
 }
 
@@ -49,8 +50,8 @@ func (k Keeper) SetPermissionsByBytes(ctx sdk.Context, permissionId []byte, perm
 
 	store.Set(permissionId, bz)
 
-    keys := strings.Split(string(permissionId), "@")
-    _ = ctx.EventManager().EmitTypedEvent(&types.EventPermission{Body: &types.EventPermissionBodyKeyPair{ObjectId: keys[0], PlayerId: keys[1], Value: uint64(permissions)}})
+    //keys := strings.Split(string(permissionId), "@")
+    //_ = ctx.EventManager().EmitTypedEvent(&types.EventPermission{Body: &types.EventPermissionBodyKeyPair{ObjectId: keys[0], PlayerId: keys[1], Value: uint64(permissions)}})
 
 	return permissions
 }
@@ -60,8 +61,8 @@ func (k Keeper) PermissionClearAll(ctx sdk.Context, permissionId []byte) {
 
 	store.Delete(permissionId)
 
-    keys := strings.Split(string(permissionId), "@")
-    _ = ctx.EventManager().EmitTypedEvent(&types.EventPermission{Body: &types.EventPermissionBodyKeyPair{ObjectId: keys[0], PlayerId: keys[1], Value: uint64(0)}})
+    //keys := strings.Split(string(permissionId), "@")
+    //_ = ctx.EventManager().EmitTypedEvent(&types.EventPermission{Body: &types.EventPermissionBodyKeyPair{ObjectId: keys[0], PlayerId: keys[1], Value: uint64(0)}})
 
 }
 

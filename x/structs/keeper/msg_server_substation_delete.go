@@ -23,15 +23,16 @@ func (k msgServer) SubstationDelete(goCtx context.Context, msg *types.MsgSubstat
     }
 
 
+    substationObjectPermissionId := GetObjectPermissionIDBytes(msg.SubstationId, player.Id)
 	// check that the player has reactor permissions
-    if (!k.SubstationPermissionHasOneOf(ctx, msg.SubstationId, player.Id, types.SubstationPermissionDelete)) {
+    if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.Permission(types.SubstationPermissionDelete))) {
         return &types.MsgSubstationDeleteResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationDelete, "Calling player (%d) has no Substation Delete permissions ", player.Id)
     }
 
 
     // check that the account has energy management permissions
-    playerPermissions := k.AddressGetPlayerPermissions(ctx, msg.Creator)
-    if (playerPermissions&types.AddressPermissionManageEnergy == 0) {
+    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManageEnergy))) {
         return &types.MsgSubstationDeleteResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
     }
 

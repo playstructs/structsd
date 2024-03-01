@@ -45,7 +45,7 @@ func (k Keeper) AppendPlanet(
 	count := k.GetPlanetCount(ctx)
 
 	// Set the ID of the appended value
-	planet.Id = GetObjectId(types.ObjectType_planet, count)
+	planet.Id = GetObjectID(types.ObjectType_planet, count)
 	planet.SetCreator(player.Creator)
 	planet.SetOwner(player.Id)
 
@@ -147,7 +147,7 @@ func (k Keeper) SetPlanetRefinementCount(ctx sdk.Context, planetId string, count
 
 	store.Set([]byte(planetId), bz)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlanetRefinementCount{Body: &types.EventBodyKeyPair{Key: planetId, Value: count}})
+	//_ = ctx.EventManager().EmitTypedEvent(&types.EventPlanetRefinementCount{Body: &types.EventBodyKeyPair{Key: planetId, Value: count}})
 }
 
 
@@ -185,7 +185,7 @@ func (k Keeper) SetPlanetOreCount(ctx sdk.Context, planetId string, count uint64
 
 	store.Set([]byte(planetId), bz)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlanetOreCount{Body: &types.EventBodyKeyPair{Key: planetId, Value: count}})
+	//_ = ctx.EventManager().EmitTypedEvent(&types.EventPlanetOreCount{Body: &types.EventBodyKeyPair{Key: planetId, Value: count}})
 }
 
 

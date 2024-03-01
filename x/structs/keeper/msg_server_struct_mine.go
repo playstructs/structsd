@@ -32,7 +32,7 @@ func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has Play permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionPlay))) {
-        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
     }
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
@@ -73,9 +73,8 @@ func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (
         return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Planet (%s) is empty, nothing to mine", structure.PlanetId)
     }
 
-    structIdString                  := strconv.FormatUint(structure.Id, 10)
     activeMiningSystemBlockString   := strconv.FormatUint(structure.ActiveMiningSystemBlock , 10)
-    hashInput                       := structIdString + "MINE" + activeMiningSystemBlockString + "NONCE" + msg.Nonce
+    hashInput                       := structure.Id + "MINE" + activeMiningSystemBlockString + "NONCE" + msg.Nonce
 
     currentAge := uint64(ctx.BlockHeight()) - structure.ActiveMiningSystemBlock
     if (!types.HashBuildAndCheckActionDifficulty(hashInput, msg.Proof, currentAge)) {

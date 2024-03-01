@@ -44,7 +44,7 @@ func (k Keeper) AppendPlayer(
 	count := k.GetPlayerCount(ctx)
 
 	// Set the ID of the appended value
-	player.Id = GetObjectId(types.ObjectType_player, count)
+	player.Id = GetObjectID(types.ObjectType_player, count)
 	player.Index = count
 
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
@@ -57,7 +57,7 @@ func (k Keeper) AppendPlayer(
 	//Add Address records
 	k.SetPlayerIndexForAddress(ctx, player.Creator, player.Index)
 
-	addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
+	addressPermissionId := GetAddressPermissionIDBytes(player.Creator)
 	k.PermissionAdd(ctx, addressPermissionId, types.Permission(types.AddressPermissionAll))
 
 	// Add the Account keeper record
@@ -82,7 +82,7 @@ func (k Keeper) SetPlayer(ctx sdk.Context, player types.Player) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
 	b := k.cdc.MustMarshal(&player)
 
-	store.Set(GetObjectID(player.Id), b)
+	store.Set([]byte(player.Id), b)
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlayer{Player: &player})
 }
@@ -111,14 +111,14 @@ func (k Keeper) GetPlayer(ctx sdk.Context, playerId string, full bool) (val type
 }
 
 func (k Keeper) GetPlayerFromIndex(ctx sdk.Context, playerIndex uint64, full bool) (val types.Player, found bool) {
-    val, found = GetPlayer(ctx, GetObjectId(types.ObjectType_player, playerIndex), full)
+    val, found = k.GetPlayer(ctx, GetObjectID(types.ObjectType_player, playerIndex), full)
     return
 }
 
 // RemovePlayer removes a player from the store
 func (k Keeper) RemovePlayer(ctx sdk.Context, id uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
-	store.Delete(GetObjectID(id))
+	store.Delete([]byte(id))
 }
 
 // GetAllPlayer returns all player

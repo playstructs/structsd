@@ -20,9 +20,9 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
 		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationNotFound, "allocation (%d) not found", msg.AllocationId)
 	}
 
-	substation, substationFound := k.GetSubstation(ctx, msg.DestinationObjectId, false)
+	substation, substationFound := k.GetSubstation(ctx, msg.DestinationId, false)
 	if (!substationFound) {
-		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrSubstationNotFound, "destination substation (%d) not found", allocation.DestinationId)
+		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrSubstationNotFound, "destination substation (%d) not found", allocation.DestinationObjectId)
 	}
 
 
