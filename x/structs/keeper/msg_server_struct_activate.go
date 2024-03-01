@@ -50,11 +50,12 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo structs, no permission for action on Struct (%s)", structure.Owner)
     }
 
-     // Try to bring online if there is room in the energy cap
-    _, err = k.PlayerIncrementLoad(ctx, player, structure.PassiveDraw)
-    if (err != nil) {
+    // Try to bring online if there is room in the energy cap
+    if (player.CanSupportNewLoad(structure.PassiveDraw)) {
         return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrStructActivate, "Could not bring Struct %s online, player %s does not have enough power",structure.Id, player.Id)
     }
+
+    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, player.Id), structure.PassiveDraw)
 
     // Reset difficulty block
     structure.SetStatus("ACTIVE")
