@@ -49,6 +49,11 @@ func (k Keeper) GetGridAttribute(ctx sdk.Context, gridAttributeId string) (amoun
 	return
 }
 
+func (k Keeper) ClearGridAttribute(ctx sdk.Context, gridAttributeId string) () {
+	gridAttributeStore := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GridAttributeKey))
+	gridAttributeStore.Delete([]byte(gridAttributeId))
+}
+
 
 func (k Keeper) SetGridAttribute(ctx sdk.Context, gridAttributeId string, amount uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GridAttributeKey))

@@ -44,13 +44,15 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
 
         var identity sdk.AccAddress
         identity = validatorAddress.Bytes()
-        player := k.UpsertPlayer(ctx, identity.String())
+        player := k.UpsertPlayer(ctx, identity.String(), false)
 
         // Add the player as a permissioned user of the reactor
         permissionId := GetObjectPermissionIDBytes(reactor.Id, player.Id)
         k.PermissionAdd(ctx, permissionId, types.Permission(types.ReactorPermissionAll))
 
 
+        // TODO apply the energy distribution to the reactor player account
+        
 
         // Deprecated
             // Player no longer needs a substation because they'll end up with a direct load

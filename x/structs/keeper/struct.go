@@ -101,7 +101,7 @@ func (k Keeper) RemoveStruct(ctx sdk.Context, structId string) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructKey))
 	store.Delete([]byte(structId))
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventStructDelete{StructId: structId})
+	//_ = ctx.EventManager().EmitTypedEvent(&types.EventStructDelete{StructId: structId})
 }
 
 // GetAllStruct returns all struct
@@ -132,7 +132,7 @@ func (k Keeper) GetAllStruct(ctx sdk.Context) (list []types.Struct) {
 
 
 
-func (k Keeper) StructDeactivate(ctx sdk.Context, structId uint64) {
+func (k Keeper) StructDeactivate(ctx sdk.Context, structId string) {
     structure, structureFound := k.GetStruct(ctx, structId)
     if (structureFound) {
 
@@ -184,14 +184,15 @@ func (k Keeper) StructDestroy(ctx sdk.Context, structure types.Struct) {
 
     k.StructDestroyInfusions(ctx, structure.Id)
 
-    storeLoad := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructLoadKey))
-    storeLoad.Delete([]byte(structure.Id))
 
-    storeEnergy := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructEnergyKey))
-    storeEnergy.Delete([]byte(structure.Id))
+    // Clear Load
+    k.ClearGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, structure.Id ))
 
-    storeFuel := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructFuelKey))
-    storeFuel.Delete([]byte(structure.Id))
+    // Clear Capacity
+    k.ClearGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, structure.Id ))
+
+    // Clear Fuel
+    k.ClearGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, structure.Id ))
 
     k.RemoveStruct(ctx, structure.Id)
 

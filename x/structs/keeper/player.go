@@ -137,7 +137,7 @@ func (k Keeper) GetAllPlayer(ctx sdk.Context, full bool) (list []types.Player) {
             val.Load      = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
             val.Capacity  = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
 
-            val.StructsLoad           = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, val.Id))
+            val.StructsLoad          = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, val.Id))
             val.CapacitySecondary    = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, val.SubstationId))
 
             playerAcc, _ := sdk.AccAddressFromBech32(val.PrimaryAddress)
