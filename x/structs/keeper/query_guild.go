@@ -13,7 +13,7 @@ import (
 
     "encoding/binary"
     "strings"
-    "strconv"
+    //"strconv"
 )
 
 func (k Keeper) GuildAll(goCtx context.Context, req *types.QueryAllGuildRequest) (*types.QueryAllGuildResponse, error) {

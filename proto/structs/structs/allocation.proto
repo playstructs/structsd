@@ -14,7 +14,7 @@ message Allocation {
   // Core allocation details
   string      sourceObjectId      = 3;
   uint64      index               = 4;
-  string      destinationObjectId = 5;
+  string      destinationId = 5;
   uint64      power               = 6;
 
   // Who does this currently belong to

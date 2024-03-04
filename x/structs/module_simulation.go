@@ -151,16 +151,7 @@ func (am AppModule) RegisterStoreDecoder(_ sdk.StoreDecoderRegistry) {}
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
-	var weightMsgReactorAllocationCreate int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgReactorAllocationCreate, &weightMsgReactorAllocationCreate, nil,
-		func(_ *rand.Rand) {
-			weightMsgReactorAllocationCreate = defaultWeightMsgReactorAllocationCreate
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgReactorAllocationCreate,
-		structssimulation.SimulateMsgReactorAllocationCreate(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
+
 
 	var weightMsgSubstationCreate int
 	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSubstationCreate, &weightMsgSubstationCreate, nil,
@@ -184,16 +175,6 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		structssimulation.SimulateMsgSubstationDelete(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgSubstationAllocationCreate int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSubstationAllocationCreate, &weightMsgSubstationAllocationCreate, nil,
-		func(_ *rand.Rand) {
-			weightMsgSubstationAllocationCreate = defaultWeightMsgSubstationAllocationCreate
-		},
-	)
-	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgSubstationAllocationCreate,
-		structssimulation.SimulateMsgSubstationAllocationCreate(am.accountKeeper, am.bankKeeper, am.keeper),
-	))
 
 	var weightMsgSubstationAllocationConnect int
 	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgSubstationAllocationConnect, &weightMsgSubstationAllocationConnect, nil,

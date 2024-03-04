@@ -8,8 +8,7 @@ import (
 	"structs/x/structs/types"
 
 	//sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
-	"strconv"
-	"strings"
+
 	"fmt"
 )
 

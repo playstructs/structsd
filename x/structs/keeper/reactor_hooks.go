@@ -99,7 +99,7 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
 
         delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
 
-        player := k.UpsertPlayer(ctx, playerAddress.String())
+        player := k.UpsertPlayer(ctx, playerAddress.String(), true)
 
 
         /*
@@ -116,7 +116,7 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
                err error
            )
         */
-        k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, playerAddress, player, delegationShare.Uint64(), reactor.DefaultCommission)
+        k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String(), player, delegationShare.Uint64(), reactor.DefaultCommission)
 
     }
 }
@@ -151,7 +151,7 @@ func (k Keeper) ReactorRemoveInfusion(ctx sdk.Context, unbondingId uint64) {
         reactor, _ := k.GetReactorByBytes(ctx, reactorBytes, false)
 
         if (unbondingDelegationFound) {
-            unbondingInfusion, _ := k.GetInfusion(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String())
+            unbondingInfusion, _ := k.GetInfusion(ctx, reactor.Id, playerAddress.String())
             k.DestroyInfusion(ctx, unbondingInfusion)
         }
     }

@@ -31,7 +31,7 @@ func (k msgServer) SubstationAllocationDisconnect(goCtx context.Context, msg *ty
         return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPlayerNotFound, "Could not perform substation action with non-player address (%s)", allocation.Controller)
     }
     if (allocationPlayer.Id != player.Id) {
-        sourceObjectPermissionId := GetObjectPermissionIDBytes(allocation.DestinationObjectId, player.Id)
+        sourceObjectPermissionId := GetObjectPermissionIDBytes(allocation.DestinationId, player.Id)
         // check that the player has reactor permissions
         if (!k.PermissionHasOneOf(ctx, sourceObjectPermissionId, types.Permission(types.SubstationPermissionDisconnectAllocation))) {
             // technically both correct. Refactor this to be clearer
@@ -49,7 +49,7 @@ func (k msgServer) SubstationAllocationDisconnect(goCtx context.Context, msg *ty
     }
 
 
-    allocation.DestinationObjectId = ""
+    allocation.DestinationId = ""
     allocation, err = k.SetAllocation(ctx, allocation)
 
 	return &types.MsgSubstationAllocationDisconnectResponse{}, err

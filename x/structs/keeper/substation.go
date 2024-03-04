@@ -7,7 +7,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	//sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 )
 
@@ -102,9 +102,9 @@ func (k Keeper) RemoveSubstation(ctx sdk.Context, substationId string) {
 	// Disconnect Players
 	// Clear out Grid attributes
 
-	store.Delete(string(substationId))
+	store.Delete([]byte(substationId))
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventSubstationDelete{SubstationId: id})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventSubstationDelete{SubstationId: substationId})
 }
 
 // GetSubstation returns a substation from its id
@@ -156,13 +156,14 @@ func (k Keeper) SubstationConnectPlayer(ctx sdk.Context, substation types.Substa
 
     // If the player is already on a substation then disconnect them from it first
     if (player.SubstationId != "") {
-        k.SubstationDecrementConnectedPlayerLoad(ctx, player.SubstationId, 1)
+        k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, player.SubstationId), 1)
+
         // Update Connection Capacity for the old Substation
         k.UpdateGridConnectionCapacity(ctx, player.SubstationId)
     }
 
     // Update the player record
-    player.Substation = substation.Id
+    player.SubstationId = substation.Id
     // Commit the player changes
     k.SetPlayer(ctx, player)
 
@@ -180,13 +181,13 @@ func (k Keeper) SubstationDisconnectPlayer(ctx sdk.Context, player types.Player)
 
     // If the player is already on a substation then disconnect them from it first
     if (player.SubstationId != "") {
-        k.SubstationDecrementConnectedPlayerLoad(ctx, player.SubstationId, 1)
+        k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, player.SubstationId), 1)
         // Update Connection Capacity for the old Substation
         k.UpdateGridConnectionCapacity(ctx, player.SubstationId)
     }
 
     // Update the player record
-    player.Substation = ""
+    player.SubstationId = ""
     // Commit the player changes
     k.SetPlayer(ctx, player)
 

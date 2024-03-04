@@ -22,7 +22,7 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
 
 	substation, substationFound := k.GetSubstation(ctx, msg.DestinationId, false)
 	if (!substationFound) {
-		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrSubstationNotFound, "destination substation (%d) not found", allocation.DestinationObjectId)
+		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrSubstationNotFound, "destination substation (%d) not found", allocation.DestinationId)
 	}
 
 
@@ -56,15 +56,15 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
 
 
 	if (allocation.SourceObjectId == substation.Id) {
-		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationConnectionChangeImpossible, "destination substation (%s) cannot match allocation source (%s)", allocation.DestinationObjectId, allocation.SourceObjectId)
+		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationConnectionChangeImpossible, "destination substation (%s) cannot match allocation source (%s)", allocation.DestinationId, allocation.SourceObjectId)
 	}
 
-	if substation.Id == allocation.DestinationObjectId {
-		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationConnectionChangeImpossible, "destination substation (%s) cannot change to same destination", allocation.DestinationObjectId)
+	if substation.Id == allocation.DestinationId {
+		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationConnectionChangeImpossible, "destination substation (%s) cannot change to same destination", allocation.DestinationId)
 	}
 
 
-    allocation.DestinationObjectId = substation.Id
+    allocation.DestinationId = substation.Id
     allocation, err = k.SetAllocation(ctx, allocation)
 
 	return &types.MsgSubstationAllocationConnectResponse{}, err

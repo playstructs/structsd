@@ -46754,7 +46754,7 @@ paths:
                     index:
                       type: string
                       format: uint64
-                    destinationObjectId:
+                    destinationId:
                       type: string
                     power:
                       type: string
@@ -47072,7 +47072,7 @@ paths:
                   index:
                     type: string
                     format: uint64
-                  destinationObjectId:
+                  destinationId:
                     type: string
                   power:
                     type: string
@@ -51755,7 +51755,6 @@ paths:
                       type: string
                     owner:
                       type: string
-                      format: uint64
                     creator:
                       type: string
                     load:
@@ -52059,7 +52058,6 @@ paths:
                     type: string
                   owner:
                     type: string
-                    format: uint64
                   creator:
                     type: string
                   load:
@@ -80568,7 +80566,7 @@ definitions:
       index:
         type: string
         format: uint64
-      destinationObjectId:
+      destinationId:
         type: string
       power:
         type: string
@@ -81628,7 +81626,7 @@ definitions:
             index:
               type: string
               format: uint64
-            destinationObjectId:
+            destinationId:
               type: string
             power:
               type: string
@@ -82141,7 +82139,6 @@ definitions:
               type: string
             owner:
               type: string
-              format: uint64
             creator:
               type: string
             load:
@@ -82209,7 +82206,7 @@ definitions:
           index:
             type: string
             format: uint64
-          destinationObjectId:
+          destinationId:
             type: string
           power:
             type: string
@@ -82558,7 +82555,6 @@ definitions:
             type: string
           owner:
             type: string
-            format: uint64
           creator:
             type: string
           load:
@@ -82697,7 +82693,6 @@ definitions:
         type: string
       owner:
         type: string
-        format: uint64
       creator:
         type: string
       load:

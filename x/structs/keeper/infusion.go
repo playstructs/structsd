@@ -5,8 +5,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 
-	"strconv"
-	"cosmossdk.io/math"
+	//"strconv"
+	//"cosmossdk.io/math"
 
 )
 
@@ -180,6 +180,25 @@ func (k Keeper) GetAllStructInfusions(ctx sdk.Context, structId string) (list []
 	return
 }
 
+// GetAllInfusionsByDestination returns all infusion relating to a struct
+func (k Keeper) GetAllInfusionsByDestination(ctx sdk.Context, objectId string) (list []types.Infusion) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.InfusionKey))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.Infusion
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+
+		if val.DestinationId == objectId {
+			list = append(list, val)
+		}
+	}
+
+	return
+}
+
 
 
 func (k Keeper) DestroyInfusion(ctx sdk.Context, infusion types.Infusion) {
@@ -219,4 +238,12 @@ func (k Keeper) DestroyInfusion(ctx sdk.Context, infusion types.Infusion) {
     // Remove the Infusion record from the store
 	k.RemoveInfusion(ctx, infusion.DestinationId, infusion.Address)
 
+}
+
+// TODO could likely be done far more efficiently
+// Currently makes separate writes for each update
+func (k Keeper) DestroyAllInfusions(ctx sdk.Context, infusions []types.Infusion) {
+     for _, infusion := range infusions {
+        k.DestroyInfusion(ctx, infusion)
+     }
 }

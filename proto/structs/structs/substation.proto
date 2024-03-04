@@ -10,7 +10,7 @@ option go_package = "structs/x/structs/types";
 message Substation {
     string id                           = 1;
 
-    uint64 owner                        = 2;
+    string owner                        = 2;
     string creator                      = 3;
 
     uint64 load                         = 4;

@@ -86,11 +86,10 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.ReactorCount = k.GetReactorCount(ctx)
 	genesis.SubstationList = k.GetAllSubstation(ctx, false)
 	genesis.SubstationCount = k.GetSubstationCount(ctx)
-	genesis.AllocationList = k.GetAllAllocation(ctx)
-	genesis.AllocationCount = k.GetAllocationCount(ctx)
+	genesis.AllocationList = k.GetAllAllocation(ctx, true)
 	genesis.GuildList = k.GetAllGuild(ctx)
 	genesis.GuildCount = k.GetGuildCount(ctx)
-	genesis.PlayerList = k.GetAllPlayer(ctx)
+	genesis.PlayerList = k.GetAllPlayer(ctx, true)
 	genesis.PlayerCount = k.GetPlayerCount(ctx)
 
 	// this line is used by starport scaffolding # genesis/module/export

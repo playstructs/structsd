@@ -5,7 +5,7 @@ import (
 
 	"github.com/cosmos/cosmos-sdk/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-    sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+    //sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"structs/x/structs/types"
 
 )
@@ -153,7 +153,8 @@ func (k Keeper) StructDeactivate(ctx sdk.Context, structId string) {
             k.SetStruct(ctx, structure)
 
             if (structure.PowerSystem == 1) {
-                k.StructDestroyAllocations(ctx, structure.Id)
+                allocations := k.GetAllocationsFromSource(ctx, structure.Id, false)
+                k.DestroyAllAllocations(ctx, allocations)
             }
         }
     }
@@ -161,12 +162,6 @@ func (k Keeper) StructDeactivate(ctx sdk.Context, structId string) {
 
 
 
-func (k Keeper) StructDestroyInfusions(ctx sdk.Context, structId string) {
-    infusions := k.GetAllStructInfusions(ctx, structId)
-    for _, infusion := range infusions {
-        k.InfusionDestroy(ctx, infusion)
-    }
-}
 
 func (k Keeper) StructDestroy(ctx sdk.Context, structure types.Struct) {
 
@@ -174,17 +169,17 @@ func (k Keeper) StructDestroy(ctx sdk.Context, structure types.Struct) {
     if (planetFound) {
         switch structure.Ambit {
             case "LAND":
-                planet.Land[structure.Slot] = 0
+                planet.Land[structure.Slot] = ""
         }
 
         k.SetPlanet(ctx, planet)
     }
 
-    // TODO these are wrong and outdated
+    allocations := k.GetAllocationsFromSource(ctx, structure.Id, false)
+    k.DestroyAllAllocations(ctx, allocations)
 
-    k.StructDestroyAllocations(ctx, structure.Id)
-
-    k.StructDestroyInfusions(ctx, structure.Id)
+    infusions := k.GetAllInfusionsByDestination(ctx, structure.Id)
+    k.DestroyAllInfusions(ctx, infusions)
 
 
     // Clear Load

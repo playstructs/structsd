@@ -7,8 +7,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 
-	"strconv"
-	"strings"
+	//"strconv"
+	//"strings"
 )
 
 // GetGuildCount get the total number of guild
