@@ -180,6 +180,8 @@ func (k Keeper) StructDestroy(ctx sdk.Context, structure types.Struct) {
         k.SetPlanet(ctx, planet)
     }
 
+    // TODO these are wrong and outdated
+
     k.StructDestroyAllocations(ctx, structure.Id)
 
     k.StructDestroyInfusions(ctx, structure.Id)
