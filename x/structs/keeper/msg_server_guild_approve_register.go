@@ -45,11 +45,8 @@ func (k msgServer) GuildApproveRegister(goCtx context.Context, msg *types.MsgGui
     registeringPlayer, registeringPlayerFound := k.GetPlayer(ctx, msg.PlayerId, true)
 
 
-
     if (registeringPlayerFound) {
         if (msg.Approve) {
-            // TODO permission checking to see if this specific account has the ability to grant these permissions
-
             k.GuildApproveRegisterRequest(ctx, guild, registeringPlayer)
         } else {
             k.GuildDenyRegisterRequest(ctx, guild, registeringPlayer)

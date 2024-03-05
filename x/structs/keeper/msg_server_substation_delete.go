@@ -37,18 +37,8 @@ func (k msgServer) SubstationDelete(goCtx context.Context, msg *types.MsgSubstat
     }
 
 
-	/*
-	 * This is going to start out very inefficient. We'll need to tackle
-	 * ways to improve these types of graph traversal
-	 */
 
-	// Need all allocations in
-
-	// Need all allocations out
-
-	// Need all players connected
-
-	k.RemoveSubstation(ctx, msg.SubstationId)
+	k.RemoveSubstation(ctx, msg.SubstationId, msg.MigrationSubstationId)
 
 	return &types.MsgSubstationDeleteResponse{}, nil
 }

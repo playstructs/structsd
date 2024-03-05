@@ -93,14 +93,69 @@ func (k Keeper) SetSubstation(ctx sdk.Context, substation types.Substation) {
 }
 
 // RemoveSubstation removes a substation from the store
-func (k Keeper) RemoveSubstation(ctx sdk.Context, substationId string) {
+func (k Keeper) RemoveSubstation(ctx sdk.Context, substationId string, migrationSubstationId string) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationKey))
 
-	// TODO
+	/*
+	 * This is going to start out very inefficient. We'll need to tackle
+	 * ways to improve these types of graph traversal
+	 */
+    playerConnections := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, substationId))
+    if (playerConnections > 0) {
+
+        connectedPlayers := k.GetAllPlayerBySubstation(ctx, substationId, true)
+        // Need all players connected
+        if (migrationSubstationId == "") {
+            for _, disconnectPlayer := range connectedPlayers {
+                k.SubstationDisconnectPlayer(ctx, disconnectPlayer)
+            }
+        } else {
+            if (migrationSubstationId == substationId) {
+                // TODO Move/copy this check to the message verification
+                return  // error
+            }
+            migrationSubstation, migrationSubstationFound := k.GetSubstation(ctx, migrationSubstationId, true)
+            if (!migrationSubstationFound) {
+                return // error
+            }
+            for _, migratePlayer := range connectedPlayers {
+                k.SubstationConnectPlayer(ctx, migrationSubstation, migratePlayer)
+            }
+
+        }
+	}
+
+
+    /* TODO
+     * This isn't all super amazing, it's a lot of scans. Allocations Out being the
+     * least of the problem but Allocations In will be super inefficient.
+     *
+     * Potential solution in the future is to have a Decommissioning state for substations
+     * where the object isn't deleted until all other things are moved/disconnected but it
+     * monitors allocation connection count until these values are zero.
+     *
+     * Basically, don't let it be deleted until that's all dealt with manually.
+     */
+
 	// Destroy allocations out
+    allocationsOut := k.GetAllocationsFromSource(ctx, substationId, false)
+    k.DestroyAllAllocations(ctx, allocationsOut)
+
 	// Disconnect allocations in
-	// Disconnect Players
+    // TODO Need a more efficient way than scan
+     allocationsIn := k.GetAllAllocationsFromDestination(ctx, substationId, false)
+     k.DestroyAllAllocations(ctx, allocationsIn)
+
+
 	// Clear out Grid attributes
+	k.ClearGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, substationId))
+    k.ClearGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, substationId))
+
+    k.ClearGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, substationId))
+    k.ClearGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, substationId))
+
+    k.ClearGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerStart, substationId))
+    k.ClearGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerEnd, substationId))
 
 	store.Delete([]byte(substationId))
 

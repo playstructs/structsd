@@ -14,8 +14,14 @@ func (k *Keeper) BeginBlocker(ctx sdk.Context) {
 
 // Called every block, update validator set
 func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error) {
-	//k.UpdateSubstationStatus(sdk.UnwrapSDKContext(ctx))
 
-	// TODO Cascade
+	/* Cascade all the possible failures across the grid
+	 *
+	 * This will mean that there will be some cases in which
+	 * devices have one last block of power before shutting down
+	 * but I think that's ok. We'll see how it goes in practice.
+	 */
+	k.GridCascade(sdk.UnwrapSDKContext(ctx))
+
 	return []abci.ValidatorUpdate{}, nil
 }

@@ -305,6 +305,30 @@ func (k Keeper) GetAllocationsFromSource(ctx sdk.Context, sourceObjectId string,
     return
 }
 
+
+// GetAllAllocation returns all allocation
+func (k Keeper) GetAllAllocationsFromDestination(ctx sdk.Context, destinationId string, full bool) (list []types.Allocation) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AllocationKey))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.Allocation
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+
+        if (val.DestinationId == destinationId) {
+            if full {
+                val.Power = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, val.Id))
+            }
+
+    		list = append(list, val)
+    	}
+	}
+
+	return
+}
+
 /*
  * Helper functions for the Allocation Auto-Resizing Capabilities
  *
