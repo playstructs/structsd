@@ -8,21 +8,21 @@ import (
 	"structs/testutil/sample"
 )
 
-func TestMsgPlayerCreateProxy_ValidateBasic(t *testing.T) {
+func TestMsgGuildJoin_ValidateBasic(t *testing.T) {
 	tests := []struct {
 		name string
-		msg  MsgPlayerCreateProxy
+		msg  MsgGuildJoin
 		err  error
 	}{
 		{
 			name: "invalid address",
-			msg: MsgPlayerCreateProxy{
+			msg: MsgGuildJoin{
 				Creator: "invalid_address",
 			},
 			err: sdkerrors.ErrInvalidAddress,
 		}, {
 			name: "valid address",
-			msg: MsgPlayerCreateProxy{
+			msg: MsgGuildJoin{
 				Creator: sample.AccAddress(),
 			},
 		},

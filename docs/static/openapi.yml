@@ -80668,6 +80668,10 @@ definitions:
     properties:
       guildId:
         type: string
+  structs.MsgGuildJoinProxyResponse:
+    type: object
+  structs.MsgGuildJoinResponse:
+    type: object
   structs.MsgGuildUpdateResponse:
     type: object
   structs.MsgPlanetExploreResponse:
@@ -80722,10 +80726,6 @@ definitions:
           status:
             type: string
             format: uint64
-  structs.MsgPlayerCreateProxyResponse:
-    type: object
-  structs.MsgPlayerCreateResponse:
-    type: object
   structs.MsgPlayerUpdatePrimaryAddressResponse:
     type: object
   structs.MsgSabotageResponse:

@@ -5,27 +5,27 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const TypeMsgPlayerCreateProxy = "player_create_proxy"
+const TypeMsgGuildJoinProxy = "guild_join_proxy"
 
-var _ sdk.Msg = &MsgPlayerCreateProxy{}
+var _ sdk.Msg = &MsgGuildJoinProxy{}
 
-func NewMsgPlayerCreateProxy(creator string, address string, substationId string) *MsgPlayerCreateProxy {
-	return &MsgPlayerCreateProxy{
+func NewMsgGuildJoinProxy(creator string, address string, substationId string) *MsgGuildJoinProxy {
+	return &MsgGuildJoinProxy{
 		Creator:      creator,
 		Address:      address,
 		SubstationId: substationId,
 	}
 }
 
-func (msg *MsgPlayerCreateProxy) Route() string {
+func (msg *MsgGuildJoinProxy) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgPlayerCreateProxy) Type() string {
-	return TypeMsgPlayerCreateProxy
+func (msg *MsgGuildJoinProxy) Type() string {
+	return TypeMsgGuildJoinProxy
 }
 
-func (msg *MsgPlayerCreateProxy) GetSigners() []sdk.AccAddress {
+func (msg *MsgGuildJoinProxy) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		panic(err)
@@ -33,12 +33,12 @@ func (msg *MsgPlayerCreateProxy) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgPlayerCreateProxy) GetSignBytes() []byte {
+func (msg *MsgGuildJoinProxy) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgPlayerCreateProxy) ValidateBasic() error {
+func (msg *MsgGuildJoinProxy) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

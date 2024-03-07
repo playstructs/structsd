@@ -59,13 +59,13 @@ const (
 	// TODO: Determine the simulation weight value
 	defaultWeightMsgGuildCreate int = 100
 
-	opWeightMsgPlayerCreateProxy = "op_weight_msg_player_create_proxy"
+	opWeightMsgGuildJoinProxy = "op_weight_msg_player_create_proxy"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgPlayerCreateProxy int = 100
+	defaultWeightMsgGuildJoinProxy int = 100
 
-	opWeightMsgPlayerCreate = "op_weight_msg_player_create"
+	opWeightMsgGuildJoin = "op_weight_msg_player_create"
 	// TODO: Determine the simulation weight value
-	defaultWeightMsgPlayerCreate int = 100
+	defaultWeightMsgGuildJoin int = 100
 
 	opWeightMsgAddressRegister = "op_weight_msg_address_register"
 	// TODO: Determine the simulation weight value
@@ -109,18 +109,18 @@ func (am AppModule) ProposalMsgs(simState module.SimulationState) []simtypes.Wei
 			},
 		),
 		simulation.NewWeightedProposalMsg(
-			opWeightMsgPlayerCreateProxy,
-			defaultWeightMsgPlayerCreateProxy,
+			opWeightMsgGuildJoinProxy,
+			defaultWeightMsgGuildJoinProxy,
 			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
-				structssimulation.SimulateMsgPlayerCreateProxy(am.accountKeeper, am.bankKeeper, am.keeper)
+				structssimulation.SimulateMsgGuildJoinProxy(am.accountKeeper, am.bankKeeper, am.keeper)
 				return nil
 			},
 		),
 		simulation.NewWeightedProposalMsg(
-			opWeightMsgPlayerCreate,
-			defaultWeightMsgPlayerCreate,
+			opWeightMsgGuildJoin,
+			defaultWeightMsgGuildJoin,
 			func(r *rand.Rand, ctx sdk.Context, accs []simtypes.Account) sdk.Msg {
-				structssimulation.SimulateMsgPlayerCreate(am.accountKeeper, am.bankKeeper, am.keeper)
+				structssimulation.SimulateMsgGuildJoin(am.accountKeeper, am.bankKeeper, am.keeper)
 				return nil
 			},
 		),
@@ -231,26 +231,26 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		structssimulation.SimulateMsgGuildCreate(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgPlayerCreateProxy int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgPlayerCreateProxy, &weightMsgPlayerCreateProxy, nil,
+	var weightMsgGuildJoinProxy int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgGuildJoinProxy, &weightMsgGuildJoinProxy, nil,
 		func(_ *rand.Rand) {
-			weightMsgPlayerCreateProxy = defaultWeightMsgPlayerCreateProxy
+			weightMsgGuildJoinProxy = defaultWeightMsgGuildJoinProxy
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgPlayerCreateProxy,
-		structssimulation.SimulateMsgPlayerCreateProxy(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgGuildJoinProxy,
+		structssimulation.SimulateMsgGuildJoinProxy(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
-	var weightMsgPlayerCreate int
-	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgPlayerCreate, &weightMsgPlayerCreate, nil,
+	var weightMsgGuildJoin int
+	simState.AppParams.GetOrGenerate(simState.Cdc, opWeightMsgGuildJoin, &weightMsgGuildJoin, nil,
 		func(_ *rand.Rand) {
-			weightMsgPlayerCreate = defaultWeightMsgPlayerCreate
+			weightMsgGuildJoin = defaultWeightMsgGuildJoin
 		},
 	)
 	operations = append(operations, simulation.NewWeightedOperation(
-		weightMsgPlayerCreate,
-		structssimulation.SimulateMsgPlayerCreate(am.accountKeeper, am.bankKeeper, am.keeper),
+		weightMsgGuildJoin,
+		structssimulation.SimulateMsgGuildJoin(am.accountKeeper, am.bankKeeper, am.keeper),
 	))
 
 	var weightMsgAddressRegister int

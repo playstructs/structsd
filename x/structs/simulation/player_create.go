@@ -10,7 +10,7 @@ import (
 	"structs/x/structs/types"
 )
 
-func SimulateMsgPlayerCreate(
+func SimulateMsgGuildJoin(
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
 	k keeper.Keeper,
@@ -18,12 +18,12 @@ func SimulateMsgPlayerCreate(
 	return func(r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
 		simAccount, _ := simtypes.RandomAcc(r, accs)
-		msg := &types.MsgPlayerCreate{
+		msg := &types.MsgGuildJoin{
 			Creator: simAccount.Address.String(),
 		}
 
-		// TODO: Handling the PlayerCreate simulation
+		// TODO: Handling the GuildJoin simulation
 
-		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "PlayerCreate simulation not implemented"), nil, nil
+		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "GuildJoin simulation not implemented"), nil, nil
 	}
 }

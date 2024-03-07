@@ -10,7 +10,7 @@ import (
 	"structs/x/structs/types"
 )
 
-func SimulateMsgPlayerCreateProxy(
+func SimulateMsgGuildJoinProxy(
 	ak types.AccountKeeper,
 	bk types.BankKeeper,
 	k keeper.Keeper,
@@ -20,13 +20,13 @@ func SimulateMsgPlayerCreateProxy(
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 
 
-		msg := &types.MsgPlayerCreateProxy{
+		msg := &types.MsgGuildJoinProxy{
 			Creator: simAccount.Address.String(),
 		}
 
-		// TODO: Handling the PlayerCreateProxy simulation
+		// TODO: Handling the GuildJoinProxy simulation
 
         //return msg
-		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "PlayerCreateProxy simulation not implemented"), nil, nil
+		return simtypes.NoOpMsg(types.ModuleName, msg.Type(), "GuildJoinProxy simulation not implemented"), nil, nil
 	}
 }

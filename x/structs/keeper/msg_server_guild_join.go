@@ -7,7 +7,7 @@ import (
 	"structs/x/structs/types"
 )
 
-func (k msgServer) PlayerCreate(goCtx context.Context, msg *types.MsgPlayerCreate) (*types.MsgPlayerCreateResponse, error) {
+func (k msgServer) GuildJoin(goCtx context.Context, msg *types.MsgGuildJoin) (*types.MsgGuildJoinResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// Look up requesting account
@@ -30,9 +30,9 @@ func (k msgServer) PlayerCreate(goCtx context.Context, msg *types.MsgPlayerCreat
 
         } else if (guild.JoinInfusionMinimumBypassByRequest != types.GuildJoinBypassLevel_closed) {
             k.GuildSetRegisterRequest(ctx, guild, player)
-            return &types.MsgPlayerCreateResponse{}, nil
+            return &types.MsgGuildJoinResponse{}, nil
         } else {
-            return &types.MsgPlayerCreateResponse{}, nil
+            return &types.MsgGuildJoinResponse{}, nil
             // return error
                 // does not meet the delegation minimums and requests are closed
         }
@@ -43,7 +43,7 @@ func (k msgServer) PlayerCreate(goCtx context.Context, msg *types.MsgPlayerCreat
         if (player.SubstationId == "") {
             if (!substationFound) {
                 // TODO Throw Error : No entry substation found for public guild
-                return &types.MsgPlayerCreateResponse{}, nil
+                return &types.MsgGuildJoinResponse{}, nil
             }
 
             player.GuildId = guild.Id
@@ -51,5 +51,5 @@ func (k msgServer) PlayerCreate(goCtx context.Context, msg *types.MsgPlayerCreat
         }
     }
 
-	return &types.MsgPlayerCreateResponse{}, nil
+	return &types.MsgGuildJoinResponse{}, nil
 }

@@ -24,8 +24,8 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
 	cdc.RegisterConcrete(&MsgGuildUpdateOwnerId{}, "structs/GuildUpdateOwnerId", nil)
 	cdc.RegisterConcrete(&MsgGuildApproveRegister{}, "structs/GuildApproveRegister", nil)
 
-	cdc.RegisterConcrete(&MsgPlayerCreateProxy{}, "structs/PlayerCreateProxy", nil)
-	cdc.RegisterConcrete(&MsgPlayerCreate{}, "structs/PlayerCreate", nil)
+	cdc.RegisterConcrete(&MsgGuildJoinProxy{}, "structs/GuildJoinProxy", nil)
+	cdc.RegisterConcrete(&MsgGuildJoin{}, "structs/GuildJoin", nil)
 	cdc.RegisterConcrete(&MsgAddressRegister{}, "structs/AddressRegister", nil)
 	cdc.RegisterConcrete(&MsgAddressApproveRegister{}, "structs/AddressApproveRegister", nil)
 	cdc.RegisterConcrete(&MsgAddressRevoke{}, "structs/AddressRevoke", nil)
@@ -95,10 +95,10 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
         &MsgGuildApproveRegister{},
     )
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgPlayerCreateProxy{},
+		&MsgGuildJoinProxy{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
-		&MsgPlayerCreate{},
+		&MsgGuildJoin{},
 	)
 	registry.RegisterImplementations((*sdk.Msg)(nil),
         &MsgPlayerUpdatePrimaryAddress{},

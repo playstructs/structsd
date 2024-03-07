@@ -43,6 +43,9 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(CmdGuildCreate())
 
+    cmd.AddCommand(CmdGuildJoin())
+
+	cmd.AddCommand(CmdGuildJoinProxy())
 	cmd.AddCommand(CmdGuildUpdateEndpoint())
 	cmd.AddCommand(CmdGuildUpdateEntrySubstationId())
 	cmd.AddCommand(CmdGuildUpdateJoinInfusionMinimum())
@@ -53,8 +56,6 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(CmdGuildApproveRegister())
 
 
-	cmd.AddCommand(CmdPlayerCreateProxy())
-	cmd.AddCommand(CmdPlayerCreate())
 	cmd.AddCommand(CmdPlayerUpdatePrimaryAddress())
 	cmd.AddCommand(CmdAddressRegister())
 	cmd.AddCommand(CmdAddressApproveRegister())

@@ -5,26 +5,26 @@ import (
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
-const TypeMsgPlayerCreate = "player_create"
+const TypeMsgGuildJoin = "guild_join"
 
-var _ sdk.Msg = &MsgPlayerCreate{}
+var _ sdk.Msg = &MsgGuildJoin{}
 
-func NewMsgPlayerCreate(creator string, guildId string) *MsgPlayerCreate {
-	return &MsgPlayerCreate{
+func NewMsgGuildJoin(creator string, guildId string) *MsgGuildJoin {
+	return &MsgGuildJoin{
 		Creator: creator,
 		GuildId: guildId,
 	}
 }
 
-func (msg *MsgPlayerCreate) Route() string {
+func (msg *MsgGuildJoin) Route() string {
 	return RouterKey
 }
 
-func (msg *MsgPlayerCreate) Type() string {
-	return TypeMsgPlayerCreate
+func (msg *MsgGuildJoin) Type() string {
+	return TypeMsgGuildJoin
 }
 
-func (msg *MsgPlayerCreate) GetSigners() []sdk.AccAddress {
+func (msg *MsgGuildJoin) GetSigners() []sdk.AccAddress {
 	creator, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		panic(err)
@@ -32,12 +32,12 @@ func (msg *MsgPlayerCreate) GetSigners() []sdk.AccAddress {
 	return []sdk.AccAddress{creator}
 }
 
-func (msg *MsgPlayerCreate) GetSignBytes() []byte {
+func (msg *MsgGuildJoin) GetSignBytes() []byte {
 	bz := ModuleCdc.MustMarshalJSON(msg)
 	return sdk.MustSortJSON(bz)
 }
 
-func (msg *MsgPlayerCreate) ValidateBasic() error {
+func (msg *MsgGuildJoin) ValidateBasic() error {
 	_, err := sdk.AccAddressFromBech32(msg.Creator)
 	if err != nil {
 		return sdkerrors.Wrapf(sdkerrors.ErrInvalidAddress, "invalid creator address (%s)", err)

@@ -29,8 +29,8 @@ service Msg {
   rpc GuildUpdateJoinInfusionMinimumBypassByInvite  (MsgGuildUpdateJoinInfusionMinimumBypassByInvite  ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateJoinInfusionMinimumBypassByRequest (MsgGuildUpdateJoinInfusionMinimumBypassByRequest ) returns (MsgGuildUpdateResponse );
   rpc GuildApproveRegister           (MsgGuildApproveRegister          ) returns (MsgGuildApproveRegisterResponse          );
-  rpc PlayerCreateProxy              (MsgPlayerCreateProxy             ) returns (MsgPlayerCreateProxyResponse             );
-  rpc PlayerCreate                   (MsgPlayerCreate                  ) returns (MsgPlayerCreateResponse                  );
+  rpc GuildJoinProxy                 (MsgGuildJoinProxy                ) returns (MsgGuildJoinProxyResponse             );
+  rpc GuildJoin                      (MsgGuildJoin                     ) returns (MsgGuildJoinResponse                  );
   rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse    );
   rpc AddressRegister                (MsgAddressRegister               ) returns (MsgAddressRegisterResponse               );
   rpc AddressApproveRegister         (MsgAddressApproveRegister        ) returns (MsgAddressRegisterResponse               );
@@ -162,20 +162,20 @@ message MsgGuildUpdateJoinInfusionMinimumBypassByInvite {
 message MsgGuildUpdateResponse{}
 
 
-message MsgPlayerCreateProxy {
+message MsgGuildJoinProxy {
   string creator          = 1;
   string address          = 2;
   string substationId     = 3;
 }
 
-message MsgPlayerCreateProxyResponse {}
+message MsgGuildJoinProxyResponse {}
 
-message MsgPlayerCreate {
+message MsgGuildJoin {
   string creator = 1;
   string guildId = 2;
 }
 
-message MsgPlayerCreateResponse {}
+message MsgGuildJoinResponse {}
 
 message MsgAddressApproveRegister {
   string creator     = 1;

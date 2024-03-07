@@ -50,25 +50,14 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
         permissionId := GetObjectPermissionIDBytes(reactor.Id, player.Id)
         k.PermissionAdd(ctx, permissionId, types.Permission(types.ReactorPermissionAll))
 
-
         // TODO apply the energy distribution to the reactor player account
-        
+        delegation, delegationFound := k.stakingKeeper.GetDelegation(ctx, identity, validatorAddress)
+        if (delegationFound) {
+            validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
+            delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
 
-        // Deprecated
-            // Player no longer needs a substation because they'll end up with a direct load
-
-            // Build the Primary Substation
-            // This will be unpowered at first since there is likely no
-            // delegations of fuel to the reactor at this phase.
-            //substation := k.AppendSubstation(ctx, types.InitialReactorOwnerEnergy, player)
-
-            // Wasteful right now that we're writing this a couple times
-            // to the keeper, but we'll clean it up later.
-            //reactor.SetServiceSubstationId(substation.Id)
-
-
-
-        //k.SetReactor(ctx, reactor)
+            k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, identity.String(), player, delegationShare.Uint64(), reactor.DefaultCommission)
+        }
 
     }
 
