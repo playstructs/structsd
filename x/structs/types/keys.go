@@ -145,6 +145,7 @@ var ObjectType_enum = map[string]ObjectType{
 
 // Doing the same for GridAttributeType
 var GridAttributeType_enum = map[string]GridAttributeType{
+    "ore":                      GridAttributeType_ore,
 	"fuel":                     GridAttributeType_fuel,
 	"capacity":                 GridAttributeType_capacity,
 	"load":                     GridAttributeType_load,

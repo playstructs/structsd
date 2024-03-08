@@ -141,7 +141,7 @@ func (k Keeper) RemoveReactor(ctx sdk.Context, reactorId string) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.ReactorKey))
 	store.Delete([]byte(reactorId))
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventReactorDelete{ReactorId: reactorId})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventDelete{ ObjectId: reactorId})
 }
 
 // GetAllReactor returns all reactor

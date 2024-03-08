@@ -23,7 +23,7 @@ func (k msgServer) StructMineDeactivate(goCtx context.Context, msg *types.MsgStr
     player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
     if (!player.IsOnline()){
-        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The player (%s) is offline ",player.Id)
+        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",player.Id)
     }
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)

@@ -29,8 +29,11 @@ func (k Keeper) PlanetAll(goCtx context.Context, req *types.QueryAllPlanetReques
 			return err
 		}
 
-        planet.OreRemaining = planet.MaxOre - k.GetPlanetRefinementCount(ctx, planet.Id)
-        planet.OreStored    = k.GetPlanetOreCount(ctx, planet.Id)
+        planetOre := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, planet.Id))
+        playerOre := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, planet.Owner))
+
+        planet.OreRemaining = planetOre
+        planet.OreStored    = playerOre
 
 		planets = append(planets, planet)
 		return nil

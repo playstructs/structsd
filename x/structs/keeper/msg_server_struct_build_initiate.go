@@ -22,7 +22,7 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
     if (!player.IsOnline()){
-        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The players substation (%s) is offline ",player.Id)
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The players substation (%s) is offline ",player.Id)
     }
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)

@@ -23,7 +23,7 @@ func (k msgServer) StructRefineActivate(goCtx context.Context, msg *types.MsgStr
     player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
     if (!player.IsOnline()){
-        return &types.MsgStructRefineActivateResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The player (%s) is offline ",player.Id)
+        return &types.MsgStructRefineActivateResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",player.Id)
     }
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)

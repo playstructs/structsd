@@ -24,7 +24,7 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
     player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
     if (!player.IsOnline()){
-        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The player (%s) is offline ",player.Id)
+        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",player.Id)
     }
 
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)

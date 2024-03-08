@@ -26,7 +26,7 @@ func (k msgServer) StructRefine(goCtx context.Context, msg *types.MsgStructRefin
     player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
     if (!player.IsOnline()){
-        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The player (%s) is offline ",player.Id)
+        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",player.Id)
     }
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
@@ -69,7 +69,7 @@ func (k msgServer) StructRefine(goCtx context.Context, msg *types.MsgStructRefin
         return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Planet (%s) is already complete. Move on bud, no work to be done here", structure.PlanetId)
     }
 
-    if (k.GetPlanetOreCount(ctx, planet.Id) == 0) {
+    if (planet.OreRemaining == 0) {
         return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Planet (%s) is empty, nothing to refine", structure.PlanetId)
     }
 
@@ -82,8 +82,7 @@ func (k msgServer) StructRefine(goCtx context.Context, msg *types.MsgStructRefin
     }
 
     // decrement the balance of ore for the planet
-    k.DecreasePlanetOreCount(ctx, planet.Id)
-
+    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, structure.Owner), 1)
 
     // Can't seem to add to a player account directly anymore with AddCoins
     // So instead we Mint the new alpha to the module and transfer into the account

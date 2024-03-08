@@ -159,7 +159,7 @@ func (k Keeper) RemoveSubstation(ctx sdk.Context, substationId string, migration
 
 	store.Delete([]byte(substationId))
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventSubstationDelete{SubstationId: substationId})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventDelete{ ObjectId: substationId })
 }
 
 // GetSubstation returns a substation from its id

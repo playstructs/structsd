@@ -14,6 +14,8 @@ var (
 )
 
 var (
+    ErrGridMalfunction                      = sdkerrors.Register(ModuleName, 1800, "Grid malfunction")
+
 	ErrAllocationNotFound                   = sdkerrors.Register(ModuleName, 1510, "allocation not found")
 	ErrAllocationSourceType                 = sdkerrors.Register(ModuleName, 1511, "invalid source type")
 	ErrAllocationSourceTypeMismatch         = sdkerrors.Register(ModuleName, 1512, "source type mismatch")
@@ -27,14 +29,10 @@ var (
     ErrPlayerNotFound                       = sdkerrors.Register(ModuleName, 1531, "player account specified does not exist")
     ErrPlayerUpdate                         = sdkerrors.Register(ModuleName, 1532, "player account update failed")
 
-	ErrSubstationNotFound         = sdkerrors.Register(ModuleName, 1550, "substation not found")
+	ErrSubstationNotFound                   = sdkerrors.Register(ModuleName, 1550, "substation not found")
 	ErrSubstationHasNoPowerSource = sdkerrors.Register(ModuleName, 1551, "substation has no power source")
 
-	ErrSubstationAvailableCapacityInsufficient = sdkerrors.Register(ModuleName, 1552, "substation capacity lower then attempted change allows for")
-	ErrSubstationOffline                       = sdkerrors.Register(ModuleName, 1553, "substation currently unable to support connected players")
-
-    ErrReactorActivation = sdkerrors.Register(ModuleName, 1571, "reactor activation failure")
-	ErrReactorAvailableCapacityInsufficient = sdkerrors.Register(ModuleName, 1572, "reactor capacity lower then attempted change allows for")
+	ErrReactorActivation                    = sdkerrors.Register(ModuleName, 1571, "reactor activation failure")
 	ErrReactorRequired                      = sdkerrors.Register(ModuleName, 1573, "reactor account required for this action")
 
     ErrGuildNotFound                        = sdkerrors.Register(ModuleName,  1580, "guild specified does not exist")
@@ -51,11 +49,8 @@ var (
 
     ErrPermissionGuildRegister              = sdkerrors.Register(ModuleName, 1611, "Guild permission error during player register")
 
-    ErrPermissionReactorAllocationCreate    = sdkerrors.Register(ModuleName, 1621, "Reactor permission error during allocation creation")
-
     ErrPermissionAllocation                 = sdkerrors.Register(ModuleName, 1630, "Allocation not owned by calling player")
 
-    ErrPermissionSubstationAllocationCreate     = sdkerrors.Register(ModuleName, 1631, "Substation permission error during allocation creation")
     ErrPermissionSubstationDelete               = sdkerrors.Register(ModuleName, 1632, "Substation permission error during allocation creation")
     ErrPermissionSubstationAllocationConnect    = sdkerrors.Register(ModuleName, 1633, "Substation permission error during allocation connection")
     ErrPermissionSubstationAllocationDisconnect = sdkerrors.Register(ModuleName, 1634, "Substation permission error during allocation disconnection")
@@ -80,8 +75,6 @@ var (
     ErrStructInfuse                             = sdkerrors.Register(ModuleName,  1729, "Struct infusion action failed")
     ErrStructAllocationCreate                   = sdkerrors.Register(ModuleName,  1730, "Allocation of power from struct failed")
     ErrStructActivate                           = sdkerrors.Register(ModuleName,  1731, "Struct activation failed")
-
-
 
     ErrSabotage                                 = sdkerrors.Register(ModuleName,  3800, "Sabotage failed")
 

@@ -26,7 +26,7 @@ func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (
     player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
     if (!player.IsOnline()){
-        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The player (%s) is offline ",player.Id)
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",player.Id)
     }
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
@@ -82,8 +82,8 @@ func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (
     }
 
     // Got this far, let's reward the player with some Ore
-    k.IncreasePlanetRefinementCount(ctx, structure.PlanetId)
-    k.IncreasePlanetOreCount(ctx, structure.PlanetId)
+    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, structure.PlanetId), 1)
+    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, structure.Owner), 1)
 
     // Reset difficulty block
     structure.SetMiningSystemActivationBlock(uint64(ctx.BlockHeight()))

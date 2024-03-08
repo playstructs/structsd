@@ -101,7 +101,7 @@ func (k Keeper) RemoveStruct(ctx sdk.Context, structId string) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructKey))
 	store.Delete([]byte(structId))
 
-	//_ = ctx.EventManager().EmitTypedEvent(&types.EventStructDelete{StructId: structId})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventDelete{ ObjectId: structId })
 }
 
 // GetAllStruct returns all struct

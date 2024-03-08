@@ -98,7 +98,7 @@ func (k Keeper) RemoveGuild(ctx sdk.Context, guildId string) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GuildKey))
 	store.Delete([]byte(guildId))
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventGuildDelete{GuildId: guildId})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventDelete{ObjectId: guildId})
 }
 
 // GetAllGuild returns all guild

@@ -23,7 +23,7 @@ func (k msgServer) Sabotage(goCtx context.Context, msg *types.MsgSabotage) (*typ
     player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
     if (!player.IsOnline()){
-        return &types.MsgSabotageResponse{}, sdkerrors.Wrapf(types.ErrSubstationOffline, "The player (%s) is offline ",player.Id)
+        return &types.MsgSabotageResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",player.Id)
     }
 
 
@@ -61,9 +61,10 @@ func (k msgServer) Sabotage(goCtx context.Context, msg *types.MsgSabotage) (*typ
                     return &types.MsgSabotageResponse{}, sdkerrors.Wrapf(types.ErrSabotage, "Work failure for input (%s) when trying to sabotage Struct %d", hashInput, structure.Id)
                 }
 
-                if (k.GetPlanetOreCount(ctx, structure.PlanetId) > 0) {
-                    k.DecreasePlanetOreCount(ctx, structure.PlanetId)
-                    k.IncreasePlanetOreCount(ctx, player.PlanetId)
+                if (k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, structure.PlanetId)) > 0) {
+
+                    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, structure.PlanetId), 1)
+                    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, player.Id), 1)
                 }
             }
         case "Small Generator":

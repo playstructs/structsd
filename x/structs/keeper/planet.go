@@ -80,8 +80,11 @@ func (k Keeper) GetPlanet(ctx sdk.Context, planetId string) (val types.Planet, f
 	}
 	k.cdc.MustUnmarshal(b, &val)
 
-	val.OreRemaining = val.MaxOre - k.GetPlanetRefinementCount(ctx, val.Id)
-    val.OreStored    = k.GetPlanetOreCount(ctx, val.Id)
+    planetOre := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, val.Id))
+    playerOre := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, val.Owner))
+
+    val.OreRemaining = planetOre
+    val.OreStored    = playerOre
 
 	return val, true
 }
@@ -103,8 +106,11 @@ func (k Keeper) GetAllPlanet(ctx sdk.Context) (list []types.Planet) {
 		var val types.Planet
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
-		val.OreRemaining = val.MaxOre - k.GetPlanetRefinementCount(ctx, val.Id)
-        val.OreStored    = k.GetPlanetOreCount(ctx, val.Id)
+        planetOre := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, val.Id))
+        playerOre := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, val.Owner))
+
+		val.OreRemaining = planetOre
+        val.OreStored    = playerOre
 
 		list = append(list, val)
 	}
@@ -114,7 +120,7 @@ func (k Keeper) GetAllPlanet(ctx sdk.Context) (list []types.Planet) {
 
 
 func (k Keeper) PlanetComplete(ctx sdk.Context, planet types.Planet) (bool) {
-    if (k.GetPlanetRefinementCount(ctx, planet.Id) < planet.MaxOre) {
+    if (planet.OreRemaining > 0) {
         return false
     }
 
@@ -122,87 +128,5 @@ func (k Keeper) PlanetComplete(ctx sdk.Context, planet types.Planet) (bool) {
     k.SetPlanet(ctx, planet)
     return true
 
-}
-
-func (k Keeper) GetPlanetRefinementCount(ctx sdk.Context, planetId string) (count uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlanetRefinementCountKey))
-
-	bz := store.Get([]byte(planetId))
-
-	if bz == nil {
-		count = 0
-	} else {
-		count = binary.BigEndian.Uint64(bz)
-	}
-
-	return
-}
-
-
-func (k Keeper) SetPlanetRefinementCount(ctx sdk.Context, planetId string, count uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlanetRefinementCountKey))
-
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, count)
-
-	store.Set([]byte(planetId), bz)
-
-	//_ = ctx.EventManager().EmitTypedEvent(&types.EventPlanetRefinementCount{Body: &types.EventBodyKeyPair{Key: planetId, Value: count}})
-}
-
-
-func (k Keeper) IncreasePlanetRefinementCount(ctx sdk.Context, planetId string) (uint64) {
-    current := k.GetPlanetRefinementCount(ctx, planetId)
-    current = current + 1
-
-    k.SetPlanetRefinementCount(ctx, planetId, current)
-    return current
-}
-
-
-
-
-func (k Keeper) GetPlanetOreCount(ctx sdk.Context, planetId string) (count uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlanetOreCountKey))
-
-	bz := store.Get([]byte(planetId))
-
-	if bz == nil {
-		count = 0
-	} else {
-		count = binary.BigEndian.Uint64(bz)
-	}
-
-	return
-}
-
-
-func (k Keeper) SetPlanetOreCount(ctx sdk.Context, planetId string, count uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlanetOreCountKey))
-
-	bz := make([]byte, 8)
-	binary.BigEndian.PutUint64(bz, count)
-
-	store.Set([]byte(planetId), bz)
-
-	//_ = ctx.EventManager().EmitTypedEvent(&types.EventPlanetOreCount{Body: &types.EventBodyKeyPair{Key: planetId, Value: count}})
-}
-
-
-func (k Keeper) IncreasePlanetOreCount(ctx sdk.Context, planetId string) (uint64) {
-    current := k.GetPlanetOreCount(ctx, planetId)
-    current = current + 1
-
-    k.SetPlanetOreCount(ctx, planetId, current)
-    return current
-}
-
-// TODO convert this into a function that errors out if already 0
-func (k Keeper) DecreasePlanetOreCount(ctx sdk.Context, planetId string) (uint64) {
-    current := k.GetPlanetOreCount(ctx, planetId)
-    current = current - 1
-
-    k.SetPlanetOreCount(ctx, planetId, current)
-    return current
 }
 

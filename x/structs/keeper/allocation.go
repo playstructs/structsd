@@ -199,7 +199,7 @@ func (k Keeper) RemoveAllocation(ctx sdk.Context, allocationId string) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AllocationKey))
 	store.Delete([]byte(allocationId))
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventAllocationDelete{AllocationId: allocationId})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventDelete{ObjectId: allocationId})
 }
 
 // DestroyAllocation updates grid attributes before calling RemoveAllocation
