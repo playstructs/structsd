@@ -119,6 +119,8 @@ func (k Keeper) GetPlayerFromIndex(ctx sdk.Context, playerIndex uint64, full boo
 func (k Keeper) RemovePlayer(ctx sdk.Context, playerId string) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
 	store.Delete([]byte(playerId))
+
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventDelete{ ObjectId: playerId })
 }
 
 // GetAllPlayer returns all player

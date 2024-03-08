@@ -45,3 +45,9 @@ enum guildJoinBypassLevel {
     permissioned  = 1; // Only those with permissions can do it
     member        = 2; // All members of the guild can contribute
 }
+
+enum registrationStatus {
+    proposed  = 0;
+    approved  = 1;
+    denied    = 2;
+}

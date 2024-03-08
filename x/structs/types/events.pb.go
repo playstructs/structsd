@@ -429,23 +429,23 @@ func (m *EventPermission) GetValue() uint64 {
 	return 0
 }
 
-type EventGridAttribute struct {
+type EventGrid struct {
 	AttributeId string `protobuf:"bytes,1,opt,name=attributeId,proto3" json:"attributeId,omitempty"`
 	Value       uint64 `protobuf:"varint,2,opt,name=value,proto3" json:"value,omitempty"`
 }
 
-func (m *EventGridAttribute) Reset()         { *m = EventGridAttribute{} }
-func (m *EventGridAttribute) String() string { return proto.CompactTextString(m) }
-func (*EventGridAttribute) ProtoMessage()    {}
-func (*EventGridAttribute) Descriptor() ([]byte, []int) {
+func (m *EventGrid) Reset()         { *m = EventGrid{} }
+func (m *EventGrid) String() string { return proto.CompactTextString(m) }
+func (*EventGrid) ProtoMessage()    {}
+func (*EventGrid) Descriptor() ([]byte, []int) {
 	return fileDescriptor_dd7c2ee201e0d8dd, []int{9}
 }
-func (m *EventGridAttribute) XXX_Unmarshal(b []byte) error {
+func (m *EventGrid) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *EventGridAttribute) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *EventGrid) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_EventGridAttribute.Marshal(b, m, deterministic)
+		return xxx_messageInfo_EventGrid.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -455,26 +455,26 @@ func (m *EventGridAttribute) XXX_Marshal(b []byte, deterministic bool) ([]byte, 
 		return b[:n], nil
 	}
 }
-func (m *EventGridAttribute) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventGridAttribute.Merge(m, src)
+func (m *EventGrid) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventGrid.Merge(m, src)
 }
-func (m *EventGridAttribute) XXX_Size() int {
+func (m *EventGrid) XXX_Size() int {
 	return m.Size()
 }
-func (m *EventGridAttribute) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventGridAttribute.DiscardUnknown(m)
+func (m *EventGrid) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventGrid.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_EventGridAttribute proto.InternalMessageInfo
+var xxx_messageInfo_EventGrid proto.InternalMessageInfo
 
-func (m *EventGridAttribute) GetAttributeId() string {
+func (m *EventGrid) GetAttributeId() string {
 	if m != nil {
 		return m.AttributeId
 	}
 	return ""
 }
 
-func (m *EventGridAttribute) GetValue() uint64 {
+func (m *EventGrid) GetValue() uint64 {
 	if m != nil {
 		return m.Value
 	}
@@ -526,7 +526,9 @@ func (m *EventDelete) GetObjectId() string {
 }
 
 type EventAddressAssociation struct {
-	Address *EventAddressBody `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	Address            string             `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	PlayerIndex        uint64             `protobuf:"varint,2,opt,name=playerIndex,proto3" json:"playerIndex,omitempty"`
+	RegistrationStatus RegistrationStatus `protobuf:"varint,3,opt,name=registrationStatus,proto3,enum=structs.RegistrationStatus" json:"registrationStatus,omitempty"`
 }
 
 func (m *EventAddressAssociation) Reset()         { *m = EventAddressAssociation{} }
@@ -562,107 +564,85 @@ func (m *EventAddressAssociation) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_EventAddressAssociation proto.InternalMessageInfo
 
-func (m *EventAddressAssociation) GetAddress() *EventAddressBody {
-	if m != nil {
-		return m.Address
-	}
-	return nil
-}
-
-type EventAddressRegistrationRequest struct {
-	Address *EventAddressBody `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-}
-
-func (m *EventAddressRegistrationRequest) Reset()         { *m = EventAddressRegistrationRequest{} }
-func (m *EventAddressRegistrationRequest) String() string { return proto.CompactTextString(m) }
-func (*EventAddressRegistrationRequest) ProtoMessage()    {}
-func (*EventAddressRegistrationRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{12}
-}
-func (m *EventAddressRegistrationRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *EventAddressRegistrationRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_EventAddressRegistrationRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *EventAddressRegistrationRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventAddressRegistrationRequest.Merge(m, src)
-}
-func (m *EventAddressRegistrationRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *EventAddressRegistrationRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventAddressRegistrationRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_EventAddressRegistrationRequest proto.InternalMessageInfo
-
-func (m *EventAddressRegistrationRequest) GetAddress() *EventAddressBody {
-	if m != nil {
-		return m.Address
-	}
-	return nil
-}
-
-type EventAddressBody struct {
-	Address  string `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	PlayerId string `protobuf:"bytes,2,opt,name=playerId,proto3" json:"playerId,omitempty"`
-}
-
-func (m *EventAddressBody) Reset()         { *m = EventAddressBody{} }
-func (m *EventAddressBody) String() string { return proto.CompactTextString(m) }
-func (*EventAddressBody) ProtoMessage()    {}
-func (*EventAddressBody) Descriptor() ([]byte, []int) {
-	return fileDescriptor_dd7c2ee201e0d8dd, []int{13}
-}
-func (m *EventAddressBody) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *EventAddressBody) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_EventAddressBody.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *EventAddressBody) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_EventAddressBody.Merge(m, src)
-}
-func (m *EventAddressBody) XXX_Size() int {
-	return m.Size()
-}
-func (m *EventAddressBody) XXX_DiscardUnknown() {
-	xxx_messageInfo_EventAddressBody.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_EventAddressBody proto.InternalMessageInfo
-
-func (m *EventAddressBody) GetAddress() string {
+func (m *EventAddressAssociation) GetAddress() string {
 	if m != nil {
 		return m.Address
 	}
 	return ""
 }
 
-func (m *EventAddressBody) GetPlayerId() string {
+func (m *EventAddressAssociation) GetPlayerIndex() uint64 {
+	if m != nil {
+		return m.PlayerIndex
+	}
+	return 0
+}
+
+func (m *EventAddressAssociation) GetRegistrationStatus() RegistrationStatus {
+	if m != nil {
+		return m.RegistrationStatus
+	}
+	return RegistrationStatus_proposed
+}
+
+type EventGuildAssociation struct {
+	GuildId            string             `protobuf:"bytes,1,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	PlayerId           string             `protobuf:"bytes,2,opt,name=playerId,proto3" json:"playerId,omitempty"`
+	RegistrationStatus RegistrationStatus `protobuf:"varint,3,opt,name=registrationStatus,proto3,enum=structs.RegistrationStatus" json:"registrationStatus,omitempty"`
+}
+
+func (m *EventGuildAssociation) Reset()         { *m = EventGuildAssociation{} }
+func (m *EventGuildAssociation) String() string { return proto.CompactTextString(m) }
+func (*EventGuildAssociation) ProtoMessage()    {}
+func (*EventGuildAssociation) Descriptor() ([]byte, []int) {
+	return fileDescriptor_dd7c2ee201e0d8dd, []int{12}
+}
+func (m *EventGuildAssociation) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *EventGuildAssociation) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_EventGuildAssociation.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *EventGuildAssociation) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_EventGuildAssociation.Merge(m, src)
+}
+func (m *EventGuildAssociation) XXX_Size() int {
+	return m.Size()
+}
+func (m *EventGuildAssociation) XXX_DiscardUnknown() {
+	xxx_messageInfo_EventGuildAssociation.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_EventGuildAssociation proto.InternalMessageInfo
+
+func (m *EventGuildAssociation) GetGuildId() string {
+	if m != nil {
+		return m.GuildId
+	}
+	return ""
+}
+
+func (m *EventGuildAssociation) GetPlayerId() string {
 	if m != nil {
 		return m.PlayerId
 	}
 	return ""
+}
+
+func (m *EventGuildAssociation) GetRegistrationStatus() RegistrationStatus {
+	if m != nil {
+		return m.RegistrationStatus
+	}
+	return RegistrationStatus_proposed
 }
 
 func init() {
@@ -675,53 +655,54 @@ func init() {
 	proto.RegisterType((*EventStruct)(nil), "structs.EventStruct")
 	proto.RegisterType((*EventSubstation)(nil), "structs.EventSubstation")
 	proto.RegisterType((*EventPermission)(nil), "structs.EventPermission")
-	proto.RegisterType((*EventGridAttribute)(nil), "structs.EventGridAttribute")
+	proto.RegisterType((*EventGrid)(nil), "structs.EventGrid")
 	proto.RegisterType((*EventDelete)(nil), "structs.EventDelete")
 	proto.RegisterType((*EventAddressAssociation)(nil), "structs.EventAddressAssociation")
-	proto.RegisterType((*EventAddressRegistrationRequest)(nil), "structs.EventAddressRegistrationRequest")
-	proto.RegisterType((*EventAddressBody)(nil), "structs.EventAddressBody")
+	proto.RegisterType((*EventGuildAssociation)(nil), "structs.EventGuildAssociation")
 }
 
 func init() { proto.RegisterFile("structs/structs/events.proto", fileDescriptor_dd7c2ee201e0d8dd) }
 
 var fileDescriptor_dd7c2ee201e0d8dd = []byte{
-	// 576 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x53, 0x4d, 0x6f, 0xd3, 0x30,
-	0x18, 0x5e, 0x10, 0xfb, 0xa8, 0x07, 0x6c, 0x98, 0x49, 0x2b, 0x65, 0x84, 0x2a, 0x42, 0x62, 0x4c,
-	0x5a, 0xa3, 0x6e, 0x12, 0x07, 0x84, 0x90, 0x3a, 0x3e, 0x2b, 0x21, 0x34, 0x79, 0x12, 0x07, 0x6e,
-	0x4e, 0xf2, 0x12, 0x05, 0xd2, 0xb8, 0xb3, 0x9d, 0x8a, 0xfc, 0x0b, 0x7e, 0x16, 0xc7, 0x1d, 0x39,
-	0xa2, 0xf6, 0x8f, 0xa0, 0xfa, 0xab, 0x21, 0xa3, 0x3d, 0x70, 0x4a, 0xec, 0xe7, 0x23, 0x7e, 0x9f,
-	0x27, 0x46, 0x07, 0x42, 0xf2, 0x32, 0x96, 0x22, 0xb4, 0x4f, 0x98, 0x40, 0x21, 0x45, 0x6f, 0xcc,
-	0x99, 0x64, 0x78, 0xd3, 0xec, 0x76, 0xf6, 0x52, 0x96, 0x32, 0xb5, 0x17, 0xce, 0xdf, 0x34, 0xdc,
-	0x39, 0x48, 0x19, 0x4b, 0x73, 0x08, 0xe9, 0x38, 0x0b, 0x69, 0x51, 0x30, 0x49, 0x65, 0xc6, 0x0a,
-	0x23, 0xee, 0x1c, 0xc5, 0x4c, 0x8c, 0x98, 0x08, 0x23, 0x2a, 0x20, 0xbc, 0x2c, 0x81, 0x57, 0xe1,
-	0xa4, 0x1f, 0x81, 0xa4, 0xfd, 0x70, 0x4c, 0xd3, 0xac, 0x50, 0x64, 0xeb, 0xd4, 0x3c, 0xc6, 0x98,
-	0x72, 0x3a, 0xb2, 0x4e, 0x9d, 0x26, 0xfa, 0x0d, 0x2a, 0x8b, 0x75, 0x9b, 0x18, 0xcd, 0x73, 0x16,
-	0xd7, 0xbd, 0x1f, 0x34, 0x19, 0x69, 0x99, 0xe5, 0x89, 0x01, 0xfd, 0x26, 0x98, 0x15, 0x5f, 0x4a,
-	0xb1, 0xea, 0x60, 0x39, 0x2d, 0x40, 0xae, 0x40, 0x2b, 0xe0, 0x06, 0x7d, 0xd8, 0x44, 0x39, 0xd0,
-	0x58, 0x32, 0xbe, 0x4c, 0xac, 0x9f, 0xcb, 0xe6, 0x12, 0x65, 0x24, 0x64, 0x6d, 0xae, 0xe0, 0x2d,
-	0xda, 0x79, 0x33, 0x2f, 0x6b, 0xe0, 0x06, 0xc6, 0xa7, 0x08, 0x2d, 0xc6, 0x6f, 0x7b, 0x5d, 0xef,
-	0x70, 0xfb, 0xe4, 0x5e, 0xcf, 0x38, 0xf4, 0x16, 0x44, 0x52, 0xa3, 0x05, 0x27, 0x08, 0x29, 0x9f,
-	0x77, 0xf3, 0x58, 0xf0, 0x63, 0xb4, 0xae, 0xf2, 0x31, 0xea, 0x3b, 0x4e, 0xad, 0x60, 0xa2, 0xc1,
-	0xe0, 0x25, 0xba, 0xad, 0x34, 0x43, 0x93, 0x16, 0x3e, 0x46, 0x5b, 0x36, 0x39, 0xa3, 0xbc, 0xeb,
-	0x94, 0x96, 0x44, 0x1c, 0x25, 0x78, 0x86, 0xb6, 0x95, 0xfe, 0x5c, 0xa5, 0x89, 0x9f, 0xa0, 0x0d,
-	0x9d, 0xab, 0xd1, 0xee, 0x38, 0xad, 0x26, 0x10, 0x03, 0xd7, 0x75, 0x15, 0x70, 0xa3, 0xab, 0x80,
-	0xff, 0x4b, 0x57, 0x01, 0x27, 0x06, 0x0e, 0x9e, 0xa3, 0x5b, 0x4a, 0x47, 0x74, 0x03, 0xf8, 0x08,
-	0x6d, 0x9a, 0x32, 0x8c, 0x72, 0xd7, 0x29, 0x0d, 0x85, 0x58, 0x42, 0xf0, 0xc2, 0x7c, 0xf3, 0x42,
-	0x11, 0xf0, 0x31, 0x6a, 0x69, 0x6a, 0xc9, 0xe1, 0xda, 0x67, 0x35, 0x87, 0x2c, 0x18, 0xae, 0xa5,
-	0x0b, 0x57, 0xdf, 0xbc, 0xa5, 0x45, 0x99, 0xd7, 0x5a, 0x5a, 0x10, 0x49, 0x8d, 0x16, 0xbc, 0x32,
-	0x3e, 0xe7, 0xc0, 0x47, 0x99, 0x50, 0x99, 0x77, 0xd0, 0x16, 0x8b, 0xbe, 0x42, 0x2c, 0x87, 0xba,
-	0xad, 0x16, 0x71, 0x6b, 0xbc, 0x87, 0xd6, 0x27, 0x34, 0x2f, 0xa1, 0x7d, 0xa3, 0xeb, 0x1d, 0xde,
-	0x24, 0x7a, 0x11, 0x7c, 0x40, 0x58, 0x57, 0xcd, 0xb3, 0x64, 0x20, 0x25, 0xcf, 0xa2, 0x52, 0x02,
-	0xee, 0xa2, 0x6d, 0x6a, 0x17, 0xce, 0xaa, 0xbe, 0xb5, 0xc4, 0xed, 0xa9, 0x09, 0xe6, 0x35, 0xe4,
-	0x20, 0x61, 0xd5, 0x71, 0x82, 0x8f, 0x68, 0x5f, 0xff, 0xab, 0x49, 0xc2, 0x41, 0x88, 0x81, 0x10,
-	0x2c, 0xce, 0x6c, 0x1a, 0x9b, 0x54, 0xef, 0x9a, 0x28, 0xee, 0xbb, 0x28, 0xea, 0x92, 0x33, 0x96,
-	0x54, 0xc4, 0x32, 0x83, 0x4f, 0xe8, 0x51, 0x1d, 0x24, 0x90, 0x66, 0x42, 0x72, 0x9d, 0x1a, 0x5c,
-	0x96, 0x20, 0xe4, 0xff, 0xf9, 0xbe, 0x47, 0xbb, 0x4d, 0x10, 0xb7, 0xff, 0x36, 0x6a, 0x39, 0xf6,
-	0x7c, 0x62, 0xfd, 0x7f, 0x0d, 0x13, 0x95, 0x4c, 0x8b, 0xb8, 0xf5, 0x59, 0xff, 0xe7, 0xd4, 0xf7,
-	0xae, 0xa6, 0xbe, 0xf7, 0x7b, 0xea, 0x7b, 0x3f, 0x66, 0xfe, 0xda, 0xd5, 0xcc, 0x5f, 0xfb, 0x35,
-	0xf3, 0xd7, 0x3e, 0xef, 0xdb, 0x1b, 0xfd, 0xdd, 0xdd, 0x6d, 0x59, 0x8d, 0x41, 0x44, 0x1b, 0xea,
-	0x5e, 0x9f, 0xfe, 0x09, 0x00, 0x00, 0xff, 0xff, 0x26, 0x6a, 0x4f, 0x0f, 0x94, 0x05, 0x00, 0x00,
+	// 599 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xac, 0x54, 0x4d, 0x6f, 0xd3, 0x40,
+	0x10, 0xad, 0x81, 0x7e, 0x64, 0x03, 0x2d, 0x98, 0xa2, 0x46, 0x69, 0xb1, 0x22, 0x0b, 0x89, 0x50,
+	0xa9, 0xb1, 0x92, 0x4a, 0x1c, 0x10, 0x42, 0x2a, 0xe5, 0x43, 0x11, 0x97, 0x6a, 0x73, 0xe3, 0xb6,
+	0xb6, 0x07, 0xcb, 0xe0, 0x78, 0xc3, 0xee, 0x3a, 0xaa, 0xff, 0x05, 0x67, 0x8e, 0xfc, 0x1a, 0x8e,
+	0x3d, 0x72, 0x44, 0xc9, 0x1f, 0x41, 0xde, 0x5d, 0xaf, 0x2d, 0xa7, 0xc9, 0x89, 0x93, 0xb3, 0xf3,
+	0xde, 0x1b, 0xcf, 0xbc, 0xe7, 0x2c, 0x3a, 0xe1, 0x82, 0x65, 0x81, 0xe0, 0x5e, 0xf9, 0x84, 0x39,
+	0xa4, 0x82, 0x0f, 0x66, 0x8c, 0x0a, 0x6a, 0xef, 0xea, 0x6a, 0xf7, 0x30, 0xa2, 0x11, 0x95, 0x35,
+	0xaf, 0xf8, 0xa5, 0xe0, 0xee, 0x49, 0x44, 0x69, 0x94, 0x80, 0x47, 0x66, 0xb1, 0x47, 0xd2, 0x94,
+	0x0a, 0x22, 0x62, 0x9a, 0x6a, 0x71, 0xf7, 0x34, 0xa0, 0x7c, 0x4a, 0xb9, 0xe7, 0x13, 0x0e, 0xde,
+	0xf7, 0x0c, 0x58, 0xee, 0xcd, 0x87, 0x3e, 0x08, 0x32, 0xf4, 0x66, 0x24, 0x8a, 0x53, 0x49, 0x2e,
+	0x3b, 0x35, 0xc7, 0x98, 0x11, 0x46, 0xa6, 0x65, 0xa7, 0x6e, 0x13, 0xfd, 0x06, 0x79, 0x89, 0xf5,
+	0x9a, 0x18, 0x49, 0x12, 0x1a, 0xd4, 0x7b, 0x1f, 0x37, 0x19, 0x51, 0x16, 0x27, 0xa1, 0x06, 0x9d,
+	0x26, 0x18, 0xa7, 0x5f, 0x32, 0xbe, 0x69, 0xb0, 0x84, 0xa4, 0x20, 0x36, 0xa0, 0x39, 0x30, 0x8d,
+	0x3e, 0x6d, 0xa2, 0x0c, 0x48, 0x20, 0x28, 0x5b, 0x27, 0x56, 0xcf, 0x75, 0x7b, 0xf1, 0xcc, 0xe7,
+	0xa2, 0xb6, 0x97, 0xfb, 0x01, 0x1d, 0xbc, 0x2f, 0xc2, 0xba, 0x30, 0x0b, 0xdb, 0xe7, 0x08, 0x55,
+	0xeb, 0x77, 0xac, 0x9e, 0xd5, 0x6f, 0x8f, 0x1e, 0x0f, 0x74, 0x87, 0x41, 0x45, 0xc4, 0x35, 0x9a,
+	0x3b, 0x42, 0x48, 0xf6, 0xf9, 0x58, 0xd8, 0x62, 0x3f, 0x43, 0xdb, 0xd2, 0x1f, 0xad, 0xde, 0x37,
+	0x6a, 0x09, 0x63, 0x05, 0xba, 0x6f, 0xd0, 0x03, 0xa9, 0x19, 0x6b, 0xb7, 0xec, 0x33, 0xb4, 0x57,
+	0x3a, 0xa7, 0x95, 0x8f, 0x8c, 0xb2, 0x24, 0x61, 0x43, 0x71, 0x5f, 0xa2, 0xb6, 0xd4, 0x5f, 0x49,
+	0x37, 0xed, 0xe7, 0x68, 0x47, 0xf9, 0xaa, 0xb5, 0x07, 0x46, 0xab, 0x08, 0x58, 0xc3, 0x75, 0x5d,
+	0x0e, 0x4c, 0xeb, 0x72, 0x60, 0xb7, 0xe9, 0x72, 0x60, 0x58, 0xc3, 0xee, 0x2b, 0x74, 0x5f, 0xea,
+	0xb0, 0x4a, 0xc0, 0x3e, 0x45, 0xbb, 0x3a, 0x0c, 0xad, 0x7c, 0x68, 0x94, 0x9a, 0x82, 0x4b, 0x82,
+	0xfb, 0x5a, 0xbf, 0x73, 0x22, 0x09, 0xf6, 0x19, 0x6a, 0x29, 0x6a, 0xc6, 0x60, 0xe5, 0xb5, 0x8a,
+	0x83, 0x2b, 0x86, 0x49, 0x69, 0x62, 0xe2, 0x2b, 0x52, 0xaa, 0xc2, 0x5c, 0x49, 0xa9, 0x22, 0xe2,
+	0x1a, 0xcd, 0xbd, 0xd4, 0x7d, 0xae, 0x80, 0x4d, 0x63, 0x2e, 0x3d, 0xef, 0xa2, 0x3d, 0xea, 0x7f,
+	0x85, 0x40, 0x8c, 0x55, 0x5a, 0x2d, 0x6c, 0xce, 0xf6, 0x21, 0xda, 0x9e, 0x93, 0x24, 0x83, 0xce,
+	0x9d, 0x9e, 0xd5, 0xbf, 0x87, 0xd5, 0xc1, 0xbd, 0x44, 0x2d, 0x15, 0x35, 0x8b, 0x43, 0xbb, 0x87,
+	0xda, 0x44, 0x08, 0x16, 0xfb, 0x99, 0x00, 0xd3, 0xa1, 0x5e, 0x5a, 0xd3, 0xe4, 0x85, 0xf6, 0xe3,
+	0x1d, 0x24, 0x20, 0x60, 0xd3, 0x14, 0xee, 0x2f, 0x0b, 0x1d, 0xa9, 0x6f, 0x34, 0x0c, 0x19, 0x70,
+	0x7e, 0xc1, 0x39, 0x0d, 0x62, 0xe5, 0x42, 0x07, 0xed, 0x12, 0x55, 0xd5, 0xb2, 0xf2, 0x58, 0x0c,
+	0xa6, 0x62, 0x1b, 0xa7, 0x21, 0x5c, 0xeb, 0x97, 0xd7, 0x4b, 0xf6, 0x27, 0x64, 0x33, 0x88, 0x62,
+	0x2e, 0x98, 0xec, 0x35, 0x11, 0x44, 0x64, 0xbc, 0x73, 0xb7, 0x67, 0xf5, 0xf7, 0x47, 0xc7, 0xc6,
+	0xc9, 0x55, 0x0a, 0xbe, 0x45, 0xe6, 0xfe, 0xb4, 0xd0, 0x93, 0xea, 0x0f, 0xd0, 0x18, 0x51, 0x7e,
+	0xee, 0x66, 0xb3, 0xf2, 0x58, 0x2c, 0xad, 0xe7, 0x09, 0xe5, 0x7c, 0x2d, 0x6c, 0xce, 0xff, 0x75,
+	0xb8, 0xb7, 0xc3, 0xdf, 0x0b, 0xc7, 0xba, 0x59, 0x38, 0xd6, 0xdf, 0x85, 0x63, 0xfd, 0x58, 0x3a,
+	0x5b, 0x37, 0x4b, 0x67, 0xeb, 0xcf, 0xd2, 0xd9, 0xfa, 0x7c, 0x54, 0x5e, 0x0c, 0xd7, 0xe6, 0x8a,
+	0x10, 0xf9, 0x0c, 0xb8, 0xbf, 0x23, 0xaf, 0x87, 0xf3, 0x7f, 0x01, 0x00, 0x00, 0xff, 0xff, 0x1f,
+	0x06, 0x7b, 0x0c, 0xdb, 0x05, 0x00, 0x00,
 }
 
 func (m *EventAllocation) Marshal() (dAtA []byte, err error) {
@@ -1039,7 +1020,7 @@ func (m *EventPermission) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *EventGridAttribute) Marshal() (dAtA []byte, err error) {
+func (m *EventGrid) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1049,12 +1030,12 @@ func (m *EventGridAttribute) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventGridAttribute) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventGrid) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventGridAttribute) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventGrid) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -1124,22 +1105,27 @@ func (m *EventAddressAssociation) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	_ = i
 	var l int
 	_ = l
-	if m.Address != nil {
-		{
-			size, err := m.Address.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintEvents(dAtA, i, uint64(size))
-		}
+	if m.RegistrationStatus != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.RegistrationStatus))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.PlayerIndex != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.PlayerIndex))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.Address)))
 		i--
 		dAtA[i] = 0xa
 	}
 	return len(dAtA) - i, nil
 }
 
-func (m *EventAddressRegistrationRequest) Marshal() (dAtA []byte, err error) {
+func (m *EventGuildAssociation) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -1149,51 +1135,21 @@ func (m *EventAddressRegistrationRequest) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *EventAddressRegistrationRequest) MarshalTo(dAtA []byte) (int, error) {
+func (m *EventGuildAssociation) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *EventAddressRegistrationRequest) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *EventGuildAssociation) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if m.Address != nil {
-		{
-			size, err := m.Address.MarshalToSizedBuffer(dAtA[:i])
-			if err != nil {
-				return 0, err
-			}
-			i -= size
-			i = encodeVarintEvents(dAtA, i, uint64(size))
-		}
+	if m.RegistrationStatus != 0 {
+		i = encodeVarintEvents(dAtA, i, uint64(m.RegistrationStatus))
 		i--
-		dAtA[i] = 0xa
+		dAtA[i] = 0x18
 	}
-	return len(dAtA) - i, nil
-}
-
-func (m *EventAddressBody) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *EventAddressBody) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *EventAddressBody) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
 	if len(m.PlayerId) > 0 {
 		i -= len(m.PlayerId)
 		copy(dAtA[i:], m.PlayerId)
@@ -1201,10 +1157,10 @@ func (m *EventAddressBody) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x12
 	}
-	if len(m.Address) > 0 {
-		i -= len(m.Address)
-		copy(dAtA[i:], m.Address)
-		i = encodeVarintEvents(dAtA, i, uint64(len(m.Address)))
+	if len(m.GuildId) > 0 {
+		i -= len(m.GuildId)
+		copy(dAtA[i:], m.GuildId)
+		i = encodeVarintEvents(dAtA, i, uint64(len(m.GuildId)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -1342,7 +1298,7 @@ func (m *EventPermission) Size() (n int) {
 	return n
 }
 
-func (m *EventGridAttribute) Size() (n int) {
+func (m *EventGrid) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -1377,39 +1333,35 @@ func (m *EventAddressAssociation) Size() (n int) {
 	}
 	var l int
 	_ = l
-	if m.Address != nil {
-		l = m.Address.Size()
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	return n
-}
-
-func (m *EventAddressRegistrationRequest) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	if m.Address != nil {
-		l = m.Address.Size()
-		n += 1 + l + sovEvents(uint64(l))
-	}
-	return n
-}
-
-func (m *EventAddressBody) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
 	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovEvents(uint64(l))
+	}
+	if m.PlayerIndex != 0 {
+		n += 1 + sovEvents(uint64(m.PlayerIndex))
+	}
+	if m.RegistrationStatus != 0 {
+		n += 1 + sovEvents(uint64(m.RegistrationStatus))
+	}
+	return n
+}
+
+func (m *EventGuildAssociation) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.GuildId)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
 	}
 	l = len(m.PlayerId)
 	if l > 0 {
 		n += 1 + l + sovEvents(uint64(l))
+	}
+	if m.RegistrationStatus != 0 {
+		n += 1 + sovEvents(uint64(m.RegistrationStatus))
 	}
 	return n
 }
@@ -2209,7 +2161,7 @@ func (m *EventPermission) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *EventGridAttribute) Unmarshal(dAtA []byte) error {
+func (m *EventGrid) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -2232,10 +2184,10 @@ func (m *EventGridAttribute) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: EventGridAttribute: wiretype end group for non-group")
+			return fmt.Errorf("proto: EventGrid: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventGridAttribute: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: EventGrid: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -2425,178 +2377,6 @@ func (m *EventAddressAssociation) Unmarshal(dAtA []byte) error {
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Address == nil {
-				m.Address = &EventAddressBody{}
-			}
-			if err := m.Address.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipEvents(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *EventAddressRegistrationRequest) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowEvents
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: EventAddressRegistrationRequest: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventAddressRegistrationRequest: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowEvents
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthEvents
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			if m.Address == nil {
-				m.Address = &EventAddressBody{}
-			}
-			if err := m.Address.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipEvents(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthEvents
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *EventAddressBody) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowEvents
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: EventAddressBody: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: EventAddressBody: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
-			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
@@ -2624,6 +2404,126 @@ func (m *EventAddressBody) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PlayerIndex", wireType)
+			}
+			m.PlayerIndex = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PlayerIndex |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RegistrationStatus", wireType)
+			}
+			m.RegistrationStatus = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.RegistrationStatus |= RegistrationStatus(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipEvents(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *EventGuildAssociation) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowEvents
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: EventGuildAssociation: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: EventGuildAssociation: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthEvents
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthEvents
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GuildId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
@@ -2657,6 +2557,25 @@ func (m *EventAddressBody) Unmarshal(dAtA []byte) error {
 			}
 			m.PlayerId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field RegistrationStatus", wireType)
+			}
+			m.RegistrationStatus = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowEvents
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.RegistrationStatus |= RegistrationStatus(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipEvents(dAtA[iNdEx:])

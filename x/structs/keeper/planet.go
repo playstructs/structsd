@@ -56,7 +56,6 @@ func (k Keeper) AppendPlanet(
 	// Update planet count
 	k.SetPlanetCount(ctx, count+1)
 
-
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlanet{Planet: &planet})
 
 	return planet
@@ -93,6 +92,8 @@ func (k Keeper) GetPlanet(ctx sdk.Context, planetId string) (val types.Planet, f
 func (k Keeper) RemovePlanet(ctx sdk.Context, planetId string) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlanetKey))
 	store.Delete([]byte(planetId))
+
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventDelete{ ObjectId: planetId })
 }
 
 // GetAllPlanet returns all planet

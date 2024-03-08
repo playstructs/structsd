@@ -63,7 +63,8 @@ func (k Keeper) SetGridAttribute(ctx sdk.Context, gridAttributeId string, amount
 
 	store.Set([]byte(gridAttributeId), bz)
 
-    //_ = ctx.EventManager().EmitTypedEvent(&types.EventGridUpdate{Body: &types.EventBodyKeyPair{Key: gridAttributeId, Value: amount}})
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventGrid{AttributeId: gridAttributeId, Value: amount})
+    fmt.Printf("Grid Change (Set): (%s) %d \n", gridAttributeId, amount)
 }
 
 func (k Keeper) SetGridAttributeDelta(ctx sdk.Context, gridAttributeId string, oldAmount uint64, newAmount uint64) (amount uint64, err error) {
@@ -76,6 +77,7 @@ func (k Keeper) SetGridAttributeDelta(ctx sdk.Context, gridAttributeId string, o
     resetAmount := currentAmount - oldAmount
     amount = resetAmount + newAmount
 
+    fmt.Printf("Grid Change (Delta): (%s) %d to %d \n", gridAttributeId, oldAmount, newAmount)
     k.SetGridAttribute(ctx, gridAttributeId, amount)
 
     return
@@ -90,6 +92,7 @@ func (k Keeper) SetGridAttributeDecrement(ctx sdk.Context, gridAttributeId strin
 
     amount = currentAmount - decrementAmount
 
+    fmt.Printf("Grid Change (Decrement): (%s) %d \n", gridAttributeId, decrementAmount)
     k.SetGridAttribute(ctx, gridAttributeId, amount)
 
     return
@@ -98,8 +101,9 @@ func (k Keeper) SetGridAttributeDecrement(ctx sdk.Context, gridAttributeId strin
 func (k Keeper) SetGridAttributeIncrement(ctx sdk.Context, gridAttributeId string, incrementAmount uint64) (amount uint64) {
     currentAmount := k.GetGridAttribute(ctx, gridAttributeId)
 
-    amount = currentAmount - incrementAmount
+    amount = currentAmount + incrementAmount
 
+    fmt.Printf("Grid Change (Increment): (%s) %d \n", gridAttributeId, incrementAmount)
     k.SetGridAttribute(ctx, gridAttributeId, amount)
 
     return
@@ -130,6 +134,8 @@ func (k Keeper) AppendGridCascadeQueue(ctx sdk.Context, queueId string) (err err
 
 	gridCascadeQueueStore.Set([]byte(queueId), bz)
 
+    fmt.Printf("Grid Queue (Add): (%s) \n", queueId)
+
 	return err
 }
 
@@ -158,13 +164,14 @@ func (k Keeper) GridCascade(ctx sdk.Context) {
             allocationPointerEnd = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerEnd, objectId))
 
             for (k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)) > k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId))) {
-
+                fmt.Printf("Grid Queue (Brownout): (%s) Load: %d Capacity: %d \n", objectId, k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)),  k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId)))
                 // Iterate through the allocationPointer until we successfully delete an allocation
                 for {
                     allocationDestroyed = k.DestroyAllocation(ctx, GetAllocationID(objectId, allocationPointer))
                     allocationPointer   = allocationPointer + 1
 
                     if ((allocationDestroyed) || (allocationPointer > allocationPointerEnd)) {
+                        fmt.Printf("Grid Queue (Allocation Destroyed): (%s) \n", GetAllocationID(objectId, allocationPointer))
                         break
                     }
                 }

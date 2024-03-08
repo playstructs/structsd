@@ -30,21 +30,21 @@ message EventStruct       { Struct structure = 1; }
 message EventSubstation   { Substation substation = 1; }
 
 message EventPermission { string objectId = 1; uint64 value = 2; }
-message EventGridAttribute { string attributeId = 1; uint64 value = 2;}
+message EventGrid { string attributeId = 1; uint64 value = 2;}
 
 message EventDelete { string objectId = 1; }
 
+
 message EventAddressAssociation {
-  EventAddressBody address = 1;
-}
-
-message EventAddressRegistrationRequest {
-  EventAddressBody address = 1;
-}
-
-message EventAddressBody {
   string address = 1;
+  uint64 playerIndex = 2;
+  registrationStatus registrationStatus = 3;
+}
+
+message EventGuildAssociation {
+  string guildId = 1;
   string playerId = 2;
+  registrationStatus registrationStatus = 3;
 }
 
 

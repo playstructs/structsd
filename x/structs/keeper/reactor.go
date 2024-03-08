@@ -83,7 +83,6 @@ func (k Keeper) AppendReactor(
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventReactor{Reactor: &reactor})
 
-
 	return reactor
 }
 

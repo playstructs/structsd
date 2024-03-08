@@ -118,15 +118,15 @@ func (k Keeper) GetAllGuild(ctx sdk.Context) (list []types.Guild) {
 }
 
 
-
-
 func (k Keeper) GuildSetRegisterRequest(ctx sdk.Context, guild types.Guild, player types.Player) {
-    	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GuildRegistrationKey))
+    store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GuildRegistrationKey))
 
-    	bz := make([]byte, 8)
-    	binary.BigEndian.PutUint64(bz, guild.Index)
+    bz := make([]byte, 8)
+    binary.BigEndian.PutUint64(bz, guild.Index)
 
-    	store.Set([]byte(player.Id), bz)
+    store.Set([]byte(player.Id), bz)
+
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventGuildAssociation{GuildId: guild.Id, PlayerId: player.Id, RegistrationStatus: types.RegistrationStatus_proposed})
 }
 
 func (k Keeper) GuildApproveRegisterRequest(ctx sdk.Context, guild types.Guild, player types.Player) {
@@ -154,6 +154,9 @@ func (k Keeper) GuildApproveRegisterRequest(ctx sdk.Context, guild types.Guild, 
 
             store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GuildRegistrationKey))
             store.Delete([]byte(player.Id))
+
+            _ = ctx.EventManager().EmitTypedEvent(&types.EventGuildAssociation{GuildId: guild.Id, PlayerId: player.Id, RegistrationStatus: types.RegistrationStatus_approved})
+
     }
 
 }
@@ -161,8 +164,10 @@ func (k Keeper) GuildApproveRegisterRequest(ctx sdk.Context, guild types.Guild, 
 func (k Keeper) GuildDenyRegisterRequest(ctx sdk.Context, guild types.Guild, player types.Player) {
     registrationGuild, registrationFound := k.GuildGetRegisterRequest(ctx, player)
     if ((registrationFound) && (registrationGuild.Id == guild.Id)) {
-            store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GuildRegistrationKey))
-            store.Delete([]byte(player.Id))
+        store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GuildRegistrationKey))
+        store.Delete([]byte(player.Id))
+
+        _ = ctx.EventManager().EmitTypedEvent(&types.EventGuildAssociation{GuildId: guild.Id, PlayerId: player.Id, RegistrationStatus: types.RegistrationStatus_denied})
     }
 }
 
@@ -179,7 +184,6 @@ func (k Keeper) GuildGetRegisterRequest(ctx sdk.Context, player types.Player) (g
     	guild, found = k.GetGuild(ctx, GetObjectID(types.ObjectType_guild, binary.BigEndian.Uint64(bz)))
 
     	return guild, found
-
 }
 
 

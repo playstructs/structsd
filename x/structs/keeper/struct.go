@@ -191,10 +191,9 @@ func (k Keeper) StructDestroy(ctx sdk.Context, structure types.Struct) {
     // Clear Fuel
     k.ClearGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, structure.Id ))
 
-    k.RemoveStruct(ctx, structure.Id)
-
     structure.SetStatus("DESTROYED")
-
     _ = ctx.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})
+
+    k.RemoveStruct(ctx, structure.Id)
 
 }

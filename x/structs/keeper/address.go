@@ -34,9 +34,7 @@ func (k Keeper) SetPlayerIndexForAddress(ctx sdk.Context, address string, player
 
 	store.Set(types.KeyPrefix(address), bz)
 
-	//_ = ctx.EventManager().EmitTypedEvent(&types.EventAddressAssociation{Address: &types.EventAddressBody{Address: address, PlayerIndex: playerIndex}})
-
-
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventAddressAssociation{Address: address, PlayerIndex: playerIndex, RegistrationStatus: types.RegistrationStatus_approved})
 }
 
 
@@ -48,7 +46,7 @@ func (k Keeper) AddressSetRegisterRequest(ctx sdk.Context, player types.Player, 
 
     store.Set(types.KeyPrefix(address), bz)
 
-   // _ = ctx.EventManager().EmitTypedEvent(&types.EventAddressRegistrationRequest{Address: &types.EventAddressBody{Address: address, PlayerId: player.Index}})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventAddressAssociation{Address: address, PlayerIndex: player.Index, RegistrationStatus: types.RegistrationStatus_proposed})
 }
 
 func (k Keeper) AddressApproveRegisterRequest(ctx sdk.Context, player types.Player, address string, permissions types.AddressPermission) {
@@ -63,6 +61,7 @@ func (k Keeper) AddressApproveRegisterRequest(ctx sdk.Context, player types.Play
             store.Delete(types.KeyPrefix(address))
     }
 
+ 	_ = ctx.EventManager().EmitTypedEvent(&types.EventAddressAssociation{Address: address, PlayerIndex: player.Index, RegistrationStatus: types.RegistrationStatus_approved})
 }
 
 func (k Keeper) AddressDenyRegisterRequest(ctx sdk.Context, player types.Player, address string) {
@@ -71,6 +70,9 @@ func (k Keeper) AddressDenyRegisterRequest(ctx sdk.Context, player types.Player,
             store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressRegistrationKey))
             store.Delete(types.KeyPrefix(address))
     }
+
+ 	_ = ctx.EventManager().EmitTypedEvent(&types.EventAddressAssociation{Address: address, PlayerIndex: player.Index, RegistrationStatus: types.RegistrationStatus_denied})
+
 }
 
 func (k Keeper) AddressGetRegisterRequest(ctx sdk.Context, address string) (player types.Player, found bool) {

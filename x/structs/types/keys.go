@@ -174,3 +174,12 @@ var guildJoinBypassLevel_enum = map[string]GuildJoinBypassLevel {
 	"permissioned":  GuildJoinBypassLevel_permissioned,
 	"member":        GuildJoinBypassLevel_member,
 }
+
+
+var registrationStatus_enum = map[string]RegistrationStatus {
+	"proposed":  RegistrationStatus_proposed,
+	"approved":  RegistrationStatus_approved,
+	"denied":    RegistrationStatus_denied,
+}
+
+

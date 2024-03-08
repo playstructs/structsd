@@ -111,8 +111,6 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
         }
     }
 
-    // need to write some events
-
      return
 }
 

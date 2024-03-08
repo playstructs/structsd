@@ -227,7 +227,6 @@ func (k Keeper) SubstationConnectPlayer(ctx sdk.Context, substation types.Substa
     // Update Connection Capacity
     k.UpdateGridConnectionCapacity(ctx, player.SubstationId)
 
-
     return nil
 
 }
