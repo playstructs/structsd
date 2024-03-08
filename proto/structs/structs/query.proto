@@ -10,6 +10,7 @@ import "structs/structs/reactor.proto";
 import "structs/structs/substation.proto";
 import "structs/structs/allocation.proto";
 import "structs/structs/guild.proto";
+import "structs/structs/permission.proto"
 import "structs/structs/player.proto";
 import "structs/structs/planet.proto";
 import "structs/structs/struct.proto";
@@ -39,20 +40,27 @@ service Query {
   rpc ReactorAll (QueryAllReactorRequest) returns (QueryAllReactorResponse) {
     option (google.api.http).get = "/structs/reactor";
   }
-/*
-  // Queries a list of Reactor Permission items.
-  rpc ReactorPermission    (QueryGetReactorPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
-    option (google.api.http).get = "/structs/permission/reactor/{reactorId}";
+
+  // Queries a specific Permission
+  rpc Permission (QueryGetPermissionRequest) returns (QueryGetPermissionResponse) {
+    option (google.api.http).get = "/structs/permission/{permissionId}";
   }
 
-  rpc ReactorPlayerPermission    (QueryGetReactorPlayerPermissionRequest) returns (QueryPermissionResponse) {
-    option (google.api.http).get = "/structs/permission/reactor/{reactorId}/{playerId}";
+  // Queries a list of Permissions based on Object
+  rpc PermissionByObject (QueryAllPermissionByObjectRequest) returns (QueryAllPermissionResponse) {
+    option (google.api.http).get = "/structs/permission/object/{objectId}";
   }
 
-  rpc ReactorPermissionAll (QueryAllReactorPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
-    option (google.api.http).get = "/structs/permission/reactor";
+  // Queries a list of Permissions based on the Player with the permissions
+  rpc PermissionByPlayer   (QueryAllPermissionByPlayerRequest) returns (QueryAllPermissionResponse) {
+    option (google.api.http).get = "/structs/permission/player/{playerId}";
   }
-*/
+
+  // Queries a list of all Permissions
+  rpc PermissionAll (QueryAllPermissionRequest) returns (QueryAllPermissionResponse) {
+    option (google.api.http).get = "/structs/permission";
+  }
+
   
   // Queries a list of Substation items.
   rpc Substation    (QueryGetSubstationRequest) returns (QueryGetSubstationResponse) {
@@ -62,19 +70,7 @@ service Query {
   rpc SubstationAll (QueryAllSubstationRequest) returns (QueryAllSubstationResponse) {
     option (google.api.http).get = "/structs/substation";
   }
-/*
-  // Queries a list of Substation Permission items.
-  rpc SubstationPermission    (QueryGetSubstationPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
-    option (google.api.http).get = "/structs/permission/substation/{substationId}";
-  }
 
-  rpc SubstationPlayerPermission    (QueryGetSubstationPlayerPermissionRequest) returns (QueryPermissionResponse) {
-    option (google.api.http).get = "/structs/permission/substation/{substationId}/{playerId}";
-  }
-  rpc SubstationPermissionAll (QueryAllSubstationPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
-    option (google.api.http).get = "/structs/permission/substation";
-  }
-*/
   // Queries a list of Allocation items.
   rpc Allocation    (QueryGetAllocationRequest) returns (QueryGetAllocationResponse) {
     option (google.api.http).get = "/structs/allocation/{id}";
@@ -98,14 +94,7 @@ service Query {
     option (google.api.http).get = "/structs/permission/guild/{guildId}";
   }
 
-  rpc GuildPlayerPermission    (QueryGetGuildPlayerPermissionRequest) returns (QueryPermissionResponse) {
-    option (google.api.http).get = "/structs/permission/guild/{guildId}/{playerId}";
-  }
 
-  rpc GuildPermissionAll (QueryAllGuildPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
-    option (google.api.http).get = "/structs/permission/guild";
-  }
-  
   // Queries a list of Player items.
   rpc Player    (QueryGetPlayerRequest) returns (QueryGetPlayerResponse) {
     option (google.api.http).get = "/structs/player/{id}";
@@ -114,20 +103,7 @@ service Query {
   rpc PlayerAll (QueryAllPlayerRequest) returns (QueryAllPlayerResponse) {
     option (google.api.http).get = "/structs/player";
   }
-/*
-  // Queries a list of Player Permission items.
-  rpc PlayerPermission    (QueryGetPlayerPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
-    option (google.api.http).get = "/structs/permission/player/{playerId}";
-  }
 
-  rpc PlayerPlayerPermission    (QueryGetPlayerPlayerPermissionRequest) returns (QueryPermissionResponse) {
-    option (google.api.http).get = "/structs/permission/player/{targetPlayerId}/{playerId}";
-  }
-
-  rpc PlayerPermissionAll (QueryAllPlayerPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
-    option (google.api.http).get = "/structs/permission/player";
-  }
-*/
   // Queries a list of Allocation items.
   rpc Infusion    (QueryGetInfusionRequest) returns (QueryGetInfusionResponse) {
     option (google.api.http).get = "/structs/infusion/{destinationId}/{address}";
@@ -170,15 +146,35 @@ service Query {
 
 }
 
-// Generic Responses for Permissions
-message QueryPermissionResponse {
-  string objectId         = 1;
-  string playerId         = 2;
-  uint64 permissionRecord = 3;
+
+
+message QueryGetPermissionRequest {
+  string permissionId = 1;
 }
 
-message QueryGetMultiplePermissionResponse {
-  repeated QueryPermissionResponse permission = 1;
+message QueryAllPermissionByObjectRequest {
+  string objectId = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+
+message QueryAllPermissionByPlayerRequest {
+  string playerId  = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryAllPermissionRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+
+// Generic Responses for Permissions
+message QueryGetPermissionResponse {
+  permissionRecord permissionRecord = 1;
+}
+
+message QueryAllPermissionResponse {
+  repeated permissionRecord permissionRecords = 1;
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
@@ -211,20 +207,6 @@ message QueryAllReactorResponse {
            cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
-
-message QueryGetReactorPermissionRequest {
-  string reactorId = 1;
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
-}
-
-message QueryGetReactorPlayerPermissionRequest {
-  string reactorId = 1;
-  string playerId  = 2;
-}
-
-message QueryAllReactorPermissionRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
 
 
 

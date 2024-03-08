@@ -1,0 +1,13 @@
+syntax = "proto3";
+package structs;
+
+import "gogoproto/gogo.proto";
+//import "cosmos_proto/cosmos.proto";
+
+option go_package = "structs/x/structs/types";
+
+
+message PermissionRecord {
+  string permissionId = 1;
+  uint64 value = 2;
+}

@@ -10,6 +10,7 @@ import (
 	//sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
 	"fmt"
+	"strings"
 )
 
 
@@ -88,3 +89,33 @@ func (k Keeper) PermissionHasOneOf(ctx sdk.Context, permissionId []byte, flag ty
 }
 
 
+func (k Keeper) GetPermissionsByObject(ctx sdk.Context, objectId string) (list []types.PermissionRecord) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PermissionKey))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+        extractedId := strings.Split(string(iterator.Key()), "@")
+        if (extractedId[0] == objectId) {
+            list = append(list, types.PermissionRecord{PermissionId: string(iterator.Key()), Value: binary.BigEndian.Uint64(iterator.Value())})
+		}
+	}
+	return
+}
+
+
+func (k Keeper) GetPermissionsByPlayer(ctx sdk.Context, playerId string) (list []types.PermissionRecord) {
+	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PermissionKey))
+	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+        extractedId := strings.Split(string(iterator.Key()), "@")
+        if (extractedId[0] == objectId) {
+            list = append(list, types.PermissionRecord{PermissionId: string(iterator.Key()), Value: binary.BigEndian.Uint64(iterator.Value())})
+		}
+	}
+	return
+}
