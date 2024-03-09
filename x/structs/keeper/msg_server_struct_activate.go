@@ -29,7 +29,7 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
 
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has Manage Player permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionPlay))) {
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionPlay)) {
         return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
     }
 

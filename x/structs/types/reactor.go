@@ -29,17 +29,3 @@ func CalculateReactorPower(fuel uint64) (energy uint64) {
     return fuel * ReactorFuelToEnergyConversion
 }
 
-type ReactorPermission Permission
-
-const (
-    // 1
-	ReactorPermissionAllocate ReactorPermission = 1 << iota
-	// 2
-	ReactorPermissionUpdateGuild
-	// 4
-	ReactorPermissionUpdateAllocationRules
-)
-const (
-    ReactorPermissionless ReactorPermission = 0 << iota
-	ReactorPermissionAll = ReactorPermissionAllocate | ReactorPermissionUpdateGuild | ReactorPermissionUpdateAllocationRules
-)

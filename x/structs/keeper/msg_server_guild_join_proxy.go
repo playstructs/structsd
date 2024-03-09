@@ -27,12 +27,12 @@ func (k msgServer) GuildJoinProxy(goCtx context.Context, msg *types.MsgGuildJoin
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
 
     // Check to make sure the player has permissions on the guild
-    if (!k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.Permission(types.GuildPermissionRegisterPlayer))) {
+    if (!k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.PermissionAssociations)) {
         return &types.MsgGuildJoinProxyResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%d) has no Player Registration permissions ", proxyPlayer.Id)
     }
 
     // Make sure the address calling this has Associate permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManageGuild))) {
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssociations)) {
         return &types.MsgGuildJoinProxyResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
     }
 
@@ -59,7 +59,7 @@ func (k msgServer) GuildJoinProxy(goCtx context.Context, msg *types.MsgGuildJoin
         // Since the Guild Entry Substation is being overridden, let's make
         // sure the ProxyPlayer actually have authority over this substation
         substationObjectPermissionId := GetObjectPermissionIDBytes(substation.Id, proxyPlayer.Id)
-        if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.Permission(types.SubstationPermissionConnectPlayer))) {
+        if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.PermissionGrid)) {
             return &types.MsgGuildJoinProxyResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%d) has no Player Connect permissions on Substation (%s) used as override", proxyPlayer.Id, substation.Id)
         }
 	}
@@ -88,7 +88,7 @@ func (k msgServer) GuildJoinProxy(goCtx context.Context, msg *types.MsgGuildJoin
 
     // Give this user (aka the guild) the ability to update their substation
     playerObjectPermissionId := GetObjectPermissionIDBytes(player.Id, proxyPlayer.Id)
-    k.PermissionAdd(ctx, playerObjectPermissionId, types.Permission(types.PlayerPermissionSubstation))
+    k.PermissionAdd(ctx, playerObjectPermissionId, types.PermissionGrid)
 
 
 	return &types.MsgGuildJoinProxyResponse{}, nil

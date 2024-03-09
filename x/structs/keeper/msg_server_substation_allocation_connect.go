@@ -44,13 +44,13 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
 
 	// check that the player has reactor permissions
-    if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.Permission(types.SubstationPermissionConnectAllocation))) {
+    if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.PermissionGrid)) {
         return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Calling player (%d) has no Substation Connect Allocation permissions ", player.Id)
     }
 
 
     // check that the account has energy management permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManageEnergy))) {
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionGrid)) {
         return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
     }
 

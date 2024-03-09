@@ -16,8 +16,10 @@ func (k msgServer) AddressApproveRegister(goCtx context.Context, msg *types.MsgA
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
 
     // Make sure the address calling this has Associate permissions
-    if (k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManageGuild))) {
-        return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionAssociation, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
+    // Might just remove this though since an address can probably always allow for another address
+    // as long as the permissions are same or less.
+    if (k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssociations)) {
+        return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionAssociation, "Calling address (%s) has no Association permissions ", msg.Creator)
     }
 
     // The calling address must have a minimum of the same permission level
@@ -27,7 +29,7 @@ func (k msgServer) AddressApproveRegister(goCtx context.Context, msg *types.MsgA
 
     if (playerFound) {
         if (msg.Approve) {
-            k.AddressApproveRegisterRequest(ctx, player, msg.Address, types.AddressPermission(msg.Permissions))
+            k.AddressApproveRegisterRequest(ctx, player, msg.Address, types.Permission(msg.Permissions))
         } else {
             k.AddressDenyRegisterRequest(ctx, player, msg.Address)
         }

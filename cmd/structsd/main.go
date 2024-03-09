@@ -10,6 +10,7 @@ import (
 
 	"structs/app"
 	"structs/cmd/structsd/cmd"
+
 )
 
 func main() {

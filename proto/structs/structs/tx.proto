@@ -47,6 +47,7 @@ service Msg {
   rpc StructRefine                   (MsgStructRefine                  ) returns (MsgStructRefineResponse                  );
   rpc StructInfuse                   (MsgStructInfuse                  ) returns (MsgStructInfuseResponse                  );
 
+  rpc PermissionGrant                 (MsgPermissionGrant              ) returns (MsgPermissionGrantResponse);
   // To Remove after battle mechanics added
   rpc Sabotage                       (MsgSabotage                      ) returns (MsgSabotageResponse                      );
 }
@@ -339,3 +340,12 @@ message MsgSabotage {
 }
 
 message MsgSabotageResponse {}
+
+message MsgPermissionGrant {
+  string creator      = 1;
+  string objectId     = 2;
+  string playerId     = 3;
+  string permissions  = 4;
+}
+
+message MsgPermissionGrantResponse {}

@@ -32,12 +32,12 @@ func (k msgServer) GuildApproveRegister(goCtx context.Context, msg *types.MsgGui
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
 
     // Check to make sure the player has permissions on the guild
-    if (!k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.Permission(types.GuildPermissionRegisterPlayer))) {
+    if (!k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.PermissionAssociations)) {
         return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%s) has no Player Registration permissions ", player.Id)
     }
 
     // Make sure the address calling this has Associate permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManageGuild))) {
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssociations)) {
         return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
     }
 

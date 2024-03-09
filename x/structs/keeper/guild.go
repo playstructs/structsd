@@ -66,7 +66,7 @@ func (k Keeper) AppendGuild(
 	k.SetGuildCount(ctx, count+1)
 
 	permissionId := GetObjectPermissionIDBytes(guild.Id, player.Id)
-    k.PermissionAdd(ctx, permissionId, types.Permission(types.GuildPermissionAll))
+    k.PermissionAdd(ctx, permissionId, types.PermissionAll)
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventGuild{Guild: &guild})
 

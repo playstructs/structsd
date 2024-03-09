@@ -46,7 +46,7 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // check that the account has energy management permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManageEnergy))) {
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets)) {
         return &types.MsgSubstationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
     }
 

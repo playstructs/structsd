@@ -23,7 +23,7 @@ func (k msgServer) SubstationPlayerDisconnect(goCtx context.Context, msg *types.
 
     substationObjectPermissionId := GetObjectPermissionIDBytes(player.SubstationId, player.Id)
     // check that the calling player has substation permissions
-    if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.Permission(types.SubstationPermissionConnectPlayer))) {
+    if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.PermissionGrid)) {
         return &types.MsgSubstationPlayerDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%d) has no Substation Connect Player permissions ", player.Id)
     }
 
@@ -31,14 +31,14 @@ func (k msgServer) SubstationPlayerDisconnect(goCtx context.Context, msg *types.
 
     if (player.Id != msg.PlayerId) {
         playerObjectPermissionId := GetObjectPermissionIDBytes(msg.PlayerId, player.Id)
-        if (!k.PermissionHasOneOf(ctx, playerObjectPermissionId, types.Permission(types.PlayerPermissionSubstation))) {
+        if (!k.PermissionHasOneOf(ctx, playerObjectPermissionId, types.PermissionGrid)) {
             return &types.MsgSubstationPlayerDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%d) has no Player Substation permissions ", player.Id)
         }
     }
 
     // check that the account has energy management permissions
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManageEnergy))) {
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionGrid)) {
        return &types.MsgSubstationPlayerDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
     }
 

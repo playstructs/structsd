@@ -64,20 +64,3 @@ func CreateEmptyGuild() Guild {
 }
 
 
-
-type GuildPermission Permission
-
-const (
-    // 1
-	GuildPermissionUpdate GuildPermission = 1 << iota
-	// 2
-	GuildPermissionRegisterPlayer
-	// 4
-	GuildPermissionDelete
-
-)
-const (
-    GuildPermissionless GuildPermission = 0 << iota
-	GuildPermissionAll = GuildPermissionUpdate | GuildPermissionRegisterPlayer | GuildPermissionDelete
-)
-

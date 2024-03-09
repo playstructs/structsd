@@ -58,7 +58,7 @@ func (k Keeper) AppendPlayer(
 	k.SetPlayerIndexForAddress(ctx, player.Creator, player.Index)
 
 	addressPermissionId := GetAddressPermissionIDBytes(player.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.Permission(types.AddressPermissionAll))
+	k.PermissionAdd(ctx, addressPermissionId, types.PermissionAll)
 
 	// Add the Account keeper record
 	// This is needed for the proxy account creation

@@ -9,10 +9,6 @@ import (
 )
 
 
-
-
-
-
 func (k Keeper) GetPlayerIndexFromAddress(ctx sdk.Context, address string) (uint64) {
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressPlayerKey))
 
@@ -49,13 +45,13 @@ func (k Keeper) AddressSetRegisterRequest(ctx sdk.Context, player types.Player, 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventAddressAssociation{Address: address, PlayerIndex: player.Index, RegistrationStatus: types.RegistrationStatus_proposed})
 }
 
-func (k Keeper) AddressApproveRegisterRequest(ctx sdk.Context, player types.Player, address string, permissions types.AddressPermission) {
+func (k Keeper) AddressApproveRegisterRequest(ctx sdk.Context, player types.Player, address string, permissions types.Permission) {
 
     registrationPlayer, registrationFound := k.AddressGetRegisterRequest(ctx, address)
     if ((registrationFound) && (registrationPlayer.Index == player.Index)) {
 
             addressPermissionId := GetAddressPermissionIDBytes(address)
-            k.PermissionAdd(ctx, addressPermissionId, types.Permission(permissions))
+            k.PermissionAdd(ctx, addressPermissionId, permissions)
 
             store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.AddressRegistrationKey))
             store.Delete(types.KeyPrefix(address))

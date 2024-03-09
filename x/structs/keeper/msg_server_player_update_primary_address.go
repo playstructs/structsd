@@ -24,7 +24,7 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
 
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has Manage Player permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManagePlayer))) {
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets)) {
         return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPermissionManagePlayer, "Calling address (%s) has no Manage Player permissions ", msg.Creator)
     }
 

@@ -33,7 +33,7 @@ func (k msgServer) SubstationAllocationDisconnect(goCtx context.Context, msg *ty
     if (allocationPlayer.Id != player.Id) {
         sourceObjectPermissionId := GetObjectPermissionIDBytes(allocation.DestinationId, player.Id)
         // check that the player has reactor permissions
-        if (!k.PermissionHasOneOf(ctx, sourceObjectPermissionId, types.Permission(types.SubstationPermissionDisconnectAllocation))) {
+        if (!k.PermissionHasOneOf(ctx, sourceObjectPermissionId, types.PermissionGrid)) {
             // technically both correct. Refactor this to be clearer
             return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationDisconnect, "Calling player (%d) has no Substation Disconnect Allocation permissions ", player.Id)
             return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation not controlled by player ", player.Id)
@@ -44,7 +44,7 @@ func (k msgServer) SubstationAllocationDisconnect(goCtx context.Context, msg *ty
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
 
     // check that the account has energy management permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.AddressPermissionManageEnergy))) {
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionGrid)) {
         return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
     }
 

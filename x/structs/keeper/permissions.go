@@ -50,7 +50,7 @@ func (k Keeper) SetPermissionsByBytes(ctx sdk.Context, permissionId []byte, perm
 
 	store.Set(permissionId, bz)
 
-    _ = ctx.EventManager().EmitTypedEvent(&types.EventPermission{PermissionId: string(permissionId), Value: uint64(permissions)}})
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventPermission{PermissionId: string(permissionId), Value: uint64(permissions)})
 
 	return permissions
 }
@@ -60,7 +60,7 @@ func (k Keeper) PermissionClearAll(ctx sdk.Context, permissionId []byte) {
 
 	store.Delete(permissionId)
 
-    _ = ctx.EventManager().EmitTypedEvent(&types.EventPermission{PermissionId: string(permissionId), Value: 0}})
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventPermission{PermissionId: string(permissionId), Value: 0})
 
 }
 

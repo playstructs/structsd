@@ -40,6 +40,8 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
     cdc.RegisterConcrete(&MsgStructRefineDeactivate{}, "structs/StructRefineDeactivate", nil)
     cdc.RegisterConcrete(&MsgStructRefine{}, "structs/StructRefine", nil)
 
+    cdc.RegisterConcrete(&MsgPermissionGrant{}, "structs/PermissionGrant", nil)
+
     cdc.RegisterConcrete(&MsgSabotage{}, "structs/Sabotage", nil)
 
 
@@ -144,6 +146,10 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     )
     registry.RegisterImplementations((*sdk.Msg)(nil),
         &MsgStructInfuse{},
+    )
+
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgPermissionGrant{},
     )
 
     registry.RegisterImplementations((*sdk.Msg)(nil),

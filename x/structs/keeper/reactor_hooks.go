@@ -48,7 +48,7 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
 
         // Add the player as a permissioned user of the reactor
         permissionId := GetObjectPermissionIDBytes(reactor.Id, player.Id)
-        k.PermissionAdd(ctx, permissionId, types.Permission(types.ReactorPermissionAll))
+        k.PermissionAdd(ctx, permissionId, types.PermissionAll)
 
         // TODO apply the energy distribution to the reactor player account
         delegation, delegationFound := k.stakingKeeper.GetDelegation(ctx, identity, validatorAddress)

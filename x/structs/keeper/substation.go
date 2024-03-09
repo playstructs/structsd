@@ -67,7 +67,7 @@ func (k Keeper) AppendSubstation(
     substation.Creator  = player.Creator
 
     permissionId := GetObjectPermissionIDBytes(substation.Id, player.Id)
-    k.PermissionAdd(ctx, permissionId, types.Permission(types.SubstationPermissionAll))
+    k.PermissionAdd(ctx, permissionId, types.PermissionAll)
 
 
     // actually commit to the store
