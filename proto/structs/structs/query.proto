@@ -10,7 +10,7 @@ import "structs/structs/reactor.proto";
 import "structs/structs/substation.proto";
 import "structs/structs/allocation.proto";
 import "structs/structs/guild.proto";
-import "structs/structs/permission.proto"
+import "structs/structs/permission.proto";
 import "structs/structs/player.proto";
 import "structs/structs/planet.proto";
 import "structs/structs/struct.proto";
@@ -89,11 +89,6 @@ service Query {
     option (google.api.http).get = "/structs/guild";
   }
 
-  // Queries a list of Guild Permission items.
-  rpc GuildPermission    (QueryGetGuildPermissionRequest) returns (QueryGetMultiplePermissionResponse) {
-    option (google.api.http).get = "/structs/permission/guild/{guildId}";
-  }
-
 
   // Queries a list of Player items.
   rpc Player    (QueryGetPlayerRequest) returns (QueryGetPlayerResponse) {
@@ -159,7 +154,7 @@ message QueryAllPermissionByObjectRequest {
 
 
 message QueryAllPermissionByPlayerRequest {
-  string playerId  = 2;
+  string playerId  = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
@@ -170,11 +165,11 @@ message QueryAllPermissionRequest {
 
 // Generic Responses for Permissions
 message QueryGetPermissionResponse {
-  permissionRecord permissionRecord = 1;
+  PermissionRecord permissionRecord = 1;
 }
 
 message QueryAllPermissionResponse {
-  repeated permissionRecord permissionRecords = 1;
+  repeated PermissionRecord permissionRecords = 1;
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

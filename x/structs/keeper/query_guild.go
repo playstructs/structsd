@@ -11,8 +11,8 @@ import (
 	"google.golang.org/grpc/status"
 	"structs/x/structs/types"
 
-    "encoding/binary"
-    "strings"
+    //"encoding/binary"
+    //"strings"
     //"strconv"
 )
 

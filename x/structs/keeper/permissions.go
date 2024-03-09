@@ -113,7 +113,7 @@ func (k Keeper) GetPermissionsByPlayer(ctx sdk.Context, playerId string) (list [
 
 	for ; iterator.Valid(); iterator.Next() {
         extractedId := strings.Split(string(iterator.Key()), "@")
-        if (extractedId[0] == objectId) {
+        if (extractedId[1] == playerId) {
             list = append(list, types.PermissionRecord{PermissionId: string(iterator.Key()), Value: binary.BigEndian.Uint64(iterator.Value())})
 		}
 	}
