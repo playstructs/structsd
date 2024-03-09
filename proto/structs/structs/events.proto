@@ -29,7 +29,7 @@ message EventReactor      { Reactor reactor = 1; }
 message EventStruct       { Struct structure = 1; }
 message EventSubstation   { Substation substation = 1; }
 
-message EventPermission { string objectId = 1; uint64 value = 2; }
+message EventPermission { string permissionId = 1; uint64 value = 2; }
 message EventGrid { string attributeId = 1; uint64 value = 2;}
 
 message EventDelete { string objectId = 1; }

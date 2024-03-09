@@ -35,8 +35,6 @@ func (k Keeper) Address(goCtx context.Context, req *types.QueryGetAddressRequest
 }
 
 
-// TODO this function is broken
-// It once relied on the address permission store, but in the unified permission store this is no longer effective
 func (k Keeper) AddressAll(goCtx context.Context, req *types.QueryAllAddressRequest) (*types.QueryAllAddressResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
@@ -70,8 +68,6 @@ func (k Keeper) AddressAll(goCtx context.Context, req *types.QueryAllAddressRequ
 	return &types.QueryAllAddressResponse{Address: permissions, Pagination: pageRes}, nil
 }
 
-// TODO re-write this function
-// This function is broken for similar reasons as the above function
 func (k Keeper) AddressAllByPlayer(goCtx context.Context, req *types.QueryAllAddressByPlayerRequest) (*types.QueryAllAddressResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
