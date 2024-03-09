@@ -335,19 +335,19 @@ message QueryGetAddressRequest {
   string address = 1;
 }
 
-message QueryAllAddressRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
 message QueryAllAddressByPlayerRequest {
   string playerId = 1;
   cosmos.base.query.v1beta1.PageRequest pagination = 2;
 }
 
+message QueryAllAddressRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
 message QueryAddressResponse {
   string address          = 1;
   string playerId         = 2;
-  uint64 permissionRecord = 3;
+  uint64 permissions      = 3;
 }
 
 message QueryAllAddressResponse {

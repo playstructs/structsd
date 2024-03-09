@@ -45944,7 +45944,7 @@ paths:
                       type: string
                     playerId:
                       type: string
-                    permissionRecord:
+                    permissions:
                       type: string
                       format: uint64
               pagination:
@@ -46233,7 +46233,7 @@ paths:
                 type: string
               playerId:
                 type: string
-              permissionRecord:
+              permissions:
                 type: string
                 format: uint64
         default:
@@ -46446,7 +46446,7 @@ paths:
                       type: string
                     playerId:
                       type: string
-                    permissionRecord:
+                    permissions:
                       type: string
                       format: uint64
               pagination:
@@ -81856,7 +81856,7 @@ definitions:
         type: string
       playerId:
         type: string
-      permissionRecord:
+      permissions:
         type: string
         format: uint64
   structs.QueryAllAddressResponse:
@@ -81871,7 +81871,7 @@ definitions:
               type: string
             playerId:
               type: string
-            permissionRecord:
+            permissions:
               type: string
               format: uint64
       pagination:
