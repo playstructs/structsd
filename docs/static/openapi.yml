@@ -80963,7 +80963,7 @@ definitions:
     type: object
   structs.MsgGuildUpdateResponse:
     type: object
-  structs.MsgPermissionGrantResponse:
+  structs.MsgPermissionResponse:
     type: object
   structs.MsgPlanetExploreResponse:
     type: object

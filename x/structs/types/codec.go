@@ -40,7 +40,10 @@ func RegisterCodec(cdc *codec.LegacyAmino) {
     cdc.RegisterConcrete(&MsgStructRefineDeactivate{}, "structs/StructRefineDeactivate", nil)
     cdc.RegisterConcrete(&MsgStructRefine{}, "structs/StructRefine", nil)
 
-    cdc.RegisterConcrete(&MsgPermissionGrant{}, "structs/PermissionGrant", nil)
+    cdc.RegisterConcrete(&MsgPermissionGrantOnObject{}, "structs/PermissionGrantOnObject", nil)
+    cdc.RegisterConcrete(&MsgPermissionGrantOnAddress{}, "structs/PermissionGrantOnAddress", nil)
+    cdc.RegisterConcrete(&MsgPermissionRevokeOnObject{}, "structs/PermissionRevokeOnObject", nil)
+    cdc.RegisterConcrete(&MsgPermissionRevokeOnAddress{}, "structs/PermissionRevokeOnAddress", nil)
 
     cdc.RegisterConcrete(&MsgSabotage{}, "structs/Sabotage", nil)
 
@@ -149,7 +152,19 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     )
 
     registry.RegisterImplementations((*sdk.Msg)(nil),
-        &MsgPermissionGrant{},
+        &MsgPermissionGrantOnObject{},
+    )
+
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgPermissionGrantOnAddress{},
+    )
+
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgPermissionRevokeOnObject{},
+    )
+
+    registry.RegisterImplementations((*sdk.Msg)(nil),
+        &MsgPermissionRevokeOnAddress{},
     )
 
     registry.RegisterImplementations((*sdk.Msg)(nil),

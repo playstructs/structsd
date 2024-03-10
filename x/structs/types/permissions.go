@@ -20,11 +20,13 @@ const (
 	PermissionAssociations
 	// 32
 	PermissionGrid
+	// 64
+	Permissions
 )
 
 const (
     Permissionless Permission = 0 << iota
-	PermissionAll = PermissionPlay | PermissionUpdate | PermissionDelete | PermissionAssets | PermissionAssociations | PermissionGrid
+	PermissionAll = PermissionPlay | PermissionUpdate | PermissionDelete | PermissionAssets | PermissionAssociations | PermissionGrid | Permissions
 )
 
 var Permission_enum = map[string]Permission {
@@ -35,5 +37,6 @@ var Permission_enum = map[string]Permission {
     "assets":           PermissionAssets,
 	"associations":     PermissionAssociations,
     "grid":             PermissionGrid,
+    "permissions":      Permissions,
 	"all":              PermissionAll,
 }

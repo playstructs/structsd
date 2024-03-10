@@ -61,6 +61,11 @@ func GetTxCmd() *cobra.Command {
 	cmd.AddCommand(CmdAddressApproveRegister())
 	cmd.AddCommand(CmdAddressRevoke())
 
+    cmd.AddCommand(CmdPermissionGrantOnObject())
+    cmd.AddCommand(CmdPermissionGrantOnAddress())
+    cmd.AddCommand(CmdPermissionRevokeOnObject())
+    cmd.AddCommand(CmdPermissionRevokeOnAddress())
+
 	cmd.AddCommand(CmdPlanetExplore())
 
     cmd.AddCommand(CmdStructActivate())
