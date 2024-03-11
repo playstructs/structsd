@@ -37,7 +37,7 @@ func (k msgServer) StructRefine(goCtx context.Context, msg *types.MsgStructRefin
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
-        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%s) not found", msg.StructId)
+        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) not found", msg.StructId)
     }
 
     if (structure.Type != "Refinery") {
@@ -62,7 +62,7 @@ func (k msgServer) StructRefine(goCtx context.Context, msg *types.MsgStructRefin
 
     planet, planetFound := k.GetPlanet(ctx, structure.PlanetId)
     if (!planetFound) {
-        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%s) was not found, which is actually a pretty big problem. Please tell an adult", structure.PlanetId)
+        return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was not found, which is actually a pretty big problem. Please tell an adult", structure.PlanetId)
     }
 
     if (planet.Status != 0) {

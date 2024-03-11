@@ -25,7 +25,7 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
 
     player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator), true)
     if (!playerFound) {
-        return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrPlayerNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)
+        return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)
     }
 
     sourceObjectPermissionId := GetObjectPermissionIDBytes(msg.SourceObjectId, player.Id)

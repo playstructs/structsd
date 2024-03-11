@@ -20,7 +20,7 @@ func (k msgServer) GuildJoinProxy(goCtx context.Context, msg *types.MsgGuildJoin
 	guild, guildFound := k.GetGuild(ctx, proxyPlayer.GuildId)
 
     if (!guildFound) {
-        return &types.MsgGuildJoinProxyResponse{}, sdkerrors.Wrapf(types.ErrGuildNotFound, "Referenced Guild (%d) not found", guild.Id)
+        return &types.MsgGuildJoinProxyResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Referenced Guild (%d) not found", guild.Id)
     }
 
     guildObjectPermissionId := GetObjectPermissionIDBytes(guild.Id, proxyPlayer.Id)
@@ -53,7 +53,7 @@ func (k msgServer) GuildJoinProxy(goCtx context.Context, msg *types.MsgGuildJoin
 	if (msg.SubstationId != "") {
 	    substation, substationFound = k.GetSubstation(ctx, msg.SubstationId, true)
         if (!substationFound) {
-            return &types.MsgGuildJoinProxyResponse{}, sdkerrors.Wrapf(types.ErrSubstationNotFound, "Provided Substation Override (%s) not found", msg.SubstationId)
+            return &types.MsgGuildJoinProxyResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Provided Substation Override (%s) not found", msg.SubstationId)
         }
 
         // Since the Guild Entry Substation is being overridden, let's make
@@ -67,7 +67,7 @@ func (k msgServer) GuildJoinProxy(goCtx context.Context, msg *types.MsgGuildJoin
     if (!substationFound) {
         substation, substationFound = k.GetSubstation(ctx, guild.EntrySubstationId, true)
         if (!substationFound) {
-            return &types.MsgGuildJoinProxyResponse{}, sdkerrors.Wrapf(types.ErrSubstationNotFound, "Entry Substation (%s) for Guild (%s) not found", guild.EntrySubstationId, guild.Id)
+            return &types.MsgGuildJoinProxyResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Entry Substation (%s) for Guild (%s) not found", guild.EntrySubstationId, guild.Id)
         }
     }
 

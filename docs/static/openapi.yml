@@ -81749,6 +81749,8 @@ definitions:
     type: object
   structs.MsgSubstationPlayerDisconnectResponse:
     type: object
+  structs.MsgSubstationPlayerMigrateResponse:
+    type: object
   structs.Params:
     type: object
     description: Params defines the parameters for the module.

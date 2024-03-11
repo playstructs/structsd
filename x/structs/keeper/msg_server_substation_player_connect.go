@@ -12,12 +12,12 @@ func (k msgServer) SubstationPlayerConnect(goCtx context.Context, msg *types.Msg
 
 	player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator), true)
     if (!playerFound) {
-        return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrPlayerNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)
+        return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)
     }
 
 	targetPlayer, targetPlayerFound := k.GetPlayer(ctx, msg.PlayerId, true)
     if (!targetPlayerFound) {
-        return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrPlayerNotFound, "Target player (%d) could be be found", player.Id)
+        return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Target player (%d) could be be found", player.Id)
     }
 
     substationObjectPermissionId := GetObjectPermissionIDBytes(msg.SubstationId, player.Id)
@@ -43,7 +43,7 @@ func (k msgServer) SubstationPlayerConnect(goCtx context.Context, msg *types.Msg
 
     substation, sourceSubstationFound := k.GetSubstation(ctx, msg.SubstationId, false)
     if (!sourceSubstationFound) {
-        return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationSourceNotFound, "substation (%d) used for player connection not found", msg.SubstationId)
+        return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "substation (%d) used for player connection not found", msg.SubstationId)
     }
 
 	// connect to new substation

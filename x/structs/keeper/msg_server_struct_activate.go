@@ -35,7 +35,7 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
-        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%s) not found", msg.StructId)
+        return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) not found", msg.StructId)
     }
 
     if (structure.Status == "ACTIVE") {

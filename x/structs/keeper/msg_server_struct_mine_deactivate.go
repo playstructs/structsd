@@ -34,7 +34,7 @@ func (k msgServer) StructMineDeactivate(goCtx context.Context, msg *types.MsgStr
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
-        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%s) not found", msg.StructId)
+        return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) not found", msg.StructId)
     }
 
     if (structure.Type != "Mining Rig") {

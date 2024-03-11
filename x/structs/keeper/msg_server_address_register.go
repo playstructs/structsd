@@ -16,7 +16,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
         // TODO Add address proof signature verification
         k.AddressSetRegisterRequest(ctx, player, msg.Address)
     } else {
-        return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrPlayerNotFound, "Could not associate an address with a non-existent player")
+        return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not associate an address with a non-existent player")
     }
 
 	return &types.MsgAddressRegisterResponse{}, nil

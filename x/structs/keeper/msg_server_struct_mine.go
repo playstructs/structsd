@@ -37,7 +37,7 @@ func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
-        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%s) not found", msg.StructId)
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) not found", msg.StructId)
     }
 
     if (structure.Type != "Mining Rig") {
@@ -62,7 +62,7 @@ func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (
 
     planet, planetFound := k.GetPlanet(ctx, structure.PlanetId)
     if (!planetFound) {
-        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%s) was not found, which is actually a pretty big problem. Please tell an adult", structure.PlanetId)
+        return &types.MsgStructMineResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was not found, which is actually a pretty big problem. Please tell an adult", structure.PlanetId)
     }
 
     if (planet.Status != 0) {

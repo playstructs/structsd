@@ -13,12 +13,12 @@ func (k msgServer) SubstationPlayerDisconnect(goCtx context.Context, msg *types.
 
 	player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator), true)
     if (!playerFound) {
-        return &types.MsgSubstationPlayerDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPlayerNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)
+        return &types.MsgSubstationPlayerDisconnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)
     }
 
 	targetPlayer, targetPlayerFound := k.GetPlayer(ctx, msg.PlayerId, true)
     if (!targetPlayerFound) {
-        return &types.MsgSubstationPlayerDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPlayerNotFound, "Target player (%d) could be be found", msg.PlayerId)
+        return &types.MsgSubstationPlayerDisconnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Target player (%d) could be be found", msg.PlayerId)
     }
 
     substationObjectPermissionId := GetObjectPermissionIDBytes(player.SubstationId, player.Id)

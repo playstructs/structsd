@@ -19,12 +19,12 @@ func (k msgServer) GuildApproveRegister(goCtx context.Context, msg *types.MsgGui
 
 
     if (!playerFound) {
-        return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrPlayerNotFound, "Could not perform guild action with non-player address (%s)", msg.Creator)
+        return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not perform guild action with non-player address (%s)", msg.Creator)
     }
 
     guild, guildFound := k.GetGuild(ctx, msg.GuildId)
     if (!guildFound) {
-        return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrGuildNotFound, "Referenced Guild (%s) not found", guild.Id)
+        return &types.MsgGuildApproveRegisterResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Referenced Guild (%s) not found", guild.Id)
     }
 
 

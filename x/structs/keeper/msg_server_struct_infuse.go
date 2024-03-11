@@ -33,7 +33,7 @@ func (k msgServer) StructInfuse(goCtx context.Context, msg *types.MsgStructInfus
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
-        return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrStructNotFound, "Struct (%s) not found", msg.StructId)
+        return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) not found", msg.StructId)
     }
 
     if (structure.Type != "Small Generator") {
@@ -54,7 +54,7 @@ func (k msgServer) StructInfuse(goCtx context.Context, msg *types.MsgStructInfus
 
     planet, planetFound := k.GetPlanet(ctx, structure.PlanetId)
     if (!planetFound) {
-        return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%s) was not found, which is actually a pretty big problem. Please tell an adult", structure.PlanetId)
+        return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was not found, which is actually a pretty big problem. Please tell an adult", structure.PlanetId)
     }
 
     if (planet.Status != 0) {

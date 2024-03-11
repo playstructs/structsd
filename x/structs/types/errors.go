@@ -16,26 +16,24 @@ var (
 var (
     ErrGridMalfunction                      = sdkerrors.Register(ModuleName, 1800, "Grid malfunction")
 
-	ErrAllocationNotFound                   = sdkerrors.Register(ModuleName, 1510, "allocation not found")
+    ErrObjectNotFound                       = sdkerrors.Register(ModuleName, 1900, "object not found")
+
+
 	ErrAllocationSourceType                 = sdkerrors.Register(ModuleName, 1511, "invalid source type")
 	ErrAllocationSourceTypeMismatch         = sdkerrors.Register(ModuleName, 1512, "source type mismatch")
-	ErrAllocationSourceNotFound             = sdkerrors.Register(ModuleName, 1513, "source not found")
 	ErrAllocationSourceNotOnline            = sdkerrors.Register(ModuleName, 1514, "source not online")
 	ErrAllocationConnectionChangeImpossible = sdkerrors.Register(ModuleName, 1515, "allocation connection change attempted is impossible")
 	ErrAllocationSet                        = sdkerrors.Register(ModuleName, 1516, "allocation could not be updated")
 	ErrAllocationAppend                     = sdkerrors.Register(ModuleName, 1517, "allocation could not be created")
 
     ErrPlayerRequired                       = sdkerrors.Register(ModuleName, 1530, "player account required for this action")
-    ErrPlayerNotFound                       = sdkerrors.Register(ModuleName, 1531, "player account specified does not exist")
     ErrPlayerUpdate                         = sdkerrors.Register(ModuleName, 1532, "player account update failed")
 
-	ErrSubstationNotFound                   = sdkerrors.Register(ModuleName, 1550, "substation not found")
-	ErrSubstationHasNoPowerSource = sdkerrors.Register(ModuleName, 1551, "substation has no power source")
+	ErrSubstationHasNoPowerSource           = sdkerrors.Register(ModuleName, 1551, "substation has no power source")
 
 	ErrReactorActivation                    = sdkerrors.Register(ModuleName, 1571, "reactor activation failure")
 	ErrReactorRequired                      = sdkerrors.Register(ModuleName, 1573, "reactor account required for this action")
 
-    ErrGuildNotFound                        = sdkerrors.Register(ModuleName,  1580, "guild specified does not exist")
     ErrGuildUpdate                          = sdkerrors.Register(ModuleName,  1581, "guild could not be updated")
     ErrInvalidGuildJoinBypassLevel          = sdkerrors.Register(ModuleName,  1582, "invalid guild join bypass level")
 
@@ -60,10 +58,8 @@ var (
     ErrPermissionPlayerPlay                     = sdkerrors.Register(ModuleName, 1641, "Player cannot play other players yet (no sudo yo)")
     ErrPermissionPlayerSquad                    = sdkerrors.Register(ModuleName, 1642, "Player cannot update other players squad status")
 
-    ErrPlanetNotFound                           = sdkerrors.Register(ModuleName,  1710, "planet specified does not exist")
     ErrPlanetExploration                        = sdkerrors.Register(ModuleName,  1711, "planet exploration failed")
 
-    ErrStructNotFound                           = sdkerrors.Register(ModuleName,  1720, "struct specified does not exist")
     ErrStructBuildInitiate                      = sdkerrors.Register(ModuleName,  1721, "Struct build initialization failed")
     ErrStructBuildComplete                      = sdkerrors.Register(ModuleName,  1722, "Struct build completion failed")
     ErrStructMineActivate                       = sdkerrors.Register(ModuleName,  1723, "Struct mining system activation failed")

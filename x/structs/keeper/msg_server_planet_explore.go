@@ -39,7 +39,7 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
         // Check to see if the planet can be completed
         currentPlanet, currentPlanetFound := k.GetPlanet(ctx, player.PlanetId)
         if (!currentPlanetFound) {
-            return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%s) was not found which in this case is extremely bad. Something horrible has happened", player.PlanetId)
+            return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was not found which in this case is extremely bad. Something horrible has happened", player.PlanetId)
         }
 
         if (!k.PlanetComplete(ctx, currentPlanet)) {

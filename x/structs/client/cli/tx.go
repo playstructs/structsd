@@ -40,6 +40,7 @@ func GetTxCmd() *cobra.Command {
 
 	cmd.AddCommand(CmdSubstationPlayerConnect())
 	cmd.AddCommand(CmdSubstationPlayerDisconnect())
+    cmd.AddCommand(CmdSubstationPlayerMigrate())
 
 	cmd.AddCommand(CmdGuildCreate())
 

@@ -19,7 +19,7 @@ func (k msgServer) SubstationDelete(goCtx context.Context, msg *types.MsgSubstat
 
 	player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator), false)
     if (!playerFound) {
-        return &types.MsgSubstationDeleteResponse{}, sdkerrors.Wrapf(types.ErrPlayerNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)
+        return &types.MsgSubstationDeleteResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)
     }
 
 

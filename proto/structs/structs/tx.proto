@@ -21,6 +21,7 @@ service Msg {
   rpc SubstationAllocationDisconnect (MsgSubstationAllocationDisconnect) returns (MsgSubstationAllocationDisconnectResponse);
   rpc SubstationPlayerConnect        (MsgSubstationPlayerConnect       ) returns (MsgSubstationPlayerConnectResponse       );
   rpc SubstationPlayerDisconnect     (MsgSubstationPlayerDisconnect    ) returns (MsgSubstationPlayerDisconnectResponse    );
+  rpc SubstationPlayerMigrate        (MsgSubstationPlayerMigrate       ) returns (MsgSubstationPlayerMigrateResponse       );
   rpc GuildCreate                    (MsgGuildCreate                   ) returns (MsgGuildCreateResponse                   );
   rpc GuildUpdateOwnerId             (MsgGuildUpdateOwnerId            ) returns (MsgGuildUpdateResponse                   );
   rpc GuildUpdateEntrySubstationId   (MsgGuildUpdateEntrySubstationId  ) returns (MsgGuildUpdateResponse                   );
@@ -370,4 +371,11 @@ message MsgPermissionRevokeOnAddress {
   uint64 permissions  = 3;
 }
 message MsgPermissionResponse {}
+
+message MsgSubstationPlayerMigrate {
+  string creator            = 1;
+  string substationId       = 2;
+  repeated string playerId  = 3;
+}
+message MsgSubstationPlayerMigrateResponse {}
 

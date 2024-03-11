@@ -41,7 +41,7 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
 
     planet, planetFound := k.GetPlanet(ctx, msg.PlanetId)
     if (!planetFound) {
-        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrPlanetNotFound, "Planet (%s) was ot found. Building a Struct in a void might be tough", msg.PlanetId)
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was ot found. Building a Struct in a void might be tough", msg.PlanetId)
     }
 
 
