@@ -174,10 +174,37 @@ var GuildJoinBypassLevel_enum = map[string]GuildJoinBypassLevel {
 }
 
 
-var registrationStatus_enum = map[string]RegistrationStatus {
+var RegistrationStatus_enum = map[string]RegistrationStatus {
 	"proposed":  RegistrationStatus_proposed,
 	"approved":  RegistrationStatus_approved,
 	"denied":    RegistrationStatus_denied,
 }
 
+
+
+var Ambit_enum = map[string]Ambit {
+    "water": Ambit_water,
+    "land":  Ambit_land,
+    "air":   Ambit_air,
+    "space": Ambit_space,
+}
+
+var StructCategory_enum = map[string]StructCategory {
+    "planetary":    StructCategory_planetary,
+    "fleet":        StructCategory_fleet,
+}
+
+
+var StructStatus_enum = map[string]StructStatus {
+    "building":     StructStatus_building,
+    "active":       StructStatus_active,
+    "inactive":     StructStatus_inactive,
+    "destroyed":    StructStatus_destroyed,
+}
+
+var StructType_enum = map[string]StructType {
+    "mining_rig": StructType_miningRig,
+    "refinery": StructType_refinery,
+    "small_generator": StructType_smallGenerator,
+}
 

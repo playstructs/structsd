@@ -51,3 +51,29 @@ enum registrationStatus {
     approved  = 1;
     denied    = 2;
 }
+
+
+enum ambit {
+    water   = 0;
+    land    = 1;
+    air     = 2;
+    space   = 3;
+}
+
+enum structCategory {
+    planetary   = 0;
+    fleet       = 1;
+}
+
+enum structStatus {
+    building    = 0;
+    active      = 1;
+    inactive    = 2;
+    destroyed   = 3;
+}
+
+enum structType {
+    miningRig      = 0;
+    refinery        = 1;
+    smallGenerator = 2;
+}
