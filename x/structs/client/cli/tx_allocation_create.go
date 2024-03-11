@@ -10,6 +10,8 @@ import (
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
 
+	"strings"
+
 )
 
 var _ = strconv.Itoa(0)
@@ -26,9 +28,9 @@ var _ = strconv.Itoa(0)
 
 func CmdAllocationCreate() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "allocation-create [source-id] [power] [controller]",
+		Use:   "allocation-create [source-id] [power]",
 		Short: "Broadcast message allocation-create",
-		Args:  cobra.RangeArgs(2, 3),
+		Args:  cobra.ExactArgs(2),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
 
 
@@ -39,7 +41,17 @@ func CmdAllocationCreate() *cobra.Command {
 				return err
 			}
 
-			argController := args[2]
+            argController, err := cmd.Flags().GetString("controller")
+            if err != nil {
+                return err
+            }
+
+            flagType, err := cmd.Flags().GetString("type")
+            if err != nil {
+                return err
+            }
+            argType := types.AllocationType_enum[strings.ToLower(flagType)]
+
 
 			clientCtx, err := client.GetClientTxContext(cmd)
 			if err != nil {
@@ -51,6 +63,7 @@ func CmdAllocationCreate() *cobra.Command {
 				argController,
 				argSourceId,
 				argPower,
+				argType,
 			)
 			if err := msg.ValidateBasic(); err != nil {
 				return err
@@ -59,7 +72,11 @@ func CmdAllocationCreate() *cobra.Command {
 		},
 	}
 
-	flags.AddTxFlagsToCmd(cmd)
+    flags.AddTxFlagsToCmd(cmd)
+
+    cmd.Flags().StringP("controller", "C", "", "The address of the allocation owner at creation")
+    cmd.Flags().StringP("type", "T", "static", "static, dynamic, or automated")
+
 
 	return cmd
 }

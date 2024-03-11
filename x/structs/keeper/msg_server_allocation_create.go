@@ -16,6 +16,11 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
 		return nil, err
 	}
 
+    // If no controller set, then make it the Creator
+    if (msg.Controller == ""){
+        msg.Controller = msg.Creator
+    }
+
 	allocation := types.CreateAllocationStub(msg.AllocationType, msg.SourceObjectId, msg.Power, msg.Creator, msg.Controller)
 
     player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator), true)

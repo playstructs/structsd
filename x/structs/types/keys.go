@@ -158,10 +158,8 @@ var GridAttributeType_enum = map[string]GridAttributeType{
 }
 
 
-
-
 // Doing the same for AllocationType
-var allocationType_enum = map[string]AllocationType{
+var AllocationType_enum = map[string]AllocationType{
 	"static":       AllocationType_static,
 	"dynamic":      AllocationType_dynamic,
 	"automated":    AllocationType_automated,
@@ -169,7 +167,7 @@ var allocationType_enum = map[string]AllocationType{
 }
 
 
-var guildJoinBypassLevel_enum = map[string]GuildJoinBypassLevel {
+var GuildJoinBypassLevel_enum = map[string]GuildJoinBypassLevel {
 	"closed":        GuildJoinBypassLevel_closed,
 	"permissioned":  GuildJoinBypassLevel_permissioned,
 	"member":        GuildJoinBypassLevel_member,

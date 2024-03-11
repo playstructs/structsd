@@ -70,7 +70,7 @@ func (k Keeper) AppendPlayer(
     }
 
     // Add the initial Player Load
-    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, player.Id), types.PlayerPassiveDraw)
+    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, player.Id), types.PlayerPassiveDraw)
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlayer{Player: &player})
 

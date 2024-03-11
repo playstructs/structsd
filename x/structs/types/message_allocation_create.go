@@ -11,12 +11,13 @@ const TypeMsgAllocationCreate = "allocation_create"
 
 var _ sdk.Msg = &MsgAllocationCreate{}
 
-func NewMsgAllocationCreate(creator string, controller string, sourceObjectId string, power uint64) *MsgAllocationCreate {
+func NewMsgAllocationCreate(creator string, controller string, sourceObjectId string, power uint64, allocationType AllocationType) *MsgAllocationCreate {
 	return &MsgAllocationCreate{
 		Creator:        creator,
 		Controller:     controller,
 		SourceObjectId: sourceObjectId,
 		Power:          power,
+		AllocationType: allocationType,
 	}
 }
 
