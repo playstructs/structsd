@@ -76,6 +76,12 @@ func (k msgServer) GuildJoinProxy(goCtx context.Context, msg *types.MsgGuildJoin
     // this doesn't make a lot of sense. Shouldn't really be creating users here since this is a create.
     // Maybe this needs to changed to guild_join_proxy and guild_join
 
+
+    // Join Guild via Proxy only Works if not in a guild
+    if (player.GuildId != "") {
+        return &types.MsgGuildJoinProxyResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Cannot proxy join a player that is already in a guild")
+    }
+
     // Add player to the guild
     player.GuildId = guild.Id
 
@@ -89,7 +95,6 @@ func (k msgServer) GuildJoinProxy(goCtx context.Context, msg *types.MsgGuildJoin
     // Give this user (aka the guild) the ability to update their substation
     playerObjectPermissionId := GetObjectPermissionIDBytes(player.Id, proxyPlayer.Id)
     k.PermissionAdd(ctx, playerObjectPermissionId, types.PermissionGrid)
-
 
 	return &types.MsgGuildJoinProxyResponse{}, nil
 }

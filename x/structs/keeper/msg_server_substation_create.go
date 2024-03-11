@@ -16,7 +16,6 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
 		return nil, err
 	}
 
-	var player types.Player
 	connectPlayer := false
 
     // Make sure the allocation exists
@@ -30,24 +29,29 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
 	// If the allocation doesn't have a player associated with it, then we will use this as
 	// a player creation point, initiating their player account and connecting it to this newly
 	// formed substation later on in the function call.
-    allocationPlayer, AllocationPlayerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, allocation.Controller), true)
+
+	allocationPlayerIndex   := k.GetPlayerIndexFromAddress(ctx, allocation.Controller)
+	callingPlayerIndex      := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
+
+    allocationPlayer, AllocationPlayerFound := k.GetPlayerFromIndex(ctx, allocationPlayerIndex, true)
+    player := k.UpsertPlayer(ctx, msg.Creator, true)
+
     if (!AllocationPlayerFound) {
         if (allocation.Controller == msg.Creator){
-            player = k.UpsertPlayer(ctx, msg.Creator, true)
             connectPlayer = true
         } else {
-            return &types.MsgSubstationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation not controlled by player ", player.Id)
+            return &types.MsgSubstationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation (%s) controlled by player (%s), not calling player (%s) ", allocation.Id, allocation.Controller, msg.Creator)
         }
     } else {
-        if (allocationPlayer.Id != player.Id) {
-            return &types.MsgSubstationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation not controlled by player ", player.Id)
+        if (allocationPlayerIndex != callingPlayerIndex) {
+            return &types.MsgSubstationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation (%s) controlled by player (%s), not calling player (%s) ", allocation.Id, allocationPlayer.Id, player.Id)
         }
-    }
 
-    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-    // check that the account has energy management permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets)) {
-        return &types.MsgSubstationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
+        addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
+        // check that the account has energy management permissions
+        if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets)) {
+            return &types.MsgSubstationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
+        }
     }
 
     substation, allocation, err := k.AppendSubstation(ctx, allocation, player)

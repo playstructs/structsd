@@ -26,10 +26,15 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
     sourceObjectPermissionId := GetObjectPermissionIDBytes(msg.SourceObjectId, player.Id)
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
 
-    // check that the player has permissions
-    if (!k.PermissionHasOneOf(ctx, sourceObjectPermissionId, types.PermissionAssets)) {
-        return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionAllocation, "Calling player (%d) has no Substation Allocation permissions ", player.Id)
+    // Ignore the one case where it's a player creating an allocation on themselves.
+    // Surely that doesn't need a lookup.
+    if (player.Id != msg.SourceObjectId) {
+        // check that the player has permissions
+        if (!k.PermissionHasOneOf(ctx, sourceObjectPermissionId, types.PermissionAssets)) {
+            return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionAllocation, "Calling player (%s) has no Allocation permissions on source (%s) ", player.Id, msg.SourceObjectId)
+        }
     }
+
 
     // check that the account has energy management permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.PermissionAssets))) {

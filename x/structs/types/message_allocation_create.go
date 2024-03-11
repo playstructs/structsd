@@ -4,6 +4,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"strings"
+	"strconv"
 )
 
 const TypeMsgAllocationCreate = "allocation_create"
@@ -47,7 +48,8 @@ func (msg *MsgAllocationCreate) ValidateBasic() error {
 	}
 
 	sourceSplit := strings.Split(msg.SourceObjectId, "-")
-    sourceType := ObjectType_enum[sourceSplit[0]]
+	number, _ := strconv.ParseUint(sourceSplit[0], 10, 64)
+    sourceType := ObjectType(number)
     if !IsValidAllocationConnectionType(sourceType) {
         return sdkerrors.Wrapf(ErrAllocationSourceType, "source type (%s) not valid for allocation", sourceType.String())
     }
