@@ -49,6 +49,9 @@ func (k Keeper) AppendPlanet(
 	planet.SetCreator(player.Creator)
 	planet.SetOwner(player.Id)
 
+
+    k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, planet.Id), types.PlanetStartingOre)
+
 	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlanetKey))
 	appendedValue := k.cdc.MustMarshal(&planet)
 	store.Set([]byte(planet.Id), appendedValue)
