@@ -63,6 +63,8 @@ func (k Keeper) AppendStruct(
 	// Update struct count
 	k.SetStructCount(ctx, count+1)
 
+    permissionId := GetObjectPermissionIDBytes(structure.Id, structure.Owner)
+    k.PermissionAdd(ctx, permissionId, types.PermissionAll)
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})
 
@@ -190,6 +192,10 @@ func (k Keeper) StructDestroy(ctx sdk.Context, structure types.Struct) {
 
     // Clear Fuel
     k.ClearGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, structure.Id ))
+
+    // Clear Permissions
+    permissionId := GetObjectPermissionIDBytes(structure.Id, structure.Owner)
+    k.PermissionClearAll(ctx, permissionId)
 
     structure.SetStatus("DESTROYED")
     _ = ctx.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})

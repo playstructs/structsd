@@ -104,6 +104,7 @@ func (k msgServer) StructInfuse(goCtx context.Context, msg *types.MsgStructInfus
            err error
        )
     */
+
     k.UpsertInfusion(ctx, types.ObjectType_struct, structure.Id, player.PrimaryAddress, player, newInfusionAmount, math.LegacyZeroDec() )
 
 	return &types.MsgStructInfuseResponse{}, nil
