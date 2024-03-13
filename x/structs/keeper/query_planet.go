@@ -59,3 +59,41 @@ func (k Keeper) Planet(goCtx context.Context, req *types.QueryGetPlanetRequest) 
 
 	return &types.QueryGetPlanetResponse{Planet: planet}, nil
 }
+
+
+func (k Keeper) PlanetAllByPlayer(goCtx context.Context, req *types.QueryAllPlanetByPlayerRequest) (*types.QueryAllPlanetResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	var planets []types.Planet
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	store := ctx.KVStore(k.storeKey)
+	planetStore := prefix.NewStore(store, types.KeyPrefix(types.PlanetKey))
+
+	pageRes, err := query.Paginate(planetStore, req.Pagination, func(key []byte, value []byte) error {
+		var planet types.Planet
+		if err := k.cdc.Unmarshal(value, &planet); err != nil {
+			return err
+		}
+
+        if (req.PlayerId == planet.Owner) {
+            planetOre := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, planet.Id))
+            playerOre := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, planet.Owner))
+
+            planet.OreRemaining = planetOre
+            planet.OreStored    = playerOre
+
+            planets = append(planets, planet)
+        }
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryAllPlanetResponse{Planet: planets, Pagination: pageRes}, nil
+}
