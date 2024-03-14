@@ -9,6 +9,7 @@ message Guild {
   uint64 index              = 2;
 
   string endpoint           = 3;
+
   string creator            = 4;
   string owner              = 5;
 
@@ -16,8 +17,6 @@ message Guild {
   guildJoinBypassLevel joinInfusionMinimumBypassByRequest   = 7;
   guildJoinBypassLevel joinInfusionMinimumBypassByInvite    = 8;
 
-
   string primaryReactorId    = 9;
   string entrySubstationId   = 10;
-
 }

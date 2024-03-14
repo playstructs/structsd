@@ -23,5 +23,4 @@ message Allocation {
 
   // Locking will be needed for IBC
   bool        locked              = 9;
-
 }
