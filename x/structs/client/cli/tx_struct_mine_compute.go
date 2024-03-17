@@ -125,15 +125,14 @@ COMPUTE:
 
 
 
-			msg := types.NewMsgStructMine(
-				clientCtx.GetFromAddress().String(),
-                argStructId,
-                argProof,
-                argNonce,
-			)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
+			msg := &types.MsgStructMine{
+                Creator:  clientCtx.GetFromAddress().String(),
+                StructId: argStructId,
+                Proof: argProof,
+                Nonce: argNonce,
+            }
+
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}

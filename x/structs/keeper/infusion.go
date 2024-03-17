@@ -1,12 +1,17 @@
 package keeper
 
 import (
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/runtime"
+	"cosmossdk.io/store/prefix"
+    storetypes "cosmossdk.io/store/types"
+
+	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 
 	//"strconv"
-	//"cosmossdk.io/math"
+	"cosmossdk.io/math"
 
 )
 
@@ -18,33 +23,35 @@ func GetInfusionID(destinationId string, address string) (id string) {
 
 // AppendInfusion appends a infusion in the store
 func (k Keeper) AppendInfusion(
-	ctx sdk.Context,
+	ctx context.Context,
 	infusion types.Infusion,
 ) string {
 
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.InfusionKey))
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionKey))
 	appendedValue := k.cdc.MustMarshal(&infusion)
 	infusionId := GetInfusionID(infusion.DestinationId, infusion.Address)
 	store.Set([]byte(infusionId), appendedValue)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventInfusion{Infusion: &infusion})
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventInfusion{Infusion: &infusion})
 
 	return infusionId
 }
 
 // SetInfusion set a specific infusion in the store
-func (k Keeper) SetInfusion(ctx sdk.Context, infusion types.Infusion) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.InfusionKey))
+func (k Keeper) SetInfusion(ctx context.Context, infusion types.Infusion) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionKey))
 	b := k.cdc.MustMarshal(&infusion)
 	infusionId := GetInfusionID(infusion.DestinationId, infusion.Address)
 	store.Set([]byte(infusionId), b)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventInfusion{Infusion: &infusion})
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventInfusion{Infusion: &infusion})
 }
 
 // GetInfusion returns a infusion from its id
-func (k Keeper) GetInfusion(ctx sdk.Context, destinationId string, address string) (val types.Infusion, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.InfusionKey))
+func (k Keeper) GetInfusion(ctx context.Context, destinationId string, address string) (val types.Infusion, found bool) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionKey))
 	infusionId := GetInfusionID(destinationId, address)
 	b := store.Get([]byte(infusionId))
 	if b == nil {
@@ -54,7 +61,7 @@ func (k Keeper) GetInfusion(ctx sdk.Context, destinationId string, address strin
 	return val, true
 }
 
-func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType, destinationId string, address string, player types.Player, fuel uint64, commission sdk.Dec) (infusion types.Infusion, newInfusionFuel uint64, oldInfusionFuel uint64, newInfusionPower uint64, oldInfusionPower uint64, newCommissionPower uint64, oldCommissionPower uint64, newPlayerPower uint64, oldPlayerPower uint64, err error) {
+func (k Keeper) UpsertInfusion(ctx context.Context, destinationType types.ObjectType, destinationId string, address string, player types.Player, fuel uint64, commission math.LegacyDec) (infusion types.Infusion, newInfusionFuel uint64, oldInfusionFuel uint64, newInfusionPower uint64, oldInfusionPower uint64, newCommissionPower uint64, oldCommissionPower uint64, newPlayerPower uint64, oldPlayerPower uint64, err error) {
 
     infusion, infusionFound := k.GetInfusion(ctx, destinationId, address)
     if (infusionFound) {
@@ -115,18 +122,19 @@ func (k Keeper) UpsertInfusion(ctx sdk.Context, destinationType types.ObjectType
 }
 
 // RemoveInfusion removes a infusion from the store
-func (k Keeper) RemoveInfusion(ctx sdk.Context, destinationId string, address string) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.InfusionKey))
+func (k Keeper) RemoveInfusion(ctx context.Context, destinationId string, address string) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionKey))
 	infusionId := GetInfusionID(destinationId, address)
 	store.Delete([]byte(infusionId))
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventDelete{ ObjectId: infusionId})
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventDelete{ ObjectId: infusionId})
 }
 
 // GetAllInfusion returns all infusion
-func (k Keeper) GetAllInfusion(ctx sdk.Context) (list []types.Infusion) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.InfusionKey))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+func (k Keeper) GetAllInfusion(ctx context.Context) (list []types.Infusion) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
@@ -141,9 +149,9 @@ func (k Keeper) GetAllInfusion(ctx sdk.Context) (list []types.Infusion) {
 
 
 // GetAllReactorInfusions returns all infusion relating to a reactor
-func (k Keeper) GetAllReactorInfusions(ctx sdk.Context, reactorId string) (list []types.Infusion) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.InfusionKey))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+func (k Keeper) GetAllReactorInfusions(ctx context.Context, reactorId string) (list []types.Infusion) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
@@ -160,9 +168,9 @@ func (k Keeper) GetAllReactorInfusions(ctx sdk.Context, reactorId string) (list 
 }
 
 // GetAllReactorInfusions returns all infusion relating to a struct
-func (k Keeper) GetAllStructInfusions(ctx sdk.Context, structId string) (list []types.Infusion) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.InfusionKey))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+func (k Keeper) GetAllStructInfusions(ctx context.Context, structId string) (list []types.Infusion) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
@@ -179,9 +187,9 @@ func (k Keeper) GetAllStructInfusions(ctx sdk.Context, structId string) (list []
 }
 
 // GetAllInfusionsByDestination returns all infusion relating to a struct
-func (k Keeper) GetAllInfusionsByDestination(ctx sdk.Context, objectId string) (list []types.Infusion) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.InfusionKey))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+func (k Keeper) GetAllInfusionsByDestination(ctx context.Context, objectId string) (list []types.Infusion) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
@@ -199,7 +207,7 @@ func (k Keeper) GetAllInfusionsByDestination(ctx sdk.Context, objectId string) (
 
 
 
-func (k Keeper) DestroyInfusion(ctx sdk.Context, infusion types.Infusion) {
+func (k Keeper) DestroyInfusion(ctx context.Context, infusion types.Infusion) {
 
     infusionPower, commissionPower, playerPower := infusion.GetPowerDistribution()
 
@@ -240,7 +248,7 @@ func (k Keeper) DestroyInfusion(ctx sdk.Context, infusion types.Infusion) {
 
 // TODO could likely be done far more efficiently
 // Currently makes separate writes for each update
-func (k Keeper) DestroyAllInfusions(ctx sdk.Context, infusions []types.Infusion) {
+func (k Keeper) DestroyAllInfusions(ctx context.Context, infusions []types.Infusion) {
      for _, infusion := range infusions {
         k.DestroyInfusion(ctx, infusion)
      }

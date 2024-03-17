@@ -1,12 +1,10 @@
 package types
 
 import (
-	sdk "github.com/cosmos/cosmos-sdk/types"
-
 	"cosmossdk.io/math"
 )
 
-func (a *Infusion) SetCommission(newCommission sdk.Dec) (
+func (a *Infusion) SetCommission(newCommission math.LegacyDec) (
                                                 newInfusionPower uint64,
                                                 oldInfusionPower uint64,
                                                 newCommissionPower uint64,
@@ -60,10 +58,9 @@ func (a *Infusion) SetFuel(newFuel uint64) (
 
     err         = nil
 	return
-
 }
 
-func (a *Infusion) SetFuelAndCommission(newFuel uint64, newCommission sdk.Dec) (
+func (a *Infusion) SetFuelAndCommission(newFuel uint64, newCommission math.LegacyDec) (
                                     newInfusionFuel uint64,
                                     oldInfusionFuel uint64,
                                     newInfusionPower uint64,
@@ -113,7 +110,7 @@ func CalculateInfusionPower(destinationType ObjectType, fuel uint64) (energy uin
     return
 }
 
-func CreateNewInfusion(destinationType ObjectType, destinationId string, playerAddress string, playerId string, fuel uint64, commission sdk.Dec) Infusion {
+func CreateNewInfusion(destinationType ObjectType, destinationId string, playerAddress string, playerId string, fuel uint64, commission math.LegacyDec) Infusion {
 	return Infusion{
 		DestinationType: destinationType,
 		DestinationId: destinationId,

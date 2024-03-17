@@ -7,7 +7,8 @@ import (
 	context "context"
 	fmt "fmt"
 	_ "github.com/cosmos/cosmos-proto"
-	_ "github.com/cosmos/cosmos-sdk/codec/types"
+	_ "github.com/cosmos/cosmos-sdk/types/msgservice"
+	_ "github.com/cosmos/cosmos-sdk/types/tx/amino"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	grpc1 "github.com/cosmos/gogoproto/grpc"
 	proto "github.com/cosmos/gogoproto/proto"
@@ -30,24 +31,28 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-type MsgSubstationCreate struct {
-	Creator      string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Owner        string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
-	AllocationId string `protobuf:"bytes,3,opt,name=allocationId,proto3" json:"allocationId,omitempty"`
+// MsgUpdateParams is the Msg/UpdateParams request type.
+type MsgUpdateParams struct {
+	// authority is the address that controls the module (defaults to x/gov unless overwritten).
+	Authority string `protobuf:"bytes,1,opt,name=authority,proto3" json:"authority,omitempty"`
+	// params defines the module parameters to update.
+	//
+	// NOTE: All parameters must be supplied.
+	Params Params `protobuf:"bytes,2,opt,name=params,proto3" json:"params"`
 }
 
-func (m *MsgSubstationCreate) Reset()         { *m = MsgSubstationCreate{} }
-func (m *MsgSubstationCreate) String() string { return proto.CompactTextString(m) }
-func (*MsgSubstationCreate) ProtoMessage()    {}
-func (*MsgSubstationCreate) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateParams) Reset()         { *m = MsgUpdateParams{} }
+func (m *MsgUpdateParams) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateParams) ProtoMessage()    {}
+func (*MsgUpdateParams) Descriptor() ([]byte, []int) {
 	return fileDescriptor_38fd6c203bede659, []int{0}
 }
-func (m *MsgSubstationCreate) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateParams) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSubstationCreate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateParams) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSubstationCreate.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateParams.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -57,55 +62,49 @@ func (m *MsgSubstationCreate) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *MsgSubstationCreate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSubstationCreate.Merge(m, src)
+func (m *MsgUpdateParams) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateParams.Merge(m, src)
 }
-func (m *MsgSubstationCreate) XXX_Size() int {
+func (m *MsgUpdateParams) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSubstationCreate) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSubstationCreate.DiscardUnknown(m)
+func (m *MsgUpdateParams) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateParams.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSubstationCreate proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateParams proto.InternalMessageInfo
 
-func (m *MsgSubstationCreate) GetCreator() string {
+func (m *MsgUpdateParams) GetAuthority() string {
 	if m != nil {
-		return m.Creator
+		return m.Authority
 	}
 	return ""
 }
 
-func (m *MsgSubstationCreate) GetOwner() string {
+func (m *MsgUpdateParams) GetParams() Params {
 	if m != nil {
-		return m.Owner
+		return m.Params
 	}
-	return ""
+	return Params{}
 }
 
-func (m *MsgSubstationCreate) GetAllocationId() string {
-	if m != nil {
-		return m.AllocationId
-	}
-	return ""
+// MsgUpdateParamsResponse defines the response structure for executing a
+// MsgUpdateParams message.
+type MsgUpdateParamsResponse struct {
 }
 
-type MsgSubstationCreateResponse struct {
-	SubstationId string `protobuf:"bytes,1,opt,name=substationId,proto3" json:"substationId,omitempty"`
-}
-
-func (m *MsgSubstationCreateResponse) Reset()         { *m = MsgSubstationCreateResponse{} }
-func (m *MsgSubstationCreateResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgSubstationCreateResponse) ProtoMessage()    {}
-func (*MsgSubstationCreateResponse) Descriptor() ([]byte, []int) {
+func (m *MsgUpdateParamsResponse) Reset()         { *m = MsgUpdateParamsResponse{} }
+func (m *MsgUpdateParamsResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgUpdateParamsResponse) ProtoMessage()    {}
+func (*MsgUpdateParamsResponse) Descriptor() ([]byte, []int) {
 	return fileDescriptor_38fd6c203bede659, []int{1}
 }
-func (m *MsgSubstationCreateResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgUpdateParamsResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSubstationCreateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgUpdateParamsResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSubstationCreateResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgUpdateParamsResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -115,43 +114,37 @@ func (m *MsgSubstationCreateResponse) XXX_Marshal(b []byte, deterministic bool) 
 		return b[:n], nil
 	}
 }
-func (m *MsgSubstationCreateResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSubstationCreateResponse.Merge(m, src)
+func (m *MsgUpdateParamsResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgUpdateParamsResponse.Merge(m, src)
 }
-func (m *MsgSubstationCreateResponse) XXX_Size() int {
+func (m *MsgUpdateParamsResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSubstationCreateResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSubstationCreateResponse.DiscardUnknown(m)
+func (m *MsgUpdateParamsResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgUpdateParamsResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSubstationCreateResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgUpdateParamsResponse proto.InternalMessageInfo
 
-func (m *MsgSubstationCreateResponse) GetSubstationId() string {
-	if m != nil {
-		return m.SubstationId
-	}
-	return ""
+type MsgAddressApproveRegister struct {
+	Creator     string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	Approve     bool   `protobuf:"varint,2,opt,name=approve,proto3" json:"approve,omitempty"`
+	Address     string `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
+	Permissions uint64 `protobuf:"varint,4,opt,name=permissions,proto3" json:"permissions,omitempty"`
 }
 
-type MsgSubstationDelete struct {
-	Creator               string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	SubstationId          string `protobuf:"bytes,2,opt,name=substationId,proto3" json:"substationId,omitempty"`
-	MigrationSubstationId string `protobuf:"bytes,3,opt,name=migrationSubstationId,proto3" json:"migrationSubstationId,omitempty"`
-}
-
-func (m *MsgSubstationDelete) Reset()         { *m = MsgSubstationDelete{} }
-func (m *MsgSubstationDelete) String() string { return proto.CompactTextString(m) }
-func (*MsgSubstationDelete) ProtoMessage()    {}
-func (*MsgSubstationDelete) Descriptor() ([]byte, []int) {
+func (m *MsgAddressApproveRegister) Reset()         { *m = MsgAddressApproveRegister{} }
+func (m *MsgAddressApproveRegister) String() string { return proto.CompactTextString(m) }
+func (*MsgAddressApproveRegister) ProtoMessage()    {}
+func (*MsgAddressApproveRegister) Descriptor() ([]byte, []int) {
 	return fileDescriptor_38fd6c203bede659, []int{2}
 }
-func (m *MsgSubstationDelete) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddressApproveRegister) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSubstationDelete) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddressApproveRegister) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSubstationDelete.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddressApproveRegister.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -161,378 +154,64 @@ func (m *MsgSubstationDelete) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *MsgSubstationDelete) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSubstationDelete.Merge(m, src)
+func (m *MsgAddressApproveRegister) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddressApproveRegister.Merge(m, src)
 }
-func (m *MsgSubstationDelete) XXX_Size() int {
+func (m *MsgAddressApproveRegister) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSubstationDelete) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSubstationDelete.DiscardUnknown(m)
+func (m *MsgAddressApproveRegister) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddressApproveRegister.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSubstationDelete proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddressApproveRegister proto.InternalMessageInfo
 
-func (m *MsgSubstationDelete) GetCreator() string {
+func (m *MsgAddressApproveRegister) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
 	return ""
 }
 
-func (m *MsgSubstationDelete) GetSubstationId() string {
+func (m *MsgAddressApproveRegister) GetApprove() bool {
 	if m != nil {
-		return m.SubstationId
+		return m.Approve
+	}
+	return false
+}
+
+func (m *MsgAddressApproveRegister) GetAddress() string {
+	if m != nil {
+		return m.Address
 	}
 	return ""
 }
 
-func (m *MsgSubstationDelete) GetMigrationSubstationId() string {
+func (m *MsgAddressApproveRegister) GetPermissions() uint64 {
 	if m != nil {
-		return m.MigrationSubstationId
+		return m.Permissions
 	}
-	return ""
+	return 0
 }
 
-type MsgSubstationDeleteResponse struct {
-}
-
-func (m *MsgSubstationDeleteResponse) Reset()         { *m = MsgSubstationDeleteResponse{} }
-func (m *MsgSubstationDeleteResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgSubstationDeleteResponse) ProtoMessage()    {}
-func (*MsgSubstationDeleteResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{3}
-}
-func (m *MsgSubstationDeleteResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgSubstationDeleteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgSubstationDeleteResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgSubstationDeleteResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSubstationDeleteResponse.Merge(m, src)
-}
-func (m *MsgSubstationDeleteResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgSubstationDeleteResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSubstationDeleteResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgSubstationDeleteResponse proto.InternalMessageInfo
-
-type MsgSubstationAllocationConnect struct {
-	Creator       string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	AllocationId  string `protobuf:"bytes,2,opt,name=allocationId,proto3" json:"allocationId,omitempty"`
-	DestinationId string `protobuf:"bytes,3,opt,name=destinationId,proto3" json:"destinationId,omitempty"`
-}
-
-func (m *MsgSubstationAllocationConnect) Reset()         { *m = MsgSubstationAllocationConnect{} }
-func (m *MsgSubstationAllocationConnect) String() string { return proto.CompactTextString(m) }
-func (*MsgSubstationAllocationConnect) ProtoMessage()    {}
-func (*MsgSubstationAllocationConnect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{4}
-}
-func (m *MsgSubstationAllocationConnect) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgSubstationAllocationConnect) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgSubstationAllocationConnect.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgSubstationAllocationConnect) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSubstationAllocationConnect.Merge(m, src)
-}
-func (m *MsgSubstationAllocationConnect) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgSubstationAllocationConnect) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSubstationAllocationConnect.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgSubstationAllocationConnect proto.InternalMessageInfo
-
-func (m *MsgSubstationAllocationConnect) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgSubstationAllocationConnect) GetAllocationId() string {
-	if m != nil {
-		return m.AllocationId
-	}
-	return ""
-}
-
-func (m *MsgSubstationAllocationConnect) GetDestinationId() string {
-	if m != nil {
-		return m.DestinationId
-	}
-	return ""
-}
-
-type MsgSubstationAllocationConnectResponse struct {
-}
-
-func (m *MsgSubstationAllocationConnectResponse) Reset() {
-	*m = MsgSubstationAllocationConnectResponse{}
-}
-func (m *MsgSubstationAllocationConnectResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgSubstationAllocationConnectResponse) ProtoMessage()    {}
-func (*MsgSubstationAllocationConnectResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{5}
-}
-func (m *MsgSubstationAllocationConnectResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgSubstationAllocationConnectResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgSubstationAllocationConnectResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgSubstationAllocationConnectResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSubstationAllocationConnectResponse.Merge(m, src)
-}
-func (m *MsgSubstationAllocationConnectResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgSubstationAllocationConnectResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSubstationAllocationConnectResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgSubstationAllocationConnectResponse proto.InternalMessageInfo
-
-type MsgSubstationAllocationDisconnect struct {
-	Creator      string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	AllocationId string `protobuf:"bytes,2,opt,name=allocationId,proto3" json:"allocationId,omitempty"`
-}
-
-func (m *MsgSubstationAllocationDisconnect) Reset()         { *m = MsgSubstationAllocationDisconnect{} }
-func (m *MsgSubstationAllocationDisconnect) String() string { return proto.CompactTextString(m) }
-func (*MsgSubstationAllocationDisconnect) ProtoMessage()    {}
-func (*MsgSubstationAllocationDisconnect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{6}
-}
-func (m *MsgSubstationAllocationDisconnect) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgSubstationAllocationDisconnect) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgSubstationAllocationDisconnect.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgSubstationAllocationDisconnect) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSubstationAllocationDisconnect.Merge(m, src)
-}
-func (m *MsgSubstationAllocationDisconnect) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgSubstationAllocationDisconnect) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSubstationAllocationDisconnect.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgSubstationAllocationDisconnect proto.InternalMessageInfo
-
-func (m *MsgSubstationAllocationDisconnect) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgSubstationAllocationDisconnect) GetAllocationId() string {
-	if m != nil {
-		return m.AllocationId
-	}
-	return ""
-}
-
-type MsgSubstationAllocationDisconnectResponse struct {
-}
-
-func (m *MsgSubstationAllocationDisconnectResponse) Reset() {
-	*m = MsgSubstationAllocationDisconnectResponse{}
-}
-func (m *MsgSubstationAllocationDisconnectResponse) String() string {
-	return proto.CompactTextString(m)
-}
-func (*MsgSubstationAllocationDisconnectResponse) ProtoMessage() {}
-func (*MsgSubstationAllocationDisconnectResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{7}
-}
-func (m *MsgSubstationAllocationDisconnectResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgSubstationAllocationDisconnectResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgSubstationAllocationDisconnectResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgSubstationAllocationDisconnectResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSubstationAllocationDisconnectResponse.Merge(m, src)
-}
-func (m *MsgSubstationAllocationDisconnectResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgSubstationAllocationDisconnectResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSubstationAllocationDisconnectResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgSubstationAllocationDisconnectResponse proto.InternalMessageInfo
-
-type MsgSubstationPlayerConnect struct {
-	Creator      string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	SubstationId string `protobuf:"bytes,2,opt,name=substationId,proto3" json:"substationId,omitempty"`
-	PlayerId     string `protobuf:"bytes,3,opt,name=playerId,proto3" json:"playerId,omitempty"`
-}
-
-func (m *MsgSubstationPlayerConnect) Reset()         { *m = MsgSubstationPlayerConnect{} }
-func (m *MsgSubstationPlayerConnect) String() string { return proto.CompactTextString(m) }
-func (*MsgSubstationPlayerConnect) ProtoMessage()    {}
-func (*MsgSubstationPlayerConnect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{8}
-}
-func (m *MsgSubstationPlayerConnect) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgSubstationPlayerConnect) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgSubstationPlayerConnect.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgSubstationPlayerConnect) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSubstationPlayerConnect.Merge(m, src)
-}
-func (m *MsgSubstationPlayerConnect) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgSubstationPlayerConnect) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSubstationPlayerConnect.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgSubstationPlayerConnect proto.InternalMessageInfo
-
-func (m *MsgSubstationPlayerConnect) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgSubstationPlayerConnect) GetSubstationId() string {
-	if m != nil {
-		return m.SubstationId
-	}
-	return ""
-}
-
-func (m *MsgSubstationPlayerConnect) GetPlayerId() string {
-	if m != nil {
-		return m.PlayerId
-	}
-	return ""
-}
-
-type MsgSubstationPlayerConnectResponse struct {
-}
-
-func (m *MsgSubstationPlayerConnectResponse) Reset()         { *m = MsgSubstationPlayerConnectResponse{} }
-func (m *MsgSubstationPlayerConnectResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgSubstationPlayerConnectResponse) ProtoMessage()    {}
-func (*MsgSubstationPlayerConnectResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{9}
-}
-func (m *MsgSubstationPlayerConnectResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgSubstationPlayerConnectResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgSubstationPlayerConnectResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgSubstationPlayerConnectResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSubstationPlayerConnectResponse.Merge(m, src)
-}
-func (m *MsgSubstationPlayerConnectResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgSubstationPlayerConnectResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSubstationPlayerConnectResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgSubstationPlayerConnectResponse proto.InternalMessageInfo
-
-type MsgSubstationPlayerDisconnect struct {
+type MsgAddressRegister struct {
 	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	PlayerId string `protobuf:"bytes,2,opt,name=playerId,proto3" json:"playerId,omitempty"`
+	Address  string `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
 }
 
-func (m *MsgSubstationPlayerDisconnect) Reset()         { *m = MsgSubstationPlayerDisconnect{} }
-func (m *MsgSubstationPlayerDisconnect) String() string { return proto.CompactTextString(m) }
-func (*MsgSubstationPlayerDisconnect) ProtoMessage()    {}
-func (*MsgSubstationPlayerDisconnect) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{10}
+func (m *MsgAddressRegister) Reset()         { *m = MsgAddressRegister{} }
+func (m *MsgAddressRegister) String() string { return proto.CompactTextString(m) }
+func (*MsgAddressRegister) ProtoMessage()    {}
+func (*MsgAddressRegister) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{3}
 }
-func (m *MsgSubstationPlayerDisconnect) XXX_Unmarshal(b []byte) error {
+func (m *MsgAddressRegister) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSubstationPlayerDisconnect) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddressRegister) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSubstationPlayerDisconnect.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddressRegister.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -542,47 +221,54 @@ func (m *MsgSubstationPlayerDisconnect) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *MsgSubstationPlayerDisconnect) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSubstationPlayerDisconnect.Merge(m, src)
+func (m *MsgAddressRegister) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddressRegister.Merge(m, src)
 }
-func (m *MsgSubstationPlayerDisconnect) XXX_Size() int {
+func (m *MsgAddressRegister) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSubstationPlayerDisconnect) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSubstationPlayerDisconnect.DiscardUnknown(m)
+func (m *MsgAddressRegister) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddressRegister.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSubstationPlayerDisconnect proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddressRegister proto.InternalMessageInfo
 
-func (m *MsgSubstationPlayerDisconnect) GetCreator() string {
+func (m *MsgAddressRegister) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
 	return ""
 }
 
-func (m *MsgSubstationPlayerDisconnect) GetPlayerId() string {
+func (m *MsgAddressRegister) GetPlayerId() string {
 	if m != nil {
 		return m.PlayerId
 	}
 	return ""
 }
 
-type MsgSubstationPlayerDisconnectResponse struct {
+func (m *MsgAddressRegister) GetAddress() string {
+	if m != nil {
+		return m.Address
+	}
+	return ""
 }
 
-func (m *MsgSubstationPlayerDisconnectResponse) Reset()         { *m = MsgSubstationPlayerDisconnectResponse{} }
-func (m *MsgSubstationPlayerDisconnectResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgSubstationPlayerDisconnectResponse) ProtoMessage()    {}
-func (*MsgSubstationPlayerDisconnectResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{11}
+type MsgAddressRegisterResponse struct {
 }
-func (m *MsgSubstationPlayerDisconnectResponse) XXX_Unmarshal(b []byte) error {
+
+func (m *MsgAddressRegisterResponse) Reset()         { *m = MsgAddressRegisterResponse{} }
+func (m *MsgAddressRegisterResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAddressRegisterResponse) ProtoMessage()    {}
+func (*MsgAddressRegisterResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{4}
+}
+func (m *MsgAddressRegisterResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSubstationPlayerDisconnectResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgAddressRegisterResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSubstationPlayerDisconnectResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgAddressRegisterResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -592,23 +278,111 @@ func (m *MsgSubstationPlayerDisconnectResponse) XXX_Marshal(b []byte, determinis
 		return b[:n], nil
 	}
 }
-func (m *MsgSubstationPlayerDisconnectResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSubstationPlayerDisconnectResponse.Merge(m, src)
+func (m *MsgAddressRegisterResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddressRegisterResponse.Merge(m, src)
 }
-func (m *MsgSubstationPlayerDisconnectResponse) XXX_Size() int {
+func (m *MsgAddressRegisterResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSubstationPlayerDisconnectResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSubstationPlayerDisconnectResponse.DiscardUnknown(m)
+func (m *MsgAddressRegisterResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddressRegisterResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSubstationPlayerDisconnectResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgAddressRegisterResponse proto.InternalMessageInfo
+
+type MsgAddressRevoke struct {
+	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
+}
+
+func (m *MsgAddressRevoke) Reset()         { *m = MsgAddressRevoke{} }
+func (m *MsgAddressRevoke) String() string { return proto.CompactTextString(m) }
+func (*MsgAddressRevoke) ProtoMessage()    {}
+func (*MsgAddressRevoke) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{5}
+}
+func (m *MsgAddressRevoke) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgAddressRevoke) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgAddressRevoke.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgAddressRevoke) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddressRevoke.Merge(m, src)
+}
+func (m *MsgAddressRevoke) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgAddressRevoke) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddressRevoke.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgAddressRevoke proto.InternalMessageInfo
+
+func (m *MsgAddressRevoke) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgAddressRevoke) GetAddress() string {
+	if m != nil {
+		return m.Address
+	}
+	return ""
+}
+
+type MsgAddressRevokeResponse struct {
+}
+
+func (m *MsgAddressRevokeResponse) Reset()         { *m = MsgAddressRevokeResponse{} }
+func (m *MsgAddressRevokeResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgAddressRevokeResponse) ProtoMessage()    {}
+func (*MsgAddressRevokeResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{6}
+}
+func (m *MsgAddressRevokeResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgAddressRevokeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgAddressRevokeResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgAddressRevokeResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgAddressRevokeResponse.Merge(m, src)
+}
+func (m *MsgAddressRevokeResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgAddressRevokeResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgAddressRevokeResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgAddressRevokeResponse proto.InternalMessageInfo
 
 type MsgAllocationCreate struct {
 	Creator        string         `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	Controller     string         `protobuf:"bytes,2,opt,name=controller,proto3" json:"controller,omitempty"`
 	SourceObjectId string         `protobuf:"bytes,3,opt,name=sourceObjectId,proto3" json:"sourceObjectId,omitempty"`
-	AllocationType AllocationType `protobuf:"varint,4,opt,name=allocationType,proto3,enum=structs.AllocationType" json:"allocationType,omitempty"`
+	AllocationType AllocationType `protobuf:"varint,4,opt,name=allocationType,proto3,enum=structs.structs.AllocationType" json:"allocationType,omitempty"`
 	Power          uint64         `protobuf:"varint,5,opt,name=power,proto3" json:"power,omitempty"`
 }
 
@@ -616,7 +390,7 @@ func (m *MsgAllocationCreate) Reset()         { *m = MsgAllocationCreate{} }
 func (m *MsgAllocationCreate) String() string { return proto.CompactTextString(m) }
 func (*MsgAllocationCreate) ProtoMessage()    {}
 func (*MsgAllocationCreate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{12}
+	return fileDescriptor_38fd6c203bede659, []int{7}
 }
 func (m *MsgAllocationCreate) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -688,7 +462,7 @@ func (m *MsgAllocationCreateResponse) Reset()         { *m = MsgAllocationCreate
 func (m *MsgAllocationCreateResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgAllocationCreateResponse) ProtoMessage()    {}
 func (*MsgAllocationCreateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{13}
+	return fileDescriptor_38fd6c203bede659, []int{8}
 }
 func (m *MsgAllocationCreateResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -724,950 +498,6 @@ func (m *MsgAllocationCreateResponse) GetAllocationId() string {
 	return ""
 }
 
-type MsgGuildCreate struct {
-	Creator           string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Endpoint          string `protobuf:"bytes,2,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
-	EntrySubstationId string `protobuf:"bytes,3,opt,name=entrySubstationId,proto3" json:"entrySubstationId,omitempty"`
-}
-
-func (m *MsgGuildCreate) Reset()         { *m = MsgGuildCreate{} }
-func (m *MsgGuildCreate) String() string { return proto.CompactTextString(m) }
-func (*MsgGuildCreate) ProtoMessage()    {}
-func (*MsgGuildCreate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{14}
-}
-func (m *MsgGuildCreate) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgGuildCreate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgGuildCreate.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgGuildCreate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgGuildCreate.Merge(m, src)
-}
-func (m *MsgGuildCreate) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgGuildCreate) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgGuildCreate.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgGuildCreate proto.InternalMessageInfo
-
-func (m *MsgGuildCreate) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgGuildCreate) GetEndpoint() string {
-	if m != nil {
-		return m.Endpoint
-	}
-	return ""
-}
-
-func (m *MsgGuildCreate) GetEntrySubstationId() string {
-	if m != nil {
-		return m.EntrySubstationId
-	}
-	return ""
-}
-
-type MsgGuildCreateResponse struct {
-	GuildId string `protobuf:"bytes,1,opt,name=guildId,proto3" json:"guildId,omitempty"`
-}
-
-func (m *MsgGuildCreateResponse) Reset()         { *m = MsgGuildCreateResponse{} }
-func (m *MsgGuildCreateResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgGuildCreateResponse) ProtoMessage()    {}
-func (*MsgGuildCreateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{15}
-}
-func (m *MsgGuildCreateResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgGuildCreateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgGuildCreateResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgGuildCreateResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgGuildCreateResponse.Merge(m, src)
-}
-func (m *MsgGuildCreateResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgGuildCreateResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgGuildCreateResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgGuildCreateResponse proto.InternalMessageInfo
-
-func (m *MsgGuildCreateResponse) GetGuildId() string {
-	if m != nil {
-		return m.GuildId
-	}
-	return ""
-}
-
-type MsgGuildUpdateOwnerId struct {
-	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	GuildId string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
-	Owner   string `protobuf:"bytes,3,opt,name=owner,proto3" json:"owner,omitempty"`
-}
-
-func (m *MsgGuildUpdateOwnerId) Reset()         { *m = MsgGuildUpdateOwnerId{} }
-func (m *MsgGuildUpdateOwnerId) String() string { return proto.CompactTextString(m) }
-func (*MsgGuildUpdateOwnerId) ProtoMessage()    {}
-func (*MsgGuildUpdateOwnerId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{16}
-}
-func (m *MsgGuildUpdateOwnerId) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgGuildUpdateOwnerId) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgGuildUpdateOwnerId.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgGuildUpdateOwnerId) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgGuildUpdateOwnerId.Merge(m, src)
-}
-func (m *MsgGuildUpdateOwnerId) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgGuildUpdateOwnerId) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgGuildUpdateOwnerId.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgGuildUpdateOwnerId proto.InternalMessageInfo
-
-func (m *MsgGuildUpdateOwnerId) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgGuildUpdateOwnerId) GetGuildId() string {
-	if m != nil {
-		return m.GuildId
-	}
-	return ""
-}
-
-func (m *MsgGuildUpdateOwnerId) GetOwner() string {
-	if m != nil {
-		return m.Owner
-	}
-	return ""
-}
-
-type MsgGuildUpdateEntrySubstationId struct {
-	Creator           string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	GuildId           string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
-	EntrySubstationId string `protobuf:"bytes,3,opt,name=entrySubstationId,proto3" json:"entrySubstationId,omitempty"`
-}
-
-func (m *MsgGuildUpdateEntrySubstationId) Reset()         { *m = MsgGuildUpdateEntrySubstationId{} }
-func (m *MsgGuildUpdateEntrySubstationId) String() string { return proto.CompactTextString(m) }
-func (*MsgGuildUpdateEntrySubstationId) ProtoMessage()    {}
-func (*MsgGuildUpdateEntrySubstationId) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{17}
-}
-func (m *MsgGuildUpdateEntrySubstationId) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgGuildUpdateEntrySubstationId) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgGuildUpdateEntrySubstationId.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgGuildUpdateEntrySubstationId) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgGuildUpdateEntrySubstationId.Merge(m, src)
-}
-func (m *MsgGuildUpdateEntrySubstationId) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgGuildUpdateEntrySubstationId) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgGuildUpdateEntrySubstationId.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgGuildUpdateEntrySubstationId proto.InternalMessageInfo
-
-func (m *MsgGuildUpdateEntrySubstationId) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgGuildUpdateEntrySubstationId) GetGuildId() string {
-	if m != nil {
-		return m.GuildId
-	}
-	return ""
-}
-
-func (m *MsgGuildUpdateEntrySubstationId) GetEntrySubstationId() string {
-	if m != nil {
-		return m.EntrySubstationId
-	}
-	return ""
-}
-
-type MsgGuildUpdateEndpoint struct {
-	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	GuildId  string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
-	Endpoint string `protobuf:"bytes,3,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
-}
-
-func (m *MsgGuildUpdateEndpoint) Reset()         { *m = MsgGuildUpdateEndpoint{} }
-func (m *MsgGuildUpdateEndpoint) String() string { return proto.CompactTextString(m) }
-func (*MsgGuildUpdateEndpoint) ProtoMessage()    {}
-func (*MsgGuildUpdateEndpoint) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{18}
-}
-func (m *MsgGuildUpdateEndpoint) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgGuildUpdateEndpoint) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgGuildUpdateEndpoint.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgGuildUpdateEndpoint) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgGuildUpdateEndpoint.Merge(m, src)
-}
-func (m *MsgGuildUpdateEndpoint) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgGuildUpdateEndpoint) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgGuildUpdateEndpoint.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgGuildUpdateEndpoint proto.InternalMessageInfo
-
-func (m *MsgGuildUpdateEndpoint) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgGuildUpdateEndpoint) GetGuildId() string {
-	if m != nil {
-		return m.GuildId
-	}
-	return ""
-}
-
-func (m *MsgGuildUpdateEndpoint) GetEndpoint() string {
-	if m != nil {
-		return m.Endpoint
-	}
-	return ""
-}
-
-type MsgGuildUpdateJoinInfusionMinimum struct {
-	Creator             string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	GuildId             string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
-	JoinInfusionMinimum uint64 `protobuf:"varint,3,opt,name=joinInfusionMinimum,proto3" json:"joinInfusionMinimum,omitempty"`
-}
-
-func (m *MsgGuildUpdateJoinInfusionMinimum) Reset()         { *m = MsgGuildUpdateJoinInfusionMinimum{} }
-func (m *MsgGuildUpdateJoinInfusionMinimum) String() string { return proto.CompactTextString(m) }
-func (*MsgGuildUpdateJoinInfusionMinimum) ProtoMessage()    {}
-func (*MsgGuildUpdateJoinInfusionMinimum) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{19}
-}
-func (m *MsgGuildUpdateJoinInfusionMinimum) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgGuildUpdateJoinInfusionMinimum) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimum.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgGuildUpdateJoinInfusionMinimum) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimum.Merge(m, src)
-}
-func (m *MsgGuildUpdateJoinInfusionMinimum) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgGuildUpdateJoinInfusionMinimum) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimum.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimum proto.InternalMessageInfo
-
-func (m *MsgGuildUpdateJoinInfusionMinimum) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgGuildUpdateJoinInfusionMinimum) GetGuildId() string {
-	if m != nil {
-		return m.GuildId
-	}
-	return ""
-}
-
-func (m *MsgGuildUpdateJoinInfusionMinimum) GetJoinInfusionMinimum() uint64 {
-	if m != nil {
-		return m.JoinInfusionMinimum
-	}
-	return 0
-}
-
-type MsgGuildUpdateJoinInfusionMinimumBypassByRequest struct {
-	Creator              string               `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	GuildId              string               `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
-	GuildJoinBypassLevel GuildJoinBypassLevel `protobuf:"varint,3,opt,name=guildJoinBypassLevel,proto3,enum=structs.GuildJoinBypassLevel" json:"guildJoinBypassLevel,omitempty"`
-}
-
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Reset() {
-	*m = MsgGuildUpdateJoinInfusionMinimumBypassByRequest{}
-}
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) String() string {
-	return proto.CompactTextString(m)
-}
-func (*MsgGuildUpdateJoinInfusionMinimumBypassByRequest) ProtoMessage() {}
-func (*MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{20}
-}
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimumBypassByRequest.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimumBypassByRequest.Merge(m, src)
-}
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimumBypassByRequest.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimumBypassByRequest proto.InternalMessageInfo
-
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) GetGuildId() string {
-	if m != nil {
-		return m.GuildId
-	}
-	return ""
-}
-
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) GetGuildJoinBypassLevel() GuildJoinBypassLevel {
-	if m != nil {
-		return m.GuildJoinBypassLevel
-	}
-	return GuildJoinBypassLevel_closed
-}
-
-type MsgGuildUpdateJoinInfusionMinimumBypassByInvite struct {
-	Creator              string               `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	GuildId              string               `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
-	GuildJoinBypassLevel GuildJoinBypassLevel `protobuf:"varint,3,opt,name=guildJoinBypassLevel,proto3,enum=structs.GuildJoinBypassLevel" json:"guildJoinBypassLevel,omitempty"`
-}
-
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Reset() {
-	*m = MsgGuildUpdateJoinInfusionMinimumBypassByInvite{}
-}
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) String() string {
-	return proto.CompactTextString(m)
-}
-func (*MsgGuildUpdateJoinInfusionMinimumBypassByInvite) ProtoMessage() {}
-func (*MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{21}
-}
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimumBypassByInvite.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimumBypassByInvite.Merge(m, src)
-}
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimumBypassByInvite.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimumBypassByInvite proto.InternalMessageInfo
-
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) GetGuildId() string {
-	if m != nil {
-		return m.GuildId
-	}
-	return ""
-}
-
-func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) GetGuildJoinBypassLevel() GuildJoinBypassLevel {
-	if m != nil {
-		return m.GuildJoinBypassLevel
-	}
-	return GuildJoinBypassLevel_closed
-}
-
-type MsgGuildUpdateResponse struct {
-}
-
-func (m *MsgGuildUpdateResponse) Reset()         { *m = MsgGuildUpdateResponse{} }
-func (m *MsgGuildUpdateResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgGuildUpdateResponse) ProtoMessage()    {}
-func (*MsgGuildUpdateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{22}
-}
-func (m *MsgGuildUpdateResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgGuildUpdateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgGuildUpdateResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgGuildUpdateResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgGuildUpdateResponse.Merge(m, src)
-}
-func (m *MsgGuildUpdateResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgGuildUpdateResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgGuildUpdateResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgGuildUpdateResponse proto.InternalMessageInfo
-
-type MsgGuildJoinProxy struct {
-	Creator      string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Address      string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
-	SubstationId string `protobuf:"bytes,3,opt,name=substationId,proto3" json:"substationId,omitempty"`
-}
-
-func (m *MsgGuildJoinProxy) Reset()         { *m = MsgGuildJoinProxy{} }
-func (m *MsgGuildJoinProxy) String() string { return proto.CompactTextString(m) }
-func (*MsgGuildJoinProxy) ProtoMessage()    {}
-func (*MsgGuildJoinProxy) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{23}
-}
-func (m *MsgGuildJoinProxy) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgGuildJoinProxy) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgGuildJoinProxy.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgGuildJoinProxy) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgGuildJoinProxy.Merge(m, src)
-}
-func (m *MsgGuildJoinProxy) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgGuildJoinProxy) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgGuildJoinProxy.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgGuildJoinProxy proto.InternalMessageInfo
-
-func (m *MsgGuildJoinProxy) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgGuildJoinProxy) GetAddress() string {
-	if m != nil {
-		return m.Address
-	}
-	return ""
-}
-
-func (m *MsgGuildJoinProxy) GetSubstationId() string {
-	if m != nil {
-		return m.SubstationId
-	}
-	return ""
-}
-
-type MsgGuildJoinProxyResponse struct {
-}
-
-func (m *MsgGuildJoinProxyResponse) Reset()         { *m = MsgGuildJoinProxyResponse{} }
-func (m *MsgGuildJoinProxyResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgGuildJoinProxyResponse) ProtoMessage()    {}
-func (*MsgGuildJoinProxyResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{24}
-}
-func (m *MsgGuildJoinProxyResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgGuildJoinProxyResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgGuildJoinProxyResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgGuildJoinProxyResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgGuildJoinProxyResponse.Merge(m, src)
-}
-func (m *MsgGuildJoinProxyResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgGuildJoinProxyResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgGuildJoinProxyResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgGuildJoinProxyResponse proto.InternalMessageInfo
-
-type MsgGuildJoin struct {
-	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	GuildId string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
-}
-
-func (m *MsgGuildJoin) Reset()         { *m = MsgGuildJoin{} }
-func (m *MsgGuildJoin) String() string { return proto.CompactTextString(m) }
-func (*MsgGuildJoin) ProtoMessage()    {}
-func (*MsgGuildJoin) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{25}
-}
-func (m *MsgGuildJoin) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgGuildJoin) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgGuildJoin.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgGuildJoin) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgGuildJoin.Merge(m, src)
-}
-func (m *MsgGuildJoin) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgGuildJoin) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgGuildJoin.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgGuildJoin proto.InternalMessageInfo
-
-func (m *MsgGuildJoin) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgGuildJoin) GetGuildId() string {
-	if m != nil {
-		return m.GuildId
-	}
-	return ""
-}
-
-type MsgGuildJoinResponse struct {
-}
-
-func (m *MsgGuildJoinResponse) Reset()         { *m = MsgGuildJoinResponse{} }
-func (m *MsgGuildJoinResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgGuildJoinResponse) ProtoMessage()    {}
-func (*MsgGuildJoinResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{26}
-}
-func (m *MsgGuildJoinResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgGuildJoinResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgGuildJoinResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgGuildJoinResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgGuildJoinResponse.Merge(m, src)
-}
-func (m *MsgGuildJoinResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgGuildJoinResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgGuildJoinResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgGuildJoinResponse proto.InternalMessageInfo
-
-type MsgAddressApproveRegister struct {
-	Creator     string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Approve     bool   `protobuf:"varint,2,opt,name=approve,proto3" json:"approve,omitempty"`
-	Address     string `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
-	Permissions uint64 `protobuf:"varint,4,opt,name=permissions,proto3" json:"permissions,omitempty"`
-}
-
-func (m *MsgAddressApproveRegister) Reset()         { *m = MsgAddressApproveRegister{} }
-func (m *MsgAddressApproveRegister) String() string { return proto.CompactTextString(m) }
-func (*MsgAddressApproveRegister) ProtoMessage()    {}
-func (*MsgAddressApproveRegister) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{27}
-}
-func (m *MsgAddressApproveRegister) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgAddressApproveRegister) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgAddressApproveRegister.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgAddressApproveRegister) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddressApproveRegister.Merge(m, src)
-}
-func (m *MsgAddressApproveRegister) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgAddressApproveRegister) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddressApproveRegister.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgAddressApproveRegister proto.InternalMessageInfo
-
-func (m *MsgAddressApproveRegister) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgAddressApproveRegister) GetApprove() bool {
-	if m != nil {
-		return m.Approve
-	}
-	return false
-}
-
-func (m *MsgAddressApproveRegister) GetAddress() string {
-	if m != nil {
-		return m.Address
-	}
-	return ""
-}
-
-func (m *MsgAddressApproveRegister) GetPermissions() uint64 {
-	if m != nil {
-		return m.Permissions
-	}
-	return 0
-}
-
-type MsgAddressRegister struct {
-	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	PlayerId string `protobuf:"bytes,2,opt,name=playerId,proto3" json:"playerId,omitempty"`
-	Address  string `protobuf:"bytes,3,opt,name=address,proto3" json:"address,omitempty"`
-}
-
-func (m *MsgAddressRegister) Reset()         { *m = MsgAddressRegister{} }
-func (m *MsgAddressRegister) String() string { return proto.CompactTextString(m) }
-func (*MsgAddressRegister) ProtoMessage()    {}
-func (*MsgAddressRegister) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{28}
-}
-func (m *MsgAddressRegister) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgAddressRegister) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgAddressRegister.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgAddressRegister) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddressRegister.Merge(m, src)
-}
-func (m *MsgAddressRegister) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgAddressRegister) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddressRegister.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgAddressRegister proto.InternalMessageInfo
-
-func (m *MsgAddressRegister) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgAddressRegister) GetPlayerId() string {
-	if m != nil {
-		return m.PlayerId
-	}
-	return ""
-}
-
-func (m *MsgAddressRegister) GetAddress() string {
-	if m != nil {
-		return m.Address
-	}
-	return ""
-}
-
-type MsgAddressRegisterResponse struct {
-}
-
-func (m *MsgAddressRegisterResponse) Reset()         { *m = MsgAddressRegisterResponse{} }
-func (m *MsgAddressRegisterResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgAddressRegisterResponse) ProtoMessage()    {}
-func (*MsgAddressRegisterResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{29}
-}
-func (m *MsgAddressRegisterResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgAddressRegisterResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgAddressRegisterResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgAddressRegisterResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddressRegisterResponse.Merge(m, src)
-}
-func (m *MsgAddressRegisterResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgAddressRegisterResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddressRegisterResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgAddressRegisterResponse proto.InternalMessageInfo
-
-type MsgAddressRevoke struct {
-	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	Address string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
-}
-
-func (m *MsgAddressRevoke) Reset()         { *m = MsgAddressRevoke{} }
-func (m *MsgAddressRevoke) String() string { return proto.CompactTextString(m) }
-func (*MsgAddressRevoke) ProtoMessage()    {}
-func (*MsgAddressRevoke) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{30}
-}
-func (m *MsgAddressRevoke) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgAddressRevoke) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgAddressRevoke.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgAddressRevoke) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddressRevoke.Merge(m, src)
-}
-func (m *MsgAddressRevoke) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgAddressRevoke) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddressRevoke.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgAddressRevoke proto.InternalMessageInfo
-
-func (m *MsgAddressRevoke) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgAddressRevoke) GetAddress() string {
-	if m != nil {
-		return m.Address
-	}
-	return ""
-}
-
-type MsgAddressRevokeResponse struct {
-}
-
-func (m *MsgAddressRevokeResponse) Reset()         { *m = MsgAddressRevokeResponse{} }
-func (m *MsgAddressRevokeResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgAddressRevokeResponse) ProtoMessage()    {}
-func (*MsgAddressRevokeResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{31}
-}
-func (m *MsgAddressRevokeResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgAddressRevokeResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgAddressRevokeResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgAddressRevokeResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgAddressRevokeResponse.Merge(m, src)
-}
-func (m *MsgAddressRevokeResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgAddressRevokeResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgAddressRevokeResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgAddressRevokeResponse proto.InternalMessageInfo
-
 type MsgGuildApproveRegister struct {
 	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	Approve  bool   `protobuf:"varint,2,opt,name=approve,proto3" json:"approve,omitempty"`
@@ -1679,7 +509,7 @@ func (m *MsgGuildApproveRegister) Reset()         { *m = MsgGuildApproveRegister
 func (m *MsgGuildApproveRegister) String() string { return proto.CompactTextString(m) }
 func (*MsgGuildApproveRegister) ProtoMessage()    {}
 func (*MsgGuildApproveRegister) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{32}
+	return fileDescriptor_38fd6c203bede659, []int{9}
 }
 func (m *MsgGuildApproveRegister) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1743,7 +573,7 @@ func (m *MsgGuildApproveRegisterResponse) Reset()         { *m = MsgGuildApprove
 func (m *MsgGuildApproveRegisterResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgGuildApproveRegisterResponse) ProtoMessage()    {}
 func (*MsgGuildApproveRegisterResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{33}
+	return fileDescriptor_38fd6c203bede659, []int{10}
 }
 func (m *MsgGuildApproveRegisterResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -1772,22 +602,128 @@ func (m *MsgGuildApproveRegisterResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgGuildApproveRegisterResponse proto.InternalMessageInfo
 
-type MsgPlanetExplore struct {
+type MsgGuildCreate struct {
+	Creator           string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	Endpoint          string `protobuf:"bytes,2,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
+	EntrySubstationId string `protobuf:"bytes,3,opt,name=entrySubstationId,proto3" json:"entrySubstationId,omitempty"`
+}
+
+func (m *MsgGuildCreate) Reset()         { *m = MsgGuildCreate{} }
+func (m *MsgGuildCreate) String() string { return proto.CompactTextString(m) }
+func (*MsgGuildCreate) ProtoMessage()    {}
+func (*MsgGuildCreate) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{11}
+}
+func (m *MsgGuildCreate) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgGuildCreate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgGuildCreate.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgGuildCreate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgGuildCreate.Merge(m, src)
+}
+func (m *MsgGuildCreate) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgGuildCreate) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgGuildCreate.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgGuildCreate proto.InternalMessageInfo
+
+func (m *MsgGuildCreate) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgGuildCreate) GetEndpoint() string {
+	if m != nil {
+		return m.Endpoint
+	}
+	return ""
+}
+
+func (m *MsgGuildCreate) GetEntrySubstationId() string {
+	if m != nil {
+		return m.EntrySubstationId
+	}
+	return ""
+}
+
+type MsgGuildCreateResponse struct {
+	GuildId string `protobuf:"bytes,1,opt,name=guildId,proto3" json:"guildId,omitempty"`
+}
+
+func (m *MsgGuildCreateResponse) Reset()         { *m = MsgGuildCreateResponse{} }
+func (m *MsgGuildCreateResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgGuildCreateResponse) ProtoMessage()    {}
+func (*MsgGuildCreateResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{12}
+}
+func (m *MsgGuildCreateResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgGuildCreateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgGuildCreateResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgGuildCreateResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgGuildCreateResponse.Merge(m, src)
+}
+func (m *MsgGuildCreateResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgGuildCreateResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgGuildCreateResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgGuildCreateResponse proto.InternalMessageInfo
+
+func (m *MsgGuildCreateResponse) GetGuildId() string {
+	if m != nil {
+		return m.GuildId
+	}
+	return ""
+}
+
+type MsgGuildUpdateOwnerId struct {
 	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	GuildId string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	Owner   string `protobuf:"bytes,3,opt,name=owner,proto3" json:"owner,omitempty"`
 }
 
-func (m *MsgPlanetExplore) Reset()         { *m = MsgPlanetExplore{} }
-func (m *MsgPlanetExplore) String() string { return proto.CompactTextString(m) }
-func (*MsgPlanetExplore) ProtoMessage()    {}
-func (*MsgPlanetExplore) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{34}
+func (m *MsgGuildUpdateOwnerId) Reset()         { *m = MsgGuildUpdateOwnerId{} }
+func (m *MsgGuildUpdateOwnerId) String() string { return proto.CompactTextString(m) }
+func (*MsgGuildUpdateOwnerId) ProtoMessage()    {}
+func (*MsgGuildUpdateOwnerId) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{13}
 }
-func (m *MsgPlanetExplore) XXX_Unmarshal(b []byte) error {
+func (m *MsgGuildUpdateOwnerId) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgPlanetExplore) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgGuildUpdateOwnerId) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgPlanetExplore.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgGuildUpdateOwnerId.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1797,41 +733,57 @@ func (m *MsgPlanetExplore) XXX_Marshal(b []byte, deterministic bool) ([]byte, er
 		return b[:n], nil
 	}
 }
-func (m *MsgPlanetExplore) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgPlanetExplore.Merge(m, src)
+func (m *MsgGuildUpdateOwnerId) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgGuildUpdateOwnerId.Merge(m, src)
 }
-func (m *MsgPlanetExplore) XXX_Size() int {
+func (m *MsgGuildUpdateOwnerId) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgPlanetExplore) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgPlanetExplore.DiscardUnknown(m)
+func (m *MsgGuildUpdateOwnerId) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgGuildUpdateOwnerId.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgPlanetExplore proto.InternalMessageInfo
+var xxx_messageInfo_MsgGuildUpdateOwnerId proto.InternalMessageInfo
 
-func (m *MsgPlanetExplore) GetCreator() string {
+func (m *MsgGuildUpdateOwnerId) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
 	return ""
 }
 
-type MsgPlanetExploreResponse struct {
-	Planet Planet `protobuf:"bytes,1,opt,name=planet,proto3" json:"planet"`
+func (m *MsgGuildUpdateOwnerId) GetGuildId() string {
+	if m != nil {
+		return m.GuildId
+	}
+	return ""
 }
 
-func (m *MsgPlanetExploreResponse) Reset()         { *m = MsgPlanetExploreResponse{} }
-func (m *MsgPlanetExploreResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgPlanetExploreResponse) ProtoMessage()    {}
-func (*MsgPlanetExploreResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{35}
+func (m *MsgGuildUpdateOwnerId) GetOwner() string {
+	if m != nil {
+		return m.Owner
+	}
+	return ""
 }
-func (m *MsgPlanetExploreResponse) XXX_Unmarshal(b []byte) error {
+
+type MsgGuildUpdateEntrySubstationId struct {
+	Creator           string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	GuildId           string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	EntrySubstationId string `protobuf:"bytes,3,opt,name=entrySubstationId,proto3" json:"entrySubstationId,omitempty"`
+}
+
+func (m *MsgGuildUpdateEntrySubstationId) Reset()         { *m = MsgGuildUpdateEntrySubstationId{} }
+func (m *MsgGuildUpdateEntrySubstationId) String() string { return proto.CompactTextString(m) }
+func (*MsgGuildUpdateEntrySubstationId) ProtoMessage()    {}
+func (*MsgGuildUpdateEntrySubstationId) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{14}
+}
+func (m *MsgGuildUpdateEntrySubstationId) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgPlanetExploreResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgGuildUpdateEntrySubstationId) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgPlanetExploreResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgGuildUpdateEntrySubstationId.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1841,42 +793,57 @@ func (m *MsgPlanetExploreResponse) XXX_Marshal(b []byte, deterministic bool) ([]
 		return b[:n], nil
 	}
 }
-func (m *MsgPlanetExploreResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgPlanetExploreResponse.Merge(m, src)
+func (m *MsgGuildUpdateEntrySubstationId) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgGuildUpdateEntrySubstationId.Merge(m, src)
 }
-func (m *MsgPlanetExploreResponse) XXX_Size() int {
+func (m *MsgGuildUpdateEntrySubstationId) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgPlanetExploreResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgPlanetExploreResponse.DiscardUnknown(m)
+func (m *MsgGuildUpdateEntrySubstationId) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgGuildUpdateEntrySubstationId.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgPlanetExploreResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgGuildUpdateEntrySubstationId proto.InternalMessageInfo
 
-func (m *MsgPlanetExploreResponse) GetPlanet() Planet {
+func (m *MsgGuildUpdateEntrySubstationId) GetCreator() string {
 	if m != nil {
-		return m.Planet
+		return m.Creator
 	}
-	return Planet{}
+	return ""
 }
 
-type MsgStructActivate struct {
+func (m *MsgGuildUpdateEntrySubstationId) GetGuildId() string {
+	if m != nil {
+		return m.GuildId
+	}
+	return ""
+}
+
+func (m *MsgGuildUpdateEntrySubstationId) GetEntrySubstationId() string {
+	if m != nil {
+		return m.EntrySubstationId
+	}
+	return ""
+}
+
+type MsgGuildUpdateEndpoint struct {
 	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
+	GuildId  string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	Endpoint string `protobuf:"bytes,3,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
 }
 
-func (m *MsgStructActivate) Reset()         { *m = MsgStructActivate{} }
-func (m *MsgStructActivate) String() string { return proto.CompactTextString(m) }
-func (*MsgStructActivate) ProtoMessage()    {}
-func (*MsgStructActivate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{36}
+func (m *MsgGuildUpdateEndpoint) Reset()         { *m = MsgGuildUpdateEndpoint{} }
+func (m *MsgGuildUpdateEndpoint) String() string { return proto.CompactTextString(m) }
+func (*MsgGuildUpdateEndpoint) ProtoMessage()    {}
+func (*MsgGuildUpdateEndpoint) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{15}
 }
-func (m *MsgStructActivate) XXX_Unmarshal(b []byte) error {
+func (m *MsgGuildUpdateEndpoint) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgStructActivate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgGuildUpdateEndpoint) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgStructActivate.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgGuildUpdateEndpoint.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1886,95 +853,57 @@ func (m *MsgStructActivate) XXX_Marshal(b []byte, deterministic bool) ([]byte, e
 		return b[:n], nil
 	}
 }
-func (m *MsgStructActivate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructActivate.Merge(m, src)
+func (m *MsgGuildUpdateEndpoint) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgGuildUpdateEndpoint.Merge(m, src)
 }
-func (m *MsgStructActivate) XXX_Size() int {
+func (m *MsgGuildUpdateEndpoint) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgStructActivate) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructActivate.DiscardUnknown(m)
+func (m *MsgGuildUpdateEndpoint) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgGuildUpdateEndpoint.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgStructActivate proto.InternalMessageInfo
+var xxx_messageInfo_MsgGuildUpdateEndpoint proto.InternalMessageInfo
 
-func (m *MsgStructActivate) GetCreator() string {
+func (m *MsgGuildUpdateEndpoint) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
 	return ""
 }
 
-func (m *MsgStructActivate) GetStructId() string {
+func (m *MsgGuildUpdateEndpoint) GetGuildId() string {
 	if m != nil {
-		return m.StructId
+		return m.GuildId
 	}
 	return ""
 }
 
-type MsgStructActivateResponse struct {
-	Struct Struct `protobuf:"bytes,1,opt,name=struct,proto3" json:"struct"`
-}
-
-func (m *MsgStructActivateResponse) Reset()         { *m = MsgStructActivateResponse{} }
-func (m *MsgStructActivateResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgStructActivateResponse) ProtoMessage()    {}
-func (*MsgStructActivateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{37}
-}
-func (m *MsgStructActivateResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgStructActivateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgStructActivateResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgStructActivateResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructActivateResponse.Merge(m, src)
-}
-func (m *MsgStructActivateResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgStructActivateResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructActivateResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgStructActivateResponse proto.InternalMessageInfo
-
-func (m *MsgStructActivateResponse) GetStruct() Struct {
+func (m *MsgGuildUpdateEndpoint) GetEndpoint() string {
 	if m != nil {
-		return m.Struct
+		return m.Endpoint
 	}
-	return Struct{}
+	return ""
 }
 
-type MsgStructBuildInitiate struct {
-	Creator    string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructType string `protobuf:"bytes,2,opt,name=structType,proto3" json:"structType,omitempty"`
-	PlanetId   string `protobuf:"bytes,3,opt,name=planetId,proto3" json:"planetId,omitempty"`
-	Slot       uint64 `protobuf:"varint,4,opt,name=slot,proto3" json:"slot,omitempty"`
+type MsgGuildUpdateJoinInfusionMinimum struct {
+	Creator             string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	GuildId             string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	JoinInfusionMinimum uint64 `protobuf:"varint,3,opt,name=joinInfusionMinimum,proto3" json:"joinInfusionMinimum,omitempty"`
 }
 
-func (m *MsgStructBuildInitiate) Reset()         { *m = MsgStructBuildInitiate{} }
-func (m *MsgStructBuildInitiate) String() string { return proto.CompactTextString(m) }
-func (*MsgStructBuildInitiate) ProtoMessage()    {}
-func (*MsgStructBuildInitiate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{38}
+func (m *MsgGuildUpdateJoinInfusionMinimum) Reset()         { *m = MsgGuildUpdateJoinInfusionMinimum{} }
+func (m *MsgGuildUpdateJoinInfusionMinimum) String() string { return proto.CompactTextString(m) }
+func (*MsgGuildUpdateJoinInfusionMinimum) ProtoMessage()    {}
+func (*MsgGuildUpdateJoinInfusionMinimum) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{16}
 }
-func (m *MsgStructBuildInitiate) XXX_Unmarshal(b []byte) error {
+func (m *MsgGuildUpdateJoinInfusionMinimum) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgStructBuildInitiate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgGuildUpdateJoinInfusionMinimum) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgStructBuildInitiate.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimum.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -1984,62 +913,61 @@ func (m *MsgStructBuildInitiate) XXX_Marshal(b []byte, deterministic bool) ([]by
 		return b[:n], nil
 	}
 }
-func (m *MsgStructBuildInitiate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructBuildInitiate.Merge(m, src)
+func (m *MsgGuildUpdateJoinInfusionMinimum) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimum.Merge(m, src)
 }
-func (m *MsgStructBuildInitiate) XXX_Size() int {
+func (m *MsgGuildUpdateJoinInfusionMinimum) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgStructBuildInitiate) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructBuildInitiate.DiscardUnknown(m)
+func (m *MsgGuildUpdateJoinInfusionMinimum) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimum.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgStructBuildInitiate proto.InternalMessageInfo
+var xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimum proto.InternalMessageInfo
 
-func (m *MsgStructBuildInitiate) GetCreator() string {
+func (m *MsgGuildUpdateJoinInfusionMinimum) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
 	return ""
 }
 
-func (m *MsgStructBuildInitiate) GetStructType() string {
+func (m *MsgGuildUpdateJoinInfusionMinimum) GetGuildId() string {
 	if m != nil {
-		return m.StructType
+		return m.GuildId
 	}
 	return ""
 }
 
-func (m *MsgStructBuildInitiate) GetPlanetId() string {
+func (m *MsgGuildUpdateJoinInfusionMinimum) GetJoinInfusionMinimum() uint64 {
 	if m != nil {
-		return m.PlanetId
-	}
-	return ""
-}
-
-func (m *MsgStructBuildInitiate) GetSlot() uint64 {
-	if m != nil {
-		return m.Slot
+		return m.JoinInfusionMinimum
 	}
 	return 0
 }
 
-type MsgStructBuildInitiateResponse struct {
-	Struct Struct `protobuf:"bytes,1,opt,name=struct,proto3" json:"struct"`
+type MsgGuildUpdateJoinInfusionMinimumBypassByRequest struct {
+	Creator              string               `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	GuildId              string               `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	GuildJoinBypassLevel GuildJoinBypassLevel `protobuf:"varint,3,opt,name=guildJoinBypassLevel,proto3,enum=structs.structs.GuildJoinBypassLevel" json:"guildJoinBypassLevel,omitempty"`
 }
 
-func (m *MsgStructBuildInitiateResponse) Reset()         { *m = MsgStructBuildInitiateResponse{} }
-func (m *MsgStructBuildInitiateResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgStructBuildInitiateResponse) ProtoMessage()    {}
-func (*MsgStructBuildInitiateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{39}
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Reset() {
+	*m = MsgGuildUpdateJoinInfusionMinimumBypassByRequest{}
 }
-func (m *MsgStructBuildInitiateResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) String() string {
+	return proto.CompactTextString(m)
+}
+func (*MsgGuildUpdateJoinInfusionMinimumBypassByRequest) ProtoMessage() {}
+func (*MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{17}
+}
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgStructBuildInitiateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgStructBuildInitiateResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimumBypassByRequest.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -2049,109 +977,61 @@ func (m *MsgStructBuildInitiateResponse) XXX_Marshal(b []byte, deterministic boo
 		return b[:n], nil
 	}
 }
-func (m *MsgStructBuildInitiateResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructBuildInitiateResponse.Merge(m, src)
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimumBypassByRequest.Merge(m, src)
 }
-func (m *MsgStructBuildInitiateResponse) XXX_Size() int {
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgStructBuildInitiateResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructBuildInitiateResponse.DiscardUnknown(m)
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimumBypassByRequest.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgStructBuildInitiateResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimumBypassByRequest proto.InternalMessageInfo
 
-func (m *MsgStructBuildInitiateResponse) GetStruct() Struct {
-	if m != nil {
-		return m.Struct
-	}
-	return Struct{}
-}
-
-type MsgStructBuildComplete struct {
-	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
-	Proof    string `protobuf:"bytes,3,opt,name=proof,proto3" json:"proof,omitempty"`
-	Nonce    string `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
-}
-
-func (m *MsgStructBuildComplete) Reset()         { *m = MsgStructBuildComplete{} }
-func (m *MsgStructBuildComplete) String() string { return proto.CompactTextString(m) }
-func (*MsgStructBuildComplete) ProtoMessage()    {}
-func (*MsgStructBuildComplete) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{40}
-}
-func (m *MsgStructBuildComplete) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgStructBuildComplete) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgStructBuildComplete.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgStructBuildComplete) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructBuildComplete.Merge(m, src)
-}
-func (m *MsgStructBuildComplete) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgStructBuildComplete) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructBuildComplete.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgStructBuildComplete proto.InternalMessageInfo
-
-func (m *MsgStructBuildComplete) GetCreator() string {
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
 	return ""
 }
 
-func (m *MsgStructBuildComplete) GetStructId() string {
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) GetGuildId() string {
 	if m != nil {
-		return m.StructId
+		return m.GuildId
 	}
 	return ""
 }
 
-func (m *MsgStructBuildComplete) GetProof() string {
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) GetGuildJoinBypassLevel() GuildJoinBypassLevel {
 	if m != nil {
-		return m.Proof
+		return m.GuildJoinBypassLevel
 	}
-	return ""
+	return GuildJoinBypassLevel_closed
 }
 
-func (m *MsgStructBuildComplete) GetNonce() string {
-	if m != nil {
-		return m.Nonce
-	}
-	return ""
+type MsgGuildUpdateJoinInfusionMinimumBypassByInvite struct {
+	Creator              string               `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	GuildId              string               `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	GuildJoinBypassLevel GuildJoinBypassLevel `protobuf:"varint,3,opt,name=guildJoinBypassLevel,proto3,enum=structs.structs.GuildJoinBypassLevel" json:"guildJoinBypassLevel,omitempty"`
 }
 
-type MsgStructBuildCompleteResponse struct {
-	Struct Struct `protobuf:"bytes,1,opt,name=struct,proto3" json:"struct"`
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Reset() {
+	*m = MsgGuildUpdateJoinInfusionMinimumBypassByInvite{}
 }
-
-func (m *MsgStructBuildCompleteResponse) Reset()         { *m = MsgStructBuildCompleteResponse{} }
-func (m *MsgStructBuildCompleteResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgStructBuildCompleteResponse) ProtoMessage()    {}
-func (*MsgStructBuildCompleteResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{41}
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) String() string {
+	return proto.CompactTextString(m)
 }
-func (m *MsgStructBuildCompleteResponse) XXX_Unmarshal(b []byte) error {
+func (*MsgGuildUpdateJoinInfusionMinimumBypassByInvite) ProtoMessage() {}
+func (*MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{18}
+}
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgStructBuildCompleteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgStructBuildCompleteResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimumBypassByInvite.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -2161,93 +1041,54 @@ func (m *MsgStructBuildCompleteResponse) XXX_Marshal(b []byte, deterministic boo
 		return b[:n], nil
 	}
 }
-func (m *MsgStructBuildCompleteResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructBuildCompleteResponse.Merge(m, src)
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimumBypassByInvite.Merge(m, src)
 }
-func (m *MsgStructBuildCompleteResponse) XXX_Size() int {
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgStructBuildCompleteResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructBuildCompleteResponse.DiscardUnknown(m)
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimumBypassByInvite.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgStructBuildCompleteResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgGuildUpdateJoinInfusionMinimumBypassByInvite proto.InternalMessageInfo
 
-func (m *MsgStructBuildCompleteResponse) GetStruct() Struct {
-	if m != nil {
-		return m.Struct
-	}
-	return Struct{}
-}
-
-type MsgStructMineActivate struct {
-	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
-}
-
-func (m *MsgStructMineActivate) Reset()         { *m = MsgStructMineActivate{} }
-func (m *MsgStructMineActivate) String() string { return proto.CompactTextString(m) }
-func (*MsgStructMineActivate) ProtoMessage()    {}
-func (*MsgStructMineActivate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{42}
-}
-func (m *MsgStructMineActivate) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgStructMineActivate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgStructMineActivate.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgStructMineActivate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructMineActivate.Merge(m, src)
-}
-func (m *MsgStructMineActivate) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgStructMineActivate) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructMineActivate.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgStructMineActivate proto.InternalMessageInfo
-
-func (m *MsgStructMineActivate) GetCreator() string {
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
 	return ""
 }
 
-func (m *MsgStructMineActivate) GetStructId() string {
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) GetGuildId() string {
 	if m != nil {
-		return m.StructId
+		return m.GuildId
 	}
 	return ""
 }
 
-type MsgStructMineActivateResponse struct {
-	Struct Struct `protobuf:"bytes,1,opt,name=struct,proto3" json:"struct"`
+func (m *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) GetGuildJoinBypassLevel() GuildJoinBypassLevel {
+	if m != nil {
+		return m.GuildJoinBypassLevel
+	}
+	return GuildJoinBypassLevel_closed
 }
 
-func (m *MsgStructMineActivateResponse) Reset()         { *m = MsgStructMineActivateResponse{} }
-func (m *MsgStructMineActivateResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgStructMineActivateResponse) ProtoMessage()    {}
-func (*MsgStructMineActivateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{43}
+type MsgGuildUpdateResponse struct {
 }
-func (m *MsgStructMineActivateResponse) XXX_Unmarshal(b []byte) error {
+
+func (m *MsgGuildUpdateResponse) Reset()         { *m = MsgGuildUpdateResponse{} }
+func (m *MsgGuildUpdateResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgGuildUpdateResponse) ProtoMessage()    {}
+func (*MsgGuildUpdateResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{19}
+}
+func (m *MsgGuildUpdateResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgStructMineActivateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgGuildUpdateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgStructMineActivateResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgGuildUpdateResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -2257,643 +1098,36 @@ func (m *MsgStructMineActivateResponse) XXX_Marshal(b []byte, deterministic bool
 		return b[:n], nil
 	}
 }
-func (m *MsgStructMineActivateResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructMineActivateResponse.Merge(m, src)
+func (m *MsgGuildUpdateResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgGuildUpdateResponse.Merge(m, src)
 }
-func (m *MsgStructMineActivateResponse) XXX_Size() int {
+func (m *MsgGuildUpdateResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgStructMineActivateResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructMineActivateResponse.DiscardUnknown(m)
+func (m *MsgGuildUpdateResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgGuildUpdateResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgStructMineActivateResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgGuildUpdateResponse proto.InternalMessageInfo
 
-func (m *MsgStructMineActivateResponse) GetStruct() Struct {
-	if m != nil {
-		return m.Struct
-	}
-	return Struct{}
-}
-
-type MsgStructMineDeactivate struct {
-	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
-}
-
-func (m *MsgStructMineDeactivate) Reset()         { *m = MsgStructMineDeactivate{} }
-func (m *MsgStructMineDeactivate) String() string { return proto.CompactTextString(m) }
-func (*MsgStructMineDeactivate) ProtoMessage()    {}
-func (*MsgStructMineDeactivate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{44}
-}
-func (m *MsgStructMineDeactivate) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgStructMineDeactivate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgStructMineDeactivate.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgStructMineDeactivate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructMineDeactivate.Merge(m, src)
-}
-func (m *MsgStructMineDeactivate) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgStructMineDeactivate) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructMineDeactivate.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgStructMineDeactivate proto.InternalMessageInfo
-
-func (m *MsgStructMineDeactivate) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgStructMineDeactivate) GetStructId() string {
-	if m != nil {
-		return m.StructId
-	}
-	return ""
-}
-
-type MsgStructMineDeactivateResponse struct {
-	Struct Struct `protobuf:"bytes,1,opt,name=struct,proto3" json:"struct"`
-}
-
-func (m *MsgStructMineDeactivateResponse) Reset()         { *m = MsgStructMineDeactivateResponse{} }
-func (m *MsgStructMineDeactivateResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgStructMineDeactivateResponse) ProtoMessage()    {}
-func (*MsgStructMineDeactivateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{45}
-}
-func (m *MsgStructMineDeactivateResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgStructMineDeactivateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgStructMineDeactivateResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgStructMineDeactivateResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructMineDeactivateResponse.Merge(m, src)
-}
-func (m *MsgStructMineDeactivateResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgStructMineDeactivateResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructMineDeactivateResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgStructMineDeactivateResponse proto.InternalMessageInfo
-
-func (m *MsgStructMineDeactivateResponse) GetStruct() Struct {
-	if m != nil {
-		return m.Struct
-	}
-	return Struct{}
-}
-
-type MsgStructMine struct {
-	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
-	Proof    string `protobuf:"bytes,3,opt,name=proof,proto3" json:"proof,omitempty"`
-	Nonce    string `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
-}
-
-func (m *MsgStructMine) Reset()         { *m = MsgStructMine{} }
-func (m *MsgStructMine) String() string { return proto.CompactTextString(m) }
-func (*MsgStructMine) ProtoMessage()    {}
-func (*MsgStructMine) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{46}
-}
-func (m *MsgStructMine) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgStructMine) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgStructMine.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgStructMine) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructMine.Merge(m, src)
-}
-func (m *MsgStructMine) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgStructMine) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructMine.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgStructMine proto.InternalMessageInfo
-
-func (m *MsgStructMine) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgStructMine) GetStructId() string {
-	if m != nil {
-		return m.StructId
-	}
-	return ""
-}
-
-func (m *MsgStructMine) GetProof() string {
-	if m != nil {
-		return m.Proof
-	}
-	return ""
-}
-
-func (m *MsgStructMine) GetNonce() string {
-	if m != nil {
-		return m.Nonce
-	}
-	return ""
-}
-
-type MsgStructMineResponse struct {
-	Struct Struct `protobuf:"bytes,1,opt,name=struct,proto3" json:"struct"`
-}
-
-func (m *MsgStructMineResponse) Reset()         { *m = MsgStructMineResponse{} }
-func (m *MsgStructMineResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgStructMineResponse) ProtoMessage()    {}
-func (*MsgStructMineResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{47}
-}
-func (m *MsgStructMineResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgStructMineResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgStructMineResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgStructMineResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructMineResponse.Merge(m, src)
-}
-func (m *MsgStructMineResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgStructMineResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructMineResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgStructMineResponse proto.InternalMessageInfo
-
-func (m *MsgStructMineResponse) GetStruct() Struct {
-	if m != nil {
-		return m.Struct
-	}
-	return Struct{}
-}
-
-type MsgStructRefineActivate struct {
-	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
-}
-
-func (m *MsgStructRefineActivate) Reset()         { *m = MsgStructRefineActivate{} }
-func (m *MsgStructRefineActivate) String() string { return proto.CompactTextString(m) }
-func (*MsgStructRefineActivate) ProtoMessage()    {}
-func (*MsgStructRefineActivate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{48}
-}
-func (m *MsgStructRefineActivate) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgStructRefineActivate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgStructRefineActivate.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgStructRefineActivate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructRefineActivate.Merge(m, src)
-}
-func (m *MsgStructRefineActivate) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgStructRefineActivate) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructRefineActivate.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgStructRefineActivate proto.InternalMessageInfo
-
-func (m *MsgStructRefineActivate) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgStructRefineActivate) GetStructId() string {
-	if m != nil {
-		return m.StructId
-	}
-	return ""
-}
-
-type MsgStructRefineActivateResponse struct {
-	Struct Struct `protobuf:"bytes,1,opt,name=struct,proto3" json:"struct"`
-}
-
-func (m *MsgStructRefineActivateResponse) Reset()         { *m = MsgStructRefineActivateResponse{} }
-func (m *MsgStructRefineActivateResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgStructRefineActivateResponse) ProtoMessage()    {}
-func (*MsgStructRefineActivateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{49}
-}
-func (m *MsgStructRefineActivateResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgStructRefineActivateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgStructRefineActivateResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgStructRefineActivateResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructRefineActivateResponse.Merge(m, src)
-}
-func (m *MsgStructRefineActivateResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgStructRefineActivateResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructRefineActivateResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgStructRefineActivateResponse proto.InternalMessageInfo
-
-func (m *MsgStructRefineActivateResponse) GetStruct() Struct {
-	if m != nil {
-		return m.Struct
-	}
-	return Struct{}
-}
-
-type MsgStructRefineDeactivate struct {
-	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
-}
-
-func (m *MsgStructRefineDeactivate) Reset()         { *m = MsgStructRefineDeactivate{} }
-func (m *MsgStructRefineDeactivate) String() string { return proto.CompactTextString(m) }
-func (*MsgStructRefineDeactivate) ProtoMessage()    {}
-func (*MsgStructRefineDeactivate) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{50}
-}
-func (m *MsgStructRefineDeactivate) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgStructRefineDeactivate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgStructRefineDeactivate.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgStructRefineDeactivate) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructRefineDeactivate.Merge(m, src)
-}
-func (m *MsgStructRefineDeactivate) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgStructRefineDeactivate) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructRefineDeactivate.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgStructRefineDeactivate proto.InternalMessageInfo
-
-func (m *MsgStructRefineDeactivate) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgStructRefineDeactivate) GetStructId() string {
-	if m != nil {
-		return m.StructId
-	}
-	return ""
-}
-
-type MsgStructRefineDeactivateResponse struct {
-	Struct Struct `protobuf:"bytes,1,opt,name=struct,proto3" json:"struct"`
-}
-
-func (m *MsgStructRefineDeactivateResponse) Reset()         { *m = MsgStructRefineDeactivateResponse{} }
-func (m *MsgStructRefineDeactivateResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgStructRefineDeactivateResponse) ProtoMessage()    {}
-func (*MsgStructRefineDeactivateResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{51}
-}
-func (m *MsgStructRefineDeactivateResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgStructRefineDeactivateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgStructRefineDeactivateResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgStructRefineDeactivateResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructRefineDeactivateResponse.Merge(m, src)
-}
-func (m *MsgStructRefineDeactivateResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgStructRefineDeactivateResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructRefineDeactivateResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgStructRefineDeactivateResponse proto.InternalMessageInfo
-
-func (m *MsgStructRefineDeactivateResponse) GetStruct() Struct {
-	if m != nil {
-		return m.Struct
-	}
-	return Struct{}
-}
-
-type MsgStructRefine struct {
-	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
-	Proof    string `protobuf:"bytes,3,opt,name=proof,proto3" json:"proof,omitempty"`
-	Nonce    string `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
-}
-
-func (m *MsgStructRefine) Reset()         { *m = MsgStructRefine{} }
-func (m *MsgStructRefine) String() string { return proto.CompactTextString(m) }
-func (*MsgStructRefine) ProtoMessage()    {}
-func (*MsgStructRefine) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{52}
-}
-func (m *MsgStructRefine) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgStructRefine) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgStructRefine.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgStructRefine) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructRefine.Merge(m, src)
-}
-func (m *MsgStructRefine) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgStructRefine) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructRefine.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgStructRefine proto.InternalMessageInfo
-
-func (m *MsgStructRefine) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgStructRefine) GetStructId() string {
-	if m != nil {
-		return m.StructId
-	}
-	return ""
-}
-
-func (m *MsgStructRefine) GetProof() string {
-	if m != nil {
-		return m.Proof
-	}
-	return ""
-}
-
-func (m *MsgStructRefine) GetNonce() string {
-	if m != nil {
-		return m.Nonce
-	}
-	return ""
-}
-
-type MsgStructRefineResponse struct {
-	Struct Struct `protobuf:"bytes,1,opt,name=struct,proto3" json:"struct"`
-}
-
-func (m *MsgStructRefineResponse) Reset()         { *m = MsgStructRefineResponse{} }
-func (m *MsgStructRefineResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgStructRefineResponse) ProtoMessage()    {}
-func (*MsgStructRefineResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{53}
-}
-func (m *MsgStructRefineResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgStructRefineResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgStructRefineResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgStructRefineResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructRefineResponse.Merge(m, src)
-}
-func (m *MsgStructRefineResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgStructRefineResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructRefineResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgStructRefineResponse proto.InternalMessageInfo
-
-func (m *MsgStructRefineResponse) GetStruct() Struct {
-	if m != nil {
-		return m.Struct
-	}
-	return Struct{}
-}
-
-type MsgPlayerUpdatePrimaryAddress struct {
-	Creator        string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	PrimaryAddress string `protobuf:"bytes,2,opt,name=primaryAddress,proto3" json:"primaryAddress,omitempty"`
-}
-
-func (m *MsgPlayerUpdatePrimaryAddress) Reset()         { *m = MsgPlayerUpdatePrimaryAddress{} }
-func (m *MsgPlayerUpdatePrimaryAddress) String() string { return proto.CompactTextString(m) }
-func (*MsgPlayerUpdatePrimaryAddress) ProtoMessage()    {}
-func (*MsgPlayerUpdatePrimaryAddress) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{54}
-}
-func (m *MsgPlayerUpdatePrimaryAddress) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgPlayerUpdatePrimaryAddress) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgPlayerUpdatePrimaryAddress.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgPlayerUpdatePrimaryAddress) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgPlayerUpdatePrimaryAddress.Merge(m, src)
-}
-func (m *MsgPlayerUpdatePrimaryAddress) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgPlayerUpdatePrimaryAddress) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgPlayerUpdatePrimaryAddress.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgPlayerUpdatePrimaryAddress proto.InternalMessageInfo
-
-func (m *MsgPlayerUpdatePrimaryAddress) GetCreator() string {
-	if m != nil {
-		return m.Creator
-	}
-	return ""
-}
-
-func (m *MsgPlayerUpdatePrimaryAddress) GetPrimaryAddress() string {
-	if m != nil {
-		return m.PrimaryAddress
-	}
-	return ""
-}
-
-type MsgPlayerUpdatePrimaryAddressResponse struct {
-}
-
-func (m *MsgPlayerUpdatePrimaryAddressResponse) Reset()         { *m = MsgPlayerUpdatePrimaryAddressResponse{} }
-func (m *MsgPlayerUpdatePrimaryAddressResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgPlayerUpdatePrimaryAddressResponse) ProtoMessage()    {}
-func (*MsgPlayerUpdatePrimaryAddressResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{55}
-}
-func (m *MsgPlayerUpdatePrimaryAddressResponse) XXX_Unmarshal(b []byte) error {
-	return m.Unmarshal(b)
-}
-func (m *MsgPlayerUpdatePrimaryAddressResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	if deterministic {
-		return xxx_messageInfo_MsgPlayerUpdatePrimaryAddressResponse.Marshal(b, m, deterministic)
-	} else {
-		b = b[:cap(b)]
-		n, err := m.MarshalToSizedBuffer(b)
-		if err != nil {
-			return nil, err
-		}
-		return b[:n], nil
-	}
-}
-func (m *MsgPlayerUpdatePrimaryAddressResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgPlayerUpdatePrimaryAddressResponse.Merge(m, src)
-}
-func (m *MsgPlayerUpdatePrimaryAddressResponse) XXX_Size() int {
-	return m.Size()
-}
-func (m *MsgPlayerUpdatePrimaryAddressResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgPlayerUpdatePrimaryAddressResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_MsgPlayerUpdatePrimaryAddressResponse proto.InternalMessageInfo
-
-type MsgStructInfuse struct {
+type MsgGuildJoinProxy struct {
 	Creator      string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId     string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
-	InfuseAmount string `protobuf:"bytes,3,opt,name=infuseAmount,proto3" json:"infuseAmount,omitempty"`
+	Address      string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
+	SubstationId string `protobuf:"bytes,3,opt,name=substationId,proto3" json:"substationId,omitempty"`
 }
 
-func (m *MsgStructInfuse) Reset()         { *m = MsgStructInfuse{} }
-func (m *MsgStructInfuse) String() string { return proto.CompactTextString(m) }
-func (*MsgStructInfuse) ProtoMessage()    {}
-func (*MsgStructInfuse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{56}
+func (m *MsgGuildJoinProxy) Reset()         { *m = MsgGuildJoinProxy{} }
+func (m *MsgGuildJoinProxy) String() string { return proto.CompactTextString(m) }
+func (*MsgGuildJoinProxy) ProtoMessage()    {}
+func (*MsgGuildJoinProxy) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{20}
 }
-func (m *MsgStructInfuse) XXX_Unmarshal(b []byte) error {
+func (m *MsgGuildJoinProxy) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgStructInfuse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgGuildJoinProxy) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgStructInfuse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgGuildJoinProxy.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -2903,54 +1137,54 @@ func (m *MsgStructInfuse) XXX_Marshal(b []byte, deterministic bool) ([]byte, err
 		return b[:n], nil
 	}
 }
-func (m *MsgStructInfuse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructInfuse.Merge(m, src)
+func (m *MsgGuildJoinProxy) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgGuildJoinProxy.Merge(m, src)
 }
-func (m *MsgStructInfuse) XXX_Size() int {
+func (m *MsgGuildJoinProxy) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgStructInfuse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructInfuse.DiscardUnknown(m)
+func (m *MsgGuildJoinProxy) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgGuildJoinProxy.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgStructInfuse proto.InternalMessageInfo
+var xxx_messageInfo_MsgGuildJoinProxy proto.InternalMessageInfo
 
-func (m *MsgStructInfuse) GetCreator() string {
+func (m *MsgGuildJoinProxy) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
 	return ""
 }
 
-func (m *MsgStructInfuse) GetStructId() string {
+func (m *MsgGuildJoinProxy) GetAddress() string {
 	if m != nil {
-		return m.StructId
+		return m.Address
 	}
 	return ""
 }
 
-func (m *MsgStructInfuse) GetInfuseAmount() string {
+func (m *MsgGuildJoinProxy) GetSubstationId() string {
 	if m != nil {
-		return m.InfuseAmount
+		return m.SubstationId
 	}
 	return ""
 }
 
-type MsgStructInfuseResponse struct {
+type MsgGuildJoinProxyResponse struct {
 }
 
-func (m *MsgStructInfuseResponse) Reset()         { *m = MsgStructInfuseResponse{} }
-func (m *MsgStructInfuseResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgStructInfuseResponse) ProtoMessage()    {}
-func (*MsgStructInfuseResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{57}
+func (m *MsgGuildJoinProxyResponse) Reset()         { *m = MsgGuildJoinProxyResponse{} }
+func (m *MsgGuildJoinProxyResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgGuildJoinProxyResponse) ProtoMessage()    {}
+func (*MsgGuildJoinProxyResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{21}
 }
-func (m *MsgStructInfuseResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgGuildJoinProxyResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgStructInfuseResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgGuildJoinProxyResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgStructInfuseResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgGuildJoinProxyResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -2960,37 +1194,35 @@ func (m *MsgStructInfuseResponse) XXX_Marshal(b []byte, deterministic bool) ([]b
 		return b[:n], nil
 	}
 }
-func (m *MsgStructInfuseResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgStructInfuseResponse.Merge(m, src)
+func (m *MsgGuildJoinProxyResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgGuildJoinProxyResponse.Merge(m, src)
 }
-func (m *MsgStructInfuseResponse) XXX_Size() int {
+func (m *MsgGuildJoinProxyResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgStructInfuseResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgStructInfuseResponse.DiscardUnknown(m)
+func (m *MsgGuildJoinProxyResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgGuildJoinProxyResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgStructInfuseResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgGuildJoinProxyResponse proto.InternalMessageInfo
 
-type MsgSabotage struct {
-	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
-	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
-	Proof    string `protobuf:"bytes,3,opt,name=proof,proto3" json:"proof,omitempty"`
-	Nonce    string `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
+type MsgGuildJoin struct {
+	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	GuildId string `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
 }
 
-func (m *MsgSabotage) Reset()         { *m = MsgSabotage{} }
-func (m *MsgSabotage) String() string { return proto.CompactTextString(m) }
-func (*MsgSabotage) ProtoMessage()    {}
-func (*MsgSabotage) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{58}
+func (m *MsgGuildJoin) Reset()         { *m = MsgGuildJoin{} }
+func (m *MsgGuildJoin) String() string { return proto.CompactTextString(m) }
+func (*MsgGuildJoin) ProtoMessage()    {}
+func (*MsgGuildJoin) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{22}
 }
-func (m *MsgSabotage) XXX_Unmarshal(b []byte) error {
+func (m *MsgGuildJoin) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSabotage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgGuildJoin) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSabotage.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgGuildJoin.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -3000,61 +1232,47 @@ func (m *MsgSabotage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) 
 		return b[:n], nil
 	}
 }
-func (m *MsgSabotage) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSabotage.Merge(m, src)
+func (m *MsgGuildJoin) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgGuildJoin.Merge(m, src)
 }
-func (m *MsgSabotage) XXX_Size() int {
+func (m *MsgGuildJoin) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSabotage) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSabotage.DiscardUnknown(m)
+func (m *MsgGuildJoin) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgGuildJoin.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSabotage proto.InternalMessageInfo
+var xxx_messageInfo_MsgGuildJoin proto.InternalMessageInfo
 
-func (m *MsgSabotage) GetCreator() string {
+func (m *MsgGuildJoin) GetCreator() string {
 	if m != nil {
 		return m.Creator
 	}
 	return ""
 }
 
-func (m *MsgSabotage) GetStructId() string {
+func (m *MsgGuildJoin) GetGuildId() string {
 	if m != nil {
-		return m.StructId
+		return m.GuildId
 	}
 	return ""
 }
 
-func (m *MsgSabotage) GetProof() string {
-	if m != nil {
-		return m.Proof
-	}
-	return ""
+type MsgGuildJoinResponse struct {
 }
 
-func (m *MsgSabotage) GetNonce() string {
-	if m != nil {
-		return m.Nonce
-	}
-	return ""
+func (m *MsgGuildJoinResponse) Reset()         { *m = MsgGuildJoinResponse{} }
+func (m *MsgGuildJoinResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgGuildJoinResponse) ProtoMessage()    {}
+func (*MsgGuildJoinResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{23}
 }
-
-type MsgSabotageResponse struct {
-}
-
-func (m *MsgSabotageResponse) Reset()         { *m = MsgSabotageResponse{} }
-func (m *MsgSabotageResponse) String() string { return proto.CompactTextString(m) }
-func (*MsgSabotageResponse) ProtoMessage()    {}
-func (*MsgSabotageResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{59}
-}
-func (m *MsgSabotageResponse) XXX_Unmarshal(b []byte) error {
+func (m *MsgGuildJoinResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
 }
-func (m *MsgSabotageResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+func (m *MsgGuildJoinResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
 	if deterministic {
-		return xxx_messageInfo_MsgSabotageResponse.Marshal(b, m, deterministic)
+		return xxx_messageInfo_MsgGuildJoinResponse.Marshal(b, m, deterministic)
 	} else {
 		b = b[:cap(b)]
 		n, err := m.MarshalToSizedBuffer(b)
@@ -3064,17 +1282,17 @@ func (m *MsgSabotageResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte,
 		return b[:n], nil
 	}
 }
-func (m *MsgSabotageResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_MsgSabotageResponse.Merge(m, src)
+func (m *MsgGuildJoinResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgGuildJoinResponse.Merge(m, src)
 }
-func (m *MsgSabotageResponse) XXX_Size() int {
+func (m *MsgGuildJoinResponse) XXX_Size() int {
 	return m.Size()
 }
-func (m *MsgSabotageResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_MsgSabotageResponse.DiscardUnknown(m)
+func (m *MsgGuildJoinResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgGuildJoinResponse.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_MsgSabotageResponse proto.InternalMessageInfo
+var xxx_messageInfo_MsgGuildJoinResponse proto.InternalMessageInfo
 
 type MsgPermissionGrantOnObject struct {
 	Creator     string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
@@ -3087,7 +1305,7 @@ func (m *MsgPermissionGrantOnObject) Reset()         { *m = MsgPermissionGrantOn
 func (m *MsgPermissionGrantOnObject) String() string { return proto.CompactTextString(m) }
 func (*MsgPermissionGrantOnObject) ProtoMessage()    {}
 func (*MsgPermissionGrantOnObject) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{60}
+	return fileDescriptor_38fd6c203bede659, []int{24}
 }
 func (m *MsgPermissionGrantOnObject) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3154,7 +1372,7 @@ func (m *MsgPermissionGrantOnAddress) Reset()         { *m = MsgPermissionGrantO
 func (m *MsgPermissionGrantOnAddress) String() string { return proto.CompactTextString(m) }
 func (*MsgPermissionGrantOnAddress) ProtoMessage()    {}
 func (*MsgPermissionGrantOnAddress) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{61}
+	return fileDescriptor_38fd6c203bede659, []int{25}
 }
 func (m *MsgPermissionGrantOnAddress) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3215,7 +1433,7 @@ func (m *MsgPermissionRevokeOnObject) Reset()         { *m = MsgPermissionRevoke
 func (m *MsgPermissionRevokeOnObject) String() string { return proto.CompactTextString(m) }
 func (*MsgPermissionRevokeOnObject) ProtoMessage()    {}
 func (*MsgPermissionRevokeOnObject) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{62}
+	return fileDescriptor_38fd6c203bede659, []int{26}
 }
 func (m *MsgPermissionRevokeOnObject) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3282,7 +1500,7 @@ func (m *MsgPermissionRevokeOnAddress) Reset()         { *m = MsgPermissionRevok
 func (m *MsgPermissionRevokeOnAddress) String() string { return proto.CompactTextString(m) }
 func (*MsgPermissionRevokeOnAddress) ProtoMessage()    {}
 func (*MsgPermissionRevokeOnAddress) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{63}
+	return fileDescriptor_38fd6c203bede659, []int{27}
 }
 func (m *MsgPermissionRevokeOnAddress) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3339,7 +1557,7 @@ func (m *MsgPermissionResponse) Reset()         { *m = MsgPermissionResponse{} }
 func (m *MsgPermissionResponse) String() string { return proto.CompactTextString(m) }
 func (*MsgPermissionResponse) ProtoMessage()    {}
 func (*MsgPermissionResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_38fd6c203bede659, []int{64}
+	return fileDescriptor_38fd6c203bede659, []int{28}
 }
 func (m *MsgPermissionResponse) XXX_Unmarshal(b []byte) error {
 	return m.Unmarshal(b)
@@ -3367,6 +1585,1780 @@ func (m *MsgPermissionResponse) XXX_DiscardUnknown() {
 }
 
 var xxx_messageInfo_MsgPermissionResponse proto.InternalMessageInfo
+
+type MsgPlanetExplore struct {
+	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+}
+
+func (m *MsgPlanetExplore) Reset()         { *m = MsgPlanetExplore{} }
+func (m *MsgPlanetExplore) String() string { return proto.CompactTextString(m) }
+func (*MsgPlanetExplore) ProtoMessage()    {}
+func (*MsgPlanetExplore) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{29}
+}
+func (m *MsgPlanetExplore) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgPlanetExplore) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgPlanetExplore.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgPlanetExplore) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgPlanetExplore.Merge(m, src)
+}
+func (m *MsgPlanetExplore) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgPlanetExplore) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgPlanetExplore.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgPlanetExplore proto.InternalMessageInfo
+
+func (m *MsgPlanetExplore) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+type MsgPlanetExploreResponse struct {
+	Planet Planet `protobuf:"bytes,1,opt,name=planet,proto3" json:"planet"`
+}
+
+func (m *MsgPlanetExploreResponse) Reset()         { *m = MsgPlanetExploreResponse{} }
+func (m *MsgPlanetExploreResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgPlanetExploreResponse) ProtoMessage()    {}
+func (*MsgPlanetExploreResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{30}
+}
+func (m *MsgPlanetExploreResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgPlanetExploreResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgPlanetExploreResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgPlanetExploreResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgPlanetExploreResponse.Merge(m, src)
+}
+func (m *MsgPlanetExploreResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgPlanetExploreResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgPlanetExploreResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgPlanetExploreResponse proto.InternalMessageInfo
+
+func (m *MsgPlanetExploreResponse) GetPlanet() Planet {
+	if m != nil {
+		return m.Planet
+	}
+	return Planet{}
+}
+
+type MsgPlayerUpdatePrimaryAddress struct {
+	Creator        string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	PrimaryAddress string `protobuf:"bytes,2,opt,name=primaryAddress,proto3" json:"primaryAddress,omitempty"`
+}
+
+func (m *MsgPlayerUpdatePrimaryAddress) Reset()         { *m = MsgPlayerUpdatePrimaryAddress{} }
+func (m *MsgPlayerUpdatePrimaryAddress) String() string { return proto.CompactTextString(m) }
+func (*MsgPlayerUpdatePrimaryAddress) ProtoMessage()    {}
+func (*MsgPlayerUpdatePrimaryAddress) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{31}
+}
+func (m *MsgPlayerUpdatePrimaryAddress) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgPlayerUpdatePrimaryAddress) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgPlayerUpdatePrimaryAddress.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgPlayerUpdatePrimaryAddress) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgPlayerUpdatePrimaryAddress.Merge(m, src)
+}
+func (m *MsgPlayerUpdatePrimaryAddress) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgPlayerUpdatePrimaryAddress) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgPlayerUpdatePrimaryAddress.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgPlayerUpdatePrimaryAddress proto.InternalMessageInfo
+
+func (m *MsgPlayerUpdatePrimaryAddress) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgPlayerUpdatePrimaryAddress) GetPrimaryAddress() string {
+	if m != nil {
+		return m.PrimaryAddress
+	}
+	return ""
+}
+
+type MsgPlayerUpdatePrimaryAddressResponse struct {
+}
+
+func (m *MsgPlayerUpdatePrimaryAddressResponse) Reset()         { *m = MsgPlayerUpdatePrimaryAddressResponse{} }
+func (m *MsgPlayerUpdatePrimaryAddressResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgPlayerUpdatePrimaryAddressResponse) ProtoMessage()    {}
+func (*MsgPlayerUpdatePrimaryAddressResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{32}
+}
+func (m *MsgPlayerUpdatePrimaryAddressResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgPlayerUpdatePrimaryAddressResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgPlayerUpdatePrimaryAddressResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgPlayerUpdatePrimaryAddressResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgPlayerUpdatePrimaryAddressResponse.Merge(m, src)
+}
+func (m *MsgPlayerUpdatePrimaryAddressResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgPlayerUpdatePrimaryAddressResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgPlayerUpdatePrimaryAddressResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgPlayerUpdatePrimaryAddressResponse proto.InternalMessageInfo
+
+type MsgStructActivate struct {
+	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
+}
+
+func (m *MsgStructActivate) Reset()         { *m = MsgStructActivate{} }
+func (m *MsgStructActivate) String() string { return proto.CompactTextString(m) }
+func (*MsgStructActivate) ProtoMessage()    {}
+func (*MsgStructActivate) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{33}
+}
+func (m *MsgStructActivate) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructActivate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructActivate.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructActivate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructActivate.Merge(m, src)
+}
+func (m *MsgStructActivate) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructActivate) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructActivate.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructActivate proto.InternalMessageInfo
+
+func (m *MsgStructActivate) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgStructActivate) GetStructId() string {
+	if m != nil {
+		return m.StructId
+	}
+	return ""
+}
+
+type MsgStructActivateResponse struct {
+	Struct Struct `protobuf:"bytes,1,opt,name=struct,proto3" json:"struct"`
+}
+
+func (m *MsgStructActivateResponse) Reset()         { *m = MsgStructActivateResponse{} }
+func (m *MsgStructActivateResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgStructActivateResponse) ProtoMessage()    {}
+func (*MsgStructActivateResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{34}
+}
+func (m *MsgStructActivateResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructActivateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructActivateResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructActivateResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructActivateResponse.Merge(m, src)
+}
+func (m *MsgStructActivateResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructActivateResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructActivateResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructActivateResponse proto.InternalMessageInfo
+
+func (m *MsgStructActivateResponse) GetStruct() Struct {
+	if m != nil {
+		return m.Struct
+	}
+	return Struct{}
+}
+
+type MsgStructBuildInitiate struct {
+	Creator    string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	StructType string `protobuf:"bytes,2,opt,name=structType,proto3" json:"structType,omitempty"`
+	PlanetId   string `protobuf:"bytes,3,opt,name=planetId,proto3" json:"planetId,omitempty"`
+	Slot       uint64 `protobuf:"varint,4,opt,name=slot,proto3" json:"slot,omitempty"`
+}
+
+func (m *MsgStructBuildInitiate) Reset()         { *m = MsgStructBuildInitiate{} }
+func (m *MsgStructBuildInitiate) String() string { return proto.CompactTextString(m) }
+func (*MsgStructBuildInitiate) ProtoMessage()    {}
+func (*MsgStructBuildInitiate) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{35}
+}
+func (m *MsgStructBuildInitiate) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructBuildInitiate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructBuildInitiate.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructBuildInitiate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructBuildInitiate.Merge(m, src)
+}
+func (m *MsgStructBuildInitiate) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructBuildInitiate) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructBuildInitiate.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructBuildInitiate proto.InternalMessageInfo
+
+func (m *MsgStructBuildInitiate) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgStructBuildInitiate) GetStructType() string {
+	if m != nil {
+		return m.StructType
+	}
+	return ""
+}
+
+func (m *MsgStructBuildInitiate) GetPlanetId() string {
+	if m != nil {
+		return m.PlanetId
+	}
+	return ""
+}
+
+func (m *MsgStructBuildInitiate) GetSlot() uint64 {
+	if m != nil {
+		return m.Slot
+	}
+	return 0
+}
+
+type MsgStructBuildInitiateResponse struct {
+	Struct Struct `protobuf:"bytes,1,opt,name=struct,proto3" json:"struct"`
+}
+
+func (m *MsgStructBuildInitiateResponse) Reset()         { *m = MsgStructBuildInitiateResponse{} }
+func (m *MsgStructBuildInitiateResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgStructBuildInitiateResponse) ProtoMessage()    {}
+func (*MsgStructBuildInitiateResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{36}
+}
+func (m *MsgStructBuildInitiateResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructBuildInitiateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructBuildInitiateResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructBuildInitiateResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructBuildInitiateResponse.Merge(m, src)
+}
+func (m *MsgStructBuildInitiateResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructBuildInitiateResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructBuildInitiateResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructBuildInitiateResponse proto.InternalMessageInfo
+
+func (m *MsgStructBuildInitiateResponse) GetStruct() Struct {
+	if m != nil {
+		return m.Struct
+	}
+	return Struct{}
+}
+
+type MsgStructBuildComplete struct {
+	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
+	Proof    string `protobuf:"bytes,3,opt,name=proof,proto3" json:"proof,omitempty"`
+	Nonce    string `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
+}
+
+func (m *MsgStructBuildComplete) Reset()         { *m = MsgStructBuildComplete{} }
+func (m *MsgStructBuildComplete) String() string { return proto.CompactTextString(m) }
+func (*MsgStructBuildComplete) ProtoMessage()    {}
+func (*MsgStructBuildComplete) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{37}
+}
+func (m *MsgStructBuildComplete) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructBuildComplete) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructBuildComplete.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructBuildComplete) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructBuildComplete.Merge(m, src)
+}
+func (m *MsgStructBuildComplete) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructBuildComplete) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructBuildComplete.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructBuildComplete proto.InternalMessageInfo
+
+func (m *MsgStructBuildComplete) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgStructBuildComplete) GetStructId() string {
+	if m != nil {
+		return m.StructId
+	}
+	return ""
+}
+
+func (m *MsgStructBuildComplete) GetProof() string {
+	if m != nil {
+		return m.Proof
+	}
+	return ""
+}
+
+func (m *MsgStructBuildComplete) GetNonce() string {
+	if m != nil {
+		return m.Nonce
+	}
+	return ""
+}
+
+type MsgStructBuildCompleteResponse struct {
+	Struct Struct `protobuf:"bytes,1,opt,name=struct,proto3" json:"struct"`
+}
+
+func (m *MsgStructBuildCompleteResponse) Reset()         { *m = MsgStructBuildCompleteResponse{} }
+func (m *MsgStructBuildCompleteResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgStructBuildCompleteResponse) ProtoMessage()    {}
+func (*MsgStructBuildCompleteResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{38}
+}
+func (m *MsgStructBuildCompleteResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructBuildCompleteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructBuildCompleteResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructBuildCompleteResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructBuildCompleteResponse.Merge(m, src)
+}
+func (m *MsgStructBuildCompleteResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructBuildCompleteResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructBuildCompleteResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructBuildCompleteResponse proto.InternalMessageInfo
+
+func (m *MsgStructBuildCompleteResponse) GetStruct() Struct {
+	if m != nil {
+		return m.Struct
+	}
+	return Struct{}
+}
+
+type MsgStructInfuse struct {
+	Creator      string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	StructId     string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
+	InfuseAmount string `protobuf:"bytes,3,opt,name=infuseAmount,proto3" json:"infuseAmount,omitempty"`
+}
+
+func (m *MsgStructInfuse) Reset()         { *m = MsgStructInfuse{} }
+func (m *MsgStructInfuse) String() string { return proto.CompactTextString(m) }
+func (*MsgStructInfuse) ProtoMessage()    {}
+func (*MsgStructInfuse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{39}
+}
+func (m *MsgStructInfuse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructInfuse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructInfuse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructInfuse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructInfuse.Merge(m, src)
+}
+func (m *MsgStructInfuse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructInfuse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructInfuse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructInfuse proto.InternalMessageInfo
+
+func (m *MsgStructInfuse) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgStructInfuse) GetStructId() string {
+	if m != nil {
+		return m.StructId
+	}
+	return ""
+}
+
+func (m *MsgStructInfuse) GetInfuseAmount() string {
+	if m != nil {
+		return m.InfuseAmount
+	}
+	return ""
+}
+
+type MsgStructInfuseResponse struct {
+}
+
+func (m *MsgStructInfuseResponse) Reset()         { *m = MsgStructInfuseResponse{} }
+func (m *MsgStructInfuseResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgStructInfuseResponse) ProtoMessage()    {}
+func (*MsgStructInfuseResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{40}
+}
+func (m *MsgStructInfuseResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructInfuseResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructInfuseResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructInfuseResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructInfuseResponse.Merge(m, src)
+}
+func (m *MsgStructInfuseResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructInfuseResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructInfuseResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructInfuseResponse proto.InternalMessageInfo
+
+type MsgStructMineActivate struct {
+	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
+}
+
+func (m *MsgStructMineActivate) Reset()         { *m = MsgStructMineActivate{} }
+func (m *MsgStructMineActivate) String() string { return proto.CompactTextString(m) }
+func (*MsgStructMineActivate) ProtoMessage()    {}
+func (*MsgStructMineActivate) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{41}
+}
+func (m *MsgStructMineActivate) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructMineActivate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructMineActivate.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructMineActivate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructMineActivate.Merge(m, src)
+}
+func (m *MsgStructMineActivate) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructMineActivate) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructMineActivate.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructMineActivate proto.InternalMessageInfo
+
+func (m *MsgStructMineActivate) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgStructMineActivate) GetStructId() string {
+	if m != nil {
+		return m.StructId
+	}
+	return ""
+}
+
+type MsgStructMineActivateResponse struct {
+	Struct Struct `protobuf:"bytes,1,opt,name=struct,proto3" json:"struct"`
+}
+
+func (m *MsgStructMineActivateResponse) Reset()         { *m = MsgStructMineActivateResponse{} }
+func (m *MsgStructMineActivateResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgStructMineActivateResponse) ProtoMessage()    {}
+func (*MsgStructMineActivateResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{42}
+}
+func (m *MsgStructMineActivateResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructMineActivateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructMineActivateResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructMineActivateResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructMineActivateResponse.Merge(m, src)
+}
+func (m *MsgStructMineActivateResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructMineActivateResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructMineActivateResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructMineActivateResponse proto.InternalMessageInfo
+
+func (m *MsgStructMineActivateResponse) GetStruct() Struct {
+	if m != nil {
+		return m.Struct
+	}
+	return Struct{}
+}
+
+type MsgStructMineDeactivate struct {
+	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
+}
+
+func (m *MsgStructMineDeactivate) Reset()         { *m = MsgStructMineDeactivate{} }
+func (m *MsgStructMineDeactivate) String() string { return proto.CompactTextString(m) }
+func (*MsgStructMineDeactivate) ProtoMessage()    {}
+func (*MsgStructMineDeactivate) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{43}
+}
+func (m *MsgStructMineDeactivate) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructMineDeactivate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructMineDeactivate.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructMineDeactivate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructMineDeactivate.Merge(m, src)
+}
+func (m *MsgStructMineDeactivate) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructMineDeactivate) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructMineDeactivate.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructMineDeactivate proto.InternalMessageInfo
+
+func (m *MsgStructMineDeactivate) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgStructMineDeactivate) GetStructId() string {
+	if m != nil {
+		return m.StructId
+	}
+	return ""
+}
+
+type MsgStructMineDeactivateResponse struct {
+	Struct Struct `protobuf:"bytes,1,opt,name=struct,proto3" json:"struct"`
+}
+
+func (m *MsgStructMineDeactivateResponse) Reset()         { *m = MsgStructMineDeactivateResponse{} }
+func (m *MsgStructMineDeactivateResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgStructMineDeactivateResponse) ProtoMessage()    {}
+func (*MsgStructMineDeactivateResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{44}
+}
+func (m *MsgStructMineDeactivateResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructMineDeactivateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructMineDeactivateResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructMineDeactivateResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructMineDeactivateResponse.Merge(m, src)
+}
+func (m *MsgStructMineDeactivateResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructMineDeactivateResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructMineDeactivateResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructMineDeactivateResponse proto.InternalMessageInfo
+
+func (m *MsgStructMineDeactivateResponse) GetStruct() Struct {
+	if m != nil {
+		return m.Struct
+	}
+	return Struct{}
+}
+
+type MsgStructMine struct {
+	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
+	Proof    string `protobuf:"bytes,3,opt,name=proof,proto3" json:"proof,omitempty"`
+	Nonce    string `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
+}
+
+func (m *MsgStructMine) Reset()         { *m = MsgStructMine{} }
+func (m *MsgStructMine) String() string { return proto.CompactTextString(m) }
+func (*MsgStructMine) ProtoMessage()    {}
+func (*MsgStructMine) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{45}
+}
+func (m *MsgStructMine) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructMine) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructMine.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructMine) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructMine.Merge(m, src)
+}
+func (m *MsgStructMine) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructMine) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructMine.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructMine proto.InternalMessageInfo
+
+func (m *MsgStructMine) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgStructMine) GetStructId() string {
+	if m != nil {
+		return m.StructId
+	}
+	return ""
+}
+
+func (m *MsgStructMine) GetProof() string {
+	if m != nil {
+		return m.Proof
+	}
+	return ""
+}
+
+func (m *MsgStructMine) GetNonce() string {
+	if m != nil {
+		return m.Nonce
+	}
+	return ""
+}
+
+type MsgStructMineResponse struct {
+	Struct Struct `protobuf:"bytes,1,opt,name=struct,proto3" json:"struct"`
+}
+
+func (m *MsgStructMineResponse) Reset()         { *m = MsgStructMineResponse{} }
+func (m *MsgStructMineResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgStructMineResponse) ProtoMessage()    {}
+func (*MsgStructMineResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{46}
+}
+func (m *MsgStructMineResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructMineResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructMineResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructMineResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructMineResponse.Merge(m, src)
+}
+func (m *MsgStructMineResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructMineResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructMineResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructMineResponse proto.InternalMessageInfo
+
+func (m *MsgStructMineResponse) GetStruct() Struct {
+	if m != nil {
+		return m.Struct
+	}
+	return Struct{}
+}
+
+type MsgStructRefineActivate struct {
+	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
+}
+
+func (m *MsgStructRefineActivate) Reset()         { *m = MsgStructRefineActivate{} }
+func (m *MsgStructRefineActivate) String() string { return proto.CompactTextString(m) }
+func (*MsgStructRefineActivate) ProtoMessage()    {}
+func (*MsgStructRefineActivate) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{47}
+}
+func (m *MsgStructRefineActivate) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructRefineActivate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructRefineActivate.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructRefineActivate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructRefineActivate.Merge(m, src)
+}
+func (m *MsgStructRefineActivate) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructRefineActivate) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructRefineActivate.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructRefineActivate proto.InternalMessageInfo
+
+func (m *MsgStructRefineActivate) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgStructRefineActivate) GetStructId() string {
+	if m != nil {
+		return m.StructId
+	}
+	return ""
+}
+
+type MsgStructRefineActivateResponse struct {
+	Struct Struct `protobuf:"bytes,1,opt,name=struct,proto3" json:"struct"`
+}
+
+func (m *MsgStructRefineActivateResponse) Reset()         { *m = MsgStructRefineActivateResponse{} }
+func (m *MsgStructRefineActivateResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgStructRefineActivateResponse) ProtoMessage()    {}
+func (*MsgStructRefineActivateResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{48}
+}
+func (m *MsgStructRefineActivateResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructRefineActivateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructRefineActivateResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructRefineActivateResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructRefineActivateResponse.Merge(m, src)
+}
+func (m *MsgStructRefineActivateResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructRefineActivateResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructRefineActivateResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructRefineActivateResponse proto.InternalMessageInfo
+
+func (m *MsgStructRefineActivateResponse) GetStruct() Struct {
+	if m != nil {
+		return m.Struct
+	}
+	return Struct{}
+}
+
+type MsgStructRefineDeactivate struct {
+	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
+}
+
+func (m *MsgStructRefineDeactivate) Reset()         { *m = MsgStructRefineDeactivate{} }
+func (m *MsgStructRefineDeactivate) String() string { return proto.CompactTextString(m) }
+func (*MsgStructRefineDeactivate) ProtoMessage()    {}
+func (*MsgStructRefineDeactivate) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{49}
+}
+func (m *MsgStructRefineDeactivate) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructRefineDeactivate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructRefineDeactivate.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructRefineDeactivate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructRefineDeactivate.Merge(m, src)
+}
+func (m *MsgStructRefineDeactivate) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructRefineDeactivate) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructRefineDeactivate.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructRefineDeactivate proto.InternalMessageInfo
+
+func (m *MsgStructRefineDeactivate) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgStructRefineDeactivate) GetStructId() string {
+	if m != nil {
+		return m.StructId
+	}
+	return ""
+}
+
+type MsgStructRefineDeactivateResponse struct {
+	Struct Struct `protobuf:"bytes,1,opt,name=struct,proto3" json:"struct"`
+}
+
+func (m *MsgStructRefineDeactivateResponse) Reset()         { *m = MsgStructRefineDeactivateResponse{} }
+func (m *MsgStructRefineDeactivateResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgStructRefineDeactivateResponse) ProtoMessage()    {}
+func (*MsgStructRefineDeactivateResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{50}
+}
+func (m *MsgStructRefineDeactivateResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructRefineDeactivateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructRefineDeactivateResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructRefineDeactivateResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructRefineDeactivateResponse.Merge(m, src)
+}
+func (m *MsgStructRefineDeactivateResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructRefineDeactivateResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructRefineDeactivateResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructRefineDeactivateResponse proto.InternalMessageInfo
+
+func (m *MsgStructRefineDeactivateResponse) GetStruct() Struct {
+	if m != nil {
+		return m.Struct
+	}
+	return Struct{}
+}
+
+type MsgStructRefine struct {
+	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
+	Proof    string `protobuf:"bytes,3,opt,name=proof,proto3" json:"proof,omitempty"`
+	Nonce    string `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
+}
+
+func (m *MsgStructRefine) Reset()         { *m = MsgStructRefine{} }
+func (m *MsgStructRefine) String() string { return proto.CompactTextString(m) }
+func (*MsgStructRefine) ProtoMessage()    {}
+func (*MsgStructRefine) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{51}
+}
+func (m *MsgStructRefine) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructRefine) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructRefine.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructRefine) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructRefine.Merge(m, src)
+}
+func (m *MsgStructRefine) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructRefine) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructRefine.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructRefine proto.InternalMessageInfo
+
+func (m *MsgStructRefine) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgStructRefine) GetStructId() string {
+	if m != nil {
+		return m.StructId
+	}
+	return ""
+}
+
+func (m *MsgStructRefine) GetProof() string {
+	if m != nil {
+		return m.Proof
+	}
+	return ""
+}
+
+func (m *MsgStructRefine) GetNonce() string {
+	if m != nil {
+		return m.Nonce
+	}
+	return ""
+}
+
+type MsgStructRefineResponse struct {
+	Struct Struct `protobuf:"bytes,1,opt,name=struct,proto3" json:"struct"`
+}
+
+func (m *MsgStructRefineResponse) Reset()         { *m = MsgStructRefineResponse{} }
+func (m *MsgStructRefineResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgStructRefineResponse) ProtoMessage()    {}
+func (*MsgStructRefineResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{52}
+}
+func (m *MsgStructRefineResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgStructRefineResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgStructRefineResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgStructRefineResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgStructRefineResponse.Merge(m, src)
+}
+func (m *MsgStructRefineResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgStructRefineResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgStructRefineResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgStructRefineResponse proto.InternalMessageInfo
+
+func (m *MsgStructRefineResponse) GetStruct() Struct {
+	if m != nil {
+		return m.Struct
+	}
+	return Struct{}
+}
+
+type MsgSubstationCreate struct {
+	Creator      string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	Owner        string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
+	AllocationId string `protobuf:"bytes,3,opt,name=allocationId,proto3" json:"allocationId,omitempty"`
+}
+
+func (m *MsgSubstationCreate) Reset()         { *m = MsgSubstationCreate{} }
+func (m *MsgSubstationCreate) String() string { return proto.CompactTextString(m) }
+func (*MsgSubstationCreate) ProtoMessage()    {}
+func (*MsgSubstationCreate) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{53}
+}
+func (m *MsgSubstationCreate) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSubstationCreate) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSubstationCreate.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSubstationCreate) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubstationCreate.Merge(m, src)
+}
+func (m *MsgSubstationCreate) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSubstationCreate) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubstationCreate.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSubstationCreate proto.InternalMessageInfo
+
+func (m *MsgSubstationCreate) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgSubstationCreate) GetOwner() string {
+	if m != nil {
+		return m.Owner
+	}
+	return ""
+}
+
+func (m *MsgSubstationCreate) GetAllocationId() string {
+	if m != nil {
+		return m.AllocationId
+	}
+	return ""
+}
+
+type MsgSubstationCreateResponse struct {
+	SubstationId string `protobuf:"bytes,1,opt,name=substationId,proto3" json:"substationId,omitempty"`
+}
+
+func (m *MsgSubstationCreateResponse) Reset()         { *m = MsgSubstationCreateResponse{} }
+func (m *MsgSubstationCreateResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgSubstationCreateResponse) ProtoMessage()    {}
+func (*MsgSubstationCreateResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{54}
+}
+func (m *MsgSubstationCreateResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSubstationCreateResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSubstationCreateResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSubstationCreateResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubstationCreateResponse.Merge(m, src)
+}
+func (m *MsgSubstationCreateResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSubstationCreateResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubstationCreateResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSubstationCreateResponse proto.InternalMessageInfo
+
+func (m *MsgSubstationCreateResponse) GetSubstationId() string {
+	if m != nil {
+		return m.SubstationId
+	}
+	return ""
+}
+
+type MsgSubstationDelete struct {
+	Creator               string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	SubstationId          string `protobuf:"bytes,2,opt,name=substationId,proto3" json:"substationId,omitempty"`
+	MigrationSubstationId string `protobuf:"bytes,3,opt,name=migrationSubstationId,proto3" json:"migrationSubstationId,omitempty"`
+}
+
+func (m *MsgSubstationDelete) Reset()         { *m = MsgSubstationDelete{} }
+func (m *MsgSubstationDelete) String() string { return proto.CompactTextString(m) }
+func (*MsgSubstationDelete) ProtoMessage()    {}
+func (*MsgSubstationDelete) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{55}
+}
+func (m *MsgSubstationDelete) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSubstationDelete) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSubstationDelete.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSubstationDelete) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubstationDelete.Merge(m, src)
+}
+func (m *MsgSubstationDelete) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSubstationDelete) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubstationDelete.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSubstationDelete proto.InternalMessageInfo
+
+func (m *MsgSubstationDelete) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgSubstationDelete) GetSubstationId() string {
+	if m != nil {
+		return m.SubstationId
+	}
+	return ""
+}
+
+func (m *MsgSubstationDelete) GetMigrationSubstationId() string {
+	if m != nil {
+		return m.MigrationSubstationId
+	}
+	return ""
+}
+
+type MsgSubstationDeleteResponse struct {
+}
+
+func (m *MsgSubstationDeleteResponse) Reset()         { *m = MsgSubstationDeleteResponse{} }
+func (m *MsgSubstationDeleteResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgSubstationDeleteResponse) ProtoMessage()    {}
+func (*MsgSubstationDeleteResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{56}
+}
+func (m *MsgSubstationDeleteResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSubstationDeleteResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSubstationDeleteResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSubstationDeleteResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubstationDeleteResponse.Merge(m, src)
+}
+func (m *MsgSubstationDeleteResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSubstationDeleteResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubstationDeleteResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSubstationDeleteResponse proto.InternalMessageInfo
+
+type MsgSubstationAllocationConnect struct {
+	Creator       string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	AllocationId  string `protobuf:"bytes,2,opt,name=allocationId,proto3" json:"allocationId,omitempty"`
+	DestinationId string `protobuf:"bytes,3,opt,name=destinationId,proto3" json:"destinationId,omitempty"`
+}
+
+func (m *MsgSubstationAllocationConnect) Reset()         { *m = MsgSubstationAllocationConnect{} }
+func (m *MsgSubstationAllocationConnect) String() string { return proto.CompactTextString(m) }
+func (*MsgSubstationAllocationConnect) ProtoMessage()    {}
+func (*MsgSubstationAllocationConnect) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{57}
+}
+func (m *MsgSubstationAllocationConnect) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSubstationAllocationConnect) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSubstationAllocationConnect.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSubstationAllocationConnect) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubstationAllocationConnect.Merge(m, src)
+}
+func (m *MsgSubstationAllocationConnect) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSubstationAllocationConnect) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubstationAllocationConnect.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSubstationAllocationConnect proto.InternalMessageInfo
+
+func (m *MsgSubstationAllocationConnect) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgSubstationAllocationConnect) GetAllocationId() string {
+	if m != nil {
+		return m.AllocationId
+	}
+	return ""
+}
+
+func (m *MsgSubstationAllocationConnect) GetDestinationId() string {
+	if m != nil {
+		return m.DestinationId
+	}
+	return ""
+}
+
+type MsgSubstationAllocationConnectResponse struct {
+}
+
+func (m *MsgSubstationAllocationConnectResponse) Reset() {
+	*m = MsgSubstationAllocationConnectResponse{}
+}
+func (m *MsgSubstationAllocationConnectResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgSubstationAllocationConnectResponse) ProtoMessage()    {}
+func (*MsgSubstationAllocationConnectResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{58}
+}
+func (m *MsgSubstationAllocationConnectResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSubstationAllocationConnectResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSubstationAllocationConnectResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSubstationAllocationConnectResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubstationAllocationConnectResponse.Merge(m, src)
+}
+func (m *MsgSubstationAllocationConnectResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSubstationAllocationConnectResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubstationAllocationConnectResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSubstationAllocationConnectResponse proto.InternalMessageInfo
+
+type MsgSubstationAllocationDisconnect struct {
+	Creator      string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	AllocationId string `protobuf:"bytes,2,opt,name=allocationId,proto3" json:"allocationId,omitempty"`
+}
+
+func (m *MsgSubstationAllocationDisconnect) Reset()         { *m = MsgSubstationAllocationDisconnect{} }
+func (m *MsgSubstationAllocationDisconnect) String() string { return proto.CompactTextString(m) }
+func (*MsgSubstationAllocationDisconnect) ProtoMessage()    {}
+func (*MsgSubstationAllocationDisconnect) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{59}
+}
+func (m *MsgSubstationAllocationDisconnect) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSubstationAllocationDisconnect) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSubstationAllocationDisconnect.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSubstationAllocationDisconnect) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubstationAllocationDisconnect.Merge(m, src)
+}
+func (m *MsgSubstationAllocationDisconnect) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSubstationAllocationDisconnect) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubstationAllocationDisconnect.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSubstationAllocationDisconnect proto.InternalMessageInfo
+
+func (m *MsgSubstationAllocationDisconnect) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgSubstationAllocationDisconnect) GetAllocationId() string {
+	if m != nil {
+		return m.AllocationId
+	}
+	return ""
+}
+
+type MsgSubstationAllocationDisconnectResponse struct {
+}
+
+func (m *MsgSubstationAllocationDisconnectResponse) Reset() {
+	*m = MsgSubstationAllocationDisconnectResponse{}
+}
+func (m *MsgSubstationAllocationDisconnectResponse) String() string {
+	return proto.CompactTextString(m)
+}
+func (*MsgSubstationAllocationDisconnectResponse) ProtoMessage() {}
+func (*MsgSubstationAllocationDisconnectResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{60}
+}
+func (m *MsgSubstationAllocationDisconnectResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSubstationAllocationDisconnectResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSubstationAllocationDisconnectResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSubstationAllocationDisconnectResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubstationAllocationDisconnectResponse.Merge(m, src)
+}
+func (m *MsgSubstationAllocationDisconnectResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSubstationAllocationDisconnectResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubstationAllocationDisconnectResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSubstationAllocationDisconnectResponse proto.InternalMessageInfo
+
+type MsgSubstationPlayerConnect struct {
+	Creator      string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	SubstationId string `protobuf:"bytes,2,opt,name=substationId,proto3" json:"substationId,omitempty"`
+	PlayerId     string `protobuf:"bytes,3,opt,name=playerId,proto3" json:"playerId,omitempty"`
+}
+
+func (m *MsgSubstationPlayerConnect) Reset()         { *m = MsgSubstationPlayerConnect{} }
+func (m *MsgSubstationPlayerConnect) String() string { return proto.CompactTextString(m) }
+func (*MsgSubstationPlayerConnect) ProtoMessage()    {}
+func (*MsgSubstationPlayerConnect) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{61}
+}
+func (m *MsgSubstationPlayerConnect) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSubstationPlayerConnect) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSubstationPlayerConnect.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSubstationPlayerConnect) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubstationPlayerConnect.Merge(m, src)
+}
+func (m *MsgSubstationPlayerConnect) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSubstationPlayerConnect) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubstationPlayerConnect.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSubstationPlayerConnect proto.InternalMessageInfo
+
+func (m *MsgSubstationPlayerConnect) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgSubstationPlayerConnect) GetSubstationId() string {
+	if m != nil {
+		return m.SubstationId
+	}
+	return ""
+}
+
+func (m *MsgSubstationPlayerConnect) GetPlayerId() string {
+	if m != nil {
+		return m.PlayerId
+	}
+	return ""
+}
+
+type MsgSubstationPlayerConnectResponse struct {
+}
+
+func (m *MsgSubstationPlayerConnectResponse) Reset()         { *m = MsgSubstationPlayerConnectResponse{} }
+func (m *MsgSubstationPlayerConnectResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgSubstationPlayerConnectResponse) ProtoMessage()    {}
+func (*MsgSubstationPlayerConnectResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{62}
+}
+func (m *MsgSubstationPlayerConnectResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSubstationPlayerConnectResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSubstationPlayerConnectResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSubstationPlayerConnectResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubstationPlayerConnectResponse.Merge(m, src)
+}
+func (m *MsgSubstationPlayerConnectResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSubstationPlayerConnectResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubstationPlayerConnectResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSubstationPlayerConnectResponse proto.InternalMessageInfo
+
+type MsgSubstationPlayerDisconnect struct {
+	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	PlayerId string `protobuf:"bytes,2,opt,name=playerId,proto3" json:"playerId,omitempty"`
+}
+
+func (m *MsgSubstationPlayerDisconnect) Reset()         { *m = MsgSubstationPlayerDisconnect{} }
+func (m *MsgSubstationPlayerDisconnect) String() string { return proto.CompactTextString(m) }
+func (*MsgSubstationPlayerDisconnect) ProtoMessage()    {}
+func (*MsgSubstationPlayerDisconnect) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{63}
+}
+func (m *MsgSubstationPlayerDisconnect) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSubstationPlayerDisconnect) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSubstationPlayerDisconnect.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSubstationPlayerDisconnect) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubstationPlayerDisconnect.Merge(m, src)
+}
+func (m *MsgSubstationPlayerDisconnect) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSubstationPlayerDisconnect) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubstationPlayerDisconnect.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSubstationPlayerDisconnect proto.InternalMessageInfo
+
+func (m *MsgSubstationPlayerDisconnect) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgSubstationPlayerDisconnect) GetPlayerId() string {
+	if m != nil {
+		return m.PlayerId
+	}
+	return ""
+}
+
+type MsgSubstationPlayerDisconnectResponse struct {
+}
+
+func (m *MsgSubstationPlayerDisconnectResponse) Reset()         { *m = MsgSubstationPlayerDisconnectResponse{} }
+func (m *MsgSubstationPlayerDisconnectResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgSubstationPlayerDisconnectResponse) ProtoMessage()    {}
+func (*MsgSubstationPlayerDisconnectResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{64}
+}
+func (m *MsgSubstationPlayerDisconnectResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSubstationPlayerDisconnectResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSubstationPlayerDisconnectResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSubstationPlayerDisconnectResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSubstationPlayerDisconnectResponse.Merge(m, src)
+}
+func (m *MsgSubstationPlayerDisconnectResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSubstationPlayerDisconnectResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSubstationPlayerDisconnectResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSubstationPlayerDisconnectResponse proto.InternalMessageInfo
 
 type MsgSubstationPlayerMigrate struct {
 	Creator      string   `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
@@ -3464,198 +3456,317 @@ func (m *MsgSubstationPlayerMigrateResponse) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_MsgSubstationPlayerMigrateResponse proto.InternalMessageInfo
 
+type MsgSabotage struct {
+	Creator  string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	StructId string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
+	Proof    string `protobuf:"bytes,3,opt,name=proof,proto3" json:"proof,omitempty"`
+	Nonce    string `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
+}
+
+func (m *MsgSabotage) Reset()         { *m = MsgSabotage{} }
+func (m *MsgSabotage) String() string { return proto.CompactTextString(m) }
+func (*MsgSabotage) ProtoMessage()    {}
+func (*MsgSabotage) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{67}
+}
+func (m *MsgSabotage) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSabotage) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSabotage.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSabotage) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSabotage.Merge(m, src)
+}
+func (m *MsgSabotage) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSabotage) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSabotage.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSabotage proto.InternalMessageInfo
+
+func (m *MsgSabotage) GetCreator() string {
+	if m != nil {
+		return m.Creator
+	}
+	return ""
+}
+
+func (m *MsgSabotage) GetStructId() string {
+	if m != nil {
+		return m.StructId
+	}
+	return ""
+}
+
+func (m *MsgSabotage) GetProof() string {
+	if m != nil {
+		return m.Proof
+	}
+	return ""
+}
+
+func (m *MsgSabotage) GetNonce() string {
+	if m != nil {
+		return m.Nonce
+	}
+	return ""
+}
+
+type MsgSabotageResponse struct {
+}
+
+func (m *MsgSabotageResponse) Reset()         { *m = MsgSabotageResponse{} }
+func (m *MsgSabotageResponse) String() string { return proto.CompactTextString(m) }
+func (*MsgSabotageResponse) ProtoMessage()    {}
+func (*MsgSabotageResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_38fd6c203bede659, []int{68}
+}
+func (m *MsgSabotageResponse) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *MsgSabotageResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_MsgSabotageResponse.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *MsgSabotageResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_MsgSabotageResponse.Merge(m, src)
+}
+func (m *MsgSabotageResponse) XXX_Size() int {
+	return m.Size()
+}
+func (m *MsgSabotageResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_MsgSabotageResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_MsgSabotageResponse proto.InternalMessageInfo
+
 func init() {
-	proto.RegisterType((*MsgSubstationCreate)(nil), "structs.MsgSubstationCreate")
-	proto.RegisterType((*MsgSubstationCreateResponse)(nil), "structs.MsgSubstationCreateResponse")
-	proto.RegisterType((*MsgSubstationDelete)(nil), "structs.MsgSubstationDelete")
-	proto.RegisterType((*MsgSubstationDeleteResponse)(nil), "structs.MsgSubstationDeleteResponse")
-	proto.RegisterType((*MsgSubstationAllocationConnect)(nil), "structs.MsgSubstationAllocationConnect")
-	proto.RegisterType((*MsgSubstationAllocationConnectResponse)(nil), "structs.MsgSubstationAllocationConnectResponse")
-	proto.RegisterType((*MsgSubstationAllocationDisconnect)(nil), "structs.MsgSubstationAllocationDisconnect")
-	proto.RegisterType((*MsgSubstationAllocationDisconnectResponse)(nil), "structs.MsgSubstationAllocationDisconnectResponse")
-	proto.RegisterType((*MsgSubstationPlayerConnect)(nil), "structs.MsgSubstationPlayerConnect")
-	proto.RegisterType((*MsgSubstationPlayerConnectResponse)(nil), "structs.MsgSubstationPlayerConnectResponse")
-	proto.RegisterType((*MsgSubstationPlayerDisconnect)(nil), "structs.MsgSubstationPlayerDisconnect")
-	proto.RegisterType((*MsgSubstationPlayerDisconnectResponse)(nil), "structs.MsgSubstationPlayerDisconnectResponse")
-	proto.RegisterType((*MsgAllocationCreate)(nil), "structs.MsgAllocationCreate")
-	proto.RegisterType((*MsgAllocationCreateResponse)(nil), "structs.MsgAllocationCreateResponse")
-	proto.RegisterType((*MsgGuildCreate)(nil), "structs.MsgGuildCreate")
-	proto.RegisterType((*MsgGuildCreateResponse)(nil), "structs.MsgGuildCreateResponse")
-	proto.RegisterType((*MsgGuildUpdateOwnerId)(nil), "structs.MsgGuildUpdateOwnerId")
-	proto.RegisterType((*MsgGuildUpdateEntrySubstationId)(nil), "structs.MsgGuildUpdateEntrySubstationId")
-	proto.RegisterType((*MsgGuildUpdateEndpoint)(nil), "structs.MsgGuildUpdateEndpoint")
-	proto.RegisterType((*MsgGuildUpdateJoinInfusionMinimum)(nil), "structs.MsgGuildUpdateJoinInfusionMinimum")
-	proto.RegisterType((*MsgGuildUpdateJoinInfusionMinimumBypassByRequest)(nil), "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest")
-	proto.RegisterType((*MsgGuildUpdateJoinInfusionMinimumBypassByInvite)(nil), "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite")
-	proto.RegisterType((*MsgGuildUpdateResponse)(nil), "structs.MsgGuildUpdateResponse")
-	proto.RegisterType((*MsgGuildJoinProxy)(nil), "structs.MsgGuildJoinProxy")
-	proto.RegisterType((*MsgGuildJoinProxyResponse)(nil), "structs.MsgGuildJoinProxyResponse")
-	proto.RegisterType((*MsgGuildJoin)(nil), "structs.MsgGuildJoin")
-	proto.RegisterType((*MsgGuildJoinResponse)(nil), "structs.MsgGuildJoinResponse")
-	proto.RegisterType((*MsgAddressApproveRegister)(nil), "structs.MsgAddressApproveRegister")
-	proto.RegisterType((*MsgAddressRegister)(nil), "structs.MsgAddressRegister")
-	proto.RegisterType((*MsgAddressRegisterResponse)(nil), "structs.MsgAddressRegisterResponse")
-	proto.RegisterType((*MsgAddressRevoke)(nil), "structs.MsgAddressRevoke")
-	proto.RegisterType((*MsgAddressRevokeResponse)(nil), "structs.MsgAddressRevokeResponse")
-	proto.RegisterType((*MsgGuildApproveRegister)(nil), "structs.MsgGuildApproveRegister")
-	proto.RegisterType((*MsgGuildApproveRegisterResponse)(nil), "structs.MsgGuildApproveRegisterResponse")
-	proto.RegisterType((*MsgPlanetExplore)(nil), "structs.MsgPlanetExplore")
-	proto.RegisterType((*MsgPlanetExploreResponse)(nil), "structs.MsgPlanetExploreResponse")
-	proto.RegisterType((*MsgStructActivate)(nil), "structs.MsgStructActivate")
-	proto.RegisterType((*MsgStructActivateResponse)(nil), "structs.MsgStructActivateResponse")
-	proto.RegisterType((*MsgStructBuildInitiate)(nil), "structs.MsgStructBuildInitiate")
-	proto.RegisterType((*MsgStructBuildInitiateResponse)(nil), "structs.MsgStructBuildInitiateResponse")
-	proto.RegisterType((*MsgStructBuildComplete)(nil), "structs.MsgStructBuildComplete")
-	proto.RegisterType((*MsgStructBuildCompleteResponse)(nil), "structs.MsgStructBuildCompleteResponse")
-	proto.RegisterType((*MsgStructMineActivate)(nil), "structs.MsgStructMineActivate")
-	proto.RegisterType((*MsgStructMineActivateResponse)(nil), "structs.MsgStructMineActivateResponse")
-	proto.RegisterType((*MsgStructMineDeactivate)(nil), "structs.MsgStructMineDeactivate")
-	proto.RegisterType((*MsgStructMineDeactivateResponse)(nil), "structs.MsgStructMineDeactivateResponse")
-	proto.RegisterType((*MsgStructMine)(nil), "structs.MsgStructMine")
-	proto.RegisterType((*MsgStructMineResponse)(nil), "structs.MsgStructMineResponse")
-	proto.RegisterType((*MsgStructRefineActivate)(nil), "structs.MsgStructRefineActivate")
-	proto.RegisterType((*MsgStructRefineActivateResponse)(nil), "structs.MsgStructRefineActivateResponse")
-	proto.RegisterType((*MsgStructRefineDeactivate)(nil), "structs.MsgStructRefineDeactivate")
-	proto.RegisterType((*MsgStructRefineDeactivateResponse)(nil), "structs.MsgStructRefineDeactivateResponse")
-	proto.RegisterType((*MsgStructRefine)(nil), "structs.MsgStructRefine")
-	proto.RegisterType((*MsgStructRefineResponse)(nil), "structs.MsgStructRefineResponse")
-	proto.RegisterType((*MsgPlayerUpdatePrimaryAddress)(nil), "structs.MsgPlayerUpdatePrimaryAddress")
-	proto.RegisterType((*MsgPlayerUpdatePrimaryAddressResponse)(nil), "structs.MsgPlayerUpdatePrimaryAddressResponse")
-	proto.RegisterType((*MsgStructInfuse)(nil), "structs.MsgStructInfuse")
-	proto.RegisterType((*MsgStructInfuseResponse)(nil), "structs.MsgStructInfuseResponse")
-	proto.RegisterType((*MsgSabotage)(nil), "structs.MsgSabotage")
-	proto.RegisterType((*MsgSabotageResponse)(nil), "structs.MsgSabotageResponse")
-	proto.RegisterType((*MsgPermissionGrantOnObject)(nil), "structs.MsgPermissionGrantOnObject")
-	proto.RegisterType((*MsgPermissionGrantOnAddress)(nil), "structs.MsgPermissionGrantOnAddress")
-	proto.RegisterType((*MsgPermissionRevokeOnObject)(nil), "structs.MsgPermissionRevokeOnObject")
-	proto.RegisterType((*MsgPermissionRevokeOnAddress)(nil), "structs.MsgPermissionRevokeOnAddress")
-	proto.RegisterType((*MsgPermissionResponse)(nil), "structs.MsgPermissionResponse")
-	proto.RegisterType((*MsgSubstationPlayerMigrate)(nil), "structs.MsgSubstationPlayerMigrate")
-	proto.RegisterType((*MsgSubstationPlayerMigrateResponse)(nil), "structs.MsgSubstationPlayerMigrateResponse")
+	proto.RegisterType((*MsgUpdateParams)(nil), "structs.structs.MsgUpdateParams")
+	proto.RegisterType((*MsgUpdateParamsResponse)(nil), "structs.structs.MsgUpdateParamsResponse")
+	proto.RegisterType((*MsgAddressApproveRegister)(nil), "structs.structs.MsgAddressApproveRegister")
+	proto.RegisterType((*MsgAddressRegister)(nil), "structs.structs.MsgAddressRegister")
+	proto.RegisterType((*MsgAddressRegisterResponse)(nil), "structs.structs.MsgAddressRegisterResponse")
+	proto.RegisterType((*MsgAddressRevoke)(nil), "structs.structs.MsgAddressRevoke")
+	proto.RegisterType((*MsgAddressRevokeResponse)(nil), "structs.structs.MsgAddressRevokeResponse")
+	proto.RegisterType((*MsgAllocationCreate)(nil), "structs.structs.MsgAllocationCreate")
+	proto.RegisterType((*MsgAllocationCreateResponse)(nil), "structs.structs.MsgAllocationCreateResponse")
+	proto.RegisterType((*MsgGuildApproveRegister)(nil), "structs.structs.MsgGuildApproveRegister")
+	proto.RegisterType((*MsgGuildApproveRegisterResponse)(nil), "structs.structs.MsgGuildApproveRegisterResponse")
+	proto.RegisterType((*MsgGuildCreate)(nil), "structs.structs.MsgGuildCreate")
+	proto.RegisterType((*MsgGuildCreateResponse)(nil), "structs.structs.MsgGuildCreateResponse")
+	proto.RegisterType((*MsgGuildUpdateOwnerId)(nil), "structs.structs.MsgGuildUpdateOwnerId")
+	proto.RegisterType((*MsgGuildUpdateEntrySubstationId)(nil), "structs.structs.MsgGuildUpdateEntrySubstationId")
+	proto.RegisterType((*MsgGuildUpdateEndpoint)(nil), "structs.structs.MsgGuildUpdateEndpoint")
+	proto.RegisterType((*MsgGuildUpdateJoinInfusionMinimum)(nil), "structs.structs.MsgGuildUpdateJoinInfusionMinimum")
+	proto.RegisterType((*MsgGuildUpdateJoinInfusionMinimumBypassByRequest)(nil), "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest")
+	proto.RegisterType((*MsgGuildUpdateJoinInfusionMinimumBypassByInvite)(nil), "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite")
+	proto.RegisterType((*MsgGuildUpdateResponse)(nil), "structs.structs.MsgGuildUpdateResponse")
+	proto.RegisterType((*MsgGuildJoinProxy)(nil), "structs.structs.MsgGuildJoinProxy")
+	proto.RegisterType((*MsgGuildJoinProxyResponse)(nil), "structs.structs.MsgGuildJoinProxyResponse")
+	proto.RegisterType((*MsgGuildJoin)(nil), "structs.structs.MsgGuildJoin")
+	proto.RegisterType((*MsgGuildJoinResponse)(nil), "structs.structs.MsgGuildJoinResponse")
+	proto.RegisterType((*MsgPermissionGrantOnObject)(nil), "structs.structs.MsgPermissionGrantOnObject")
+	proto.RegisterType((*MsgPermissionGrantOnAddress)(nil), "structs.structs.MsgPermissionGrantOnAddress")
+	proto.RegisterType((*MsgPermissionRevokeOnObject)(nil), "structs.structs.MsgPermissionRevokeOnObject")
+	proto.RegisterType((*MsgPermissionRevokeOnAddress)(nil), "structs.structs.MsgPermissionRevokeOnAddress")
+	proto.RegisterType((*MsgPermissionResponse)(nil), "structs.structs.MsgPermissionResponse")
+	proto.RegisterType((*MsgPlanetExplore)(nil), "structs.structs.MsgPlanetExplore")
+	proto.RegisterType((*MsgPlanetExploreResponse)(nil), "structs.structs.MsgPlanetExploreResponse")
+	proto.RegisterType((*MsgPlayerUpdatePrimaryAddress)(nil), "structs.structs.MsgPlayerUpdatePrimaryAddress")
+	proto.RegisterType((*MsgPlayerUpdatePrimaryAddressResponse)(nil), "structs.structs.MsgPlayerUpdatePrimaryAddressResponse")
+	proto.RegisterType((*MsgStructActivate)(nil), "structs.structs.MsgStructActivate")
+	proto.RegisterType((*MsgStructActivateResponse)(nil), "structs.structs.MsgStructActivateResponse")
+	proto.RegisterType((*MsgStructBuildInitiate)(nil), "structs.structs.MsgStructBuildInitiate")
+	proto.RegisterType((*MsgStructBuildInitiateResponse)(nil), "structs.structs.MsgStructBuildInitiateResponse")
+	proto.RegisterType((*MsgStructBuildComplete)(nil), "structs.structs.MsgStructBuildComplete")
+	proto.RegisterType((*MsgStructBuildCompleteResponse)(nil), "structs.structs.MsgStructBuildCompleteResponse")
+	proto.RegisterType((*MsgStructInfuse)(nil), "structs.structs.MsgStructInfuse")
+	proto.RegisterType((*MsgStructInfuseResponse)(nil), "structs.structs.MsgStructInfuseResponse")
+	proto.RegisterType((*MsgStructMineActivate)(nil), "structs.structs.MsgStructMineActivate")
+	proto.RegisterType((*MsgStructMineActivateResponse)(nil), "structs.structs.MsgStructMineActivateResponse")
+	proto.RegisterType((*MsgStructMineDeactivate)(nil), "structs.structs.MsgStructMineDeactivate")
+	proto.RegisterType((*MsgStructMineDeactivateResponse)(nil), "structs.structs.MsgStructMineDeactivateResponse")
+	proto.RegisterType((*MsgStructMine)(nil), "structs.structs.MsgStructMine")
+	proto.RegisterType((*MsgStructMineResponse)(nil), "structs.structs.MsgStructMineResponse")
+	proto.RegisterType((*MsgStructRefineActivate)(nil), "structs.structs.MsgStructRefineActivate")
+	proto.RegisterType((*MsgStructRefineActivateResponse)(nil), "structs.structs.MsgStructRefineActivateResponse")
+	proto.RegisterType((*MsgStructRefineDeactivate)(nil), "structs.structs.MsgStructRefineDeactivate")
+	proto.RegisterType((*MsgStructRefineDeactivateResponse)(nil), "structs.structs.MsgStructRefineDeactivateResponse")
+	proto.RegisterType((*MsgStructRefine)(nil), "structs.structs.MsgStructRefine")
+	proto.RegisterType((*MsgStructRefineResponse)(nil), "structs.structs.MsgStructRefineResponse")
+	proto.RegisterType((*MsgSubstationCreate)(nil), "structs.structs.MsgSubstationCreate")
+	proto.RegisterType((*MsgSubstationCreateResponse)(nil), "structs.structs.MsgSubstationCreateResponse")
+	proto.RegisterType((*MsgSubstationDelete)(nil), "structs.structs.MsgSubstationDelete")
+	proto.RegisterType((*MsgSubstationDeleteResponse)(nil), "structs.structs.MsgSubstationDeleteResponse")
+	proto.RegisterType((*MsgSubstationAllocationConnect)(nil), "structs.structs.MsgSubstationAllocationConnect")
+	proto.RegisterType((*MsgSubstationAllocationConnectResponse)(nil), "structs.structs.MsgSubstationAllocationConnectResponse")
+	proto.RegisterType((*MsgSubstationAllocationDisconnect)(nil), "structs.structs.MsgSubstationAllocationDisconnect")
+	proto.RegisterType((*MsgSubstationAllocationDisconnectResponse)(nil), "structs.structs.MsgSubstationAllocationDisconnectResponse")
+	proto.RegisterType((*MsgSubstationPlayerConnect)(nil), "structs.structs.MsgSubstationPlayerConnect")
+	proto.RegisterType((*MsgSubstationPlayerConnectResponse)(nil), "structs.structs.MsgSubstationPlayerConnectResponse")
+	proto.RegisterType((*MsgSubstationPlayerDisconnect)(nil), "structs.structs.MsgSubstationPlayerDisconnect")
+	proto.RegisterType((*MsgSubstationPlayerDisconnectResponse)(nil), "structs.structs.MsgSubstationPlayerDisconnectResponse")
+	proto.RegisterType((*MsgSubstationPlayerMigrate)(nil), "structs.structs.MsgSubstationPlayerMigrate")
+	proto.RegisterType((*MsgSubstationPlayerMigrateResponse)(nil), "structs.structs.MsgSubstationPlayerMigrateResponse")
+	proto.RegisterType((*MsgSabotage)(nil), "structs.structs.MsgSabotage")
+	proto.RegisterType((*MsgSabotageResponse)(nil), "structs.structs.MsgSabotageResponse")
 }
 
 func init() { proto.RegisterFile("structs/structs/tx.proto", fileDescriptor_38fd6c203bede659) }
 
 var fileDescriptor_38fd6c203bede659 = []byte{
-	// 1883 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xc4, 0x5a, 0x4f, 0x53, 0x1b, 0x47,
-	0x16, 0x67, 0x10, 0xb6, 0xf1, 0x03, 0xcb, 0xf6, 0xf0, 0x4f, 0x0c, 0x20, 0x60, 0x8c, 0x31, 0xeb,
-	0x3f, 0xe0, 0x65, 0xf7, 0xb0, 0x7b, 0xd9, 0x2d, 0x30, 0xb6, 0x17, 0xd7, 0x6a, 0x91, 0xc5, 0xda,
-	0xa9, 0x4a, 0xa5, 0xe2, 0x0c, 0x52, 0x23, 0x8f, 0x91, 0xa6, 0xc7, 0x33, 0x23, 0x8c, 0x72, 0x4a,
-	0xc5, 0xb9, 0xb8, 0x7c, 0x71, 0xbe, 0x4d, 0xf2, 0x0d, 0x7c, 0x4a, 0xf9, 0x92, 0xaa, 0x9c, 0x52,
-	0x29, 0xfb, 0x8b, 0xa4, 0xd4, 0x3d, 0xd3, 0x9a, 0xee, 0xe9, 0x9e, 0x11, 0x82, 0x90, 0x13, 0xea,
-	0x7e, 0xef, 0xfd, 0xde, 0xaf, 0x5f, 0xff, 0x99, 0xee, 0x5f, 0x01, 0x05, 0x3f, 0xf0, 0x5a, 0xd5,
-	0xc0, 0x5f, 0x8b, 0xfe, 0x06, 0x47, 0xab, 0xae, 0x87, 0x03, 0xac, 0x5f, 0x08, 0x7b, 0x8c, 0xf1,
-	0x3a, 0xae, 0x63, 0xd2, 0xb7, 0xd6, 0xf9, 0x45, 0xcd, 0xc6, 0x74, 0x1d, 0xe3, 0x7a, 0x03, 0xad,
-	0x91, 0xd6, 0x5e, 0x6b, 0x7f, 0xcd, 0x72, 0xda, 0x91, 0xa9, 0x8a, 0xfd, 0x26, 0xf6, 0x9f, 0xd1,
-	0x18, 0xda, 0x08, 0x4d, 0x86, 0x98, 0xee, 0x00, 0xb5, 0x23, 0xdb, 0xac, 0x68, 0x73, 0x1b, 0x96,
-	0x83, 0x02, 0x95, 0x95, 0xfe, 0xa5, 0x56, 0xd3, 0x86, 0xb1, 0x92, 0x5f, 0xdf, 0x6d, 0xed, 0xf9,
-	0x81, 0x15, 0xd8, 0xd8, 0xb9, 0xe7, 0x21, 0x2b, 0x40, 0x7a, 0x01, 0x2e, 0x54, 0x3b, 0xbf, 0xb0,
-	0x57, 0xd0, 0x16, 0xb4, 0x95, 0x8b, 0x95, 0xa8, 0xa9, 0x8f, 0xc3, 0x39, 0xfc, 0xca, 0x41, 0x5e,
-	0x61, 0x90, 0xf4, 0xd3, 0x86, 0x6e, 0xc2, 0xa8, 0xd5, 0x68, 0xe0, 0x2a, 0xc1, 0xd8, 0xae, 0x15,
-	0x72, 0xc4, 0xc8, 0xf5, 0x99, 0x1b, 0x30, 0x23, 0x49, 0x55, 0x41, 0xbe, 0x8b, 0x1d, 0x1f, 0x75,
-	0x20, 0x7c, 0x66, 0xdb, 0xae, 0x85, 0x79, 0xb9, 0x3e, 0xf3, 0x8d, 0x26, 0xd0, 0xdd, 0x42, 0x0d,
-	0x94, 0x4a, 0x57, 0x44, 0x1d, 0x4c, 0xa2, 0xea, 0x7f, 0x87, 0x89, 0xa6, 0x5d, 0xf7, 0x48, 0x73,
-	0x37, 0xee, 0x4c, 0x47, 0x21, 0x37, 0x9a, 0x73, 0xc2, 0x70, 0x28, 0x95, 0x68, 0x38, 0xe6, 0x77,
-	0x1a, 0x14, 0x39, 0xfb, 0x06, 0xab, 0xc5, 0x3d, 0xec, 0x38, 0xa8, 0x1a, 0xa4, 0xb3, 0xe6, 0xca,
-	0x39, 0x98, 0x2c, 0xa7, 0xbe, 0x04, 0x97, 0x6a, 0xc8, 0x0f, 0x6c, 0x87, 0x67, 0xcb, 0x77, 0x9a,
-	0x2b, 0xb0, 0x9c, 0xce, 0x82, 0x11, 0xb6, 0x60, 0x51, 0xe1, 0xb9, 0x65, 0xfb, 0xd5, 0xd3, 0xa0,
-	0x6c, 0xde, 0x82, 0xbf, 0x64, 0xa6, 0x60, 0x7c, 0x0e, 0xc1, 0xe0, 0x9c, 0xcb, 0x0d, 0xab, 0x8d,
-	0xbc, 0x9e, 0x6a, 0x97, 0x39, 0xe3, 0x06, 0x0c, 0xbb, 0x04, 0x8e, 0x95, 0x8d, 0xb5, 0xcd, 0x25,
-	0x30, 0xd5, 0x79, 0x19, 0xbb, 0x27, 0x30, 0x27, 0xf1, 0xea, 0xa9, 0x52, 0xf1, 0xe4, 0x83, 0x42,
-	0xf2, 0x1b, 0x70, 0x3d, 0x15, 0x96, 0xe5, 0xff, 0x89, 0xee, 0x84, 0xd8, 0x74, 0x66, 0x6d, 0xdc,
-	0x22, 0x40, 0x15, 0x3b, 0x81, 0x87, 0x1b, 0x0d, 0xb6, 0x7b, 0x63, 0x3d, 0xfa, 0x32, 0xe4, 0x7d,
-	0xdc, 0xf2, 0xaa, 0x68, 0x67, 0xef, 0x05, 0xaa, 0x06, 0xac, 0x32, 0x42, 0xaf, 0xfe, 0x6f, 0xc8,
-	0x77, 0x27, 0xf5, 0xff, 0x6d, 0x17, 0x15, 0x86, 0x16, 0xb4, 0x95, 0xfc, 0xfa, 0xd4, 0x6a, 0x78,
-	0xc0, 0xac, 0xf2, 0xe6, 0x8a, 0xe0, 0xde, 0x39, 0x41, 0x5c, 0xfc, 0x0a, 0x79, 0x85, 0x73, 0x0b,
-	0xda, 0xca, 0x50, 0x85, 0x36, 0xc2, 0xd3, 0x41, 0x1c, 0x4f, 0xfc, 0x74, 0xe0, 0x96, 0x97, 0x26,
-	0x59, 0x5e, 0x01, 0xe4, 0x4b, 0x7e, 0xfd, 0x61, 0xcb, 0x6e, 0xd4, 0x32, 0xab, 0x61, 0xc0, 0x30,
-	0x72, 0x6a, 0x2e, 0xb6, 0x9d, 0x20, 0x9a, 0x84, 0xa8, 0xad, 0xdf, 0x86, 0xab, 0xc8, 0x09, 0xbc,
-	0xb6, 0xe4, 0x2c, 0x48, 0x1a, 0xcc, 0x75, 0x98, 0xe4, 0xb3, 0x32, 0xce, 0x05, 0xb8, 0x50, 0xef,
-	0x74, 0x33, 0xba, 0x51, 0xd3, 0xb4, 0x60, 0x22, 0x8a, 0x79, 0xe2, 0xd6, 0xac, 0x00, 0xed, 0x74,
-	0x4e, 0xd1, 0xed, 0x5a, 0x0a, 0xe1, 0x18, 0xd8, 0x20, 0x07, 0xd6, 0x3d, 0x91, 0x73, 0xb1, 0x13,
-	0xd9, 0x7c, 0xad, 0xc1, 0x3c, 0x9f, 0xe3, 0xbe, 0x48, 0xbd, 0xaf, 0x6c, 0xc7, 0x2b, 0xce, 0xf3,
-	0x6e, 0x71, 0x22, 0x12, 0x61, 0x91, 0xfb, 0xc9, 0x1d, 0x9f, 0xb4, 0x1c, 0x3f, 0x69, 0x9d, 0x4f,
-	0xc3, 0x22, 0x9f, 0xea, 0x11, 0xb6, 0x9d, 0x6d, 0x67, 0xbf, 0xe5, 0xdb, 0xd8, 0x29, 0xd9, 0x8e,
-	0xdd, 0x6c, 0x35, 0xfb, 0xca, 0x7a, 0x17, 0xc6, 0x5e, 0x24, 0xa1, 0x08, 0x81, 0xa1, 0x8a, 0xcc,
-	0x64, 0xfe, 0xa8, 0xc1, 0xdd, 0x4c, 0x2e, 0x9b, 0x6d, 0xd7, 0xf2, 0xfd, 0xcd, 0x76, 0x05, 0xbd,
-	0x6c, 0x21, 0xbf, 0xbf, 0x82, 0x3c, 0x86, 0x71, 0xf2, 0xb3, 0x03, 0x4f, 0xf1, 0xfe, 0x8b, 0x0e,
-	0x51, 0x83, 0x70, 0xcb, 0xaf, 0xcf, 0xb1, 0x1d, 0x29, 0x73, 0xaa, 0x48, 0x43, 0xcd, 0x1f, 0x34,
-	0x58, 0xeb, 0x99, 0xfb, 0xb6, 0x73, 0x68, 0xa7, 0x6e, 0xb3, 0x33, 0xa5, 0x5e, 0x10, 0x17, 0x1b,
-	0x3b, 0x2d, 0x0f, 0xe0, 0x6a, 0x64, 0xe9, 0x04, 0x95, 0x3d, 0x7c, 0xd4, 0x4e, 0x67, 0x6d, 0xd5,
-	0x6a, 0x1e, 0xf2, 0xfd, 0x88, 0x75, 0xd8, 0x4c, 0x7c, 0x5c, 0x72, 0x92, 0x4b, 0xca, 0x0c, 0x4c,
-	0x27, 0x92, 0x31, 0x26, 0x9b, 0x30, 0x1a, 0x37, 0xf6, 0x53, 0x3a, 0x73, 0x12, 0xc6, 0xe3, 0x18,
-	0x0c, 0xfb, 0xad, 0x46, 0x32, 0x6f, 0x50, 0xae, 0x1b, 0xae, 0xeb, 0xe1, 0x43, 0x54, 0x41, 0x75,
-	0xdb, 0x0f, 0x90, 0x97, 0x31, 0x5c, 0xea, 0x4c, 0x32, 0x0d, 0x57, 0xa2, 0x66, 0xbc, 0x10, 0x39,
-	0xbe, 0x10, 0x0b, 0x30, 0xe2, 0x22, 0xaf, 0x69, 0xfb, 0x9d, 0x55, 0xe1, 0x93, 0x4f, 0xc0, 0x50,
-	0x25, 0xde, 0x65, 0xd6, 0x40, 0xef, 0x92, 0xe9, 0x81, 0x45, 0xca, 0x67, 0x51, 0xcd, 0xc3, 0x9c,
-	0x25, 0xb7, 0x04, 0x21, 0x0b, 0xab, 0xc8, 0x03, 0xb8, 0x12, 0xb7, 0x1e, 0xe2, 0x03, 0xd4, 0xcf,
-	0xb4, 0x9b, 0x06, 0x14, 0x44, 0x1c, 0x96, 0xe3, 0xb5, 0x06, 0x53, 0xd1, 0x74, 0x9c, 0x52, 0xcd,
-	0xa3, 0x79, 0xcf, 0x25, 0x8e, 0x3f, 0x56, 0xa1, 0x21, 0xe1, 0xe2, 0xb0, 0xd8, 0x3d, 0xed, 0x05,
-	0x12, 0x8c, 0xe8, 0x6d, 0x52, 0x8c, 0x32, 0x79, 0x1b, 0xdc, 0x3f, 0x72, 0x1b, 0xd8, 0x4b, 0x29,
-	0x86, 0xb9, 0x4d, 0x86, 0xcc, 0x79, 0xb3, 0x0f, 0xdb, 0x1d, 0x38, 0x4f, 0x9f, 0x18, 0x24, 0x68,
-	0x64, 0xfd, 0x32, 0xdb, 0xad, 0xd4, 0x7f, 0x73, 0xe8, 0xfd, 0xaf, 0xf3, 0x03, 0x95, 0xd0, 0xc9,
-	0xdc, 0x26, 0xbb, 0x6f, 0x97, 0xb8, 0x6c, 0x54, 0x03, 0xfb, 0x30, 0xf3, 0xd3, 0x4c, 0xe1, 0xba,
-	0x0b, 0x21, 0x6a, 0x9b, 0x8f, 0xc8, 0x0a, 0xe7, 0xa1, 0xe2, 0xb4, 0xa8, 0x63, 0x82, 0x16, 0x0d,
-	0x88, 0x68, 0xd1, 0x5e, 0xf3, 0x5b, 0x8d, 0x9c, 0x17, 0xa1, 0x8d, 0xd4, 0xd8, 0xb1, 0x03, 0x3b,
-	0xf3, 0x16, 0x45, 0xc3, 0xc9, 0xcd, 0x27, 0xbc, 0x45, 0x75, 0x7b, 0xc2, 0x39, 0x72, 0x50, 0xc0,
-	0xdd, 0x2c, 0x49, 0x5b, 0xd7, 0x61, 0xc8, 0x6f, 0xe0, 0x20, 0xdc, 0x2c, 0xe4, 0xb7, 0xb9, 0x43,
-	0x5f, 0x09, 0x49, 0x0e, 0xfd, 0x8e, 0xea, 0x6b, 0x71, 0x50, 0xf7, 0x70, 0xd3, 0xcd, 0x78, 0x24,
-	0xa5, 0x54, 0x9c, 0xdc, 0xd6, 0x3c, 0x8c, 0xf7, 0xa3, 0xdb, 0x05, 0x69, 0x74, 0x7a, 0x1d, 0xec,
-	0x54, 0x51, 0xb8, 0x0e, 0x69, 0x23, 0x39, 0x98, 0x28, 0x77, 0xbf, 0x83, 0x29, 0x91, 0x7b, 0x12,
-	0x35, 0x95, 0x6c, 0x07, 0x9d, 0x70, 0xf5, 0xfc, 0x8f, 0x5e, 0xda, 0x13, 0x70, 0xfd, 0xd2, 0xdb,
-	0x21, 0x3b, 0xbf, 0x8b, 0xb7, 0x85, 0xac, 0x93, 0x11, 0x2c, 0x93, 0x5d, 0x2c, 0x03, 0xec, 0x97,
-	0xe2, 0x4b, 0xb8, 0xc4, 0x21, 0x9e, 0xc1, 0x2a, 0x78, 0x20, 0x4c, 0xda, 0x69, 0x54, 0xb7, 0x82,
-	0xf6, 0x4f, 0x3e, 0xfd, 0xf1, 0xea, 0xf2, 0x80, 0xfd, 0x52, 0x7c, 0x1c, 0x3b, 0x8e, 0x28, 0xe2,
-	0x89, 0x97, 0x40, 0x85, 0x3e, 0xc3, 0xa5, 0x90, 0xfd, 0xd2, 0xf4, 0xe1, 0xb2, 0x80, 0x79, 0x06,
-	0xcb, 0xe0, 0x3f, 0x89, 0xe9, 0xeb, 0x97, 0xbe, 0x45, 0xb6, 0x2d, 0x7d, 0x0a, 0xd3, 0x8b, 0x5d,
-	0xd9, 0xb3, 0x9b, 0x96, 0xd7, 0x0e, 0x3f, 0xc8, 0x29, 0x83, 0x59, 0x86, 0xbc, 0xcb, 0xf9, 0x86,
-	0x43, 0x12, 0x7a, 0xc3, 0x77, 0xb7, 0x3a, 0x45, 0xec, 0x26, 0xd9, 0x2d, 0x25, 0xb9, 0x14, 0xf7,
-	0x5b, 0x4a, 0x13, 0x46, 0x6d, 0x12, 0xbf, 0xd1, 0xc4, 0x2d, 0xf6, 0x9e, 0xe1, 0xfa, 0xcc, 0xe9,
-	0x58, 0x09, 0x69, 0x32, 0xc6, 0x03, 0xc3, 0x48, 0xc7, 0x64, 0xed, 0xe1, 0xc0, 0xaa, 0x9f, 0xc5,
-	0x74, 0x4e, 0x50, 0xe5, 0x2d, 0x4c, 0xc8, 0x78, 0xbc, 0xd3, 0xc8, 0x05, 0xac, 0xcc, 0x2e, 0x7e,
-	0x0f, 0x3d, 0xcb, 0x09, 0x76, 0x1c, 0x2a, 0x17, 0xa4, 0xf3, 0xc2, 0x91, 0xd0, 0x10, 0xf2, 0x8a,
-	0xda, 0x69, 0xf2, 0x4c, 0x0f, 0x17, 0x4f, 0x9f, 0x28, 0x09, 0x09, 0x46, 0xd9, 0x8b, 0x45, 0x7d,
-	0xed, 0x17, 0x92, 0xe6, 0x92, 0x49, 0xbf, 0xd7, 0x84, 0xac, 0xf4, 0x96, 0xf8, 0xa7, 0x16, 0x22,
-	0x80, 0x59, 0x29, 0xa5, 0x3f, 0xb6, 0x12, 0x53, 0xe4, 0xf8, 0x8f, 0x67, 0x4d, 0x15, 0xf4, 0x4a,
-	0x44, 0x5c, 0x45, 0xa7, 0x2a, 0xe8, 0xe5, 0x7a, 0x10, 0xf4, 0xc2, 0xbc, 0x11, 0xbb, 0xf5, 0x9f,
-	0x67, 0x21, 0x57, 0xf2, 0xeb, 0xfa, 0x53, 0xb8, 0x92, 0x10, 0xd5, 0x66, 0xd9, 0xf9, 0x24, 0x91,
-	0xa8, 0x8c, 0xa5, 0x34, 0x2b, 0x3b, 0xf3, 0x9e, 0xc2, 0x95, 0x84, 0xca, 0xce, 0xe1, 0x8a, 0x56,
-	0x1e, 0x57, 0x29, 0x9b, 0x73, 0xb8, 0xa1, 0x1c, 0xae, 0xc0, 0xa5, 0x56, 0x15, 0x2e, 0xaf, 0x5f,
-	0xeb, 0xaf, 0x60, 0x26, 0x4d, 0xbb, 0xbe, 0x21, 0x07, 0x49, 0x38, 0x1a, 0x6b, 0x3d, 0x3a, 0xb2,
-	0xc4, 0xdf, 0x68, 0x50, 0xcc, 0x50, 0xa1, 0x6f, 0x66, 0x61, 0x76, 0x7d, 0x8d, 0xf5, 0xde, 0x7d,
-	0x19, 0x85, 0x03, 0x98, 0x52, 0xe9, 0xce, 0xd7, 0xe4, 0x70, 0x9c, 0x93, 0x71, 0xab, 0x07, 0x27,
-	0x96, 0x2c, 0x00, 0x23, 0x45, 0x46, 0x5e, 0x4e, 0x83, 0x8a, 0x0d, 0x73, 0xb5, 0x37, 0xbf, 0xb4,
-	0x21, 0x46, 0x3b, 0x31, 0x75, 0x88, 0xa1, 0x53, 0xfa, 0x10, 0x85, 0xbd, 0xa5, 0x3f, 0x84, 0x91,
-	0xb8, 0x2a, 0x3b, 0x15, 0x8f, 0x8d, 0x19, 0x8c, 0x79, 0x85, 0x81, 0x01, 0x3d, 0x01, 0x5d, 0x22,
-	0x9a, 0x16, 0x13, 0x61, 0x9c, 0x5d, 0x02, 0xcb, 0xcb, 0x43, 0xba, 0x0d, 0xb3, 0xa9, 0x3a, 0xe9,
-	0x8a, 0x02, 0x20, 0xe1, 0x99, 0x9d, 0xea, 0x33, 0x18, 0x93, 0xa9, 0xa1, 0xf3, 0xca, 0x0c, 0xd4,
-	0x21, 0x1b, 0xb8, 0x09, 0xc5, 0x0c, 0xed, 0xf3, 0xa6, 0x02, 0x42, 0xe2, 0x9b, 0x9d, 0xee, 0x8d,
-	0x06, 0xb7, 0x8f, 0xa5, 0x11, 0xfe, 0xa3, 0xf7, 0xec, 0x7c, 0x64, 0x36, 0x97, 0xb7, 0x1a, 0xdc,
-	0x39, 0x9e, 0xd6, 0xfa, 0xcf, 0xe3, 0x93, 0x09, 0x43, 0xb3, 0xd9, 0xec, 0xc1, 0xb8, 0x54, 0x0b,
-	0x5a, 0x48, 0x04, 0x0a, 0x1e, 0xc6, 0x4a, 0x96, 0x07, 0xcb, 0x51, 0x86, 0xbc, 0x20, 0x66, 0x1a,
-	0x89, 0x58, 0x66, 0x33, 0x4c, 0xb5, 0x8d, 0x21, 0x6e, 0xc0, 0xc5, 0xae, 0x28, 0x39, 0x21, 0x0d,
-	0x30, 0xe6, 0xa4, 0xdd, 0xf1, 0x83, 0x2c, 0xe5, 0x8e, 0xce, 0x1d, 0x64, 0x6a, 0x3f, 0xfe, 0x20,
-	0xcb, 0xbe, 0x90, 0xeb, 0xbb, 0x70, 0x59, 0xd4, 0x18, 0x67, 0xb8, 0x0f, 0x32, 0x6f, 0x34, 0xae,
-	0xa5, 0x18, 0x19, 0xa8, 0x05, 0x93, 0x0a, 0x15, 0xd5, 0x94, 0x84, 0x8b, 0xf3, 0xd8, 0x53, 0x8a,
-	0x12, 0x5c, 0xe2, 0x75, 0xc9, 0x69, 0x69, 0x54, 0xc7, 0x64, 0x2c, 0x2a, 0x4d, 0x71, 0x38, 0x5e,
-	0xd9, 0x9b, 0x16, 0xea, 0xd8, 0x35, 0xf1, 0x70, 0x72, 0x85, 0xaf, 0x0c, 0x79, 0x41, 0xaf, 0xe3,
-	0x16, 0x18, 0x6f, 0xe3, 0x17, 0x98, 0x42, 0x9c, 0x7b, 0x06, 0x63, 0x32, 0xa5, 0x6d, 0x3e, 0x19,
-	0xca, 0x39, 0x18, 0x37, 0x32, 0x1c, 0x14, 0x09, 0x98, 0xea, 0xa5, 0x4a, 0x10, 0x39, 0x28, 0x13,
-	0x24, 0xb4, 0xab, 0x2f, 0x40, 0x97, 0x28, 0x51, 0xc5, 0x64, 0x78, 0xdc, 0x6e, 0x2c, 0xa7, 0xdb,
-	0xe3, 0xc7, 0x86, 0x54, 0x48, 0x5a, 0x90, 0xc7, 0x77, 0x3d, 0xf8, 0x63, 0x23, 0x55, 0x3b, 0xda,
-	0x02, 0x88, 0x29, 0x41, 0x93, 0xf2, 0x38, 0x43, 0x31, 0xa2, 0x24, 0x53, 0x41, 0x94, 0x91, 0x30,
-	0xe5, 0x3d, 0x64, 0x4c, 0x15, 0x3a, 0xcc, 0x73, 0x98, 0x54, 0xa8, 0x2a, 0xa6, 0x0a, 0x23, 0x56,
-	0x91, 0x9b, 0xd9, 0x3e, 0x2c, 0xd3, 0x23, 0x18, 0xe5, 0x85, 0x11, 0x55, 0xac, 0xa1, 0x1c, 0x5f,
-	0x12, 0x2b, 0x52, 0x06, 0x92, 0x11, 0xd4, 0x22, 0xc3, 0xe2, 0x1f, 0xf8, 0xfa, 0x57, 0x50, 0x50,
-	0x3e, 0x61, 0xb9, 0x1b, 0xbc, 0xca, 0x8b, 0x9f, 0xc7, 0xe4, 0x7b, 0x4c, 0xff, 0x12, 0xa6, 0x54,
-	0xcf, 0xf6, 0x6b, 0xa9, 0x09, 0xa8, 0x53, 0x26, 0xfe, 0x1e, 0x4c, 0xab, 0xdf, 0x9e, 0xd7, 0x55,
-	0xc1, 0x9c, 0x5b, 0x66, 0x0e, 0xae, 0x4a, 0xc2, 0x93, 0x7b, 0x29, 0x3d, 0x45, 0x8f, 0xa3, 0xf8,
-	0x17, 0x0c, 0x33, 0x95, 0x65, 0x9c, 0x9b, 0xb5, 0xb0, 0xd7, 0x98, 0x95, 0xf5, 0x46, 0xf1, 0x9b,
-	0x7f, 0x7d, 0xff, 0xb1, 0xa8, 0x7d, 0xf8, 0x58, 0xd4, 0x7e, 0xfb, 0x58, 0xd4, 0xde, 0x7d, 0x2a,
-	0x0e, 0x7c, 0xf8, 0x54, 0x1c, 0xf8, 0xe5, 0x53, 0x71, 0xe0, 0xf3, 0xa9, 0xe8, 0x1f, 0xb2, 0x8e,
-	0xba, 0xff, 0x43, 0xd6, 0x76, 0x91, 0xbf, 0x77, 0x9e, 0xfc, 0x6b, 0xd6, 0xdf, 0x7e, 0x0f, 0x00,
-	0x00, 0xff, 0xff, 0x5e, 0xcc, 0x5d, 0x43, 0x63, 0x26, 0x00, 0x00,
+	// 2092 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x5a, 0xcd, 0x6f, 0xdc, 0xc6,
+	0x15, 0x37, 0x25, 0xd9, 0xb5, 0x9e, 0x65, 0x39, 0xa6, 0x65, 0x6b, 0x45, 0xcb, 0x2b, 0x69, 0x2b,
+	0x4b, 0x8a, 0x24, 0x6b, 0x95, 0x4d, 0xea, 0x02, 0x3a, 0x55, 0x8a, 0x03, 0x43, 0x45, 0x15, 0x2b,
+	0x6b, 0xb7, 0x6e, 0x55, 0x18, 0x29, 0xb5, 0x3b, 0xda, 0x32, 0xd9, 0xe5, 0x30, 0x24, 0x57, 0xd6,
+	0xa2, 0x08, 0xda, 0x18, 0x05, 0x5a, 0xf4, 0xe4, 0xf4, 0x52, 0x04, 0x01, 0xda, 0x6b, 0x8f, 0x3a,
+	0xf4, 0xd6, 0x7f, 0x20, 0xa7, 0x36, 0xe8, 0xa9, 0xa7, 0xa2, 0xb0, 0x0b, 0xe8, 0xdf, 0x28, 0x38,
+	0x33, 0x9c, 0xe5, 0x0c, 0x87, 0x1f, 0xfb, 0x01, 0xc1, 0x17, 0xaf, 0x66, 0xe6, 0xbd, 0xdf, 0xfb,
+	0xbd, 0xc7, 0xe1, 0x7c, 0xfc, 0x68, 0x28, 0x78, 0xbe, 0xdb, 0xae, 0xf9, 0x5e, 0x39, 0xfc, 0xf5,
+	0x4f, 0x36, 0x1c, 0x17, 0xfb, 0x58, 0xbf, 0xc6, 0x7a, 0x36, 0xd8, 0xaf, 0x71, 0xdd, 0x6c, 0x59,
+	0x36, 0x2e, 0x93, 0x7f, 0xa9, 0x8d, 0x31, 0x5d, 0xc3, 0x5e, 0x0b, 0x7b, 0xe5, 0x96, 0xd7, 0x28,
+	0x1f, 0xbf, 0x13, 0xfc, 0xb0, 0x81, 0x19, 0x3a, 0xf0, 0x31, 0x69, 0x95, 0x69, 0x83, 0x0d, 0x4d,
+	0x35, 0x70, 0x03, 0xd3, 0xfe, 0xe0, 0x2f, 0xd6, 0x3b, 0x2b, 0xf3, 0x70, 0x4c, 0xd7, 0x6c, 0x85,
+	0x3e, 0x86, 0x3c, 0xfa, 0x29, 0xea, 0x78, 0x89, 0x9e, 0x4d, 0xd3, 0x46, 0x7e, 0xd2, 0x28, 0xfd,
+	0xa5, 0xa3, 0xa5, 0xbf, 0x6b, 0x70, 0x6d, 0xcf, 0x6b, 0xfc, 0xd8, 0xa9, 0x9b, 0x3e, 0xda, 0x27,
+	0x11, 0xf5, 0xfb, 0x30, 0x6e, 0xb6, 0xfd, 0x5f, 0x62, 0xd7, 0xf2, 0x3b, 0x05, 0x6d, 0x5e, 0x5b,
+	0x19, 0xdf, 0x29, 0xfc, 0xeb, 0x6f, 0xf7, 0xa6, 0x58, 0x12, 0xdb, 0xf5, 0xba, 0x8b, 0x3c, 0xef,
+	0xb1, 0xef, 0x5a, 0x76, 0xa3, 0xda, 0x35, 0xd5, 0xb7, 0xe0, 0x12, 0xe5, 0x5c, 0x18, 0x99, 0xd7,
+	0x56, 0xae, 0x54, 0xa6, 0x37, 0xa4, 0x02, 0x6e, 0xd0, 0x00, 0x3b, 0xe3, 0xdf, 0xfc, 0x67, 0xee,
+	0xc2, 0x5f, 0xcf, 0x4e, 0x57, 0xb5, 0x2a, 0xf3, 0xd8, 0x7a, 0xef, 0xc5, 0xd9, 0xe9, 0x6a, 0x17,
+	0xeb, 0x0f, 0x67, 0xa7, 0xab, 0x0b, 0x21, 0xe1, 0x13, 0x4e, 0x5d, 0x62, 0x5a, 0x9a, 0x81, 0x69,
+	0xa9, 0xab, 0x8a, 0x3c, 0x07, 0xdb, 0x1e, 0x2a, 0x7d, 0xa5, 0xc1, 0xcc, 0x9e, 0xd7, 0x60, 0x64,
+	0xb7, 0x1d, 0xc7, 0xc5, 0xc7, 0xa8, 0x8a, 0x1a, 0x96, 0xe7, 0x23, 0x57, 0x2f, 0xc0, 0x77, 0x6a,
+	0x2e, 0x32, 0x7d, 0xec, 0xd2, 0x04, 0xab, 0x61, 0x33, 0x18, 0x31, 0xa9, 0x31, 0xc9, 0xe2, 0x72,
+	0x35, 0x6c, 0x92, 0x11, 0x8a, 0x56, 0x18, 0xa5, 0x3e, 0xac, 0xa9, 0xcf, 0xc3, 0x15, 0x07, 0xb9,
+	0x2d, 0xcb, 0xf3, 0x2c, 0x6c, 0x7b, 0x85, 0xb1, 0x79, 0x6d, 0x65, 0xac, 0x1a, 0xed, 0xda, 0x9a,
+	0x08, 0xd2, 0x0b, 0x63, 0x94, 0x5c, 0xd0, 0xbb, 0xd4, 0x72, 0x70, 0x32, 0xe0, 0xb2, 0xd3, 0x34,
+	0x3b, 0xc8, 0xdd, 0xad, 0x13, 0x52, 0xe3, 0x55, 0xde, 0x4e, 0x66, 0x25, 0xc5, 0x9c, 0x05, 0x23,
+	0x1e, 0x93, 0x57, 0xeb, 0x09, 0xbc, 0x15, 0x1d, 0x3d, 0xc6, 0x9f, 0xa2, 0x8c, 0x1a, 0xb1, 0x98,
+	0x23, 0x69, 0x31, 0x0d, 0x28, 0xc8, 0xa8, 0x3c, 0xe2, 0xff, 0x34, 0xb8, 0x11, 0x0c, 0x36, 0x9b,
+	0xb8, 0x66, 0xfa, 0x16, 0xb6, 0xdf, 0x0f, 0x9c, 0xd2, 0xa2, 0x16, 0x01, 0x6a, 0xd8, 0xf6, 0x5d,
+	0xdc, 0x6c, 0x22, 0x97, 0x05, 0x8e, 0xf4, 0xe8, 0x4b, 0x30, 0xe9, 0xe1, 0xb6, 0x5b, 0x43, 0x8f,
+	0x0e, 0x3f, 0x41, 0x35, 0x7f, 0xb7, 0xce, 0x0a, 0x22, 0xf5, 0xea, 0x0f, 0x61, 0xd2, 0xe4, 0x51,
+	0x9f, 0x74, 0x1c, 0x44, 0x1e, 0xd8, 0x64, 0x65, 0x2e, 0x36, 0x5d, 0x45, 0xb3, 0xaa, 0xe4, 0xa6,
+	0x4f, 0xc1, 0x45, 0x07, 0x3f, 0x47, 0x6e, 0xe1, 0x22, 0x79, 0xe0, 0xb4, 0x21, 0x95, 0x60, 0x1b,
+	0x6e, 0x2b, 0xb2, 0x0c, 0xab, 0xa0, 0x97, 0x60, 0xa2, 0x0b, 0xba, 0x5b, 0x67, 0x29, 0x0b, 0x7d,
+	0xa5, 0x2f, 0x35, 0x32, 0xcb, 0x1f, 0xb6, 0xad, 0x66, 0x7d, 0x48, 0xf3, 0xb8, 0x11, 0x60, 0xf1,
+	0x02, 0x85, 0x4d, 0x61, 0x9e, 0x8d, 0x89, 0xf3, 0x4c, 0x4a, 0x6b, 0x01, 0xe6, 0x12, 0x28, 0xf1,
+	0x07, 0xfc, 0x42, 0x83, 0xc9, 0xd0, 0x26, 0xf3, 0xd9, 0x1a, 0x70, 0x19, 0xd9, 0x75, 0x07, 0x5b,
+	0xb6, 0x1f, 0xce, 0xf0, 0xb0, 0xad, 0xaf, 0xc3, 0x75, 0x64, 0xfb, 0x6e, 0xe7, 0x71, 0xfb, 0xd0,
+	0xf3, 0xc3, 0x42, 0x51, 0xe6, 0xf1, 0x01, 0x89, 0x67, 0x05, 0x6e, 0x89, 0x1c, 0x78, 0xe5, 0x23,
+	0x55, 0xd0, 0x84, 0x2a, 0x94, 0x30, 0xdc, 0x0c, 0x7d, 0xe8, 0xca, 0xf2, 0xe8, 0xb9, 0x1d, 0xbe,
+	0x6a, 0xc9, 0xc5, 0x0e, 0xc1, 0x46, 0xc4, 0x92, 0x4e, 0xc1, 0x45, 0x1c, 0xb8, 0x33, 0xc2, 0xb4,
+	0x21, 0x91, 0xfc, 0x52, 0xeb, 0x56, 0x93, 0x46, 0xfc, 0x40, 0x4e, 0xab, 0xaf, 0xd8, 0x83, 0x14,
+	0xee, 0xb8, 0x5b, 0xb8, 0x90, 0x12, 0x7b, 0x1c, 0xfd, 0x30, 0x89, 0x3e, 0xde, 0x51, 0xf1, 0xf1,
+	0x4a, 0x71, 0xff, 0xa4, 0xc1, 0x82, 0x18, 0xf8, 0x87, 0xd8, 0xb2, 0x77, 0xed, 0xa3, 0x76, 0xb0,
+	0x90, 0xee, 0x59, 0xb6, 0xd5, 0x6a, 0xb7, 0xfa, 0xe2, 0xb0, 0x09, 0x37, 0x3e, 0x89, 0x43, 0x11,
+	0x3a, 0x63, 0x55, 0xd5, 0x90, 0xc4, 0xec, 0x9f, 0x1a, 0x6c, 0x66, 0x32, 0xdb, 0xe9, 0x38, 0xa6,
+	0xe7, 0xed, 0x74, 0xaa, 0xe8, 0xb3, 0x36, 0xf2, 0xfa, 0x2b, 0xd6, 0xcf, 0x60, 0x8a, 0xfc, 0x19,
+	0xc0, 0x53, 0xbc, 0x1f, 0xa1, 0x63, 0xd4, 0x24, 0x4c, 0x27, 0x2b, 0x77, 0x63, 0xab, 0x94, 0xca,
+	0xb8, 0xaa, 0x84, 0x90, 0x32, 0xfa, 0x87, 0x06, 0xe5, 0xdc, 0x19, 0xed, 0xda, 0xc7, 0x96, 0x8f,
+	0xde, 0xec, 0x84, 0x0a, 0xf2, 0xa4, 0xe5, 0x8b, 0x51, 0x07, 0xae, 0x87, 0x23, 0x01, 0xc4, 0xbe,
+	0x8b, 0x4f, 0x3a, 0xfd, 0x6c, 0x70, 0xc1, 0x82, 0xed, 0xc5, 0x5f, 0x27, 0xa1, 0x4f, 0x22, 0x75,
+	0x9b, 0x9c, 0x43, 0xc4, 0xd0, 0x9c, 0xd7, 0x3e, 0x4c, 0x44, 0x07, 0xfb, 0x29, 0xaf, 0x14, 0xee,
+	0x16, 0x4c, 0x45, 0x11, 0x79, 0xa4, 0x3f, 0x6b, 0xe4, 0x00, 0xb0, 0xcf, 0x0f, 0x25, 0x0f, 0x5d,
+	0xd3, 0xf6, 0x1f, 0xd9, 0x74, 0x5b, 0x4c, 0x5f, 0x9a, 0x71, 0xb8, 0xa1, 0xb2, 0xa5, 0x39, 0x6c,
+	0x0b, 0x1b, 0xc6, 0xa8, 0x74, 0x30, 0xe9, 0xf5, 0x50, 0xf4, 0x85, 0x46, 0xb6, 0xca, 0x18, 0x41,
+	0x76, 0x7c, 0xe8, 0xeb, 0x69, 0x49, 0x1c, 0x46, 0xb3, 0x38, 0xfc, 0x45, 0xe6, 0x40, 0x0f, 0x2d,
+	0x6f, 0x50, 0x95, 0x5e, 0x68, 0x30, 0xab, 0x64, 0x78, 0x9e, 0x65, 0x9a, 0x26, 0x3b, 0x64, 0x94,
+	0x03, 0x9b, 0x64, 0x5b, 0xe4, 0x18, 0xb9, 0x4f, 0xae, 0x1f, 0x1f, 0x9c, 0x38, 0x4d, 0xec, 0xa6,
+	0xac, 0x18, 0x12, 0xe8, 0x47, 0xe4, 0xb0, 0x28, 0xf8, 0xf2, 0xcd, 0xfa, 0x7b, 0x70, 0x89, 0xde,
+	0x69, 0x08, 0x84, 0xf2, 0x66, 0x41, 0x86, 0x77, 0xc6, 0x82, 0x9b, 0x45, 0x95, 0x19, 0x97, 0x30,
+	0xdc, 0xa1, 0x90, 0x1d, 0xe4, 0xb2, 0x4b, 0x82, 0x6b, 0xb5, 0x4c, 0xb7, 0x93, 0x5d, 0xac, 0x25,
+	0x98, 0x74, 0x04, 0x5b, 0x56, 0x33, 0xa9, 0x57, 0xca, 0x61, 0x19, 0xee, 0xa6, 0x06, 0xe4, 0x85,
+	0x7a, 0x4a, 0xd6, 0xa3, 0xc7, 0x84, 0xfc, 0x76, 0xcd, 0xb7, 0x8e, 0x33, 0x8f, 0x47, 0x34, 0xd1,
+	0xee, 0xec, 0x0a, 0xdb, 0x12, 0x83, 0x2a, 0x59, 0x6d, 0x44, 0xe0, 0x68, 0x19, 0xa9, 0x5b, 0x62,
+	0x19, 0xa9, 0x63, 0x58, 0x46, 0xda, 0x5b, 0x7a, 0xa9, 0x91, 0x75, 0x95, 0x8d, 0x91, 0x55, 0xc7,
+	0xb6, 0x7c, 0x2b, 0xf3, 0xb4, 0x4e, 0xdd, 0xc9, 0x09, 0x9b, 0x9d, 0xd6, 0xbb, 0x3d, 0xec, 0xa5,
+	0xb0, 0x91, 0x2f, 0xbc, 0x14, 0xa4, 0xad, 0xeb, 0x30, 0xe6, 0x35, 0xb1, 0xcf, 0xde, 0x06, 0xf2,
+	0xb7, 0x94, 0xe6, 0x53, 0x28, 0xaa, 0x19, 0x0d, 0x9a, 0xeb, 0xef, 0x63, 0xb9, 0xbe, 0x8f, 0x5b,
+	0x4e, 0x13, 0xf5, 0xfb, 0x78, 0xc8, 0x25, 0xc1, 0xc5, 0xf8, 0x28, 0x3c, 0x00, 0x92, 0x46, 0xd0,
+	0x6b, 0x63, 0xbb, 0x86, 0xd8, 0x31, 0x9b, 0x36, 0xb2, 0x72, 0x0c, 0x99, 0x0c, 0x9a, 0x63, 0x87,
+	0x5c, 0xf9, 0xe9, 0x10, 0xd9, 0xed, 0xfb, 0xcd, 0xad, 0x04, 0x13, 0x16, 0xf1, 0xdf, 0x6e, 0xe1,
+	0x36, 0x3f, 0xda, 0x09, 0x7d, 0x52, 0x4e, 0xf4, 0xc2, 0x1e, 0x0d, 0xcd, 0x5f, 0x89, 0x9f, 0x93,
+	0x45, 0x85, 0x0e, 0xed, 0x59, 0x36, 0x1a, 0xea, 0x6b, 0xf1, 0x13, 0xb2, 0x12, 0xc4, 0xc1, 0x07,
+	0x2d, 0xe5, 0xb3, 0x48, 0x3e, 0x01, 0xee, 0x03, 0x64, 0x0e, 0x93, 0xf6, 0x4f, 0xc9, 0xc5, 0x40,
+	0x05, 0x3f, 0x28, 0xf1, 0x5f, 0xc3, 0x55, 0x01, 0xf9, 0xdc, 0x67, 0xf7, 0x87, 0xd2, 0xe3, 0x1e,
+	0xe6, 0x93, 0xa8, 0xa2, 0xa3, 0x61, 0x4f, 0xa0, 0xe8, 0x93, 0x10, 0xe1, 0x07, 0x25, 0xfe, 0x71,
+	0x64, 0xc5, 0xa6, 0xc8, 0x43, 0x9e, 0x44, 0x07, 0xe4, 0x46, 0xa5, 0x0e, 0x30, 0x28, 0xf9, 0x2f,
+	0xb4, 0xc8, 0x5a, 0x42, 0xc1, 0xcf, 0x7d, 0x26, 0xed, 0xc7, 0x9e, 0xfc, 0xa0, 0x59, 0x3d, 0x27,
+	0xd2, 0x54, 0xf7, 0x76, 0x9c, 0x29, 0x5f, 0xf0, 0x5b, 0xfe, 0x48, 0xe4, 0x96, 0x1f, 0x13, 0x77,
+	0x46, 0xe3, 0xe2, 0x8e, 0x52, 0x2d, 0x92, 0x03, 0x47, 0xd5, 0x22, 0xe1, 0xf2, 0xa1, 0xc5, 0x2f,
+	0x1f, 0xc1, 0x05, 0x5a, 0x24, 0xff, 0x00, 0x65, 0xec, 0x5e, 0x32, 0xea, 0x48, 0x1c, 0x55, 0x7f,
+	0x0f, 0x6e, 0xb6, 0xac, 0x86, 0x4b, 0x9a, 0x0a, 0x39, 0x41, 0x3d, 0x28, 0x25, 0x77, 0x47, 0x4a,
+	0x8e, 0x12, 0xe3, 0xeb, 0xff, 0x1f, 0x35, 0xba, 0xdf, 0xf1, 0xf1, 0x88, 0x68, 0x86, 0x6d, 0x3b,
+	0xfd, 0xf8, 0x2d, 0x97, 0x7a, 0x24, 0x5e, 0x6a, 0x7d, 0x11, 0xae, 0xd6, 0x91, 0xe7, 0x5b, 0xb6,
+	0xc8, 0x5d, 0xec, 0x94, 0x38, 0xaf, 0xc0, 0x52, 0x3a, 0x27, 0x4e, 0x1f, 0xd3, 0xb7, 0x4c, 0x61,
+	0xf9, 0xc0, 0xf2, 0x6a, 0xc3, 0x48, 0x40, 0xa2, 0xb6, 0x06, 0x6f, 0x67, 0x06, 0xe4, 0xec, 0x7e,
+	0x4b, 0x6f, 0x7f, 0x5d, 0x6b, 0x7a, 0x46, 0xcd, 0x55, 0xd8, 0xcc, 0xc9, 0x91, 0x72, 0xbf, 0x91,
+	0x38, 0x2f, 0x42, 0x29, 0x99, 0x05, 0x27, 0x5b, 0xa3, 0x9b, 0xb5, 0x64, 0x95, 0xab, 0x8c, 0x29,
+	0x4a, 0xb9, 0xf2, 0xa8, 0x9e, 0x1c, 0x24, 0xab, 0x74, 0x7b, 0x64, 0xc6, 0xa3, 0xa1, 0x96, 0x6e,
+	0xb4, 0xe7, 0xd2, 0x31, 0x16, 0x9c, 0xec, 0xe7, 0x70, 0x25, 0xb0, 0x32, 0x0f, 0xb1, 0x6f, 0x36,
+	0xce, 0x7f, 0x29, 0xbe, 0x49, 0xd7, 0x1e, 0x16, 0x3e, 0x64, 0x55, 0xf9, 0xba, 0x04, 0xa3, 0x7b,
+	0x5e, 0x43, 0x3f, 0x80, 0x09, 0xe1, 0x43, 0xd3, 0x7c, 0x6c, 0x39, 0x96, 0xbe, 0xe6, 0x18, 0x2b,
+	0x59, 0x16, 0x7c, 0x6d, 0xac, 0xc1, 0x35, 0xf9, 0x83, 0xca, 0x77, 0x55, 0xce, 0x92, 0x91, 0xb1,
+	0x96, 0xc3, 0x88, 0x07, 0xf9, 0x0c, 0x6e, 0x25, 0x7c, 0x50, 0x5a, 0x4d, 0x81, 0x91, 0x6c, 0x7b,
+	0x0b, 0xf9, 0x0c, 0xae, 0x8a, 0x9f, 0x65, 0x16, 0x52, 0xbd, 0x03, 0x13, 0xe3, 0xed, 0x4c, 0x13,
+	0x0e, 0x7f, 0x04, 0x6f, 0xc5, 0x3e, 0xc1, 0x2c, 0x2a, 0xdd, 0x25, 0x2b, 0x63, 0x3d, 0x8f, 0x15,
+	0x8f, 0xf3, 0x14, 0xae, 0x44, 0xbf, 0x04, 0xcc, 0xa9, 0x9c, 0x23, 0x06, 0xc6, 0x72, 0x86, 0x01,
+	0x07, 0x46, 0xa0, 0x2b, 0xa4, 0xfa, 0xa5, 0x44, 0x77, 0xc1, 0x2e, 0x25, 0x8c, 0x28, 0x20, 0xea,
+	0x1d, 0x98, 0x4d, 0xd5, 0xe7, 0x37, 0x33, 0x80, 0x62, 0x1e, 0xf9, 0x43, 0x37, 0xe0, 0x86, 0x4a,
+	0x87, 0x5f, 0xce, 0x8c, 0x48, 0x0d, 0xf3, 0x07, 0xfa, 0x1c, 0x8a, 0x19, 0xba, 0x7b, 0x25, 0x03,
+	0x4a, 0xe1, 0x93, 0x3f, 0xfc, 0x57, 0x1a, 0xac, 0xf7, 0xa4, 0x45, 0xff, 0xa0, 0x77, 0x36, 0x22,
+	0x42, 0x7e, 0x6e, 0x5f, 0x6b, 0x70, 0xaf, 0x37, 0xe5, 0x7f, 0xbb, 0x7f, 0x72, 0x0c, 0x22, 0x3f,
+	0x3b, 0x17, 0xa6, 0x94, 0x5f, 0x07, 0x57, 0x12, 0x01, 0xe4, 0x25, 0x69, 0x33, 0xaf, 0x25, 0x8f,
+	0xf9, 0x0b, 0x98, 0x94, 0xe4, 0xf4, 0x52, 0x22, 0x06, 0xb7, 0x31, 0x56, 0xb3, 0x6d, 0x78, 0x84,
+	0x8f, 0x60, 0xbc, 0x2b, 0x8c, 0xdf, 0x49, 0x75, 0x34, 0xee, 0xa6, 0x0e, 0x73, 0x48, 0x07, 0x0a,
+	0x89, 0xfa, 0xb2, 0x72, 0x3d, 0x4b, 0xb2, 0x36, 0x96, 0xd2, 0xad, 0x79, 0x44, 0x1b, 0xa6, 0x93,
+	0x24, 0xf7, 0xb5, 0x5c, 0x01, 0xa9, 0x71, 0xee, 0x78, 0x2e, 0xcc, 0x24, 0x6b, 0xc3, 0xf7, 0xb2,
+	0x40, 0x04, 0xf3, 0xdc, 0x31, 0x85, 0xaa, 0x4a, 0x8a, 0xf9, 0x7a, 0xbe, 0x90, 0x3d, 0x66, 0xf9,
+	0x0c, 0xae, 0x8a, 0x22, 0xb3, 0x72, 0x53, 0x14, 0x4c, 0xd4, 0x9b, 0xa2, 0x5a, 0x6e, 0x0e, 0x8e,
+	0x7c, 0x29, 0xaa, 0xf1, 0x46, 0x02, 0x52, 0x82, 0xbd, 0x71, 0xbf, 0x37, 0xfb, 0xe8, 0x2b, 0x26,
+	0x29, 0xc4, 0xca, 0x57, 0x4c, 0xb4, 0x51, 0xbf, 0x62, 0x09, 0x82, 0x30, 0x86, 0x1b, 0x2a, 0x55,
+	0x77, 0x39, 0x19, 0x42, 0x30, 0x34, 0xca, 0x39, 0x0d, 0x13, 0x02, 0x72, 0x69, 0x35, 0x2b, 0x60,
+	0x68, 0x98, 0x19, 0x30, 0x26, 0x91, 0x36, 0x41, 0x57, 0x48, 0x8a, 0x4b, 0xc9, 0x30, 0x51, 0x3b,
+	0x63, 0x23, 0x9f, 0x5d, 0x74, 0x21, 0x56, 0x6a, 0x81, 0x2b, 0xe9, 0x38, 0x5d, 0x4b, 0xf5, 0x42,
+	0x9c, 0x2a, 0x00, 0x3e, 0x01, 0x88, 0xc8, 0x78, 0xc5, 0x74, 0x7f, 0x23, 0x23, 0xf3, 0x78, 0x26,
+	0x92, 0x96, 0x96, 0x92, 0x89, 0x68, 0x99, 0x96, 0x49, 0x82, 0x80, 0x76, 0x02, 0xb7, 0x12, 0x64,
+	0xb0, 0xd5, 0x2c, 0xac, 0x48, 0x05, 0x2b, 0xf9, 0x6d, 0x79, 0xe4, 0x03, 0x98, 0x10, 0x24, 0xac,
+	0xf9, 0x2c, 0x0c, 0x23, 0xb3, 0x0e, 0x71, 0x6c, 0x26, 0xb5, 0xa7, 0x60, 0x53, 0x8b, 0x34, 0x6c,
+	0x51, 0x33, 0x0f, 0x4e, 0xef, 0x31, 0x95, 0x4a, 0x79, 0x7a, 0x97, 0xad, 0xd4, 0xa7, 0xf7, 0x44,
+	0xe1, 0x49, 0x88, 0xc3, 0x04, 0xa5, 0x8c, 0x38, 0xd4, 0x2a, 0x2b, 0x8e, 0xa8, 0x01, 0xe9, 0xbf,
+	0xd3, 0xe0, 0x76, 0x9a, 0x00, 0x54, 0x4e, 0x47, 0x8b, 0x39, 0x18, 0xdf, 0xef, 0xd1, 0x81, 0x33,
+	0x79, 0xa9, 0x41, 0x31, 0x43, 0xcc, 0xa9, 0xe4, 0xc5, 0xee, 0xfa, 0x18, 0x5b, 0xbd, 0xfb, 0x70,
+	0x4a, 0xbf, 0x82, 0xe9, 0x24, 0xfd, 0x66, 0x2d, 0x1d, 0x56, 0x30, 0x36, 0xde, 0xed, 0xc1, 0x58,
+	0xd8, 0x12, 0x53, 0x14, 0x99, 0x8d, 0x3c, 0x98, 0x91, 0x3a, 0xdc, 0xef, 0xcd, 0x3e, 0xad, 0x06,
+	0xa1, 0x10, 0x93, 0xab, 0x06, 0xcc, 0x38, 0x5f, 0x0d, 0x24, 0x71, 0x45, 0xff, 0x10, 0x2e, 0x73,
+	0x65, 0x65, 0x56, 0x09, 0xc0, 0x46, 0x8d, 0xc5, 0xb4, 0xd1, 0x10, 0xcf, 0xb8, 0xf8, 0x9b, 0xb3,
+	0xd3, 0x55, 0x6d, 0xe7, 0x9d, 0x6f, 0x5e, 0x15, 0xb5, 0x6f, 0x5f, 0x15, 0xb5, 0xff, 0xbe, 0x2a,
+	0x6a, 0x2f, 0x5f, 0x17, 0x2f, 0x7c, 0xfb, 0xba, 0x78, 0xe1, 0xdf, 0xaf, 0x8b, 0x17, 0x0e, 0xa6,
+	0xe3, 0xff, 0x03, 0xd6, 0xef, 0x38, 0xc8, 0x3b, 0xbc, 0x44, 0xfe, 0xf3, 0xee, 0xbb, 0xff, 0x0f,
+	0x00, 0x00, 0xff, 0xff, 0x32, 0x55, 0x43, 0x57, 0xbc, 0x2c, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -3670,14 +3781,13 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type MsgClient interface {
+	// UpdateParams defines a (governance) operation for updating the module
+	// parameters. The authority defaults to the x/gov module account.
+	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
+	AddressRegister(ctx context.Context, in *MsgAddressRegister, opts ...grpc.CallOption) (*MsgAddressRegisterResponse, error)
+	AddressApproveRegister(ctx context.Context, in *MsgAddressApproveRegister, opts ...grpc.CallOption) (*MsgAddressRegisterResponse, error)
+	AddressRevoke(ctx context.Context, in *MsgAddressRevoke, opts ...grpc.CallOption) (*MsgAddressRevokeResponse, error)
 	AllocationCreate(ctx context.Context, in *MsgAllocationCreate, opts ...grpc.CallOption) (*MsgAllocationCreateResponse, error)
-	SubstationCreate(ctx context.Context, in *MsgSubstationCreate, opts ...grpc.CallOption) (*MsgSubstationCreateResponse, error)
-	SubstationDelete(ctx context.Context, in *MsgSubstationDelete, opts ...grpc.CallOption) (*MsgSubstationDeleteResponse, error)
-	SubstationAllocationConnect(ctx context.Context, in *MsgSubstationAllocationConnect, opts ...grpc.CallOption) (*MsgSubstationAllocationConnectResponse, error)
-	SubstationAllocationDisconnect(ctx context.Context, in *MsgSubstationAllocationDisconnect, opts ...grpc.CallOption) (*MsgSubstationAllocationDisconnectResponse, error)
-	SubstationPlayerConnect(ctx context.Context, in *MsgSubstationPlayerConnect, opts ...grpc.CallOption) (*MsgSubstationPlayerConnectResponse, error)
-	SubstationPlayerDisconnect(ctx context.Context, in *MsgSubstationPlayerDisconnect, opts ...grpc.CallOption) (*MsgSubstationPlayerDisconnectResponse, error)
-	SubstationPlayerMigrate(ctx context.Context, in *MsgSubstationPlayerMigrate, opts ...grpc.CallOption) (*MsgSubstationPlayerMigrateResponse, error)
 	GuildCreate(ctx context.Context, in *MsgGuildCreate, opts ...grpc.CallOption) (*MsgGuildCreateResponse, error)
 	GuildUpdateOwnerId(ctx context.Context, in *MsgGuildUpdateOwnerId, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEntrySubstationId(ctx context.Context, in *MsgGuildUpdateEntrySubstationId, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
@@ -3688,11 +3798,12 @@ type MsgClient interface {
 	GuildApproveRegister(ctx context.Context, in *MsgGuildApproveRegister, opts ...grpc.CallOption) (*MsgGuildApproveRegisterResponse, error)
 	GuildJoinProxy(ctx context.Context, in *MsgGuildJoinProxy, opts ...grpc.CallOption) (*MsgGuildJoinProxyResponse, error)
 	GuildJoin(ctx context.Context, in *MsgGuildJoin, opts ...grpc.CallOption) (*MsgGuildJoinResponse, error)
-	PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlayerUpdatePrimaryAddress, opts ...grpc.CallOption) (*MsgPlayerUpdatePrimaryAddressResponse, error)
-	AddressRegister(ctx context.Context, in *MsgAddressRegister, opts ...grpc.CallOption) (*MsgAddressRegisterResponse, error)
-	AddressApproveRegister(ctx context.Context, in *MsgAddressApproveRegister, opts ...grpc.CallOption) (*MsgAddressRegisterResponse, error)
-	AddressRevoke(ctx context.Context, in *MsgAddressRevoke, opts ...grpc.CallOption) (*MsgAddressRevokeResponse, error)
+	PermissionGrantOnAddress(ctx context.Context, in *MsgPermissionGrantOnAddress, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
+	PermissionGrantOnObject(ctx context.Context, in *MsgPermissionGrantOnObject, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
+	PermissionRevokeOnAddress(ctx context.Context, in *MsgPermissionRevokeOnAddress, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
+	PermissionRevokeOnObject(ctx context.Context, in *MsgPermissionRevokeOnObject, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
 	PlanetExplore(ctx context.Context, in *MsgPlanetExplore, opts ...grpc.CallOption) (*MsgPlanetExploreResponse, error)
+	PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlayerUpdatePrimaryAddress, opts ...grpc.CallOption) (*MsgPlayerUpdatePrimaryAddressResponse, error)
 	StructActivate(ctx context.Context, in *MsgStructActivate, opts ...grpc.CallOption) (*MsgStructActivateResponse, error)
 	StructBuildInitiate(ctx context.Context, in *MsgStructBuildInitiate, opts ...grpc.CallOption) (*MsgStructBuildInitiateResponse, error)
 	StructBuildComplete(ctx context.Context, in *MsgStructBuildComplete, opts ...grpc.CallOption) (*MsgStructBuildCompleteResponse, error)
@@ -3703,10 +3814,13 @@ type MsgClient interface {
 	StructRefineDeactivate(ctx context.Context, in *MsgStructRefineDeactivate, opts ...grpc.CallOption) (*MsgStructRefineDeactivateResponse, error)
 	StructRefine(ctx context.Context, in *MsgStructRefine, opts ...grpc.CallOption) (*MsgStructRefineResponse, error)
 	StructInfuse(ctx context.Context, in *MsgStructInfuse, opts ...grpc.CallOption) (*MsgStructInfuseResponse, error)
-	PermissionGrantOnAddress(ctx context.Context, in *MsgPermissionGrantOnAddress, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
-	PermissionGrantOnObject(ctx context.Context, in *MsgPermissionGrantOnObject, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
-	PermissionRevokeOnAddress(ctx context.Context, in *MsgPermissionRevokeOnAddress, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
-	PermissionRevokeOnObject(ctx context.Context, in *MsgPermissionRevokeOnObject, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
+	SubstationCreate(ctx context.Context, in *MsgSubstationCreate, opts ...grpc.CallOption) (*MsgSubstationCreateResponse, error)
+	SubstationDelete(ctx context.Context, in *MsgSubstationDelete, opts ...grpc.CallOption) (*MsgSubstationDeleteResponse, error)
+	SubstationAllocationConnect(ctx context.Context, in *MsgSubstationAllocationConnect, opts ...grpc.CallOption) (*MsgSubstationAllocationConnectResponse, error)
+	SubstationAllocationDisconnect(ctx context.Context, in *MsgSubstationAllocationDisconnect, opts ...grpc.CallOption) (*MsgSubstationAllocationDisconnectResponse, error)
+	SubstationPlayerConnect(ctx context.Context, in *MsgSubstationPlayerConnect, opts ...grpc.CallOption) (*MsgSubstationPlayerConnectResponse, error)
+	SubstationPlayerDisconnect(ctx context.Context, in *MsgSubstationPlayerDisconnect, opts ...grpc.CallOption) (*MsgSubstationPlayerDisconnectResponse, error)
+	SubstationPlayerMigrate(ctx context.Context, in *MsgSubstationPlayerMigrate, opts ...grpc.CallOption) (*MsgSubstationPlayerMigrateResponse, error)
 	// To Remove after battle mechanics added
 	Sabotage(ctx context.Context, in *MsgSabotage, opts ...grpc.CallOption) (*MsgSabotageResponse, error)
 }
@@ -3719,171 +3833,9 @@ func NewMsgClient(cc grpc1.ClientConn) MsgClient {
 	return &msgClient{cc}
 }
 
-func (c *msgClient) AllocationCreate(ctx context.Context, in *MsgAllocationCreate, opts ...grpc.CallOption) (*MsgAllocationCreateResponse, error) {
-	out := new(MsgAllocationCreateResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/AllocationCreate", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) SubstationCreate(ctx context.Context, in *MsgSubstationCreate, opts ...grpc.CallOption) (*MsgSubstationCreateResponse, error) {
-	out := new(MsgSubstationCreateResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/SubstationCreate", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) SubstationDelete(ctx context.Context, in *MsgSubstationDelete, opts ...grpc.CallOption) (*MsgSubstationDeleteResponse, error) {
-	out := new(MsgSubstationDeleteResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/SubstationDelete", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) SubstationAllocationConnect(ctx context.Context, in *MsgSubstationAllocationConnect, opts ...grpc.CallOption) (*MsgSubstationAllocationConnectResponse, error) {
-	out := new(MsgSubstationAllocationConnectResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/SubstationAllocationConnect", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) SubstationAllocationDisconnect(ctx context.Context, in *MsgSubstationAllocationDisconnect, opts ...grpc.CallOption) (*MsgSubstationAllocationDisconnectResponse, error) {
-	out := new(MsgSubstationAllocationDisconnectResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/SubstationAllocationDisconnect", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) SubstationPlayerConnect(ctx context.Context, in *MsgSubstationPlayerConnect, opts ...grpc.CallOption) (*MsgSubstationPlayerConnectResponse, error) {
-	out := new(MsgSubstationPlayerConnectResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/SubstationPlayerConnect", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) SubstationPlayerDisconnect(ctx context.Context, in *MsgSubstationPlayerDisconnect, opts ...grpc.CallOption) (*MsgSubstationPlayerDisconnectResponse, error) {
-	out := new(MsgSubstationPlayerDisconnectResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/SubstationPlayerDisconnect", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) SubstationPlayerMigrate(ctx context.Context, in *MsgSubstationPlayerMigrate, opts ...grpc.CallOption) (*MsgSubstationPlayerMigrateResponse, error) {
-	out := new(MsgSubstationPlayerMigrateResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/SubstationPlayerMigrate", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) GuildCreate(ctx context.Context, in *MsgGuildCreate, opts ...grpc.CallOption) (*MsgGuildCreateResponse, error) {
-	out := new(MsgGuildCreateResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/GuildCreate", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) GuildUpdateOwnerId(ctx context.Context, in *MsgGuildUpdateOwnerId, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error) {
-	out := new(MsgGuildUpdateResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/GuildUpdateOwnerId", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) GuildUpdateEntrySubstationId(ctx context.Context, in *MsgGuildUpdateEntrySubstationId, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error) {
-	out := new(MsgGuildUpdateResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/GuildUpdateEntrySubstationId", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) GuildUpdateEndpoint(ctx context.Context, in *MsgGuildUpdateEndpoint, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error) {
-	out := new(MsgGuildUpdateResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/GuildUpdateEndpoint", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) GuildUpdateJoinInfusionMinimum(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimum, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error) {
-	out := new(MsgGuildUpdateResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/GuildUpdateJoinInfusionMinimum", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) GuildUpdateJoinInfusionMinimumBypassByInvite(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimumBypassByInvite, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error) {
-	out := new(MsgGuildUpdateResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/GuildUpdateJoinInfusionMinimumBypassByInvite", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) GuildUpdateJoinInfusionMinimumBypassByRequest(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimumBypassByRequest, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error) {
-	out := new(MsgGuildUpdateResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/GuildUpdateJoinInfusionMinimumBypassByRequest", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) GuildApproveRegister(ctx context.Context, in *MsgGuildApproveRegister, opts ...grpc.CallOption) (*MsgGuildApproveRegisterResponse, error) {
-	out := new(MsgGuildApproveRegisterResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/GuildApproveRegister", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) GuildJoinProxy(ctx context.Context, in *MsgGuildJoinProxy, opts ...grpc.CallOption) (*MsgGuildJoinProxyResponse, error) {
-	out := new(MsgGuildJoinProxyResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/GuildJoinProxy", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) GuildJoin(ctx context.Context, in *MsgGuildJoin, opts ...grpc.CallOption) (*MsgGuildJoinResponse, error) {
-	out := new(MsgGuildJoinResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/GuildJoin", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlayerUpdatePrimaryAddress, opts ...grpc.CallOption) (*MsgPlayerUpdatePrimaryAddressResponse, error) {
-	out := new(MsgPlayerUpdatePrimaryAddressResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/PlayerUpdatePrimaryAddress", in, out, opts...)
+func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error) {
+	out := new(MsgUpdateParamsResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/UpdateParams", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -3892,7 +3844,7 @@ func (c *msgClient) PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlaye
 
 func (c *msgClient) AddressRegister(ctx context.Context, in *MsgAddressRegister, opts ...grpc.CallOption) (*MsgAddressRegisterResponse, error) {
 	out := new(MsgAddressRegisterResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/AddressRegister", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/AddressRegister", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -3901,7 +3853,7 @@ func (c *msgClient) AddressRegister(ctx context.Context, in *MsgAddressRegister,
 
 func (c *msgClient) AddressApproveRegister(ctx context.Context, in *MsgAddressApproveRegister, opts ...grpc.CallOption) (*MsgAddressRegisterResponse, error) {
 	out := new(MsgAddressRegisterResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/AddressApproveRegister", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/AddressApproveRegister", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -3910,106 +3862,106 @@ func (c *msgClient) AddressApproveRegister(ctx context.Context, in *MsgAddressAp
 
 func (c *msgClient) AddressRevoke(ctx context.Context, in *MsgAddressRevoke, opts ...grpc.CallOption) (*MsgAddressRevokeResponse, error) {
 	out := new(MsgAddressRevokeResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/AddressRevoke", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/AddressRevoke", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) PlanetExplore(ctx context.Context, in *MsgPlanetExplore, opts ...grpc.CallOption) (*MsgPlanetExploreResponse, error) {
-	out := new(MsgPlanetExploreResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/PlanetExplore", in, out, opts...)
+func (c *msgClient) AllocationCreate(ctx context.Context, in *MsgAllocationCreate, opts ...grpc.CallOption) (*MsgAllocationCreateResponse, error) {
+	out := new(MsgAllocationCreateResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/AllocationCreate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) StructActivate(ctx context.Context, in *MsgStructActivate, opts ...grpc.CallOption) (*MsgStructActivateResponse, error) {
-	out := new(MsgStructActivateResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/StructActivate", in, out, opts...)
+func (c *msgClient) GuildCreate(ctx context.Context, in *MsgGuildCreate, opts ...grpc.CallOption) (*MsgGuildCreateResponse, error) {
+	out := new(MsgGuildCreateResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/GuildCreate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) StructBuildInitiate(ctx context.Context, in *MsgStructBuildInitiate, opts ...grpc.CallOption) (*MsgStructBuildInitiateResponse, error) {
-	out := new(MsgStructBuildInitiateResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/StructBuildInitiate", in, out, opts...)
+func (c *msgClient) GuildUpdateOwnerId(ctx context.Context, in *MsgGuildUpdateOwnerId, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error) {
+	out := new(MsgGuildUpdateResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/GuildUpdateOwnerId", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) StructBuildComplete(ctx context.Context, in *MsgStructBuildComplete, opts ...grpc.CallOption) (*MsgStructBuildCompleteResponse, error) {
-	out := new(MsgStructBuildCompleteResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/StructBuildComplete", in, out, opts...)
+func (c *msgClient) GuildUpdateEntrySubstationId(ctx context.Context, in *MsgGuildUpdateEntrySubstationId, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error) {
+	out := new(MsgGuildUpdateResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/GuildUpdateEntrySubstationId", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) StructMineActivate(ctx context.Context, in *MsgStructMineActivate, opts ...grpc.CallOption) (*MsgStructMineActivateResponse, error) {
-	out := new(MsgStructMineActivateResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/StructMineActivate", in, out, opts...)
+func (c *msgClient) GuildUpdateEndpoint(ctx context.Context, in *MsgGuildUpdateEndpoint, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error) {
+	out := new(MsgGuildUpdateResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/GuildUpdateEndpoint", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) StructMineDeactivate(ctx context.Context, in *MsgStructMineDeactivate, opts ...grpc.CallOption) (*MsgStructMineDeactivateResponse, error) {
-	out := new(MsgStructMineDeactivateResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/StructMineDeactivate", in, out, opts...)
+func (c *msgClient) GuildUpdateJoinInfusionMinimum(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimum, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error) {
+	out := new(MsgGuildUpdateResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/GuildUpdateJoinInfusionMinimum", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) StructMine(ctx context.Context, in *MsgStructMine, opts ...grpc.CallOption) (*MsgStructMineResponse, error) {
-	out := new(MsgStructMineResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/StructMine", in, out, opts...)
+func (c *msgClient) GuildUpdateJoinInfusionMinimumBypassByInvite(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimumBypassByInvite, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error) {
+	out := new(MsgGuildUpdateResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/GuildUpdateJoinInfusionMinimumBypassByInvite", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) StructRefineActivate(ctx context.Context, in *MsgStructRefineActivate, opts ...grpc.CallOption) (*MsgStructRefineActivateResponse, error) {
-	out := new(MsgStructRefineActivateResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/StructRefineActivate", in, out, opts...)
+func (c *msgClient) GuildUpdateJoinInfusionMinimumBypassByRequest(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimumBypassByRequest, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error) {
+	out := new(MsgGuildUpdateResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/GuildUpdateJoinInfusionMinimumBypassByRequest", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) StructRefineDeactivate(ctx context.Context, in *MsgStructRefineDeactivate, opts ...grpc.CallOption) (*MsgStructRefineDeactivateResponse, error) {
-	out := new(MsgStructRefineDeactivateResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/StructRefineDeactivate", in, out, opts...)
+func (c *msgClient) GuildApproveRegister(ctx context.Context, in *MsgGuildApproveRegister, opts ...grpc.CallOption) (*MsgGuildApproveRegisterResponse, error) {
+	out := new(MsgGuildApproveRegisterResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/GuildApproveRegister", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) StructRefine(ctx context.Context, in *MsgStructRefine, opts ...grpc.CallOption) (*MsgStructRefineResponse, error) {
-	out := new(MsgStructRefineResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/StructRefine", in, out, opts...)
+func (c *msgClient) GuildJoinProxy(ctx context.Context, in *MsgGuildJoinProxy, opts ...grpc.CallOption) (*MsgGuildJoinProxyResponse, error) {
+	out := new(MsgGuildJoinProxyResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/GuildJoinProxy", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) StructInfuse(ctx context.Context, in *MsgStructInfuse, opts ...grpc.CallOption) (*MsgStructInfuseResponse, error) {
-	out := new(MsgStructInfuseResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/StructInfuse", in, out, opts...)
+func (c *msgClient) GuildJoin(ctx context.Context, in *MsgGuildJoin, opts ...grpc.CallOption) (*MsgGuildJoinResponse, error) {
+	out := new(MsgGuildJoinResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/GuildJoin", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -4018,7 +3970,7 @@ func (c *msgClient) StructInfuse(ctx context.Context, in *MsgStructInfuse, opts 
 
 func (c *msgClient) PermissionGrantOnAddress(ctx context.Context, in *MsgPermissionGrantOnAddress, opts ...grpc.CallOption) (*MsgPermissionResponse, error) {
 	out := new(MsgPermissionResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/PermissionGrantOnAddress", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/PermissionGrantOnAddress", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -4027,7 +3979,7 @@ func (c *msgClient) PermissionGrantOnAddress(ctx context.Context, in *MsgPermiss
 
 func (c *msgClient) PermissionGrantOnObject(ctx context.Context, in *MsgPermissionGrantOnObject, opts ...grpc.CallOption) (*MsgPermissionResponse, error) {
 	out := new(MsgPermissionResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/PermissionGrantOnObject", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/PermissionGrantOnObject", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -4036,7 +3988,7 @@ func (c *msgClient) PermissionGrantOnObject(ctx context.Context, in *MsgPermissi
 
 func (c *msgClient) PermissionRevokeOnAddress(ctx context.Context, in *MsgPermissionRevokeOnAddress, opts ...grpc.CallOption) (*MsgPermissionResponse, error) {
 	out := new(MsgPermissionResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/PermissionRevokeOnAddress", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/PermissionRevokeOnAddress", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -4045,7 +3997,178 @@ func (c *msgClient) PermissionRevokeOnAddress(ctx context.Context, in *MsgPermis
 
 func (c *msgClient) PermissionRevokeOnObject(ctx context.Context, in *MsgPermissionRevokeOnObject, opts ...grpc.CallOption) (*MsgPermissionResponse, error) {
 	out := new(MsgPermissionResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/PermissionRevokeOnObject", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/PermissionRevokeOnObject", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) PlanetExplore(ctx context.Context, in *MsgPlanetExplore, opts ...grpc.CallOption) (*MsgPlanetExploreResponse, error) {
+	out := new(MsgPlanetExploreResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/PlanetExplore", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlayerUpdatePrimaryAddress, opts ...grpc.CallOption) (*MsgPlayerUpdatePrimaryAddressResponse, error) {
+	out := new(MsgPlayerUpdatePrimaryAddressResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/PlayerUpdatePrimaryAddress", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) StructActivate(ctx context.Context, in *MsgStructActivate, opts ...grpc.CallOption) (*MsgStructActivateResponse, error) {
+	out := new(MsgStructActivateResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/StructActivate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) StructBuildInitiate(ctx context.Context, in *MsgStructBuildInitiate, opts ...grpc.CallOption) (*MsgStructBuildInitiateResponse, error) {
+	out := new(MsgStructBuildInitiateResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/StructBuildInitiate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) StructBuildComplete(ctx context.Context, in *MsgStructBuildComplete, opts ...grpc.CallOption) (*MsgStructBuildCompleteResponse, error) {
+	out := new(MsgStructBuildCompleteResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/StructBuildComplete", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) StructMineActivate(ctx context.Context, in *MsgStructMineActivate, opts ...grpc.CallOption) (*MsgStructMineActivateResponse, error) {
+	out := new(MsgStructMineActivateResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/StructMineActivate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) StructMineDeactivate(ctx context.Context, in *MsgStructMineDeactivate, opts ...grpc.CallOption) (*MsgStructMineDeactivateResponse, error) {
+	out := new(MsgStructMineDeactivateResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/StructMineDeactivate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) StructMine(ctx context.Context, in *MsgStructMine, opts ...grpc.CallOption) (*MsgStructMineResponse, error) {
+	out := new(MsgStructMineResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/StructMine", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) StructRefineActivate(ctx context.Context, in *MsgStructRefineActivate, opts ...grpc.CallOption) (*MsgStructRefineActivateResponse, error) {
+	out := new(MsgStructRefineActivateResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/StructRefineActivate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) StructRefineDeactivate(ctx context.Context, in *MsgStructRefineDeactivate, opts ...grpc.CallOption) (*MsgStructRefineDeactivateResponse, error) {
+	out := new(MsgStructRefineDeactivateResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/StructRefineDeactivate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) StructRefine(ctx context.Context, in *MsgStructRefine, opts ...grpc.CallOption) (*MsgStructRefineResponse, error) {
+	out := new(MsgStructRefineResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/StructRefine", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) StructInfuse(ctx context.Context, in *MsgStructInfuse, opts ...grpc.CallOption) (*MsgStructInfuseResponse, error) {
+	out := new(MsgStructInfuseResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/StructInfuse", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) SubstationCreate(ctx context.Context, in *MsgSubstationCreate, opts ...grpc.CallOption) (*MsgSubstationCreateResponse, error) {
+	out := new(MsgSubstationCreateResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/SubstationCreate", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) SubstationDelete(ctx context.Context, in *MsgSubstationDelete, opts ...grpc.CallOption) (*MsgSubstationDeleteResponse, error) {
+	out := new(MsgSubstationDeleteResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/SubstationDelete", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) SubstationAllocationConnect(ctx context.Context, in *MsgSubstationAllocationConnect, opts ...grpc.CallOption) (*MsgSubstationAllocationConnectResponse, error) {
+	out := new(MsgSubstationAllocationConnectResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/SubstationAllocationConnect", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) SubstationAllocationDisconnect(ctx context.Context, in *MsgSubstationAllocationDisconnect, opts ...grpc.CallOption) (*MsgSubstationAllocationDisconnectResponse, error) {
+	out := new(MsgSubstationAllocationDisconnectResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/SubstationAllocationDisconnect", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) SubstationPlayerConnect(ctx context.Context, in *MsgSubstationPlayerConnect, opts ...grpc.CallOption) (*MsgSubstationPlayerConnectResponse, error) {
+	out := new(MsgSubstationPlayerConnectResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/SubstationPlayerConnect", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) SubstationPlayerDisconnect(ctx context.Context, in *MsgSubstationPlayerDisconnect, opts ...grpc.CallOption) (*MsgSubstationPlayerDisconnectResponse, error) {
+	out := new(MsgSubstationPlayerDisconnectResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/SubstationPlayerDisconnect", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) SubstationPlayerMigrate(ctx context.Context, in *MsgSubstationPlayerMigrate, opts ...grpc.CallOption) (*MsgSubstationPlayerMigrateResponse, error) {
+	out := new(MsgSubstationPlayerMigrateResponse)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/SubstationPlayerMigrate", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -4054,7 +4177,7 @@ func (c *msgClient) PermissionRevokeOnObject(ctx context.Context, in *MsgPermiss
 
 func (c *msgClient) Sabotage(ctx context.Context, in *MsgSabotage, opts ...grpc.CallOption) (*MsgSabotageResponse, error) {
 	out := new(MsgSabotageResponse)
-	err := c.cc.Invoke(ctx, "/structs.Msg/Sabotage", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/structs.structs.Msg/Sabotage", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -4063,14 +4186,13 @@ func (c *msgClient) Sabotage(ctx context.Context, in *MsgSabotage, opts ...grpc.
 
 // MsgServer is the server API for Msg service.
 type MsgServer interface {
+	// UpdateParams defines a (governance) operation for updating the module
+	// parameters. The authority defaults to the x/gov module account.
+	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
+	AddressRegister(context.Context, *MsgAddressRegister) (*MsgAddressRegisterResponse, error)
+	AddressApproveRegister(context.Context, *MsgAddressApproveRegister) (*MsgAddressRegisterResponse, error)
+	AddressRevoke(context.Context, *MsgAddressRevoke) (*MsgAddressRevokeResponse, error)
 	AllocationCreate(context.Context, *MsgAllocationCreate) (*MsgAllocationCreateResponse, error)
-	SubstationCreate(context.Context, *MsgSubstationCreate) (*MsgSubstationCreateResponse, error)
-	SubstationDelete(context.Context, *MsgSubstationDelete) (*MsgSubstationDeleteResponse, error)
-	SubstationAllocationConnect(context.Context, *MsgSubstationAllocationConnect) (*MsgSubstationAllocationConnectResponse, error)
-	SubstationAllocationDisconnect(context.Context, *MsgSubstationAllocationDisconnect) (*MsgSubstationAllocationDisconnectResponse, error)
-	SubstationPlayerConnect(context.Context, *MsgSubstationPlayerConnect) (*MsgSubstationPlayerConnectResponse, error)
-	SubstationPlayerDisconnect(context.Context, *MsgSubstationPlayerDisconnect) (*MsgSubstationPlayerDisconnectResponse, error)
-	SubstationPlayerMigrate(context.Context, *MsgSubstationPlayerMigrate) (*MsgSubstationPlayerMigrateResponse, error)
 	GuildCreate(context.Context, *MsgGuildCreate) (*MsgGuildCreateResponse, error)
 	GuildUpdateOwnerId(context.Context, *MsgGuildUpdateOwnerId) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEntrySubstationId(context.Context, *MsgGuildUpdateEntrySubstationId) (*MsgGuildUpdateResponse, error)
@@ -4081,11 +4203,12 @@ type MsgServer interface {
 	GuildApproveRegister(context.Context, *MsgGuildApproveRegister) (*MsgGuildApproveRegisterResponse, error)
 	GuildJoinProxy(context.Context, *MsgGuildJoinProxy) (*MsgGuildJoinProxyResponse, error)
 	GuildJoin(context.Context, *MsgGuildJoin) (*MsgGuildJoinResponse, error)
-	PlayerUpdatePrimaryAddress(context.Context, *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error)
-	AddressRegister(context.Context, *MsgAddressRegister) (*MsgAddressRegisterResponse, error)
-	AddressApproveRegister(context.Context, *MsgAddressApproveRegister) (*MsgAddressRegisterResponse, error)
-	AddressRevoke(context.Context, *MsgAddressRevoke) (*MsgAddressRevokeResponse, error)
+	PermissionGrantOnAddress(context.Context, *MsgPermissionGrantOnAddress) (*MsgPermissionResponse, error)
+	PermissionGrantOnObject(context.Context, *MsgPermissionGrantOnObject) (*MsgPermissionResponse, error)
+	PermissionRevokeOnAddress(context.Context, *MsgPermissionRevokeOnAddress) (*MsgPermissionResponse, error)
+	PermissionRevokeOnObject(context.Context, *MsgPermissionRevokeOnObject) (*MsgPermissionResponse, error)
 	PlanetExplore(context.Context, *MsgPlanetExplore) (*MsgPlanetExploreResponse, error)
+	PlayerUpdatePrimaryAddress(context.Context, *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error)
 	StructActivate(context.Context, *MsgStructActivate) (*MsgStructActivateResponse, error)
 	StructBuildInitiate(context.Context, *MsgStructBuildInitiate) (*MsgStructBuildInitiateResponse, error)
 	StructBuildComplete(context.Context, *MsgStructBuildComplete) (*MsgStructBuildCompleteResponse, error)
@@ -4096,10 +4219,13 @@ type MsgServer interface {
 	StructRefineDeactivate(context.Context, *MsgStructRefineDeactivate) (*MsgStructRefineDeactivateResponse, error)
 	StructRefine(context.Context, *MsgStructRefine) (*MsgStructRefineResponse, error)
 	StructInfuse(context.Context, *MsgStructInfuse) (*MsgStructInfuseResponse, error)
-	PermissionGrantOnAddress(context.Context, *MsgPermissionGrantOnAddress) (*MsgPermissionResponse, error)
-	PermissionGrantOnObject(context.Context, *MsgPermissionGrantOnObject) (*MsgPermissionResponse, error)
-	PermissionRevokeOnAddress(context.Context, *MsgPermissionRevokeOnAddress) (*MsgPermissionResponse, error)
-	PermissionRevokeOnObject(context.Context, *MsgPermissionRevokeOnObject) (*MsgPermissionResponse, error)
+	SubstationCreate(context.Context, *MsgSubstationCreate) (*MsgSubstationCreateResponse, error)
+	SubstationDelete(context.Context, *MsgSubstationDelete) (*MsgSubstationDeleteResponse, error)
+	SubstationAllocationConnect(context.Context, *MsgSubstationAllocationConnect) (*MsgSubstationAllocationConnectResponse, error)
+	SubstationAllocationDisconnect(context.Context, *MsgSubstationAllocationDisconnect) (*MsgSubstationAllocationDisconnectResponse, error)
+	SubstationPlayerConnect(context.Context, *MsgSubstationPlayerConnect) (*MsgSubstationPlayerConnectResponse, error)
+	SubstationPlayerDisconnect(context.Context, *MsgSubstationPlayerDisconnect) (*MsgSubstationPlayerDisconnectResponse, error)
+	SubstationPlayerMigrate(context.Context, *MsgSubstationPlayerMigrate) (*MsgSubstationPlayerMigrateResponse, error)
 	// To Remove after battle mechanics added
 	Sabotage(context.Context, *MsgSabotage) (*MsgSabotageResponse, error)
 }
@@ -4108,29 +4234,20 @@ type MsgServer interface {
 type UnimplementedMsgServer struct {
 }
 
+func (*UnimplementedMsgServer) UpdateParams(ctx context.Context, req *MsgUpdateParams) (*MsgUpdateParamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateParams not implemented")
+}
+func (*UnimplementedMsgServer) AddressRegister(ctx context.Context, req *MsgAddressRegister) (*MsgAddressRegisterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddressRegister not implemented")
+}
+func (*UnimplementedMsgServer) AddressApproveRegister(ctx context.Context, req *MsgAddressApproveRegister) (*MsgAddressRegisterResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddressApproveRegister not implemented")
+}
+func (*UnimplementedMsgServer) AddressRevoke(ctx context.Context, req *MsgAddressRevoke) (*MsgAddressRevokeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddressRevoke not implemented")
+}
 func (*UnimplementedMsgServer) AllocationCreate(ctx context.Context, req *MsgAllocationCreate) (*MsgAllocationCreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllocationCreate not implemented")
-}
-func (*UnimplementedMsgServer) SubstationCreate(ctx context.Context, req *MsgSubstationCreate) (*MsgSubstationCreateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubstationCreate not implemented")
-}
-func (*UnimplementedMsgServer) SubstationDelete(ctx context.Context, req *MsgSubstationDelete) (*MsgSubstationDeleteResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubstationDelete not implemented")
-}
-func (*UnimplementedMsgServer) SubstationAllocationConnect(ctx context.Context, req *MsgSubstationAllocationConnect) (*MsgSubstationAllocationConnectResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubstationAllocationConnect not implemented")
-}
-func (*UnimplementedMsgServer) SubstationAllocationDisconnect(ctx context.Context, req *MsgSubstationAllocationDisconnect) (*MsgSubstationAllocationDisconnectResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubstationAllocationDisconnect not implemented")
-}
-func (*UnimplementedMsgServer) SubstationPlayerConnect(ctx context.Context, req *MsgSubstationPlayerConnect) (*MsgSubstationPlayerConnectResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubstationPlayerConnect not implemented")
-}
-func (*UnimplementedMsgServer) SubstationPlayerDisconnect(ctx context.Context, req *MsgSubstationPlayerDisconnect) (*MsgSubstationPlayerDisconnectResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubstationPlayerDisconnect not implemented")
-}
-func (*UnimplementedMsgServer) SubstationPlayerMigrate(ctx context.Context, req *MsgSubstationPlayerMigrate) (*MsgSubstationPlayerMigrateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SubstationPlayerMigrate not implemented")
 }
 func (*UnimplementedMsgServer) GuildCreate(ctx context.Context, req *MsgGuildCreate) (*MsgGuildCreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildCreate not implemented")
@@ -4162,20 +4279,23 @@ func (*UnimplementedMsgServer) GuildJoinProxy(ctx context.Context, req *MsgGuild
 func (*UnimplementedMsgServer) GuildJoin(ctx context.Context, req *MsgGuildJoin) (*MsgGuildJoinResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildJoin not implemented")
 }
-func (*UnimplementedMsgServer) PlayerUpdatePrimaryAddress(ctx context.Context, req *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PlayerUpdatePrimaryAddress not implemented")
+func (*UnimplementedMsgServer) PermissionGrantOnAddress(ctx context.Context, req *MsgPermissionGrantOnAddress) (*MsgPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PermissionGrantOnAddress not implemented")
 }
-func (*UnimplementedMsgServer) AddressRegister(ctx context.Context, req *MsgAddressRegister) (*MsgAddressRegisterResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddressRegister not implemented")
+func (*UnimplementedMsgServer) PermissionGrantOnObject(ctx context.Context, req *MsgPermissionGrantOnObject) (*MsgPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PermissionGrantOnObject not implemented")
 }
-func (*UnimplementedMsgServer) AddressApproveRegister(ctx context.Context, req *MsgAddressApproveRegister) (*MsgAddressRegisterResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddressApproveRegister not implemented")
+func (*UnimplementedMsgServer) PermissionRevokeOnAddress(ctx context.Context, req *MsgPermissionRevokeOnAddress) (*MsgPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PermissionRevokeOnAddress not implemented")
 }
-func (*UnimplementedMsgServer) AddressRevoke(ctx context.Context, req *MsgAddressRevoke) (*MsgAddressRevokeResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddressRevoke not implemented")
+func (*UnimplementedMsgServer) PermissionRevokeOnObject(ctx context.Context, req *MsgPermissionRevokeOnObject) (*MsgPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PermissionRevokeOnObject not implemented")
 }
 func (*UnimplementedMsgServer) PlanetExplore(ctx context.Context, req *MsgPlanetExplore) (*MsgPlanetExploreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlanetExplore not implemented")
+}
+func (*UnimplementedMsgServer) PlayerUpdatePrimaryAddress(ctx context.Context, req *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlayerUpdatePrimaryAddress not implemented")
 }
 func (*UnimplementedMsgServer) StructActivate(ctx context.Context, req *MsgStructActivate) (*MsgStructActivateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructActivate not implemented")
@@ -4207,17 +4327,26 @@ func (*UnimplementedMsgServer) StructRefine(ctx context.Context, req *MsgStructR
 func (*UnimplementedMsgServer) StructInfuse(ctx context.Context, req *MsgStructInfuse) (*MsgStructInfuseResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructInfuse not implemented")
 }
-func (*UnimplementedMsgServer) PermissionGrantOnAddress(ctx context.Context, req *MsgPermissionGrantOnAddress) (*MsgPermissionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PermissionGrantOnAddress not implemented")
+func (*UnimplementedMsgServer) SubstationCreate(ctx context.Context, req *MsgSubstationCreate) (*MsgSubstationCreateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubstationCreate not implemented")
 }
-func (*UnimplementedMsgServer) PermissionGrantOnObject(ctx context.Context, req *MsgPermissionGrantOnObject) (*MsgPermissionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PermissionGrantOnObject not implemented")
+func (*UnimplementedMsgServer) SubstationDelete(ctx context.Context, req *MsgSubstationDelete) (*MsgSubstationDeleteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubstationDelete not implemented")
 }
-func (*UnimplementedMsgServer) PermissionRevokeOnAddress(ctx context.Context, req *MsgPermissionRevokeOnAddress) (*MsgPermissionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PermissionRevokeOnAddress not implemented")
+func (*UnimplementedMsgServer) SubstationAllocationConnect(ctx context.Context, req *MsgSubstationAllocationConnect) (*MsgSubstationAllocationConnectResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubstationAllocationConnect not implemented")
 }
-func (*UnimplementedMsgServer) PermissionRevokeOnObject(ctx context.Context, req *MsgPermissionRevokeOnObject) (*MsgPermissionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PermissionRevokeOnObject not implemented")
+func (*UnimplementedMsgServer) SubstationAllocationDisconnect(ctx context.Context, req *MsgSubstationAllocationDisconnect) (*MsgSubstationAllocationDisconnectResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubstationAllocationDisconnect not implemented")
+}
+func (*UnimplementedMsgServer) SubstationPlayerConnect(ctx context.Context, req *MsgSubstationPlayerConnect) (*MsgSubstationPlayerConnectResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubstationPlayerConnect not implemented")
+}
+func (*UnimplementedMsgServer) SubstationPlayerDisconnect(ctx context.Context, req *MsgSubstationPlayerDisconnect) (*MsgSubstationPlayerDisconnectResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubstationPlayerDisconnect not implemented")
+}
+func (*UnimplementedMsgServer) SubstationPlayerMigrate(ctx context.Context, req *MsgSubstationPlayerMigrate) (*MsgSubstationPlayerMigrateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SubstationPlayerMigrate not implemented")
 }
 func (*UnimplementedMsgServer) Sabotage(ctx context.Context, req *MsgSabotage) (*MsgSabotageResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Sabotage not implemented")
@@ -4227,344 +4356,20 @@ func RegisterMsgServer(s grpc1.Server, srv MsgServer) {
 	s.RegisterService(&_Msg_serviceDesc, srv)
 }
 
-func _Msg_AllocationCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgAllocationCreate)
+func _Msg_UpdateParams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgUpdateParams)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).AllocationCreate(ctx, in)
+		return srv.(MsgServer).UpdateParams(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/AllocationCreate",
+		FullMethod: "/structs.structs.Msg/UpdateParams",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).AllocationCreate(ctx, req.(*MsgAllocationCreate))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_SubstationCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSubstationCreate)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).SubstationCreate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.Msg/SubstationCreate",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SubstationCreate(ctx, req.(*MsgSubstationCreate))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_SubstationDelete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSubstationDelete)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).SubstationDelete(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.Msg/SubstationDelete",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SubstationDelete(ctx, req.(*MsgSubstationDelete))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_SubstationAllocationConnect_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSubstationAllocationConnect)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).SubstationAllocationConnect(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.Msg/SubstationAllocationConnect",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SubstationAllocationConnect(ctx, req.(*MsgSubstationAllocationConnect))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_SubstationAllocationDisconnect_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSubstationAllocationDisconnect)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).SubstationAllocationDisconnect(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.Msg/SubstationAllocationDisconnect",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SubstationAllocationDisconnect(ctx, req.(*MsgSubstationAllocationDisconnect))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_SubstationPlayerConnect_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSubstationPlayerConnect)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).SubstationPlayerConnect(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.Msg/SubstationPlayerConnect",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SubstationPlayerConnect(ctx, req.(*MsgSubstationPlayerConnect))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_SubstationPlayerDisconnect_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSubstationPlayerDisconnect)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).SubstationPlayerDisconnect(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.Msg/SubstationPlayerDisconnect",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SubstationPlayerDisconnect(ctx, req.(*MsgSubstationPlayerDisconnect))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_SubstationPlayerMigrate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSubstationPlayerMigrate)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).SubstationPlayerMigrate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.Msg/SubstationPlayerMigrate",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).SubstationPlayerMigrate(ctx, req.(*MsgSubstationPlayerMigrate))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_GuildCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgGuildCreate)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).GuildCreate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.Msg/GuildCreate",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).GuildCreate(ctx, req.(*MsgGuildCreate))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_GuildUpdateOwnerId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgGuildUpdateOwnerId)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).GuildUpdateOwnerId(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.Msg/GuildUpdateOwnerId",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).GuildUpdateOwnerId(ctx, req.(*MsgGuildUpdateOwnerId))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_GuildUpdateEntrySubstationId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgGuildUpdateEntrySubstationId)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).GuildUpdateEntrySubstationId(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.Msg/GuildUpdateEntrySubstationId",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).GuildUpdateEntrySubstationId(ctx, req.(*MsgGuildUpdateEntrySubstationId))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_GuildUpdateEndpoint_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgGuildUpdateEndpoint)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).GuildUpdateEndpoint(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.Msg/GuildUpdateEndpoint",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).GuildUpdateEndpoint(ctx, req.(*MsgGuildUpdateEndpoint))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_GuildUpdateJoinInfusionMinimum_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgGuildUpdateJoinInfusionMinimum)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).GuildUpdateJoinInfusionMinimum(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.Msg/GuildUpdateJoinInfusionMinimum",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).GuildUpdateJoinInfusionMinimum(ctx, req.(*MsgGuildUpdateJoinInfusionMinimum))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_GuildUpdateJoinInfusionMinimumBypassByInvite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgGuildUpdateJoinInfusionMinimumBypassByInvite)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).GuildUpdateJoinInfusionMinimumBypassByInvite(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.Msg/GuildUpdateJoinInfusionMinimumBypassByInvite",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).GuildUpdateJoinInfusionMinimumBypassByInvite(ctx, req.(*MsgGuildUpdateJoinInfusionMinimumBypassByInvite))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_GuildUpdateJoinInfusionMinimumBypassByRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgGuildUpdateJoinInfusionMinimumBypassByRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).GuildUpdateJoinInfusionMinimumBypassByRequest(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.Msg/GuildUpdateJoinInfusionMinimumBypassByRequest",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).GuildUpdateJoinInfusionMinimumBypassByRequest(ctx, req.(*MsgGuildUpdateJoinInfusionMinimumBypassByRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_GuildApproveRegister_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgGuildApproveRegister)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).GuildApproveRegister(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.Msg/GuildApproveRegister",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).GuildApproveRegister(ctx, req.(*MsgGuildApproveRegister))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_GuildJoinProxy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgGuildJoinProxy)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).GuildJoinProxy(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.Msg/GuildJoinProxy",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).GuildJoinProxy(ctx, req.(*MsgGuildJoinProxy))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_GuildJoin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgGuildJoin)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).GuildJoin(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.Msg/GuildJoin",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).GuildJoin(ctx, req.(*MsgGuildJoin))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_PlayerUpdatePrimaryAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgPlayerUpdatePrimaryAddress)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).PlayerUpdatePrimaryAddress(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/structs.Msg/PlayerUpdatePrimaryAddress",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).PlayerUpdatePrimaryAddress(ctx, req.(*MsgPlayerUpdatePrimaryAddress))
+		return srv.(MsgServer).UpdateParams(ctx, req.(*MsgUpdateParams))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -4579,7 +4384,7 @@ func _Msg_AddressRegister_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/AddressRegister",
+		FullMethod: "/structs.structs.Msg/AddressRegister",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).AddressRegister(ctx, req.(*MsgAddressRegister))
@@ -4597,7 +4402,7 @@ func _Msg_AddressApproveRegister_Handler(srv interface{}, ctx context.Context, d
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/AddressApproveRegister",
+		FullMethod: "/structs.structs.Msg/AddressApproveRegister",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).AddressApproveRegister(ctx, req.(*MsgAddressApproveRegister))
@@ -4615,7 +4420,7 @@ func _Msg_AddressRevoke_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/AddressRevoke",
+		FullMethod: "/structs.structs.Msg/AddressRevoke",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).AddressRevoke(ctx, req.(*MsgAddressRevoke))
@@ -4623,200 +4428,200 @@ func _Msg_AddressRevoke_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_PlanetExplore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgPlanetExplore)
+func _Msg_AllocationCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAllocationCreate)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).PlanetExplore(ctx, in)
+		return srv.(MsgServer).AllocationCreate(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/PlanetExplore",
+		FullMethod: "/structs.structs.Msg/AllocationCreate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).PlanetExplore(ctx, req.(*MsgPlanetExplore))
+		return srv.(MsgServer).AllocationCreate(ctx, req.(*MsgAllocationCreate))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_StructActivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStructActivate)
+func _Msg_GuildCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildCreate)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).StructActivate(ctx, in)
+		return srv.(MsgServer).GuildCreate(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/StructActivate",
+		FullMethod: "/structs.structs.Msg/GuildCreate",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StructActivate(ctx, req.(*MsgStructActivate))
+		return srv.(MsgServer).GuildCreate(ctx, req.(*MsgGuildCreate))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_StructBuildInitiate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStructBuildInitiate)
+func _Msg_GuildUpdateOwnerId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildUpdateOwnerId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).StructBuildInitiate(ctx, in)
+		return srv.(MsgServer).GuildUpdateOwnerId(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/StructBuildInitiate",
+		FullMethod: "/structs.structs.Msg/GuildUpdateOwnerId",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StructBuildInitiate(ctx, req.(*MsgStructBuildInitiate))
+		return srv.(MsgServer).GuildUpdateOwnerId(ctx, req.(*MsgGuildUpdateOwnerId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_StructBuildComplete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStructBuildComplete)
+func _Msg_GuildUpdateEntrySubstationId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildUpdateEntrySubstationId)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).StructBuildComplete(ctx, in)
+		return srv.(MsgServer).GuildUpdateEntrySubstationId(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/StructBuildComplete",
+		FullMethod: "/structs.structs.Msg/GuildUpdateEntrySubstationId",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StructBuildComplete(ctx, req.(*MsgStructBuildComplete))
+		return srv.(MsgServer).GuildUpdateEntrySubstationId(ctx, req.(*MsgGuildUpdateEntrySubstationId))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_StructMineActivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStructMineActivate)
+func _Msg_GuildUpdateEndpoint_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildUpdateEndpoint)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).StructMineActivate(ctx, in)
+		return srv.(MsgServer).GuildUpdateEndpoint(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/StructMineActivate",
+		FullMethod: "/structs.structs.Msg/GuildUpdateEndpoint",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StructMineActivate(ctx, req.(*MsgStructMineActivate))
+		return srv.(MsgServer).GuildUpdateEndpoint(ctx, req.(*MsgGuildUpdateEndpoint))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_StructMineDeactivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStructMineDeactivate)
+func _Msg_GuildUpdateJoinInfusionMinimum_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildUpdateJoinInfusionMinimum)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).StructMineDeactivate(ctx, in)
+		return srv.(MsgServer).GuildUpdateJoinInfusionMinimum(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/StructMineDeactivate",
+		FullMethod: "/structs.structs.Msg/GuildUpdateJoinInfusionMinimum",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StructMineDeactivate(ctx, req.(*MsgStructMineDeactivate))
+		return srv.(MsgServer).GuildUpdateJoinInfusionMinimum(ctx, req.(*MsgGuildUpdateJoinInfusionMinimum))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_StructMine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStructMine)
+func _Msg_GuildUpdateJoinInfusionMinimumBypassByInvite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildUpdateJoinInfusionMinimumBypassByInvite)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).StructMine(ctx, in)
+		return srv.(MsgServer).GuildUpdateJoinInfusionMinimumBypassByInvite(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/StructMine",
+		FullMethod: "/structs.structs.Msg/GuildUpdateJoinInfusionMinimumBypassByInvite",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StructMine(ctx, req.(*MsgStructMine))
+		return srv.(MsgServer).GuildUpdateJoinInfusionMinimumBypassByInvite(ctx, req.(*MsgGuildUpdateJoinInfusionMinimumBypassByInvite))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_StructRefineActivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStructRefineActivate)
+func _Msg_GuildUpdateJoinInfusionMinimumBypassByRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildUpdateJoinInfusionMinimumBypassByRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).StructRefineActivate(ctx, in)
+		return srv.(MsgServer).GuildUpdateJoinInfusionMinimumBypassByRequest(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/StructRefineActivate",
+		FullMethod: "/structs.structs.Msg/GuildUpdateJoinInfusionMinimumBypassByRequest",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StructRefineActivate(ctx, req.(*MsgStructRefineActivate))
+		return srv.(MsgServer).GuildUpdateJoinInfusionMinimumBypassByRequest(ctx, req.(*MsgGuildUpdateJoinInfusionMinimumBypassByRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_StructRefineDeactivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStructRefineDeactivate)
+func _Msg_GuildApproveRegister_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildApproveRegister)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).StructRefineDeactivate(ctx, in)
+		return srv.(MsgServer).GuildApproveRegister(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/StructRefineDeactivate",
+		FullMethod: "/structs.structs.Msg/GuildApproveRegister",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StructRefineDeactivate(ctx, req.(*MsgStructRefineDeactivate))
+		return srv.(MsgServer).GuildApproveRegister(ctx, req.(*MsgGuildApproveRegister))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_StructRefine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStructRefine)
+func _Msg_GuildJoinProxy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildJoinProxy)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).StructRefine(ctx, in)
+		return srv.(MsgServer).GuildJoinProxy(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/StructRefine",
+		FullMethod: "/structs.structs.Msg/GuildJoinProxy",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StructRefine(ctx, req.(*MsgStructRefine))
+		return srv.(MsgServer).GuildJoinProxy(ctx, req.(*MsgGuildJoinProxy))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_StructInfuse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStructInfuse)
+func _Msg_GuildJoin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildJoin)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).StructInfuse(ctx, in)
+		return srv.(MsgServer).GuildJoin(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/StructInfuse",
+		FullMethod: "/structs.structs.Msg/GuildJoin",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StructInfuse(ctx, req.(*MsgStructInfuse))
+		return srv.(MsgServer).GuildJoin(ctx, req.(*MsgGuildJoin))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -4831,7 +4636,7 @@ func _Msg_PermissionGrantOnAddress_Handler(srv interface{}, ctx context.Context,
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/PermissionGrantOnAddress",
+		FullMethod: "/structs.structs.Msg/PermissionGrantOnAddress",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).PermissionGrantOnAddress(ctx, req.(*MsgPermissionGrantOnAddress))
@@ -4849,7 +4654,7 @@ func _Msg_PermissionGrantOnObject_Handler(srv interface{}, ctx context.Context, 
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/PermissionGrantOnObject",
+		FullMethod: "/structs.structs.Msg/PermissionGrantOnObject",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).PermissionGrantOnObject(ctx, req.(*MsgPermissionGrantOnObject))
@@ -4867,7 +4672,7 @@ func _Msg_PermissionRevokeOnAddress_Handler(srv interface{}, ctx context.Context
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/PermissionRevokeOnAddress",
+		FullMethod: "/structs.structs.Msg/PermissionRevokeOnAddress",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).PermissionRevokeOnAddress(ctx, req.(*MsgPermissionRevokeOnAddress))
@@ -4885,10 +4690,352 @@ func _Msg_PermissionRevokeOnObject_Handler(srv interface{}, ctx context.Context,
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/PermissionRevokeOnObject",
+		FullMethod: "/structs.structs.Msg/PermissionRevokeOnObject",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).PermissionRevokeOnObject(ctx, req.(*MsgPermissionRevokeOnObject))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_PlanetExplore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgPlanetExplore)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).PlanetExplore(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/PlanetExplore",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).PlanetExplore(ctx, req.(*MsgPlanetExplore))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_PlayerUpdatePrimaryAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgPlayerUpdatePrimaryAddress)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).PlayerUpdatePrimaryAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/PlayerUpdatePrimaryAddress",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).PlayerUpdatePrimaryAddress(ctx, req.(*MsgPlayerUpdatePrimaryAddress))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_StructActivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgStructActivate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).StructActivate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/StructActivate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).StructActivate(ctx, req.(*MsgStructActivate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_StructBuildInitiate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgStructBuildInitiate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).StructBuildInitiate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/StructBuildInitiate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).StructBuildInitiate(ctx, req.(*MsgStructBuildInitiate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_StructBuildComplete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgStructBuildComplete)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).StructBuildComplete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/StructBuildComplete",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).StructBuildComplete(ctx, req.(*MsgStructBuildComplete))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_StructMineActivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgStructMineActivate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).StructMineActivate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/StructMineActivate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).StructMineActivate(ctx, req.(*MsgStructMineActivate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_StructMineDeactivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgStructMineDeactivate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).StructMineDeactivate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/StructMineDeactivate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).StructMineDeactivate(ctx, req.(*MsgStructMineDeactivate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_StructMine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgStructMine)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).StructMine(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/StructMine",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).StructMine(ctx, req.(*MsgStructMine))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_StructRefineActivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgStructRefineActivate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).StructRefineActivate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/StructRefineActivate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).StructRefineActivate(ctx, req.(*MsgStructRefineActivate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_StructRefineDeactivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgStructRefineDeactivate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).StructRefineDeactivate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/StructRefineDeactivate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).StructRefineDeactivate(ctx, req.(*MsgStructRefineDeactivate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_StructRefine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgStructRefine)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).StructRefine(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/StructRefine",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).StructRefine(ctx, req.(*MsgStructRefine))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_StructInfuse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgStructInfuse)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).StructInfuse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/StructInfuse",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).StructInfuse(ctx, req.(*MsgStructInfuse))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_SubstationCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgSubstationCreate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).SubstationCreate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/SubstationCreate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).SubstationCreate(ctx, req.(*MsgSubstationCreate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_SubstationDelete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgSubstationDelete)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).SubstationDelete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/SubstationDelete",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).SubstationDelete(ctx, req.(*MsgSubstationDelete))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_SubstationAllocationConnect_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgSubstationAllocationConnect)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).SubstationAllocationConnect(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/SubstationAllocationConnect",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).SubstationAllocationConnect(ctx, req.(*MsgSubstationAllocationConnect))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_SubstationAllocationDisconnect_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgSubstationAllocationDisconnect)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).SubstationAllocationDisconnect(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/SubstationAllocationDisconnect",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).SubstationAllocationDisconnect(ctx, req.(*MsgSubstationAllocationDisconnect))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_SubstationPlayerConnect_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgSubstationPlayerConnect)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).SubstationPlayerConnect(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/SubstationPlayerConnect",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).SubstationPlayerConnect(ctx, req.(*MsgSubstationPlayerConnect))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_SubstationPlayerDisconnect_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgSubstationPlayerDisconnect)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).SubstationPlayerDisconnect(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/SubstationPlayerDisconnect",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).SubstationPlayerDisconnect(ctx, req.(*MsgSubstationPlayerDisconnect))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_SubstationPlayerMigrate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgSubstationPlayerMigrate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).SubstationPlayerMigrate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/structs.structs.Msg/SubstationPlayerMigrate",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).SubstationPlayerMigrate(ctx, req.(*MsgSubstationPlayerMigrate))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -4903,7 +5050,7 @@ func _Msg_Sabotage_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/structs.Msg/Sabotage",
+		FullMethod: "/structs.structs.Msg/Sabotage",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).Sabotage(ctx, req.(*MsgSabotage))
@@ -4912,40 +5059,28 @@ func _Msg_Sabotage_Handler(srv interface{}, ctx context.Context, dec func(interf
 }
 
 var _Msg_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "structs.Msg",
+	ServiceName: "structs.structs.Msg",
 	HandlerType: (*MsgServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "UpdateParams",
+			Handler:    _Msg_UpdateParams_Handler,
+		},
+		{
+			MethodName: "AddressRegister",
+			Handler:    _Msg_AddressRegister_Handler,
+		},
+		{
+			MethodName: "AddressApproveRegister",
+			Handler:    _Msg_AddressApproveRegister_Handler,
+		},
+		{
+			MethodName: "AddressRevoke",
+			Handler:    _Msg_AddressRevoke_Handler,
+		},
+		{
 			MethodName: "AllocationCreate",
 			Handler:    _Msg_AllocationCreate_Handler,
-		},
-		{
-			MethodName: "SubstationCreate",
-			Handler:    _Msg_SubstationCreate_Handler,
-		},
-		{
-			MethodName: "SubstationDelete",
-			Handler:    _Msg_SubstationDelete_Handler,
-		},
-		{
-			MethodName: "SubstationAllocationConnect",
-			Handler:    _Msg_SubstationAllocationConnect_Handler,
-		},
-		{
-			MethodName: "SubstationAllocationDisconnect",
-			Handler:    _Msg_SubstationAllocationDisconnect_Handler,
-		},
-		{
-			MethodName: "SubstationPlayerConnect",
-			Handler:    _Msg_SubstationPlayerConnect_Handler,
-		},
-		{
-			MethodName: "SubstationPlayerDisconnect",
-			Handler:    _Msg_SubstationPlayerDisconnect_Handler,
-		},
-		{
-			MethodName: "SubstationPlayerMigrate",
-			Handler:    _Msg_SubstationPlayerMigrate_Handler,
 		},
 		{
 			MethodName: "GuildCreate",
@@ -4988,24 +5123,28 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_GuildJoin_Handler,
 		},
 		{
-			MethodName: "PlayerUpdatePrimaryAddress",
-			Handler:    _Msg_PlayerUpdatePrimaryAddress_Handler,
+			MethodName: "PermissionGrantOnAddress",
+			Handler:    _Msg_PermissionGrantOnAddress_Handler,
 		},
 		{
-			MethodName: "AddressRegister",
-			Handler:    _Msg_AddressRegister_Handler,
+			MethodName: "PermissionGrantOnObject",
+			Handler:    _Msg_PermissionGrantOnObject_Handler,
 		},
 		{
-			MethodName: "AddressApproveRegister",
-			Handler:    _Msg_AddressApproveRegister_Handler,
+			MethodName: "PermissionRevokeOnAddress",
+			Handler:    _Msg_PermissionRevokeOnAddress_Handler,
 		},
 		{
-			MethodName: "AddressRevoke",
-			Handler:    _Msg_AddressRevoke_Handler,
+			MethodName: "PermissionRevokeOnObject",
+			Handler:    _Msg_PermissionRevokeOnObject_Handler,
 		},
 		{
 			MethodName: "PlanetExplore",
 			Handler:    _Msg_PlanetExplore_Handler,
+		},
+		{
+			MethodName: "PlayerUpdatePrimaryAddress",
+			Handler:    _Msg_PlayerUpdatePrimaryAddress_Handler,
 		},
 		{
 			MethodName: "StructActivate",
@@ -5048,20 +5187,32 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_StructInfuse_Handler,
 		},
 		{
-			MethodName: "PermissionGrantOnAddress",
-			Handler:    _Msg_PermissionGrantOnAddress_Handler,
+			MethodName: "SubstationCreate",
+			Handler:    _Msg_SubstationCreate_Handler,
 		},
 		{
-			MethodName: "PermissionGrantOnObject",
-			Handler:    _Msg_PermissionGrantOnObject_Handler,
+			MethodName: "SubstationDelete",
+			Handler:    _Msg_SubstationDelete_Handler,
 		},
 		{
-			MethodName: "PermissionRevokeOnAddress",
-			Handler:    _Msg_PermissionRevokeOnAddress_Handler,
+			MethodName: "SubstationAllocationConnect",
+			Handler:    _Msg_SubstationAllocationConnect_Handler,
 		},
 		{
-			MethodName: "PermissionRevokeOnObject",
-			Handler:    _Msg_PermissionRevokeOnObject_Handler,
+			MethodName: "SubstationAllocationDisconnect",
+			Handler:    _Msg_SubstationAllocationDisconnect_Handler,
+		},
+		{
+			MethodName: "SubstationPlayerConnect",
+			Handler:    _Msg_SubstationPlayerConnect_Handler,
+		},
+		{
+			MethodName: "SubstationPlayerDisconnect",
+			Handler:    _Msg_SubstationPlayerDisconnect_Handler,
+		},
+		{
+			MethodName: "SubstationPlayerMigrate",
+			Handler:    _Msg_SubstationPlayerMigrate_Handler,
 		},
 		{
 			MethodName: "Sabotage",
@@ -5072,7 +5223,7 @@ var _Msg_serviceDesc = grpc.ServiceDesc{
 	Metadata: "structs/structs/tx.proto",
 }
 
-func (m *MsgSubstationCreate) Marshal() (dAtA []byte, err error) {
+func (m *MsgUpdateParams) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -5082,29 +5233,100 @@ func (m *MsgSubstationCreate) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgSubstationCreate) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgUpdateParams) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgSubstationCreate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgUpdateParams) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.AllocationId) > 0 {
-		i -= len(m.AllocationId)
-		copy(dAtA[i:], m.AllocationId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.AllocationId)))
+	{
+		size, err := m.Params.MarshalToSizedBuffer(dAtA[:i])
+		if err != nil {
+			return 0, err
+		}
+		i -= size
+		i = encodeVarintTx(dAtA, i, uint64(size))
+	}
+	i--
+	dAtA[i] = 0x12
+	if len(m.Authority) > 0 {
+		i -= len(m.Authority)
+		copy(dAtA[i:], m.Authority)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Authority)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgUpdateParamsResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgUpdateParamsResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgUpdateParamsResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgAddressApproveRegister) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgAddressApproveRegister) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgAddressApproveRegister) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Permissions != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.Permissions))
+		i--
+		dAtA[i] = 0x20
+	}
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Address)))
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.Owner) > 0 {
-		i -= len(m.Owner)
-		copy(dAtA[i:], m.Owner)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Owner)))
+	if m.Approve {
 		i--
-		dAtA[i] = 0x12
+		if m.Approve {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x10
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -5116,7 +5338,7 @@ func (m *MsgSubstationCreate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgSubstationCreateResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddressRegister) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -5126,307 +5348,23 @@ func (m *MsgSubstationCreateResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgSubstationCreateResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddressRegister) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgSubstationCreateResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddressRegister) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.SubstationId) > 0 {
-		i -= len(m.SubstationId)
-		copy(dAtA[i:], m.SubstationId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.SubstationId)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgSubstationDelete) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgSubstationDelete) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgSubstationDelete) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.MigrationSubstationId) > 0 {
-		i -= len(m.MigrationSubstationId)
-		copy(dAtA[i:], m.MigrationSubstationId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.MigrationSubstationId)))
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Address)))
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.SubstationId) > 0 {
-		i -= len(m.SubstationId)
-		copy(dAtA[i:], m.SubstationId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.SubstationId)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgSubstationDeleteResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgSubstationDeleteResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgSubstationDeleteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgSubstationAllocationConnect) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgSubstationAllocationConnect) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgSubstationAllocationConnect) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.DestinationId) > 0 {
-		i -= len(m.DestinationId)
-		copy(dAtA[i:], m.DestinationId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.DestinationId)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.AllocationId) > 0 {
-		i -= len(m.AllocationId)
-		copy(dAtA[i:], m.AllocationId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.AllocationId)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgSubstationAllocationConnectResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgSubstationAllocationConnectResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgSubstationAllocationConnectResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgSubstationAllocationDisconnect) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgSubstationAllocationDisconnect) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgSubstationAllocationDisconnect) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.AllocationId) > 0 {
-		i -= len(m.AllocationId)
-		copy(dAtA[i:], m.AllocationId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.AllocationId)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgSubstationAllocationDisconnectResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgSubstationAllocationDisconnectResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgSubstationAllocationDisconnectResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgSubstationPlayerConnect) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgSubstationPlayerConnect) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgSubstationPlayerConnect) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.PlayerId) > 0 {
-		i -= len(m.PlayerId)
-		copy(dAtA[i:], m.PlayerId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.PlayerId)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.SubstationId) > 0 {
-		i -= len(m.SubstationId)
-		copy(dAtA[i:], m.SubstationId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.SubstationId)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgSubstationPlayerConnectResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgSubstationPlayerConnectResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgSubstationPlayerConnectResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgSubstationPlayerDisconnect) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgSubstationPlayerDisconnect) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgSubstationPlayerDisconnect) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
 	if len(m.PlayerId) > 0 {
 		i -= len(m.PlayerId)
 		copy(dAtA[i:], m.PlayerId)
@@ -5444,7 +5382,7 @@ func (m *MsgSubstationPlayerDisconnect) MarshalToSizedBuffer(dAtA []byte) (int, 
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgSubstationPlayerDisconnectResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgAddressRegisterResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -5454,12 +5392,72 @@ func (m *MsgSubstationPlayerDisconnectResponse) Marshal() (dAtA []byte, err erro
 	return dAtA[:n], nil
 }
 
-func (m *MsgSubstationPlayerDisconnectResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgAddressRegisterResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgSubstationPlayerDisconnectResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgAddressRegisterResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgAddressRevoke) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgAddressRevoke) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgAddressRevoke) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Address)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgAddressRevokeResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgAddressRevokeResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgAddressRevokeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -5548,6 +5546,83 @@ func (m *MsgAllocationCreateResponse) MarshalToSizedBuffer(dAtA []byte) (int, er
 		i--
 		dAtA[i] = 0xa
 	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgGuildApproveRegister) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgGuildApproveRegister) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgGuildApproveRegister) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.PlayerId) > 0 {
+		i -= len(m.PlayerId)
+		copy(dAtA[i:], m.PlayerId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.PlayerId)))
+		i--
+		dAtA[i] = 0x22
+	}
+	if len(m.GuildId) > 0 {
+		i -= len(m.GuildId)
+		copy(dAtA[i:], m.GuildId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.GuildId)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.Approve {
+		i--
+		if m.Approve {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgGuildApproveRegisterResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgGuildApproveRegisterResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgGuildApproveRegisterResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
 	return len(dAtA) - i, nil
 }
 
@@ -6033,7 +6108,7 @@ func (m *MsgGuildJoinResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgAddressApproveRegister) Marshal() (dAtA []byte, err error) {
+func (m *MsgPermissionGrantOnObject) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -6043,12 +6118,12 @@ func (m *MsgAddressApproveRegister) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAddressApproveRegister) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgPermissionGrantOnObject) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAddressApproveRegister) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgPermissionGrantOnObject) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -6058,64 +6133,17 @@ func (m *MsgAddressApproveRegister) MarshalToSizedBuffer(dAtA []byte) (int, erro
 		i--
 		dAtA[i] = 0x20
 	}
-	if len(m.Address) > 0 {
-		i -= len(m.Address)
-		copy(dAtA[i:], m.Address)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Address)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if m.Approve {
-		i--
-		if m.Approve {
-			dAtA[i] = 1
-		} else {
-			dAtA[i] = 0
-		}
-		i--
-		dAtA[i] = 0x10
-	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgAddressRegister) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgAddressRegister) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgAddressRegister) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.Address) > 0 {
-		i -= len(m.Address)
-		copy(dAtA[i:], m.Address)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Address)))
-		i--
-		dAtA[i] = 0x1a
-	}
 	if len(m.PlayerId) > 0 {
 		i -= len(m.PlayerId)
 		copy(dAtA[i:], m.PlayerId)
 		i = encodeVarintTx(dAtA, i, uint64(len(m.PlayerId)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.ObjectId) > 0 {
+		i -= len(m.ObjectId)
+		copy(dAtA[i:], m.ObjectId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ObjectId)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -6129,7 +6157,7 @@ func (m *MsgAddressRegister) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgAddressRegisterResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgPermissionGrantOnAddress) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -6139,39 +6167,21 @@ func (m *MsgAddressRegisterResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAddressRegisterResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgPermissionGrantOnAddress) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAddressRegisterResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgPermissionGrantOnAddress) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgAddressRevoke) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
+	if m.Permissions != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.Permissions))
+		i--
+		dAtA[i] = 0x18
 	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgAddressRevoke) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgAddressRevoke) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
 	if len(m.Address) > 0 {
 		i -= len(m.Address)
 		copy(dAtA[i:], m.Address)
@@ -6189,7 +6199,7 @@ func (m *MsgAddressRevoke) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgAddressRevokeResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgPermissionRevokeOnObject) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -6199,62 +6209,34 @@ func (m *MsgAddressRevokeResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgAddressRevokeResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgPermissionRevokeOnObject) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgAddressRevokeResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgPermissionRevokeOnObject) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgGuildApproveRegister) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
+	if m.Permissions != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.Permissions))
+		i--
+		dAtA[i] = 0x20
 	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgGuildApproveRegister) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgGuildApproveRegister) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
 	if len(m.PlayerId) > 0 {
 		i -= len(m.PlayerId)
 		copy(dAtA[i:], m.PlayerId)
 		i = encodeVarintTx(dAtA, i, uint64(len(m.PlayerId)))
 		i--
-		dAtA[i] = 0x22
-	}
-	if len(m.GuildId) > 0 {
-		i -= len(m.GuildId)
-		copy(dAtA[i:], m.GuildId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.GuildId)))
-		i--
 		dAtA[i] = 0x1a
 	}
-	if m.Approve {
+	if len(m.ObjectId) > 0 {
+		i -= len(m.ObjectId)
+		copy(dAtA[i:], m.ObjectId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.ObjectId)))
 		i--
-		if m.Approve {
-			dAtA[i] = 1
-		} else {
-			dAtA[i] = 0
-		}
-		i--
-		dAtA[i] = 0x10
+		dAtA[i] = 0x12
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
@@ -6266,7 +6248,7 @@ func (m *MsgGuildApproveRegister) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgGuildApproveRegisterResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgPermissionRevokeOnAddress) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -6276,12 +6258,54 @@ func (m *MsgGuildApproveRegisterResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgGuildApproveRegisterResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgPermissionRevokeOnAddress) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgGuildApproveRegisterResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgPermissionRevokeOnAddress) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Permissions != 0 {
+		i = encodeVarintTx(dAtA, i, uint64(m.Permissions))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.Address) > 0 {
+		i -= len(m.Address)
+		copy(dAtA[i:], m.Address)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Address)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgPermissionResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgPermissionResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgPermissionResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -6349,6 +6373,66 @@ func (m *MsgPlanetExploreResponse) MarshalToSizedBuffer(dAtA []byte) (int, error
 	}
 	i--
 	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgPlayerUpdatePrimaryAddress) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgPlayerUpdatePrimaryAddress) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgPlayerUpdatePrimaryAddress) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.PrimaryAddress) > 0 {
+		i -= len(m.PrimaryAddress)
+		copy(dAtA[i:], m.PrimaryAddress)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.PrimaryAddress)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgPlayerUpdatePrimaryAddressResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgPlayerUpdatePrimaryAddressResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgPlayerUpdatePrimaryAddressResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
 	return len(dAtA) - i, nil
 }
 
@@ -6585,6 +6669,73 @@ func (m *MsgStructBuildCompleteResponse) MarshalToSizedBuffer(dAtA []byte) (int,
 	}
 	i--
 	dAtA[i] = 0xa
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgStructInfuse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgStructInfuse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgStructInfuse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.InfuseAmount) > 0 {
+		i -= len(m.InfuseAmount)
+		copy(dAtA[i:], m.InfuseAmount)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.InfuseAmount)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.StructId) > 0 {
+		i -= len(m.StructId)
+		copy(dAtA[i:], m.StructId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.StructId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgStructInfuseResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgStructInfuseResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgStructInfuseResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
 	return len(dAtA) - i, nil
 }
 
@@ -7036,7 +7187,7 @@ func (m *MsgStructRefineResponse) MarshalToSizedBuffer(dAtA []byte) (int, error)
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgPlayerUpdatePrimaryAddress) Marshal() (dAtA []byte, err error) {
+func (m *MsgSubstationCreate) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -7046,87 +7197,27 @@ func (m *MsgPlayerUpdatePrimaryAddress) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgPlayerUpdatePrimaryAddress) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgSubstationCreate) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgPlayerUpdatePrimaryAddress) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgSubstationCreate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
 	_ = l
-	if len(m.PrimaryAddress) > 0 {
-		i -= len(m.PrimaryAddress)
-		copy(dAtA[i:], m.PrimaryAddress)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.PrimaryAddress)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgPlayerUpdatePrimaryAddressResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgPlayerUpdatePrimaryAddressResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgPlayerUpdatePrimaryAddressResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgStructInfuse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgStructInfuse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgStructInfuse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.InfuseAmount) > 0 {
-		i -= len(m.InfuseAmount)
-		copy(dAtA[i:], m.InfuseAmount)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.InfuseAmount)))
+	if len(m.AllocationId) > 0 {
+		i -= len(m.AllocationId)
+		copy(dAtA[i:], m.AllocationId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.AllocationId)))
 		i--
 		dAtA[i] = 0x1a
 	}
-	if len(m.StructId) > 0 {
-		i -= len(m.StructId)
-		copy(dAtA[i:], m.StructId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.StructId)))
+	if len(m.Owner) > 0 {
+		i -= len(m.Owner)
+		copy(dAtA[i:], m.Owner)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Owner)))
 		i--
 		dAtA[i] = 0x12
 	}
@@ -7140,7 +7231,7 @@ func (m *MsgStructInfuse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgStructInfuseResponse) Marshal() (dAtA []byte, err error) {
+func (m *MsgSubstationCreateResponse) Marshal() (dAtA []byte, err error) {
 	size := m.Size()
 	dAtA = make([]byte, size)
 	n, err := m.MarshalToSizedBuffer(dAtA[:size])
@@ -7150,12 +7241,409 @@ func (m *MsgStructInfuseResponse) Marshal() (dAtA []byte, err error) {
 	return dAtA[:n], nil
 }
 
-func (m *MsgStructInfuseResponse) MarshalTo(dAtA []byte) (int, error) {
+func (m *MsgSubstationCreateResponse) MarshalTo(dAtA []byte) (int, error) {
 	size := m.Size()
 	return m.MarshalToSizedBuffer(dAtA[:size])
 }
 
-func (m *MsgStructInfuseResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+func (m *MsgSubstationCreateResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.SubstationId) > 0 {
+		i -= len(m.SubstationId)
+		copy(dAtA[i:], m.SubstationId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.SubstationId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgSubstationDelete) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgSubstationDelete) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgSubstationDelete) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.MigrationSubstationId) > 0 {
+		i -= len(m.MigrationSubstationId)
+		copy(dAtA[i:], m.MigrationSubstationId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.MigrationSubstationId)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.SubstationId) > 0 {
+		i -= len(m.SubstationId)
+		copy(dAtA[i:], m.SubstationId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.SubstationId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgSubstationDeleteResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgSubstationDeleteResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgSubstationDeleteResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgSubstationAllocationConnect) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgSubstationAllocationConnect) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgSubstationAllocationConnect) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.DestinationId) > 0 {
+		i -= len(m.DestinationId)
+		copy(dAtA[i:], m.DestinationId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.DestinationId)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.AllocationId) > 0 {
+		i -= len(m.AllocationId)
+		copy(dAtA[i:], m.AllocationId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.AllocationId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgSubstationAllocationConnectResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgSubstationAllocationConnectResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgSubstationAllocationConnectResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgSubstationAllocationDisconnect) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgSubstationAllocationDisconnect) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgSubstationAllocationDisconnect) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.AllocationId) > 0 {
+		i -= len(m.AllocationId)
+		copy(dAtA[i:], m.AllocationId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.AllocationId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgSubstationAllocationDisconnectResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgSubstationAllocationDisconnectResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgSubstationAllocationDisconnectResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgSubstationPlayerConnect) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgSubstationPlayerConnect) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgSubstationPlayerConnect) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.PlayerId) > 0 {
+		i -= len(m.PlayerId)
+		copy(dAtA[i:], m.PlayerId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.PlayerId)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.SubstationId) > 0 {
+		i -= len(m.SubstationId)
+		copy(dAtA[i:], m.SubstationId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.SubstationId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgSubstationPlayerConnectResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgSubstationPlayerConnectResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgSubstationPlayerConnectResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgSubstationPlayerDisconnect) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgSubstationPlayerDisconnect) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgSubstationPlayerDisconnect) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.PlayerId) > 0 {
+		i -= len(m.PlayerId)
+		copy(dAtA[i:], m.PlayerId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.PlayerId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgSubstationPlayerDisconnectResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgSubstationPlayerDisconnectResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgSubstationPlayerDisconnectResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgSubstationPlayerMigrate) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgSubstationPlayerMigrate) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgSubstationPlayerMigrate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if len(m.PlayerId) > 0 {
+		for iNdEx := len(m.PlayerId) - 1; iNdEx >= 0; iNdEx-- {
+			i -= len(m.PlayerId[iNdEx])
+			copy(dAtA[i:], m.PlayerId[iNdEx])
+			i = encodeVarintTx(dAtA, i, uint64(len(m.PlayerId[iNdEx])))
+			i--
+			dAtA[i] = 0x1a
+		}
+	}
+	if len(m.SubstationId) > 0 {
+		i -= len(m.SubstationId)
+		copy(dAtA[i:], m.SubstationId)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.SubstationId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.Creator) > 0 {
+		i -= len(m.Creator)
+		copy(dAtA[i:], m.Creator)
+		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *MsgSubstationPlayerMigrateResponse) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *MsgSubstationPlayerMigrateResponse) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *MsgSubstationPlayerMigrateResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	i := len(dAtA)
 	_ = i
 	var l int
@@ -7237,280 +7725,6 @@ func (m *MsgSabotageResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-func (m *MsgPermissionGrantOnObject) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgPermissionGrantOnObject) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgPermissionGrantOnObject) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Permissions != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.Permissions))
-		i--
-		dAtA[i] = 0x20
-	}
-	if len(m.PlayerId) > 0 {
-		i -= len(m.PlayerId)
-		copy(dAtA[i:], m.PlayerId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.PlayerId)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.ObjectId) > 0 {
-		i -= len(m.ObjectId)
-		copy(dAtA[i:], m.ObjectId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.ObjectId)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgPermissionGrantOnAddress) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgPermissionGrantOnAddress) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgPermissionGrantOnAddress) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Permissions != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.Permissions))
-		i--
-		dAtA[i] = 0x18
-	}
-	if len(m.Address) > 0 {
-		i -= len(m.Address)
-		copy(dAtA[i:], m.Address)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Address)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgPermissionRevokeOnObject) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgPermissionRevokeOnObject) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgPermissionRevokeOnObject) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Permissions != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.Permissions))
-		i--
-		dAtA[i] = 0x20
-	}
-	if len(m.PlayerId) > 0 {
-		i -= len(m.PlayerId)
-		copy(dAtA[i:], m.PlayerId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.PlayerId)))
-		i--
-		dAtA[i] = 0x1a
-	}
-	if len(m.ObjectId) > 0 {
-		i -= len(m.ObjectId)
-		copy(dAtA[i:], m.ObjectId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.ObjectId)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgPermissionRevokeOnAddress) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgPermissionRevokeOnAddress) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgPermissionRevokeOnAddress) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if m.Permissions != 0 {
-		i = encodeVarintTx(dAtA, i, uint64(m.Permissions))
-		i--
-		dAtA[i] = 0x18
-	}
-	if len(m.Address) > 0 {
-		i -= len(m.Address)
-		copy(dAtA[i:], m.Address)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Address)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgPermissionResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgPermissionResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgPermissionResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgSubstationPlayerMigrate) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgSubstationPlayerMigrate) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgSubstationPlayerMigrate) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	if len(m.PlayerId) > 0 {
-		for iNdEx := len(m.PlayerId) - 1; iNdEx >= 0; iNdEx-- {
-			i -= len(m.PlayerId[iNdEx])
-			copy(dAtA[i:], m.PlayerId[iNdEx])
-			i = encodeVarintTx(dAtA, i, uint64(len(m.PlayerId[iNdEx])))
-			i--
-			dAtA[i] = 0x1a
-		}
-	}
-	if len(m.SubstationId) > 0 {
-		i -= len(m.SubstationId)
-		copy(dAtA[i:], m.SubstationId)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.SubstationId)))
-		i--
-		dAtA[i] = 0x12
-	}
-	if len(m.Creator) > 0 {
-		i -= len(m.Creator)
-		copy(dAtA[i:], m.Creator)
-		i = encodeVarintTx(dAtA, i, uint64(len(m.Creator)))
-		i--
-		dAtA[i] = 0xa
-	}
-	return len(dAtA) - i, nil
-}
-
-func (m *MsgSubstationPlayerMigrateResponse) Marshal() (dAtA []byte, err error) {
-	size := m.Size()
-	dAtA = make([]byte, size)
-	n, err := m.MarshalToSizedBuffer(dAtA[:size])
-	if err != nil {
-		return nil, err
-	}
-	return dAtA[:n], nil
-}
-
-func (m *MsgSubstationPlayerMigrateResponse) MarshalTo(dAtA []byte) (int, error) {
-	size := m.Size()
-	return m.MarshalToSizedBuffer(dAtA[:size])
-}
-
-func (m *MsgSubstationPlayerMigrateResponse) MarshalToSizedBuffer(dAtA []byte) (int, error) {
-	i := len(dAtA)
-	_ = i
-	var l int
-	_ = l
-	return len(dAtA) - i, nil
-}
-
 func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	offset -= sovTx(v)
 	base := offset
@@ -7522,7 +7736,31 @@ func encodeVarintTx(dAtA []byte, offset int, v uint64) int {
 	dAtA[offset] = uint8(v)
 	return base
 }
-func (m *MsgSubstationCreate) Size() (n int) {
+func (m *MsgUpdateParams) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Authority)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = m.Params.Size()
+	n += 1 + l + sovTx(uint64(l))
+	return n
+}
+
+func (m *MsgUpdateParamsResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgAddressApproveRegister) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -7532,147 +7770,20 @@ func (m *MsgSubstationCreate) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Owner)
+	if m.Approve {
+		n += 2
+	}
+	l = len(m.Address)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.AllocationId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
+	if m.Permissions != 0 {
+		n += 1 + sovTx(uint64(m.Permissions))
 	}
 	return n
 }
 
-func (m *MsgSubstationCreateResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.SubstationId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	return n
-}
-
-func (m *MsgSubstationDelete) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Creator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.SubstationId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.MigrationSubstationId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	return n
-}
-
-func (m *MsgSubstationDeleteResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MsgSubstationAllocationConnect) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Creator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.AllocationId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.DestinationId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	return n
-}
-
-func (m *MsgSubstationAllocationConnectResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MsgSubstationAllocationDisconnect) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Creator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.AllocationId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	return n
-}
-
-func (m *MsgSubstationAllocationDisconnectResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MsgSubstationPlayerConnect) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Creator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.SubstationId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.PlayerId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	return n
-}
-
-func (m *MsgSubstationPlayerConnectResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MsgSubstationPlayerDisconnect) Size() (n int) {
+func (m *MsgAddressRegister) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -7686,10 +7797,40 @@ func (m *MsgSubstationPlayerDisconnect) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
 	return n
 }
 
-func (m *MsgSubstationPlayerDisconnectResponse) Size() (n int) {
+func (m *MsgAddressRegisterResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgAddressRevoke) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.Address)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgAddressRevokeResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -7735,6 +7876,39 @@ func (m *MsgAllocationCreateResponse) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
+	return n
+}
+
+func (m *MsgGuildApproveRegister) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.Approve {
+		n += 2
+	}
+	l = len(m.GuildId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.PlayerId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgGuildApproveRegisterResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
 	return n
 }
 
@@ -7960,7 +8134,7 @@ func (m *MsgGuildJoinResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgAddressApproveRegister) Size() (n int) {
+func (m *MsgPermissionGrantOnObject) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -7970,8 +8144,29 @@ func (m *MsgAddressApproveRegister) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	if m.Approve {
-		n += 2
+	l = len(m.ObjectId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.PlayerId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if m.Permissions != 0 {
+		n += 1 + sovTx(uint64(m.Permissions))
+	}
+	return n
+}
+
+func (m *MsgPermissionGrantOnAddress) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
 	}
 	l = len(m.Address)
 	if l > 0 {
@@ -7983,7 +8178,7 @@ func (m *MsgAddressApproveRegister) Size() (n int) {
 	return n
 }
 
-func (m *MsgAddressRegister) Size() (n int) {
+func (m *MsgPermissionRevokeOnObject) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -7993,27 +8188,21 @@ func (m *MsgAddressRegister) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
+	l = len(m.ObjectId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
 	l = len(m.PlayerId)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.Address)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
+	if m.Permissions != 0 {
+		n += 1 + sovTx(uint64(m.Permissions))
 	}
 	return n
 }
 
-func (m *MsgAddressRegisterResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MsgAddressRevoke) Size() (n int) {
+func (m *MsgPermissionRevokeOnAddress) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -8027,43 +8216,13 @@ func (m *MsgAddressRevoke) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	return n
-}
-
-func (m *MsgAddressRevokeResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MsgGuildApproveRegister) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Creator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	if m.Approve {
-		n += 2
-	}
-	l = len(m.GuildId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.PlayerId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
+	if m.Permissions != 0 {
+		n += 1 + sovTx(uint64(m.Permissions))
 	}
 	return n
 }
 
-func (m *MsgGuildApproveRegisterResponse) Size() (n int) {
+func (m *MsgPermissionResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -8093,6 +8252,32 @@ func (m *MsgPlanetExploreResponse) Size() (n int) {
 	_ = l
 	l = m.Planet.Size()
 	n += 1 + l + sovTx(uint64(l))
+	return n
+}
+
+func (m *MsgPlayerUpdatePrimaryAddress) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.PrimaryAddress)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgPlayerUpdatePrimaryAddressResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
 	return n
 }
 
@@ -8192,6 +8377,36 @@ func (m *MsgStructBuildCompleteResponse) Size() (n int) {
 	_ = l
 	l = m.Struct.Size()
 	n += 1 + l + sovTx(uint64(l))
+	return n
+}
+
+func (m *MsgStructInfuse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.StructId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.InfuseAmount)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgStructInfuseResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
 	return n
 }
 
@@ -8379,7 +8594,7 @@ func (m *MsgStructRefineResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgPlayerUpdatePrimaryAddress) Size() (n int) {
+func (m *MsgSubstationCreate) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -8389,23 +8604,31 @@ func (m *MsgPlayerUpdatePrimaryAddress) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.PrimaryAddress)
+	l = len(m.Owner)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.AllocationId)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
 
-func (m *MsgPlayerUpdatePrimaryAddressResponse) Size() (n int) {
+func (m *MsgSubstationCreateResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
 	var l int
 	_ = l
+	l = len(m.SubstationId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
 	return n
 }
 
-func (m *MsgStructInfuse) Size() (n int) {
+func (m *MsgSubstationDelete) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -8415,18 +8638,162 @@ func (m *MsgStructInfuse) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.StructId)
+	l = len(m.SubstationId)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
-	l = len(m.InfuseAmount)
+	l = len(m.MigrationSubstationId)
 	if l > 0 {
 		n += 1 + l + sovTx(uint64(l))
 	}
 	return n
 }
 
-func (m *MsgStructInfuseResponse) Size() (n int) {
+func (m *MsgSubstationDeleteResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgSubstationAllocationConnect) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.AllocationId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.DestinationId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgSubstationAllocationConnectResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgSubstationAllocationDisconnect) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.AllocationId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgSubstationAllocationDisconnectResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgSubstationPlayerConnect) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.SubstationId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.PlayerId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgSubstationPlayerConnectResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgSubstationPlayerDisconnect) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.PlayerId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	return n
+}
+
+func (m *MsgSubstationPlayerDisconnectResponse) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	return n
+}
+
+func (m *MsgSubstationPlayerMigrate) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.Creator)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	l = len(m.SubstationId)
+	if l > 0 {
+		n += 1 + l + sovTx(uint64(l))
+	}
+	if len(m.PlayerId) > 0 {
+		for _, s := range m.PlayerId {
+			l = len(s)
+			n += 1 + l + sovTx(uint64(l))
+		}
+	}
+	return n
+}
+
+func (m *MsgSubstationPlayerMigrateResponse) Size() (n int) {
 	if m == nil {
 		return 0
 	}
@@ -8469,142 +8836,13 @@ func (m *MsgSabotageResponse) Size() (n int) {
 	return n
 }
 
-func (m *MsgPermissionGrantOnObject) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Creator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.ObjectId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.PlayerId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	if m.Permissions != 0 {
-		n += 1 + sovTx(uint64(m.Permissions))
-	}
-	return n
-}
-
-func (m *MsgPermissionGrantOnAddress) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Creator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.Address)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	if m.Permissions != 0 {
-		n += 1 + sovTx(uint64(m.Permissions))
-	}
-	return n
-}
-
-func (m *MsgPermissionRevokeOnObject) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Creator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.ObjectId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.PlayerId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	if m.Permissions != 0 {
-		n += 1 + sovTx(uint64(m.Permissions))
-	}
-	return n
-}
-
-func (m *MsgPermissionRevokeOnAddress) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Creator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.Address)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	if m.Permissions != 0 {
-		n += 1 + sovTx(uint64(m.Permissions))
-	}
-	return n
-}
-
-func (m *MsgPermissionResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
-func (m *MsgSubstationPlayerMigrate) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	l = len(m.Creator)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	l = len(m.SubstationId)
-	if l > 0 {
-		n += 1 + l + sovTx(uint64(l))
-	}
-	if len(m.PlayerId) > 0 {
-		for _, s := range m.PlayerId {
-			l = len(s)
-			n += 1 + l + sovTx(uint64(l))
-		}
-	}
-	return n
-}
-
-func (m *MsgSubstationPlayerMigrateResponse) Size() (n int) {
-	if m == nil {
-		return 0
-	}
-	var l int
-	_ = l
-	return n
-}
-
 func sovTx(x uint64) (n int) {
 	return (math_bits.Len64(x|1) + 6) / 7
 }
 func sozTx(x uint64) (n int) {
 	return sovTx(uint64((x << 1) ^ uint64((int64(x) >> 63))))
 }
-func (m *MsgSubstationCreate) Unmarshal(dAtA []byte) error {
+func (m *MsgUpdateParams) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -8627,10 +8865,175 @@ func (m *MsgSubstationCreate) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSubstationCreate: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgUpdateParams: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSubstationCreate: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgUpdateParams: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Authority", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Authority = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Params", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if err := m.Params.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgUpdateParamsResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgUpdateParamsResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgUpdateParamsResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgAddressApproveRegister) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgAddressApproveRegister: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgAddressApproveRegister: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -8666,10 +9069,10 @@ func (m *MsgSubstationCreate) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Approve", wireType)
 			}
-			var stringLen uint64
+			var v int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowTx
@@ -8679,27 +9082,15 @@ func (m *MsgSubstationCreate) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				v |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Owner = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
+			m.Approve = bool(v != 0)
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AllocationId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -8727,8 +9118,27 @@ func (m *MsgSubstationCreate) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.AllocationId = string(dAtA[iNdEx:postIndex])
+			m.Address = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Permissions", wireType)
+			}
+			m.Permissions = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Permissions |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -8750,7 +9160,7 @@ func (m *MsgSubstationCreate) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgSubstationCreateResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgAddressRegister) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -8773,844 +9183,10 @@ func (m *MsgSubstationCreateResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSubstationCreateResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddressRegister: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSubstationCreateResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SubstationId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.SubstationId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgSubstationDelete) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSubstationDelete: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSubstationDelete: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SubstationId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.SubstationId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MigrationSubstationId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.MigrationSubstationId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgSubstationDeleteResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSubstationDeleteResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSubstationDeleteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgSubstationAllocationConnect) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSubstationAllocationConnect: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSubstationAllocationConnect: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AllocationId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.AllocationId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field DestinationId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.DestinationId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgSubstationAllocationConnectResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSubstationAllocationConnectResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSubstationAllocationConnectResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgSubstationAllocationDisconnect) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSubstationAllocationDisconnect: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSubstationAllocationDisconnect: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AllocationId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.AllocationId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgSubstationAllocationDisconnectResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSubstationAllocationDisconnectResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSubstationAllocationDisconnectResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgSubstationPlayerConnect) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSubstationPlayerConnect: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSubstationPlayerConnect: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SubstationId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.SubstationId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.PlayerId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgSubstationPlayerConnectResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSubstationPlayerConnectResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSubstationPlayerConnectResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgSubstationPlayerDisconnect) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSubstationPlayerDisconnect: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSubstationPlayerDisconnect: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddressRegister: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -9677,6 +9253,38 @@ func (m *MsgSubstationPlayerDisconnect) Unmarshal(dAtA []byte) error {
 			}
 			m.PlayerId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -9698,7 +9306,7 @@ func (m *MsgSubstationPlayerDisconnect) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgSubstationPlayerDisconnectResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgAddressRegisterResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -9721,10 +9329,174 @@ func (m *MsgSubstationPlayerDisconnectResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSubstationPlayerDisconnectResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgAddressRegisterResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSubstationPlayerDisconnectResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgAddressRegisterResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgAddressRevoke) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgAddressRevoke: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgAddressRevoke: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgAddressRevokeResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgAddressRevokeResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgAddressRevokeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -9993,6 +9765,222 @@ func (m *MsgAllocationCreateResponse) Unmarshal(dAtA []byte) error {
 			}
 			m.AllocationId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgGuildApproveRegister) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgGuildApproveRegister: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgGuildApproveRegister: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Approve", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Approve = bool(v != 0)
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GuildId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PlayerId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgGuildApproveRegisterResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgGuildApproveRegisterResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgGuildApproveRegisterResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -11489,7 +11477,7 @@ func (m *MsgGuildJoinResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgAddressApproveRegister) Unmarshal(dAtA []byte) error {
+func (m *MsgPermissionGrantOnObject) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -11512,10 +11500,10 @@ func (m *MsgAddressApproveRegister) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddressApproveRegister: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgPermissionGrantOnObject: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddressApproveRegister: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgPermissionGrantOnObject: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -11551,28 +11539,8 @@ func (m *MsgAddressApproveRegister) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Approve", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				v |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.Approve = bool(v != 0)
-		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field ObjectId", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -11600,7 +11568,39 @@ func (m *MsgAddressApproveRegister) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Address = string(dAtA[iNdEx:postIndex])
+			m.ObjectId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PlayerId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 4:
 			if wireType != 0 {
@@ -11642,7 +11642,7 @@ func (m *MsgAddressApproveRegister) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgAddressRegister) Unmarshal(dAtA []byte) error {
+func (m *MsgPermissionGrantOnAddress) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -11665,10 +11665,10 @@ func (m *MsgAddressRegister) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddressRegister: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgPermissionGrantOnAddress: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddressRegister: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgPermissionGrantOnAddress: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -11704,6 +11704,171 @@ func (m *MsgAddressRegister) Unmarshal(dAtA []byte) error {
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Permissions", wireType)
+			}
+			m.Permissions = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Permissions |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgPermissionRevokeOnObject) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgPermissionRevokeOnObject: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgPermissionRevokeOnObject: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ObjectId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ObjectId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
 			}
@@ -11734,390 +11899,79 @@ func (m *MsgAddressRegister) Unmarshal(dAtA []byte) error {
 				return io.ErrUnexpectedEOF
 			}
 			m.PlayerId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Address = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgAddressRegisterResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddressRegisterResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddressRegisterResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgAddressRevoke) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddressRevoke: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddressRevoke: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Address = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgAddressRevokeResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgAddressRevokeResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgAddressRevokeResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgGuildApproveRegister) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgGuildApproveRegister: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgGuildApproveRegister: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Approve", wireType)
-			}
-			var v int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				v |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			m.Approve = bool(v != 0)
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.GuildId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Permissions", wireType)
+			}
+			m.Permissions = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Permissions |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgPermissionRevokeOnAddress) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgPermissionRevokeOnAddress: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgPermissionRevokeOnAddress: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -12145,8 +11999,59 @@ func (m *MsgGuildApproveRegister) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.PlayerId = string(dAtA[iNdEx:postIndex])
+			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Address = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Permissions", wireType)
+			}
+			m.Permissions = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Permissions |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -12168,7 +12073,7 @@ func (m *MsgGuildApproveRegister) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgGuildApproveRegisterResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgPermissionResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -12191,10 +12096,10 @@ func (m *MsgGuildApproveRegisterResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgGuildApproveRegisterResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgPermissionResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgGuildApproveRegisterResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgPermissionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -12362,6 +12267,170 @@ func (m *MsgPlanetExploreResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgPlayerUpdatePrimaryAddress) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgPlayerUpdatePrimaryAddress: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgPlayerUpdatePrimaryAddress: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryAddress", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PrimaryAddress = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgPlayerUpdatePrimaryAddressResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgPlayerUpdatePrimaryAddressResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgPlayerUpdatePrimaryAddressResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -13068,6 +13137,202 @@ func (m *MsgStructBuildCompleteResponse) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgStructInfuse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgStructInfuse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgStructInfuse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StructId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.StructId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field InfuseAmount", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.InfuseAmount = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgStructInfuseResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgStructInfuseResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgStructInfuseResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
 		default:
 			iNdEx = preIndex
 			skippy, err := skipTx(dAtA[iNdEx:])
@@ -14399,7 +14664,7 @@ func (m *MsgStructRefineResponse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgPlayerUpdatePrimaryAddress) Unmarshal(dAtA []byte) error {
+func (m *MsgSubstationCreate) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -14422,10 +14687,10 @@ func (m *MsgPlayerUpdatePrimaryAddress) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgPlayerUpdatePrimaryAddress: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgSubstationCreate: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgPlayerUpdatePrimaryAddress: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgSubstationCreate: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		case 1:
@@ -14462,7 +14727,7 @@ func (m *MsgPlayerUpdatePrimaryAddress) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 2:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryAddress", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -14490,175 +14755,11 @@ func (m *MsgPlayerUpdatePrimaryAddress) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.PrimaryAddress = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgPlayerUpdatePrimaryAddressResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgPlayerUpdatePrimaryAddressResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgPlayerUpdatePrimaryAddressResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgStructInfuse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgStructInfuse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgStructInfuse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field StructId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.StructId = string(dAtA[iNdEx:postIndex])
+			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field InfuseAmount", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field AllocationId", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -14686,7 +14787,7 @@ func (m *MsgStructInfuse) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.InfuseAmount = string(dAtA[iNdEx:postIndex])
+			m.AllocationId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
@@ -14709,7 +14810,7 @@ func (m *MsgStructInfuse) Unmarshal(dAtA []byte) error {
 	}
 	return nil
 }
-func (m *MsgStructInfuseResponse) Unmarshal(dAtA []byte) error {
+func (m *MsgSubstationCreateResponse) Unmarshal(dAtA []byte) error {
 	l := len(dAtA)
 	iNdEx := 0
 	for iNdEx < l {
@@ -14732,10 +14833,1154 @@ func (m *MsgStructInfuseResponse) Unmarshal(dAtA []byte) error {
 		fieldNum := int32(wire >> 3)
 		wireType := int(wire & 0x7)
 		if wireType == 4 {
-			return fmt.Errorf("proto: MsgStructInfuseResponse: wiretype end group for non-group")
+			return fmt.Errorf("proto: MsgSubstationCreateResponse: wiretype end group for non-group")
 		}
 		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgStructInfuseResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			return fmt.Errorf("proto: MsgSubstationCreateResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubstationId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubstationId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSubstationDelete) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSubstationDelete: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSubstationDelete: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubstationId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubstationId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MigrationSubstationId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.MigrationSubstationId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSubstationDeleteResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSubstationDeleteResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSubstationDeleteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSubstationAllocationConnect) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSubstationAllocationConnect: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSubstationAllocationConnect: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AllocationId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AllocationId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DestinationId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DestinationId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSubstationAllocationConnectResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSubstationAllocationConnectResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSubstationAllocationConnectResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSubstationAllocationDisconnect) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSubstationAllocationDisconnect: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSubstationAllocationDisconnect: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AllocationId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AllocationId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSubstationAllocationDisconnectResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSubstationAllocationDisconnectResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSubstationAllocationDisconnectResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSubstationPlayerConnect) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSubstationPlayerConnect: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSubstationPlayerConnect: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubstationId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubstationId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PlayerId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSubstationPlayerConnectResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSubstationPlayerConnectResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSubstationPlayerConnectResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSubstationPlayerDisconnect) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSubstationPlayerDisconnect: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSubstationPlayerDisconnect: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PlayerId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSubstationPlayerDisconnectResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSubstationPlayerDisconnectResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSubstationPlayerDisconnectResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSubstationPlayerMigrate) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSubstationPlayerMigrate: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSubstationPlayerMigrate: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.Creator = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubstationId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubstationId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowTx
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthTx
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthTx
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PlayerId = append(m.PlayerId, string(dAtA[iNdEx:postIndex]))
+			iNdEx = postIndex
+		default:
+			iNdEx = preIndex
+			skippy, err := skipTx(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthTx
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *MsgSubstationPlayerMigrateResponse) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowTx
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: MsgSubstationPlayerMigrateResponse: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: MsgSubstationPlayerMigrateResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:
@@ -14964,848 +16209,6 @@ func (m *MsgSabotageResponse) Unmarshal(dAtA []byte) error {
 		}
 		if fieldNum <= 0 {
 			return fmt.Errorf("proto: MsgSabotageResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgPermissionGrantOnObject) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgPermissionGrantOnObject: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgPermissionGrantOnObject: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ObjectId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ObjectId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.PlayerId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Permissions", wireType)
-			}
-			m.Permissions = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Permissions |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgPermissionGrantOnAddress) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgPermissionGrantOnAddress: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgPermissionGrantOnAddress: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Address = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Permissions", wireType)
-			}
-			m.Permissions = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Permissions |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgPermissionRevokeOnObject) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgPermissionRevokeOnObject: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgPermissionRevokeOnObject: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ObjectId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ObjectId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.PlayerId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Permissions", wireType)
-			}
-			m.Permissions = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Permissions |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgPermissionRevokeOnAddress) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgPermissionRevokeOnAddress: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgPermissionRevokeOnAddress: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Address = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Permissions", wireType)
-			}
-			m.Permissions = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Permissions |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgPermissionResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgPermissionResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgPermissionResponse: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgSubstationPlayerMigrate) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSubstationPlayerMigrate: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSubstationPlayerMigrate: illegal tag %d (wire type %d)", fieldNum, wire)
-		}
-		switch fieldNum {
-		case 1:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Creator = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 2:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SubstationId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.SubstationId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 3:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowTx
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthTx
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthTx
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.PlayerId = append(m.PlayerId, string(dAtA[iNdEx:postIndex]))
-			iNdEx = postIndex
-		default:
-			iNdEx = preIndex
-			skippy, err := skipTx(dAtA[iNdEx:])
-			if err != nil {
-				return err
-			}
-			if (skippy < 0) || (iNdEx+skippy) < 0 {
-				return ErrInvalidLengthTx
-			}
-			if (iNdEx + skippy) > l {
-				return io.ErrUnexpectedEOF
-			}
-			iNdEx += skippy
-		}
-	}
-
-	if iNdEx > l {
-		return io.ErrUnexpectedEOF
-	}
-	return nil
-}
-func (m *MsgSubstationPlayerMigrateResponse) Unmarshal(dAtA []byte) error {
-	l := len(dAtA)
-	iNdEx := 0
-	for iNdEx < l {
-		preIndex := iNdEx
-		var wire uint64
-		for shift := uint(0); ; shift += 7 {
-			if shift >= 64 {
-				return ErrIntOverflowTx
-			}
-			if iNdEx >= l {
-				return io.ErrUnexpectedEOF
-			}
-			b := dAtA[iNdEx]
-			iNdEx++
-			wire |= uint64(b&0x7F) << shift
-			if b < 0x80 {
-				break
-			}
-		}
-		fieldNum := int32(wire >> 3)
-		wireType := int(wire & 0x7)
-		if wireType == 4 {
-			return fmt.Errorf("proto: MsgSubstationPlayerMigrateResponse: wiretype end group for non-group")
-		}
-		if fieldNum <= 0 {
-			return fmt.Errorf("proto: MsgSubstationPlayerMigrateResponse: illegal tag %d (wire type %d)", fieldNum, wire)
 		}
 		switch fieldNum {
 		default:

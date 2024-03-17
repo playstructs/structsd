@@ -4,17 +4,12 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
 func (k msgServer) StructMineDeactivate(goCtx context.Context, msg *types.MsgStructMineDeactivate) (*types.MsgStructMineDeactivateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	err := msg.ValidateBasic()
-	if err != nil {
-		return nil, err
-	}
 
     playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
     if (playerIndex == 0) {

@@ -4,17 +4,12 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
 func (k msgServer) GuildUpdateEndpoint(goCtx context.Context, msg *types.MsgGuildUpdateEndpoint) (*types.MsgGuildUpdateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	err := msg.ValidateBasic()
-	if err != nil {
-		return nil, err
-	}
 
     playerId := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
     if (playerId == 0) {

@@ -3,17 +3,22 @@ package keeper
 import (
 	"encoding/binary"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/runtime"
+	"cosmossdk.io/store/prefix"
+	storetypes "cosmossdk.io/store/types"
+
+	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 
-	//sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	//sdkerrors "cosmossdk.io/errors"
 
 )
 
 
 // GetNextPlayerId allocate a new substation ID
-func (k Keeper) GetNextSubstationId(ctx sdk.Context) uint64 {
+func (k Keeper) GetNextSubstationId(ctx context.Context) uint64 {
 
     nextId := k.GetSubstationCount(ctx)
 
@@ -23,8 +28,8 @@ func (k Keeper) GetNextSubstationId(ctx sdk.Context) uint64 {
 }
 
 // GetSubstationCount get the total number of substation
-func (k Keeper) GetSubstationCount(ctx sdk.Context) uint64 {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
+func (k Keeper) GetSubstationCount(ctx context.Context) uint64 {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
 	byteKey := types.KeyPrefix(types.SubstationCountKey)
 	bz := store.Get(byteKey)
 
@@ -38,8 +43,8 @@ func (k Keeper) GetSubstationCount(ctx sdk.Context) uint64 {
 }
 
 // SetSubstationCount set the total number of substation
-func (k Keeper) SetSubstationCount(ctx sdk.Context, count uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
+func (k Keeper) SetSubstationCount(ctx context.Context, count uint64) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
 	byteKey := types.KeyPrefix(types.SubstationCountKey)
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, count)
@@ -48,7 +53,7 @@ func (k Keeper) SetSubstationCount(ctx sdk.Context, count uint64) {
 
 // AppendSubstation appends a substation in the store with a new id and update the count
 func (k Keeper) AppendSubstation(
-	ctx sdk.Context,
+	ctx context.Context,
     allocation types.Allocation,
     player types.Player,
 ) (substation types.Substation, updatedAllocation types.Allocation, err error) {
@@ -71,30 +76,32 @@ func (k Keeper) AppendSubstation(
 
 
     // actually commit to the store
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationKey))
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.SubstationKey))
 	appendedValue := k.cdc.MustMarshal(&substation)
 	store.Set([]byte(substation.Id), appendedValue)
 
 
     // Cache invalidation event
-    _ = ctx.EventManager().EmitTypedEvent(&types.EventSubstation{Substation: &substation})
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventSubstation{Substation: &substation})
 
 	return substation, updatedAllocation, err
 }
 
 // SetSubstation set a specific substation in the store
-func (k Keeper) SetSubstation(ctx sdk.Context, substation types.Substation) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationKey))
+func (k Keeper) SetSubstation(ctx context.Context, substation types.Substation) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.SubstationKey))
 	b := k.cdc.MustMarshal(&substation)
 	store.Set([]byte(substation.Id), b)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventSubstation{Substation: &substation})
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventSubstation{Substation: &substation})
 
 }
 
 // RemoveSubstation removes a substation from the store
-func (k Keeper) RemoveSubstation(ctx sdk.Context, substationId string, migrationSubstationId string) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationKey))
+func (k Keeper) RemoveSubstation(ctx context.Context, substationId string, migrationSubstationId string) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.SubstationKey))
 
 	/*
 	 * This is going to start out very inefficient. We'll need to tackle
@@ -159,12 +166,13 @@ func (k Keeper) RemoveSubstation(ctx sdk.Context, substationId string, migration
 
 	store.Delete([]byte(substationId))
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventDelete{ ObjectId: substationId })
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventDelete{ ObjectId: substationId })
 }
 
 // GetSubstation returns a substation from its id
-func (k Keeper) GetSubstation(ctx sdk.Context, substationId string, full bool) (val types.Substation, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationKey))
+func (k Keeper) GetSubstation(ctx context.Context, substationId string, full bool) (val types.Substation, found bool) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.SubstationKey))
 	b := store.Get([]byte(substationId))
 	if b == nil {
 		return val, false
@@ -182,9 +190,9 @@ func (k Keeper) GetSubstation(ctx sdk.Context, substationId string, full bool) (
 }
 
 // GetAllSubstation returns all substation
-func (k Keeper) GetAllSubstation(ctx sdk.Context, full bool) (list []types.Substation) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.SubstationKey))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+func (k Keeper) GetAllSubstation(ctx context.Context, full bool) (list []types.Substation) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.SubstationKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
@@ -207,7 +215,7 @@ func (k Keeper) GetAllSubstation(ctx sdk.Context, full bool) (list []types.Subst
 
 
 
-func (k Keeper) SubstationConnectPlayer(ctx sdk.Context, substation types.Substation, player types.Player) (error) {
+func (k Keeper) SubstationConnectPlayer(ctx context.Context, substation types.Substation, player types.Player) (error) {
 
     // If the player is already on a substation then disconnect them from it first
     if (player.SubstationId != "") {
@@ -231,7 +239,7 @@ func (k Keeper) SubstationConnectPlayer(ctx sdk.Context, substation types.Substa
 
 }
 
-func (k Keeper) SubstationDisconnectPlayer(ctx sdk.Context, player types.Player) (error) {
+func (k Keeper) SubstationDisconnectPlayer(ctx context.Context, player types.Player) (error) {
 
     // If the player is already on a substation then disconnect them from it first
     if (player.SubstationId != "") {

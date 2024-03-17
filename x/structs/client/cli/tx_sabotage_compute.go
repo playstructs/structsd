@@ -147,15 +147,14 @@ COMPUTE:
 
 
 
-			msg := types.NewMsgSabotage(
-				clientCtx.GetFromAddress().String(),
-                argStructId,
-                argProof,
-                argNonce,
-			)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
+			msg := &types.MsgSabotage{
+					Creator:  clientCtx.GetFromAddress().String(),
+            		StructId: argStructId,
+            		Proof: argProof,
+            		Nonce: argNonce,
+            }
+
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}

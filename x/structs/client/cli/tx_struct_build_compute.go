@@ -125,16 +125,15 @@ COMPUTE:
 
 
 
-			msg := types.NewMsgStructBuildComplete(
-				clientCtx.GetFromAddress().String(),
-                argStructId,
-                argProof,
-                argNonce,
-			)
+			msg := &types.MsgStructBuildComplete{
+                    Creator:  clientCtx.GetFromAddress().String(),
+                    StructId: argStructId,
+                    Proof: argProof,
+                    Nonce: argNonce,
+            }
 
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
+
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}

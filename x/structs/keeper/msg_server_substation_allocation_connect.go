@@ -3,17 +3,14 @@ package keeper
 import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
 func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types.MsgSubstationAllocationConnect) (*types.MsgSubstationAllocationConnectResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	err := msg.ValidateBasic()
-	if err != nil {
-		return nil, err
-	}
+    var err error
 
 	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId, true)
 	if (!allocationFound) {

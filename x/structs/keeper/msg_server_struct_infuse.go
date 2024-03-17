@@ -5,7 +5,7 @@ import (
 
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 
 	"cosmossdk.io/math"
@@ -13,11 +13,6 @@ import (
 
 func (k msgServer) StructInfuse(goCtx context.Context, msg *types.MsgStructInfuse) (*types.MsgStructInfuseResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	err := msg.ValidateBasic()
-	if err != nil {
-		return nil, err
-	}
 
     playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
     if (playerIndex == 0) {

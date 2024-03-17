@@ -3,9 +3,10 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/runtime"
+	"cosmossdk.io/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	//sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	//sdkerrors "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -43,7 +44,7 @@ func (k Keeper) PermissionByObject(goCtx context.Context, req *types.QueryAllPer
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	store := ctx.KVStore(k.storeKey)
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	permissionStore := prefix.NewStore(store, types.KeyPrefix(types.PermissionKey))
 
 	pageRes, err := query.Paginate(permissionStore, req.Pagination, func(key []byte, value []byte) error {
@@ -70,7 +71,7 @@ func (k Keeper) PermissionByPlayer(goCtx context.Context, req *types.QueryAllPer
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	store := ctx.KVStore(k.storeKey)
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	permissionStore := prefix.NewStore(store, types.KeyPrefix(types.PermissionKey))
 
 	pageRes, err := query.Paginate(permissionStore, req.Pagination, func(key []byte, value []byte) error {
@@ -95,7 +96,7 @@ func (k Keeper) PermissionAll(goCtx context.Context, req *types.QueryAllPermissi
 
  	ctx := sdk.UnwrapSDKContext(goCtx)
 
- 	store := ctx.KVStore(k.storeKey)
+ 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
  	permissionStore := prefix.NewStore(store, types.KeyPrefix(types.PermissionKey))
 
  	pageRes, err := query.Paginate(permissionStore, req.Pagination, func(key []byte, value []byte) error {

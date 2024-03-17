@@ -3,9 +3,10 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/runtime"
+	"cosmossdk.io/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	//sdkerrors "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -20,7 +21,7 @@ func (k Keeper) PlanetAll(goCtx context.Context, req *types.QueryAllPlanetReques
 	var planets []types.Planet
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	store := ctx.KVStore(k.storeKey)
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	planetStore := prefix.NewStore(store, types.KeyPrefix(types.PlanetKey))
 
 	pageRes, err := query.Paginate(planetStore, req.Pagination, func(key []byte, value []byte) error {
@@ -54,7 +55,7 @@ func (k Keeper) Planet(goCtx context.Context, req *types.QueryGetPlanetRequest) 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	planet, found := k.GetPlanet(ctx, req.Id)
 	if !found {
-		return nil, sdkerrors.ErrKeyNotFound
+		return nil, types.ErrObjectNotFound
 	}
 
 	return &types.QueryGetPlanetResponse{Planet: planet}, nil
@@ -69,7 +70,7 @@ func (k Keeper) PlanetAllByPlayer(goCtx context.Context, req *types.QueryAllPlan
 	var planets []types.Planet
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	store := ctx.KVStore(k.storeKey)
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	planetStore := prefix.NewStore(store, types.KeyPrefix(types.PlanetKey))
 
 	pageRes, err := query.Paginate(planetStore, req.Pagination, func(key []byte, value []byte) error {

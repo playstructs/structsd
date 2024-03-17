@@ -3,9 +3,10 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/runtime"
+	"cosmossdk.io/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	//sdkerrors "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -20,7 +21,7 @@ func (k Keeper) InfusionAll(goCtx context.Context, req *types.QueryAllInfusionRe
 	var infusions []types.Infusion
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	store := ctx.KVStore(k.storeKey)
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	infusionStore := prefix.NewStore(store, types.KeyPrefix(types.InfusionKey))
 
 	pageRes, err := query.Paginate(infusionStore, req.Pagination, func(key []byte, value []byte) error {
@@ -48,7 +49,7 @@ func (k Keeper) Infusion(goCtx context.Context, req *types.QueryGetInfusionReque
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	infusion, found := k.GetInfusion(ctx, req.DestinationId, req.Address)
 	if !found {
-		return nil, sdkerrors.ErrKeyNotFound
+		return nil, types.ErrObjectNotFound
 	}
 
 	return &types.QueryGetInfusionResponse{Infusion: infusion}, nil

@@ -3,9 +3,10 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/runtime"
+	"cosmossdk.io/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	//sdkerrors "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -24,7 +25,7 @@ func (k Keeper) SubstationAll(goCtx context.Context, req *types.QueryAllSubstati
 	var substations []types.Substation
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	store := ctx.KVStore(k.storeKey)
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	substationStore := prefix.NewStore(store, types.KeyPrefix(types.SubstationKey))
 
 	pageRes, err := query.Paginate(substationStore, req.Pagination, func(key []byte, value []byte) error {
@@ -58,7 +59,7 @@ func (k Keeper) Substation(goCtx context.Context, req *types.QueryGetSubstationR
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	substation, found := k.GetSubstation(ctx, req.Id, true)
 	if !found {
-		return nil, sdkerrors.ErrKeyNotFound
+		return nil, types.ErrObjectNotFound
 	}
 
 	return &types.QueryGetSubstationResponse{Substation: substation}, nil

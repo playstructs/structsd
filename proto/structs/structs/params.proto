@@ -1,12 +1,14 @@
 syntax = "proto3";
-package structs;
 
+package structs.structs;
+
+import "amino/amino.proto";
 import "gogoproto/gogo.proto";
 
 option go_package = "structs/x/structs/types";
 
 // Params defines the parameters for the module.
 message Params {
-  option (gogoproto.goproto_stringer) = false;
-  
+  option (amino.name) = "structs/x/structs/Params";
+  option (gogoproto.equal) = true;
 }

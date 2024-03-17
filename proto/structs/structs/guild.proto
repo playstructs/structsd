@@ -1,5 +1,6 @@
 syntax = "proto3";
-package structs;
+
+package structs.structs;
 
 import "structs/structs/keys.proto";
 option go_package = "structs/x/structs/types";

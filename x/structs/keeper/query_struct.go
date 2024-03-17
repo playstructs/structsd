@@ -3,9 +3,10 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/runtime"
+	"cosmossdk.io/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	//sdkerrors "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -20,7 +21,7 @@ func (k Keeper) StructAll(goCtx context.Context, req *types.QueryAllStructReques
 	var structures []types.Struct
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	store := ctx.KVStore(k.storeKey)
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	structureStore := prefix.NewStore(store, types.KeyPrefix(types.StructKey))
 
 	pageRes, err := query.Paginate(structureStore, req.Pagination, func(key []byte, value []byte) error {
@@ -55,7 +56,7 @@ func (k Keeper) Struct(goCtx context.Context, req *types.QueryGetStructRequest) 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	structure, found := k.GetStruct(ctx, req.Id)
 	if !found {
-		return nil, sdkerrors.ErrKeyNotFound
+		return nil, types.ErrObjectNotFound
 	}
 
 	return &types.QueryGetStructResponse{Struct: structure}, nil

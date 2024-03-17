@@ -4,27 +4,24 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
 func (k msgServer) PermissionRevokeOnObject(goCtx context.Context, msg *types.MsgPermissionRevokeOnObject) (*types.MsgPermissionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-    err := msg.ValidateBasic()
-    if err != nil {
-        return nil, err
-    }
+    var err error
 
     player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator), false)
     if (!playerFound) {
-        return nil, err
+        return &types.MsgPermissionResponse{}, err
     }
 
     if (player.Id != msg.PlayerId) {
         _, targetPlayerFound := k.GetPlayer(ctx, msg.PlayerId, false)
         if (!targetPlayerFound) {
-            return nil, err
+            return &types.MsgPermissionResponse{}, err
         }
     }
 

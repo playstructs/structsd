@@ -3,9 +3,10 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/runtime"
+	"cosmossdk.io/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	//sdkerrors "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -24,7 +25,7 @@ func (k Keeper) PlayerAll(goCtx context.Context, req *types.QueryAllPlayerReques
 	var players []types.Player
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	store := ctx.KVStore(k.storeKey)
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	playerStore := prefix.NewStore(store, types.KeyPrefix(types.PlayerKey))
 
 	pageRes, err := query.Paginate(playerStore, req.Pagination, func(key []byte, value []byte) error {
@@ -62,7 +63,7 @@ func (k Keeper) Player(goCtx context.Context, req *types.QueryGetPlayerRequest) 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	player, found := k.GetPlayer(ctx, req.Id, true)
 	if !found {
-		return nil, sdkerrors.ErrKeyNotFound
+		return nil, types.ErrObjectNotFound
 	}
 
 	return &types.QueryGetPlayerResponse{Player: player}, nil

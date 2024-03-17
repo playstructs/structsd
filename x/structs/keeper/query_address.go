@@ -3,7 +3,8 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/runtime"
+	"cosmossdk.io/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
@@ -44,7 +45,7 @@ func (k Keeper) AddressAll(goCtx context.Context, req *types.QueryAllAddressRequ
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	store := ctx.KVStore(k.storeKey)
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	addressPlayerStore := prefix.NewStore(store, types.KeyPrefix(types.AddressPlayerKey))
 
 	pageRes, err := query.Paginate(addressPlayerStore, req.Pagination, func(key []byte, value []byte) error {
@@ -77,7 +78,7 @@ func (k Keeper) AddressAllByPlayer(goCtx context.Context, req *types.QueryAllAdd
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	store := ctx.KVStore(k.storeKey)
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	addressPlayerStore := prefix.NewStore(store, types.KeyPrefix(types.AddressPlayerKey))
 
 	pageRes, err := query.Paginate(addressPlayerStore, req.Pagination, func(key []byte, value []byte) error {

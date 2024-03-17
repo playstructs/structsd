@@ -3,16 +3,21 @@ package keeper
 import (
 	"encoding/binary"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/runtime"
+	"cosmossdk.io/store/prefix"
+	storetypes "cosmossdk.io/store/types"
+
+	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-    //sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+    //sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 
 )
 
 // GetStructCount get the total number of struct
-func (k Keeper) GetStructCount(ctx sdk.Context) uint64 {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
+func (k Keeper) GetStructCount(ctx context.Context) uint64 {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
 	byteKey := types.KeyPrefix(types.StructCountKey)
 	bz := store.Get(byteKey)
 
@@ -26,8 +31,8 @@ func (k Keeper) GetStructCount(ctx sdk.Context) uint64 {
 }
 
 // SetStructCount set the total number of struct
-func (k Keeper) SetStructCount(ctx sdk.Context, count uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
+func (k Keeper) SetStructCount(ctx context.Context, count uint64) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
 	byteKey := types.KeyPrefix(types.StructCountKey)
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, count)
@@ -36,13 +41,14 @@ func (k Keeper) SetStructCount(ctx sdk.Context, count uint64) {
 
 // AppendStruct appends a struct in the store with a new id and update the count
 func (k Keeper) AppendStruct(
-	ctx sdk.Context,
+	ctx context.Context,
 	//struct types.Struct,
 	player types.Player,
 	structType string,
 	planet types.Planet,
 	slot uint64,
 ) (structure types.Struct) {
+ 	ctxSDK := sdk.UnwrapSDKContext(ctx)
     structure = types.CreateBaseStruct(structType)
 
 	// Create the struct
@@ -54,9 +60,9 @@ func (k Keeper) AppendStruct(
 	structure.Owner   = player.Id
 	structure.SetPlanetId(planet.Id)
 	structure.SetSlot(slot)
-	structure.SetBuildStartBlock(uint64(ctx.BlockHeight()))
+	structure.SetBuildStartBlock(uint64(ctxSDK.BlockHeight()))
 
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructKey))
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructKey))
 	appendedValue := k.cdc.MustMarshal(&structure)
 	store.Set([]byte(structure.Id), appendedValue)
 
@@ -66,23 +72,24 @@ func (k Keeper) AppendStruct(
     permissionId := GetObjectPermissionIDBytes(structure.Id, structure.Owner)
     k.PermissionAdd(ctx, permissionId, types.PermissionAll)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})
 
 	return structure
 }
 
 // SetStruct set a specific struct in the store
-func (k Keeper) SetStruct(ctx sdk.Context, structure types.Struct) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructKey))
+func (k Keeper) SetStruct(ctx context.Context, structure types.Struct) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructKey))
 	b := k.cdc.MustMarshal(&structure)
 	store.Set([]byte(structure.Id), b)
 
-    _ = ctx.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})
 }
 
 // GetStruct returns a struct from its id
-func (k Keeper) GetStruct(ctx sdk.Context, structId string) (val types.Struct, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructKey))
+func (k Keeper) GetStruct(ctx context.Context, structId string) (val types.Struct, found bool) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructKey))
 	b := store.Get([]byte(structId))
 	if b == nil {
 		return val, false
@@ -99,17 +106,18 @@ func (k Keeper) GetStruct(ctx sdk.Context, structId string) (val types.Struct, f
 }
 
 // RemoveStruct removes a struct from the store
-func (k Keeper) RemoveStruct(ctx sdk.Context, structId string) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructKey))
+func (k Keeper) RemoveStruct(ctx context.Context, structId string) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructKey))
 	store.Delete([]byte(structId))
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventDelete{ ObjectId: structId })
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventDelete{ ObjectId: structId })
 }
 
 // GetAllStruct returns all struct
-func (k Keeper) GetAllStruct(ctx sdk.Context) (list []types.Struct) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.StructKey))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+func (k Keeper) GetAllStruct(ctx context.Context) (list []types.Struct) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
@@ -134,7 +142,7 @@ func (k Keeper) GetAllStruct(ctx sdk.Context) (list []types.Struct) {
 
 
 
-func (k Keeper) StructDeactivate(ctx sdk.Context, structId string) {
+func (k Keeper) StructDeactivate(ctx context.Context, structId string) {
     structure, structureFound := k.GetStruct(ctx, structId)
     if (structureFound) {
 
@@ -165,7 +173,7 @@ func (k Keeper) StructDeactivate(ctx sdk.Context, structId string) {
 
 
 
-func (k Keeper) StructDestroy(ctx sdk.Context, structure types.Struct) {
+func (k Keeper) StructDestroy(ctx context.Context, structure types.Struct) {
 
     planet, planetFound := k.GetPlanet(ctx, structure.PlanetId)
     if (planetFound) {
@@ -198,7 +206,8 @@ func (k Keeper) StructDestroy(ctx sdk.Context, structure types.Struct) {
     k.PermissionClearAll(ctx, permissionId)
 
     structure.SetStatus("DESTROYED")
-    _ = ctx.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})
 
     k.RemoveStruct(ctx, structure.Id)
 

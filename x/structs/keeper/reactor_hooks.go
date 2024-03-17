@@ -3,6 +3,9 @@ package keeper
 import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"context"
+
 	"structs/x/structs/types"
 	"cosmossdk.io/math"
 
@@ -14,7 +17,7 @@ import (
  * Triggered during Staking Hooks:
  *   AfterValidatorCreated
  */
-func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddress)  {
+func (k Keeper) ReactorInitialize(ctx context.Context, validatorAddress sdk.ValAddress)  {
 
     /* Does this Reactor exist? */
     var reactor types.Reactor
@@ -51,8 +54,8 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
         k.PermissionAdd(ctx, permissionId, types.PermissionAll)
 
         // TODO apply the energy distribution to the reactor player account
-        delegation, delegationFound := k.stakingKeeper.GetDelegation(ctx, identity, validatorAddress)
-        if (delegationFound) {
+        delegation, err := k.stakingKeeper.GetDelegation(ctx, identity, validatorAddress)
+        if (err == nil) {
             validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
             delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
 
@@ -70,7 +73,7 @@ func (k Keeper) ReactorInitialize(ctx sdk.Context, validatorAddress sdk.ValAddre
  *   AfterDelegationModified
  *
  */
-func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) {
+func (k Keeper) ReactorUpdatePlayerAllocation(ctx context.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) {
 
 	/* Does this Reactor exist? */
 	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
@@ -81,10 +84,10 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
 	validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
 
 
-    delegation, delegationFound := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
+    delegation, err := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
 
 
-    if (delegationFound) {
+    if (err == nil) {
 
         delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
 
@@ -117,7 +120,7 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx sdk.Context, playerAddress sdk
  *   BeforeValidatorModified (Ugh, why isn't this AfterValidatorModified)
  *
  */
-func (k Keeper) ReactorUpdateFromValidator(ctx sdk.Context, validatorAddress sdk.ValAddress)  {
+func (k Keeper) ReactorUpdateFromValidator(ctx context.Context, validatorAddress sdk.ValAddress)  {
 
     // Currently no need to run updates after the Validator Description is updated
     // but we may use this in the future
@@ -125,10 +128,10 @@ func (k Keeper) ReactorUpdateFromValidator(ctx sdk.Context, validatorAddress sdk
 }
 
 
-func (k Keeper) ReactorRemoveInfusion(ctx sdk.Context, unbondingId uint64) {
+func (k Keeper) ReactorRemoveInfusion(ctx context.Context, unbondingId uint64) {
 
-    unbondingDelegation , unbondingDelegationFound := k.stakingKeeper.GetUnbondingDelegationByUnbondingID(ctx, unbondingId)
-    if (unbondingDelegationFound) {
+    unbondingDelegation, err := k.stakingKeeper.GetUnbondingDelegationByUnbondingID(ctx, unbondingId)
+    if (err == nil) {
 
         var playerAddress sdk.AccAddress
         playerAddress, _ = sdk.AccAddressFromBech32(unbondingDelegation.DelegatorAddress)
@@ -139,9 +142,8 @@ func (k Keeper) ReactorRemoveInfusion(ctx sdk.Context, unbondingId uint64) {
         reactorBytes, _ := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
         reactor, _ := k.GetReactorByBytes(ctx, reactorBytes, false)
 
-        if (unbondingDelegationFound) {
-            unbondingInfusion, _ := k.GetInfusion(ctx, reactor.Id, playerAddress.String())
-            k.DestroyInfusion(ctx, unbondingInfusion)
-        }
+        unbondingInfusion, _ := k.GetInfusion(ctx, reactor.Id, playerAddress.String())
+        k.DestroyInfusion(ctx, unbondingInfusion)
+
     }
 }

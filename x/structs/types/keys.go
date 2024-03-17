@@ -11,9 +11,6 @@ const (
 	// Data stored only during block processing
 	TStoreKey = "transient_structs"
 
-	// RouterKey defines the module's message routing key
-	RouterKey = ModuleName
-
 	// MemStoreKey defines the in-memory store key
 	MemStoreKey = "mem_structs"
 
@@ -24,13 +21,13 @@ const (
 	PortID = "structs"
 
 	// Starting value for Keeper IDs
-	KeeperStartValue = 1
-
-	// Starting value for Reactor Owner Initialization
-	InitialReactorOwnerEnergy = 100
+    KeeperStartValue = 1
 
     // Starting value for Reactor Owner Initialization
-	InitialSubstationOwnerEnergy = 100
+    InitialReactorOwnerEnergy = 100
+
+    // Starting value for Reactor Owner Initialization
+    InitialSubstationOwnerEnergy = 100
 
 
     DifficultyBuildAgeRange  = 10 // 1800  // 36000 // 1 days
@@ -40,6 +37,10 @@ const (
     DifficultySabotageRangeRefine = DifficultyActionAgeRange // 252000 // 7 days
     DifficultySabotageRangePower  = 252000 // 252000 // 7 days
 
+)
+
+var (
+	ParamsKey = []byte("p_structs")
 )
 
 var (
@@ -108,8 +109,6 @@ const (
 const (
 	PlanetKey                = "Planet/value/"
 	PlanetCountKey           = "Planet/count/"
-	PlanetRefinementCountKey = "Planet/refinement/"
-	PlanetOreCountKey        = "Planet/ore/"
 
 	// TODO Make these dynamic in the future
 	PlanetStartingOre = 5

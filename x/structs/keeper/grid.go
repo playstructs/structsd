@@ -2,11 +2,14 @@ package keeper
 
 import (
 	"encoding/binary"
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"context"
+	"github.com/cosmos/cosmos-sdk/runtime"
+	"cosmossdk.io/store/prefix"
+	storetypes "cosmossdk.io/store/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 
-	//sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	//sdkerrors "cosmossdk.io/errors"
 
 	"fmt"
 )
@@ -33,8 +36,8 @@ func GetGridAttributeIDByObjectId(gridAttributeType types.GridAttributeType, obj
 }
 
 
-func (k Keeper) GetGridAttribute(ctx sdk.Context, gridAttributeId string) (amount uint64) {
-	gridAttributeStore := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GridAttributeKey))
+func (k Keeper) GetGridAttribute(ctx context.Context, gridAttributeId string) (amount uint64) {
+	gridAttributeStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridAttributeKey))
 
 	bz := gridAttributeStore.Get([]byte(gridAttributeId))
 
@@ -49,25 +52,26 @@ func (k Keeper) GetGridAttribute(ctx sdk.Context, gridAttributeId string) (amoun
 	return
 }
 
-func (k Keeper) ClearGridAttribute(ctx sdk.Context, gridAttributeId string) () {
-	gridAttributeStore := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GridAttributeKey))
+func (k Keeper) ClearGridAttribute(ctx context.Context, gridAttributeId string) () {
+	gridAttributeStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridAttributeKey))
 	gridAttributeStore.Delete([]byte(gridAttributeId))
 }
 
 
-func (k Keeper) SetGridAttribute(ctx sdk.Context, gridAttributeId string, amount uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GridAttributeKey))
+func (k Keeper) SetGridAttribute(ctx context.Context, gridAttributeId string, amount uint64) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridAttributeKey))
 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, amount)
 
 	store.Set([]byte(gridAttributeId), bz)
 
-    _ = ctx.EventManager().EmitTypedEvent(&types.EventGrid{AttributeId: gridAttributeId, Value: amount})
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGrid{AttributeId: gridAttributeId, Value: amount})
     fmt.Printf("Grid Change (Set): (%s) %d \n", gridAttributeId, amount)
 }
 
-func (k Keeper) SetGridAttributeDelta(ctx sdk.Context, gridAttributeId string, oldAmount uint64, newAmount uint64) (amount uint64, err error) {
+func (k Keeper) SetGridAttributeDelta(ctx context.Context, gridAttributeId string, oldAmount uint64, newAmount uint64) (amount uint64, err error) {
     currentAmount := k.GetGridAttribute(ctx, gridAttributeId)
 
     if (oldAmount > currentAmount) {
@@ -83,7 +87,7 @@ func (k Keeper) SetGridAttributeDelta(ctx sdk.Context, gridAttributeId string, o
     return
 }
 
-func (k Keeper) SetGridAttributeDecrement(ctx sdk.Context, gridAttributeId string, decrementAmount uint64) (amount uint64, err error) {
+func (k Keeper) SetGridAttributeDecrement(ctx context.Context, gridAttributeId string, decrementAmount uint64) (amount uint64, err error) {
     currentAmount := k.GetGridAttribute(ctx, gridAttributeId)
 
     if (decrementAmount > currentAmount) {
@@ -98,7 +102,7 @@ func (k Keeper) SetGridAttributeDecrement(ctx sdk.Context, gridAttributeId strin
     return
 }
 
-func (k Keeper) SetGridAttributeIncrement(ctx sdk.Context, gridAttributeId string, incrementAmount uint64) (amount uint64) {
+func (k Keeper) SetGridAttributeIncrement(ctx context.Context, gridAttributeId string, incrementAmount uint64) (amount uint64) {
     currentAmount := k.GetGridAttribute(ctx, gridAttributeId)
 
     amount = currentAmount + incrementAmount
@@ -109,9 +113,9 @@ func (k Keeper) SetGridAttributeIncrement(ctx sdk.Context, gridAttributeId strin
     return
 }
 
-func (k Keeper) GetGridCascadeQueue(ctx sdk.Context, clear bool) (queue []string) {
-	gridCascadeQueueStore := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GridCascadeQueue))
-	iterator := sdk.KVStorePrefixIterator(gridCascadeQueueStore, []byte{})
+func (k Keeper) GetGridCascadeQueue(ctx context.Context, clear bool) (queue []string) {
+	gridCascadeQueueStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueue))
+	iterator := storetypes.KVStorePrefixIterator(gridCascadeQueueStore, []byte{})
 
 	defer iterator.Close()
 
@@ -126,8 +130,8 @@ func (k Keeper) GetGridCascadeQueue(ctx sdk.Context, clear bool) (queue []string
 }
 
 
-func (k Keeper) AppendGridCascadeQueue(ctx sdk.Context, queueId string) (err error) {
-    gridCascadeQueueStore := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.GridCascadeQueue))
+func (k Keeper) AppendGridCascadeQueue(ctx context.Context, queueId string) (err error) {
+    gridCascadeQueueStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueue))
 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, 1)
@@ -139,7 +143,7 @@ func (k Keeper) AppendGridCascadeQueue(ctx sdk.Context, queueId string) (err err
 	return err
 }
 
-func (k Keeper) GridCascade(ctx sdk.Context) {
+func (k Keeper) GridCascade(ctx context.Context) {
 
     // Initiate the attributes
     var allocationPointer       uint64
@@ -188,7 +192,7 @@ func (k Keeper) GridCascade(ctx sdk.Context) {
     }
 }
 
-func (k Keeper) UpdateGridConnectionCapacity(ctx sdk.Context, objectId string) {
+func (k Keeper) UpdateGridConnectionCapacity(ctx context.Context, objectId string) {
     capacity := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId))
     load     := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId))
 

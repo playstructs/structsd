@@ -3,9 +3,10 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/runtime"
+	"cosmossdk.io/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	//sdkerrors "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -24,7 +25,7 @@ func (k Keeper) GuildAll(goCtx context.Context, req *types.QueryAllGuildRequest)
 	var guilds []types.Guild
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	store := ctx.KVStore(k.storeKey)
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	guildStore := prefix.NewStore(store, types.KeyPrefix(types.GuildKey))
 
 	pageRes, err := query.Paginate(guildStore, req.Pagination, func(key []byte, value []byte) error {
@@ -52,7 +53,7 @@ func (k Keeper) Guild(goCtx context.Context, req *types.QueryGetGuildRequest) (*
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	guild, found := k.GetGuild(ctx, req.Id)
 	if !found {
-		return nil, sdkerrors.ErrKeyNotFound
+		return nil, types.ErrObjectNotFound
 	}
 
 	return &types.QueryGetGuildResponse{Guild: guild}, nil

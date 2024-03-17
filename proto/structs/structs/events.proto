@@ -1,18 +1,18 @@
 syntax = "proto3";
 
-package structs;
+
+package structs.structs;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
-import "cosmos/base/query/v1beta1/pagination.proto";
 import "structs/structs/params.proto";
-import "structs/structs/keys.proto";
 
 import "structs/structs/allocation.proto";
 import "structs/structs/guild.proto";
 import "structs/structs/infusion.proto";
-import "structs/structs/planet.proto";
+import "structs/structs/keys.proto";
 import "structs/structs/player.proto";
+import "structs/structs/planet.proto";
 import "structs/structs/reactor.proto";
 import "structs/structs/struct.proto";
 import "structs/structs/substation.proto";

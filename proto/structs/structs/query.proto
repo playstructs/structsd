@@ -1,44 +1,75 @@
 syntax = "proto3";
 
-package structs;
+package structs.structs;
 
+import "amino/amino.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "cosmos/base/query/v1beta1/pagination.proto";
 import "structs/structs/params.proto";
-import "structs/structs/reactor.proto";
-import "structs/structs/substation.proto";
+
 import "structs/structs/allocation.proto";
 import "structs/structs/guild.proto";
+import "structs/structs/infusion.proto";
+import "structs/structs/keys.proto";
 import "structs/structs/permission.proto";
 import "structs/structs/player.proto";
 import "structs/structs/planet.proto";
+import "structs/structs/reactor.proto";
 import "structs/structs/struct.proto";
-import "structs/structs/infusion.proto";
-import "structs/structs/keys.proto";
+import "structs/structs/substation.proto";
 
 option go_package = "structs/x/structs/types";
 
 // Query defines the gRPC querier service.
 service Query {
-
-  // Parameters queries the parameters of the module.
   rpc GetBlockHeight (QueryBlockHeight) returns (QueryBlockHeightResponse) {
     option (google.api.http).get = "/blockheight";
   }
 
   // Parameters queries the parameters of the module.
-  rpc Params (QueryParamsRequest) returns (QueryParamsResponse) {
-    option (google.api.http).get = "/structs/params";
-  }
-  
-  // Queries a list of Reactor items.
-  rpc Reactor    (QueryGetReactorRequest) returns (QueryGetReactorResponse) {
-    option (google.api.http).get = "/structs/reactor/{id}";
+  rpc Params(QueryParamsRequest) returns (QueryParamsResponse) {
+    option (google.api.http).get = "/structs/structs/params";
   }
 
-  rpc ReactorAll (QueryAllReactorRequest) returns (QueryAllReactorResponse) {
-    option (google.api.http).get = "/structs/reactor";
+  // Queries for Addresses.
+  rpc Address    (QueryGetAddressRequest) returns (QueryAddressResponse) {
+    option (google.api.http).get = "/structs/address/{address}";
+  }
+
+  rpc AddressAll (QueryAllAddressRequest) returns (QueryAllAddressResponse) {
+    option (google.api.http).get = "/structs/address";
+  }
+
+  rpc AddressAllByPlayer (QueryAllAddressByPlayerRequest) returns (QueryAllAddressResponse) {
+    option (google.api.http).get = "/structs/address_by_player/{playerId}";
+  }
+
+  // Queries a list of Allocation items.
+  rpc Allocation    (QueryGetAllocationRequest) returns (QueryGetAllocationResponse) {
+    option (google.api.http).get = "/structs/allocation/{id}";
+  }
+
+  rpc AllocationAll (QueryAllAllocationRequest) returns (QueryAllAllocationResponse) {
+    option (google.api.http).get = "/structs/allocation";
+  }
+
+  // Queries a list of Guild items.
+  rpc Guild    (QueryGetGuildRequest) returns (QueryGetGuildResponse) {
+    option (google.api.http).get = "/structs/guild/{id}";
+  }
+
+  rpc GuildAll (QueryAllGuildRequest) returns (QueryAllGuildResponse) {
+    option (google.api.http).get = "/structs/guild";
+  }
+
+  // Queries a list of Infusions.
+  rpc Infusion    (QueryGetInfusionRequest) returns (QueryGetInfusionResponse) {
+    option (google.api.http).get = "/structs/infusion/{destinationId}/{address}";
+  }
+
+  rpc InfusionAll (QueryAllInfusionRequest) returns (QueryAllInfusionResponse) {
+    option (google.api.http).get = "/structs/infusion";
   }
 
   // Queries a specific Permission
@@ -61,35 +92,6 @@ service Query {
     option (google.api.http).get = "/structs/permission";
   }
 
-  
-  // Queries a list of Substation items.
-  rpc Substation    (QueryGetSubstationRequest) returns (QueryGetSubstationResponse) {
-    option (google.api.http).get = "/structs/substation/{id}";
-  }
-
-  rpc SubstationAll (QueryAllSubstationRequest) returns (QueryAllSubstationResponse) {
-    option (google.api.http).get = "/structs/substation";
-  }
-
-  // Queries a list of Allocation items.
-  rpc Allocation    (QueryGetAllocationRequest) returns (QueryGetAllocationResponse) {
-    option (google.api.http).get = "/structs/allocation/{id}";
-  }
-
-  rpc AllocationAll (QueryAllAllocationRequest) returns (QueryAllAllocationResponse) {
-    option (google.api.http).get = "/structs/allocation";
-  }
-  
-  // Queries a list of Guild items.
-  rpc Guild    (QueryGetGuildRequest) returns (QueryGetGuildResponse) {
-    option (google.api.http).get = "/structs/guild/{id}";
-  }
-
-  rpc GuildAll (QueryAllGuildRequest) returns (QueryAllGuildResponse) {
-    option (google.api.http).get = "/structs/guild";
-  }
-
-
   // Queries a list of Player items.
   rpc Player    (QueryGetPlayerRequest) returns (QueryGetPlayerResponse) {
     option (google.api.http).get = "/structs/player/{id}";
@@ -99,14 +101,6 @@ service Query {
     option (google.api.http).get = "/structs/player";
   }
 
-  // Queries a list of Allocation items.
-  rpc Infusion    (QueryGetInfusionRequest) returns (QueryGetInfusionResponse) {
-    option (google.api.http).get = "/structs/infusion/{destinationId}/{address}";
-  }
-
-  rpc InfusionAll (QueryAllInfusionRequest) returns (QueryAllInfusionResponse) {
-    option (google.api.http).get = "/structs/infusion";
-  }
 
   // Queries a list of Planet items.
   rpc Planet    (QueryGetPlanetRequest) returns (QueryGetPlanetResponse) {
@@ -121,6 +115,15 @@ service Query {
     option (google.api.http).get = "/structs/planet_by_player/{playerId}";
   }
 
+  // Queries a list of Reactor items.
+  rpc Reactor    (QueryGetReactorRequest) returns (QueryGetReactorResponse) {
+    option (google.api.http).get = "/structs/reactor/{id}";
+  }
+
+  rpc ReactorAll (QueryAllReactorRequest) returns (QueryAllReactorResponse) {
+    option (google.api.http).get = "/structs/reactor";
+  }
+
   // Queries a list of Structs items.
   rpc Struct    (QueryGetStructRequest) returns (QueryGetStructResponse) {
     option (google.api.http).get = "/structs/struct/{id}";
@@ -130,22 +133,113 @@ service Query {
     option (google.api.http).get = "/structs/struct";
   }
 
-  // Queries a list of Guild Permission items.
-  rpc Address    (QueryGetAddressRequest) returns (QueryAddressResponse) {
-    option (google.api.http).get = "/structs/address/{address}";
+  // Queries a list of Substation items.
+  rpc Substation    (QueryGetSubstationRequest) returns (QueryGetSubstationResponse) {
+    option (google.api.http).get = "/structs/substation/{id}";
   }
 
-  rpc AddressAll (QueryAllAddressRequest) returns (QueryAllAddressResponse) {
-    option (google.api.http).get = "/structs/address";
-  }
-
-  rpc AddressAllByPlayer (QueryAllAddressByPlayerRequest) returns (QueryAllAddressResponse) {
-    option (google.api.http).get = "/structs/address_by_player/{playerId}";
+  rpc SubstationAll (QueryAllSubstationRequest) returns (QueryAllSubstationResponse) {
+    option (google.api.http).get = "/structs/substation";
   }
 
 }
 
+// QueryParamsRequest is request type for the Query/Params RPC method.
+message QueryParamsRequest {}
 
+// QueryParamsResponse is response type for the Query/Params RPC method.
+message QueryParamsResponse {
+  // params holds all the parameters of this module.
+  Params params = 1 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
+}
+
+
+message QueryBlockHeight {}
+
+message QueryBlockHeightResponse { uint64 blockHeight = 1;}
+
+
+message QueryGetAddressRequest {
+  string address = 1;
+}
+
+message QueryAllAddressByPlayerRequest {
+  string playerId = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryAllAddressRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAddressResponse {
+  string address          = 1;
+  string playerId         = 2;
+  uint64 permissions      = 3;
+}
+
+message QueryAllAddressResponse {
+  repeated QueryAddressResponse address = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetAllocationRequest {
+  string id = 1;
+}
+
+message QueryGetAllocationResponse {
+  Allocation Allocation = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllAllocationRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAllocationResponse {
+  repeated Allocation                             Allocation = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+  repeated uint64                                 status     = 3;
+}
+
+message QueryGetGuildRequest {
+  string id = 1;
+}
+
+message QueryGetGuildResponse {
+  Guild Guild = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllGuildRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllGuildResponse {
+  repeated Guild                                  Guild      = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+
+message QueryGetInfusionRequest {
+  string destinationId        = 1;
+  string address              = 2;
+}
+
+message QueryGetInfusionResponse {
+  Infusion Infusion = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllInfusionRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllInfusionResponse {
+  repeated Infusion                             Infusion = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+  repeated uint64                                 status     = 3;
+}
 
 message QueryGetPermissionRequest {
   string permissionId = 1;
@@ -178,123 +272,6 @@ message QueryAllPermissionResponse {
 }
 
 
-
-// QueryParamsRequest is request type for the Query/Params RPC method.
-message QueryParamsRequest {}
-
-// QueryParamsResponse is response type for the Query/Params RPC method.
-message QueryParamsResponse {
-  
-  // params holds all the parameters of this module.
-  Params params = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryGetReactorRequest {
-  string id = 1;
-}
-
-message QueryGetReactorResponse {
-  Reactor Reactor = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryAllReactorRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryAllReactorResponse {
-  repeated Reactor                                Reactor    = 1 [(gogoproto.nullable) = false];
-           cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-message QueryGetSubstationRequest {
-  string id = 1;
-}
-
-message QueryGetSubstationResponse {
-  Substation Substation = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryAllSubstationRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryAllSubstationResponse {
-  repeated Substation                             Substation = 1 [(gogoproto.nullable) = false];
-           cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-message QueryGetAllocationRequest {
-  string id = 1;
-}
-
-message QueryGetAllocationResponse {
-  Allocation Allocation = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryAllAllocationRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryAllAllocationResponse {
-  repeated Allocation                             Allocation = 1 [(gogoproto.nullable) = false];
-           cosmos.base.query.v1beta1.PageResponse pagination = 2;
-  repeated uint64                                 status     = 3;
-}
-
-message QueryGetGuildRequest {
-  string id = 1;
-}
-
-message QueryGetGuildResponse {
-  Guild Guild = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryAllGuildRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryAllGuildResponse {
-  repeated Guild                                  Guild      = 1 [(gogoproto.nullable) = false];
-           cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-message QueryGetPlayerRequest {
-  string id = 1;
-}
-
-message QueryGetPlayerResponse {
-  Player Player = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryAllPlayerRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryAllPlayerResponse {
-  repeated Player                                 Player     = 1 [(gogoproto.nullable) = false];
-           cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
-
-message QueryGetInfusionRequest {
-  string destinationId        = 1;
-  string address              = 2;
-}
-
-message QueryGetInfusionResponse {
-  Infusion Infusion = 1 [(gogoproto.nullable) = false];
-}
-
-message QueryAllInfusionRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryAllInfusionResponse {
-  repeated Infusion                             Infusion = 1 [(gogoproto.nullable) = false];
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-  repeated uint64                                 status     = 3;
-}
-
 message QueryGetPlanetRequest {
   string id = 1;
 }
@@ -317,6 +294,41 @@ message QueryAllPlanetResponse {
 }
 
 
+message QueryGetPlayerRequest {
+  string id = 1;
+}
+
+message QueryGetPlayerResponse {
+  Player Player = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllPlayerRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllPlayerResponse {
+  repeated Player                                 Player     = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetReactorRequest {
+  string id = 1;
+}
+
+message QueryGetReactorResponse {
+  Reactor Reactor = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllReactorRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllReactorResponse {
+  repeated Reactor                                Reactor    = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+
 message QueryGetStructRequest {
   string id = 1;
 }
@@ -335,30 +347,20 @@ message QueryAllStructResponse {
 }
 
 
-message QueryBlockHeight {}
-
-message QueryBlockHeightResponse { uint64 blockHeight = 1;}
-
-message QueryGetAddressRequest {
-  string address = 1;
+message QueryGetSubstationRequest {
+  string id = 1;
 }
 
-message QueryAllAddressByPlayerRequest {
-  string playerId = 1;
-  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+message QueryGetSubstationResponse {
+  Substation Substation = 1 [(gogoproto.nullable) = false];
 }
 
-message QueryAllAddressRequest {
+message QueryAllSubstationRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
 
-message QueryAddressResponse {
-  string address          = 1;
-  string playerId         = 2;
-  uint64 permissions      = 3;
-}
-
-message QueryAllAddressResponse {
-  repeated QueryAddressResponse address = 1;
+message QueryAllSubstationResponse {
+  repeated Substation                             Substation = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
+

@@ -13,4 +13,3 @@ func FindAccount(accs []simtypes.Account, address string) (simtypes.Account, boo
 	}
 	return simtypes.FindAccount(accs, creator)
 }
-

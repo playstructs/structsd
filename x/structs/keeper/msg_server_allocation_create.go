@@ -2,19 +2,13 @@ package keeper
 
 import (
 	"context"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocationCreate) (*types.MsgAllocationCreateResponse, error) {
-
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
-	err := msg.ValidateBasic()
-	if err != nil {
-		return nil, err
-	}
 
     // If no controller set, then make it the Creator
     if (msg.Controller == ""){

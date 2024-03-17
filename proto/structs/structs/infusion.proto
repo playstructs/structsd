@@ -1,5 +1,6 @@
 syntax = "proto3";
-package structs;
+
+package structs.structs;
 
 option go_package = "structs/x/structs/types";
 
@@ -16,7 +17,7 @@ message Infusion {
 
   string      commission                    = 5 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
-    (gogoproto.customtype) = "github.com/cosmos/cosmos-sdk/types.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false
   ];
 

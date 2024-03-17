@@ -124,15 +124,13 @@ COMPUTE:
 			}
 
 
-			msg := types.NewMsgStructRefine(
-				clientCtx.GetFromAddress().String(),
-                argStructId,
-                argProof,
-                argNonce,
-			)
-			if err := msg.ValidateBasic(); err != nil {
-				return err
-			}
+			msg := &types.MsgStructRefine{
+                Creator:  clientCtx.GetFromAddress().String(),
+                StructId: argStructId,
+                Proof: argProof,
+                Nonce: argNonce,
+            }
+
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}

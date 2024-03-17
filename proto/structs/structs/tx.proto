@@ -1,42 +1,53 @@
 syntax = "proto3";
 
-package structs;
+package structs.structs;
 
-import "gogoproto/gogo.proto";
-import "google/protobuf/any.proto";
+import "amino/amino.proto";
+import "cosmos/msg/v1/msg.proto";
 import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "structs/structs/params.proto";
+
 import "structs/structs/keys.proto";
 import "structs/structs/planet.proto";
 import "structs/structs/struct.proto";
-
 
 option go_package = "structs/x/structs/types";
 
 // Msg defines the Msg service.
 service Msg {
-  rpc AllocationCreate               (MsgAllocationCreate              ) returns (MsgAllocationCreateResponse              );
-  rpc SubstationCreate               (MsgSubstationCreate              ) returns (MsgSubstationCreateResponse              );
-  rpc SubstationDelete               (MsgSubstationDelete              ) returns (MsgSubstationDeleteResponse              );
-  rpc SubstationAllocationConnect    (MsgSubstationAllocationConnect   ) returns (MsgSubstationAllocationConnectResponse   );
-  rpc SubstationAllocationDisconnect (MsgSubstationAllocationDisconnect) returns (MsgSubstationAllocationDisconnectResponse);
-  rpc SubstationPlayerConnect        (MsgSubstationPlayerConnect       ) returns (MsgSubstationPlayerConnectResponse       );
-  rpc SubstationPlayerDisconnect     (MsgSubstationPlayerDisconnect    ) returns (MsgSubstationPlayerDisconnectResponse    );
-  rpc SubstationPlayerMigrate        (MsgSubstationPlayerMigrate       ) returns (MsgSubstationPlayerMigrateResponse       );
-  rpc GuildCreate                    (MsgGuildCreate                   ) returns (MsgGuildCreateResponse                   );
-  rpc GuildUpdateOwnerId             (MsgGuildUpdateOwnerId            ) returns (MsgGuildUpdateResponse                   );
-  rpc GuildUpdateEntrySubstationId   (MsgGuildUpdateEntrySubstationId  ) returns (MsgGuildUpdateResponse                   );
-  rpc GuildUpdateEndpoint            (MsgGuildUpdateEndpoint           ) returns (MsgGuildUpdateResponse                   );
-  rpc GuildUpdateJoinInfusionMinimum (MsgGuildUpdateJoinInfusionMinimum ) returns (MsgGuildUpdateResponse                  );
+  option (cosmos.msg.v1.service) = true;
+
+  // UpdateParams defines a (governance) operation for updating the module
+  // parameters. The authority defaults to the x/gov module account.
+  rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
+
+  rpc AddressRegister                (MsgAddressRegister               ) returns (MsgAddressRegisterResponse );
+  rpc AddressApproveRegister         (MsgAddressApproveRegister        ) returns (MsgAddressRegisterResponse );
+  rpc AddressRevoke                  (MsgAddressRevoke                 ) returns (MsgAddressRevokeResponse );
+
+  rpc AllocationCreate               (MsgAllocationCreate              ) returns (MsgAllocationCreateResponse );
+
+  rpc GuildCreate                                   (MsgGuildCreate                                   ) returns (MsgGuildCreateResponse );
+  rpc GuildUpdateOwnerId                            (MsgGuildUpdateOwnerId                            ) returns (MsgGuildUpdateResponse );
+  rpc GuildUpdateEntrySubstationId                  (MsgGuildUpdateEntrySubstationId                  ) returns (MsgGuildUpdateResponse );
+  rpc GuildUpdateEndpoint                           (MsgGuildUpdateEndpoint                           ) returns (MsgGuildUpdateResponse );
+  rpc GuildUpdateJoinInfusionMinimum                (MsgGuildUpdateJoinInfusionMinimum                ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateJoinInfusionMinimumBypassByInvite  (MsgGuildUpdateJoinInfusionMinimumBypassByInvite  ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateJoinInfusionMinimumBypassByRequest (MsgGuildUpdateJoinInfusionMinimumBypassByRequest ) returns (MsgGuildUpdateResponse );
-  rpc GuildApproveRegister           (MsgGuildApproveRegister          ) returns (MsgGuildApproveRegisterResponse          );
-  rpc GuildJoinProxy                 (MsgGuildJoinProxy                ) returns (MsgGuildJoinProxyResponse             );
-  rpc GuildJoin                      (MsgGuildJoin                     ) returns (MsgGuildJoinResponse                  );
-  rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse    );
-  rpc AddressRegister                (MsgAddressRegister               ) returns (MsgAddressRegisterResponse               );
-  rpc AddressApproveRegister         (MsgAddressApproveRegister        ) returns (MsgAddressRegisterResponse               );
-  rpc AddressRevoke                  (MsgAddressRevoke                 ) returns (MsgAddressRevokeResponse                 );
+  rpc GuildApproveRegister                          (MsgGuildApproveRegister                          ) returns (MsgGuildApproveRegisterResponse );
+  rpc GuildJoinProxy                                (MsgGuildJoinProxy                                ) returns (MsgGuildJoinProxyResponse );
+  rpc GuildJoin                                     (MsgGuildJoin                                     ) returns (MsgGuildJoinResponse );
+
+  rpc PermissionGrantOnAddress       (MsgPermissionGrantOnAddress      ) returns (MsgPermissionResponse);
+  rpc PermissionGrantOnObject        (MsgPermissionGrantOnObject       ) returns (MsgPermissionResponse);
+  rpc PermissionRevokeOnAddress      (MsgPermissionRevokeOnAddress     ) returns (MsgPermissionResponse);
+  rpc PermissionRevokeOnObject       (MsgPermissionRevokeOnObject      ) returns (MsgPermissionResponse);
+
   rpc PlanetExplore                  (MsgPlanetExplore                 ) returns (MsgPlanetExploreResponse                 );
+
+  rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse    );
+
   rpc StructActivate                 (MsgStructActivate                ) returns (MsgStructActivateResponse                );
   rpc StructBuildInitiate            (MsgStructBuildInitiate           ) returns (MsgStructBuildInitiateResponse           );
   rpc StructBuildComplete            (MsgStructBuildComplete           ) returns (MsgStructBuildCompleteResponse           );
@@ -48,64 +59,74 @@ service Msg {
   rpc StructRefine                   (MsgStructRefine                  ) returns (MsgStructRefineResponse                  );
   rpc StructInfuse                   (MsgStructInfuse                  ) returns (MsgStructInfuseResponse                  );
 
-  rpc PermissionGrantOnAddress       (MsgPermissionGrantOnAddress      ) returns (MsgPermissionResponse);
-  rpc PermissionGrantOnObject        (MsgPermissionGrantOnObject      ) returns (MsgPermissionResponse);
-  rpc PermissionRevokeOnAddress       (MsgPermissionRevokeOnAddress      ) returns (MsgPermissionResponse);
-  rpc PermissionRevokeOnObject        (MsgPermissionRevokeOnObject      ) returns (MsgPermissionResponse);
+  rpc SubstationCreate               (MsgSubstationCreate              ) returns (MsgSubstationCreateResponse              );
+  rpc SubstationDelete               (MsgSubstationDelete              ) returns (MsgSubstationDeleteResponse              );
+  rpc SubstationAllocationConnect    (MsgSubstationAllocationConnect   ) returns (MsgSubstationAllocationConnectResponse   );
+  rpc SubstationAllocationDisconnect (MsgSubstationAllocationDisconnect) returns (MsgSubstationAllocationDisconnectResponse);
+  rpc SubstationPlayerConnect        (MsgSubstationPlayerConnect       ) returns (MsgSubstationPlayerConnectResponse       );
+  rpc SubstationPlayerDisconnect     (MsgSubstationPlayerDisconnect    ) returns (MsgSubstationPlayerDisconnectResponse    );
+  rpc SubstationPlayerMigrate        (MsgSubstationPlayerMigrate       ) returns (MsgSubstationPlayerMigrateResponse       );
+
   // To Remove after battle mechanics added
   rpc Sabotage                       (MsgSabotage                      ) returns (MsgSabotageResponse                      );
+
 }
 
-message MsgSubstationCreate {
-  string creator      = 1;
-  string owner        = 2;
-  string allocationId = 3;
+// MsgUpdateParams is the Msg/UpdateParams request type.
+message MsgUpdateParams {
+  option (cosmos.msg.v1.signer) = "authority";
+  option (amino.name) = "structs/x/structs/MsgUpdateParams";
+
+  // authority is the address that controls the module (defaults to x/gov unless overwritten).
+  string authority = 1 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+
+  // params defines the module parameters to update.
+  //
+  // NOTE: All parameters must be supplied.
+  Params params = 2 [
+    (gogoproto.nullable) = false,
+    (amino.dont_omitempty) = true
+  ];
 }
 
-message MsgSubstationCreateResponse {
-  string substationId = 1;
+// MsgUpdateParamsResponse defines the response structure for executing a
+// MsgUpdateParams message.
+message MsgUpdateParamsResponse {}
+
+
+message MsgAddressApproveRegister {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator     = 1;
+  bool   approve     = 2;
+  string address     = 3;
+  uint64 permissions = 4;
 }
 
-message MsgSubstationDelete {
-  string creator               = 1;
-  string substationId          = 2;
-  string migrationSubstationId = 3;
+
+message MsgAddressRegister {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator     = 1;
+  string playerId    = 2;
+  string address     = 3;
+
 }
 
-message MsgSubstationDeleteResponse {}
+message MsgAddressRegisterResponse {}
 
-message MsgSubstationAllocationConnect {
-  string creator                 = 1;
-  string allocationId            = 2;
-  string destinationId = 3;
-}
+message MsgAddressRevoke {
+  option (cosmos.msg.v1.signer) = "creator";
 
-message MsgSubstationAllocationConnectResponse {}
-
-message MsgSubstationAllocationDisconnect {
-  string creator      = 1;
-  string allocationId = 2;
-}
-
-message MsgSubstationAllocationDisconnectResponse {}
-
-message MsgSubstationPlayerConnect {
-  string creator      = 1;
-  string substationId = 2;
-  string playerId     = 3;
-}
-
-message MsgSubstationPlayerConnectResponse {}
-
-message MsgSubstationPlayerDisconnect {
   string creator  = 1;
-  string playerId = 2;
+  string address  = 2;
 }
 
-message MsgSubstationPlayerDisconnectResponse {}
-
+message MsgAddressRevokeResponse {}
 
 message MsgAllocationCreate {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string          creator        = 1;
   string          controller     = 2;
   string          sourceObjectId = 3;
@@ -118,7 +139,21 @@ message MsgAllocationCreateResponse {
 }
 
 
+message MsgGuildApproveRegister {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator     = 1;
+  bool   approve     = 2;
+  string guildId     = 3;
+  string playerId    = 4;
+}
+
+message MsgGuildApproveRegisterResponse {}
+
+
 message MsgGuildCreate {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator  = 1;
   string endpoint = 2;
   string entrySubstationId = 3;
@@ -127,18 +162,24 @@ message MsgGuildCreate {
 message MsgGuildCreateResponse { string guildId = 1; }
 
 message MsgGuildUpdateOwnerId {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator            = 1;
   string guildId            = 2;
   string owner              = 3;
 }
 
 message MsgGuildUpdateEntrySubstationId {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator            = 1;
   string guildId            = 2;
   string entrySubstationId  = 3;
 }
 
 message MsgGuildUpdateEndpoint {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator            = 1;
   string guildId            = 2;
   string endpoint           = 3;
@@ -146,18 +187,24 @@ message MsgGuildUpdateEndpoint {
 
 
 message MsgGuildUpdateJoinInfusionMinimum {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator              = 1;
   string guildId              = 2;
   uint64 joinInfusionMinimum  = 3;
 }
 
 message MsgGuildUpdateJoinInfusionMinimumBypassByRequest {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator                = 1;
   string guildId                = 2;
   guildJoinBypassLevel guildJoinBypassLevel   = 3;
 }
 
 message MsgGuildUpdateJoinInfusionMinimumBypassByInvite {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator                = 1;
   string guildId                = 2;
   guildJoinBypassLevel guildJoinBypassLevel   = 3;
@@ -168,6 +215,8 @@ message MsgGuildUpdateResponse{}
 
 
 message MsgGuildJoinProxy {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator          = 1;
   string address          = 2;
   string substationId     = 3;
@@ -176,47 +225,53 @@ message MsgGuildJoinProxy {
 message MsgGuildJoinProxyResponse {}
 
 message MsgGuildJoin {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator = 1;
   string guildId = 2;
 }
 
 message MsgGuildJoinResponse {}
 
-message MsgAddressApproveRegister {
-  string creator     = 1;
-  bool   approve     = 2;
-  string address     = 3;
-  uint64 permissions = 4;
+
+message MsgPermissionGrantOnObject {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator      = 1;
+  string objectId     = 2;
+  string playerId     = 3;
+  uint64 permissions  = 4;
 }
 
+message MsgPermissionGrantOnAddress {
+  option (cosmos.msg.v1.signer) = "creator";
 
-message MsgAddressRegister {
-  string creator     = 1;
-  string playerId    = 2;
-  string address     = 3;
-
+  string creator      = 1;
+  string address      = 2;
+  uint64 permissions  = 3;
 }
 
-message MsgAddressRegisterResponse {}
+message MsgPermissionRevokeOnObject {
+  option (cosmos.msg.v1.signer) = "creator";
 
-message MsgAddressRevoke {
-  string creator  = 1;
-  string address  = 2;
+  string creator      = 1;
+  string objectId     = 2;
+  string playerId     = 3;
+  uint64 permissions  = 4;
 }
 
-message MsgAddressRevokeResponse {}
+message MsgPermissionRevokeOnAddress {
+  option (cosmos.msg.v1.signer) = "creator";
 
-message MsgGuildApproveRegister {
-  string creator     = 1;
-  bool   approve     = 2;
-  string guildId     = 3;
-  string playerId    = 4;
+  string creator      = 1;
+  string address      = 2;
+  uint64 permissions  = 3;
 }
-
-message MsgGuildApproveRegisterResponse {}
-
+message MsgPermissionResponse {}
 
 message MsgPlanetExplore {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator     = 1;
 }
 
@@ -224,9 +279,18 @@ message MsgPlanetExploreResponse {
   Planet planet = 1 [(gogoproto.nullable) = false];
 }
 
+message MsgPlayerUpdatePrimaryAddress {
+  option (cosmos.msg.v1.signer) = "creator";
 
+  string creator        = 1;
+  string primaryAddress = 2;
+}
+
+message MsgPlayerUpdatePrimaryAddressResponse {}
 
 message MsgStructActivate {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator      = 1;
   string structId     = 2;
 }
@@ -236,6 +300,8 @@ message MsgStructActivateResponse {
 }
 
 message MsgStructBuildInitiate {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator      = 1;
 
   string structType   = 2;
@@ -250,6 +316,8 @@ message MsgStructBuildInitiateResponse {
 }
 
 message MsgStructBuildComplete {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator      = 1;
   string structId     = 2;
   string proof        = 3;
@@ -262,7 +330,20 @@ message MsgStructBuildCompleteResponse {
 }
 
 
+message MsgStructInfuse{
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator        = 1;
+  string structId       = 2;
+  string infuseAmount   = 3;
+}
+
+message MsgStructInfuseResponse {}
+
+
 message MsgStructMineActivate {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator      = 1;
   string structId     = 2;
 }
@@ -272,6 +353,8 @@ message MsgStructMineActivateResponse {
 }
 
 message MsgStructMineDeactivate {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator      = 1;
   string structId     = 2;
 }
@@ -281,6 +364,8 @@ message MsgStructMineDeactivateResponse {
 }
 
 message MsgStructMine {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator      = 1;
   string structId     = 2;
   string proof        = 3;
@@ -292,6 +377,8 @@ message MsgStructMineResponse {
 }
 
 message MsgStructRefineActivate {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator      = 1;
   string structId     = 2;
 }
@@ -301,6 +388,8 @@ message MsgStructRefineActivateResponse {
 }
 
 message MsgStructRefineDeactivate {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator      = 1;
   string structId     = 2;
 }
@@ -310,6 +399,8 @@ message MsgStructRefineDeactivateResponse {
 }
 
 message MsgStructRefine {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator      = 1;
   string structId     = 2;
   string proof        = 3;
@@ -320,23 +411,79 @@ message MsgStructRefineResponse {
   Struct struct = 1 [(gogoproto.nullable) = false];
 }
 
-message MsgPlayerUpdatePrimaryAddress {
-  string creator        = 1;
-  string primaryAddress = 2;
+message MsgSubstationCreate {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator      = 1;
+  string owner        = 2;
+  string allocationId = 3;
 }
 
-message MsgPlayerUpdatePrimaryAddressResponse {}
-
-message MsgStructInfuse{
-  string creator        = 1;
-  string structId       = 2;
-  string infuseAmount   = 3;
+message MsgSubstationCreateResponse {
+  string substationId = 1;
 }
 
-message MsgStructInfuseResponse {}
+message MsgSubstationDelete {
+  option (cosmos.msg.v1.signer) = "creator";
 
+  string creator               = 1;
+  string substationId          = 2;
+  string migrationSubstationId = 3;
+}
+
+message MsgSubstationDeleteResponse {}
+
+message MsgSubstationAllocationConnect {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator                 = 1;
+  string allocationId            = 2;
+  string destinationId = 3;
+}
+
+message MsgSubstationAllocationConnectResponse {}
+
+message MsgSubstationAllocationDisconnect {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator      = 1;
+  string allocationId = 2;
+}
+
+message MsgSubstationAllocationDisconnectResponse {}
+
+message MsgSubstationPlayerConnect {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator      = 1;
+  string substationId = 2;
+  string playerId     = 3;
+}
+
+message MsgSubstationPlayerConnectResponse {}
+
+message MsgSubstationPlayerDisconnect {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator  = 1;
+  string playerId = 2;
+}
+
+message MsgSubstationPlayerDisconnectResponse {}
+
+
+message MsgSubstationPlayerMigrate {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string substationId       = 2;
+  repeated string playerId  = 3;
+}
+message MsgSubstationPlayerMigrateResponse {}
 
 message MsgSabotage {
+  option (cosmos.msg.v1.signer) = "creator";
+
   string creator      = 1;
   string structId     = 2;
   string proof        = 3;
@@ -344,38 +491,3 @@ message MsgSabotage {
 }
 
 message MsgSabotageResponse {}
-
-message MsgPermissionGrantOnObject {
-  string creator      = 1;
-  string objectId     = 2;
-  string playerId     = 3;
-  uint64 permissions  = 4;
-}
-
-message MsgPermissionGrantOnAddress {
-  string creator      = 1;
-  string address      = 2;
-  uint64 permissions  = 3;
-}
-
-message MsgPermissionRevokeOnObject {
-  string creator      = 1;
-  string objectId     = 2;
-  string playerId     = 3;
-  uint64 permissions  = 4;
-}
-
-message MsgPermissionRevokeOnAddress {
-  string creator      = 1;
-  string address      = 2;
-  uint64 permissions  = 3;
-}
-message MsgPermissionResponse {}
-
-message MsgSubstationPlayerMigrate {
-  string creator            = 1;
-  string substationId       = 2;
-  repeated string playerId  = 3;
-}
-message MsgSubstationPlayerMigrateResponse {}
-

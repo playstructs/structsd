@@ -1,34 +1,58 @@
 syntax = "proto3";
 
-package structs;
 
+package structs.structs;
+
+import "amino/amino.proto";
 import "gogoproto/gogo.proto";
 import "structs/structs/params.proto";
-import "structs/structs/reactor.proto";
-import "structs/structs/substation.proto";
-import "structs/structs/allocation.proto";
-import "structs/structs/guild.proto";
-import "structs/structs/player.proto";
 
+import "structs/structs/allocation.proto";
+import "structs/structs/grid.proto";
+import "structs/structs/guild.proto";
+import "structs/structs/infusion.proto";
+import "structs/structs/keys.proto";
+import "structs/structs/permission.proto";
+import "structs/structs/player.proto";
+import "structs/structs/planet.proto";
+import "structs/structs/reactor.proto";
+import "structs/structs/struct.proto";
+import "structs/structs/substation.proto";
 
 option go_package = "structs/x/structs/types";
 
 // GenesisState defines the structs module's genesis state.
 message GenesisState {
-           Params     params           =  1 [(gogoproto.nullable) = false];
-           string     port_id          =  2;
-  repeated Reactor    reactorList      =  3 [(gogoproto.nullable) = false];
-           uint64     reactorCount     =  4;
-  repeated Substation substationList   =  5 [(gogoproto.nullable) = false];
-           uint64     substationCount  =  6;
-  repeated Allocation allocationList   =  7 [(gogoproto.nullable) = false];
-           uint64     allocationCount  =  8;
-  repeated uint64     allocationStatus =  9;
-  repeated Guild      guildList        = 10 [(gogoproto.nullable) = false];
-           uint64     guildCount       = 11;
-  repeated Player     playerList       = 12 [(gogoproto.nullable) = false];
-           uint64     playerCount      = 13;
-  repeated uint64     addressPermissionKey   = 14;
-           uint64     addressPlayerKey       = 15;
+  
+  // params defines all the parameters of the module.
+  Params params  = 1 [(gogoproto.nullable) = false, (amino.dont_omitempty) = true];
+  string port_id = 2;
+
+  repeated  Allocation allocationList   =  3 [(gogoproto.nullable) = false];
+            uint64     allocationCount  =  4;
+
+  repeated  Infusion   infusionList     =  5 [(gogoproto.nullable) = false];
+            uint64     infusionCount    =  6;
+
+  repeated  Guild      guildList        = 7 [(gogoproto.nullable) = false];
+            uint64     guildCount       = 8;
+
+  repeated  Planet     planetList       = 9 [(gogoproto.nullable) = false];
+            uint64     planetCount      = 10;
+
+  repeated  Player     playerList       = 11 [(gogoproto.nullable) = false];
+            uint64     playerCount      = 12;
+
+  repeated  Reactor    reactorList      =  13 [(gogoproto.nullable) = false];
+            uint64     reactorCount     =  14;
+
+  repeated  Struct     structList       =  15 [(gogoproto.nullable) = false];
+            uint64     structCount      =  16;
+
+  repeated  Substation substationList   =  17 [(gogoproto.nullable) = false];
+            uint64     substationCount  =  18;
+
+  repeated  PermissionRecord  permissionList  = 19;
+  repeated  GridRecord        gridList        = 20;
 }
 

@@ -5,6 +5,7 @@ package types
 
 import (
 	fmt "fmt"
+	_ "github.com/cosmos/cosmos-sdk/types/tx/amino"
 	_ "github.com/cosmos/gogoproto/gogoproto"
 	proto "github.com/cosmos/gogoproto/proto"
 	io "io"
@@ -25,21 +26,27 @@ const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
 // GenesisState defines the structs module's genesis state.
 type GenesisState struct {
-	Params               Params       `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
-	PortId               string       `protobuf:"bytes,2,opt,name=port_id,json=portId,proto3" json:"port_id,omitempty"`
-	ReactorList          []Reactor    `protobuf:"bytes,3,rep,name=reactorList,proto3" json:"reactorList"`
-	ReactorCount         uint64       `protobuf:"varint,4,opt,name=reactorCount,proto3" json:"reactorCount,omitempty"`
-	SubstationList       []Substation `protobuf:"bytes,5,rep,name=substationList,proto3" json:"substationList"`
-	SubstationCount      uint64       `protobuf:"varint,6,opt,name=substationCount,proto3" json:"substationCount,omitempty"`
-	AllocationList       []Allocation `protobuf:"bytes,7,rep,name=allocationList,proto3" json:"allocationList"`
-	AllocationCount      uint64       `protobuf:"varint,8,opt,name=allocationCount,proto3" json:"allocationCount,omitempty"`
-	AllocationStatus     []uint64     `protobuf:"varint,9,rep,packed,name=allocationStatus,proto3" json:"allocationStatus,omitempty"`
-	GuildList            []Guild      `protobuf:"bytes,10,rep,name=guildList,proto3" json:"guildList"`
-	GuildCount           uint64       `protobuf:"varint,11,opt,name=guildCount,proto3" json:"guildCount,omitempty"`
-	PlayerList           []Player     `protobuf:"bytes,12,rep,name=playerList,proto3" json:"playerList"`
-	PlayerCount          uint64       `protobuf:"varint,13,opt,name=playerCount,proto3" json:"playerCount,omitempty"`
-	AddressPermissionKey []uint64     `protobuf:"varint,14,rep,packed,name=addressPermissionKey,proto3" json:"addressPermissionKey,omitempty"`
-	AddressPlayerKey     uint64       `protobuf:"varint,15,opt,name=addressPlayerKey,proto3" json:"addressPlayerKey,omitempty"`
+	// params defines all the parameters of the module.
+	Params          Params              `protobuf:"bytes,1,opt,name=params,proto3" json:"params"`
+	PortId          string              `protobuf:"bytes,2,opt,name=port_id,json=portId,proto3" json:"port_id,omitempty"`
+	AllocationList  []Allocation        `protobuf:"bytes,3,rep,name=allocationList,proto3" json:"allocationList"`
+	AllocationCount uint64              `protobuf:"varint,4,opt,name=allocationCount,proto3" json:"allocationCount,omitempty"`
+	InfusionList    []Infusion          `protobuf:"bytes,5,rep,name=infusionList,proto3" json:"infusionList"`
+	InfusionCount   uint64              `protobuf:"varint,6,opt,name=infusionCount,proto3" json:"infusionCount,omitempty"`
+	GuildList       []Guild             `protobuf:"bytes,7,rep,name=guildList,proto3" json:"guildList"`
+	GuildCount      uint64              `protobuf:"varint,8,opt,name=guildCount,proto3" json:"guildCount,omitempty"`
+	PlanetList      []Planet            `protobuf:"bytes,9,rep,name=planetList,proto3" json:"planetList"`
+	PlanetCount     uint64              `protobuf:"varint,10,opt,name=planetCount,proto3" json:"planetCount,omitempty"`
+	PlayerList      []Player            `protobuf:"bytes,11,rep,name=playerList,proto3" json:"playerList"`
+	PlayerCount     uint64              `protobuf:"varint,12,opt,name=playerCount,proto3" json:"playerCount,omitempty"`
+	ReactorList     []Reactor           `protobuf:"bytes,13,rep,name=reactorList,proto3" json:"reactorList"`
+	ReactorCount    uint64              `protobuf:"varint,14,opt,name=reactorCount,proto3" json:"reactorCount,omitempty"`
+	StructList      []Struct            `protobuf:"bytes,15,rep,name=structList,proto3" json:"structList"`
+	StructCount     uint64              `protobuf:"varint,16,opt,name=structCount,proto3" json:"structCount,omitempty"`
+	SubstationList  []Substation        `protobuf:"bytes,17,rep,name=substationList,proto3" json:"substationList"`
+	SubstationCount uint64              `protobuf:"varint,18,opt,name=substationCount,proto3" json:"substationCount,omitempty"`
+	PermissionList  []*PermissionRecord `protobuf:"bytes,19,rep,name=permissionList,proto3" json:"permissionList,omitempty"`
+	GridList        []*GridRecord       `protobuf:"bytes,20,rep,name=gridList,proto3" json:"gridList,omitempty"`
 }
 
 func (m *GenesisState) Reset()         { *m = GenesisState{} }
@@ -89,34 +96,6 @@ func (m *GenesisState) GetPortId() string {
 	return ""
 }
 
-func (m *GenesisState) GetReactorList() []Reactor {
-	if m != nil {
-		return m.ReactorList
-	}
-	return nil
-}
-
-func (m *GenesisState) GetReactorCount() uint64 {
-	if m != nil {
-		return m.ReactorCount
-	}
-	return 0
-}
-
-func (m *GenesisState) GetSubstationList() []Substation {
-	if m != nil {
-		return m.SubstationList
-	}
-	return nil
-}
-
-func (m *GenesisState) GetSubstationCount() uint64 {
-	if m != nil {
-		return m.SubstationCount
-	}
-	return 0
-}
-
 func (m *GenesisState) GetAllocationList() []Allocation {
 	if m != nil {
 		return m.AllocationList
@@ -131,11 +110,18 @@ func (m *GenesisState) GetAllocationCount() uint64 {
 	return 0
 }
 
-func (m *GenesisState) GetAllocationStatus() []uint64 {
+func (m *GenesisState) GetInfusionList() []Infusion {
 	if m != nil {
-		return m.AllocationStatus
+		return m.InfusionList
 	}
 	return nil
+}
+
+func (m *GenesisState) GetInfusionCount() uint64 {
+	if m != nil {
+		return m.InfusionCount
+	}
+	return 0
 }
 
 func (m *GenesisState) GetGuildList() []Guild {
@@ -148,6 +134,20 @@ func (m *GenesisState) GetGuildList() []Guild {
 func (m *GenesisState) GetGuildCount() uint64 {
 	if m != nil {
 		return m.GuildCount
+	}
+	return 0
+}
+
+func (m *GenesisState) GetPlanetList() []Planet {
+	if m != nil {
+		return m.PlanetList
+	}
+	return nil
+}
+
+func (m *GenesisState) GetPlanetCount() uint64 {
+	if m != nil {
+		return m.PlanetCount
 	}
 	return 0
 }
@@ -166,57 +166,107 @@ func (m *GenesisState) GetPlayerCount() uint64 {
 	return 0
 }
 
-func (m *GenesisState) GetAddressPermissionKey() []uint64 {
+func (m *GenesisState) GetReactorList() []Reactor {
 	if m != nil {
-		return m.AddressPermissionKey
+		return m.ReactorList
 	}
 	return nil
 }
 
-func (m *GenesisState) GetAddressPlayerKey() uint64 {
+func (m *GenesisState) GetReactorCount() uint64 {
 	if m != nil {
-		return m.AddressPlayerKey
+		return m.ReactorCount
 	}
 	return 0
 }
 
+func (m *GenesisState) GetStructList() []Struct {
+	if m != nil {
+		return m.StructList
+	}
+	return nil
+}
+
+func (m *GenesisState) GetStructCount() uint64 {
+	if m != nil {
+		return m.StructCount
+	}
+	return 0
+}
+
+func (m *GenesisState) GetSubstationList() []Substation {
+	if m != nil {
+		return m.SubstationList
+	}
+	return nil
+}
+
+func (m *GenesisState) GetSubstationCount() uint64 {
+	if m != nil {
+		return m.SubstationCount
+	}
+	return 0
+}
+
+func (m *GenesisState) GetPermissionList() []*PermissionRecord {
+	if m != nil {
+		return m.PermissionList
+	}
+	return nil
+}
+
+func (m *GenesisState) GetGridList() []*GridRecord {
+	if m != nil {
+		return m.GridList
+	}
+	return nil
+}
+
 func init() {
-	proto.RegisterType((*GenesisState)(nil), "structs.GenesisState")
+	proto.RegisterType((*GenesisState)(nil), "structs.structs.GenesisState")
 }
 
 func init() { proto.RegisterFile("structs/structs/genesis.proto", fileDescriptor_39407fc37d8c4705) }
 
 var fileDescriptor_39407fc37d8c4705 = []byte{
-	// 458 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x53, 0x4d, 0x6f, 0xd3, 0x40,
-	0x10, 0xb5, 0x89, 0xeb, 0x90, 0x71, 0x48, 0xaa, 0xa5, 0x52, 0xad, 0x00, 0xc6, 0xea, 0xc9, 0x42,
-	0x22, 0x15, 0x46, 0x48, 0x5c, 0x5b, 0x0e, 0x15, 0x82, 0x43, 0xe5, 0xde, 0xb8, 0xa0, 0x6d, 0xbc,
-	0x8a, 0x2c, 0xb9, 0x5e, 0x6b, 0x77, 0x2d, 0x91, 0x7f, 0xc1, 0xbf, 0xa2, 0xc7, 0x1e, 0x39, 0x21,
-	0x94, 0xfc, 0x11, 0xe4, 0xd9, 0x8d, 0xed, 0xda, 0xe4, 0x64, 0xcf, 0x7b, 0x33, 0xef, 0xbd, 0xfd,
-	0x82, 0x57, 0x52, 0x89, 0x6a, 0xa5, 0xe4, 0xf9, 0xfe, 0xbb, 0x66, 0x05, 0x93, 0x99, 0x5c, 0x96,
-	0x82, 0x2b, 0x4e, 0xc6, 0x06, 0x5e, 0x9c, 0xac, 0xf9, 0x9a, 0x23, 0x76, 0x5e, 0xff, 0x69, 0x7a,
-	0xf1, 0xb2, 0x3f, 0x5d, 0x52, 0x41, 0xef, 0xcc, 0xf0, 0x62, 0xa0, 0x2d, 0x18, 0x5d, 0x29, 0x2e,
-	0x0c, 0x1d, 0xf6, 0x69, 0x59, 0xdd, 0x4a, 0x45, 0x55, 0xc6, 0x8b, 0x43, 0x1d, 0x34, 0xcf, 0xf9,
-	0xaa, 0xdb, 0xf1, 0x62, 0x10, 0xbf, 0xca, 0xf2, 0xf4, 0x60, 0xba, 0x9c, 0x6e, 0x98, 0xb1, 0x3f,
-	0xfb, 0x75, 0x04, 0xd3, 0x2b, 0xbd, 0xd8, 0x1b, 0x45, 0x15, 0x23, 0x6f, 0xc1, 0xd5, 0xf1, 0x7d,
-	0x3b, 0xb4, 0x23, 0x2f, 0x9e, 0x2f, 0xcd, 0xdc, 0xf2, 0x1a, 0xe1, 0x4b, 0xe7, 0xfe, 0xcf, 0x6b,
-	0x2b, 0x31, 0x4d, 0xe4, 0x14, 0xc6, 0x25, 0x17, 0xea, 0x7b, 0x96, 0xfa, 0x4f, 0x42, 0x3b, 0x9a,
-	0x24, 0x6e, 0x5d, 0x7e, 0x4e, 0xc9, 0x47, 0xf0, 0xcc, 0x42, 0xbf, 0x66, 0x52, 0xf9, 0xa3, 0x70,
-	0x14, 0x79, 0xf1, 0x71, 0x23, 0x96, 0x68, 0xce, 0xa8, 0x75, 0x5b, 0xc9, 0x19, 0x4c, 0x4d, 0xf9,
-	0x89, 0x57, 0x85, 0xf2, 0x9d, 0xd0, 0x8e, 0x9c, 0xe4, 0x11, 0x46, 0x2e, 0x60, 0xd6, 0xee, 0x13,
-	0x1a, 0x1c, 0xa1, 0xc1, 0xf3, 0xc6, 0xe0, 0xa6, 0xa1, 0x8d, 0x47, 0x6f, 0x80, 0x44, 0x30, 0x6f,
-	0x11, 0xed, 0xe4, 0xa2, 0x53, 0x1f, 0xae, 0xcd, 0xda, 0x2d, 0x47, 0xb3, 0x71, 0xcf, 0xec, 0xa2,
-	0xa1, 0xf7, 0x66, 0x8f, 0x07, 0x6a, 0xb3, 0x16, 0xd1, 0x66, 0x4f, 0xb5, 0x59, 0x0f, 0x26, 0x6f,
-	0xe0, 0xb8, 0x85, 0xea, 0x23, 0xa9, 0xa4, 0x3f, 0x09, 0x47, 0x91, 0x93, 0x0c, 0x70, 0x12, 0xc3,
-	0x04, 0x4f, 0x1a, 0x33, 0x01, 0x66, 0x9a, 0x35, 0x99, 0xae, 0x6a, 0xc6, 0xc4, 0x69, 0xdb, 0x48,
-	0x00, 0x80, 0x85, 0x0e, 0xe1, 0x61, 0x88, 0x0e, 0x42, 0x3e, 0x00, 0xe8, 0x0b, 0x82, 0xa2, 0x53,
-	0x14, 0xed, 0xdc, 0x01, 0xa4, 0x8c, 0x6a, 0xa7, 0x91, 0x84, 0xe0, 0xe9, 0x4a, 0xeb, 0x3e, 0x43,
-	0xdd, 0x2e, 0x44, 0x62, 0x38, 0xa1, 0x69, 0x2a, 0x98, 0x94, 0xd7, 0x4c, 0xdc, 0x65, 0x52, 0x66,
-	0xbc, 0xf8, 0xc2, 0x36, 0xfe, 0x0c, 0x17, 0xf7, 0x5f, 0x0e, 0x37, 0xc3, 0xe0, 0xa8, 0x54, 0xf7,
-	0xcf, 0x51, 0x7a, 0x80, 0x5f, 0xbe, 0xbb, 0xdf, 0x06, 0xf6, 0xc3, 0x36, 0xb0, 0xff, 0x6e, 0x03,
-	0xfb, 0xe7, 0x2e, 0xb0, 0x1e, 0x76, 0x81, 0xf5, 0x7b, 0x17, 0x58, 0xdf, 0x4e, 0xf7, 0x37, 0xff,
-	0x47, 0xf3, 0x06, 0xd4, 0xa6, 0x64, 0xf2, 0xd6, 0xc5, 0x37, 0xf0, 0xfe, 0x5f, 0x00, 0x00, 0x00,
-	0xff, 0xff, 0x2a, 0x2a, 0x7e, 0xfd, 0xff, 0x03, 0x00, 0x00,
+	// 592 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x7c, 0x94, 0xcd, 0x6e, 0xd3, 0x4c,
+	0x14, 0x86, 0xe3, 0xaf, 0xf9, 0xd2, 0x64, 0x92, 0x36, 0x74, 0xa8, 0x48, 0x48, 0xc1, 0x98, 0x8a,
+	0x85, 0xc5, 0x22, 0x11, 0x65, 0x81, 0x54, 0x09, 0x09, 0xd2, 0x45, 0x14, 0x89, 0x05, 0x72, 0x76,
+	0x6c, 0x90, 0x1b, 0x0f, 0xd1, 0x88, 0xc4, 0x63, 0xcd, 0x8c, 0x25, 0x7c, 0x17, 0xdc, 0x02, 0x3b,
+	0x96, 0x5c, 0x46, 0x97, 0x5d, 0xb2, 0x42, 0x28, 0x59, 0x70, 0x1b, 0x68, 0xce, 0x8c, 0x7f, 0x62,
+	0xe3, 0x6e, 0x32, 0x9e, 0x73, 0xce, 0xfb, 0x3e, 0xf3, 0x73, 0x32, 0xe8, 0xb1, 0x90, 0x3c, 0x5e,
+	0x4a, 0x31, 0x49, 0xc7, 0x15, 0x09, 0x89, 0xa0, 0x62, 0x1c, 0x71, 0x26, 0x19, 0xee, 0x9b, 0xf0,
+	0xd8, 0x8c, 0xa3, 0x13, 0x7f, 0x43, 0x43, 0x36, 0x81, 0x5f, 0x5d, 0x33, 0x3a, 0x5d, 0xb1, 0x15,
+	0x83, 0xcf, 0x89, 0xfa, 0x32, 0xd1, 0x47, 0x65, 0xe3, 0xc8, 0xe7, 0xfe, 0xc6, 0xf8, 0x8e, 0x9c,
+	0x72, 0xd6, 0x5f, 0xaf, 0xd9, 0xd2, 0x97, 0x94, 0x85, 0xa6, 0x62, 0x54, 0x59, 0x18, 0xa7, 0x81,
+	0xc9, 0x9d, 0x55, 0x72, 0x31, 0x5d, 0xa7, 0x49, 0xbb, 0x9c, 0xa4, 0xe1, 0xa7, 0x58, 0xdc, 0x61,
+	0xfc, 0x99, 0x24, 0xb5, 0xcb, 0x8a, 0x08, 0xdf, 0x50, 0x51, 0x50, 0x57, 0xb7, 0xb5, 0xf6, 0x13,
+	0xc2, 0xef, 0xc8, 0x86, 0x44, 0x9a, 0x6c, 0xe5, 0xac, 0x39, 0xf1, 0x97, 0x92, 0xd5, 0x8a, 0xf5,
+	0x58, 0xb7, 0x34, 0x11, 0x5f, 0x0b, 0x59, 0x38, 0xb1, 0xf3, 0x6f, 0x6d, 0xd4, 0x9b, 0xe9, 0xdb,
+	0x5b, 0x48, 0x5f, 0x12, 0x7c, 0x89, 0x5a, 0xfa, 0xd0, 0x87, 0x96, 0x63, 0xb9, 0xdd, 0x8b, 0xc1,
+	0xb8, 0x74, 0x9b, 0xe3, 0xf7, 0x90, 0x9e, 0x76, 0x6e, 0x7e, 0x3d, 0x69, 0x7c, 0xff, 0xf3, 0xe3,
+	0xb9, 0xe5, 0x19, 0x05, 0x1e, 0xa0, 0xc3, 0x88, 0x71, 0xf9, 0x91, 0x06, 0xc3, 0xff, 0x1c, 0xcb,
+	0xed, 0x78, 0x2d, 0x35, 0x9d, 0x07, 0x78, 0x8e, 0x8e, 0xf3, 0xbb, 0x7a, 0x47, 0x85, 0x1c, 0x1e,
+	0x38, 0x07, 0x6e, 0xf7, 0xe2, 0xac, 0x62, 0xfe, 0x36, 0x2b, 0x9b, 0x36, 0x15, 0xc0, 0x2b, 0x09,
+	0xb1, 0x8b, 0xfa, 0x79, 0xe4, 0x8a, 0xc5, 0xa1, 0x1c, 0x36, 0x1d, 0xcb, 0x6d, 0x7a, 0xe5, 0x30,
+	0xbe, 0x42, 0xbd, 0xf4, 0x16, 0x01, 0xf9, 0x3f, 0x20, 0x1f, 0x56, 0x90, 0x73, 0x53, 0x64, 0x80,
+	0x7b, 0x22, 0xfc, 0x0c, 0x1d, 0xa5, 0x73, 0x0d, 0x6b, 0x01, 0x6c, 0x3f, 0x88, 0x2f, 0x51, 0x07,
+	0xba, 0x09, 0x38, 0x87, 0xc0, 0x79, 0x50, 0xe1, 0xcc, 0x54, 0x85, 0x81, 0xe4, 0xe5, 0xd8, 0x46,
+	0x08, 0x26, 0xda, 0xbe, 0x0d, 0xf6, 0x85, 0x08, 0x7e, 0x8d, 0x90, 0x6e, 0x08, 0x30, 0xef, 0x80,
+	0xf9, 0x3f, 0x2e, 0x05, 0x4a, 0x8c, 0x7b, 0x41, 0x80, 0x1d, 0xd4, 0xd5, 0x33, 0xed, 0x8f, 0xc0,
+	0xbf, 0x18, 0x32, 0x80, 0x84, 0x70, 0x00, 0x74, 0xeb, 0x01, 0x09, 0xe1, 0x05, 0x80, 0x11, 0x18,
+	0x40, 0x42, 0xb8, 0x06, 0xf4, 0x32, 0x40, 0x1a, 0xc2, 0x6f, 0x50, 0xd7, 0x34, 0x2d, 0x10, 0x8e,
+	0x80, 0x30, 0xac, 0x10, 0x3c, 0x5d, 0x63, 0x10, 0x45, 0x09, 0x3e, 0x47, 0x3d, 0x33, 0xd5, 0x90,
+	0x63, 0x80, 0xec, 0xc5, 0xd4, 0x36, 0xb4, 0x13, 0x40, 0xfa, 0x35, 0xdb, 0x58, 0xc0, 0x98, 0x6e,
+	0x23, 0x17, 0xa8, 0x6d, 0xe8, 0x99, 0x26, 0xdc, 0xd3, 0xdb, 0x28, 0x84, 0x54, 0x13, 0xe7, 0x7f,
+	0x1f, 0x80, 0x9c, 0xd4, 0x34, 0xf1, 0x22, 0x2b, 0x4b, 0x9b, 0x78, 0x5f, 0xa8, 0x9a, 0x38, 0x8f,
+	0x68, 0x20, 0xd6, 0x4d, 0x5c, 0x0a, 0x2b, 0x68, 0xfe, 0x9c, 0x00, 0xf4, 0x3e, 0x40, 0x9f, 0x56,
+	0x2f, 0x28, 0x2b, 0xf3, 0xc8, 0x92, 0xf1, 0xc0, 0x2b, 0x09, 0xf1, 0x2b, 0xd4, 0x56, 0xcf, 0x21,
+	0x98, 0x9c, 0xd6, 0xac, 0x7c, 0xc6, 0x69, 0x60, 0xe4, 0x59, 0xf1, 0xf4, 0xc5, 0xcd, 0xd6, 0xb6,
+	0x6e, 0xb7, 0xb6, 0xf5, 0x7b, 0x6b, 0x5b, 0x5f, 0x77, 0x76, 0xe3, 0x76, 0x67, 0x37, 0x7e, 0xee,
+	0xec, 0xc6, 0x87, 0x41, 0xfa, 0xae, 0x7c, 0xc9, 0x5e, 0x18, 0x99, 0x44, 0x44, 0x5c, 0xb7, 0xe0,
+	0x75, 0x79, 0xf9, 0x37, 0x00, 0x00, 0xff, 0xff, 0x20, 0xf6, 0xa2, 0xd5, 0x2a, 0x06, 0x00, 0x00,
 }
 
 func (m *GenesisState) Marshal() (dAtA []byte, err error) {
@@ -239,38 +289,10 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.AddressPlayerKey != 0 {
-		i = encodeVarintGenesis(dAtA, i, uint64(m.AddressPlayerKey))
-		i--
-		dAtA[i] = 0x78
-	}
-	if len(m.AddressPermissionKey) > 0 {
-		dAtA2 := make([]byte, len(m.AddressPermissionKey)*10)
-		var j1 int
-		for _, num := range m.AddressPermissionKey {
-			for num >= 1<<7 {
-				dAtA2[j1] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j1++
-			}
-			dAtA2[j1] = uint8(num)
-			j1++
-		}
-		i -= j1
-		copy(dAtA[i:], dAtA2[:j1])
-		i = encodeVarintGenesis(dAtA, i, uint64(j1))
-		i--
-		dAtA[i] = 0x72
-	}
-	if m.PlayerCount != 0 {
-		i = encodeVarintGenesis(dAtA, i, uint64(m.PlayerCount))
-		i--
-		dAtA[i] = 0x68
-	}
-	if len(m.PlayerList) > 0 {
-		for iNdEx := len(m.PlayerList) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.GridList) > 0 {
+		for iNdEx := len(m.GridList) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.PlayerList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.GridList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -278,18 +300,15 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 				i = encodeVarintGenesis(dAtA, i, uint64(size))
 			}
 			i--
-			dAtA[i] = 0x62
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0xa2
 		}
 	}
-	if m.GuildCount != 0 {
-		i = encodeVarintGenesis(dAtA, i, uint64(m.GuildCount))
-		i--
-		dAtA[i] = 0x58
-	}
-	if len(m.GuildList) > 0 {
-		for iNdEx := len(m.GuildList) - 1; iNdEx >= 0; iNdEx-- {
+	if len(m.PermissionList) > 0 {
+		for iNdEx := len(m.PermissionList) - 1; iNdEx >= 0; iNdEx-- {
 			{
-				size, err := m.GuildList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				size, err := m.PermissionList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -297,50 +316,17 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 				i = encodeVarintGenesis(dAtA, i, uint64(size))
 			}
 			i--
-			dAtA[i] = 0x52
-		}
-	}
-	if len(m.AllocationStatus) > 0 {
-		dAtA4 := make([]byte, len(m.AllocationStatus)*10)
-		var j3 int
-		for _, num := range m.AllocationStatus {
-			for num >= 1<<7 {
-				dAtA4[j3] = uint8(uint64(num)&0x7f | 0x80)
-				num >>= 7
-				j3++
-			}
-			dAtA4[j3] = uint8(num)
-			j3++
-		}
-		i -= j3
-		copy(dAtA[i:], dAtA4[:j3])
-		i = encodeVarintGenesis(dAtA, i, uint64(j3))
-		i--
-		dAtA[i] = 0x4a
-	}
-	if m.AllocationCount != 0 {
-		i = encodeVarintGenesis(dAtA, i, uint64(m.AllocationCount))
-		i--
-		dAtA[i] = 0x40
-	}
-	if len(m.AllocationList) > 0 {
-		for iNdEx := len(m.AllocationList) - 1; iNdEx >= 0; iNdEx-- {
-			{
-				size, err := m.AllocationList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
-				if err != nil {
-					return 0, err
-				}
-				i -= size
-				i = encodeVarintGenesis(dAtA, i, uint64(size))
-			}
+			dAtA[i] = 0x1
 			i--
-			dAtA[i] = 0x3a
+			dAtA[i] = 0x9a
 		}
 	}
 	if m.SubstationCount != 0 {
 		i = encodeVarintGenesis(dAtA, i, uint64(m.SubstationCount))
 		i--
-		dAtA[i] = 0x30
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x90
 	}
 	if len(m.SubstationList) > 0 {
 		for iNdEx := len(m.SubstationList) - 1; iNdEx >= 0; iNdEx-- {
@@ -353,18 +339,136 @@ func (m *GenesisState) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 				i = encodeVarintGenesis(dAtA, i, uint64(size))
 			}
 			i--
-			dAtA[i] = 0x2a
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0x8a
+		}
+	}
+	if m.StructCount != 0 {
+		i = encodeVarintGenesis(dAtA, i, uint64(m.StructCount))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x80
+	}
+	if len(m.StructList) > 0 {
+		for iNdEx := len(m.StructList) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.StructList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x7a
 		}
 	}
 	if m.ReactorCount != 0 {
 		i = encodeVarintGenesis(dAtA, i, uint64(m.ReactorCount))
 		i--
-		dAtA[i] = 0x20
+		dAtA[i] = 0x70
 	}
 	if len(m.ReactorList) > 0 {
 		for iNdEx := len(m.ReactorList) - 1; iNdEx >= 0; iNdEx-- {
 			{
 				size, err := m.ReactorList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x6a
+		}
+	}
+	if m.PlayerCount != 0 {
+		i = encodeVarintGenesis(dAtA, i, uint64(m.PlayerCount))
+		i--
+		dAtA[i] = 0x60
+	}
+	if len(m.PlayerList) > 0 {
+		for iNdEx := len(m.PlayerList) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.PlayerList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x5a
+		}
+	}
+	if m.PlanetCount != 0 {
+		i = encodeVarintGenesis(dAtA, i, uint64(m.PlanetCount))
+		i--
+		dAtA[i] = 0x50
+	}
+	if len(m.PlanetList) > 0 {
+		for iNdEx := len(m.PlanetList) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.PlanetList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x4a
+		}
+	}
+	if m.GuildCount != 0 {
+		i = encodeVarintGenesis(dAtA, i, uint64(m.GuildCount))
+		i--
+		dAtA[i] = 0x40
+	}
+	if len(m.GuildList) > 0 {
+		for iNdEx := len(m.GuildList) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.GuildList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x3a
+		}
+	}
+	if m.InfusionCount != 0 {
+		i = encodeVarintGenesis(dAtA, i, uint64(m.InfusionCount))
+		i--
+		dAtA[i] = 0x30
+	}
+	if len(m.InfusionList) > 0 {
+		for iNdEx := len(m.InfusionList) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.InfusionList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
+				if err != nil {
+					return 0, err
+				}
+				i -= size
+				i = encodeVarintGenesis(dAtA, i, uint64(size))
+			}
+			i--
+			dAtA[i] = 0x2a
+		}
+	}
+	if m.AllocationCount != 0 {
+		i = encodeVarintGenesis(dAtA, i, uint64(m.AllocationCount))
+		i--
+		dAtA[i] = 0x20
+	}
+	if len(m.AllocationList) > 0 {
+		for iNdEx := len(m.AllocationList) - 1; iNdEx >= 0; iNdEx-- {
+			{
+				size, err := m.AllocationList[iNdEx].MarshalToSizedBuffer(dAtA[:i])
 				if err != nil {
 					return 0, err
 				}
@@ -418,24 +522,6 @@ func (m *GenesisState) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovGenesis(uint64(l))
 	}
-	if len(m.ReactorList) > 0 {
-		for _, e := range m.ReactorList {
-			l = e.Size()
-			n += 1 + l + sovGenesis(uint64(l))
-		}
-	}
-	if m.ReactorCount != 0 {
-		n += 1 + sovGenesis(uint64(m.ReactorCount))
-	}
-	if len(m.SubstationList) > 0 {
-		for _, e := range m.SubstationList {
-			l = e.Size()
-			n += 1 + l + sovGenesis(uint64(l))
-		}
-	}
-	if m.SubstationCount != 0 {
-		n += 1 + sovGenesis(uint64(m.SubstationCount))
-	}
 	if len(m.AllocationList) > 0 {
 		for _, e := range m.AllocationList {
 			l = e.Size()
@@ -445,12 +531,14 @@ func (m *GenesisState) Size() (n int) {
 	if m.AllocationCount != 0 {
 		n += 1 + sovGenesis(uint64(m.AllocationCount))
 	}
-	if len(m.AllocationStatus) > 0 {
-		l = 0
-		for _, e := range m.AllocationStatus {
-			l += sovGenesis(uint64(e))
+	if len(m.InfusionList) > 0 {
+		for _, e := range m.InfusionList {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
 		}
-		n += 1 + sovGenesis(uint64(l)) + l
+	}
+	if m.InfusionCount != 0 {
+		n += 1 + sovGenesis(uint64(m.InfusionCount))
 	}
 	if len(m.GuildList) > 0 {
 		for _, e := range m.GuildList {
@@ -461,6 +549,15 @@ func (m *GenesisState) Size() (n int) {
 	if m.GuildCount != 0 {
 		n += 1 + sovGenesis(uint64(m.GuildCount))
 	}
+	if len(m.PlanetList) > 0 {
+		for _, e := range m.PlanetList {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if m.PlanetCount != 0 {
+		n += 1 + sovGenesis(uint64(m.PlanetCount))
+	}
 	if len(m.PlayerList) > 0 {
 		for _, e := range m.PlayerList {
 			l = e.Size()
@@ -470,15 +567,44 @@ func (m *GenesisState) Size() (n int) {
 	if m.PlayerCount != 0 {
 		n += 1 + sovGenesis(uint64(m.PlayerCount))
 	}
-	if len(m.AddressPermissionKey) > 0 {
-		l = 0
-		for _, e := range m.AddressPermissionKey {
-			l += sovGenesis(uint64(e))
+	if len(m.ReactorList) > 0 {
+		for _, e := range m.ReactorList {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
 		}
-		n += 1 + sovGenesis(uint64(l)) + l
 	}
-	if m.AddressPlayerKey != 0 {
-		n += 1 + sovGenesis(uint64(m.AddressPlayerKey))
+	if m.ReactorCount != 0 {
+		n += 1 + sovGenesis(uint64(m.ReactorCount))
+	}
+	if len(m.StructList) > 0 {
+		for _, e := range m.StructList {
+			l = e.Size()
+			n += 1 + l + sovGenesis(uint64(l))
+		}
+	}
+	if m.StructCount != 0 {
+		n += 2 + sovGenesis(uint64(m.StructCount))
+	}
+	if len(m.SubstationList) > 0 {
+		for _, e := range m.SubstationList {
+			l = e.Size()
+			n += 2 + l + sovGenesis(uint64(l))
+		}
+	}
+	if m.SubstationCount != 0 {
+		n += 2 + sovGenesis(uint64(m.SubstationCount))
+	}
+	if len(m.PermissionList) > 0 {
+		for _, e := range m.PermissionList {
+			l = e.Size()
+			n += 2 + l + sovGenesis(uint64(l))
+		}
+	}
+	if len(m.GridList) > 0 {
+		for _, e := range m.GridList {
+			l = e.Size()
+			n += 2 + l + sovGenesis(uint64(l))
+		}
 	}
 	return n
 }
@@ -585,112 +711,6 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 			iNdEx = postIndex
 		case 3:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ReactorList", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGenesis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.ReactorList = append(m.ReactorList, Reactor{})
-			if err := m.ReactorList[len(m.ReactorList)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 4:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ReactorCount", wireType)
-			}
-			m.ReactorCount = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGenesis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.ReactorCount |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 5:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SubstationList", wireType)
-			}
-			var msglen int
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGenesis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				msglen |= int(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			if msglen < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			postIndex := iNdEx + msglen
-			if postIndex < 0 {
-				return ErrInvalidLengthGenesis
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.SubstationList = append(m.SubstationList, Substation{})
-			if err := m.SubstationList[len(m.SubstationList)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
-				return err
-			}
-			iNdEx = postIndex
-		case 6:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field SubstationCount", wireType)
-			}
-			m.SubstationCount = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowGenesis
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.SubstationCount |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 7:
-			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AllocationList", wireType)
 			}
 			var msglen int
@@ -723,7 +743,7 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 8:
+		case 4:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AllocationCount", wireType)
 			}
@@ -742,83 +762,60 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 9:
-			if wireType == 0 {
-				var v uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowGenesis
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field InfusionList", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
 				}
-				m.AllocationStatus = append(m.AllocationStatus, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowGenesis
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthGenesis
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthGenesis
-				}
-				if postIndex > l {
+				if iNdEx >= l {
 					return io.ErrUnexpectedEOF
 				}
-				var elementCount int
-				var count int
-				for _, integer := range dAtA[iNdEx:postIndex] {
-					if integer < 128 {
-						count++
-					}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
 				}
-				elementCount = count
-				if elementCount != 0 && len(m.AllocationStatus) == 0 {
-					m.AllocationStatus = make([]uint64, 0, elementCount)
-				}
-				for iNdEx < postIndex {
-					var v uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowGenesis
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						v |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					m.AllocationStatus = append(m.AllocationStatus, v)
-				}
-			} else {
-				return fmt.Errorf("proto: wrong wireType = %d for field AllocationStatus", wireType)
 			}
-		case 10:
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.InfusionList = append(m.InfusionList, Infusion{})
+			if err := m.InfusionList[len(m.InfusionList)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field InfusionCount", wireType)
+			}
+			m.InfusionCount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.InfusionCount |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 7:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GuildList", wireType)
 			}
@@ -852,7 +849,7 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 11:
+		case 8:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GuildCount", wireType)
 			}
@@ -871,7 +868,60 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 12:
+		case 9:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PlanetList", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PlanetList = append(m.PlanetList, Planet{})
+			if err := m.PlanetList[len(m.PlanetList)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 10:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PlanetCount", wireType)
+			}
+			m.PlanetCount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PlanetCount |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 11:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PlayerList", wireType)
 			}
@@ -905,7 +955,7 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 				return err
 			}
 			iNdEx = postIndex
-		case 13:
+		case 12:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PlayerCount", wireType)
 			}
@@ -924,87 +974,11 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 14:
-			if wireType == 0 {
-				var v uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowGenesis
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					v |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				m.AddressPermissionKey = append(m.AddressPermissionKey, v)
-			} else if wireType == 2 {
-				var packedLen int
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return ErrIntOverflowGenesis
-					}
-					if iNdEx >= l {
-						return io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					packedLen |= int(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				if packedLen < 0 {
-					return ErrInvalidLengthGenesis
-				}
-				postIndex := iNdEx + packedLen
-				if postIndex < 0 {
-					return ErrInvalidLengthGenesis
-				}
-				if postIndex > l {
-					return io.ErrUnexpectedEOF
-				}
-				var elementCount int
-				var count int
-				for _, integer := range dAtA[iNdEx:postIndex] {
-					if integer < 128 {
-						count++
-					}
-				}
-				elementCount = count
-				if elementCount != 0 && len(m.AddressPermissionKey) == 0 {
-					m.AddressPermissionKey = make([]uint64, 0, elementCount)
-				}
-				for iNdEx < postIndex {
-					var v uint64
-					for shift := uint(0); ; shift += 7 {
-						if shift >= 64 {
-							return ErrIntOverflowGenesis
-						}
-						if iNdEx >= l {
-							return io.ErrUnexpectedEOF
-						}
-						b := dAtA[iNdEx]
-						iNdEx++
-						v |= uint64(b&0x7F) << shift
-						if b < 0x80 {
-							break
-						}
-					}
-					m.AddressPermissionKey = append(m.AddressPermissionKey, v)
-				}
-			} else {
-				return fmt.Errorf("proto: wrong wireType = %d for field AddressPermissionKey", wireType)
+		case 13:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReactorList", wireType)
 			}
-		case 15:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field AddressPlayerKey", wireType)
-			}
-			m.AddressPlayerKey = 0
+			var msglen int
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowGenesis
@@ -1014,11 +988,219 @@ func (m *GenesisState) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.AddressPlayerKey |= uint64(b&0x7F) << shift
+				msglen |= int(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ReactorList = append(m.ReactorList, Reactor{})
+			if err := m.ReactorList[len(m.ReactorList)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 14:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ReactorCount", wireType)
+			}
+			m.ReactorCount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ReactorCount |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 15:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StructList", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.StructList = append(m.StructList, Struct{})
+			if err := m.StructList[len(m.StructList)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 16:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StructCount", wireType)
+			}
+			m.StructCount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.StructCount |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 17:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubstationList", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.SubstationList = append(m.SubstationList, Substation{})
+			if err := m.SubstationList[len(m.SubstationList)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 18:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SubstationCount", wireType)
+			}
+			m.SubstationCount = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SubstationCount |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 19:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PermissionList", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.PermissionList = append(m.PermissionList, &PermissionRecord{})
+			if err := m.PermissionList[len(m.PermissionList)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 20:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GridList", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowGenesis
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthGenesis
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.GridList = append(m.GridList, &GridRecord{})
+			if err := m.GridList[len(m.GridList)-1].Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
 		default:
 			iNdEx = preIndex
 			skippy, err := skipGenesis(dAtA[iNdEx:])

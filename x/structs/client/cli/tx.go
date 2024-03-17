@@ -11,16 +11,11 @@ import (
 	"structs/x/structs/types"
 )
 
-var (
-	DefaultRelativePacketTimeoutTimestamp = uint64((time.Duration(10) * time.Minute).Nanoseconds())
-)
+var DefaultRelativePacketTimeoutTimestamp = uint64((time.Duration(10) * time.Minute).Nanoseconds())
 
-const (
-	flagPacketTimeoutTimestamp = "packet-timeout-timestamp"
-	listSeparator              = ","
-)
+const listSeparator = ","
 
-// GetTxCmd returns the transaction commands for this module
+// GetTxCmd returns the transaction commands for this module.
 func GetTxCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:                        types.ModuleName,
@@ -30,66 +25,10 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
-	cmd.AddCommand(CmdAllocationCreate())
-
-	cmd.AddCommand(CmdSubstationCreate())
-	cmd.AddCommand(CmdSubstationDelete())
-
-	cmd.AddCommand(CmdSubstationAllocationConnect())
-	cmd.AddCommand(CmdSubstationAllocationDisconnect())
-
-	cmd.AddCommand(CmdSubstationPlayerConnect())
-	cmd.AddCommand(CmdSubstationPlayerDisconnect())
-    cmd.AddCommand(CmdSubstationPlayerMigrate())
-
-	cmd.AddCommand(CmdGuildCreate())
-
-    cmd.AddCommand(CmdGuildJoin())
-
-	cmd.AddCommand(CmdGuildJoinProxy())
-	cmd.AddCommand(CmdGuildUpdateEndpoint())
-	cmd.AddCommand(CmdGuildUpdateEntrySubstationId())
-	cmd.AddCommand(CmdGuildUpdateJoinInfusionMinimum())
-	cmd.AddCommand(CmdGuildUpdateJoinInfusionMinimumBypassByInvite())
-	cmd.AddCommand(CmdGuildUpdateJoinInfusionMinimumBypassByRequest())
-	cmd.AddCommand(CmdGuildUpdateOwnerId())
-
-	cmd.AddCommand(CmdGuildApproveRegister())
-
-
-	cmd.AddCommand(CmdPlayerUpdatePrimaryAddress())
-	cmd.AddCommand(CmdAddressRegister())
-	cmd.AddCommand(CmdAddressApproveRegister())
-	cmd.AddCommand(CmdAddressRevoke())
-
-    cmd.AddCommand(CmdPermissionGrantOnObject())
-    cmd.AddCommand(CmdPermissionGrantOnAddress())
-    cmd.AddCommand(CmdPermissionRevokeOnObject())
-    cmd.AddCommand(CmdPermissionRevokeOnAddress())
-
-	cmd.AddCommand(CmdPlanetExplore())
-
-    cmd.AddCommand(CmdStructActivate())
-
-	cmd.AddCommand(CmdStructBuildInitiate())
-	cmd.AddCommand(CmdStructBuildComplete())
 	cmd.AddCommand(CmdStructBuildCompute())
-
-	cmd.AddCommand(CmdStructMineActivate())
-	cmd.AddCommand(CmdStructMineDeactivate())
-	cmd.AddCommand(CmdStructMine())
 	cmd.AddCommand(CmdStructMineCompute())
-
-    cmd.AddCommand(CmdStructRefineActivate())
-    cmd.AddCommand(CmdStructRefineDeactivate())
-    cmd.AddCommand(CmdStructRefine())
     cmd.AddCommand(CmdStructRefineCompute())
-
-    cmd.AddCommand(CmdStructInfuse())
-
-    cmd.AddCommand(CmdSabotage())
     cmd.AddCommand(CmdSabotageCompute())
-
 	// this line is used by starport scaffolding # 1
 
 	return cmd

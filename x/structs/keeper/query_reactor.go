@@ -3,9 +3,10 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/runtime"
+	"cosmossdk.io/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	//sdkerrors "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -24,7 +25,7 @@ func (k Keeper) ReactorAll(goCtx context.Context, req *types.QueryAllReactorRequ
 	var reactors []types.Reactor
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	store := ctx.KVStore(k.storeKey)
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	reactorStore := prefix.NewStore(store, types.KeyPrefix(types.ReactorKey))
 
 	pageRes, err := query.Paginate(reactorStore, req.Pagination, func(key []byte, value []byte) error {
@@ -57,7 +58,7 @@ func (k Keeper) Reactor(goCtx context.Context, req *types.QueryGetReactorRequest
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	reactor, found := k.GetReactor(ctx, req.Id, true)
 	if !found {
-		return nil, sdkerrors.ErrKeyNotFound
+		return nil, types.ErrObjectNotFound
 	}
 
 	return &types.QueryGetReactorResponse{Reactor: reactor}, nil

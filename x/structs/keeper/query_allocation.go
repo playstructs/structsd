@@ -3,9 +3,10 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/runtime"
+	"cosmossdk.io/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	//sdkerrors "cosmossdk.io/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -20,7 +21,7 @@ func (k Keeper) AllocationAll(goCtx context.Context, req *types.QueryAllAllocati
 	var allocations []types.Allocation
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-	store := ctx.KVStore(k.storeKey)
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
 	allocationStore := prefix.NewStore(store, types.KeyPrefix(types.AllocationKey))
 
 	pageRes, err := query.Paginate(allocationStore, req.Pagination, func(key []byte, value []byte) error {
@@ -48,7 +49,7 @@ func (k Keeper) Allocation(goCtx context.Context, req *types.QueryGetAllocationR
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	allocation, found := k.GetAllocation(ctx, req.Id, true)
 	if !found {
-		return nil, sdkerrors.ErrKeyNotFound
+		return nil, types.ErrObjectNotFound
 	}
 
 	return &types.QueryGetAllocationResponse{Allocation: allocation}, nil

@@ -3,17 +3,23 @@ package keeper
 import (
 	"encoding/binary"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/runtime"
+	"cosmossdk.io/store/prefix"
+
+    storetypes "cosmossdk.io/store/types"
+
+	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	//sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
+	//sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 
 )
 
 
 // GetPlayerCount get the total number of player
-func (k Keeper) GetPlayerCount(ctx sdk.Context) uint64 {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
+func (k Keeper) GetPlayerCount(ctx context.Context) uint64 {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
 	byteKey := types.KeyPrefix(types.PlayerCountKey)
 	bz := store.Get(byteKey)
 
@@ -27,8 +33,8 @@ func (k Keeper) GetPlayerCount(ctx sdk.Context) uint64 {
 }
 
 // SetPlayerCount set the total number of player
-func (k Keeper) SetPlayerCount(ctx sdk.Context, count uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
+func (k Keeper) SetPlayerCount(ctx context.Context, count uint64) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
 	byteKey := types.KeyPrefix(types.PlayerCountKey)
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, count)
@@ -37,9 +43,11 @@ func (k Keeper) SetPlayerCount(ctx sdk.Context, count uint64) {
 
 // AppendPlayer appends a player in the store with a new id and update the count
 func (k Keeper) AppendPlayer(
-	ctx sdk.Context,
+	ctx context.Context,
 	player types.Player,
 ) types.Player {
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+
 	// Create the player
 	count := k.GetPlayerCount(ctx)
 
@@ -47,7 +55,7 @@ func (k Keeper) AppendPlayer(
 	player.Id = GetObjectID(types.ObjectType_player, count)
 	player.Index = count
 
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlayerKey))
 	appendedValue := k.cdc.MustMarshal(&player)
 	store.Set([]byte(player.Id), appendedValue)
 
@@ -72,24 +80,25 @@ func (k Keeper) AppendPlayer(
     // Add the initial Player Load
     k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, player.Id), types.PlayerPassiveDraw)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlayer{Player: &player})
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPlayer{Player: &player})
 
 	return player
 }
 
 // SetPlayer set a specific player in the store
-func (k Keeper) SetPlayer(ctx sdk.Context, player types.Player) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
+func (k Keeper) SetPlayer(ctx context.Context, player types.Player) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlayerKey))
 	b := k.cdc.MustMarshal(&player)
 
 	store.Set([]byte(player.Id), b)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlayer{Player: &player})
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPlayer{Player: &player})
 }
 
 // GetPlayer returns a player from its id
-func (k Keeper) GetPlayer(ctx sdk.Context, playerId string, full bool) (val types.Player, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
+func (k Keeper) GetPlayer(ctx context.Context, playerId string, full bool) (val types.Player, found bool) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlayerKey))
 	b := store.Get([]byte(playerId))
 	if b == nil {
 		return val, false
@@ -110,23 +119,24 @@ func (k Keeper) GetPlayer(ctx sdk.Context, playerId string, full bool) (val type
 	return val, true
 }
 
-func (k Keeper) GetPlayerFromIndex(ctx sdk.Context, playerIndex uint64, full bool) (val types.Player, found bool) {
+func (k Keeper) GetPlayerFromIndex(ctx context.Context, playerIndex uint64, full bool) (val types.Player, found bool) {
     val, found = k.GetPlayer(ctx, GetObjectID(types.ObjectType_player, playerIndex), full)
     return
 }
 
 // RemovePlayer removes a player from the store
-func (k Keeper) RemovePlayer(ctx sdk.Context, playerId string) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
+func (k Keeper) RemovePlayer(ctx context.Context, playerId string) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlayerKey))
 	store.Delete([]byte(playerId))
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventDelete{ ObjectId: playerId })
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventDelete{ ObjectId: playerId })
 }
 
 // GetAllPlayer returns all player
-func (k Keeper) GetAllPlayer(ctx sdk.Context, full bool) (list []types.Player) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+func (k Keeper) GetAllPlayer(ctx context.Context, full bool) (list []types.Player) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlayerKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
@@ -153,9 +163,9 @@ func (k Keeper) GetAllPlayer(ctx sdk.Context, full bool) (list []types.Player) {
 }
 
 // GetAllPlayer returns all player
-func (k Keeper) GetAllPlayerBySubstation(ctx sdk.Context, substationId string, full bool) (list []types.Player) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlayerKey))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+func (k Keeper) GetAllPlayerBySubstation(ctx context.Context, substationId string, full bool) (list []types.Player) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlayerKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
@@ -185,7 +195,7 @@ func (k Keeper) GetAllPlayerBySubstation(ctx sdk.Context, substationId string, f
 }
 
 // Technically more of an InGet than an UpSert
-func (k Keeper) UpsertPlayer(ctx sdk.Context, playerAddress string, full bool) (player types.Player) {
+func (k Keeper) UpsertPlayer(ctx context.Context, playerAddress string, full bool) (player types.Player) {
     playerIndex := k.GetPlayerIndexFromAddress(ctx, playerAddress)
 
     if (playerIndex == 0) {

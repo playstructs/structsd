@@ -3,15 +3,20 @@ package keeper
 import (
 	"encoding/binary"
 
-	"github.com/cosmos/cosmos-sdk/store/prefix"
+	"github.com/cosmos/cosmos-sdk/runtime"
+	"cosmossdk.io/store/prefix"
+	storetypes "cosmossdk.io/store/types"
+
+	"context"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 
 )
 
 // GetPlanetCount get the total number of planet
-func (k Keeper) GetPlanetCount(ctx sdk.Context) uint64 {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
+func (k Keeper) GetPlanetCount(ctx context.Context) uint64 {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
 	byteKey := types.KeyPrefix(types.PlanetCountKey)
 	bz := store.Get(byteKey)
 
@@ -25,8 +30,8 @@ func (k Keeper) GetPlanetCount(ctx sdk.Context) uint64 {
 }
 
 // SetPlanetCount set the total number of planet
-func (k Keeper) SetPlanetCount(ctx sdk.Context, count uint64) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), []byte{})
+func (k Keeper) SetPlanetCount(ctx context.Context, count uint64) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
 	byteKey := types.KeyPrefix(types.PlanetCountKey)
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, count)
@@ -35,7 +40,7 @@ func (k Keeper) SetPlanetCount(ctx sdk.Context, count uint64) {
 
 // AppendPlanet appends a planet in the store with a new id and update the count
 func (k Keeper) AppendPlanet(
-	ctx sdk.Context,
+	ctx context.Context,
 	//planet types.Planet,
 	player types.Player,
 ) (planet types.Planet) {
@@ -52,30 +57,32 @@ func (k Keeper) AppendPlanet(
 
     k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, planet.Id), types.PlanetStartingOre)
 
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlanetKey))
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlanetKey))
 	appendedValue := k.cdc.MustMarshal(&planet)
 	store.Set([]byte(planet.Id), appendedValue)
 
 	// Update planet count
 	k.SetPlanetCount(ctx, count+1)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlanet{Planet: &planet})
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPlanet{Planet: &planet})
 
 	return planet
 }
 
 // SetPlanet set a specific planet in the store
-func (k Keeper) SetPlanet(ctx sdk.Context, planet types.Planet) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlanetKey))
+func (k Keeper) SetPlanet(ctx context.Context, planet types.Planet) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlanetKey))
 	b := k.cdc.MustMarshal(&planet)
 	store.Set([]byte(planet.Id), b)
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventPlanet{Planet: &planet})
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPlanet{Planet: &planet})
 }
 
 // GetPlanet returns a planet from its id
-func (k Keeper) GetPlanet(ctx sdk.Context, planetId string) (val types.Planet, found bool) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlanetKey))
+func (k Keeper) GetPlanet(ctx context.Context, planetId string) (val types.Planet, found bool) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlanetKey))
 	b := store.Get([]byte(planetId))
 	if b == nil {
 		return val, false
@@ -92,17 +99,18 @@ func (k Keeper) GetPlanet(ctx sdk.Context, planetId string) (val types.Planet, f
 }
 
 // RemovePlanet removes a planet from the store
-func (k Keeper) RemovePlanet(ctx sdk.Context, planetId string) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlanetKey))
+func (k Keeper) RemovePlanet(ctx context.Context, planetId string) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlanetKey))
 	store.Delete([]byte(planetId))
 
-    _ = ctx.EventManager().EmitTypedEvent(&types.EventDelete{ ObjectId: planetId })
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventDelete{ ObjectId: planetId })
 }
 
 // GetAllPlanet returns all planet
-func (k Keeper) GetAllPlanet(ctx sdk.Context) (list []types.Planet) {
-	store := prefix.NewStore(ctx.KVStore(k.storeKey), types.KeyPrefix(types.PlanetKey))
-	iterator := sdk.KVStorePrefixIterator(store, []byte{})
+func (k Keeper) GetAllPlanet(ctx context.Context) (list []types.Planet) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlanetKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
@@ -123,7 +131,7 @@ func (k Keeper) GetAllPlanet(ctx sdk.Context) (list []types.Planet) {
 }
 
 
-func (k Keeper) PlanetComplete(ctx sdk.Context, planet types.Planet) (bool) {
+func (k Keeper) PlanetComplete(ctx context.Context, planet types.Planet) (bool) {
     if (planet.OreRemaining > 0) {
         return false
     }
