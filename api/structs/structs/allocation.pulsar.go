@@ -174,29 +174,29 @@ func (x *fastReflection_Allocation) Range(f func(protoreflect.FieldDescriptor, p
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_Allocation) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.Allocation.id":
+	case "structs.Allocation.id":
 		return x.Id != ""
-	case "structs.structs.Allocation.type":
+	case "structs.Allocation.type":
 		return x.Type_ != 0
-	case "structs.structs.Allocation.sourceObjectId":
+	case "structs.Allocation.sourceObjectId":
 		return x.SourceObjectId != ""
-	case "structs.structs.Allocation.index":
+	case "structs.Allocation.index":
 		return x.Index != uint64(0)
-	case "structs.structs.Allocation.destinationId":
+	case "structs.Allocation.destinationId":
 		return x.DestinationId != ""
-	case "structs.structs.Allocation.power":
+	case "structs.Allocation.power":
 		return x.Power != uint64(0)
-	case "structs.structs.Allocation.creator":
+	case "structs.Allocation.creator":
 		return x.Creator != ""
-	case "structs.structs.Allocation.controller":
+	case "structs.Allocation.controller":
 		return x.Controller != ""
-	case "structs.structs.Allocation.locked":
+	case "structs.Allocation.locked":
 		return x.Locked != false
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Allocation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.Allocation"))
 		}
-		panic(fmt.Errorf("message structs.structs.Allocation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.Allocation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -208,29 +208,29 @@ func (x *fastReflection_Allocation) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Allocation) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.Allocation.id":
+	case "structs.Allocation.id":
 		x.Id = ""
-	case "structs.structs.Allocation.type":
+	case "structs.Allocation.type":
 		x.Type_ = 0
-	case "structs.structs.Allocation.sourceObjectId":
+	case "structs.Allocation.sourceObjectId":
 		x.SourceObjectId = ""
-	case "structs.structs.Allocation.index":
+	case "structs.Allocation.index":
 		x.Index = uint64(0)
-	case "structs.structs.Allocation.destinationId":
+	case "structs.Allocation.destinationId":
 		x.DestinationId = ""
-	case "structs.structs.Allocation.power":
+	case "structs.Allocation.power":
 		x.Power = uint64(0)
-	case "structs.structs.Allocation.creator":
+	case "structs.Allocation.creator":
 		x.Creator = ""
-	case "structs.structs.Allocation.controller":
+	case "structs.Allocation.controller":
 		x.Controller = ""
-	case "structs.structs.Allocation.locked":
+	case "structs.Allocation.locked":
 		x.Locked = false
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Allocation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.Allocation"))
 		}
-		panic(fmt.Errorf("message structs.structs.Allocation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.Allocation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -242,38 +242,38 @@ func (x *fastReflection_Allocation) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_Allocation) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.Allocation.id":
+	case "structs.Allocation.id":
 		value := x.Id
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.Allocation.type":
+	case "structs.Allocation.type":
 		value := x.Type_
 		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
-	case "structs.structs.Allocation.sourceObjectId":
+	case "structs.Allocation.sourceObjectId":
 		value := x.SourceObjectId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.Allocation.index":
+	case "structs.Allocation.index":
 		value := x.Index
 		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Allocation.destinationId":
+	case "structs.Allocation.destinationId":
 		value := x.DestinationId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.Allocation.power":
+	case "structs.Allocation.power":
 		value := x.Power
 		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Allocation.creator":
+	case "structs.Allocation.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.Allocation.controller":
+	case "structs.Allocation.controller":
 		value := x.Controller
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.Allocation.locked":
+	case "structs.Allocation.locked":
 		value := x.Locked
 		return protoreflect.ValueOfBool(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Allocation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.Allocation"))
 		}
-		panic(fmt.Errorf("message structs.structs.Allocation does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.Allocation does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -289,29 +289,29 @@ func (x *fastReflection_Allocation) Get(descriptor protoreflect.FieldDescriptor)
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Allocation) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.Allocation.id":
+	case "structs.Allocation.id":
 		x.Id = value.Interface().(string)
-	case "structs.structs.Allocation.type":
+	case "structs.Allocation.type":
 		x.Type_ = (AllocationType)(value.Enum())
-	case "structs.structs.Allocation.sourceObjectId":
+	case "structs.Allocation.sourceObjectId":
 		x.SourceObjectId = value.Interface().(string)
-	case "structs.structs.Allocation.index":
+	case "structs.Allocation.index":
 		x.Index = value.Uint()
-	case "structs.structs.Allocation.destinationId":
+	case "structs.Allocation.destinationId":
 		x.DestinationId = value.Interface().(string)
-	case "structs.structs.Allocation.power":
+	case "structs.Allocation.power":
 		x.Power = value.Uint()
-	case "structs.structs.Allocation.creator":
+	case "structs.Allocation.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.Allocation.controller":
+	case "structs.Allocation.controller":
 		x.Controller = value.Interface().(string)
-	case "structs.structs.Allocation.locked":
+	case "structs.Allocation.locked":
 		x.Locked = value.Bool()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Allocation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.Allocation"))
 		}
-		panic(fmt.Errorf("message structs.structs.Allocation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.Allocation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -327,29 +327,29 @@ func (x *fastReflection_Allocation) Set(fd protoreflect.FieldDescriptor, value p
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Allocation) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.Allocation.id":
-		panic(fmt.Errorf("field id of message structs.structs.Allocation is not mutable"))
-	case "structs.structs.Allocation.type":
-		panic(fmt.Errorf("field type of message structs.structs.Allocation is not mutable"))
-	case "structs.structs.Allocation.sourceObjectId":
-		panic(fmt.Errorf("field sourceObjectId of message structs.structs.Allocation is not mutable"))
-	case "structs.structs.Allocation.index":
-		panic(fmt.Errorf("field index of message structs.structs.Allocation is not mutable"))
-	case "structs.structs.Allocation.destinationId":
-		panic(fmt.Errorf("field destinationId of message structs.structs.Allocation is not mutable"))
-	case "structs.structs.Allocation.power":
-		panic(fmt.Errorf("field power of message structs.structs.Allocation is not mutable"))
-	case "structs.structs.Allocation.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.Allocation is not mutable"))
-	case "structs.structs.Allocation.controller":
-		panic(fmt.Errorf("field controller of message structs.structs.Allocation is not mutable"))
-	case "structs.structs.Allocation.locked":
-		panic(fmt.Errorf("field locked of message structs.structs.Allocation is not mutable"))
+	case "structs.Allocation.id":
+		panic(fmt.Errorf("field id of message structs.Allocation is not mutable"))
+	case "structs.Allocation.type":
+		panic(fmt.Errorf("field type of message structs.Allocation is not mutable"))
+	case "structs.Allocation.sourceObjectId":
+		panic(fmt.Errorf("field sourceObjectId of message structs.Allocation is not mutable"))
+	case "structs.Allocation.index":
+		panic(fmt.Errorf("field index of message structs.Allocation is not mutable"))
+	case "structs.Allocation.destinationId":
+		panic(fmt.Errorf("field destinationId of message structs.Allocation is not mutable"))
+	case "structs.Allocation.power":
+		panic(fmt.Errorf("field power of message structs.Allocation is not mutable"))
+	case "structs.Allocation.creator":
+		panic(fmt.Errorf("field creator of message structs.Allocation is not mutable"))
+	case "structs.Allocation.controller":
+		panic(fmt.Errorf("field controller of message structs.Allocation is not mutable"))
+	case "structs.Allocation.locked":
+		panic(fmt.Errorf("field locked of message structs.Allocation is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Allocation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.Allocation"))
 		}
-		panic(fmt.Errorf("message structs.structs.Allocation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.Allocation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -358,29 +358,29 @@ func (x *fastReflection_Allocation) Mutable(fd protoreflect.FieldDescriptor) pro
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_Allocation) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.Allocation.id":
+	case "structs.Allocation.id":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.Allocation.type":
+	case "structs.Allocation.type":
 		return protoreflect.ValueOfEnum(0)
-	case "structs.structs.Allocation.sourceObjectId":
+	case "structs.Allocation.sourceObjectId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.Allocation.index":
+	case "structs.Allocation.index":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Allocation.destinationId":
+	case "structs.Allocation.destinationId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.Allocation.power":
+	case "structs.Allocation.power":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Allocation.creator":
+	case "structs.Allocation.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.Allocation.controller":
+	case "structs.Allocation.controller":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.Allocation.locked":
+	case "structs.Allocation.locked":
 		return protoreflect.ValueOfBool(false)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Allocation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.Allocation"))
 		}
-		panic(fmt.Errorf("message structs.structs.Allocation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.Allocation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -390,7 +390,7 @@ func (x *fastReflection_Allocation) NewField(fd protoreflect.FieldDescriptor) pr
 func (x *fastReflection_Allocation) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.Allocation", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.Allocation", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -906,7 +906,7 @@ type Allocation struct {
 	unknownFields protoimpl.UnknownFields
 
 	Id    string         `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Type_ AllocationType `protobuf:"varint,2,opt,name=type,proto3,enum=structs.structs.AllocationType" json:"type,omitempty"`
+	Type_ AllocationType `protobuf:"varint,2,opt,name=type,proto3,enum=structs.AllocationType" json:"type,omitempty"`
 	// Core allocation details
 	SourceObjectId string `protobuf:"bytes,3,opt,name=sourceObjectId,proto3" json:"sourceObjectId,omitempty"`
 	Index          uint64 `protobuf:"varint,4,opt,name=index,proto3" json:"index,omitempty"`
@@ -1007,14 +1007,13 @@ var File_structs_structs_allocation_proto protoreflect.FileDescriptor
 var file_structs_structs_allocation_proto_rawDesc = []byte{
 	0x0a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x73, 0x2f, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x12, 0x0f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x1a, 0x14, 0x67, 0x6f, 0x67, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67,
-	0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1a, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x6b, 0x65, 0x79, 0x73, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x9d, 0x02, 0x0a, 0x0a, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x02, 0x69, 0x64, 0x12, 0x33, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x0e, 0x32, 0x1f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x74, 0x6f, 0x12, 0x07, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x1a, 0x14, 0x67, 0x6f, 0x67,
+	0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x1a, 0x1a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2f, 0x6b, 0x65, 0x79, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x95, 0x02,
+	0x0a, 0x0a, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x0e, 0x0a, 0x02,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x2b, 0x0a, 0x04,
+	0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72,
 	0x75, 0x63, 0x74, 0x73, 0x2e, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54,
 	0x79, 0x70, 0x65, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x26, 0x0a, 0x0e, 0x73, 0x6f, 0x75,
 	0x72, 0x63, 0x65, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28,
@@ -1029,18 +1028,15 @@ var file_structs_structs_allocation_proto_rawDesc = []byte{
 	0x0a, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x6c, 0x65, 0x72, 0x18, 0x08, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x0a, 0x63, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x6c, 0x65, 0x72, 0x12, 0x16, 0x0a,
 	0x06, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x18, 0x09, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x6c,
-	0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0xa5, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0f, 0x41,
-	0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01,
-	0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61,
-	0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47,
-	0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x7c, 0x0a, 0x0b, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x42, 0x0f, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73,
+	0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x58, 0x58, 0xaa,
+	0x02, 0x07, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x07, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0xe2, 0x02, 0x13, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50,
+	0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x07, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1057,11 +1053,11 @@ func file_structs_structs_allocation_proto_rawDescGZIP() []byte {
 
 var file_structs_structs_allocation_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_structs_structs_allocation_proto_goTypes = []interface{}{
-	(*Allocation)(nil),  // 0: structs.structs.Allocation
-	(AllocationType)(0), // 1: structs.structs.allocationType
+	(*Allocation)(nil),  // 0: structs.Allocation
+	(AllocationType)(0), // 1: structs.allocationType
 }
 var file_structs_structs_allocation_proto_depIdxs = []int32{
-	1, // 0: structs.structs.Allocation.type:type_name -> structs.structs.allocationType
+	1, // 0: structs.Allocation.type:type_name -> structs.allocationType
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

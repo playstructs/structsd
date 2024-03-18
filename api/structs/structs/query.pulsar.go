@@ -107,9 +107,9 @@ func (x *fastReflection_QueryParamsRequest) Has(fd protoreflect.FieldDescriptor)
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryParamsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryParamsRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryParamsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryParamsRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -123,9 +123,9 @@ func (x *fastReflection_QueryParamsRequest) Clear(fd protoreflect.FieldDescripto
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryParamsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryParamsRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryParamsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryParamsRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -139,9 +139,9 @@ func (x *fastReflection_QueryParamsRequest) Get(descriptor protoreflect.FieldDes
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryParamsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryParamsRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryParamsRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryParamsRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -159,9 +159,9 @@ func (x *fastReflection_QueryParamsRequest) Set(fd protoreflect.FieldDescriptor,
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryParamsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryParamsRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryParamsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryParamsRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -179,9 +179,9 @@ func (x *fastReflection_QueryParamsRequest) Mutable(fd protoreflect.FieldDescrip
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryParamsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryParamsRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryParamsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryParamsRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -192,9 +192,9 @@ func (x *fastReflection_QueryParamsRequest) NewField(fd protoreflect.FieldDescri
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryParamsRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryParamsRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryParamsRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryParamsRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -204,7 +204,7 @@ func (x *fastReflection_QueryParamsRequest) NewField(fd protoreflect.FieldDescri
 func (x *fastReflection_QueryParamsRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryParamsRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryParamsRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -469,13 +469,13 @@ func (x *fastReflection_QueryParamsResponse) Range(f func(protoreflect.FieldDesc
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryParamsResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryParamsResponse.params":
+	case "structs.QueryParamsResponse.params":
 		return x.Params != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryParamsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryParamsResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryParamsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryParamsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -487,13 +487,13 @@ func (x *fastReflection_QueryParamsResponse) Has(fd protoreflect.FieldDescriptor
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryParamsResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryParamsResponse.params":
+	case "structs.QueryParamsResponse.params":
 		x.Params = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryParamsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryParamsResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryParamsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryParamsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -505,14 +505,14 @@ func (x *fastReflection_QueryParamsResponse) Clear(fd protoreflect.FieldDescript
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryParamsResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryParamsResponse.params":
+	case "structs.QueryParamsResponse.params":
 		value := x.Params
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryParamsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryParamsResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryParamsResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryParamsResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -528,13 +528,13 @@ func (x *fastReflection_QueryParamsResponse) Get(descriptor protoreflect.FieldDe
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryParamsResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryParamsResponse.params":
+	case "structs.QueryParamsResponse.params":
 		x.Params = value.Message().Interface().(*Params)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryParamsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryParamsResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryParamsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryParamsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -550,16 +550,16 @@ func (x *fastReflection_QueryParamsResponse) Set(fd protoreflect.FieldDescriptor
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryParamsResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryParamsResponse.params":
+	case "structs.QueryParamsResponse.params":
 		if x.Params == nil {
 			x.Params = new(Params)
 		}
 		return protoreflect.ValueOfMessage(x.Params.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryParamsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryParamsResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryParamsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryParamsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -568,14 +568,14 @@ func (x *fastReflection_QueryParamsResponse) Mutable(fd protoreflect.FieldDescri
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryParamsResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryParamsResponse.params":
+	case "structs.QueryParamsResponse.params":
 		m := new(Params)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryParamsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryParamsResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryParamsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryParamsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -585,7 +585,7 @@ func (x *fastReflection_QueryParamsResponse) NewField(fd protoreflect.FieldDescr
 func (x *fastReflection_QueryParamsResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryParamsResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryParamsResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -898,9 +898,9 @@ func (x *fastReflection_QueryBlockHeight) Has(fd protoreflect.FieldDescriptor) b
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryBlockHeight"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryBlockHeight"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryBlockHeight does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryBlockHeight does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -914,9 +914,9 @@ func (x *fastReflection_QueryBlockHeight) Clear(fd protoreflect.FieldDescriptor)
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryBlockHeight"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryBlockHeight"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryBlockHeight does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryBlockHeight does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -930,9 +930,9 @@ func (x *fastReflection_QueryBlockHeight) Get(descriptor protoreflect.FieldDescr
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryBlockHeight"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryBlockHeight"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryBlockHeight does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryBlockHeight does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -950,9 +950,9 @@ func (x *fastReflection_QueryBlockHeight) Set(fd protoreflect.FieldDescriptor, v
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryBlockHeight"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryBlockHeight"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryBlockHeight does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryBlockHeight does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -970,9 +970,9 @@ func (x *fastReflection_QueryBlockHeight) Mutable(fd protoreflect.FieldDescripto
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryBlockHeight"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryBlockHeight"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryBlockHeight does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryBlockHeight does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -983,9 +983,9 @@ func (x *fastReflection_QueryBlockHeight) NewField(fd protoreflect.FieldDescript
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryBlockHeight"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryBlockHeight"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryBlockHeight does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryBlockHeight does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -995,7 +995,7 @@ func (x *fastReflection_QueryBlockHeight) NewField(fd protoreflect.FieldDescript
 func (x *fastReflection_QueryBlockHeight) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryBlockHeight", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryBlockHeight", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -1260,13 +1260,13 @@ func (x *fastReflection_QueryBlockHeightResponse) Range(f func(protoreflect.Fiel
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryBlockHeightResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryBlockHeightResponse.blockHeight":
+	case "structs.QueryBlockHeightResponse.blockHeight":
 		return x.BlockHeight != uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryBlockHeightResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryBlockHeightResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryBlockHeightResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryBlockHeightResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1278,13 +1278,13 @@ func (x *fastReflection_QueryBlockHeightResponse) Has(fd protoreflect.FieldDescr
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryBlockHeightResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryBlockHeightResponse.blockHeight":
+	case "structs.QueryBlockHeightResponse.blockHeight":
 		x.BlockHeight = uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryBlockHeightResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryBlockHeightResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryBlockHeightResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryBlockHeightResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1296,14 +1296,14 @@ func (x *fastReflection_QueryBlockHeightResponse) Clear(fd protoreflect.FieldDes
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryBlockHeightResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryBlockHeightResponse.blockHeight":
+	case "structs.QueryBlockHeightResponse.blockHeight":
 		value := x.BlockHeight
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryBlockHeightResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryBlockHeightResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryBlockHeightResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryBlockHeightResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -1319,13 +1319,13 @@ func (x *fastReflection_QueryBlockHeightResponse) Get(descriptor protoreflect.Fi
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryBlockHeightResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryBlockHeightResponse.blockHeight":
+	case "structs.QueryBlockHeightResponse.blockHeight":
 		x.BlockHeight = value.Uint()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryBlockHeightResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryBlockHeightResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryBlockHeightResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryBlockHeightResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1341,13 +1341,13 @@ func (x *fastReflection_QueryBlockHeightResponse) Set(fd protoreflect.FieldDescr
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryBlockHeightResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryBlockHeightResponse.blockHeight":
-		panic(fmt.Errorf("field blockHeight of message structs.structs.QueryBlockHeightResponse is not mutable"))
+	case "structs.QueryBlockHeightResponse.blockHeight":
+		panic(fmt.Errorf("field blockHeight of message structs.QueryBlockHeightResponse is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryBlockHeightResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryBlockHeightResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryBlockHeightResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryBlockHeightResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1356,13 +1356,13 @@ func (x *fastReflection_QueryBlockHeightResponse) Mutable(fd protoreflect.FieldD
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryBlockHeightResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryBlockHeightResponse.blockHeight":
+	case "structs.QueryBlockHeightResponse.blockHeight":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryBlockHeightResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryBlockHeightResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryBlockHeightResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryBlockHeightResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1372,7 +1372,7 @@ func (x *fastReflection_QueryBlockHeightResponse) NewField(fd protoreflect.Field
 func (x *fastReflection_QueryBlockHeightResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryBlockHeightResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryBlockHeightResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -1664,13 +1664,13 @@ func (x *fastReflection_QueryGetAddressRequest) Range(f func(protoreflect.FieldD
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetAddressRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetAddressRequest.address":
+	case "structs.QueryGetAddressRequest.address":
 		return x.Address != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetAddressRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetAddressRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetAddressRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetAddressRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1682,13 +1682,13 @@ func (x *fastReflection_QueryGetAddressRequest) Has(fd protoreflect.FieldDescrip
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetAddressRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetAddressRequest.address":
+	case "structs.QueryGetAddressRequest.address":
 		x.Address = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetAddressRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetAddressRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetAddressRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetAddressRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1700,14 +1700,14 @@ func (x *fastReflection_QueryGetAddressRequest) Clear(fd protoreflect.FieldDescr
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetAddressRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetAddressRequest.address":
+	case "structs.QueryGetAddressRequest.address":
 		value := x.Address
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetAddressRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetAddressRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetAddressRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetAddressRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -1723,13 +1723,13 @@ func (x *fastReflection_QueryGetAddressRequest) Get(descriptor protoreflect.Fiel
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetAddressRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetAddressRequest.address":
+	case "structs.QueryGetAddressRequest.address":
 		x.Address = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetAddressRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetAddressRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetAddressRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetAddressRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1745,13 +1745,13 @@ func (x *fastReflection_QueryGetAddressRequest) Set(fd protoreflect.FieldDescrip
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetAddressRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetAddressRequest.address":
-		panic(fmt.Errorf("field address of message structs.structs.QueryGetAddressRequest is not mutable"))
+	case "structs.QueryGetAddressRequest.address":
+		panic(fmt.Errorf("field address of message structs.QueryGetAddressRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetAddressRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetAddressRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetAddressRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetAddressRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1760,13 +1760,13 @@ func (x *fastReflection_QueryGetAddressRequest) Mutable(fd protoreflect.FieldDes
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetAddressRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetAddressRequest.address":
+	case "structs.QueryGetAddressRequest.address":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetAddressRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetAddressRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetAddressRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetAddressRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1776,7 +1776,7 @@ func (x *fastReflection_QueryGetAddressRequest) NewField(fd protoreflect.FieldDe
 func (x *fastReflection_QueryGetAddressRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetAddressRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetAddressRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2092,15 +2092,15 @@ func (x *fastReflection_QueryAllAddressByPlayerRequest) Range(f func(protoreflec
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllAddressByPlayerRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAddressByPlayerRequest.playerId":
+	case "structs.QueryAllAddressByPlayerRequest.playerId":
 		return x.PlayerId != ""
-	case "structs.structs.QueryAllAddressByPlayerRequest.pagination":
+	case "structs.QueryAllAddressByPlayerRequest.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAddressByPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAddressByPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAddressByPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAddressByPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2112,15 +2112,15 @@ func (x *fastReflection_QueryAllAddressByPlayerRequest) Has(fd protoreflect.Fiel
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllAddressByPlayerRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAddressByPlayerRequest.playerId":
+	case "structs.QueryAllAddressByPlayerRequest.playerId":
 		x.PlayerId = ""
-	case "structs.structs.QueryAllAddressByPlayerRequest.pagination":
+	case "structs.QueryAllAddressByPlayerRequest.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAddressByPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAddressByPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAddressByPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAddressByPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2132,17 +2132,17 @@ func (x *fastReflection_QueryAllAddressByPlayerRequest) Clear(fd protoreflect.Fi
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllAddressByPlayerRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllAddressByPlayerRequest.playerId":
+	case "structs.QueryAllAddressByPlayerRequest.playerId":
 		value := x.PlayerId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.QueryAllAddressByPlayerRequest.pagination":
+	case "structs.QueryAllAddressByPlayerRequest.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAddressByPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAddressByPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAddressByPlayerRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAddressByPlayerRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -2158,15 +2158,15 @@ func (x *fastReflection_QueryAllAddressByPlayerRequest) Get(descriptor protorefl
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllAddressByPlayerRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAddressByPlayerRequest.playerId":
+	case "structs.QueryAllAddressByPlayerRequest.playerId":
 		x.PlayerId = value.Interface().(string)
-	case "structs.structs.QueryAllAddressByPlayerRequest.pagination":
+	case "structs.QueryAllAddressByPlayerRequest.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAddressByPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAddressByPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAddressByPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAddressByPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2182,18 +2182,18 @@ func (x *fastReflection_QueryAllAddressByPlayerRequest) Set(fd protoreflect.Fiel
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllAddressByPlayerRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAddressByPlayerRequest.pagination":
+	case "structs.QueryAllAddressByPlayerRequest.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageRequest)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
-	case "structs.structs.QueryAllAddressByPlayerRequest.playerId":
-		panic(fmt.Errorf("field playerId of message structs.structs.QueryAllAddressByPlayerRequest is not mutable"))
+	case "structs.QueryAllAddressByPlayerRequest.playerId":
+		panic(fmt.Errorf("field playerId of message structs.QueryAllAddressByPlayerRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAddressByPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAddressByPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAddressByPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAddressByPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2202,16 +2202,16 @@ func (x *fastReflection_QueryAllAddressByPlayerRequest) Mutable(fd protoreflect.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllAddressByPlayerRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAddressByPlayerRequest.playerId":
+	case "structs.QueryAllAddressByPlayerRequest.playerId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.QueryAllAddressByPlayerRequest.pagination":
+	case "structs.QueryAllAddressByPlayerRequest.pagination":
 		m := new(v1beta1.PageRequest)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAddressByPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAddressByPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAddressByPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAddressByPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2221,7 +2221,7 @@ func (x *fastReflection_QueryAllAddressByPlayerRequest) NewField(fd protoreflect
 func (x *fastReflection_QueryAllAddressByPlayerRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllAddressByPlayerRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllAddressByPlayerRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2583,13 +2583,13 @@ func (x *fastReflection_QueryAllAddressRequest) Range(f func(protoreflect.FieldD
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllAddressRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAddressRequest.pagination":
+	case "structs.QueryAllAddressRequest.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAddressRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAddressRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAddressRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAddressRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2601,13 +2601,13 @@ func (x *fastReflection_QueryAllAddressRequest) Has(fd protoreflect.FieldDescrip
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllAddressRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAddressRequest.pagination":
+	case "structs.QueryAllAddressRequest.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAddressRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAddressRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAddressRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAddressRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2619,14 +2619,14 @@ func (x *fastReflection_QueryAllAddressRequest) Clear(fd protoreflect.FieldDescr
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllAddressRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllAddressRequest.pagination":
+	case "structs.QueryAllAddressRequest.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAddressRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAddressRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAddressRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAddressRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -2642,13 +2642,13 @@ func (x *fastReflection_QueryAllAddressRequest) Get(descriptor protoreflect.Fiel
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllAddressRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAddressRequest.pagination":
+	case "structs.QueryAllAddressRequest.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAddressRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAddressRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAddressRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAddressRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2664,16 +2664,16 @@ func (x *fastReflection_QueryAllAddressRequest) Set(fd protoreflect.FieldDescrip
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllAddressRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAddressRequest.pagination":
+	case "structs.QueryAllAddressRequest.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageRequest)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAddressRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAddressRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAddressRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAddressRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2682,14 +2682,14 @@ func (x *fastReflection_QueryAllAddressRequest) Mutable(fd protoreflect.FieldDes
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllAddressRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAddressRequest.pagination":
+	case "structs.QueryAllAddressRequest.pagination":
 		m := new(v1beta1.PageRequest)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAddressRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAddressRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAddressRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAddressRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2699,7 +2699,7 @@ func (x *fastReflection_QueryAllAddressRequest) NewField(fd protoreflect.FieldDe
 func (x *fastReflection_QueryAllAddressRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllAddressRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllAddressRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -3034,17 +3034,17 @@ func (x *fastReflection_QueryAddressResponse) Range(f func(protoreflect.FieldDes
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAddressResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAddressResponse.address":
+	case "structs.QueryAddressResponse.address":
 		return x.Address != ""
-	case "structs.structs.QueryAddressResponse.playerId":
+	case "structs.QueryAddressResponse.playerId":
 		return x.PlayerId != ""
-	case "structs.structs.QueryAddressResponse.permissions":
+	case "structs.QueryAddressResponse.permissions":
 		return x.Permissions != uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAddressResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAddressResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAddressResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAddressResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3056,17 +3056,17 @@ func (x *fastReflection_QueryAddressResponse) Has(fd protoreflect.FieldDescripto
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAddressResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAddressResponse.address":
+	case "structs.QueryAddressResponse.address":
 		x.Address = ""
-	case "structs.structs.QueryAddressResponse.playerId":
+	case "structs.QueryAddressResponse.playerId":
 		x.PlayerId = ""
-	case "structs.structs.QueryAddressResponse.permissions":
+	case "structs.QueryAddressResponse.permissions":
 		x.Permissions = uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAddressResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAddressResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAddressResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAddressResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3078,20 +3078,20 @@ func (x *fastReflection_QueryAddressResponse) Clear(fd protoreflect.FieldDescrip
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAddressResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAddressResponse.address":
+	case "structs.QueryAddressResponse.address":
 		value := x.Address
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.QueryAddressResponse.playerId":
+	case "structs.QueryAddressResponse.playerId":
 		value := x.PlayerId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.QueryAddressResponse.permissions":
+	case "structs.QueryAddressResponse.permissions":
 		value := x.Permissions
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAddressResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAddressResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAddressResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAddressResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -3107,17 +3107,17 @@ func (x *fastReflection_QueryAddressResponse) Get(descriptor protoreflect.FieldD
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAddressResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAddressResponse.address":
+	case "structs.QueryAddressResponse.address":
 		x.Address = value.Interface().(string)
-	case "structs.structs.QueryAddressResponse.playerId":
+	case "structs.QueryAddressResponse.playerId":
 		x.PlayerId = value.Interface().(string)
-	case "structs.structs.QueryAddressResponse.permissions":
+	case "structs.QueryAddressResponse.permissions":
 		x.Permissions = value.Uint()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAddressResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAddressResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAddressResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAddressResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3133,17 +3133,17 @@ func (x *fastReflection_QueryAddressResponse) Set(fd protoreflect.FieldDescripto
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAddressResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAddressResponse.address":
-		panic(fmt.Errorf("field address of message structs.structs.QueryAddressResponse is not mutable"))
-	case "structs.structs.QueryAddressResponse.playerId":
-		panic(fmt.Errorf("field playerId of message structs.structs.QueryAddressResponse is not mutable"))
-	case "structs.structs.QueryAddressResponse.permissions":
-		panic(fmt.Errorf("field permissions of message structs.structs.QueryAddressResponse is not mutable"))
+	case "structs.QueryAddressResponse.address":
+		panic(fmt.Errorf("field address of message structs.QueryAddressResponse is not mutable"))
+	case "structs.QueryAddressResponse.playerId":
+		panic(fmt.Errorf("field playerId of message structs.QueryAddressResponse is not mutable"))
+	case "structs.QueryAddressResponse.permissions":
+		panic(fmt.Errorf("field permissions of message structs.QueryAddressResponse is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAddressResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAddressResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAddressResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAddressResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3152,17 +3152,17 @@ func (x *fastReflection_QueryAddressResponse) Mutable(fd protoreflect.FieldDescr
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAddressResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAddressResponse.address":
+	case "structs.QueryAddressResponse.address":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.QueryAddressResponse.playerId":
+	case "structs.QueryAddressResponse.playerId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.QueryAddressResponse.permissions":
+	case "structs.QueryAddressResponse.permissions":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAddressResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAddressResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAddressResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAddressResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3172,7 +3172,7 @@ func (x *fastReflection_QueryAddressResponse) NewField(fd protoreflect.FieldDesc
 func (x *fastReflection_QueryAddressResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAddressResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAddressResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -3609,15 +3609,15 @@ func (x *fastReflection_QueryAllAddressResponse) Range(f func(protoreflect.Field
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllAddressResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAddressResponse.address":
+	case "structs.QueryAllAddressResponse.address":
 		return len(x.Address) != 0
-	case "structs.structs.QueryAllAddressResponse.pagination":
+	case "structs.QueryAllAddressResponse.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAddressResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAddressResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAddressResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAddressResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3629,15 +3629,15 @@ func (x *fastReflection_QueryAllAddressResponse) Has(fd protoreflect.FieldDescri
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllAddressResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAddressResponse.address":
+	case "structs.QueryAllAddressResponse.address":
 		x.Address = nil
-	case "structs.structs.QueryAllAddressResponse.pagination":
+	case "structs.QueryAllAddressResponse.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAddressResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAddressResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAddressResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAddressResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3649,20 +3649,20 @@ func (x *fastReflection_QueryAllAddressResponse) Clear(fd protoreflect.FieldDesc
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllAddressResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllAddressResponse.address":
+	case "structs.QueryAllAddressResponse.address":
 		if len(x.Address) == 0 {
 			return protoreflect.ValueOfList(&_QueryAllAddressResponse_1_list{})
 		}
 		listValue := &_QueryAllAddressResponse_1_list{list: &x.Address}
 		return protoreflect.ValueOfList(listValue)
-	case "structs.structs.QueryAllAddressResponse.pagination":
+	case "structs.QueryAllAddressResponse.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAddressResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAddressResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAddressResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAddressResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -3678,17 +3678,17 @@ func (x *fastReflection_QueryAllAddressResponse) Get(descriptor protoreflect.Fie
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllAddressResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAddressResponse.address":
+	case "structs.QueryAllAddressResponse.address":
 		lv := value.List()
 		clv := lv.(*_QueryAllAddressResponse_1_list)
 		x.Address = *clv.list
-	case "structs.structs.QueryAllAddressResponse.pagination":
+	case "structs.QueryAllAddressResponse.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageResponse)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAddressResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAddressResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAddressResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAddressResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3704,22 +3704,22 @@ func (x *fastReflection_QueryAllAddressResponse) Set(fd protoreflect.FieldDescri
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllAddressResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAddressResponse.address":
+	case "structs.QueryAllAddressResponse.address":
 		if x.Address == nil {
 			x.Address = []*QueryAddressResponse{}
 		}
 		value := &_QueryAllAddressResponse_1_list{list: &x.Address}
 		return protoreflect.ValueOfList(value)
-	case "structs.structs.QueryAllAddressResponse.pagination":
+	case "structs.QueryAllAddressResponse.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageResponse)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAddressResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAddressResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAddressResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAddressResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3728,17 +3728,17 @@ func (x *fastReflection_QueryAllAddressResponse) Mutable(fd protoreflect.FieldDe
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllAddressResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAddressResponse.address":
+	case "structs.QueryAllAddressResponse.address":
 		list := []*QueryAddressResponse{}
 		return protoreflect.ValueOfList(&_QueryAllAddressResponse_1_list{list: &list})
-	case "structs.structs.QueryAllAddressResponse.pagination":
+	case "structs.QueryAllAddressResponse.pagination":
 		m := new(v1beta1.PageResponse)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAddressResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAddressResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAddressResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAddressResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3748,7 +3748,7 @@ func (x *fastReflection_QueryAllAddressResponse) NewField(fd protoreflect.FieldD
 func (x *fastReflection_QueryAllAddressResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllAddressResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllAddressResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -4123,13 +4123,13 @@ func (x *fastReflection_QueryGetAllocationRequest) Range(f func(protoreflect.Fie
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetAllocationRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetAllocationRequest.id":
+	case "structs.QueryGetAllocationRequest.id":
 		return x.Id != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetAllocationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetAllocationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetAllocationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetAllocationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4141,13 +4141,13 @@ func (x *fastReflection_QueryGetAllocationRequest) Has(fd protoreflect.FieldDesc
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetAllocationRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetAllocationRequest.id":
+	case "structs.QueryGetAllocationRequest.id":
 		x.Id = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetAllocationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetAllocationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetAllocationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetAllocationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4159,14 +4159,14 @@ func (x *fastReflection_QueryGetAllocationRequest) Clear(fd protoreflect.FieldDe
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetAllocationRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetAllocationRequest.id":
+	case "structs.QueryGetAllocationRequest.id":
 		value := x.Id
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetAllocationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetAllocationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetAllocationRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetAllocationRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -4182,13 +4182,13 @@ func (x *fastReflection_QueryGetAllocationRequest) Get(descriptor protoreflect.F
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetAllocationRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetAllocationRequest.id":
+	case "structs.QueryGetAllocationRequest.id":
 		x.Id = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetAllocationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetAllocationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetAllocationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetAllocationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4204,13 +4204,13 @@ func (x *fastReflection_QueryGetAllocationRequest) Set(fd protoreflect.FieldDesc
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetAllocationRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetAllocationRequest.id":
-		panic(fmt.Errorf("field id of message structs.structs.QueryGetAllocationRequest is not mutable"))
+	case "structs.QueryGetAllocationRequest.id":
+		panic(fmt.Errorf("field id of message structs.QueryGetAllocationRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetAllocationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetAllocationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetAllocationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetAllocationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4219,13 +4219,13 @@ func (x *fastReflection_QueryGetAllocationRequest) Mutable(fd protoreflect.Field
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetAllocationRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetAllocationRequest.id":
+	case "structs.QueryGetAllocationRequest.id":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetAllocationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetAllocationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetAllocationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetAllocationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4235,7 +4235,7 @@ func (x *fastReflection_QueryGetAllocationRequest) NewField(fd protoreflect.Fiel
 func (x *fastReflection_QueryGetAllocationRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetAllocationRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetAllocationRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -4543,13 +4543,13 @@ func (x *fastReflection_QueryGetAllocationResponse) Range(f func(protoreflect.Fi
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetAllocationResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetAllocationResponse.Allocation":
+	case "structs.QueryGetAllocationResponse.Allocation":
 		return x.Allocation != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetAllocationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetAllocationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetAllocationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetAllocationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4561,13 +4561,13 @@ func (x *fastReflection_QueryGetAllocationResponse) Has(fd protoreflect.FieldDes
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetAllocationResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetAllocationResponse.Allocation":
+	case "structs.QueryGetAllocationResponse.Allocation":
 		x.Allocation = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetAllocationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetAllocationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetAllocationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetAllocationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4579,14 +4579,14 @@ func (x *fastReflection_QueryGetAllocationResponse) Clear(fd protoreflect.FieldD
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetAllocationResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetAllocationResponse.Allocation":
+	case "structs.QueryGetAllocationResponse.Allocation":
 		value := x.Allocation
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetAllocationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetAllocationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetAllocationResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetAllocationResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -4602,13 +4602,13 @@ func (x *fastReflection_QueryGetAllocationResponse) Get(descriptor protoreflect.
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetAllocationResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetAllocationResponse.Allocation":
+	case "structs.QueryGetAllocationResponse.Allocation":
 		x.Allocation = value.Message().Interface().(*Allocation)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetAllocationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetAllocationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetAllocationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetAllocationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4624,16 +4624,16 @@ func (x *fastReflection_QueryGetAllocationResponse) Set(fd protoreflect.FieldDes
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetAllocationResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetAllocationResponse.Allocation":
+	case "structs.QueryGetAllocationResponse.Allocation":
 		if x.Allocation == nil {
 			x.Allocation = new(Allocation)
 		}
 		return protoreflect.ValueOfMessage(x.Allocation.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetAllocationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetAllocationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetAllocationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetAllocationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4642,14 +4642,14 @@ func (x *fastReflection_QueryGetAllocationResponse) Mutable(fd protoreflect.Fiel
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetAllocationResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetAllocationResponse.Allocation":
+	case "structs.QueryGetAllocationResponse.Allocation":
 		m := new(Allocation)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetAllocationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetAllocationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetAllocationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetAllocationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4659,7 +4659,7 @@ func (x *fastReflection_QueryGetAllocationResponse) NewField(fd protoreflect.Fie
 func (x *fastReflection_QueryGetAllocationResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetAllocationResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetAllocationResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -4978,13 +4978,13 @@ func (x *fastReflection_QueryAllAllocationRequest) Range(f func(protoreflect.Fie
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllAllocationRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAllocationRequest.pagination":
+	case "structs.QueryAllAllocationRequest.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAllocationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAllocationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAllocationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAllocationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4996,13 +4996,13 @@ func (x *fastReflection_QueryAllAllocationRequest) Has(fd protoreflect.FieldDesc
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllAllocationRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAllocationRequest.pagination":
+	case "structs.QueryAllAllocationRequest.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAllocationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAllocationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAllocationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAllocationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5014,14 +5014,14 @@ func (x *fastReflection_QueryAllAllocationRequest) Clear(fd protoreflect.FieldDe
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllAllocationRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllAllocationRequest.pagination":
+	case "structs.QueryAllAllocationRequest.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAllocationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAllocationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAllocationRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAllocationRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -5037,13 +5037,13 @@ func (x *fastReflection_QueryAllAllocationRequest) Get(descriptor protoreflect.F
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllAllocationRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAllocationRequest.pagination":
+	case "structs.QueryAllAllocationRequest.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAllocationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAllocationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAllocationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAllocationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5059,16 +5059,16 @@ func (x *fastReflection_QueryAllAllocationRequest) Set(fd protoreflect.FieldDesc
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllAllocationRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAllocationRequest.pagination":
+	case "structs.QueryAllAllocationRequest.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageRequest)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAllocationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAllocationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAllocationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAllocationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5077,14 +5077,14 @@ func (x *fastReflection_QueryAllAllocationRequest) Mutable(fd protoreflect.Field
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllAllocationRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAllocationRequest.pagination":
+	case "structs.QueryAllAllocationRequest.pagination":
 		m := new(v1beta1.PageRequest)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAllocationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAllocationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAllocationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAllocationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5094,7 +5094,7 @@ func (x *fastReflection_QueryAllAllocationRequest) NewField(fd protoreflect.Fiel
 func (x *fastReflection_QueryAllAllocationRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllAllocationRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllAllocationRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -5526,17 +5526,17 @@ func (x *fastReflection_QueryAllAllocationResponse) Range(f func(protoreflect.Fi
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllAllocationResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAllocationResponse.Allocation":
+	case "structs.QueryAllAllocationResponse.Allocation":
 		return len(x.Allocation) != 0
-	case "structs.structs.QueryAllAllocationResponse.pagination":
+	case "structs.QueryAllAllocationResponse.pagination":
 		return x.Pagination != nil
-	case "structs.structs.QueryAllAllocationResponse.status":
+	case "structs.QueryAllAllocationResponse.status":
 		return len(x.Status) != 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAllocationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAllocationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAllocationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAllocationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5548,17 +5548,17 @@ func (x *fastReflection_QueryAllAllocationResponse) Has(fd protoreflect.FieldDes
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllAllocationResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAllocationResponse.Allocation":
+	case "structs.QueryAllAllocationResponse.Allocation":
 		x.Allocation = nil
-	case "structs.structs.QueryAllAllocationResponse.pagination":
+	case "structs.QueryAllAllocationResponse.pagination":
 		x.Pagination = nil
-	case "structs.structs.QueryAllAllocationResponse.status":
+	case "structs.QueryAllAllocationResponse.status":
 		x.Status = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAllocationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAllocationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAllocationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAllocationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5570,16 +5570,16 @@ func (x *fastReflection_QueryAllAllocationResponse) Clear(fd protoreflect.FieldD
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllAllocationResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllAllocationResponse.Allocation":
+	case "structs.QueryAllAllocationResponse.Allocation":
 		if len(x.Allocation) == 0 {
 			return protoreflect.ValueOfList(&_QueryAllAllocationResponse_1_list{})
 		}
 		listValue := &_QueryAllAllocationResponse_1_list{list: &x.Allocation}
 		return protoreflect.ValueOfList(listValue)
-	case "structs.structs.QueryAllAllocationResponse.pagination":
+	case "structs.QueryAllAllocationResponse.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "structs.structs.QueryAllAllocationResponse.status":
+	case "structs.QueryAllAllocationResponse.status":
 		if len(x.Status) == 0 {
 			return protoreflect.ValueOfList(&_QueryAllAllocationResponse_3_list{})
 		}
@@ -5587,9 +5587,9 @@ func (x *fastReflection_QueryAllAllocationResponse) Get(descriptor protoreflect.
 		return protoreflect.ValueOfList(listValue)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAllocationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAllocationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAllocationResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAllocationResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -5605,21 +5605,21 @@ func (x *fastReflection_QueryAllAllocationResponse) Get(descriptor protoreflect.
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllAllocationResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAllocationResponse.Allocation":
+	case "structs.QueryAllAllocationResponse.Allocation":
 		lv := value.List()
 		clv := lv.(*_QueryAllAllocationResponse_1_list)
 		x.Allocation = *clv.list
-	case "structs.structs.QueryAllAllocationResponse.pagination":
+	case "structs.QueryAllAllocationResponse.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageResponse)
-	case "structs.structs.QueryAllAllocationResponse.status":
+	case "structs.QueryAllAllocationResponse.status":
 		lv := value.List()
 		clv := lv.(*_QueryAllAllocationResponse_3_list)
 		x.Status = *clv.list
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAllocationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAllocationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAllocationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAllocationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5635,18 +5635,18 @@ func (x *fastReflection_QueryAllAllocationResponse) Set(fd protoreflect.FieldDes
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllAllocationResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAllocationResponse.Allocation":
+	case "structs.QueryAllAllocationResponse.Allocation":
 		if x.Allocation == nil {
 			x.Allocation = []*Allocation{}
 		}
 		value := &_QueryAllAllocationResponse_1_list{list: &x.Allocation}
 		return protoreflect.ValueOfList(value)
-	case "structs.structs.QueryAllAllocationResponse.pagination":
+	case "structs.QueryAllAllocationResponse.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageResponse)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
-	case "structs.structs.QueryAllAllocationResponse.status":
+	case "structs.QueryAllAllocationResponse.status":
 		if x.Status == nil {
 			x.Status = []uint64{}
 		}
@@ -5654,9 +5654,9 @@ func (x *fastReflection_QueryAllAllocationResponse) Mutable(fd protoreflect.Fiel
 		return protoreflect.ValueOfList(value)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAllocationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAllocationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAllocationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAllocationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5665,20 +5665,20 @@ func (x *fastReflection_QueryAllAllocationResponse) Mutable(fd protoreflect.Fiel
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllAllocationResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllAllocationResponse.Allocation":
+	case "structs.QueryAllAllocationResponse.Allocation":
 		list := []*Allocation{}
 		return protoreflect.ValueOfList(&_QueryAllAllocationResponse_1_list{list: &list})
-	case "structs.structs.QueryAllAllocationResponse.pagination":
+	case "structs.QueryAllAllocationResponse.pagination":
 		m := new(v1beta1.PageResponse)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "structs.structs.QueryAllAllocationResponse.status":
+	case "structs.QueryAllAllocationResponse.status":
 		list := []uint64{}
 		return protoreflect.ValueOfList(&_QueryAllAllocationResponse_3_list{list: &list})
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllAllocationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllAllocationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllAllocationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllAllocationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5688,7 +5688,7 @@ func (x *fastReflection_QueryAllAllocationResponse) NewField(fd protoreflect.Fie
 func (x *fastReflection_QueryAllAllocationResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllAllocationResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllAllocationResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -6166,13 +6166,13 @@ func (x *fastReflection_QueryGetGuildRequest) Range(f func(protoreflect.FieldDes
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetGuildRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetGuildRequest.id":
+	case "structs.QueryGetGuildRequest.id":
 		return x.Id != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetGuildRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetGuildRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetGuildRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetGuildRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6184,13 +6184,13 @@ func (x *fastReflection_QueryGetGuildRequest) Has(fd protoreflect.FieldDescripto
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetGuildRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetGuildRequest.id":
+	case "structs.QueryGetGuildRequest.id":
 		x.Id = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetGuildRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetGuildRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetGuildRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetGuildRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6202,14 +6202,14 @@ func (x *fastReflection_QueryGetGuildRequest) Clear(fd protoreflect.FieldDescrip
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetGuildRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetGuildRequest.id":
+	case "structs.QueryGetGuildRequest.id":
 		value := x.Id
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetGuildRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetGuildRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetGuildRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetGuildRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -6225,13 +6225,13 @@ func (x *fastReflection_QueryGetGuildRequest) Get(descriptor protoreflect.FieldD
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetGuildRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetGuildRequest.id":
+	case "structs.QueryGetGuildRequest.id":
 		x.Id = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetGuildRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetGuildRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetGuildRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetGuildRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6247,13 +6247,13 @@ func (x *fastReflection_QueryGetGuildRequest) Set(fd protoreflect.FieldDescripto
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetGuildRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetGuildRequest.id":
-		panic(fmt.Errorf("field id of message structs.structs.QueryGetGuildRequest is not mutable"))
+	case "structs.QueryGetGuildRequest.id":
+		panic(fmt.Errorf("field id of message structs.QueryGetGuildRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetGuildRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetGuildRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetGuildRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetGuildRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6262,13 +6262,13 @@ func (x *fastReflection_QueryGetGuildRequest) Mutable(fd protoreflect.FieldDescr
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetGuildRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetGuildRequest.id":
+	case "structs.QueryGetGuildRequest.id":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetGuildRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetGuildRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetGuildRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetGuildRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6278,7 +6278,7 @@ func (x *fastReflection_QueryGetGuildRequest) NewField(fd protoreflect.FieldDesc
 func (x *fastReflection_QueryGetGuildRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetGuildRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetGuildRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -6586,13 +6586,13 @@ func (x *fastReflection_QueryGetGuildResponse) Range(f func(protoreflect.FieldDe
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetGuildResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetGuildResponse.Guild":
+	case "structs.QueryGetGuildResponse.Guild":
 		return x.Guild != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetGuildResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetGuildResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetGuildResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetGuildResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6604,13 +6604,13 @@ func (x *fastReflection_QueryGetGuildResponse) Has(fd protoreflect.FieldDescript
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetGuildResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetGuildResponse.Guild":
+	case "structs.QueryGetGuildResponse.Guild":
 		x.Guild = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetGuildResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetGuildResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetGuildResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetGuildResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6622,14 +6622,14 @@ func (x *fastReflection_QueryGetGuildResponse) Clear(fd protoreflect.FieldDescri
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetGuildResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetGuildResponse.Guild":
+	case "structs.QueryGetGuildResponse.Guild":
 		value := x.Guild
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetGuildResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetGuildResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetGuildResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetGuildResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -6645,13 +6645,13 @@ func (x *fastReflection_QueryGetGuildResponse) Get(descriptor protoreflect.Field
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetGuildResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetGuildResponse.Guild":
+	case "structs.QueryGetGuildResponse.Guild":
 		x.Guild = value.Message().Interface().(*Guild)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetGuildResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetGuildResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetGuildResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetGuildResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6667,16 +6667,16 @@ func (x *fastReflection_QueryGetGuildResponse) Set(fd protoreflect.FieldDescript
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetGuildResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetGuildResponse.Guild":
+	case "structs.QueryGetGuildResponse.Guild":
 		if x.Guild == nil {
 			x.Guild = new(Guild)
 		}
 		return protoreflect.ValueOfMessage(x.Guild.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetGuildResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetGuildResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetGuildResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetGuildResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6685,14 +6685,14 @@ func (x *fastReflection_QueryGetGuildResponse) Mutable(fd protoreflect.FieldDesc
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetGuildResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetGuildResponse.Guild":
+	case "structs.QueryGetGuildResponse.Guild":
 		m := new(Guild)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetGuildResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetGuildResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetGuildResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetGuildResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6702,7 +6702,7 @@ func (x *fastReflection_QueryGetGuildResponse) NewField(fd protoreflect.FieldDes
 func (x *fastReflection_QueryGetGuildResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetGuildResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetGuildResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -7021,13 +7021,13 @@ func (x *fastReflection_QueryAllGuildRequest) Range(f func(protoreflect.FieldDes
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllGuildRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllGuildRequest.pagination":
+	case "structs.QueryAllGuildRequest.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllGuildRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllGuildRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllGuildRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllGuildRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7039,13 +7039,13 @@ func (x *fastReflection_QueryAllGuildRequest) Has(fd protoreflect.FieldDescripto
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllGuildRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllGuildRequest.pagination":
+	case "structs.QueryAllGuildRequest.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllGuildRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllGuildRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllGuildRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllGuildRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7057,14 +7057,14 @@ func (x *fastReflection_QueryAllGuildRequest) Clear(fd protoreflect.FieldDescrip
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllGuildRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllGuildRequest.pagination":
+	case "structs.QueryAllGuildRequest.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllGuildRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllGuildRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllGuildRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllGuildRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -7080,13 +7080,13 @@ func (x *fastReflection_QueryAllGuildRequest) Get(descriptor protoreflect.FieldD
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllGuildRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllGuildRequest.pagination":
+	case "structs.QueryAllGuildRequest.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllGuildRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllGuildRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllGuildRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllGuildRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7102,16 +7102,16 @@ func (x *fastReflection_QueryAllGuildRequest) Set(fd protoreflect.FieldDescripto
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllGuildRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllGuildRequest.pagination":
+	case "structs.QueryAllGuildRequest.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageRequest)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllGuildRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllGuildRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllGuildRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllGuildRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7120,14 +7120,14 @@ func (x *fastReflection_QueryAllGuildRequest) Mutable(fd protoreflect.FieldDescr
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllGuildRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllGuildRequest.pagination":
+	case "structs.QueryAllGuildRequest.pagination":
 		m := new(v1beta1.PageRequest)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllGuildRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllGuildRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllGuildRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllGuildRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7137,7 +7137,7 @@ func (x *fastReflection_QueryAllGuildRequest) NewField(fd protoreflect.FieldDesc
 func (x *fastReflection_QueryAllGuildRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllGuildRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllGuildRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -7515,15 +7515,15 @@ func (x *fastReflection_QueryAllGuildResponse) Range(f func(protoreflect.FieldDe
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllGuildResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllGuildResponse.Guild":
+	case "structs.QueryAllGuildResponse.Guild":
 		return len(x.Guild) != 0
-	case "structs.structs.QueryAllGuildResponse.pagination":
+	case "structs.QueryAllGuildResponse.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllGuildResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllGuildResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllGuildResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllGuildResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7535,15 +7535,15 @@ func (x *fastReflection_QueryAllGuildResponse) Has(fd protoreflect.FieldDescript
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllGuildResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllGuildResponse.Guild":
+	case "structs.QueryAllGuildResponse.Guild":
 		x.Guild = nil
-	case "structs.structs.QueryAllGuildResponse.pagination":
+	case "structs.QueryAllGuildResponse.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllGuildResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllGuildResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllGuildResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllGuildResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7555,20 +7555,20 @@ func (x *fastReflection_QueryAllGuildResponse) Clear(fd protoreflect.FieldDescri
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllGuildResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllGuildResponse.Guild":
+	case "structs.QueryAllGuildResponse.Guild":
 		if len(x.Guild) == 0 {
 			return protoreflect.ValueOfList(&_QueryAllGuildResponse_1_list{})
 		}
 		listValue := &_QueryAllGuildResponse_1_list{list: &x.Guild}
 		return protoreflect.ValueOfList(listValue)
-	case "structs.structs.QueryAllGuildResponse.pagination":
+	case "structs.QueryAllGuildResponse.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllGuildResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllGuildResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllGuildResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllGuildResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -7584,17 +7584,17 @@ func (x *fastReflection_QueryAllGuildResponse) Get(descriptor protoreflect.Field
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllGuildResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllGuildResponse.Guild":
+	case "structs.QueryAllGuildResponse.Guild":
 		lv := value.List()
 		clv := lv.(*_QueryAllGuildResponse_1_list)
 		x.Guild = *clv.list
-	case "structs.structs.QueryAllGuildResponse.pagination":
+	case "structs.QueryAllGuildResponse.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageResponse)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllGuildResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllGuildResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllGuildResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllGuildResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7610,22 +7610,22 @@ func (x *fastReflection_QueryAllGuildResponse) Set(fd protoreflect.FieldDescript
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllGuildResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllGuildResponse.Guild":
+	case "structs.QueryAllGuildResponse.Guild":
 		if x.Guild == nil {
 			x.Guild = []*Guild{}
 		}
 		value := &_QueryAllGuildResponse_1_list{list: &x.Guild}
 		return protoreflect.ValueOfList(value)
-	case "structs.structs.QueryAllGuildResponse.pagination":
+	case "structs.QueryAllGuildResponse.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageResponse)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllGuildResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllGuildResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllGuildResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllGuildResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7634,17 +7634,17 @@ func (x *fastReflection_QueryAllGuildResponse) Mutable(fd protoreflect.FieldDesc
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllGuildResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllGuildResponse.Guild":
+	case "structs.QueryAllGuildResponse.Guild":
 		list := []*Guild{}
 		return protoreflect.ValueOfList(&_QueryAllGuildResponse_1_list{list: &list})
-	case "structs.structs.QueryAllGuildResponse.pagination":
+	case "structs.QueryAllGuildResponse.pagination":
 		m := new(v1beta1.PageResponse)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllGuildResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllGuildResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllGuildResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllGuildResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7654,7 +7654,7 @@ func (x *fastReflection_QueryAllGuildResponse) NewField(fd protoreflect.FieldDes
 func (x *fastReflection_QueryAllGuildResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllGuildResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllGuildResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -8037,15 +8037,15 @@ func (x *fastReflection_QueryGetInfusionRequest) Range(f func(protoreflect.Field
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetInfusionRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetInfusionRequest.destinationId":
+	case "structs.QueryGetInfusionRequest.destinationId":
 		return x.DestinationId != ""
-	case "structs.structs.QueryGetInfusionRequest.address":
+	case "structs.QueryGetInfusionRequest.address":
 		return x.Address != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetInfusionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetInfusionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetInfusionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetInfusionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8057,15 +8057,15 @@ func (x *fastReflection_QueryGetInfusionRequest) Has(fd protoreflect.FieldDescri
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetInfusionRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetInfusionRequest.destinationId":
+	case "structs.QueryGetInfusionRequest.destinationId":
 		x.DestinationId = ""
-	case "structs.structs.QueryGetInfusionRequest.address":
+	case "structs.QueryGetInfusionRequest.address":
 		x.Address = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetInfusionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetInfusionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetInfusionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetInfusionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8077,17 +8077,17 @@ func (x *fastReflection_QueryGetInfusionRequest) Clear(fd protoreflect.FieldDesc
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetInfusionRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetInfusionRequest.destinationId":
+	case "structs.QueryGetInfusionRequest.destinationId":
 		value := x.DestinationId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.QueryGetInfusionRequest.address":
+	case "structs.QueryGetInfusionRequest.address":
 		value := x.Address
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetInfusionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetInfusionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetInfusionRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetInfusionRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -8103,15 +8103,15 @@ func (x *fastReflection_QueryGetInfusionRequest) Get(descriptor protoreflect.Fie
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetInfusionRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetInfusionRequest.destinationId":
+	case "structs.QueryGetInfusionRequest.destinationId":
 		x.DestinationId = value.Interface().(string)
-	case "structs.structs.QueryGetInfusionRequest.address":
+	case "structs.QueryGetInfusionRequest.address":
 		x.Address = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetInfusionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetInfusionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetInfusionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetInfusionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8127,15 +8127,15 @@ func (x *fastReflection_QueryGetInfusionRequest) Set(fd protoreflect.FieldDescri
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetInfusionRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetInfusionRequest.destinationId":
-		panic(fmt.Errorf("field destinationId of message structs.structs.QueryGetInfusionRequest is not mutable"))
-	case "structs.structs.QueryGetInfusionRequest.address":
-		panic(fmt.Errorf("field address of message structs.structs.QueryGetInfusionRequest is not mutable"))
+	case "structs.QueryGetInfusionRequest.destinationId":
+		panic(fmt.Errorf("field destinationId of message structs.QueryGetInfusionRequest is not mutable"))
+	case "structs.QueryGetInfusionRequest.address":
+		panic(fmt.Errorf("field address of message structs.QueryGetInfusionRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetInfusionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetInfusionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetInfusionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetInfusionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8144,15 +8144,15 @@ func (x *fastReflection_QueryGetInfusionRequest) Mutable(fd protoreflect.FieldDe
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetInfusionRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetInfusionRequest.destinationId":
+	case "structs.QueryGetInfusionRequest.destinationId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.QueryGetInfusionRequest.address":
+	case "structs.QueryGetInfusionRequest.address":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetInfusionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetInfusionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetInfusionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetInfusionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8162,7 +8162,7 @@ func (x *fastReflection_QueryGetInfusionRequest) NewField(fd protoreflect.FieldD
 func (x *fastReflection_QueryGetInfusionRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetInfusionRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetInfusionRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -8513,13 +8513,13 @@ func (x *fastReflection_QueryGetInfusionResponse) Range(f func(protoreflect.Fiel
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetInfusionResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetInfusionResponse.Infusion":
+	case "structs.QueryGetInfusionResponse.Infusion":
 		return x.Infusion != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetInfusionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetInfusionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetInfusionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetInfusionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8531,13 +8531,13 @@ func (x *fastReflection_QueryGetInfusionResponse) Has(fd protoreflect.FieldDescr
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetInfusionResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetInfusionResponse.Infusion":
+	case "structs.QueryGetInfusionResponse.Infusion":
 		x.Infusion = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetInfusionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetInfusionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetInfusionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetInfusionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8549,14 +8549,14 @@ func (x *fastReflection_QueryGetInfusionResponse) Clear(fd protoreflect.FieldDes
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetInfusionResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetInfusionResponse.Infusion":
+	case "structs.QueryGetInfusionResponse.Infusion":
 		value := x.Infusion
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetInfusionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetInfusionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetInfusionResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetInfusionResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -8572,13 +8572,13 @@ func (x *fastReflection_QueryGetInfusionResponse) Get(descriptor protoreflect.Fi
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetInfusionResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetInfusionResponse.Infusion":
+	case "structs.QueryGetInfusionResponse.Infusion":
 		x.Infusion = value.Message().Interface().(*Infusion)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetInfusionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetInfusionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetInfusionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetInfusionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8594,16 +8594,16 @@ func (x *fastReflection_QueryGetInfusionResponse) Set(fd protoreflect.FieldDescr
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetInfusionResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetInfusionResponse.Infusion":
+	case "structs.QueryGetInfusionResponse.Infusion":
 		if x.Infusion == nil {
 			x.Infusion = new(Infusion)
 		}
 		return protoreflect.ValueOfMessage(x.Infusion.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetInfusionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetInfusionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetInfusionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetInfusionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8612,14 +8612,14 @@ func (x *fastReflection_QueryGetInfusionResponse) Mutable(fd protoreflect.FieldD
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetInfusionResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetInfusionResponse.Infusion":
+	case "structs.QueryGetInfusionResponse.Infusion":
 		m := new(Infusion)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetInfusionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetInfusionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetInfusionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetInfusionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8629,7 +8629,7 @@ func (x *fastReflection_QueryGetInfusionResponse) NewField(fd protoreflect.Field
 func (x *fastReflection_QueryGetInfusionResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetInfusionResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetInfusionResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -8948,13 +8948,13 @@ func (x *fastReflection_QueryAllInfusionRequest) Range(f func(protoreflect.Field
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllInfusionRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllInfusionRequest.pagination":
+	case "structs.QueryAllInfusionRequest.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllInfusionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllInfusionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllInfusionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllInfusionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8966,13 +8966,13 @@ func (x *fastReflection_QueryAllInfusionRequest) Has(fd protoreflect.FieldDescri
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllInfusionRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllInfusionRequest.pagination":
+	case "structs.QueryAllInfusionRequest.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllInfusionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllInfusionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllInfusionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllInfusionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8984,14 +8984,14 @@ func (x *fastReflection_QueryAllInfusionRequest) Clear(fd protoreflect.FieldDesc
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllInfusionRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllInfusionRequest.pagination":
+	case "structs.QueryAllInfusionRequest.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllInfusionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllInfusionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllInfusionRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllInfusionRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -9007,13 +9007,13 @@ func (x *fastReflection_QueryAllInfusionRequest) Get(descriptor protoreflect.Fie
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllInfusionRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllInfusionRequest.pagination":
+	case "structs.QueryAllInfusionRequest.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllInfusionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllInfusionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllInfusionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllInfusionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9029,16 +9029,16 @@ func (x *fastReflection_QueryAllInfusionRequest) Set(fd protoreflect.FieldDescri
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllInfusionRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllInfusionRequest.pagination":
+	case "structs.QueryAllInfusionRequest.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageRequest)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllInfusionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllInfusionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllInfusionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllInfusionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9047,14 +9047,14 @@ func (x *fastReflection_QueryAllInfusionRequest) Mutable(fd protoreflect.FieldDe
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllInfusionRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllInfusionRequest.pagination":
+	case "structs.QueryAllInfusionRequest.pagination":
 		m := new(v1beta1.PageRequest)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllInfusionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllInfusionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllInfusionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllInfusionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9064,7 +9064,7 @@ func (x *fastReflection_QueryAllInfusionRequest) NewField(fd protoreflect.FieldD
 func (x *fastReflection_QueryAllInfusionRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllInfusionRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllInfusionRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -9496,17 +9496,17 @@ func (x *fastReflection_QueryAllInfusionResponse) Range(f func(protoreflect.Fiel
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllInfusionResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllInfusionResponse.Infusion":
+	case "structs.QueryAllInfusionResponse.Infusion":
 		return len(x.Infusion) != 0
-	case "structs.structs.QueryAllInfusionResponse.pagination":
+	case "structs.QueryAllInfusionResponse.pagination":
 		return x.Pagination != nil
-	case "structs.structs.QueryAllInfusionResponse.status":
+	case "structs.QueryAllInfusionResponse.status":
 		return len(x.Status) != 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllInfusionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllInfusionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllInfusionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllInfusionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9518,17 +9518,17 @@ func (x *fastReflection_QueryAllInfusionResponse) Has(fd protoreflect.FieldDescr
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllInfusionResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllInfusionResponse.Infusion":
+	case "structs.QueryAllInfusionResponse.Infusion":
 		x.Infusion = nil
-	case "structs.structs.QueryAllInfusionResponse.pagination":
+	case "structs.QueryAllInfusionResponse.pagination":
 		x.Pagination = nil
-	case "structs.structs.QueryAllInfusionResponse.status":
+	case "structs.QueryAllInfusionResponse.status":
 		x.Status = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllInfusionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllInfusionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllInfusionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllInfusionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9540,16 +9540,16 @@ func (x *fastReflection_QueryAllInfusionResponse) Clear(fd protoreflect.FieldDes
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllInfusionResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllInfusionResponse.Infusion":
+	case "structs.QueryAllInfusionResponse.Infusion":
 		if len(x.Infusion) == 0 {
 			return protoreflect.ValueOfList(&_QueryAllInfusionResponse_1_list{})
 		}
 		listValue := &_QueryAllInfusionResponse_1_list{list: &x.Infusion}
 		return protoreflect.ValueOfList(listValue)
-	case "structs.structs.QueryAllInfusionResponse.pagination":
+	case "structs.QueryAllInfusionResponse.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
-	case "structs.structs.QueryAllInfusionResponse.status":
+	case "structs.QueryAllInfusionResponse.status":
 		if len(x.Status) == 0 {
 			return protoreflect.ValueOfList(&_QueryAllInfusionResponse_3_list{})
 		}
@@ -9557,9 +9557,9 @@ func (x *fastReflection_QueryAllInfusionResponse) Get(descriptor protoreflect.Fi
 		return protoreflect.ValueOfList(listValue)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllInfusionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllInfusionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllInfusionResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllInfusionResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -9575,21 +9575,21 @@ func (x *fastReflection_QueryAllInfusionResponse) Get(descriptor protoreflect.Fi
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllInfusionResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllInfusionResponse.Infusion":
+	case "structs.QueryAllInfusionResponse.Infusion":
 		lv := value.List()
 		clv := lv.(*_QueryAllInfusionResponse_1_list)
 		x.Infusion = *clv.list
-	case "structs.structs.QueryAllInfusionResponse.pagination":
+	case "structs.QueryAllInfusionResponse.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageResponse)
-	case "structs.structs.QueryAllInfusionResponse.status":
+	case "structs.QueryAllInfusionResponse.status":
 		lv := value.List()
 		clv := lv.(*_QueryAllInfusionResponse_3_list)
 		x.Status = *clv.list
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllInfusionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllInfusionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllInfusionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllInfusionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9605,18 +9605,18 @@ func (x *fastReflection_QueryAllInfusionResponse) Set(fd protoreflect.FieldDescr
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllInfusionResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllInfusionResponse.Infusion":
+	case "structs.QueryAllInfusionResponse.Infusion":
 		if x.Infusion == nil {
 			x.Infusion = []*Infusion{}
 		}
 		value := &_QueryAllInfusionResponse_1_list{list: &x.Infusion}
 		return protoreflect.ValueOfList(value)
-	case "structs.structs.QueryAllInfusionResponse.pagination":
+	case "structs.QueryAllInfusionResponse.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageResponse)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
-	case "structs.structs.QueryAllInfusionResponse.status":
+	case "structs.QueryAllInfusionResponse.status":
 		if x.Status == nil {
 			x.Status = []uint64{}
 		}
@@ -9624,9 +9624,9 @@ func (x *fastReflection_QueryAllInfusionResponse) Mutable(fd protoreflect.FieldD
 		return protoreflect.ValueOfList(value)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllInfusionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllInfusionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllInfusionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllInfusionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9635,20 +9635,20 @@ func (x *fastReflection_QueryAllInfusionResponse) Mutable(fd protoreflect.FieldD
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllInfusionResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllInfusionResponse.Infusion":
+	case "structs.QueryAllInfusionResponse.Infusion":
 		list := []*Infusion{}
 		return protoreflect.ValueOfList(&_QueryAllInfusionResponse_1_list{list: &list})
-	case "structs.structs.QueryAllInfusionResponse.pagination":
+	case "structs.QueryAllInfusionResponse.pagination":
 		m := new(v1beta1.PageResponse)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
-	case "structs.structs.QueryAllInfusionResponse.status":
+	case "structs.QueryAllInfusionResponse.status":
 		list := []uint64{}
 		return protoreflect.ValueOfList(&_QueryAllInfusionResponse_3_list{list: &list})
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllInfusionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllInfusionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllInfusionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllInfusionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9658,7 +9658,7 @@ func (x *fastReflection_QueryAllInfusionResponse) NewField(fd protoreflect.Field
 func (x *fastReflection_QueryAllInfusionResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllInfusionResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllInfusionResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -10136,13 +10136,13 @@ func (x *fastReflection_QueryGetPermissionRequest) Range(f func(protoreflect.Fie
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetPermissionRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPermissionRequest.permissionId":
+	case "structs.QueryGetPermissionRequest.permissionId":
 		return x.PermissionId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPermissionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPermissionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPermissionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPermissionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10154,13 +10154,13 @@ func (x *fastReflection_QueryGetPermissionRequest) Has(fd protoreflect.FieldDesc
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetPermissionRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPermissionRequest.permissionId":
+	case "structs.QueryGetPermissionRequest.permissionId":
 		x.PermissionId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPermissionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPermissionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPermissionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPermissionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10172,14 +10172,14 @@ func (x *fastReflection_QueryGetPermissionRequest) Clear(fd protoreflect.FieldDe
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetPermissionRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetPermissionRequest.permissionId":
+	case "structs.QueryGetPermissionRequest.permissionId":
 		value := x.PermissionId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPermissionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPermissionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPermissionRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPermissionRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -10195,13 +10195,13 @@ func (x *fastReflection_QueryGetPermissionRequest) Get(descriptor protoreflect.F
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetPermissionRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPermissionRequest.permissionId":
+	case "structs.QueryGetPermissionRequest.permissionId":
 		x.PermissionId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPermissionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPermissionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPermissionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPermissionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10217,13 +10217,13 @@ func (x *fastReflection_QueryGetPermissionRequest) Set(fd protoreflect.FieldDesc
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetPermissionRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPermissionRequest.permissionId":
-		panic(fmt.Errorf("field permissionId of message structs.structs.QueryGetPermissionRequest is not mutable"))
+	case "structs.QueryGetPermissionRequest.permissionId":
+		panic(fmt.Errorf("field permissionId of message structs.QueryGetPermissionRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPermissionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPermissionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPermissionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPermissionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10232,13 +10232,13 @@ func (x *fastReflection_QueryGetPermissionRequest) Mutable(fd protoreflect.Field
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetPermissionRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPermissionRequest.permissionId":
+	case "structs.QueryGetPermissionRequest.permissionId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPermissionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPermissionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPermissionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPermissionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10248,7 +10248,7 @@ func (x *fastReflection_QueryGetPermissionRequest) NewField(fd protoreflect.Fiel
 func (x *fastReflection_QueryGetPermissionRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetPermissionRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetPermissionRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -10564,15 +10564,15 @@ func (x *fastReflection_QueryAllPermissionByObjectRequest) Range(f func(protoref
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllPermissionByObjectRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionByObjectRequest.objectId":
+	case "structs.QueryAllPermissionByObjectRequest.objectId":
 		return x.ObjectId != ""
-	case "structs.structs.QueryAllPermissionByObjectRequest.pagination":
+	case "structs.QueryAllPermissionByObjectRequest.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionByObjectRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionByObjectRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionByObjectRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionByObjectRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10584,15 +10584,15 @@ func (x *fastReflection_QueryAllPermissionByObjectRequest) Has(fd protoreflect.F
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPermissionByObjectRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionByObjectRequest.objectId":
+	case "structs.QueryAllPermissionByObjectRequest.objectId":
 		x.ObjectId = ""
-	case "structs.structs.QueryAllPermissionByObjectRequest.pagination":
+	case "structs.QueryAllPermissionByObjectRequest.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionByObjectRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionByObjectRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionByObjectRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionByObjectRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10604,17 +10604,17 @@ func (x *fastReflection_QueryAllPermissionByObjectRequest) Clear(fd protoreflect
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllPermissionByObjectRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllPermissionByObjectRequest.objectId":
+	case "structs.QueryAllPermissionByObjectRequest.objectId":
 		value := x.ObjectId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.QueryAllPermissionByObjectRequest.pagination":
+	case "structs.QueryAllPermissionByObjectRequest.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionByObjectRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionByObjectRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionByObjectRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionByObjectRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -10630,15 +10630,15 @@ func (x *fastReflection_QueryAllPermissionByObjectRequest) Get(descriptor protor
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPermissionByObjectRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionByObjectRequest.objectId":
+	case "structs.QueryAllPermissionByObjectRequest.objectId":
 		x.ObjectId = value.Interface().(string)
-	case "structs.structs.QueryAllPermissionByObjectRequest.pagination":
+	case "structs.QueryAllPermissionByObjectRequest.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionByObjectRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionByObjectRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionByObjectRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionByObjectRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10654,18 +10654,18 @@ func (x *fastReflection_QueryAllPermissionByObjectRequest) Set(fd protoreflect.F
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPermissionByObjectRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionByObjectRequest.pagination":
+	case "structs.QueryAllPermissionByObjectRequest.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageRequest)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
-	case "structs.structs.QueryAllPermissionByObjectRequest.objectId":
-		panic(fmt.Errorf("field objectId of message structs.structs.QueryAllPermissionByObjectRequest is not mutable"))
+	case "structs.QueryAllPermissionByObjectRequest.objectId":
+		panic(fmt.Errorf("field objectId of message structs.QueryAllPermissionByObjectRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionByObjectRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionByObjectRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionByObjectRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionByObjectRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10674,16 +10674,16 @@ func (x *fastReflection_QueryAllPermissionByObjectRequest) Mutable(fd protorefle
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllPermissionByObjectRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionByObjectRequest.objectId":
+	case "structs.QueryAllPermissionByObjectRequest.objectId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.QueryAllPermissionByObjectRequest.pagination":
+	case "structs.QueryAllPermissionByObjectRequest.pagination":
 		m := new(v1beta1.PageRequest)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionByObjectRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionByObjectRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionByObjectRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionByObjectRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10693,7 +10693,7 @@ func (x *fastReflection_QueryAllPermissionByObjectRequest) NewField(fd protorefl
 func (x *fastReflection_QueryAllPermissionByObjectRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllPermissionByObjectRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllPermissionByObjectRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -11063,15 +11063,15 @@ func (x *fastReflection_QueryAllPermissionByPlayerRequest) Range(f func(protoref
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllPermissionByPlayerRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionByPlayerRequest.playerId":
+	case "structs.QueryAllPermissionByPlayerRequest.playerId":
 		return x.PlayerId != ""
-	case "structs.structs.QueryAllPermissionByPlayerRequest.pagination":
+	case "structs.QueryAllPermissionByPlayerRequest.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionByPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionByPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionByPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionByPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11083,15 +11083,15 @@ func (x *fastReflection_QueryAllPermissionByPlayerRequest) Has(fd protoreflect.F
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPermissionByPlayerRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionByPlayerRequest.playerId":
+	case "structs.QueryAllPermissionByPlayerRequest.playerId":
 		x.PlayerId = ""
-	case "structs.structs.QueryAllPermissionByPlayerRequest.pagination":
+	case "structs.QueryAllPermissionByPlayerRequest.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionByPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionByPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionByPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionByPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11103,17 +11103,17 @@ func (x *fastReflection_QueryAllPermissionByPlayerRequest) Clear(fd protoreflect
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllPermissionByPlayerRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllPermissionByPlayerRequest.playerId":
+	case "structs.QueryAllPermissionByPlayerRequest.playerId":
 		value := x.PlayerId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.QueryAllPermissionByPlayerRequest.pagination":
+	case "structs.QueryAllPermissionByPlayerRequest.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionByPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionByPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionByPlayerRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionByPlayerRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -11129,15 +11129,15 @@ func (x *fastReflection_QueryAllPermissionByPlayerRequest) Get(descriptor protor
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPermissionByPlayerRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionByPlayerRequest.playerId":
+	case "structs.QueryAllPermissionByPlayerRequest.playerId":
 		x.PlayerId = value.Interface().(string)
-	case "structs.structs.QueryAllPermissionByPlayerRequest.pagination":
+	case "structs.QueryAllPermissionByPlayerRequest.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionByPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionByPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionByPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionByPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11153,18 +11153,18 @@ func (x *fastReflection_QueryAllPermissionByPlayerRequest) Set(fd protoreflect.F
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPermissionByPlayerRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionByPlayerRequest.pagination":
+	case "structs.QueryAllPermissionByPlayerRequest.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageRequest)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
-	case "structs.structs.QueryAllPermissionByPlayerRequest.playerId":
-		panic(fmt.Errorf("field playerId of message structs.structs.QueryAllPermissionByPlayerRequest is not mutable"))
+	case "structs.QueryAllPermissionByPlayerRequest.playerId":
+		panic(fmt.Errorf("field playerId of message structs.QueryAllPermissionByPlayerRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionByPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionByPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionByPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionByPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11173,16 +11173,16 @@ func (x *fastReflection_QueryAllPermissionByPlayerRequest) Mutable(fd protorefle
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllPermissionByPlayerRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionByPlayerRequest.playerId":
+	case "structs.QueryAllPermissionByPlayerRequest.playerId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.QueryAllPermissionByPlayerRequest.pagination":
+	case "structs.QueryAllPermissionByPlayerRequest.pagination":
 		m := new(v1beta1.PageRequest)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionByPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionByPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionByPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionByPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11192,7 +11192,7 @@ func (x *fastReflection_QueryAllPermissionByPlayerRequest) NewField(fd protorefl
 func (x *fastReflection_QueryAllPermissionByPlayerRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllPermissionByPlayerRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllPermissionByPlayerRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -11554,13 +11554,13 @@ func (x *fastReflection_QueryAllPermissionRequest) Range(f func(protoreflect.Fie
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllPermissionRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionRequest.pagination":
+	case "structs.QueryAllPermissionRequest.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11572,13 +11572,13 @@ func (x *fastReflection_QueryAllPermissionRequest) Has(fd protoreflect.FieldDesc
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPermissionRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionRequest.pagination":
+	case "structs.QueryAllPermissionRequest.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11590,14 +11590,14 @@ func (x *fastReflection_QueryAllPermissionRequest) Clear(fd protoreflect.FieldDe
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllPermissionRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllPermissionRequest.pagination":
+	case "structs.QueryAllPermissionRequest.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -11613,13 +11613,13 @@ func (x *fastReflection_QueryAllPermissionRequest) Get(descriptor protoreflect.F
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPermissionRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionRequest.pagination":
+	case "structs.QueryAllPermissionRequest.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11635,16 +11635,16 @@ func (x *fastReflection_QueryAllPermissionRequest) Set(fd protoreflect.FieldDesc
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPermissionRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionRequest.pagination":
+	case "structs.QueryAllPermissionRequest.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageRequest)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11653,14 +11653,14 @@ func (x *fastReflection_QueryAllPermissionRequest) Mutable(fd protoreflect.Field
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllPermissionRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionRequest.pagination":
+	case "structs.QueryAllPermissionRequest.pagination":
 		m := new(v1beta1.PageRequest)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11670,7 +11670,7 @@ func (x *fastReflection_QueryAllPermissionRequest) NewField(fd protoreflect.Fiel
 func (x *fastReflection_QueryAllPermissionRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllPermissionRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllPermissionRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -11989,13 +11989,13 @@ func (x *fastReflection_QueryGetPermissionResponse) Range(f func(protoreflect.Fi
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetPermissionResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPermissionResponse.permissionRecord":
+	case "structs.QueryGetPermissionResponse.permissionRecord":
 		return x.PermissionRecord != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPermissionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPermissionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPermissionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPermissionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12007,13 +12007,13 @@ func (x *fastReflection_QueryGetPermissionResponse) Has(fd protoreflect.FieldDes
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetPermissionResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPermissionResponse.permissionRecord":
+	case "structs.QueryGetPermissionResponse.permissionRecord":
 		x.PermissionRecord = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPermissionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPermissionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPermissionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPermissionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12025,14 +12025,14 @@ func (x *fastReflection_QueryGetPermissionResponse) Clear(fd protoreflect.FieldD
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetPermissionResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetPermissionResponse.permissionRecord":
+	case "structs.QueryGetPermissionResponse.permissionRecord":
 		value := x.PermissionRecord
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPermissionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPermissionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPermissionResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPermissionResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -12048,13 +12048,13 @@ func (x *fastReflection_QueryGetPermissionResponse) Get(descriptor protoreflect.
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetPermissionResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPermissionResponse.permissionRecord":
+	case "structs.QueryGetPermissionResponse.permissionRecord":
 		x.PermissionRecord = value.Message().Interface().(*PermissionRecord)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPermissionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPermissionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPermissionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPermissionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12070,16 +12070,16 @@ func (x *fastReflection_QueryGetPermissionResponse) Set(fd protoreflect.FieldDes
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetPermissionResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPermissionResponse.permissionRecord":
+	case "structs.QueryGetPermissionResponse.permissionRecord":
 		if x.PermissionRecord == nil {
 			x.PermissionRecord = new(PermissionRecord)
 		}
 		return protoreflect.ValueOfMessage(x.PermissionRecord.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPermissionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPermissionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPermissionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPermissionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12088,14 +12088,14 @@ func (x *fastReflection_QueryGetPermissionResponse) Mutable(fd protoreflect.Fiel
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetPermissionResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPermissionResponse.permissionRecord":
+	case "structs.QueryGetPermissionResponse.permissionRecord":
 		m := new(PermissionRecord)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPermissionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPermissionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPermissionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPermissionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12105,7 +12105,7 @@ func (x *fastReflection_QueryGetPermissionResponse) NewField(fd protoreflect.Fie
 func (x *fastReflection_QueryGetPermissionResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetPermissionResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetPermissionResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -12483,15 +12483,15 @@ func (x *fastReflection_QueryAllPermissionResponse) Range(f func(protoreflect.Fi
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllPermissionResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionResponse.permissionRecords":
+	case "structs.QueryAllPermissionResponse.permissionRecords":
 		return len(x.PermissionRecords) != 0
-	case "structs.structs.QueryAllPermissionResponse.pagination":
+	case "structs.QueryAllPermissionResponse.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12503,15 +12503,15 @@ func (x *fastReflection_QueryAllPermissionResponse) Has(fd protoreflect.FieldDes
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPermissionResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionResponse.permissionRecords":
+	case "structs.QueryAllPermissionResponse.permissionRecords":
 		x.PermissionRecords = nil
-	case "structs.structs.QueryAllPermissionResponse.pagination":
+	case "structs.QueryAllPermissionResponse.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12523,20 +12523,20 @@ func (x *fastReflection_QueryAllPermissionResponse) Clear(fd protoreflect.FieldD
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllPermissionResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllPermissionResponse.permissionRecords":
+	case "structs.QueryAllPermissionResponse.permissionRecords":
 		if len(x.PermissionRecords) == 0 {
 			return protoreflect.ValueOfList(&_QueryAllPermissionResponse_1_list{})
 		}
 		listValue := &_QueryAllPermissionResponse_1_list{list: &x.PermissionRecords}
 		return protoreflect.ValueOfList(listValue)
-	case "structs.structs.QueryAllPermissionResponse.pagination":
+	case "structs.QueryAllPermissionResponse.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -12552,17 +12552,17 @@ func (x *fastReflection_QueryAllPermissionResponse) Get(descriptor protoreflect.
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPermissionResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionResponse.permissionRecords":
+	case "structs.QueryAllPermissionResponse.permissionRecords":
 		lv := value.List()
 		clv := lv.(*_QueryAllPermissionResponse_1_list)
 		x.PermissionRecords = *clv.list
-	case "structs.structs.QueryAllPermissionResponse.pagination":
+	case "structs.QueryAllPermissionResponse.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageResponse)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12578,22 +12578,22 @@ func (x *fastReflection_QueryAllPermissionResponse) Set(fd protoreflect.FieldDes
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPermissionResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionResponse.permissionRecords":
+	case "structs.QueryAllPermissionResponse.permissionRecords":
 		if x.PermissionRecords == nil {
 			x.PermissionRecords = []*PermissionRecord{}
 		}
 		value := &_QueryAllPermissionResponse_1_list{list: &x.PermissionRecords}
 		return protoreflect.ValueOfList(value)
-	case "structs.structs.QueryAllPermissionResponse.pagination":
+	case "structs.QueryAllPermissionResponse.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageResponse)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12602,17 +12602,17 @@ func (x *fastReflection_QueryAllPermissionResponse) Mutable(fd protoreflect.Fiel
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllPermissionResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPermissionResponse.permissionRecords":
+	case "structs.QueryAllPermissionResponse.permissionRecords":
 		list := []*PermissionRecord{}
 		return protoreflect.ValueOfList(&_QueryAllPermissionResponse_1_list{list: &list})
-	case "structs.structs.QueryAllPermissionResponse.pagination":
+	case "structs.QueryAllPermissionResponse.pagination":
 		m := new(v1beta1.PageResponse)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPermissionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPermissionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPermissionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPermissionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12622,7 +12622,7 @@ func (x *fastReflection_QueryAllPermissionResponse) NewField(fd protoreflect.Fie
 func (x *fastReflection_QueryAllPermissionResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllPermissionResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllPermissionResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -12997,13 +12997,13 @@ func (x *fastReflection_QueryGetPlanetRequest) Range(f func(protoreflect.FieldDe
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetPlanetRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlanetRequest.id":
+	case "structs.QueryGetPlanetRequest.id":
 		return x.Id != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlanetRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlanetRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlanetRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlanetRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13015,13 +13015,13 @@ func (x *fastReflection_QueryGetPlanetRequest) Has(fd protoreflect.FieldDescript
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetPlanetRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlanetRequest.id":
+	case "structs.QueryGetPlanetRequest.id":
 		x.Id = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlanetRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlanetRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlanetRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlanetRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13033,14 +13033,14 @@ func (x *fastReflection_QueryGetPlanetRequest) Clear(fd protoreflect.FieldDescri
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetPlanetRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetPlanetRequest.id":
+	case "structs.QueryGetPlanetRequest.id":
 		value := x.Id
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlanetRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlanetRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlanetRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlanetRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -13056,13 +13056,13 @@ func (x *fastReflection_QueryGetPlanetRequest) Get(descriptor protoreflect.Field
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetPlanetRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlanetRequest.id":
+	case "structs.QueryGetPlanetRequest.id":
 		x.Id = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlanetRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlanetRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlanetRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlanetRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13078,13 +13078,13 @@ func (x *fastReflection_QueryGetPlanetRequest) Set(fd protoreflect.FieldDescript
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetPlanetRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlanetRequest.id":
-		panic(fmt.Errorf("field id of message structs.structs.QueryGetPlanetRequest is not mutable"))
+	case "structs.QueryGetPlanetRequest.id":
+		panic(fmt.Errorf("field id of message structs.QueryGetPlanetRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlanetRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlanetRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlanetRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlanetRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13093,13 +13093,13 @@ func (x *fastReflection_QueryGetPlanetRequest) Mutable(fd protoreflect.FieldDesc
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetPlanetRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlanetRequest.id":
+	case "structs.QueryGetPlanetRequest.id":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlanetRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlanetRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlanetRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlanetRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13109,7 +13109,7 @@ func (x *fastReflection_QueryGetPlanetRequest) NewField(fd protoreflect.FieldDes
 func (x *fastReflection_QueryGetPlanetRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetPlanetRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetPlanetRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -13417,13 +13417,13 @@ func (x *fastReflection_QueryGetPlanetResponse) Range(f func(protoreflect.FieldD
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetPlanetResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlanetResponse.Planet":
+	case "structs.QueryGetPlanetResponse.Planet":
 		return x.Planet != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlanetResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlanetResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlanetResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlanetResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13435,13 +13435,13 @@ func (x *fastReflection_QueryGetPlanetResponse) Has(fd protoreflect.FieldDescrip
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetPlanetResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlanetResponse.Planet":
+	case "structs.QueryGetPlanetResponse.Planet":
 		x.Planet = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlanetResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlanetResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlanetResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlanetResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13453,14 +13453,14 @@ func (x *fastReflection_QueryGetPlanetResponse) Clear(fd protoreflect.FieldDescr
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetPlanetResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetPlanetResponse.Planet":
+	case "structs.QueryGetPlanetResponse.Planet":
 		value := x.Planet
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlanetResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlanetResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlanetResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlanetResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -13476,13 +13476,13 @@ func (x *fastReflection_QueryGetPlanetResponse) Get(descriptor protoreflect.Fiel
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetPlanetResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlanetResponse.Planet":
+	case "structs.QueryGetPlanetResponse.Planet":
 		x.Planet = value.Message().Interface().(*Planet)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlanetResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlanetResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlanetResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlanetResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13498,16 +13498,16 @@ func (x *fastReflection_QueryGetPlanetResponse) Set(fd protoreflect.FieldDescrip
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetPlanetResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlanetResponse.Planet":
+	case "structs.QueryGetPlanetResponse.Planet":
 		if x.Planet == nil {
 			x.Planet = new(Planet)
 		}
 		return protoreflect.ValueOfMessage(x.Planet.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlanetResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlanetResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlanetResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlanetResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13516,14 +13516,14 @@ func (x *fastReflection_QueryGetPlanetResponse) Mutable(fd protoreflect.FieldDes
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetPlanetResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlanetResponse.Planet":
+	case "structs.QueryGetPlanetResponse.Planet":
 		m := new(Planet)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlanetResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlanetResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlanetResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlanetResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13533,7 +13533,7 @@ func (x *fastReflection_QueryGetPlanetResponse) NewField(fd protoreflect.FieldDe
 func (x *fastReflection_QueryGetPlanetResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetPlanetResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetPlanetResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -13852,13 +13852,13 @@ func (x *fastReflection_QueryAllPlanetRequest) Range(f func(protoreflect.FieldDe
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllPlanetRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlanetRequest.pagination":
+	case "structs.QueryAllPlanetRequest.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlanetRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlanetRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlanetRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlanetRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13870,13 +13870,13 @@ func (x *fastReflection_QueryAllPlanetRequest) Has(fd protoreflect.FieldDescript
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPlanetRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlanetRequest.pagination":
+	case "structs.QueryAllPlanetRequest.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlanetRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlanetRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlanetRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlanetRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13888,14 +13888,14 @@ func (x *fastReflection_QueryAllPlanetRequest) Clear(fd protoreflect.FieldDescri
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllPlanetRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllPlanetRequest.pagination":
+	case "structs.QueryAllPlanetRequest.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlanetRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlanetRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlanetRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlanetRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -13911,13 +13911,13 @@ func (x *fastReflection_QueryAllPlanetRequest) Get(descriptor protoreflect.Field
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPlanetRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlanetRequest.pagination":
+	case "structs.QueryAllPlanetRequest.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlanetRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlanetRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlanetRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlanetRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13933,16 +13933,16 @@ func (x *fastReflection_QueryAllPlanetRequest) Set(fd protoreflect.FieldDescript
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPlanetRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlanetRequest.pagination":
+	case "structs.QueryAllPlanetRequest.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageRequest)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlanetRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlanetRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlanetRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlanetRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13951,14 +13951,14 @@ func (x *fastReflection_QueryAllPlanetRequest) Mutable(fd protoreflect.FieldDesc
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllPlanetRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlanetRequest.pagination":
+	case "structs.QueryAllPlanetRequest.pagination":
 		m := new(v1beta1.PageRequest)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlanetRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlanetRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlanetRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlanetRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13968,7 +13968,7 @@ func (x *fastReflection_QueryAllPlanetRequest) NewField(fd protoreflect.FieldDes
 func (x *fastReflection_QueryAllPlanetRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllPlanetRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllPlanetRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -14295,15 +14295,15 @@ func (x *fastReflection_QueryAllPlanetByPlayerRequest) Range(f func(protoreflect
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllPlanetByPlayerRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlanetByPlayerRequest.playerId":
+	case "structs.QueryAllPlanetByPlayerRequest.playerId":
 		return x.PlayerId != ""
-	case "structs.structs.QueryAllPlanetByPlayerRequest.pagination":
+	case "structs.QueryAllPlanetByPlayerRequest.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlanetByPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlanetByPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlanetByPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlanetByPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14315,15 +14315,15 @@ func (x *fastReflection_QueryAllPlanetByPlayerRequest) Has(fd protoreflect.Field
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPlanetByPlayerRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlanetByPlayerRequest.playerId":
+	case "structs.QueryAllPlanetByPlayerRequest.playerId":
 		x.PlayerId = ""
-	case "structs.structs.QueryAllPlanetByPlayerRequest.pagination":
+	case "structs.QueryAllPlanetByPlayerRequest.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlanetByPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlanetByPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlanetByPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlanetByPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14335,17 +14335,17 @@ func (x *fastReflection_QueryAllPlanetByPlayerRequest) Clear(fd protoreflect.Fie
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllPlanetByPlayerRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllPlanetByPlayerRequest.playerId":
+	case "structs.QueryAllPlanetByPlayerRequest.playerId":
 		value := x.PlayerId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.QueryAllPlanetByPlayerRequest.pagination":
+	case "structs.QueryAllPlanetByPlayerRequest.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlanetByPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlanetByPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlanetByPlayerRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlanetByPlayerRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -14361,15 +14361,15 @@ func (x *fastReflection_QueryAllPlanetByPlayerRequest) Get(descriptor protorefle
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPlanetByPlayerRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlanetByPlayerRequest.playerId":
+	case "structs.QueryAllPlanetByPlayerRequest.playerId":
 		x.PlayerId = value.Interface().(string)
-	case "structs.structs.QueryAllPlanetByPlayerRequest.pagination":
+	case "structs.QueryAllPlanetByPlayerRequest.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlanetByPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlanetByPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlanetByPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlanetByPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14385,18 +14385,18 @@ func (x *fastReflection_QueryAllPlanetByPlayerRequest) Set(fd protoreflect.Field
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPlanetByPlayerRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlanetByPlayerRequest.pagination":
+	case "structs.QueryAllPlanetByPlayerRequest.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageRequest)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
-	case "structs.structs.QueryAllPlanetByPlayerRequest.playerId":
-		panic(fmt.Errorf("field playerId of message structs.structs.QueryAllPlanetByPlayerRequest is not mutable"))
+	case "structs.QueryAllPlanetByPlayerRequest.playerId":
+		panic(fmt.Errorf("field playerId of message structs.QueryAllPlanetByPlayerRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlanetByPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlanetByPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlanetByPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlanetByPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14405,16 +14405,16 @@ func (x *fastReflection_QueryAllPlanetByPlayerRequest) Mutable(fd protoreflect.F
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllPlanetByPlayerRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlanetByPlayerRequest.playerId":
+	case "structs.QueryAllPlanetByPlayerRequest.playerId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.QueryAllPlanetByPlayerRequest.pagination":
+	case "structs.QueryAllPlanetByPlayerRequest.pagination":
 		m := new(v1beta1.PageRequest)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlanetByPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlanetByPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlanetByPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlanetByPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14424,7 +14424,7 @@ func (x *fastReflection_QueryAllPlanetByPlayerRequest) NewField(fd protoreflect.
 func (x *fastReflection_QueryAllPlanetByPlayerRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllPlanetByPlayerRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllPlanetByPlayerRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -14845,15 +14845,15 @@ func (x *fastReflection_QueryAllPlanetResponse) Range(f func(protoreflect.FieldD
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllPlanetResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlanetResponse.Planet":
+	case "structs.QueryAllPlanetResponse.Planet":
 		return len(x.Planet) != 0
-	case "structs.structs.QueryAllPlanetResponse.pagination":
+	case "structs.QueryAllPlanetResponse.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlanetResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlanetResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlanetResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlanetResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14865,15 +14865,15 @@ func (x *fastReflection_QueryAllPlanetResponse) Has(fd protoreflect.FieldDescrip
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPlanetResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlanetResponse.Planet":
+	case "structs.QueryAllPlanetResponse.Planet":
 		x.Planet = nil
-	case "structs.structs.QueryAllPlanetResponse.pagination":
+	case "structs.QueryAllPlanetResponse.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlanetResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlanetResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlanetResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlanetResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14885,20 +14885,20 @@ func (x *fastReflection_QueryAllPlanetResponse) Clear(fd protoreflect.FieldDescr
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllPlanetResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllPlanetResponse.Planet":
+	case "structs.QueryAllPlanetResponse.Planet":
 		if len(x.Planet) == 0 {
 			return protoreflect.ValueOfList(&_QueryAllPlanetResponse_1_list{})
 		}
 		listValue := &_QueryAllPlanetResponse_1_list{list: &x.Planet}
 		return protoreflect.ValueOfList(listValue)
-	case "structs.structs.QueryAllPlanetResponse.pagination":
+	case "structs.QueryAllPlanetResponse.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlanetResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlanetResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlanetResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlanetResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -14914,17 +14914,17 @@ func (x *fastReflection_QueryAllPlanetResponse) Get(descriptor protoreflect.Fiel
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPlanetResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlanetResponse.Planet":
+	case "structs.QueryAllPlanetResponse.Planet":
 		lv := value.List()
 		clv := lv.(*_QueryAllPlanetResponse_1_list)
 		x.Planet = *clv.list
-	case "structs.structs.QueryAllPlanetResponse.pagination":
+	case "structs.QueryAllPlanetResponse.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageResponse)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlanetResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlanetResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlanetResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlanetResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14940,22 +14940,22 @@ func (x *fastReflection_QueryAllPlanetResponse) Set(fd protoreflect.FieldDescrip
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPlanetResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlanetResponse.Planet":
+	case "structs.QueryAllPlanetResponse.Planet":
 		if x.Planet == nil {
 			x.Planet = []*Planet{}
 		}
 		value := &_QueryAllPlanetResponse_1_list{list: &x.Planet}
 		return protoreflect.ValueOfList(value)
-	case "structs.structs.QueryAllPlanetResponse.pagination":
+	case "structs.QueryAllPlanetResponse.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageResponse)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlanetResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlanetResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlanetResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlanetResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14964,17 +14964,17 @@ func (x *fastReflection_QueryAllPlanetResponse) Mutable(fd protoreflect.FieldDes
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllPlanetResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlanetResponse.Planet":
+	case "structs.QueryAllPlanetResponse.Planet":
 		list := []*Planet{}
 		return protoreflect.ValueOfList(&_QueryAllPlanetResponse_1_list{list: &list})
-	case "structs.structs.QueryAllPlanetResponse.pagination":
+	case "structs.QueryAllPlanetResponse.pagination":
 		m := new(v1beta1.PageResponse)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlanetResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlanetResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlanetResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlanetResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14984,7 +14984,7 @@ func (x *fastReflection_QueryAllPlanetResponse) NewField(fd protoreflect.FieldDe
 func (x *fastReflection_QueryAllPlanetResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllPlanetResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllPlanetResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -15359,13 +15359,13 @@ func (x *fastReflection_QueryGetPlayerRequest) Range(f func(protoreflect.FieldDe
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetPlayerRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlayerRequest.id":
+	case "structs.QueryGetPlayerRequest.id":
 		return x.Id != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15377,13 +15377,13 @@ func (x *fastReflection_QueryGetPlayerRequest) Has(fd protoreflect.FieldDescript
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetPlayerRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlayerRequest.id":
+	case "structs.QueryGetPlayerRequest.id":
 		x.Id = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15395,14 +15395,14 @@ func (x *fastReflection_QueryGetPlayerRequest) Clear(fd protoreflect.FieldDescri
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetPlayerRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetPlayerRequest.id":
+	case "structs.QueryGetPlayerRequest.id":
 		value := x.Id
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlayerRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlayerRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -15418,13 +15418,13 @@ func (x *fastReflection_QueryGetPlayerRequest) Get(descriptor protoreflect.Field
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetPlayerRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlayerRequest.id":
+	case "structs.QueryGetPlayerRequest.id":
 		x.Id = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15440,13 +15440,13 @@ func (x *fastReflection_QueryGetPlayerRequest) Set(fd protoreflect.FieldDescript
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetPlayerRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlayerRequest.id":
-		panic(fmt.Errorf("field id of message structs.structs.QueryGetPlayerRequest is not mutable"))
+	case "structs.QueryGetPlayerRequest.id":
+		panic(fmt.Errorf("field id of message structs.QueryGetPlayerRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15455,13 +15455,13 @@ func (x *fastReflection_QueryGetPlayerRequest) Mutable(fd protoreflect.FieldDesc
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetPlayerRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlayerRequest.id":
+	case "structs.QueryGetPlayerRequest.id":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15471,7 +15471,7 @@ func (x *fastReflection_QueryGetPlayerRequest) NewField(fd protoreflect.FieldDes
 func (x *fastReflection_QueryGetPlayerRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetPlayerRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetPlayerRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -15779,13 +15779,13 @@ func (x *fastReflection_QueryGetPlayerResponse) Range(f func(protoreflect.FieldD
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetPlayerResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlayerResponse.Player":
+	case "structs.QueryGetPlayerResponse.Player":
 		return x.Player != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlayerResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlayerResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlayerResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlayerResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15797,13 +15797,13 @@ func (x *fastReflection_QueryGetPlayerResponse) Has(fd protoreflect.FieldDescrip
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetPlayerResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlayerResponse.Player":
+	case "structs.QueryGetPlayerResponse.Player":
 		x.Player = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlayerResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlayerResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlayerResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlayerResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15815,14 +15815,14 @@ func (x *fastReflection_QueryGetPlayerResponse) Clear(fd protoreflect.FieldDescr
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetPlayerResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetPlayerResponse.Player":
+	case "structs.QueryGetPlayerResponse.Player":
 		value := x.Player
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlayerResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlayerResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlayerResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlayerResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -15838,13 +15838,13 @@ func (x *fastReflection_QueryGetPlayerResponse) Get(descriptor protoreflect.Fiel
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetPlayerResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlayerResponse.Player":
+	case "structs.QueryGetPlayerResponse.Player":
 		x.Player = value.Message().Interface().(*Player)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlayerResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlayerResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlayerResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlayerResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15860,16 +15860,16 @@ func (x *fastReflection_QueryGetPlayerResponse) Set(fd protoreflect.FieldDescrip
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetPlayerResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlayerResponse.Player":
+	case "structs.QueryGetPlayerResponse.Player":
 		if x.Player == nil {
 			x.Player = new(Player)
 		}
 		return protoreflect.ValueOfMessage(x.Player.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlayerResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlayerResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlayerResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlayerResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15878,14 +15878,14 @@ func (x *fastReflection_QueryGetPlayerResponse) Mutable(fd protoreflect.FieldDes
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetPlayerResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetPlayerResponse.Player":
+	case "structs.QueryGetPlayerResponse.Player":
 		m := new(Player)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetPlayerResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetPlayerResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetPlayerResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetPlayerResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15895,7 +15895,7 @@ func (x *fastReflection_QueryGetPlayerResponse) NewField(fd protoreflect.FieldDe
 func (x *fastReflection_QueryGetPlayerResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetPlayerResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetPlayerResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -16214,13 +16214,13 @@ func (x *fastReflection_QueryAllPlayerRequest) Range(f func(protoreflect.FieldDe
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllPlayerRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlayerRequest.pagination":
+	case "structs.QueryAllPlayerRequest.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16232,13 +16232,13 @@ func (x *fastReflection_QueryAllPlayerRequest) Has(fd protoreflect.FieldDescript
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPlayerRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlayerRequest.pagination":
+	case "structs.QueryAllPlayerRequest.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16250,14 +16250,14 @@ func (x *fastReflection_QueryAllPlayerRequest) Clear(fd protoreflect.FieldDescri
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllPlayerRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllPlayerRequest.pagination":
+	case "structs.QueryAllPlayerRequest.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlayerRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlayerRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -16273,13 +16273,13 @@ func (x *fastReflection_QueryAllPlayerRequest) Get(descriptor protoreflect.Field
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPlayerRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlayerRequest.pagination":
+	case "structs.QueryAllPlayerRequest.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16295,16 +16295,16 @@ func (x *fastReflection_QueryAllPlayerRequest) Set(fd protoreflect.FieldDescript
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPlayerRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlayerRequest.pagination":
+	case "structs.QueryAllPlayerRequest.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageRequest)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16313,14 +16313,14 @@ func (x *fastReflection_QueryAllPlayerRequest) Mutable(fd protoreflect.FieldDesc
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllPlayerRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlayerRequest.pagination":
+	case "structs.QueryAllPlayerRequest.pagination":
 		m := new(v1beta1.PageRequest)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlayerRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlayerRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlayerRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlayerRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16330,7 +16330,7 @@ func (x *fastReflection_QueryAllPlayerRequest) NewField(fd protoreflect.FieldDes
 func (x *fastReflection_QueryAllPlayerRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllPlayerRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllPlayerRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -16708,15 +16708,15 @@ func (x *fastReflection_QueryAllPlayerResponse) Range(f func(protoreflect.FieldD
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllPlayerResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlayerResponse.Player":
+	case "structs.QueryAllPlayerResponse.Player":
 		return len(x.Player) != 0
-	case "structs.structs.QueryAllPlayerResponse.pagination":
+	case "structs.QueryAllPlayerResponse.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlayerResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlayerResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlayerResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlayerResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16728,15 +16728,15 @@ func (x *fastReflection_QueryAllPlayerResponse) Has(fd protoreflect.FieldDescrip
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPlayerResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlayerResponse.Player":
+	case "structs.QueryAllPlayerResponse.Player":
 		x.Player = nil
-	case "structs.structs.QueryAllPlayerResponse.pagination":
+	case "structs.QueryAllPlayerResponse.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlayerResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlayerResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlayerResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlayerResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16748,20 +16748,20 @@ func (x *fastReflection_QueryAllPlayerResponse) Clear(fd protoreflect.FieldDescr
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllPlayerResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllPlayerResponse.Player":
+	case "structs.QueryAllPlayerResponse.Player":
 		if len(x.Player) == 0 {
 			return protoreflect.ValueOfList(&_QueryAllPlayerResponse_1_list{})
 		}
 		listValue := &_QueryAllPlayerResponse_1_list{list: &x.Player}
 		return protoreflect.ValueOfList(listValue)
-	case "structs.structs.QueryAllPlayerResponse.pagination":
+	case "structs.QueryAllPlayerResponse.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlayerResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlayerResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlayerResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlayerResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -16777,17 +16777,17 @@ func (x *fastReflection_QueryAllPlayerResponse) Get(descriptor protoreflect.Fiel
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPlayerResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlayerResponse.Player":
+	case "structs.QueryAllPlayerResponse.Player":
 		lv := value.List()
 		clv := lv.(*_QueryAllPlayerResponse_1_list)
 		x.Player = *clv.list
-	case "structs.structs.QueryAllPlayerResponse.pagination":
+	case "structs.QueryAllPlayerResponse.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageResponse)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlayerResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlayerResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlayerResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlayerResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16803,22 +16803,22 @@ func (x *fastReflection_QueryAllPlayerResponse) Set(fd protoreflect.FieldDescrip
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllPlayerResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlayerResponse.Player":
+	case "structs.QueryAllPlayerResponse.Player":
 		if x.Player == nil {
 			x.Player = []*Player{}
 		}
 		value := &_QueryAllPlayerResponse_1_list{list: &x.Player}
 		return protoreflect.ValueOfList(value)
-	case "structs.structs.QueryAllPlayerResponse.pagination":
+	case "structs.QueryAllPlayerResponse.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageResponse)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlayerResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlayerResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlayerResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlayerResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16827,17 +16827,17 @@ func (x *fastReflection_QueryAllPlayerResponse) Mutable(fd protoreflect.FieldDes
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllPlayerResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllPlayerResponse.Player":
+	case "structs.QueryAllPlayerResponse.Player":
 		list := []*Player{}
 		return protoreflect.ValueOfList(&_QueryAllPlayerResponse_1_list{list: &list})
-	case "structs.structs.QueryAllPlayerResponse.pagination":
+	case "structs.QueryAllPlayerResponse.pagination":
 		m := new(v1beta1.PageResponse)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllPlayerResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllPlayerResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllPlayerResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllPlayerResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16847,7 +16847,7 @@ func (x *fastReflection_QueryAllPlayerResponse) NewField(fd protoreflect.FieldDe
 func (x *fastReflection_QueryAllPlayerResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllPlayerResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllPlayerResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -17222,13 +17222,13 @@ func (x *fastReflection_QueryGetReactorRequest) Range(f func(protoreflect.FieldD
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetReactorRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetReactorRequest.id":
+	case "structs.QueryGetReactorRequest.id":
 		return x.Id != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetReactorRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetReactorRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetReactorRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetReactorRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17240,13 +17240,13 @@ func (x *fastReflection_QueryGetReactorRequest) Has(fd protoreflect.FieldDescrip
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetReactorRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetReactorRequest.id":
+	case "structs.QueryGetReactorRequest.id":
 		x.Id = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetReactorRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetReactorRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetReactorRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetReactorRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17258,14 +17258,14 @@ func (x *fastReflection_QueryGetReactorRequest) Clear(fd protoreflect.FieldDescr
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetReactorRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetReactorRequest.id":
+	case "structs.QueryGetReactorRequest.id":
 		value := x.Id
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetReactorRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetReactorRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetReactorRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetReactorRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -17281,13 +17281,13 @@ func (x *fastReflection_QueryGetReactorRequest) Get(descriptor protoreflect.Fiel
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetReactorRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetReactorRequest.id":
+	case "structs.QueryGetReactorRequest.id":
 		x.Id = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetReactorRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetReactorRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetReactorRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetReactorRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17303,13 +17303,13 @@ func (x *fastReflection_QueryGetReactorRequest) Set(fd protoreflect.FieldDescrip
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetReactorRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetReactorRequest.id":
-		panic(fmt.Errorf("field id of message structs.structs.QueryGetReactorRequest is not mutable"))
+	case "structs.QueryGetReactorRequest.id":
+		panic(fmt.Errorf("field id of message structs.QueryGetReactorRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetReactorRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetReactorRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetReactorRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetReactorRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17318,13 +17318,13 @@ func (x *fastReflection_QueryGetReactorRequest) Mutable(fd protoreflect.FieldDes
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetReactorRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetReactorRequest.id":
+	case "structs.QueryGetReactorRequest.id":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetReactorRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetReactorRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetReactorRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetReactorRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17334,7 +17334,7 @@ func (x *fastReflection_QueryGetReactorRequest) NewField(fd protoreflect.FieldDe
 func (x *fastReflection_QueryGetReactorRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetReactorRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetReactorRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -17642,13 +17642,13 @@ func (x *fastReflection_QueryGetReactorResponse) Range(f func(protoreflect.Field
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetReactorResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetReactorResponse.Reactor":
+	case "structs.QueryGetReactorResponse.Reactor":
 		return x.Reactor != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetReactorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetReactorResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetReactorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetReactorResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17660,13 +17660,13 @@ func (x *fastReflection_QueryGetReactorResponse) Has(fd protoreflect.FieldDescri
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetReactorResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetReactorResponse.Reactor":
+	case "structs.QueryGetReactorResponse.Reactor":
 		x.Reactor = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetReactorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetReactorResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetReactorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetReactorResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17678,14 +17678,14 @@ func (x *fastReflection_QueryGetReactorResponse) Clear(fd protoreflect.FieldDesc
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetReactorResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetReactorResponse.Reactor":
+	case "structs.QueryGetReactorResponse.Reactor":
 		value := x.Reactor
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetReactorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetReactorResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetReactorResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetReactorResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -17701,13 +17701,13 @@ func (x *fastReflection_QueryGetReactorResponse) Get(descriptor protoreflect.Fie
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetReactorResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetReactorResponse.Reactor":
+	case "structs.QueryGetReactorResponse.Reactor":
 		x.Reactor = value.Message().Interface().(*Reactor)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetReactorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetReactorResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetReactorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetReactorResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17723,16 +17723,16 @@ func (x *fastReflection_QueryGetReactorResponse) Set(fd protoreflect.FieldDescri
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetReactorResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetReactorResponse.Reactor":
+	case "structs.QueryGetReactorResponse.Reactor":
 		if x.Reactor == nil {
 			x.Reactor = new(Reactor)
 		}
 		return protoreflect.ValueOfMessage(x.Reactor.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetReactorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetReactorResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetReactorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetReactorResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17741,14 +17741,14 @@ func (x *fastReflection_QueryGetReactorResponse) Mutable(fd protoreflect.FieldDe
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetReactorResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetReactorResponse.Reactor":
+	case "structs.QueryGetReactorResponse.Reactor":
 		m := new(Reactor)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetReactorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetReactorResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetReactorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetReactorResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17758,7 +17758,7 @@ func (x *fastReflection_QueryGetReactorResponse) NewField(fd protoreflect.FieldD
 func (x *fastReflection_QueryGetReactorResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetReactorResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetReactorResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -18077,13 +18077,13 @@ func (x *fastReflection_QueryAllReactorRequest) Range(f func(protoreflect.FieldD
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllReactorRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllReactorRequest.pagination":
+	case "structs.QueryAllReactorRequest.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllReactorRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllReactorRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllReactorRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllReactorRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18095,13 +18095,13 @@ func (x *fastReflection_QueryAllReactorRequest) Has(fd protoreflect.FieldDescrip
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllReactorRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllReactorRequest.pagination":
+	case "structs.QueryAllReactorRequest.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllReactorRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllReactorRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllReactorRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllReactorRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18113,14 +18113,14 @@ func (x *fastReflection_QueryAllReactorRequest) Clear(fd protoreflect.FieldDescr
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllReactorRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllReactorRequest.pagination":
+	case "structs.QueryAllReactorRequest.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllReactorRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllReactorRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllReactorRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllReactorRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -18136,13 +18136,13 @@ func (x *fastReflection_QueryAllReactorRequest) Get(descriptor protoreflect.Fiel
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllReactorRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllReactorRequest.pagination":
+	case "structs.QueryAllReactorRequest.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllReactorRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllReactorRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllReactorRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllReactorRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18158,16 +18158,16 @@ func (x *fastReflection_QueryAllReactorRequest) Set(fd protoreflect.FieldDescrip
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllReactorRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllReactorRequest.pagination":
+	case "structs.QueryAllReactorRequest.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageRequest)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllReactorRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllReactorRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllReactorRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllReactorRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18176,14 +18176,14 @@ func (x *fastReflection_QueryAllReactorRequest) Mutable(fd protoreflect.FieldDes
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllReactorRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllReactorRequest.pagination":
+	case "structs.QueryAllReactorRequest.pagination":
 		m := new(v1beta1.PageRequest)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllReactorRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllReactorRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllReactorRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllReactorRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18193,7 +18193,7 @@ func (x *fastReflection_QueryAllReactorRequest) NewField(fd protoreflect.FieldDe
 func (x *fastReflection_QueryAllReactorRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllReactorRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllReactorRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -18571,15 +18571,15 @@ func (x *fastReflection_QueryAllReactorResponse) Range(f func(protoreflect.Field
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllReactorResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllReactorResponse.Reactor":
+	case "structs.QueryAllReactorResponse.Reactor":
 		return len(x.Reactor) != 0
-	case "structs.structs.QueryAllReactorResponse.pagination":
+	case "structs.QueryAllReactorResponse.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllReactorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllReactorResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllReactorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllReactorResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18591,15 +18591,15 @@ func (x *fastReflection_QueryAllReactorResponse) Has(fd protoreflect.FieldDescri
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllReactorResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllReactorResponse.Reactor":
+	case "structs.QueryAllReactorResponse.Reactor":
 		x.Reactor = nil
-	case "structs.structs.QueryAllReactorResponse.pagination":
+	case "structs.QueryAllReactorResponse.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllReactorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllReactorResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllReactorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllReactorResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18611,20 +18611,20 @@ func (x *fastReflection_QueryAllReactorResponse) Clear(fd protoreflect.FieldDesc
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllReactorResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllReactorResponse.Reactor":
+	case "structs.QueryAllReactorResponse.Reactor":
 		if len(x.Reactor) == 0 {
 			return protoreflect.ValueOfList(&_QueryAllReactorResponse_1_list{})
 		}
 		listValue := &_QueryAllReactorResponse_1_list{list: &x.Reactor}
 		return protoreflect.ValueOfList(listValue)
-	case "structs.structs.QueryAllReactorResponse.pagination":
+	case "structs.QueryAllReactorResponse.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllReactorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllReactorResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllReactorResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllReactorResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -18640,17 +18640,17 @@ func (x *fastReflection_QueryAllReactorResponse) Get(descriptor protoreflect.Fie
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllReactorResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllReactorResponse.Reactor":
+	case "structs.QueryAllReactorResponse.Reactor":
 		lv := value.List()
 		clv := lv.(*_QueryAllReactorResponse_1_list)
 		x.Reactor = *clv.list
-	case "structs.structs.QueryAllReactorResponse.pagination":
+	case "structs.QueryAllReactorResponse.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageResponse)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllReactorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllReactorResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllReactorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllReactorResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18666,22 +18666,22 @@ func (x *fastReflection_QueryAllReactorResponse) Set(fd protoreflect.FieldDescri
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllReactorResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllReactorResponse.Reactor":
+	case "structs.QueryAllReactorResponse.Reactor":
 		if x.Reactor == nil {
 			x.Reactor = []*Reactor{}
 		}
 		value := &_QueryAllReactorResponse_1_list{list: &x.Reactor}
 		return protoreflect.ValueOfList(value)
-	case "structs.structs.QueryAllReactorResponse.pagination":
+	case "structs.QueryAllReactorResponse.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageResponse)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllReactorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllReactorResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllReactorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllReactorResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18690,17 +18690,17 @@ func (x *fastReflection_QueryAllReactorResponse) Mutable(fd protoreflect.FieldDe
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllReactorResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllReactorResponse.Reactor":
+	case "structs.QueryAllReactorResponse.Reactor":
 		list := []*Reactor{}
 		return protoreflect.ValueOfList(&_QueryAllReactorResponse_1_list{list: &list})
-	case "structs.structs.QueryAllReactorResponse.pagination":
+	case "structs.QueryAllReactorResponse.pagination":
 		m := new(v1beta1.PageResponse)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllReactorResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllReactorResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllReactorResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllReactorResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18710,7 +18710,7 @@ func (x *fastReflection_QueryAllReactorResponse) NewField(fd protoreflect.FieldD
 func (x *fastReflection_QueryAllReactorResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllReactorResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllReactorResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -19085,13 +19085,13 @@ func (x *fastReflection_QueryGetStructRequest) Range(f func(protoreflect.FieldDe
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetStructRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetStructRequest.id":
+	case "structs.QueryGetStructRequest.id":
 		return x.Id != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetStructRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetStructRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetStructRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetStructRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19103,13 +19103,13 @@ func (x *fastReflection_QueryGetStructRequest) Has(fd protoreflect.FieldDescript
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetStructRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetStructRequest.id":
+	case "structs.QueryGetStructRequest.id":
 		x.Id = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetStructRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetStructRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetStructRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetStructRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19121,14 +19121,14 @@ func (x *fastReflection_QueryGetStructRequest) Clear(fd protoreflect.FieldDescri
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetStructRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetStructRequest.id":
+	case "structs.QueryGetStructRequest.id":
 		value := x.Id
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetStructRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetStructRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetStructRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetStructRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -19144,13 +19144,13 @@ func (x *fastReflection_QueryGetStructRequest) Get(descriptor protoreflect.Field
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetStructRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetStructRequest.id":
+	case "structs.QueryGetStructRequest.id":
 		x.Id = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetStructRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetStructRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetStructRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetStructRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19166,13 +19166,13 @@ func (x *fastReflection_QueryGetStructRequest) Set(fd protoreflect.FieldDescript
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetStructRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetStructRequest.id":
-		panic(fmt.Errorf("field id of message structs.structs.QueryGetStructRequest is not mutable"))
+	case "structs.QueryGetStructRequest.id":
+		panic(fmt.Errorf("field id of message structs.QueryGetStructRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetStructRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetStructRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetStructRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetStructRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19181,13 +19181,13 @@ func (x *fastReflection_QueryGetStructRequest) Mutable(fd protoreflect.FieldDesc
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetStructRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetStructRequest.id":
+	case "structs.QueryGetStructRequest.id":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetStructRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetStructRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetStructRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetStructRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19197,7 +19197,7 @@ func (x *fastReflection_QueryGetStructRequest) NewField(fd protoreflect.FieldDes
 func (x *fastReflection_QueryGetStructRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetStructRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetStructRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -19505,13 +19505,13 @@ func (x *fastReflection_QueryGetStructResponse) Range(f func(protoreflect.FieldD
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetStructResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetStructResponse.Struct":
+	case "structs.QueryGetStructResponse.Struct":
 		return x.Struct != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetStructResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetStructResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetStructResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetStructResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19523,13 +19523,13 @@ func (x *fastReflection_QueryGetStructResponse) Has(fd protoreflect.FieldDescrip
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetStructResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetStructResponse.Struct":
+	case "structs.QueryGetStructResponse.Struct":
 		x.Struct = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetStructResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetStructResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetStructResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetStructResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19541,14 +19541,14 @@ func (x *fastReflection_QueryGetStructResponse) Clear(fd protoreflect.FieldDescr
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetStructResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetStructResponse.Struct":
+	case "structs.QueryGetStructResponse.Struct":
 		value := x.Struct
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetStructResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetStructResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetStructResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetStructResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -19564,13 +19564,13 @@ func (x *fastReflection_QueryGetStructResponse) Get(descriptor protoreflect.Fiel
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetStructResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetStructResponse.Struct":
+	case "structs.QueryGetStructResponse.Struct":
 		x.Struct = value.Message().Interface().(*Struct)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetStructResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetStructResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetStructResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetStructResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19586,16 +19586,16 @@ func (x *fastReflection_QueryGetStructResponse) Set(fd protoreflect.FieldDescrip
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetStructResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetStructResponse.Struct":
+	case "structs.QueryGetStructResponse.Struct":
 		if x.Struct == nil {
 			x.Struct = new(Struct)
 		}
 		return protoreflect.ValueOfMessage(x.Struct.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetStructResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetStructResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetStructResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetStructResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19604,14 +19604,14 @@ func (x *fastReflection_QueryGetStructResponse) Mutable(fd protoreflect.FieldDes
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetStructResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetStructResponse.Struct":
+	case "structs.QueryGetStructResponse.Struct":
 		m := new(Struct)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetStructResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetStructResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetStructResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetStructResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19621,7 +19621,7 @@ func (x *fastReflection_QueryGetStructResponse) NewField(fd protoreflect.FieldDe
 func (x *fastReflection_QueryGetStructResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetStructResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetStructResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -19940,13 +19940,13 @@ func (x *fastReflection_QueryAllStructRequest) Range(f func(protoreflect.FieldDe
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllStructRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllStructRequest.pagination":
+	case "structs.QueryAllStructRequest.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllStructRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllStructRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllStructRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllStructRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19958,13 +19958,13 @@ func (x *fastReflection_QueryAllStructRequest) Has(fd protoreflect.FieldDescript
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllStructRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllStructRequest.pagination":
+	case "structs.QueryAllStructRequest.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllStructRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllStructRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllStructRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllStructRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19976,14 +19976,14 @@ func (x *fastReflection_QueryAllStructRequest) Clear(fd protoreflect.FieldDescri
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllStructRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllStructRequest.pagination":
+	case "structs.QueryAllStructRequest.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllStructRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllStructRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllStructRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllStructRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -19999,13 +19999,13 @@ func (x *fastReflection_QueryAllStructRequest) Get(descriptor protoreflect.Field
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllStructRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllStructRequest.pagination":
+	case "structs.QueryAllStructRequest.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllStructRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllStructRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllStructRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllStructRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20021,16 +20021,16 @@ func (x *fastReflection_QueryAllStructRequest) Set(fd protoreflect.FieldDescript
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllStructRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllStructRequest.pagination":
+	case "structs.QueryAllStructRequest.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageRequest)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllStructRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllStructRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllStructRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllStructRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20039,14 +20039,14 @@ func (x *fastReflection_QueryAllStructRequest) Mutable(fd protoreflect.FieldDesc
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllStructRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllStructRequest.pagination":
+	case "structs.QueryAllStructRequest.pagination":
 		m := new(v1beta1.PageRequest)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllStructRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllStructRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllStructRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllStructRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20056,7 +20056,7 @@ func (x *fastReflection_QueryAllStructRequest) NewField(fd protoreflect.FieldDes
 func (x *fastReflection_QueryAllStructRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllStructRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllStructRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -20434,15 +20434,15 @@ func (x *fastReflection_QueryAllStructResponse) Range(f func(protoreflect.FieldD
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllStructResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllStructResponse.Struct":
+	case "structs.QueryAllStructResponse.Struct":
 		return len(x.Struct) != 0
-	case "structs.structs.QueryAllStructResponse.pagination":
+	case "structs.QueryAllStructResponse.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllStructResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllStructResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllStructResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllStructResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20454,15 +20454,15 @@ func (x *fastReflection_QueryAllStructResponse) Has(fd protoreflect.FieldDescrip
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllStructResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllStructResponse.Struct":
+	case "structs.QueryAllStructResponse.Struct":
 		x.Struct = nil
-	case "structs.structs.QueryAllStructResponse.pagination":
+	case "structs.QueryAllStructResponse.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllStructResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllStructResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllStructResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllStructResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20474,20 +20474,20 @@ func (x *fastReflection_QueryAllStructResponse) Clear(fd protoreflect.FieldDescr
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllStructResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllStructResponse.Struct":
+	case "structs.QueryAllStructResponse.Struct":
 		if len(x.Struct) == 0 {
 			return protoreflect.ValueOfList(&_QueryAllStructResponse_1_list{})
 		}
 		listValue := &_QueryAllStructResponse_1_list{list: &x.Struct}
 		return protoreflect.ValueOfList(listValue)
-	case "structs.structs.QueryAllStructResponse.pagination":
+	case "structs.QueryAllStructResponse.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllStructResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllStructResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllStructResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllStructResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -20503,17 +20503,17 @@ func (x *fastReflection_QueryAllStructResponse) Get(descriptor protoreflect.Fiel
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllStructResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllStructResponse.Struct":
+	case "structs.QueryAllStructResponse.Struct":
 		lv := value.List()
 		clv := lv.(*_QueryAllStructResponse_1_list)
 		x.Struct = *clv.list
-	case "structs.structs.QueryAllStructResponse.pagination":
+	case "structs.QueryAllStructResponse.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageResponse)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllStructResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllStructResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllStructResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllStructResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20529,22 +20529,22 @@ func (x *fastReflection_QueryAllStructResponse) Set(fd protoreflect.FieldDescrip
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllStructResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllStructResponse.Struct":
+	case "structs.QueryAllStructResponse.Struct":
 		if x.Struct == nil {
 			x.Struct = []*Struct{}
 		}
 		value := &_QueryAllStructResponse_1_list{list: &x.Struct}
 		return protoreflect.ValueOfList(value)
-	case "structs.structs.QueryAllStructResponse.pagination":
+	case "structs.QueryAllStructResponse.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageResponse)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllStructResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllStructResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllStructResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllStructResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20553,17 +20553,17 @@ func (x *fastReflection_QueryAllStructResponse) Mutable(fd protoreflect.FieldDes
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllStructResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllStructResponse.Struct":
+	case "structs.QueryAllStructResponse.Struct":
 		list := []*Struct{}
 		return protoreflect.ValueOfList(&_QueryAllStructResponse_1_list{list: &list})
-	case "structs.structs.QueryAllStructResponse.pagination":
+	case "structs.QueryAllStructResponse.pagination":
 		m := new(v1beta1.PageResponse)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllStructResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllStructResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllStructResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllStructResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20573,7 +20573,7 @@ func (x *fastReflection_QueryAllStructResponse) NewField(fd protoreflect.FieldDe
 func (x *fastReflection_QueryAllStructResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllStructResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllStructResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -20948,13 +20948,13 @@ func (x *fastReflection_QueryGetSubstationRequest) Range(f func(protoreflect.Fie
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetSubstationRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetSubstationRequest.id":
+	case "structs.QueryGetSubstationRequest.id":
 		return x.Id != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetSubstationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetSubstationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetSubstationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetSubstationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20966,13 +20966,13 @@ func (x *fastReflection_QueryGetSubstationRequest) Has(fd protoreflect.FieldDesc
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetSubstationRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetSubstationRequest.id":
+	case "structs.QueryGetSubstationRequest.id":
 		x.Id = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetSubstationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetSubstationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetSubstationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetSubstationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20984,14 +20984,14 @@ func (x *fastReflection_QueryGetSubstationRequest) Clear(fd protoreflect.FieldDe
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetSubstationRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetSubstationRequest.id":
+	case "structs.QueryGetSubstationRequest.id":
 		value := x.Id
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetSubstationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetSubstationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetSubstationRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetSubstationRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -21007,13 +21007,13 @@ func (x *fastReflection_QueryGetSubstationRequest) Get(descriptor protoreflect.F
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetSubstationRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetSubstationRequest.id":
+	case "structs.QueryGetSubstationRequest.id":
 		x.Id = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetSubstationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetSubstationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetSubstationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetSubstationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21029,13 +21029,13 @@ func (x *fastReflection_QueryGetSubstationRequest) Set(fd protoreflect.FieldDesc
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetSubstationRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetSubstationRequest.id":
-		panic(fmt.Errorf("field id of message structs.structs.QueryGetSubstationRequest is not mutable"))
+	case "structs.QueryGetSubstationRequest.id":
+		panic(fmt.Errorf("field id of message structs.QueryGetSubstationRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetSubstationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetSubstationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetSubstationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetSubstationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21044,13 +21044,13 @@ func (x *fastReflection_QueryGetSubstationRequest) Mutable(fd protoreflect.Field
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetSubstationRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetSubstationRequest.id":
+	case "structs.QueryGetSubstationRequest.id":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetSubstationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetSubstationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetSubstationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetSubstationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21060,7 +21060,7 @@ func (x *fastReflection_QueryGetSubstationRequest) NewField(fd protoreflect.Fiel
 func (x *fastReflection_QueryGetSubstationRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetSubstationRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetSubstationRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -21368,13 +21368,13 @@ func (x *fastReflection_QueryGetSubstationResponse) Range(f func(protoreflect.Fi
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryGetSubstationResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetSubstationResponse.Substation":
+	case "structs.QueryGetSubstationResponse.Substation":
 		return x.Substation != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetSubstationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetSubstationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetSubstationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetSubstationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21386,13 +21386,13 @@ func (x *fastReflection_QueryGetSubstationResponse) Has(fd protoreflect.FieldDes
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetSubstationResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetSubstationResponse.Substation":
+	case "structs.QueryGetSubstationResponse.Substation":
 		x.Substation = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetSubstationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetSubstationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetSubstationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetSubstationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21404,14 +21404,14 @@ func (x *fastReflection_QueryGetSubstationResponse) Clear(fd protoreflect.FieldD
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryGetSubstationResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryGetSubstationResponse.Substation":
+	case "structs.QueryGetSubstationResponse.Substation":
 		value := x.Substation
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetSubstationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetSubstationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetSubstationResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetSubstationResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -21427,13 +21427,13 @@ func (x *fastReflection_QueryGetSubstationResponse) Get(descriptor protoreflect.
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetSubstationResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetSubstationResponse.Substation":
+	case "structs.QueryGetSubstationResponse.Substation":
 		x.Substation = value.Message().Interface().(*Substation)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetSubstationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetSubstationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetSubstationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetSubstationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21449,16 +21449,16 @@ func (x *fastReflection_QueryGetSubstationResponse) Set(fd protoreflect.FieldDes
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryGetSubstationResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetSubstationResponse.Substation":
+	case "structs.QueryGetSubstationResponse.Substation":
 		if x.Substation == nil {
 			x.Substation = new(Substation)
 		}
 		return protoreflect.ValueOfMessage(x.Substation.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetSubstationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetSubstationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetSubstationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetSubstationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21467,14 +21467,14 @@ func (x *fastReflection_QueryGetSubstationResponse) Mutable(fd protoreflect.Fiel
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryGetSubstationResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryGetSubstationResponse.Substation":
+	case "structs.QueryGetSubstationResponse.Substation":
 		m := new(Substation)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryGetSubstationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryGetSubstationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryGetSubstationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryGetSubstationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21484,7 +21484,7 @@ func (x *fastReflection_QueryGetSubstationResponse) NewField(fd protoreflect.Fie
 func (x *fastReflection_QueryGetSubstationResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryGetSubstationResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryGetSubstationResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -21803,13 +21803,13 @@ func (x *fastReflection_QueryAllSubstationRequest) Range(f func(protoreflect.Fie
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllSubstationRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllSubstationRequest.pagination":
+	case "structs.QueryAllSubstationRequest.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllSubstationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllSubstationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllSubstationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllSubstationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21821,13 +21821,13 @@ func (x *fastReflection_QueryAllSubstationRequest) Has(fd protoreflect.FieldDesc
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllSubstationRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllSubstationRequest.pagination":
+	case "structs.QueryAllSubstationRequest.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllSubstationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllSubstationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllSubstationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllSubstationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21839,14 +21839,14 @@ func (x *fastReflection_QueryAllSubstationRequest) Clear(fd protoreflect.FieldDe
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllSubstationRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllSubstationRequest.pagination":
+	case "structs.QueryAllSubstationRequest.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllSubstationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllSubstationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllSubstationRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllSubstationRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -21862,13 +21862,13 @@ func (x *fastReflection_QueryAllSubstationRequest) Get(descriptor protoreflect.F
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllSubstationRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllSubstationRequest.pagination":
+	case "structs.QueryAllSubstationRequest.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageRequest)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllSubstationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllSubstationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllSubstationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllSubstationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21884,16 +21884,16 @@ func (x *fastReflection_QueryAllSubstationRequest) Set(fd protoreflect.FieldDesc
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllSubstationRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllSubstationRequest.pagination":
+	case "structs.QueryAllSubstationRequest.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageRequest)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllSubstationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllSubstationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllSubstationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllSubstationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21902,14 +21902,14 @@ func (x *fastReflection_QueryAllSubstationRequest) Mutable(fd protoreflect.Field
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllSubstationRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllSubstationRequest.pagination":
+	case "structs.QueryAllSubstationRequest.pagination":
 		m := new(v1beta1.PageRequest)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllSubstationRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllSubstationRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllSubstationRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllSubstationRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21919,7 +21919,7 @@ func (x *fastReflection_QueryAllSubstationRequest) NewField(fd protoreflect.Fiel
 func (x *fastReflection_QueryAllSubstationRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllSubstationRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllSubstationRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -22297,15 +22297,15 @@ func (x *fastReflection_QueryAllSubstationResponse) Range(f func(protoreflect.Fi
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_QueryAllSubstationResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllSubstationResponse.Substation":
+	case "structs.QueryAllSubstationResponse.Substation":
 		return len(x.Substation) != 0
-	case "structs.structs.QueryAllSubstationResponse.pagination":
+	case "structs.QueryAllSubstationResponse.pagination":
 		return x.Pagination != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllSubstationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllSubstationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllSubstationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllSubstationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -22317,15 +22317,15 @@ func (x *fastReflection_QueryAllSubstationResponse) Has(fd protoreflect.FieldDes
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllSubstationResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllSubstationResponse.Substation":
+	case "structs.QueryAllSubstationResponse.Substation":
 		x.Substation = nil
-	case "structs.structs.QueryAllSubstationResponse.pagination":
+	case "structs.QueryAllSubstationResponse.pagination":
 		x.Pagination = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllSubstationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllSubstationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllSubstationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllSubstationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -22337,20 +22337,20 @@ func (x *fastReflection_QueryAllSubstationResponse) Clear(fd protoreflect.FieldD
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_QueryAllSubstationResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.QueryAllSubstationResponse.Substation":
+	case "structs.QueryAllSubstationResponse.Substation":
 		if len(x.Substation) == 0 {
 			return protoreflect.ValueOfList(&_QueryAllSubstationResponse_1_list{})
 		}
 		listValue := &_QueryAllSubstationResponse_1_list{list: &x.Substation}
 		return protoreflect.ValueOfList(listValue)
-	case "structs.structs.QueryAllSubstationResponse.pagination":
+	case "structs.QueryAllSubstationResponse.pagination":
 		value := x.Pagination
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllSubstationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllSubstationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllSubstationResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllSubstationResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -22366,17 +22366,17 @@ func (x *fastReflection_QueryAllSubstationResponse) Get(descriptor protoreflect.
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllSubstationResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllSubstationResponse.Substation":
+	case "structs.QueryAllSubstationResponse.Substation":
 		lv := value.List()
 		clv := lv.(*_QueryAllSubstationResponse_1_list)
 		x.Substation = *clv.list
-	case "structs.structs.QueryAllSubstationResponse.pagination":
+	case "structs.QueryAllSubstationResponse.pagination":
 		x.Pagination = value.Message().Interface().(*v1beta1.PageResponse)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllSubstationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllSubstationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllSubstationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllSubstationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -22392,22 +22392,22 @@ func (x *fastReflection_QueryAllSubstationResponse) Set(fd protoreflect.FieldDes
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_QueryAllSubstationResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllSubstationResponse.Substation":
+	case "structs.QueryAllSubstationResponse.Substation":
 		if x.Substation == nil {
 			x.Substation = []*Substation{}
 		}
 		value := &_QueryAllSubstationResponse_1_list{list: &x.Substation}
 		return protoreflect.ValueOfList(value)
-	case "structs.structs.QueryAllSubstationResponse.pagination":
+	case "structs.QueryAllSubstationResponse.pagination":
 		if x.Pagination == nil {
 			x.Pagination = new(v1beta1.PageResponse)
 		}
 		return protoreflect.ValueOfMessage(x.Pagination.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllSubstationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllSubstationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllSubstationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllSubstationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -22416,17 +22416,17 @@ func (x *fastReflection_QueryAllSubstationResponse) Mutable(fd protoreflect.Fiel
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_QueryAllSubstationResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.QueryAllSubstationResponse.Substation":
+	case "structs.QueryAllSubstationResponse.Substation":
 		list := []*Substation{}
 		return protoreflect.ValueOfList(&_QueryAllSubstationResponse_1_list{list: &list})
-	case "structs.structs.QueryAllSubstationResponse.pagination":
+	case "structs.QueryAllSubstationResponse.pagination":
 		m := new(v1beta1.PageResponse)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.QueryAllSubstationResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.QueryAllSubstationResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.QueryAllSubstationResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.QueryAllSubstationResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -22436,7 +22436,7 @@ func (x *fastReflection_QueryAllSubstationResponse) NewField(fd protoreflect.Fie
 func (x *fastReflection_QueryAllSubstationResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.QueryAllSubstationResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.QueryAllSubstationResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -24549,41 +24549,40 @@ var File_structs_structs_query_proto protoreflect.FileDescriptor
 
 var file_structs_structs_query_proto_rawDesc = []byte{
 	0x0a, 0x1b, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0f, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x1a, 0x11,
-	0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2f, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x1a, 0x14, 0x67, 0x6f, 0x67, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x67,
-	0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f,
-	0x61, 0x70, 0x69, 0x2f, 0x61, 0x6e, 0x6e, 0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2a, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x62, 0x61,
-	0x73, 0x65, 0x2f, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
-	0x2f, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a,
-	0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2f, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x1a, 0x1b, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2f, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
-	0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1a,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
-	0x6b, 0x65, 0x79, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x65, 0x72, 0x6d,
-	0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c,
-	0x61, 0x79, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x6e,
-	0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1d, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f,
-	0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x14, 0x0a, 0x12, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x51, 0x0a,
-	0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3a, 0x0a, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x73, 0x2f, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x07, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x1a, 0x11, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2f, 0x61, 0x6d,
+	0x69, 0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x14, 0x67, 0x6f, 0x67, 0x6f, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a,
+	0x1c, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x6e, 0x6e, 0x6f,
+	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x2a, 0x63,
+	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x62, 0x61, 0x73, 0x65, 0x2f, 0x71, 0x75, 0x65, 0x72, 0x79,
+	0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d,
+	0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1b, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x75, 0x69, 0x6c, 0x64,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x6b, 0x65, 0x79, 0x73, 0x2e, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2f, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f,
+	0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x1a, 0x1d, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2f, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a,
+	0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73,
+	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22,
+	0x14, 0x0a, 0x12, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x22, 0x49, 0x0a, 0x13, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61,
+	0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x32, 0x0a, 0x06,
+	0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x73,
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x42, 0x09, 0xc8,
 	0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73,
 	0x22, 0x12, 0x0a, 0x10, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x65,
@@ -24616,23 +24615,22 @@ var file_structs_structs_query_proto_rawDesc = []byte{
 	0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x20, 0x0a,
 	0x0b, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x03, 0x20, 0x01,
 	0x28, 0x04, 0x52, 0x0b, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x22,
-	0xa3, 0x01, 0x0a, 0x17, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x41, 0x64, 0x64, 0x72,
-	0x65, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3f, 0x0a, 0x07, 0x61,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x25, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x47, 0x0a, 0x0a,
-	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71,
-	0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67,
-	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x2b, 0x0a, 0x19, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65,
-	0x74, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02,
-	0x69, 0x64, 0x22, 0x5f, 0x0a, 0x1a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x41, 0x6c,
-	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x41, 0x0a, 0x0a, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x9b, 0x01, 0x0a, 0x17, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x41, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x37, 0x0a, 0x07, 0x61,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1d, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x07, 0x61, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
+	0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62,
+	0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x2b, 0x0a,
+	0x19, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x57, 0x0a, 0x1a, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x39, 0x0a, 0x0a, 0x41, 0x6c, 0x6c, 0x6f,
+	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x73,
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f,
 	0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0a, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74,
 	0x69, 0x6f, 0x6e, 0x22, 0x63, 0x0a, 0x19, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x41,
@@ -24641,25 +24639,24 @@ var file_structs_structs_query_proto_rawDesc = []byte{
 	0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61,
 	0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
 	0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61,
-	0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xc0, 0x01, 0x0a, 0x1a, 0x51, 0x75, 0x65,
+	0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xb8, 0x01, 0x0a, 0x1a, 0x51, 0x75, 0x65,
 	0x72, 0x79, 0x41, 0x6c, 0x6c, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x41, 0x0a, 0x0a, 0x41, 0x6c, 0x6c, 0x6f, 0x63,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x41, 0x6c,
-	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0a,
-	0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61,
-	0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27,
-	0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65,
-	0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x03, 0x20,
-	0x03, 0x28, 0x04, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x22, 0x26, 0x0a, 0x14, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x65, 0x71, 0x75,
-	0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x02, 0x69, 0x64, 0x22, 0x4b, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x47,
-	0x75, 0x69, 0x6c, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x32, 0x0a, 0x05,
-	0x47, 0x75, 0x69, 0x6c, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x47, 0x75,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x39, 0x0a, 0x0a, 0x41, 0x6c, 0x6c, 0x6f, 0x63,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0a, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
+	0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
+	0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52,
+	0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x16, 0x0a, 0x06, 0x73,
+	0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x04, 0x52, 0x06, 0x73, 0x74, 0x61,
+	0x74, 0x75, 0x73, 0x22, 0x26, 0x0a, 0x14, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x47,
+	0x75, 0x69, 0x6c, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69,
+	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x43, 0x0a, 0x15, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2a, 0x0a, 0x05, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x47, 0x75,
 	0x69, 0x6c, 0x64, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x05, 0x47, 0x75, 0x69, 0x6c, 0x64,
 	0x22, 0x5e, 0x0a, 0x14, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x47, 0x75, 0x69, 0x6c,
 	0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69,
@@ -24667,25 +24664,24 @@ var file_structs_structs_query_proto_rawDesc = []byte{
 	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79,
 	0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71,
 	0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x22, 0x94, 0x01, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x47, 0x75, 0x69,
-	0x6c, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x32, 0x0a, 0x05, 0x47, 0x75,
-	0x69, 0x6c, 0x64, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x47, 0x75, 0x69, 0x6c,
-	0x64, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x05, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x12, 0x47,
-	0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65,
-	0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50,
-	0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67,
-	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x59, 0x0a, 0x17, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x47, 0x65, 0x74, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x12, 0x24, 0x0a, 0x0d, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x64, 0x65, 0x73, 0x74, 0x69,
-	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72,
-	0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65,
-	0x73, 0x73, 0x22, 0x57, 0x0a, 0x18, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x49, 0x6e,
-	0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3b,
-	0x0a, 0x08, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x19, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x22, 0x8c, 0x01, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x47, 0x75, 0x69,
+	0x6c, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2a, 0x0a, 0x05, 0x47, 0x75,
+	0x69, 0x6c, 0x64, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52,
+	0x05, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76,
+	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22,
+	0x59, 0x0a, 0x17, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x49, 0x6e, 0x66, 0x75, 0x73,
+	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x24, 0x0a, 0x0d, 0x64, 0x65,
+	0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0d, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64,
+	0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x22, 0x4f, 0x0a, 0x18, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x33, 0x0a, 0x08, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69,
+	0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x11, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
 	0x74, 0x73, 0x2e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f,
 	0x00, 0x52, 0x08, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x61, 0x0a, 0x17, 0x51,
 	0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x52,
@@ -24693,71 +24689,69 @@ var file_structs_structs_query_proto_rawDesc = []byte{
 	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73,
 	0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76,
 	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xb8,
+	0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xb0,
 	0x01, 0x0a, 0x18, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x49, 0x6e, 0x66, 0x75, 0x73,
-	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x3b, 0x0a, 0x08, 0x49,
-	0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x08,
-	0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69,
-	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63,
-	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79,
-	0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28,
-	0x04, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x22, 0x3f, 0x0a, 0x19, 0x51, 0x75, 0x65,
-	0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x22, 0x0a, 0x0c, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73,
-	0x73, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x70, 0x65,
-	0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x22, 0x87, 0x01, 0x0a, 0x21, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f,
-	0x6e, 0x42, 0x79, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x12, 0x1a, 0x0a, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x12, 0x46, 0x0a, 0x0a,
-	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71,
-	0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67,
-	0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x22, 0x87, 0x01, 0x0a, 0x21, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c,
-	0x6c, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x79, 0x50, 0x6c, 0x61,
-	0x79, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c,
-	0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c,
-	0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73,
-	0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76,
-	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x63,
-	0x0a, 0x19, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73,
-	0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x46, 0x0a, 0x0a, 0x70,
-	0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75,
-	0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x22, 0x6b, 0x0a, 0x1a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50,
-	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x4d, 0x0a, 0x10, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52,
-	0x65, 0x63, 0x6f, 0x72, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x21, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x65,
-	0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x52, 0x10,
-	0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64,
-	0x22, 0xb6, 0x01, 0x0a, 0x1a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x65, 0x72,
-	0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x4f, 0x0a, 0x11, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63,
-	0x6f, 0x72, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x65, 0x72,
-	0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x52, 0x11, 0x70,
-	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x73,
+	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x33, 0x0a, 0x08, 0x49,
+	0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x11, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e,
+	0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x08, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e,
 	0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02,
 	0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61,
 	0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
 	0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70,
-	0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x27, 0x0a, 0x15, 0x51, 0x75, 0x65,
-	0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02,
-	0x69, 0x64, 0x22, 0x4f, 0x0a, 0x16, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x6c,
-	0x61, 0x6e, 0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x35, 0x0a, 0x06,
-	0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50,
+	0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x61,
+	0x74, 0x75, 0x73, 0x18, 0x03, 0x20, 0x03, 0x28, 0x04, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75,
+	0x73, 0x22, 0x3f, 0x0a, 0x19, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x65, 0x72,
+	0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x22,
+	0x0a, 0x0c, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e,
+	0x49, 0x64, 0x22, 0x87, 0x01, 0x0a, 0x21, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50,
+	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x79, 0x4f, 0x62, 0x6a, 0x65, 0x63,
+	0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x6f, 0x62, 0x6a, 0x65,
+	0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6f, 0x62, 0x6a, 0x65,
+	0x63, 0x74, 0x49, 0x64, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
+	0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62,
+	0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x87, 0x01, 0x0a,
+	0x21, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73,
+	0x69, 0x6f, 0x6e, 0x42, 0x79, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x46,
+	0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65,
+	0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50,
+	0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69,
+	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x63, 0x0a, 0x19, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41,
+	0x6c, 0x6c, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75,
+	0x65, 0x73, 0x74, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65,
+	0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52,
+	0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x63, 0x0a, 0x1a, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f,
+	0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x45, 0x0a, 0x10, 0x70, 0x65, 0x72,
+	0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x65,
+	0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x52, 0x10,
+	0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64,
+	0x22, 0xae, 0x01, 0x0a, 0x1a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x65, 0x72,
+	0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x47, 0x0a, 0x11, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63,
+	0x6f, 0x72, 0x64, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52,
+	0x65, 0x63, 0x6f, 0x72, 0x64, 0x52, 0x11, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f,
+	0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x73, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69,
+	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63,
+	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79,
+	0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x22, 0x27, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x6c, 0x61,
+	0x6e, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x47, 0x0a, 0x16, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d, 0x0a, 0x06, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50,
 	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x50, 0x6c, 0x61,
 	0x6e, 0x65, 0x74, 0x22, 0x5f, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50,
 	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x46, 0x0a, 0x0a,
@@ -24773,23 +24767,22 @@ var file_structs_structs_query_proto_rawDesc = []byte{
 	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
 	0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
 	0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a,
-	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x98, 0x01, 0x0a, 0x16, 0x51,
+	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x90, 0x01, 0x0a, 0x16, 0x51,
 	0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x35, 0x0a, 0x06, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x18,
-	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x42, 0x04,
-	0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x12, 0x47, 0x0a, 0x0a,
-	0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71,
-	0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67,
-	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x27, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65,
-	0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e,
-	0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x4f,
-	0x0a, 0x16, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x35, 0x0a, 0x06, 0x50, 0x6c, 0x61, 0x79,
-	0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61, 0x79, 0x65,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d, 0x0a, 0x06, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x18,
+	0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x50, 0x6c,
+	0x61, 0x6e, 0x65, 0x74, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
+	0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62,
+	0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x27, 0x0a,
+	0x15, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x47, 0x0a, 0x16, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47,
+	0x65, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x12, 0x2d, 0x0a, 0x06, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x0f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61, 0x79, 0x65,
 	0x72, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x22,
 	0x5f, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x6c, 0x61, 0x79, 0x65,
 	0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x46, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69,
@@ -24797,22 +24790,21 @@ var file_structs_structs_query_proto_rawDesc = []byte{
 	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79,
 	0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71,
 	0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x22, 0x98, 0x01, 0x0a, 0x16, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x6c, 0x61,
-	0x79, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x35, 0x0a, 0x06, 0x50,
-	0x6c, 0x61, 0x79, 0x65, 0x72, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c,
-	0x61, 0x79, 0x65, 0x72, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x50, 0x6c, 0x61, 0x79,
-	0x65, 0x72, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
-	0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
-	0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52,
-	0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x28, 0x0a, 0x16, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x65,
-	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x53, 0x0a, 0x17, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65,
-	0x74, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x38, 0x0a, 0x07, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x18, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x22, 0x90, 0x01, 0x0a, 0x16, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x6c, 0x61,
+	0x79, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d, 0x0a, 0x06, 0x50,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x42, 0x04, 0xc8, 0xde,
+	0x1f, 0x00, 0x52, 0x06, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61,
+	0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27,
+	0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65,
+	0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x22, 0x28, 0x0a, 0x16, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x52,
+	0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a,
+	0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x4b, 0x0a,
+	0x17, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x30, 0x0a, 0x07, 0x52, 0x65, 0x61, 0x63,
+	0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x73, 0x74, 0x72, 0x75,
 	0x63, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x42, 0x04, 0xc8, 0xde, 0x1f,
 	0x00, 0x52, 0x07, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x22, 0x60, 0x0a, 0x16, 0x51, 0x75,
 	0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x71,
@@ -24820,23 +24812,22 @@ var file_structs_structs_query_proto_rawDesc = []byte{
 	0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
 	0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62,
 	0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x9c, 0x01, 0x0a,
+	0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x94, 0x01, 0x0a,
 	0x17, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x38, 0x0a, 0x07, 0x52, 0x65, 0x61, 0x63,
-	0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x18, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x61, 0x63,
-	0x74, 0x6f, 0x72, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x07, 0x52, 0x65, 0x61, 0x63, 0x74,
-	0x6f, 0x72, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
-	0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74,
-	0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52,
-	0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x27, 0x0a, 0x15, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x71,
-	0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x02, 0x69, 0x64, 0x22, 0x4f, 0x0a, 0x16, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x35,
-	0x0a, 0x06, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x30, 0x0a, 0x07, 0x52, 0x65, 0x61, 0x63,
+	0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x42, 0x04, 0xc8, 0xde, 0x1f,
+	0x00, 0x52, 0x07, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61,
+	0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27,
+	0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65,
+	0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x22, 0x27, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02,
+	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x47, 0x0a, 0x16,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d, 0x0a, 0x06, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
 	0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x53,
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x22, 0x5f, 0x0a, 0x15, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c,
 	0x6c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x46,
@@ -24844,23 +24835,22 @@ var file_structs_structs_query_proto_rawDesc = []byte{
 	0x28, 0x0b, 0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65,
 	0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50,
 	0x61, 0x67, 0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69,
-	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x98, 0x01, 0x0a, 0x16, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x90, 0x01, 0x0a, 0x16, 0x51, 0x75, 0x65, 0x72, 0x79,
 	0x41, 0x6c, 0x6c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x35, 0x0a, 0x06, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x18, 0x01, 0x20, 0x03, 0x28,
-	0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00,
-	0x52, 0x06, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69,
-	0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63,
-	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79,
-	0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x22, 0x2b, 0x0a, 0x19, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x53, 0x75, 0x62,
-	0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e,
-	0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x5f,
-	0x0a, 0x1a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x41, 0x0a, 0x0a,
-	0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x65, 0x12, 0x2d, 0x0a, 0x06, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x18, 0x01, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x0f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61,
+	0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31,
+	0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70,
+	0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x2b, 0x0a, 0x19, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x47, 0x65, 0x74, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x22, 0x57, 0x0a, 0x1a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47,
+	0x65, 0x74, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x39, 0x0a, 0x0a, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
 	0x74, 0x73, 0x2e, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8,
 	0xde, 0x1f, 0x00, 0x52, 0x0a, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22,
 	0x63, 0x0a, 0x19, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x53, 0x75, 0x62, 0x73, 0x74,
@@ -24869,244 +24859,215 @@ var file_structs_structs_query_proto_rawDesc = []byte{
 	0x32, 0x26, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71,
 	0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67,
 	0x65, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa8, 0x01, 0x0a, 0x1a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c,
+	0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa0, 0x01, 0x0a, 0x1a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c,
 	0x6c, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x41, 0x0a, 0x0a, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0a, 0x53, 0x75, 0x62, 0x73,
-	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x47, 0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73,
-	0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65, 0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76,
-	0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x32,
-	0xff, 0x1a, 0x0a, 0x05, 0x51, 0x75, 0x65, 0x72, 0x79, 0x12, 0x74, 0x0a, 0x0e, 0x47, 0x65, 0x74,
-	0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12, 0x21, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x1a, 0x29,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x65, 0x69, 0x67, 0x68,
-	0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x14, 0x82, 0xd3, 0xe4, 0x93, 0x02,
-	0x0e, 0x12, 0x0c, 0x2f, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12,
-	0x74, 0x0a, 0x06, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x24,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1f, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x19, 0x12, 0x17, 0x2f, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70,
-	0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x7d, 0x0a, 0x07, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
-	0x12, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x6e, 0x73, 0x65, 0x12, 0x39, 0x0a, 0x0a, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde,
+	0x1f, 0x00, 0x52, 0x0a, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x47,
+	0x0a, 0x0a, 0x70, 0x61, 0x67, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x27, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x62, 0x61, 0x73, 0x65,
+	0x2e, 0x71, 0x75, 0x65, 0x72, 0x79, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x50,
+	0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x52, 0x0a, 0x70, 0x61, 0x67,
+	0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x32, 0xda, 0x17, 0x0a, 0x05, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x12, 0x64, 0x0a, 0x0e, 0x47, 0x65, 0x74, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x65, 0x69,
+	0x67, 0x68, 0x74, 0x12, 0x19, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75,
+	0x65, 0x72, 0x79, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x1a, 0x21,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x42, 0x6c,
+	0x6f, 0x63, 0x6b, 0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x22, 0x14, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x0e, 0x12, 0x0c, 0x2f, 0x62, 0x6c, 0x6f, 0x63,
+	0x6b, 0x68, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12, 0x64, 0x0a, 0x06, 0x50, 0x61, 0x72, 0x61, 0x6d,
+	0x73, 0x12, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1c,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x61,
+	0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1f, 0x82, 0xd3,
+	0xe4, 0x93, 0x02, 0x19, 0x12, 0x17, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x6d, 0x0a,
+	0x07, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x1f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
 	0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65,
-	0x73, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x25, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x22, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1c, 0x12, 0x1a, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x2f, 0x7b, 0x61, 0x64, 0x64, 0x72,
-	0x65, 0x73, 0x73, 0x7d, 0x12, 0x79, 0x0a, 0x0a, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41,
-	0x6c, 0x6c, 0x12, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x73, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1d, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x22, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1c,
+	0x12, 0x1a, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x2f, 0x7b, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x7d, 0x12, 0x69, 0x0a, 0x0a,
+	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x6c, 0x6c, 0x12, 0x1f, 0x2e, 0x73, 0x74, 0x72,
 	0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x41, 0x64, 0x64,
-	0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x18, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x12, 0x12, 0x10, 0x2f,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12,
-	0x9e, 0x01, 0x0a, 0x12, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x6c, 0x6c, 0x42, 0x79,
-	0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x2f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x41, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x18, 0x82,
+	0xd3, 0xe4, 0x93, 0x02, 0x12, 0x12, 0x10, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
+	0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x8e, 0x01, 0x0a, 0x12, 0x41, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x41, 0x6c, 0x6c, 0x42, 0x79, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x27,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c,
 	0x6c, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x42, 0x79, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41,
-	0x6c, 0x6c, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x2d, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x27, 0x12, 0x25, 0x2f, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x5f, 0x62, 0x79, 0x5f, 0x70,
-	0x6c, 0x61, 0x79, 0x65, 0x72, 0x2f, 0x7b, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x7d,
-	0x12, 0x87, 0x01, 0x0a, 0x0a, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12,
-	0x2a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x20, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1a,
-	0x12, 0x18, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x6c, 0x6c, 0x6f, 0x63,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x12, 0x85, 0x01, 0x0a, 0x0d, 0x41,
-	0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x12, 0x2a, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x41, 0x6c, 0x6c, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1b, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x15, 0x12, 0x13, 0x2f,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x12, 0x73, 0x0a, 0x05, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x12, 0x25, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65,
-	0x73, 0x74, 0x1a, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x47, 0x75, 0x69,
-	0x6c, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1b, 0x82, 0xd3, 0xe4, 0x93,
-	0x02, 0x15, 0x12, 0x13, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x75, 0x69,
-	0x6c, 0x64, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x12, 0x71, 0x0a, 0x08, 0x47, 0x75, 0x69, 0x6c, 0x64,
-	0x41, 0x6c, 0x6c, 0x12, 0x25, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x47, 0x75,
-	0x69, 0x6c, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x26, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65,
-	0x72, 0x79, 0x41, 0x6c, 0x6c, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x22, 0x16, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x10, 0x12, 0x0e, 0x2f, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x12, 0x94, 0x01, 0x0a, 0x08, 0x49,
-	0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47,
-	0x65, 0x74, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x49, 0x6e, 0x66, 0x75,
-	0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x33, 0x82, 0xd3,
-	0xe4, 0x93, 0x02, 0x2d, 0x12, 0x2b, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x69,
-	0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x2f, 0x7b, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x7d, 0x2f, 0x7b, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
-	0x7d, 0x12, 0x7d, 0x0a, 0x0b, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c,
-	0x12, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
+	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2d, 0x82, 0xd3, 0xe4, 0x93, 0x02,
+	0x27, 0x12, 0x25, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x5f, 0x62, 0x79, 0x5f, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2f, 0x7b, 0x70,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x7d, 0x12, 0x77, 0x0a, 0x0a, 0x41, 0x6c, 0x6c, 0x6f,
+	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x41, 0x6c, 0x6c,
+	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0x20, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1a, 0x12, 0x18, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2f, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2f, 0x7b, 0x69, 0x64,
+	0x7d, 0x12, 0x75, 0x0a, 0x0d, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41,
+	0x6c, 0x6c, 0x12, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x41, 0x6c, 0x6c, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1b, 0x82, 0xd3, 0xe4,
+	0x93, 0x02, 0x15, 0x12, 0x13, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x6c,
+	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x63, 0x0a, 0x05, 0x47, 0x75, 0x69, 0x6c,
+	0x64, 0x12, 0x1d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x47, 0x65, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
+	0x1a, 0x1e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
+	0x47, 0x65, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x1b, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x15, 0x12, 0x13, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2f, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x12, 0x61, 0x0a,
+	0x08, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x41, 0x6c, 0x6c, 0x12, 0x1d, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x47, 0x75, 0x69, 0x6c,
+	0x64, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x47, 0x75, 0x69, 0x6c, 0x64,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x16, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x10,
+	0x12, 0x0e, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x75, 0x69, 0x6c, 0x64,
+	0x12, 0x84, 0x01, 0x0a, 0x08, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x20, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74,
+	0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
+	0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47,
+	0x65, 0x74, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x33, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x2d, 0x12, 0x2b, 0x2f, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2f, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x2f, 0x7b, 0x64,
+	0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x7d, 0x2f, 0x7b, 0x61,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x7d, 0x12, 0x6d, 0x0a, 0x0b, 0x49, 0x6e, 0x66, 0x75, 0x73,
+	0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x12, 0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f,
+	0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
 	0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x49, 0x6e, 0x66, 0x75, 0x73,
-	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x29, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65,
-	0x72, 0x79, 0x41, 0x6c, 0x6c, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x19, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x13, 0x12, 0x11, 0x2f,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e,
-	0x12, 0x91, 0x01, 0x0a, 0x0a, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12,
-	0x2a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73,
-	0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2a, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x24,
-	0x12, 0x22, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x65, 0x72, 0x6d, 0x69,
-	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x2f, 0x7b, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f,
-	0x6e, 0x49, 0x64, 0x7d, 0x12, 0xa4, 0x01, 0x0a, 0x12, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73,
-	0x69, 0x6f, 0x6e, 0x42, 0x79, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x32, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e,
-	0x42, 0x79, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a,
-	0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73,
-	0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2d, 0x82, 0xd3,
-	0xe4, 0x93, 0x02, 0x27, 0x12, 0x25, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70,
-	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x2f, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74,
-	0x2f, 0x7b, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x7d, 0x12, 0xa4, 0x01, 0x0a, 0x12,
-	0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x79, 0x50, 0x6c, 0x61, 0x79,
-	0x65, 0x72, 0x12, 0x32, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x65, 0x72,
-	0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x79, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52,
-	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c,
-	0x6c, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x22, 0x2d, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x27, 0x12, 0x25, 0x2f, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e,
-	0x2f, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2f, 0x7b, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49,
-	0x64, 0x7d, 0x12, 0x85, 0x01, 0x0a, 0x0d, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f,
-	0x6e, 0x41, 0x6c, 0x6c, 0x12, 0x2a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50,
-	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x65, 0x72, 0x6d, 0x69,
-	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1b, 0x82,
-	0xd3, 0xe4, 0x93, 0x02, 0x15, 0x12, 0x13, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
-	0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x77, 0x0a, 0x06, 0x50, 0x6c,
-	0x61, 0x79, 0x65, 0x72, 0x12, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50,
-	0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1c, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x16, 0x12, 0x14, 0x2f,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2f, 0x7b,
-	0x69, 0x64, 0x7d, 0x12, 0x75, 0x0a, 0x09, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x41, 0x6c, 0x6c,
-	0x12, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x6c, 0x61, 0x79, 0x65,
-	0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x41, 0x6c, 0x6c, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x17, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x11, 0x12, 0x0f, 0x2f, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x77, 0x0a, 0x06, 0x50, 0x6c,
-	0x61, 0x6e, 0x65, 0x74, 0x12, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50,
-	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51,
-	0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1c, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x16, 0x12, 0x14, 0x2f,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x2f, 0x7b,
-	0x69, 0x64, 0x7d, 0x12, 0x75, 0x0a, 0x09, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x41, 0x6c, 0x6c,
-	0x12, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x6c, 0x61, 0x6e, 0x65,
-	0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x41, 0x6c, 0x6c, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x22, 0x17, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x11, 0x12, 0x0f, 0x2f, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x12, 0x9a, 0x01, 0x0a, 0x11, 0x50,
-	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x41, 0x6c, 0x6c, 0x42, 0x79, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72,
-	0x12, 0x2e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x6c, 0x61, 0x6e, 0x65,
-	0x74, 0x42, 0x79, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74,
-	0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x6c, 0x61, 0x6e, 0x65,
-	0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2c, 0x82, 0xd3, 0xe4, 0x93, 0x02,
-	0x26, 0x12, 0x24, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x6e,
-	0x65, 0x74, 0x5f, 0x62, 0x79, 0x5f, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2f, 0x7b, 0x70, 0x6c,
-	0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x7d, 0x12, 0x7b, 0x0a, 0x07, 0x52, 0x65, 0x61, 0x63, 0x74,
-	0x6f, 0x72, 0x12, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x52, 0x65, 0x61,
-	0x63, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1d, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x17, 0x12, 0x15, 0x2f,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x2f,
-	0x7b, 0x69, 0x64, 0x7d, 0x12, 0x79, 0x0a, 0x0a, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x41,
-	0x6c, 0x6c, 0x12, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x52, 0x65, 0x61,
-	0x63, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x28, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x18, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x12, 0x12, 0x10, 0x2f,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x12,
-	0x77, 0x0a, 0x06, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x12, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72,
-	0x79, 0x47, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73,
-	0x74, 0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1c, 0x82, 0xd3, 0xe4, 0x93,
-	0x02, 0x16, 0x12, 0x14, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x12, 0x75, 0x0a, 0x09, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x41, 0x6c, 0x6c, 0x12, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x19, 0x82, 0xd3, 0xe4,
+	0x93, 0x02, 0x13, 0x12, 0x11, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x69, 0x6e,
+	0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x81, 0x01, 0x0a, 0x0a, 0x50, 0x65, 0x72, 0x6d, 0x69,
+	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69,
+	0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x65, 0x72, 0x6d,
+	0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2a,
+	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x24, 0x12, 0x22, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2f, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x2f, 0x7b, 0x70, 0x65, 0x72,
+	0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x7d, 0x12, 0x94, 0x01, 0x0a, 0x12, 0x50,
+	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x79, 0x4f, 0x62, 0x6a, 0x65, 0x63,
+	0x74, 0x12, 0x2a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72,
+	0x79, 0x41, 0x6c, 0x6c, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x79,
+	0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65,
+	0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x2d, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x27, 0x12, 0x25, 0x2f, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x2f,
+	0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x2f, 0x7b, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64,
+	0x7d, 0x12, 0x94, 0x01, 0x0a, 0x12, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e,
+	0x42, 0x79, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x2a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x65, 0x72, 0x6d, 0x69,
+	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x79, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x71,
+	0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51,
+	0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f,
+	0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2d, 0x82, 0xd3, 0xe4, 0x93, 0x02,
+	0x27, 0x12, 0x25, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x65, 0x72, 0x6d,
+	0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x2f, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2f, 0x7b, 0x70,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x7d, 0x12, 0x75, 0x0a, 0x0d, 0x50, 0x65, 0x72, 0x6d,
+	0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x12, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x65, 0x72, 0x6d,
+	0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c,
+	0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x22, 0x1b, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x15, 0x12, 0x13, 0x2f, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12,
+	0x67, 0x0a, 0x06, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x1e, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x79,
+	0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x79,
+	0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1c, 0x82, 0xd3, 0xe4, 0x93,
+	0x02, 0x16, 0x12, 0x14, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61,
+	0x79, 0x65, 0x72, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x12, 0x65, 0x0a, 0x09, 0x50, 0x6c, 0x61, 0x79,
+	0x65, 0x72, 0x41, 0x6c, 0x6c, 0x12, 0x1e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65,
 	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x17, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x11, 0x12, 0x0f,
-	0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x12,
-	0x87, 0x01, 0x0a, 0x0a, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x2a,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65,
+	0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12,
+	0x67, 0x0a, 0x06, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x12, 0x1e, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x6e,
+	0x65, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x6e,
+	0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1c, 0x82, 0xd3, 0xe4, 0x93,
+	0x02, 0x16, 0x12, 0x14, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61,
+	0x6e, 0x65, 0x74, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x12, 0x65, 0x0a, 0x09, 0x50, 0x6c, 0x61, 0x6e,
+	0x65, 0x74, 0x41, 0x6c, 0x6c, 0x12, 0x1e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x17, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x11, 0x12, 0x0f,
+	0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x12,
+	0x8a, 0x01, 0x0a, 0x11, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x41, 0x6c, 0x6c, 0x42, 0x79, 0x50,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x42, 0x79,
+	0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c,
+	0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x2c,
+	0x82, 0xd3, 0xe4, 0x93, 0x02, 0x26, 0x12, 0x24, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2f, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x5f, 0x62, 0x79, 0x5f, 0x70, 0x6c, 0x61, 0x79, 0x65,
+	0x72, 0x2f, 0x7b, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x7d, 0x12, 0x6b, 0x0a, 0x07,
+	0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x12, 0x1f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f,
+	0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x52, 0x65, 0x61, 0x63, 0x74,
+	0x6f, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1d, 0x82, 0xd3, 0xe4, 0x93,
+	0x02, 0x17, 0x12, 0x15, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x72, 0x65, 0x61,
+	0x63, 0x74, 0x6f, 0x72, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x12, 0x69, 0x0a, 0x0a, 0x52, 0x65, 0x61,
+	0x63, 0x74, 0x6f, 0x72, 0x41, 0x6c, 0x6c, 0x12, 0x1f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f,
+	0x72, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x52, 0x65, 0x61, 0x63, 0x74,
+	0x6f, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x18, 0x82, 0xd3, 0xe4, 0x93,
+	0x02, 0x12, 0x12, 0x10, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x72, 0x65, 0x61,
+	0x63, 0x74, 0x6f, 0x72, 0x12, 0x67, 0x0a, 0x06, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x12, 0x1e,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65,
+	0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65,
+	0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0x1c, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x16, 0x12, 0x14, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x12, 0x65, 0x0a,
+	0x09, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x6c, 0x6c, 0x12, 0x1e, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x17, 0x82, 0xd3, 0xe4,
+	0x93, 0x02, 0x11, 0x12, 0x0f, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x12, 0x77, 0x0a, 0x0a, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x12, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65,
 	0x72, 0x79, 0x47, 0x65, 0x74, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x20, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x1a, 0x12,
-	0x18, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x12, 0x85, 0x01, 0x0a, 0x0d, 0x53, 0x75,
-	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x12, 0x2a, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75,
-	0x65, 0x72, 0x79, 0x41, 0x6c, 0x6c, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41,
-	0x6c, 0x6c, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1b, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x15, 0x12, 0x13, 0x2f, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x42, 0xa0, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0a, 0x51, 0x75, 0x65, 0x72, 0x79,
-	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73,
-	0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa,
-	0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
-	0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x47, 0x65, 0x74, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x20, 0x82, 0xd3, 0xe4,
+	0x93, 0x02, 0x1a, 0x12, 0x18, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x75,
+	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2f, 0x7b, 0x69, 0x64, 0x7d, 0x12, 0x75, 0x0a,
+	0x0d, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x12, 0x22,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65, 0x72, 0x79, 0x41, 0x6c,
+	0x6c, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x71, 0x75, 0x65,
+	0x73, 0x74, 0x1a, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x51, 0x75, 0x65,
+	0x72, 0x79, 0x41, 0x6c, 0x6c, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x1b, 0x82, 0xd3, 0xe4, 0x93, 0x02, 0x15, 0x12,
+	0x13, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x42, 0x77, 0x0a, 0x0b, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x42, 0x0a, 0x51, 0x75, 0x65, 0x72, 0x79, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
+	0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f,
+	0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x58, 0x58, 0xaa, 0x02, 0x07, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0xca, 0x02, 0x07, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x13,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64,
+	0x61, 0x74, 0x61, 0xea, 0x02, 0x07, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -25123,164 +25084,164 @@ func file_structs_structs_query_proto_rawDescGZIP() []byte {
 
 var file_structs_structs_query_proto_msgTypes = make([]protoimpl.MessageInfo, 48)
 var file_structs_structs_query_proto_goTypes = []interface{}{
-	(*QueryParamsRequest)(nil),                // 0: structs.structs.QueryParamsRequest
-	(*QueryParamsResponse)(nil),               // 1: structs.structs.QueryParamsResponse
-	(*QueryBlockHeight)(nil),                  // 2: structs.structs.QueryBlockHeight
-	(*QueryBlockHeightResponse)(nil),          // 3: structs.structs.QueryBlockHeightResponse
-	(*QueryGetAddressRequest)(nil),            // 4: structs.structs.QueryGetAddressRequest
-	(*QueryAllAddressByPlayerRequest)(nil),    // 5: structs.structs.QueryAllAddressByPlayerRequest
-	(*QueryAllAddressRequest)(nil),            // 6: structs.structs.QueryAllAddressRequest
-	(*QueryAddressResponse)(nil),              // 7: structs.structs.QueryAddressResponse
-	(*QueryAllAddressResponse)(nil),           // 8: structs.structs.QueryAllAddressResponse
-	(*QueryGetAllocationRequest)(nil),         // 9: structs.structs.QueryGetAllocationRequest
-	(*QueryGetAllocationResponse)(nil),        // 10: structs.structs.QueryGetAllocationResponse
-	(*QueryAllAllocationRequest)(nil),         // 11: structs.structs.QueryAllAllocationRequest
-	(*QueryAllAllocationResponse)(nil),        // 12: structs.structs.QueryAllAllocationResponse
-	(*QueryGetGuildRequest)(nil),              // 13: structs.structs.QueryGetGuildRequest
-	(*QueryGetGuildResponse)(nil),             // 14: structs.structs.QueryGetGuildResponse
-	(*QueryAllGuildRequest)(nil),              // 15: structs.structs.QueryAllGuildRequest
-	(*QueryAllGuildResponse)(nil),             // 16: structs.structs.QueryAllGuildResponse
-	(*QueryGetInfusionRequest)(nil),           // 17: structs.structs.QueryGetInfusionRequest
-	(*QueryGetInfusionResponse)(nil),          // 18: structs.structs.QueryGetInfusionResponse
-	(*QueryAllInfusionRequest)(nil),           // 19: structs.structs.QueryAllInfusionRequest
-	(*QueryAllInfusionResponse)(nil),          // 20: structs.structs.QueryAllInfusionResponse
-	(*QueryGetPermissionRequest)(nil),         // 21: structs.structs.QueryGetPermissionRequest
-	(*QueryAllPermissionByObjectRequest)(nil), // 22: structs.structs.QueryAllPermissionByObjectRequest
-	(*QueryAllPermissionByPlayerRequest)(nil), // 23: structs.structs.QueryAllPermissionByPlayerRequest
-	(*QueryAllPermissionRequest)(nil),         // 24: structs.structs.QueryAllPermissionRequest
-	(*QueryGetPermissionResponse)(nil),        // 25: structs.structs.QueryGetPermissionResponse
-	(*QueryAllPermissionResponse)(nil),        // 26: structs.structs.QueryAllPermissionResponse
-	(*QueryGetPlanetRequest)(nil),             // 27: structs.structs.QueryGetPlanetRequest
-	(*QueryGetPlanetResponse)(nil),            // 28: structs.structs.QueryGetPlanetResponse
-	(*QueryAllPlanetRequest)(nil),             // 29: structs.structs.QueryAllPlanetRequest
-	(*QueryAllPlanetByPlayerRequest)(nil),     // 30: structs.structs.QueryAllPlanetByPlayerRequest
-	(*QueryAllPlanetResponse)(nil),            // 31: structs.structs.QueryAllPlanetResponse
-	(*QueryGetPlayerRequest)(nil),             // 32: structs.structs.QueryGetPlayerRequest
-	(*QueryGetPlayerResponse)(nil),            // 33: structs.structs.QueryGetPlayerResponse
-	(*QueryAllPlayerRequest)(nil),             // 34: structs.structs.QueryAllPlayerRequest
-	(*QueryAllPlayerResponse)(nil),            // 35: structs.structs.QueryAllPlayerResponse
-	(*QueryGetReactorRequest)(nil),            // 36: structs.structs.QueryGetReactorRequest
-	(*QueryGetReactorResponse)(nil),           // 37: structs.structs.QueryGetReactorResponse
-	(*QueryAllReactorRequest)(nil),            // 38: structs.structs.QueryAllReactorRequest
-	(*QueryAllReactorResponse)(nil),           // 39: structs.structs.QueryAllReactorResponse
-	(*QueryGetStructRequest)(nil),             // 40: structs.structs.QueryGetStructRequest
-	(*QueryGetStructResponse)(nil),            // 41: structs.structs.QueryGetStructResponse
-	(*QueryAllStructRequest)(nil),             // 42: structs.structs.QueryAllStructRequest
-	(*QueryAllStructResponse)(nil),            // 43: structs.structs.QueryAllStructResponse
-	(*QueryGetSubstationRequest)(nil),         // 44: structs.structs.QueryGetSubstationRequest
-	(*QueryGetSubstationResponse)(nil),        // 45: structs.structs.QueryGetSubstationResponse
-	(*QueryAllSubstationRequest)(nil),         // 46: structs.structs.QueryAllSubstationRequest
-	(*QueryAllSubstationResponse)(nil),        // 47: structs.structs.QueryAllSubstationResponse
-	(*Params)(nil),                            // 48: structs.structs.Params
+	(*QueryParamsRequest)(nil),                // 0: structs.QueryParamsRequest
+	(*QueryParamsResponse)(nil),               // 1: structs.QueryParamsResponse
+	(*QueryBlockHeight)(nil),                  // 2: structs.QueryBlockHeight
+	(*QueryBlockHeightResponse)(nil),          // 3: structs.QueryBlockHeightResponse
+	(*QueryGetAddressRequest)(nil),            // 4: structs.QueryGetAddressRequest
+	(*QueryAllAddressByPlayerRequest)(nil),    // 5: structs.QueryAllAddressByPlayerRequest
+	(*QueryAllAddressRequest)(nil),            // 6: structs.QueryAllAddressRequest
+	(*QueryAddressResponse)(nil),              // 7: structs.QueryAddressResponse
+	(*QueryAllAddressResponse)(nil),           // 8: structs.QueryAllAddressResponse
+	(*QueryGetAllocationRequest)(nil),         // 9: structs.QueryGetAllocationRequest
+	(*QueryGetAllocationResponse)(nil),        // 10: structs.QueryGetAllocationResponse
+	(*QueryAllAllocationRequest)(nil),         // 11: structs.QueryAllAllocationRequest
+	(*QueryAllAllocationResponse)(nil),        // 12: structs.QueryAllAllocationResponse
+	(*QueryGetGuildRequest)(nil),              // 13: structs.QueryGetGuildRequest
+	(*QueryGetGuildResponse)(nil),             // 14: structs.QueryGetGuildResponse
+	(*QueryAllGuildRequest)(nil),              // 15: structs.QueryAllGuildRequest
+	(*QueryAllGuildResponse)(nil),             // 16: structs.QueryAllGuildResponse
+	(*QueryGetInfusionRequest)(nil),           // 17: structs.QueryGetInfusionRequest
+	(*QueryGetInfusionResponse)(nil),          // 18: structs.QueryGetInfusionResponse
+	(*QueryAllInfusionRequest)(nil),           // 19: structs.QueryAllInfusionRequest
+	(*QueryAllInfusionResponse)(nil),          // 20: structs.QueryAllInfusionResponse
+	(*QueryGetPermissionRequest)(nil),         // 21: structs.QueryGetPermissionRequest
+	(*QueryAllPermissionByObjectRequest)(nil), // 22: structs.QueryAllPermissionByObjectRequest
+	(*QueryAllPermissionByPlayerRequest)(nil), // 23: structs.QueryAllPermissionByPlayerRequest
+	(*QueryAllPermissionRequest)(nil),         // 24: structs.QueryAllPermissionRequest
+	(*QueryGetPermissionResponse)(nil),        // 25: structs.QueryGetPermissionResponse
+	(*QueryAllPermissionResponse)(nil),        // 26: structs.QueryAllPermissionResponse
+	(*QueryGetPlanetRequest)(nil),             // 27: structs.QueryGetPlanetRequest
+	(*QueryGetPlanetResponse)(nil),            // 28: structs.QueryGetPlanetResponse
+	(*QueryAllPlanetRequest)(nil),             // 29: structs.QueryAllPlanetRequest
+	(*QueryAllPlanetByPlayerRequest)(nil),     // 30: structs.QueryAllPlanetByPlayerRequest
+	(*QueryAllPlanetResponse)(nil),            // 31: structs.QueryAllPlanetResponse
+	(*QueryGetPlayerRequest)(nil),             // 32: structs.QueryGetPlayerRequest
+	(*QueryGetPlayerResponse)(nil),            // 33: structs.QueryGetPlayerResponse
+	(*QueryAllPlayerRequest)(nil),             // 34: structs.QueryAllPlayerRequest
+	(*QueryAllPlayerResponse)(nil),            // 35: structs.QueryAllPlayerResponse
+	(*QueryGetReactorRequest)(nil),            // 36: structs.QueryGetReactorRequest
+	(*QueryGetReactorResponse)(nil),           // 37: structs.QueryGetReactorResponse
+	(*QueryAllReactorRequest)(nil),            // 38: structs.QueryAllReactorRequest
+	(*QueryAllReactorResponse)(nil),           // 39: structs.QueryAllReactorResponse
+	(*QueryGetStructRequest)(nil),             // 40: structs.QueryGetStructRequest
+	(*QueryGetStructResponse)(nil),            // 41: structs.QueryGetStructResponse
+	(*QueryAllStructRequest)(nil),             // 42: structs.QueryAllStructRequest
+	(*QueryAllStructResponse)(nil),            // 43: structs.QueryAllStructResponse
+	(*QueryGetSubstationRequest)(nil),         // 44: structs.QueryGetSubstationRequest
+	(*QueryGetSubstationResponse)(nil),        // 45: structs.QueryGetSubstationResponse
+	(*QueryAllSubstationRequest)(nil),         // 46: structs.QueryAllSubstationRequest
+	(*QueryAllSubstationResponse)(nil),        // 47: structs.QueryAllSubstationResponse
+	(*Params)(nil),                            // 48: structs.Params
 	(*v1beta1.PageRequest)(nil),               // 49: cosmos.base.query.v1beta1.PageRequest
 	(*v1beta1.PageResponse)(nil),              // 50: cosmos.base.query.v1beta1.PageResponse
-	(*Allocation)(nil),                        // 51: structs.structs.Allocation
-	(*Guild)(nil),                             // 52: structs.structs.Guild
-	(*Infusion)(nil),                          // 53: structs.structs.Infusion
-	(*PermissionRecord)(nil),                  // 54: structs.structs.PermissionRecord
-	(*Planet)(nil),                            // 55: structs.structs.Planet
-	(*Player)(nil),                            // 56: structs.structs.Player
-	(*Reactor)(nil),                           // 57: structs.structs.Reactor
-	(*Struct)(nil),                            // 58: structs.structs.Struct
-	(*Substation)(nil),                        // 59: structs.structs.Substation
+	(*Allocation)(nil),                        // 51: structs.Allocation
+	(*Guild)(nil),                             // 52: structs.Guild
+	(*Infusion)(nil),                          // 53: structs.Infusion
+	(*PermissionRecord)(nil),                  // 54: structs.PermissionRecord
+	(*Planet)(nil),                            // 55: structs.Planet
+	(*Player)(nil),                            // 56: structs.Player
+	(*Reactor)(nil),                           // 57: structs.Reactor
+	(*Struct)(nil),                            // 58: structs.Struct
+	(*Substation)(nil),                        // 59: structs.Substation
 }
 var file_structs_structs_query_proto_depIdxs = []int32{
-	48, // 0: structs.structs.QueryParamsResponse.params:type_name -> structs.structs.Params
-	49, // 1: structs.structs.QueryAllAddressByPlayerRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	49, // 2: structs.structs.QueryAllAddressRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	7,  // 3: structs.structs.QueryAllAddressResponse.address:type_name -> structs.structs.QueryAddressResponse
-	50, // 4: structs.structs.QueryAllAddressResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	51, // 5: structs.structs.QueryGetAllocationResponse.Allocation:type_name -> structs.structs.Allocation
-	49, // 6: structs.structs.QueryAllAllocationRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	51, // 7: structs.structs.QueryAllAllocationResponse.Allocation:type_name -> structs.structs.Allocation
-	50, // 8: structs.structs.QueryAllAllocationResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	52, // 9: structs.structs.QueryGetGuildResponse.Guild:type_name -> structs.structs.Guild
-	49, // 10: structs.structs.QueryAllGuildRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	52, // 11: structs.structs.QueryAllGuildResponse.Guild:type_name -> structs.structs.Guild
-	50, // 12: structs.structs.QueryAllGuildResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	53, // 13: structs.structs.QueryGetInfusionResponse.Infusion:type_name -> structs.structs.Infusion
-	49, // 14: structs.structs.QueryAllInfusionRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	53, // 15: structs.structs.QueryAllInfusionResponse.Infusion:type_name -> structs.structs.Infusion
-	50, // 16: structs.structs.QueryAllInfusionResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	49, // 17: structs.structs.QueryAllPermissionByObjectRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	49, // 18: structs.structs.QueryAllPermissionByPlayerRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	49, // 19: structs.structs.QueryAllPermissionRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	54, // 20: structs.structs.QueryGetPermissionResponse.permissionRecord:type_name -> structs.structs.PermissionRecord
-	54, // 21: structs.structs.QueryAllPermissionResponse.permissionRecords:type_name -> structs.structs.PermissionRecord
-	50, // 22: structs.structs.QueryAllPermissionResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	55, // 23: structs.structs.QueryGetPlanetResponse.Planet:type_name -> structs.structs.Planet
-	49, // 24: structs.structs.QueryAllPlanetRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	49, // 25: structs.structs.QueryAllPlanetByPlayerRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	55, // 26: structs.structs.QueryAllPlanetResponse.Planet:type_name -> structs.structs.Planet
-	50, // 27: structs.structs.QueryAllPlanetResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	56, // 28: structs.structs.QueryGetPlayerResponse.Player:type_name -> structs.structs.Player
-	49, // 29: structs.structs.QueryAllPlayerRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	56, // 30: structs.structs.QueryAllPlayerResponse.Player:type_name -> structs.structs.Player
-	50, // 31: structs.structs.QueryAllPlayerResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	57, // 32: structs.structs.QueryGetReactorResponse.Reactor:type_name -> structs.structs.Reactor
-	49, // 33: structs.structs.QueryAllReactorRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	57, // 34: structs.structs.QueryAllReactorResponse.Reactor:type_name -> structs.structs.Reactor
-	50, // 35: structs.structs.QueryAllReactorResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	58, // 36: structs.structs.QueryGetStructResponse.Struct:type_name -> structs.structs.Struct
-	49, // 37: structs.structs.QueryAllStructRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	58, // 38: structs.structs.QueryAllStructResponse.Struct:type_name -> structs.structs.Struct
-	50, // 39: structs.structs.QueryAllStructResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	59, // 40: structs.structs.QueryGetSubstationResponse.Substation:type_name -> structs.structs.Substation
-	49, // 41: structs.structs.QueryAllSubstationRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
-	59, // 42: structs.structs.QueryAllSubstationResponse.Substation:type_name -> structs.structs.Substation
-	50, // 43: structs.structs.QueryAllSubstationResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
-	2,  // 44: structs.structs.Query.GetBlockHeight:input_type -> structs.structs.QueryBlockHeight
-	0,  // 45: structs.structs.Query.Params:input_type -> structs.structs.QueryParamsRequest
-	4,  // 46: structs.structs.Query.Address:input_type -> structs.structs.QueryGetAddressRequest
-	6,  // 47: structs.structs.Query.AddressAll:input_type -> structs.structs.QueryAllAddressRequest
-	5,  // 48: structs.structs.Query.AddressAllByPlayer:input_type -> structs.structs.QueryAllAddressByPlayerRequest
-	9,  // 49: structs.structs.Query.Allocation:input_type -> structs.structs.QueryGetAllocationRequest
-	11, // 50: structs.structs.Query.AllocationAll:input_type -> structs.structs.QueryAllAllocationRequest
-	13, // 51: structs.structs.Query.Guild:input_type -> structs.structs.QueryGetGuildRequest
-	15, // 52: structs.structs.Query.GuildAll:input_type -> structs.structs.QueryAllGuildRequest
-	17, // 53: structs.structs.Query.Infusion:input_type -> structs.structs.QueryGetInfusionRequest
-	19, // 54: structs.structs.Query.InfusionAll:input_type -> structs.structs.QueryAllInfusionRequest
-	21, // 55: structs.structs.Query.Permission:input_type -> structs.structs.QueryGetPermissionRequest
-	22, // 56: structs.structs.Query.PermissionByObject:input_type -> structs.structs.QueryAllPermissionByObjectRequest
-	23, // 57: structs.structs.Query.PermissionByPlayer:input_type -> structs.structs.QueryAllPermissionByPlayerRequest
-	24, // 58: structs.structs.Query.PermissionAll:input_type -> structs.structs.QueryAllPermissionRequest
-	32, // 59: structs.structs.Query.Player:input_type -> structs.structs.QueryGetPlayerRequest
-	34, // 60: structs.structs.Query.PlayerAll:input_type -> structs.structs.QueryAllPlayerRequest
-	27, // 61: structs.structs.Query.Planet:input_type -> structs.structs.QueryGetPlanetRequest
-	29, // 62: structs.structs.Query.PlanetAll:input_type -> structs.structs.QueryAllPlanetRequest
-	30, // 63: structs.structs.Query.PlanetAllByPlayer:input_type -> structs.structs.QueryAllPlanetByPlayerRequest
-	36, // 64: structs.structs.Query.Reactor:input_type -> structs.structs.QueryGetReactorRequest
-	38, // 65: structs.structs.Query.ReactorAll:input_type -> structs.structs.QueryAllReactorRequest
-	40, // 66: structs.structs.Query.Struct:input_type -> structs.structs.QueryGetStructRequest
-	42, // 67: structs.structs.Query.StructAll:input_type -> structs.structs.QueryAllStructRequest
-	44, // 68: structs.structs.Query.Substation:input_type -> structs.structs.QueryGetSubstationRequest
-	46, // 69: structs.structs.Query.SubstationAll:input_type -> structs.structs.QueryAllSubstationRequest
-	3,  // 70: structs.structs.Query.GetBlockHeight:output_type -> structs.structs.QueryBlockHeightResponse
-	1,  // 71: structs.structs.Query.Params:output_type -> structs.structs.QueryParamsResponse
-	7,  // 72: structs.structs.Query.Address:output_type -> structs.structs.QueryAddressResponse
-	8,  // 73: structs.structs.Query.AddressAll:output_type -> structs.structs.QueryAllAddressResponse
-	8,  // 74: structs.structs.Query.AddressAllByPlayer:output_type -> structs.structs.QueryAllAddressResponse
-	10, // 75: structs.structs.Query.Allocation:output_type -> structs.structs.QueryGetAllocationResponse
-	12, // 76: structs.structs.Query.AllocationAll:output_type -> structs.structs.QueryAllAllocationResponse
-	14, // 77: structs.structs.Query.Guild:output_type -> structs.structs.QueryGetGuildResponse
-	16, // 78: structs.structs.Query.GuildAll:output_type -> structs.structs.QueryAllGuildResponse
-	18, // 79: structs.structs.Query.Infusion:output_type -> structs.structs.QueryGetInfusionResponse
-	20, // 80: structs.structs.Query.InfusionAll:output_type -> structs.structs.QueryAllInfusionResponse
-	25, // 81: structs.structs.Query.Permission:output_type -> structs.structs.QueryGetPermissionResponse
-	26, // 82: structs.structs.Query.PermissionByObject:output_type -> structs.structs.QueryAllPermissionResponse
-	26, // 83: structs.structs.Query.PermissionByPlayer:output_type -> structs.structs.QueryAllPermissionResponse
-	26, // 84: structs.structs.Query.PermissionAll:output_type -> structs.structs.QueryAllPermissionResponse
-	33, // 85: structs.structs.Query.Player:output_type -> structs.structs.QueryGetPlayerResponse
-	35, // 86: structs.structs.Query.PlayerAll:output_type -> structs.structs.QueryAllPlayerResponse
-	28, // 87: structs.structs.Query.Planet:output_type -> structs.structs.QueryGetPlanetResponse
-	31, // 88: structs.structs.Query.PlanetAll:output_type -> structs.structs.QueryAllPlanetResponse
-	31, // 89: structs.structs.Query.PlanetAllByPlayer:output_type -> structs.structs.QueryAllPlanetResponse
-	37, // 90: structs.structs.Query.Reactor:output_type -> structs.structs.QueryGetReactorResponse
-	39, // 91: structs.structs.Query.ReactorAll:output_type -> structs.structs.QueryAllReactorResponse
-	41, // 92: structs.structs.Query.Struct:output_type -> structs.structs.QueryGetStructResponse
-	43, // 93: structs.structs.Query.StructAll:output_type -> structs.structs.QueryAllStructResponse
-	45, // 94: structs.structs.Query.Substation:output_type -> structs.structs.QueryGetSubstationResponse
-	47, // 95: structs.structs.Query.SubstationAll:output_type -> structs.structs.QueryAllSubstationResponse
+	48, // 0: structs.QueryParamsResponse.params:type_name -> structs.Params
+	49, // 1: structs.QueryAllAddressByPlayerRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	49, // 2: structs.QueryAllAddressRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	7,  // 3: structs.QueryAllAddressResponse.address:type_name -> structs.QueryAddressResponse
+	50, // 4: structs.QueryAllAddressResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	51, // 5: structs.QueryGetAllocationResponse.Allocation:type_name -> structs.Allocation
+	49, // 6: structs.QueryAllAllocationRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	51, // 7: structs.QueryAllAllocationResponse.Allocation:type_name -> structs.Allocation
+	50, // 8: structs.QueryAllAllocationResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	52, // 9: structs.QueryGetGuildResponse.Guild:type_name -> structs.Guild
+	49, // 10: structs.QueryAllGuildRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	52, // 11: structs.QueryAllGuildResponse.Guild:type_name -> structs.Guild
+	50, // 12: structs.QueryAllGuildResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	53, // 13: structs.QueryGetInfusionResponse.Infusion:type_name -> structs.Infusion
+	49, // 14: structs.QueryAllInfusionRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	53, // 15: structs.QueryAllInfusionResponse.Infusion:type_name -> structs.Infusion
+	50, // 16: structs.QueryAllInfusionResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	49, // 17: structs.QueryAllPermissionByObjectRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	49, // 18: structs.QueryAllPermissionByPlayerRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	49, // 19: structs.QueryAllPermissionRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	54, // 20: structs.QueryGetPermissionResponse.permissionRecord:type_name -> structs.PermissionRecord
+	54, // 21: structs.QueryAllPermissionResponse.permissionRecords:type_name -> structs.PermissionRecord
+	50, // 22: structs.QueryAllPermissionResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	55, // 23: structs.QueryGetPlanetResponse.Planet:type_name -> structs.Planet
+	49, // 24: structs.QueryAllPlanetRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	49, // 25: structs.QueryAllPlanetByPlayerRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	55, // 26: structs.QueryAllPlanetResponse.Planet:type_name -> structs.Planet
+	50, // 27: structs.QueryAllPlanetResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	56, // 28: structs.QueryGetPlayerResponse.Player:type_name -> structs.Player
+	49, // 29: structs.QueryAllPlayerRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	56, // 30: structs.QueryAllPlayerResponse.Player:type_name -> structs.Player
+	50, // 31: structs.QueryAllPlayerResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	57, // 32: structs.QueryGetReactorResponse.Reactor:type_name -> structs.Reactor
+	49, // 33: structs.QueryAllReactorRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	57, // 34: structs.QueryAllReactorResponse.Reactor:type_name -> structs.Reactor
+	50, // 35: structs.QueryAllReactorResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	58, // 36: structs.QueryGetStructResponse.Struct:type_name -> structs.Struct
+	49, // 37: structs.QueryAllStructRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	58, // 38: structs.QueryAllStructResponse.Struct:type_name -> structs.Struct
+	50, // 39: structs.QueryAllStructResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	59, // 40: structs.QueryGetSubstationResponse.Substation:type_name -> structs.Substation
+	49, // 41: structs.QueryAllSubstationRequest.pagination:type_name -> cosmos.base.query.v1beta1.PageRequest
+	59, // 42: structs.QueryAllSubstationResponse.Substation:type_name -> structs.Substation
+	50, // 43: structs.QueryAllSubstationResponse.pagination:type_name -> cosmos.base.query.v1beta1.PageResponse
+	2,  // 44: structs.Query.GetBlockHeight:input_type -> structs.QueryBlockHeight
+	0,  // 45: structs.Query.Params:input_type -> structs.QueryParamsRequest
+	4,  // 46: structs.Query.Address:input_type -> structs.QueryGetAddressRequest
+	6,  // 47: structs.Query.AddressAll:input_type -> structs.QueryAllAddressRequest
+	5,  // 48: structs.Query.AddressAllByPlayer:input_type -> structs.QueryAllAddressByPlayerRequest
+	9,  // 49: structs.Query.Allocation:input_type -> structs.QueryGetAllocationRequest
+	11, // 50: structs.Query.AllocationAll:input_type -> structs.QueryAllAllocationRequest
+	13, // 51: structs.Query.Guild:input_type -> structs.QueryGetGuildRequest
+	15, // 52: structs.Query.GuildAll:input_type -> structs.QueryAllGuildRequest
+	17, // 53: structs.Query.Infusion:input_type -> structs.QueryGetInfusionRequest
+	19, // 54: structs.Query.InfusionAll:input_type -> structs.QueryAllInfusionRequest
+	21, // 55: structs.Query.Permission:input_type -> structs.QueryGetPermissionRequest
+	22, // 56: structs.Query.PermissionByObject:input_type -> structs.QueryAllPermissionByObjectRequest
+	23, // 57: structs.Query.PermissionByPlayer:input_type -> structs.QueryAllPermissionByPlayerRequest
+	24, // 58: structs.Query.PermissionAll:input_type -> structs.QueryAllPermissionRequest
+	32, // 59: structs.Query.Player:input_type -> structs.QueryGetPlayerRequest
+	34, // 60: structs.Query.PlayerAll:input_type -> structs.QueryAllPlayerRequest
+	27, // 61: structs.Query.Planet:input_type -> structs.QueryGetPlanetRequest
+	29, // 62: structs.Query.PlanetAll:input_type -> structs.QueryAllPlanetRequest
+	30, // 63: structs.Query.PlanetAllByPlayer:input_type -> structs.QueryAllPlanetByPlayerRequest
+	36, // 64: structs.Query.Reactor:input_type -> structs.QueryGetReactorRequest
+	38, // 65: structs.Query.ReactorAll:input_type -> structs.QueryAllReactorRequest
+	40, // 66: structs.Query.Struct:input_type -> structs.QueryGetStructRequest
+	42, // 67: structs.Query.StructAll:input_type -> structs.QueryAllStructRequest
+	44, // 68: structs.Query.Substation:input_type -> structs.QueryGetSubstationRequest
+	46, // 69: structs.Query.SubstationAll:input_type -> structs.QueryAllSubstationRequest
+	3,  // 70: structs.Query.GetBlockHeight:output_type -> structs.QueryBlockHeightResponse
+	1,  // 71: structs.Query.Params:output_type -> structs.QueryParamsResponse
+	7,  // 72: structs.Query.Address:output_type -> structs.QueryAddressResponse
+	8,  // 73: structs.Query.AddressAll:output_type -> structs.QueryAllAddressResponse
+	8,  // 74: structs.Query.AddressAllByPlayer:output_type -> structs.QueryAllAddressResponse
+	10, // 75: structs.Query.Allocation:output_type -> structs.QueryGetAllocationResponse
+	12, // 76: structs.Query.AllocationAll:output_type -> structs.QueryAllAllocationResponse
+	14, // 77: structs.Query.Guild:output_type -> structs.QueryGetGuildResponse
+	16, // 78: structs.Query.GuildAll:output_type -> structs.QueryAllGuildResponse
+	18, // 79: structs.Query.Infusion:output_type -> structs.QueryGetInfusionResponse
+	20, // 80: structs.Query.InfusionAll:output_type -> structs.QueryAllInfusionResponse
+	25, // 81: structs.Query.Permission:output_type -> structs.QueryGetPermissionResponse
+	26, // 82: structs.Query.PermissionByObject:output_type -> structs.QueryAllPermissionResponse
+	26, // 83: structs.Query.PermissionByPlayer:output_type -> structs.QueryAllPermissionResponse
+	26, // 84: structs.Query.PermissionAll:output_type -> structs.QueryAllPermissionResponse
+	33, // 85: structs.Query.Player:output_type -> structs.QueryGetPlayerResponse
+	35, // 86: structs.Query.PlayerAll:output_type -> structs.QueryAllPlayerResponse
+	28, // 87: structs.Query.Planet:output_type -> structs.QueryGetPlanetResponse
+	31, // 88: structs.Query.PlanetAll:output_type -> structs.QueryAllPlanetResponse
+	31, // 89: structs.Query.PlanetAllByPlayer:output_type -> structs.QueryAllPlanetResponse
+	37, // 90: structs.Query.Reactor:output_type -> structs.QueryGetReactorResponse
+	39, // 91: structs.Query.ReactorAll:output_type -> structs.QueryAllReactorResponse
+	41, // 92: structs.Query.Struct:output_type -> structs.QueryGetStructResponse
+	43, // 93: structs.Query.StructAll:output_type -> structs.QueryAllStructResponse
+	45, // 94: structs.Query.Substation:output_type -> structs.QueryGetSubstationResponse
+	47, // 95: structs.Query.SubstationAll:output_type -> structs.QueryAllSubstationResponse
 	70, // [70:96] is the sub-list for method output_type
 	44, // [44:70] is the sub-list for method input_type
 	44, // [44:44] is the sub-list for extension type_name

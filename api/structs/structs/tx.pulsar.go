@@ -121,15 +121,15 @@ func (x *fastReflection_MsgUpdateParams) Range(f func(protoreflect.FieldDescript
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgUpdateParams) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgUpdateParams.authority":
+	case "structs.MsgUpdateParams.authority":
 		return x.Authority != ""
-	case "structs.structs.MsgUpdateParams.params":
+	case "structs.MsgUpdateParams.params":
 		return x.Params != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgUpdateParams"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgUpdateParams"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgUpdateParams does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgUpdateParams does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -141,15 +141,15 @@ func (x *fastReflection_MsgUpdateParams) Has(fd protoreflect.FieldDescriptor) bo
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgUpdateParams) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgUpdateParams.authority":
+	case "structs.MsgUpdateParams.authority":
 		x.Authority = ""
-	case "structs.structs.MsgUpdateParams.params":
+	case "structs.MsgUpdateParams.params":
 		x.Params = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgUpdateParams"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgUpdateParams"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgUpdateParams does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgUpdateParams does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -161,17 +161,17 @@ func (x *fastReflection_MsgUpdateParams) Clear(fd protoreflect.FieldDescriptor) 
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgUpdateParams) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgUpdateParams.authority":
+	case "structs.MsgUpdateParams.authority":
 		value := x.Authority
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgUpdateParams.params":
+	case "structs.MsgUpdateParams.params":
 		value := x.Params
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgUpdateParams"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgUpdateParams"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgUpdateParams does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgUpdateParams does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -187,15 +187,15 @@ func (x *fastReflection_MsgUpdateParams) Get(descriptor protoreflect.FieldDescri
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgUpdateParams) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgUpdateParams.authority":
+	case "structs.MsgUpdateParams.authority":
 		x.Authority = value.Interface().(string)
-	case "structs.structs.MsgUpdateParams.params":
+	case "structs.MsgUpdateParams.params":
 		x.Params = value.Message().Interface().(*Params)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgUpdateParams"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgUpdateParams"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgUpdateParams does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgUpdateParams does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -211,18 +211,18 @@ func (x *fastReflection_MsgUpdateParams) Set(fd protoreflect.FieldDescriptor, va
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgUpdateParams) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgUpdateParams.params":
+	case "structs.MsgUpdateParams.params":
 		if x.Params == nil {
 			x.Params = new(Params)
 		}
 		return protoreflect.ValueOfMessage(x.Params.ProtoReflect())
-	case "structs.structs.MsgUpdateParams.authority":
-		panic(fmt.Errorf("field authority of message structs.structs.MsgUpdateParams is not mutable"))
+	case "structs.MsgUpdateParams.authority":
+		panic(fmt.Errorf("field authority of message structs.MsgUpdateParams is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgUpdateParams"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgUpdateParams"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgUpdateParams does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgUpdateParams does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -231,16 +231,16 @@ func (x *fastReflection_MsgUpdateParams) Mutable(fd protoreflect.FieldDescriptor
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgUpdateParams) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgUpdateParams.authority":
+	case "structs.MsgUpdateParams.authority":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgUpdateParams.params":
+	case "structs.MsgUpdateParams.params":
 		m := new(Params)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgUpdateParams"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgUpdateParams"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgUpdateParams does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgUpdateParams does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -250,7 +250,7 @@ func (x *fastReflection_MsgUpdateParams) NewField(fd protoreflect.FieldDescripto
 func (x *fastReflection_MsgUpdateParams) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgUpdateParams", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgUpdateParams", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -606,9 +606,9 @@ func (x *fastReflection_MsgUpdateParamsResponse) Has(fd protoreflect.FieldDescri
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgUpdateParamsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgUpdateParamsResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgUpdateParamsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgUpdateParamsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -622,9 +622,9 @@ func (x *fastReflection_MsgUpdateParamsResponse) Clear(fd protoreflect.FieldDesc
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgUpdateParamsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgUpdateParamsResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgUpdateParamsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgUpdateParamsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -638,9 +638,9 @@ func (x *fastReflection_MsgUpdateParamsResponse) Get(descriptor protoreflect.Fie
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgUpdateParamsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgUpdateParamsResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgUpdateParamsResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgUpdateParamsResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -658,9 +658,9 @@ func (x *fastReflection_MsgUpdateParamsResponse) Set(fd protoreflect.FieldDescri
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgUpdateParamsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgUpdateParamsResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgUpdateParamsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgUpdateParamsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -678,9 +678,9 @@ func (x *fastReflection_MsgUpdateParamsResponse) Mutable(fd protoreflect.FieldDe
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgUpdateParamsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgUpdateParamsResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgUpdateParamsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgUpdateParamsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -691,9 +691,9 @@ func (x *fastReflection_MsgUpdateParamsResponse) NewField(fd protoreflect.FieldD
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgUpdateParamsResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgUpdateParamsResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgUpdateParamsResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgUpdateParamsResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -703,7 +703,7 @@ func (x *fastReflection_MsgUpdateParamsResponse) NewField(fd protoreflect.FieldD
 func (x *fastReflection_MsgUpdateParamsResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgUpdateParamsResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgUpdateParamsResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -992,19 +992,19 @@ func (x *fastReflection_MsgAddressApproveRegister) Range(f func(protoreflect.Fie
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgAddressApproveRegister) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgAddressApproveRegister.creator":
+	case "structs.MsgAddressApproveRegister.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgAddressApproveRegister.approve":
+	case "structs.MsgAddressApproveRegister.approve":
 		return x.Approve != false
-	case "structs.structs.MsgAddressApproveRegister.address":
+	case "structs.MsgAddressApproveRegister.address":
 		return x.Address != ""
-	case "structs.structs.MsgAddressApproveRegister.permissions":
+	case "structs.MsgAddressApproveRegister.permissions":
 		return x.Permissions != uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressApproveRegister"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressApproveRegister"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressApproveRegister does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressApproveRegister does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1016,19 +1016,19 @@ func (x *fastReflection_MsgAddressApproveRegister) Has(fd protoreflect.FieldDesc
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgAddressApproveRegister) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgAddressApproveRegister.creator":
+	case "structs.MsgAddressApproveRegister.creator":
 		x.Creator = ""
-	case "structs.structs.MsgAddressApproveRegister.approve":
+	case "structs.MsgAddressApproveRegister.approve":
 		x.Approve = false
-	case "structs.structs.MsgAddressApproveRegister.address":
+	case "structs.MsgAddressApproveRegister.address":
 		x.Address = ""
-	case "structs.structs.MsgAddressApproveRegister.permissions":
+	case "structs.MsgAddressApproveRegister.permissions":
 		x.Permissions = uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressApproveRegister"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressApproveRegister"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressApproveRegister does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressApproveRegister does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1040,23 +1040,23 @@ func (x *fastReflection_MsgAddressApproveRegister) Clear(fd protoreflect.FieldDe
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgAddressApproveRegister) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgAddressApproveRegister.creator":
+	case "structs.MsgAddressApproveRegister.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgAddressApproveRegister.approve":
+	case "structs.MsgAddressApproveRegister.approve":
 		value := x.Approve
 		return protoreflect.ValueOfBool(value)
-	case "structs.structs.MsgAddressApproveRegister.address":
+	case "structs.MsgAddressApproveRegister.address":
 		value := x.Address
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgAddressApproveRegister.permissions":
+	case "structs.MsgAddressApproveRegister.permissions":
 		value := x.Permissions
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressApproveRegister"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressApproveRegister"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressApproveRegister does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressApproveRegister does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -1072,19 +1072,19 @@ func (x *fastReflection_MsgAddressApproveRegister) Get(descriptor protoreflect.F
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgAddressApproveRegister) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgAddressApproveRegister.creator":
+	case "structs.MsgAddressApproveRegister.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgAddressApproveRegister.approve":
+	case "structs.MsgAddressApproveRegister.approve":
 		x.Approve = value.Bool()
-	case "structs.structs.MsgAddressApproveRegister.address":
+	case "structs.MsgAddressApproveRegister.address":
 		x.Address = value.Interface().(string)
-	case "structs.structs.MsgAddressApproveRegister.permissions":
+	case "structs.MsgAddressApproveRegister.permissions":
 		x.Permissions = value.Uint()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressApproveRegister"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressApproveRegister"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressApproveRegister does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressApproveRegister does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1100,19 +1100,19 @@ func (x *fastReflection_MsgAddressApproveRegister) Set(fd protoreflect.FieldDesc
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgAddressApproveRegister) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgAddressApproveRegister.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgAddressApproveRegister is not mutable"))
-	case "structs.structs.MsgAddressApproveRegister.approve":
-		panic(fmt.Errorf("field approve of message structs.structs.MsgAddressApproveRegister is not mutable"))
-	case "structs.structs.MsgAddressApproveRegister.address":
-		panic(fmt.Errorf("field address of message structs.structs.MsgAddressApproveRegister is not mutable"))
-	case "structs.structs.MsgAddressApproveRegister.permissions":
-		panic(fmt.Errorf("field permissions of message structs.structs.MsgAddressApproveRegister is not mutable"))
+	case "structs.MsgAddressApproveRegister.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgAddressApproveRegister is not mutable"))
+	case "structs.MsgAddressApproveRegister.approve":
+		panic(fmt.Errorf("field approve of message structs.MsgAddressApproveRegister is not mutable"))
+	case "structs.MsgAddressApproveRegister.address":
+		panic(fmt.Errorf("field address of message structs.MsgAddressApproveRegister is not mutable"))
+	case "structs.MsgAddressApproveRegister.permissions":
+		panic(fmt.Errorf("field permissions of message structs.MsgAddressApproveRegister is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressApproveRegister"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressApproveRegister"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressApproveRegister does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressApproveRegister does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1121,19 +1121,19 @@ func (x *fastReflection_MsgAddressApproveRegister) Mutable(fd protoreflect.Field
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgAddressApproveRegister) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgAddressApproveRegister.creator":
+	case "structs.MsgAddressApproveRegister.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgAddressApproveRegister.approve":
+	case "structs.MsgAddressApproveRegister.approve":
 		return protoreflect.ValueOfBool(false)
-	case "structs.structs.MsgAddressApproveRegister.address":
+	case "structs.MsgAddressApproveRegister.address":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgAddressApproveRegister.permissions":
+	case "structs.MsgAddressApproveRegister.permissions":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressApproveRegister"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressApproveRegister"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressApproveRegister does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressApproveRegister does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1143,7 +1143,7 @@ func (x *fastReflection_MsgAddressApproveRegister) NewField(fd protoreflect.Fiel
 func (x *fastReflection_MsgAddressApproveRegister) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgAddressApproveRegister", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgAddressApproveRegister", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -1570,17 +1570,17 @@ func (x *fastReflection_MsgAddressRegister) Range(f func(protoreflect.FieldDescr
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgAddressRegister) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgAddressRegister.creator":
+	case "structs.MsgAddressRegister.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgAddressRegister.playerId":
+	case "structs.MsgAddressRegister.playerId":
 		return x.PlayerId != ""
-	case "structs.structs.MsgAddressRegister.address":
+	case "structs.MsgAddressRegister.address":
 		return x.Address != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRegister"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRegister"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRegister does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRegister does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1592,17 +1592,17 @@ func (x *fastReflection_MsgAddressRegister) Has(fd protoreflect.FieldDescriptor)
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgAddressRegister) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgAddressRegister.creator":
+	case "structs.MsgAddressRegister.creator":
 		x.Creator = ""
-	case "structs.structs.MsgAddressRegister.playerId":
+	case "structs.MsgAddressRegister.playerId":
 		x.PlayerId = ""
-	case "structs.structs.MsgAddressRegister.address":
+	case "structs.MsgAddressRegister.address":
 		x.Address = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRegister"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRegister"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRegister does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRegister does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1614,20 +1614,20 @@ func (x *fastReflection_MsgAddressRegister) Clear(fd protoreflect.FieldDescripto
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgAddressRegister) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgAddressRegister.creator":
+	case "structs.MsgAddressRegister.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgAddressRegister.playerId":
+	case "structs.MsgAddressRegister.playerId":
 		value := x.PlayerId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgAddressRegister.address":
+	case "structs.MsgAddressRegister.address":
 		value := x.Address
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRegister"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRegister"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRegister does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRegister does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -1643,17 +1643,17 @@ func (x *fastReflection_MsgAddressRegister) Get(descriptor protoreflect.FieldDes
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgAddressRegister) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgAddressRegister.creator":
+	case "structs.MsgAddressRegister.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgAddressRegister.playerId":
+	case "structs.MsgAddressRegister.playerId":
 		x.PlayerId = value.Interface().(string)
-	case "structs.structs.MsgAddressRegister.address":
+	case "structs.MsgAddressRegister.address":
 		x.Address = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRegister"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRegister"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRegister does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRegister does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1669,17 +1669,17 @@ func (x *fastReflection_MsgAddressRegister) Set(fd protoreflect.FieldDescriptor,
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgAddressRegister) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgAddressRegister.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgAddressRegister is not mutable"))
-	case "structs.structs.MsgAddressRegister.playerId":
-		panic(fmt.Errorf("field playerId of message structs.structs.MsgAddressRegister is not mutable"))
-	case "structs.structs.MsgAddressRegister.address":
-		panic(fmt.Errorf("field address of message structs.structs.MsgAddressRegister is not mutable"))
+	case "structs.MsgAddressRegister.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgAddressRegister is not mutable"))
+	case "structs.MsgAddressRegister.playerId":
+		panic(fmt.Errorf("field playerId of message structs.MsgAddressRegister is not mutable"))
+	case "structs.MsgAddressRegister.address":
+		panic(fmt.Errorf("field address of message structs.MsgAddressRegister is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRegister"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRegister"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRegister does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRegister does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1688,17 +1688,17 @@ func (x *fastReflection_MsgAddressRegister) Mutable(fd protoreflect.FieldDescrip
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgAddressRegister) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgAddressRegister.creator":
+	case "structs.MsgAddressRegister.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgAddressRegister.playerId":
+	case "structs.MsgAddressRegister.playerId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgAddressRegister.address":
+	case "structs.MsgAddressRegister.address":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRegister"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRegister"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRegister does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRegister does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1708,7 +1708,7 @@ func (x *fastReflection_MsgAddressRegister) NewField(fd protoreflect.FieldDescri
 func (x *fastReflection_MsgAddressRegister) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgAddressRegister", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgAddressRegister", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2096,9 +2096,9 @@ func (x *fastReflection_MsgAddressRegisterResponse) Has(fd protoreflect.FieldDes
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRegisterResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRegisterResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRegisterResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRegisterResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2112,9 +2112,9 @@ func (x *fastReflection_MsgAddressRegisterResponse) Clear(fd protoreflect.FieldD
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRegisterResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRegisterResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRegisterResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRegisterResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2128,9 +2128,9 @@ func (x *fastReflection_MsgAddressRegisterResponse) Get(descriptor protoreflect.
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRegisterResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRegisterResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRegisterResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRegisterResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -2148,9 +2148,9 @@ func (x *fastReflection_MsgAddressRegisterResponse) Set(fd protoreflect.FieldDes
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRegisterResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRegisterResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRegisterResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRegisterResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2168,9 +2168,9 @@ func (x *fastReflection_MsgAddressRegisterResponse) Mutable(fd protoreflect.Fiel
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRegisterResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRegisterResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRegisterResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRegisterResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2181,9 +2181,9 @@ func (x *fastReflection_MsgAddressRegisterResponse) NewField(fd protoreflect.Fie
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRegisterResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRegisterResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRegisterResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRegisterResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2193,7 +2193,7 @@ func (x *fastReflection_MsgAddressRegisterResponse) NewField(fd protoreflect.Fie
 func (x *fastReflection_MsgAddressRegisterResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgAddressRegisterResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgAddressRegisterResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2466,15 +2466,15 @@ func (x *fastReflection_MsgAddressRevoke) Range(f func(protoreflect.FieldDescrip
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgAddressRevoke) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgAddressRevoke.creator":
+	case "structs.MsgAddressRevoke.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgAddressRevoke.address":
+	case "structs.MsgAddressRevoke.address":
 		return x.Address != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRevoke"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRevoke"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRevoke does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRevoke does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2486,15 +2486,15 @@ func (x *fastReflection_MsgAddressRevoke) Has(fd protoreflect.FieldDescriptor) b
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgAddressRevoke) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgAddressRevoke.creator":
+	case "structs.MsgAddressRevoke.creator":
 		x.Creator = ""
-	case "structs.structs.MsgAddressRevoke.address":
+	case "structs.MsgAddressRevoke.address":
 		x.Address = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRevoke"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRevoke"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRevoke does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRevoke does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2506,17 +2506,17 @@ func (x *fastReflection_MsgAddressRevoke) Clear(fd protoreflect.FieldDescriptor)
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgAddressRevoke) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgAddressRevoke.creator":
+	case "structs.MsgAddressRevoke.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgAddressRevoke.address":
+	case "structs.MsgAddressRevoke.address":
 		value := x.Address
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRevoke"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRevoke"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRevoke does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRevoke does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -2532,15 +2532,15 @@ func (x *fastReflection_MsgAddressRevoke) Get(descriptor protoreflect.FieldDescr
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgAddressRevoke) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgAddressRevoke.creator":
+	case "structs.MsgAddressRevoke.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgAddressRevoke.address":
+	case "structs.MsgAddressRevoke.address":
 		x.Address = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRevoke"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRevoke"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRevoke does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRevoke does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2556,15 +2556,15 @@ func (x *fastReflection_MsgAddressRevoke) Set(fd protoreflect.FieldDescriptor, v
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgAddressRevoke) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgAddressRevoke.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgAddressRevoke is not mutable"))
-	case "structs.structs.MsgAddressRevoke.address":
-		panic(fmt.Errorf("field address of message structs.structs.MsgAddressRevoke is not mutable"))
+	case "structs.MsgAddressRevoke.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgAddressRevoke is not mutable"))
+	case "structs.MsgAddressRevoke.address":
+		panic(fmt.Errorf("field address of message structs.MsgAddressRevoke is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRevoke"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRevoke"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRevoke does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRevoke does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2573,15 +2573,15 @@ func (x *fastReflection_MsgAddressRevoke) Mutable(fd protoreflect.FieldDescripto
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgAddressRevoke) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgAddressRevoke.creator":
+	case "structs.MsgAddressRevoke.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgAddressRevoke.address":
+	case "structs.MsgAddressRevoke.address":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRevoke"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRevoke"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRevoke does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRevoke does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2591,7 +2591,7 @@ func (x *fastReflection_MsgAddressRevoke) NewField(fd protoreflect.FieldDescript
 func (x *fastReflection_MsgAddressRevoke) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgAddressRevoke", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgAddressRevoke", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2936,9 +2936,9 @@ func (x *fastReflection_MsgAddressRevokeResponse) Has(fd protoreflect.FieldDescr
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRevokeResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRevokeResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRevokeResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRevokeResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2952,9 +2952,9 @@ func (x *fastReflection_MsgAddressRevokeResponse) Clear(fd protoreflect.FieldDes
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRevokeResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRevokeResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRevokeResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRevokeResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2968,9 +2968,9 @@ func (x *fastReflection_MsgAddressRevokeResponse) Get(descriptor protoreflect.Fi
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRevokeResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRevokeResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRevokeResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRevokeResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -2988,9 +2988,9 @@ func (x *fastReflection_MsgAddressRevokeResponse) Set(fd protoreflect.FieldDescr
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRevokeResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRevokeResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRevokeResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRevokeResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3008,9 +3008,9 @@ func (x *fastReflection_MsgAddressRevokeResponse) Mutable(fd protoreflect.FieldD
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRevokeResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRevokeResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRevokeResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRevokeResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3021,9 +3021,9 @@ func (x *fastReflection_MsgAddressRevokeResponse) NewField(fd protoreflect.Field
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAddressRevokeResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAddressRevokeResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAddressRevokeResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAddressRevokeResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3033,7 +3033,7 @@ func (x *fastReflection_MsgAddressRevokeResponse) NewField(fd protoreflect.Field
 func (x *fastReflection_MsgAddressRevokeResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgAddressRevokeResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgAddressRevokeResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -3330,21 +3330,21 @@ func (x *fastReflection_MsgAllocationCreate) Range(f func(protoreflect.FieldDesc
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgAllocationCreate) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgAllocationCreate.creator":
+	case "structs.MsgAllocationCreate.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgAllocationCreate.controller":
+	case "structs.MsgAllocationCreate.controller":
 		return x.Controller != ""
-	case "structs.structs.MsgAllocationCreate.sourceObjectId":
+	case "structs.MsgAllocationCreate.sourceObjectId":
 		return x.SourceObjectId != ""
-	case "structs.structs.MsgAllocationCreate.allocationType":
+	case "structs.MsgAllocationCreate.allocationType":
 		return x.AllocationType != 0
-	case "structs.structs.MsgAllocationCreate.power":
+	case "structs.MsgAllocationCreate.power":
 		return x.Power != uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAllocationCreate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAllocationCreate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAllocationCreate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAllocationCreate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3356,21 +3356,21 @@ func (x *fastReflection_MsgAllocationCreate) Has(fd protoreflect.FieldDescriptor
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgAllocationCreate) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgAllocationCreate.creator":
+	case "structs.MsgAllocationCreate.creator":
 		x.Creator = ""
-	case "structs.structs.MsgAllocationCreate.controller":
+	case "structs.MsgAllocationCreate.controller":
 		x.Controller = ""
-	case "structs.structs.MsgAllocationCreate.sourceObjectId":
+	case "structs.MsgAllocationCreate.sourceObjectId":
 		x.SourceObjectId = ""
-	case "structs.structs.MsgAllocationCreate.allocationType":
+	case "structs.MsgAllocationCreate.allocationType":
 		x.AllocationType = 0
-	case "structs.structs.MsgAllocationCreate.power":
+	case "structs.MsgAllocationCreate.power":
 		x.Power = uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAllocationCreate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAllocationCreate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAllocationCreate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAllocationCreate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3382,26 +3382,26 @@ func (x *fastReflection_MsgAllocationCreate) Clear(fd protoreflect.FieldDescript
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgAllocationCreate) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgAllocationCreate.creator":
+	case "structs.MsgAllocationCreate.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgAllocationCreate.controller":
+	case "structs.MsgAllocationCreate.controller":
 		value := x.Controller
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgAllocationCreate.sourceObjectId":
+	case "structs.MsgAllocationCreate.sourceObjectId":
 		value := x.SourceObjectId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgAllocationCreate.allocationType":
+	case "structs.MsgAllocationCreate.allocationType":
 		value := x.AllocationType
 		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
-	case "structs.structs.MsgAllocationCreate.power":
+	case "structs.MsgAllocationCreate.power":
 		value := x.Power
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAllocationCreate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAllocationCreate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAllocationCreate does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgAllocationCreate does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -3417,21 +3417,21 @@ func (x *fastReflection_MsgAllocationCreate) Get(descriptor protoreflect.FieldDe
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgAllocationCreate) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgAllocationCreate.creator":
+	case "structs.MsgAllocationCreate.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgAllocationCreate.controller":
+	case "structs.MsgAllocationCreate.controller":
 		x.Controller = value.Interface().(string)
-	case "structs.structs.MsgAllocationCreate.sourceObjectId":
+	case "structs.MsgAllocationCreate.sourceObjectId":
 		x.SourceObjectId = value.Interface().(string)
-	case "structs.structs.MsgAllocationCreate.allocationType":
+	case "structs.MsgAllocationCreate.allocationType":
 		x.AllocationType = (AllocationType)(value.Enum())
-	case "structs.structs.MsgAllocationCreate.power":
+	case "structs.MsgAllocationCreate.power":
 		x.Power = value.Uint()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAllocationCreate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAllocationCreate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAllocationCreate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAllocationCreate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3447,21 +3447,21 @@ func (x *fastReflection_MsgAllocationCreate) Set(fd protoreflect.FieldDescriptor
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgAllocationCreate) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgAllocationCreate.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgAllocationCreate is not mutable"))
-	case "structs.structs.MsgAllocationCreate.controller":
-		panic(fmt.Errorf("field controller of message structs.structs.MsgAllocationCreate is not mutable"))
-	case "structs.structs.MsgAllocationCreate.sourceObjectId":
-		panic(fmt.Errorf("field sourceObjectId of message structs.structs.MsgAllocationCreate is not mutable"))
-	case "structs.structs.MsgAllocationCreate.allocationType":
-		panic(fmt.Errorf("field allocationType of message structs.structs.MsgAllocationCreate is not mutable"))
-	case "structs.structs.MsgAllocationCreate.power":
-		panic(fmt.Errorf("field power of message structs.structs.MsgAllocationCreate is not mutable"))
+	case "structs.MsgAllocationCreate.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgAllocationCreate is not mutable"))
+	case "structs.MsgAllocationCreate.controller":
+		panic(fmt.Errorf("field controller of message structs.MsgAllocationCreate is not mutable"))
+	case "structs.MsgAllocationCreate.sourceObjectId":
+		panic(fmt.Errorf("field sourceObjectId of message structs.MsgAllocationCreate is not mutable"))
+	case "structs.MsgAllocationCreate.allocationType":
+		panic(fmt.Errorf("field allocationType of message structs.MsgAllocationCreate is not mutable"))
+	case "structs.MsgAllocationCreate.power":
+		panic(fmt.Errorf("field power of message structs.MsgAllocationCreate is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAllocationCreate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAllocationCreate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAllocationCreate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAllocationCreate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3470,21 +3470,21 @@ func (x *fastReflection_MsgAllocationCreate) Mutable(fd protoreflect.FieldDescri
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgAllocationCreate) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgAllocationCreate.creator":
+	case "structs.MsgAllocationCreate.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgAllocationCreate.controller":
+	case "structs.MsgAllocationCreate.controller":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgAllocationCreate.sourceObjectId":
+	case "structs.MsgAllocationCreate.sourceObjectId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgAllocationCreate.allocationType":
+	case "structs.MsgAllocationCreate.allocationType":
 		return protoreflect.ValueOfEnum(0)
-	case "structs.structs.MsgAllocationCreate.power":
+	case "structs.MsgAllocationCreate.power":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAllocationCreate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAllocationCreate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAllocationCreate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAllocationCreate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3494,7 +3494,7 @@ func (x *fastReflection_MsgAllocationCreate) NewField(fd protoreflect.FieldDescr
 func (x *fastReflection_MsgAllocationCreate) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgAllocationCreate", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgAllocationCreate", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -3942,13 +3942,13 @@ func (x *fastReflection_MsgAllocationCreateResponse) Range(f func(protoreflect.F
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgAllocationCreateResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgAllocationCreateResponse.allocationId":
+	case "structs.MsgAllocationCreateResponse.allocationId":
 		return x.AllocationId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAllocationCreateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAllocationCreateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAllocationCreateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAllocationCreateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3960,13 +3960,13 @@ func (x *fastReflection_MsgAllocationCreateResponse) Has(fd protoreflect.FieldDe
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgAllocationCreateResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgAllocationCreateResponse.allocationId":
+	case "structs.MsgAllocationCreateResponse.allocationId":
 		x.AllocationId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAllocationCreateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAllocationCreateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAllocationCreateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAllocationCreateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3978,14 +3978,14 @@ func (x *fastReflection_MsgAllocationCreateResponse) Clear(fd protoreflect.Field
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgAllocationCreateResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgAllocationCreateResponse.allocationId":
+	case "structs.MsgAllocationCreateResponse.allocationId":
 		value := x.AllocationId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAllocationCreateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAllocationCreateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAllocationCreateResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgAllocationCreateResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -4001,13 +4001,13 @@ func (x *fastReflection_MsgAllocationCreateResponse) Get(descriptor protoreflect
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgAllocationCreateResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgAllocationCreateResponse.allocationId":
+	case "structs.MsgAllocationCreateResponse.allocationId":
 		x.AllocationId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAllocationCreateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAllocationCreateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAllocationCreateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAllocationCreateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4023,13 +4023,13 @@ func (x *fastReflection_MsgAllocationCreateResponse) Set(fd protoreflect.FieldDe
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgAllocationCreateResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgAllocationCreateResponse.allocationId":
-		panic(fmt.Errorf("field allocationId of message structs.structs.MsgAllocationCreateResponse is not mutable"))
+	case "structs.MsgAllocationCreateResponse.allocationId":
+		panic(fmt.Errorf("field allocationId of message structs.MsgAllocationCreateResponse is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAllocationCreateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAllocationCreateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAllocationCreateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAllocationCreateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4038,13 +4038,13 @@ func (x *fastReflection_MsgAllocationCreateResponse) Mutable(fd protoreflect.Fie
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgAllocationCreateResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgAllocationCreateResponse.allocationId":
+	case "structs.MsgAllocationCreateResponse.allocationId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgAllocationCreateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgAllocationCreateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgAllocationCreateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgAllocationCreateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4054,7 +4054,7 @@ func (x *fastReflection_MsgAllocationCreateResponse) NewField(fd protoreflect.Fi
 func (x *fastReflection_MsgAllocationCreateResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgAllocationCreateResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgAllocationCreateResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -4386,19 +4386,19 @@ func (x *fastReflection_MsgGuildApproveRegister) Range(f func(protoreflect.Field
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgGuildApproveRegister) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildApproveRegister.creator":
+	case "structs.MsgGuildApproveRegister.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgGuildApproveRegister.approve":
+	case "structs.MsgGuildApproveRegister.approve":
 		return x.Approve != false
-	case "structs.structs.MsgGuildApproveRegister.guildId":
+	case "structs.MsgGuildApproveRegister.guildId":
 		return x.GuildId != ""
-	case "structs.structs.MsgGuildApproveRegister.playerId":
+	case "structs.MsgGuildApproveRegister.playerId":
 		return x.PlayerId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildApproveRegister"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildApproveRegister"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildApproveRegister does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildApproveRegister does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4410,19 +4410,19 @@ func (x *fastReflection_MsgGuildApproveRegister) Has(fd protoreflect.FieldDescri
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildApproveRegister) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildApproveRegister.creator":
+	case "structs.MsgGuildApproveRegister.creator":
 		x.Creator = ""
-	case "structs.structs.MsgGuildApproveRegister.approve":
+	case "structs.MsgGuildApproveRegister.approve":
 		x.Approve = false
-	case "structs.structs.MsgGuildApproveRegister.guildId":
+	case "structs.MsgGuildApproveRegister.guildId":
 		x.GuildId = ""
-	case "structs.structs.MsgGuildApproveRegister.playerId":
+	case "structs.MsgGuildApproveRegister.playerId":
 		x.PlayerId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildApproveRegister"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildApproveRegister"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildApproveRegister does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildApproveRegister does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4434,23 +4434,23 @@ func (x *fastReflection_MsgGuildApproveRegister) Clear(fd protoreflect.FieldDesc
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgGuildApproveRegister) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgGuildApproveRegister.creator":
+	case "structs.MsgGuildApproveRegister.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildApproveRegister.approve":
+	case "structs.MsgGuildApproveRegister.approve":
 		value := x.Approve
 		return protoreflect.ValueOfBool(value)
-	case "structs.structs.MsgGuildApproveRegister.guildId":
+	case "structs.MsgGuildApproveRegister.guildId":
 		value := x.GuildId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildApproveRegister.playerId":
+	case "structs.MsgGuildApproveRegister.playerId":
 		value := x.PlayerId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildApproveRegister"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildApproveRegister"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildApproveRegister does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildApproveRegister does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -4466,19 +4466,19 @@ func (x *fastReflection_MsgGuildApproveRegister) Get(descriptor protoreflect.Fie
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildApproveRegister) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildApproveRegister.creator":
+	case "structs.MsgGuildApproveRegister.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgGuildApproveRegister.approve":
+	case "structs.MsgGuildApproveRegister.approve":
 		x.Approve = value.Bool()
-	case "structs.structs.MsgGuildApproveRegister.guildId":
+	case "structs.MsgGuildApproveRegister.guildId":
 		x.GuildId = value.Interface().(string)
-	case "structs.structs.MsgGuildApproveRegister.playerId":
+	case "structs.MsgGuildApproveRegister.playerId":
 		x.PlayerId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildApproveRegister"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildApproveRegister"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildApproveRegister does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildApproveRegister does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4494,19 +4494,19 @@ func (x *fastReflection_MsgGuildApproveRegister) Set(fd protoreflect.FieldDescri
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildApproveRegister) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildApproveRegister.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgGuildApproveRegister is not mutable"))
-	case "structs.structs.MsgGuildApproveRegister.approve":
-		panic(fmt.Errorf("field approve of message structs.structs.MsgGuildApproveRegister is not mutable"))
-	case "structs.structs.MsgGuildApproveRegister.guildId":
-		panic(fmt.Errorf("field guildId of message structs.structs.MsgGuildApproveRegister is not mutable"))
-	case "structs.structs.MsgGuildApproveRegister.playerId":
-		panic(fmt.Errorf("field playerId of message structs.structs.MsgGuildApproveRegister is not mutable"))
+	case "structs.MsgGuildApproveRegister.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgGuildApproveRegister is not mutable"))
+	case "structs.MsgGuildApproveRegister.approve":
+		panic(fmt.Errorf("field approve of message structs.MsgGuildApproveRegister is not mutable"))
+	case "structs.MsgGuildApproveRegister.guildId":
+		panic(fmt.Errorf("field guildId of message structs.MsgGuildApproveRegister is not mutable"))
+	case "structs.MsgGuildApproveRegister.playerId":
+		panic(fmt.Errorf("field playerId of message structs.MsgGuildApproveRegister is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildApproveRegister"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildApproveRegister"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildApproveRegister does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildApproveRegister does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4515,19 +4515,19 @@ func (x *fastReflection_MsgGuildApproveRegister) Mutable(fd protoreflect.FieldDe
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgGuildApproveRegister) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildApproveRegister.creator":
+	case "structs.MsgGuildApproveRegister.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildApproveRegister.approve":
+	case "structs.MsgGuildApproveRegister.approve":
 		return protoreflect.ValueOfBool(false)
-	case "structs.structs.MsgGuildApproveRegister.guildId":
+	case "structs.MsgGuildApproveRegister.guildId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildApproveRegister.playerId":
+	case "structs.MsgGuildApproveRegister.playerId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildApproveRegister"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildApproveRegister"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildApproveRegister does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildApproveRegister does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4537,7 +4537,7 @@ func (x *fastReflection_MsgGuildApproveRegister) NewField(fd protoreflect.FieldD
 func (x *fastReflection_MsgGuildApproveRegister) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgGuildApproveRegister", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgGuildApproveRegister", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -4958,9 +4958,9 @@ func (x *fastReflection_MsgGuildApproveRegisterResponse) Has(fd protoreflect.Fie
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildApproveRegisterResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildApproveRegisterResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildApproveRegisterResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildApproveRegisterResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4974,9 +4974,9 @@ func (x *fastReflection_MsgGuildApproveRegisterResponse) Clear(fd protoreflect.F
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildApproveRegisterResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildApproveRegisterResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildApproveRegisterResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildApproveRegisterResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4990,9 +4990,9 @@ func (x *fastReflection_MsgGuildApproveRegisterResponse) Get(descriptor protoref
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildApproveRegisterResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildApproveRegisterResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildApproveRegisterResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildApproveRegisterResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -5010,9 +5010,9 @@ func (x *fastReflection_MsgGuildApproveRegisterResponse) Set(fd protoreflect.Fie
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildApproveRegisterResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildApproveRegisterResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildApproveRegisterResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildApproveRegisterResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5030,9 +5030,9 @@ func (x *fastReflection_MsgGuildApproveRegisterResponse) Mutable(fd protoreflect
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildApproveRegisterResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildApproveRegisterResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildApproveRegisterResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildApproveRegisterResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5043,9 +5043,9 @@ func (x *fastReflection_MsgGuildApproveRegisterResponse) NewField(fd protoreflec
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildApproveRegisterResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildApproveRegisterResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildApproveRegisterResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildApproveRegisterResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5055,7 +5055,7 @@ func (x *fastReflection_MsgGuildApproveRegisterResponse) NewField(fd protoreflec
 func (x *fastReflection_MsgGuildApproveRegisterResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgGuildApproveRegisterResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgGuildApproveRegisterResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -5336,17 +5336,17 @@ func (x *fastReflection_MsgGuildCreate) Range(f func(protoreflect.FieldDescripto
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgGuildCreate) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildCreate.creator":
+	case "structs.MsgGuildCreate.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgGuildCreate.endpoint":
+	case "structs.MsgGuildCreate.endpoint":
 		return x.Endpoint != ""
-	case "structs.structs.MsgGuildCreate.entrySubstationId":
+	case "structs.MsgGuildCreate.entrySubstationId":
 		return x.EntrySubstationId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildCreate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildCreate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildCreate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildCreate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5358,17 +5358,17 @@ func (x *fastReflection_MsgGuildCreate) Has(fd protoreflect.FieldDescriptor) boo
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildCreate) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildCreate.creator":
+	case "structs.MsgGuildCreate.creator":
 		x.Creator = ""
-	case "structs.structs.MsgGuildCreate.endpoint":
+	case "structs.MsgGuildCreate.endpoint":
 		x.Endpoint = ""
-	case "structs.structs.MsgGuildCreate.entrySubstationId":
+	case "structs.MsgGuildCreate.entrySubstationId":
 		x.EntrySubstationId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildCreate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildCreate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildCreate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildCreate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5380,20 +5380,20 @@ func (x *fastReflection_MsgGuildCreate) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgGuildCreate) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgGuildCreate.creator":
+	case "structs.MsgGuildCreate.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildCreate.endpoint":
+	case "structs.MsgGuildCreate.endpoint":
 		value := x.Endpoint
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildCreate.entrySubstationId":
+	case "structs.MsgGuildCreate.entrySubstationId":
 		value := x.EntrySubstationId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildCreate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildCreate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildCreate does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildCreate does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -5409,17 +5409,17 @@ func (x *fastReflection_MsgGuildCreate) Get(descriptor protoreflect.FieldDescrip
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildCreate) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildCreate.creator":
+	case "structs.MsgGuildCreate.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgGuildCreate.endpoint":
+	case "structs.MsgGuildCreate.endpoint":
 		x.Endpoint = value.Interface().(string)
-	case "structs.structs.MsgGuildCreate.entrySubstationId":
+	case "structs.MsgGuildCreate.entrySubstationId":
 		x.EntrySubstationId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildCreate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildCreate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildCreate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildCreate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5435,17 +5435,17 @@ func (x *fastReflection_MsgGuildCreate) Set(fd protoreflect.FieldDescriptor, val
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildCreate) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildCreate.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgGuildCreate is not mutable"))
-	case "structs.structs.MsgGuildCreate.endpoint":
-		panic(fmt.Errorf("field endpoint of message structs.structs.MsgGuildCreate is not mutable"))
-	case "structs.structs.MsgGuildCreate.entrySubstationId":
-		panic(fmt.Errorf("field entrySubstationId of message structs.structs.MsgGuildCreate is not mutable"))
+	case "structs.MsgGuildCreate.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgGuildCreate is not mutable"))
+	case "structs.MsgGuildCreate.endpoint":
+		panic(fmt.Errorf("field endpoint of message structs.MsgGuildCreate is not mutable"))
+	case "structs.MsgGuildCreate.entrySubstationId":
+		panic(fmt.Errorf("field entrySubstationId of message structs.MsgGuildCreate is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildCreate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildCreate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildCreate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildCreate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5454,17 +5454,17 @@ func (x *fastReflection_MsgGuildCreate) Mutable(fd protoreflect.FieldDescriptor)
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgGuildCreate) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildCreate.creator":
+	case "structs.MsgGuildCreate.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildCreate.endpoint":
+	case "structs.MsgGuildCreate.endpoint":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildCreate.entrySubstationId":
+	case "structs.MsgGuildCreate.entrySubstationId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildCreate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildCreate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildCreate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildCreate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5474,7 +5474,7 @@ func (x *fastReflection_MsgGuildCreate) NewField(fd protoreflect.FieldDescriptor
 func (x *fastReflection_MsgGuildCreate) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgGuildCreate", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgGuildCreate", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -5868,13 +5868,13 @@ func (x *fastReflection_MsgGuildCreateResponse) Range(f func(protoreflect.FieldD
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgGuildCreateResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildCreateResponse.guildId":
+	case "structs.MsgGuildCreateResponse.guildId":
 		return x.GuildId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildCreateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildCreateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildCreateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildCreateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5886,13 +5886,13 @@ func (x *fastReflection_MsgGuildCreateResponse) Has(fd protoreflect.FieldDescrip
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildCreateResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildCreateResponse.guildId":
+	case "structs.MsgGuildCreateResponse.guildId":
 		x.GuildId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildCreateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildCreateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildCreateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildCreateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5904,14 +5904,14 @@ func (x *fastReflection_MsgGuildCreateResponse) Clear(fd protoreflect.FieldDescr
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgGuildCreateResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgGuildCreateResponse.guildId":
+	case "structs.MsgGuildCreateResponse.guildId":
 		value := x.GuildId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildCreateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildCreateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildCreateResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildCreateResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -5927,13 +5927,13 @@ func (x *fastReflection_MsgGuildCreateResponse) Get(descriptor protoreflect.Fiel
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildCreateResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildCreateResponse.guildId":
+	case "structs.MsgGuildCreateResponse.guildId":
 		x.GuildId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildCreateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildCreateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildCreateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildCreateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5949,13 +5949,13 @@ func (x *fastReflection_MsgGuildCreateResponse) Set(fd protoreflect.FieldDescrip
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildCreateResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildCreateResponse.guildId":
-		panic(fmt.Errorf("field guildId of message structs.structs.MsgGuildCreateResponse is not mutable"))
+	case "structs.MsgGuildCreateResponse.guildId":
+		panic(fmt.Errorf("field guildId of message structs.MsgGuildCreateResponse is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildCreateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildCreateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildCreateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildCreateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5964,13 +5964,13 @@ func (x *fastReflection_MsgGuildCreateResponse) Mutable(fd protoreflect.FieldDes
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgGuildCreateResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildCreateResponse.guildId":
+	case "structs.MsgGuildCreateResponse.guildId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildCreateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildCreateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildCreateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildCreateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5980,7 +5980,7 @@ func (x *fastReflection_MsgGuildCreateResponse) NewField(fd protoreflect.FieldDe
 func (x *fastReflection_MsgGuildCreateResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgGuildCreateResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgGuildCreateResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -6304,17 +6304,17 @@ func (x *fastReflection_MsgGuildUpdateOwnerId) Range(f func(protoreflect.FieldDe
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgGuildUpdateOwnerId) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateOwnerId.creator":
+	case "structs.MsgGuildUpdateOwnerId.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgGuildUpdateOwnerId.guildId":
+	case "structs.MsgGuildUpdateOwnerId.guildId":
 		return x.GuildId != ""
-	case "structs.structs.MsgGuildUpdateOwnerId.owner":
+	case "structs.MsgGuildUpdateOwnerId.owner":
 		return x.Owner != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateOwnerId"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateOwnerId"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateOwnerId does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateOwnerId does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6326,17 +6326,17 @@ func (x *fastReflection_MsgGuildUpdateOwnerId) Has(fd protoreflect.FieldDescript
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildUpdateOwnerId) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateOwnerId.creator":
+	case "structs.MsgGuildUpdateOwnerId.creator":
 		x.Creator = ""
-	case "structs.structs.MsgGuildUpdateOwnerId.guildId":
+	case "structs.MsgGuildUpdateOwnerId.guildId":
 		x.GuildId = ""
-	case "structs.structs.MsgGuildUpdateOwnerId.owner":
+	case "structs.MsgGuildUpdateOwnerId.owner":
 		x.Owner = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateOwnerId"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateOwnerId"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateOwnerId does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateOwnerId does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6348,20 +6348,20 @@ func (x *fastReflection_MsgGuildUpdateOwnerId) Clear(fd protoreflect.FieldDescri
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgGuildUpdateOwnerId) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgGuildUpdateOwnerId.creator":
+	case "structs.MsgGuildUpdateOwnerId.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildUpdateOwnerId.guildId":
+	case "structs.MsgGuildUpdateOwnerId.guildId":
 		value := x.GuildId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildUpdateOwnerId.owner":
+	case "structs.MsgGuildUpdateOwnerId.owner":
 		value := x.Owner
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateOwnerId"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateOwnerId"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateOwnerId does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateOwnerId does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -6377,17 +6377,17 @@ func (x *fastReflection_MsgGuildUpdateOwnerId) Get(descriptor protoreflect.Field
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildUpdateOwnerId) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateOwnerId.creator":
+	case "structs.MsgGuildUpdateOwnerId.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgGuildUpdateOwnerId.guildId":
+	case "structs.MsgGuildUpdateOwnerId.guildId":
 		x.GuildId = value.Interface().(string)
-	case "structs.structs.MsgGuildUpdateOwnerId.owner":
+	case "structs.MsgGuildUpdateOwnerId.owner":
 		x.Owner = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateOwnerId"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateOwnerId"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateOwnerId does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateOwnerId does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6403,17 +6403,17 @@ func (x *fastReflection_MsgGuildUpdateOwnerId) Set(fd protoreflect.FieldDescript
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildUpdateOwnerId) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateOwnerId.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgGuildUpdateOwnerId is not mutable"))
-	case "structs.structs.MsgGuildUpdateOwnerId.guildId":
-		panic(fmt.Errorf("field guildId of message structs.structs.MsgGuildUpdateOwnerId is not mutable"))
-	case "structs.structs.MsgGuildUpdateOwnerId.owner":
-		panic(fmt.Errorf("field owner of message structs.structs.MsgGuildUpdateOwnerId is not mutable"))
+	case "structs.MsgGuildUpdateOwnerId.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgGuildUpdateOwnerId is not mutable"))
+	case "structs.MsgGuildUpdateOwnerId.guildId":
+		panic(fmt.Errorf("field guildId of message structs.MsgGuildUpdateOwnerId is not mutable"))
+	case "structs.MsgGuildUpdateOwnerId.owner":
+		panic(fmt.Errorf("field owner of message structs.MsgGuildUpdateOwnerId is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateOwnerId"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateOwnerId"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateOwnerId does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateOwnerId does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6422,17 +6422,17 @@ func (x *fastReflection_MsgGuildUpdateOwnerId) Mutable(fd protoreflect.FieldDesc
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgGuildUpdateOwnerId) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateOwnerId.creator":
+	case "structs.MsgGuildUpdateOwnerId.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildUpdateOwnerId.guildId":
+	case "structs.MsgGuildUpdateOwnerId.guildId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildUpdateOwnerId.owner":
+	case "structs.MsgGuildUpdateOwnerId.owner":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateOwnerId"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateOwnerId"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateOwnerId does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateOwnerId does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6442,7 +6442,7 @@ func (x *fastReflection_MsgGuildUpdateOwnerId) NewField(fd protoreflect.FieldDes
 func (x *fastReflection_MsgGuildUpdateOwnerId) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgGuildUpdateOwnerId", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgGuildUpdateOwnerId", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -6852,17 +6852,17 @@ func (x *fastReflection_MsgGuildUpdateEntrySubstationId) Range(f func(protorefle
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgGuildUpdateEntrySubstationId) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateEntrySubstationId.creator":
+	case "structs.MsgGuildUpdateEntrySubstationId.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgGuildUpdateEntrySubstationId.guildId":
+	case "structs.MsgGuildUpdateEntrySubstationId.guildId":
 		return x.GuildId != ""
-	case "structs.structs.MsgGuildUpdateEntrySubstationId.entrySubstationId":
+	case "structs.MsgGuildUpdateEntrySubstationId.entrySubstationId":
 		return x.EntrySubstationId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateEntrySubstationId"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateEntrySubstationId"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateEntrySubstationId does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateEntrySubstationId does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6874,17 +6874,17 @@ func (x *fastReflection_MsgGuildUpdateEntrySubstationId) Has(fd protoreflect.Fie
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildUpdateEntrySubstationId) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateEntrySubstationId.creator":
+	case "structs.MsgGuildUpdateEntrySubstationId.creator":
 		x.Creator = ""
-	case "structs.structs.MsgGuildUpdateEntrySubstationId.guildId":
+	case "structs.MsgGuildUpdateEntrySubstationId.guildId":
 		x.GuildId = ""
-	case "structs.structs.MsgGuildUpdateEntrySubstationId.entrySubstationId":
+	case "structs.MsgGuildUpdateEntrySubstationId.entrySubstationId":
 		x.EntrySubstationId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateEntrySubstationId"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateEntrySubstationId"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateEntrySubstationId does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateEntrySubstationId does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6896,20 +6896,20 @@ func (x *fastReflection_MsgGuildUpdateEntrySubstationId) Clear(fd protoreflect.F
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgGuildUpdateEntrySubstationId) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgGuildUpdateEntrySubstationId.creator":
+	case "structs.MsgGuildUpdateEntrySubstationId.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildUpdateEntrySubstationId.guildId":
+	case "structs.MsgGuildUpdateEntrySubstationId.guildId":
 		value := x.GuildId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildUpdateEntrySubstationId.entrySubstationId":
+	case "structs.MsgGuildUpdateEntrySubstationId.entrySubstationId":
 		value := x.EntrySubstationId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateEntrySubstationId"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateEntrySubstationId"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateEntrySubstationId does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateEntrySubstationId does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -6925,17 +6925,17 @@ func (x *fastReflection_MsgGuildUpdateEntrySubstationId) Get(descriptor protoref
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildUpdateEntrySubstationId) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateEntrySubstationId.creator":
+	case "structs.MsgGuildUpdateEntrySubstationId.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgGuildUpdateEntrySubstationId.guildId":
+	case "structs.MsgGuildUpdateEntrySubstationId.guildId":
 		x.GuildId = value.Interface().(string)
-	case "structs.structs.MsgGuildUpdateEntrySubstationId.entrySubstationId":
+	case "structs.MsgGuildUpdateEntrySubstationId.entrySubstationId":
 		x.EntrySubstationId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateEntrySubstationId"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateEntrySubstationId"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateEntrySubstationId does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateEntrySubstationId does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6951,17 +6951,17 @@ func (x *fastReflection_MsgGuildUpdateEntrySubstationId) Set(fd protoreflect.Fie
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildUpdateEntrySubstationId) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateEntrySubstationId.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgGuildUpdateEntrySubstationId is not mutable"))
-	case "structs.structs.MsgGuildUpdateEntrySubstationId.guildId":
-		panic(fmt.Errorf("field guildId of message structs.structs.MsgGuildUpdateEntrySubstationId is not mutable"))
-	case "structs.structs.MsgGuildUpdateEntrySubstationId.entrySubstationId":
-		panic(fmt.Errorf("field entrySubstationId of message structs.structs.MsgGuildUpdateEntrySubstationId is not mutable"))
+	case "structs.MsgGuildUpdateEntrySubstationId.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgGuildUpdateEntrySubstationId is not mutable"))
+	case "structs.MsgGuildUpdateEntrySubstationId.guildId":
+		panic(fmt.Errorf("field guildId of message structs.MsgGuildUpdateEntrySubstationId is not mutable"))
+	case "structs.MsgGuildUpdateEntrySubstationId.entrySubstationId":
+		panic(fmt.Errorf("field entrySubstationId of message structs.MsgGuildUpdateEntrySubstationId is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateEntrySubstationId"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateEntrySubstationId"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateEntrySubstationId does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateEntrySubstationId does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6970,17 +6970,17 @@ func (x *fastReflection_MsgGuildUpdateEntrySubstationId) Mutable(fd protoreflect
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgGuildUpdateEntrySubstationId) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateEntrySubstationId.creator":
+	case "structs.MsgGuildUpdateEntrySubstationId.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildUpdateEntrySubstationId.guildId":
+	case "structs.MsgGuildUpdateEntrySubstationId.guildId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildUpdateEntrySubstationId.entrySubstationId":
+	case "structs.MsgGuildUpdateEntrySubstationId.entrySubstationId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateEntrySubstationId"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateEntrySubstationId"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateEntrySubstationId does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateEntrySubstationId does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -6990,7 +6990,7 @@ func (x *fastReflection_MsgGuildUpdateEntrySubstationId) NewField(fd protoreflec
 func (x *fastReflection_MsgGuildUpdateEntrySubstationId) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgGuildUpdateEntrySubstationId", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgGuildUpdateEntrySubstationId", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -7400,17 +7400,17 @@ func (x *fastReflection_MsgGuildUpdateEndpoint) Range(f func(protoreflect.FieldD
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgGuildUpdateEndpoint) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateEndpoint.creator":
+	case "structs.MsgGuildUpdateEndpoint.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgGuildUpdateEndpoint.guildId":
+	case "structs.MsgGuildUpdateEndpoint.guildId":
 		return x.GuildId != ""
-	case "structs.structs.MsgGuildUpdateEndpoint.endpoint":
+	case "structs.MsgGuildUpdateEndpoint.endpoint":
 		return x.Endpoint != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateEndpoint"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateEndpoint"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateEndpoint does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateEndpoint does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7422,17 +7422,17 @@ func (x *fastReflection_MsgGuildUpdateEndpoint) Has(fd protoreflect.FieldDescrip
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildUpdateEndpoint) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateEndpoint.creator":
+	case "structs.MsgGuildUpdateEndpoint.creator":
 		x.Creator = ""
-	case "structs.structs.MsgGuildUpdateEndpoint.guildId":
+	case "structs.MsgGuildUpdateEndpoint.guildId":
 		x.GuildId = ""
-	case "structs.structs.MsgGuildUpdateEndpoint.endpoint":
+	case "structs.MsgGuildUpdateEndpoint.endpoint":
 		x.Endpoint = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateEndpoint"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateEndpoint"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateEndpoint does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateEndpoint does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7444,20 +7444,20 @@ func (x *fastReflection_MsgGuildUpdateEndpoint) Clear(fd protoreflect.FieldDescr
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgGuildUpdateEndpoint) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgGuildUpdateEndpoint.creator":
+	case "structs.MsgGuildUpdateEndpoint.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildUpdateEndpoint.guildId":
+	case "structs.MsgGuildUpdateEndpoint.guildId":
 		value := x.GuildId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildUpdateEndpoint.endpoint":
+	case "structs.MsgGuildUpdateEndpoint.endpoint":
 		value := x.Endpoint
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateEndpoint"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateEndpoint"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateEndpoint does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateEndpoint does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -7473,17 +7473,17 @@ func (x *fastReflection_MsgGuildUpdateEndpoint) Get(descriptor protoreflect.Fiel
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildUpdateEndpoint) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateEndpoint.creator":
+	case "structs.MsgGuildUpdateEndpoint.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgGuildUpdateEndpoint.guildId":
+	case "structs.MsgGuildUpdateEndpoint.guildId":
 		x.GuildId = value.Interface().(string)
-	case "structs.structs.MsgGuildUpdateEndpoint.endpoint":
+	case "structs.MsgGuildUpdateEndpoint.endpoint":
 		x.Endpoint = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateEndpoint"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateEndpoint"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateEndpoint does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateEndpoint does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7499,17 +7499,17 @@ func (x *fastReflection_MsgGuildUpdateEndpoint) Set(fd protoreflect.FieldDescrip
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildUpdateEndpoint) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateEndpoint.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgGuildUpdateEndpoint is not mutable"))
-	case "structs.structs.MsgGuildUpdateEndpoint.guildId":
-		panic(fmt.Errorf("field guildId of message structs.structs.MsgGuildUpdateEndpoint is not mutable"))
-	case "structs.structs.MsgGuildUpdateEndpoint.endpoint":
-		panic(fmt.Errorf("field endpoint of message structs.structs.MsgGuildUpdateEndpoint is not mutable"))
+	case "structs.MsgGuildUpdateEndpoint.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgGuildUpdateEndpoint is not mutable"))
+	case "structs.MsgGuildUpdateEndpoint.guildId":
+		panic(fmt.Errorf("field guildId of message structs.MsgGuildUpdateEndpoint is not mutable"))
+	case "structs.MsgGuildUpdateEndpoint.endpoint":
+		panic(fmt.Errorf("field endpoint of message structs.MsgGuildUpdateEndpoint is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateEndpoint"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateEndpoint"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateEndpoint does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateEndpoint does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7518,17 +7518,17 @@ func (x *fastReflection_MsgGuildUpdateEndpoint) Mutable(fd protoreflect.FieldDes
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgGuildUpdateEndpoint) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateEndpoint.creator":
+	case "structs.MsgGuildUpdateEndpoint.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildUpdateEndpoint.guildId":
+	case "structs.MsgGuildUpdateEndpoint.guildId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildUpdateEndpoint.endpoint":
+	case "structs.MsgGuildUpdateEndpoint.endpoint":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateEndpoint"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateEndpoint"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateEndpoint does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateEndpoint does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7538,7 +7538,7 @@ func (x *fastReflection_MsgGuildUpdateEndpoint) NewField(fd protoreflect.FieldDe
 func (x *fastReflection_MsgGuildUpdateEndpoint) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgGuildUpdateEndpoint", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgGuildUpdateEndpoint", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -7948,17 +7948,17 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimum) Range(f func(protoref
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimum) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimum.creator":
+	case "structs.MsgGuildUpdateJoinInfusionMinimum.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimum.guildId":
+	case "structs.MsgGuildUpdateJoinInfusionMinimum.guildId":
 		return x.GuildId != ""
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimum.joinInfusionMinimum":
+	case "structs.MsgGuildUpdateJoinInfusionMinimum.joinInfusionMinimum":
 		return x.JoinInfusionMinimum != uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateJoinInfusionMinimum"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateJoinInfusionMinimum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateJoinInfusionMinimum does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateJoinInfusionMinimum does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7970,17 +7970,17 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimum) Has(fd protoreflect.F
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimum) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimum.creator":
+	case "structs.MsgGuildUpdateJoinInfusionMinimum.creator":
 		x.Creator = ""
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimum.guildId":
+	case "structs.MsgGuildUpdateJoinInfusionMinimum.guildId":
 		x.GuildId = ""
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimum.joinInfusionMinimum":
+	case "structs.MsgGuildUpdateJoinInfusionMinimum.joinInfusionMinimum":
 		x.JoinInfusionMinimum = uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateJoinInfusionMinimum"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateJoinInfusionMinimum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateJoinInfusionMinimum does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateJoinInfusionMinimum does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -7992,20 +7992,20 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimum) Clear(fd protoreflect
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimum) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimum.creator":
+	case "structs.MsgGuildUpdateJoinInfusionMinimum.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimum.guildId":
+	case "structs.MsgGuildUpdateJoinInfusionMinimum.guildId":
 		value := x.GuildId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimum.joinInfusionMinimum":
+	case "structs.MsgGuildUpdateJoinInfusionMinimum.joinInfusionMinimum":
 		value := x.JoinInfusionMinimum
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateJoinInfusionMinimum"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateJoinInfusionMinimum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateJoinInfusionMinimum does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateJoinInfusionMinimum does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -8021,17 +8021,17 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimum) Get(descriptor protor
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimum) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimum.creator":
+	case "structs.MsgGuildUpdateJoinInfusionMinimum.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimum.guildId":
+	case "structs.MsgGuildUpdateJoinInfusionMinimum.guildId":
 		x.GuildId = value.Interface().(string)
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimum.joinInfusionMinimum":
+	case "structs.MsgGuildUpdateJoinInfusionMinimum.joinInfusionMinimum":
 		x.JoinInfusionMinimum = value.Uint()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateJoinInfusionMinimum"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateJoinInfusionMinimum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateJoinInfusionMinimum does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateJoinInfusionMinimum does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8047,17 +8047,17 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimum) Set(fd protoreflect.F
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimum) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimum.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgGuildUpdateJoinInfusionMinimum is not mutable"))
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimum.guildId":
-		panic(fmt.Errorf("field guildId of message structs.structs.MsgGuildUpdateJoinInfusionMinimum is not mutable"))
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimum.joinInfusionMinimum":
-		panic(fmt.Errorf("field joinInfusionMinimum of message structs.structs.MsgGuildUpdateJoinInfusionMinimum is not mutable"))
+	case "structs.MsgGuildUpdateJoinInfusionMinimum.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgGuildUpdateJoinInfusionMinimum is not mutable"))
+	case "structs.MsgGuildUpdateJoinInfusionMinimum.guildId":
+		panic(fmt.Errorf("field guildId of message structs.MsgGuildUpdateJoinInfusionMinimum is not mutable"))
+	case "structs.MsgGuildUpdateJoinInfusionMinimum.joinInfusionMinimum":
+		panic(fmt.Errorf("field joinInfusionMinimum of message structs.MsgGuildUpdateJoinInfusionMinimum is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateJoinInfusionMinimum"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateJoinInfusionMinimum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateJoinInfusionMinimum does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateJoinInfusionMinimum does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8066,17 +8066,17 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimum) Mutable(fd protorefle
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimum) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimum.creator":
+	case "structs.MsgGuildUpdateJoinInfusionMinimum.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimum.guildId":
+	case "structs.MsgGuildUpdateJoinInfusionMinimum.guildId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimum.joinInfusionMinimum":
+	case "structs.MsgGuildUpdateJoinInfusionMinimum.joinInfusionMinimum":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateJoinInfusionMinimum"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateJoinInfusionMinimum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateJoinInfusionMinimum does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateJoinInfusionMinimum does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8086,7 +8086,7 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimum) NewField(fd protorefl
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimum) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgGuildUpdateJoinInfusionMinimum", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgGuildUpdateJoinInfusionMinimum", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -8480,17 +8480,17 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Range(
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.creator":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildId":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildId":
 		return x.GuildId != ""
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildJoinBypassLevel":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildJoinBypassLevel":
 		return x.GuildJoinBypassLevel != 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8502,17 +8502,17 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Has(fd
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.creator":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.creator":
 		x.Creator = ""
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildId":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildId":
 		x.GuildId = ""
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildJoinBypassLevel":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildJoinBypassLevel":
 		x.GuildJoinBypassLevel = 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8524,20 +8524,20 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Clear(
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.creator":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildId":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildId":
 		value := x.GuildId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildJoinBypassLevel":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildJoinBypassLevel":
 		value := x.GuildJoinBypassLevel
 		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -8553,17 +8553,17 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Get(de
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.creator":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildId":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildId":
 		x.GuildId = value.Interface().(string)
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildJoinBypassLevel":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildJoinBypassLevel":
 		x.GuildJoinBypassLevel = (GuildJoinBypassLevel)(value.Enum())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8579,17 +8579,17 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Set(fd
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest is not mutable"))
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildId":
-		panic(fmt.Errorf("field guildId of message structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest is not mutable"))
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildJoinBypassLevel":
-		panic(fmt.Errorf("field guildJoinBypassLevel of message structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest is not mutable"))
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest is not mutable"))
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildId":
+		panic(fmt.Errorf("field guildId of message structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest is not mutable"))
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildJoinBypassLevel":
+		panic(fmt.Errorf("field guildJoinBypassLevel of message structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8598,17 +8598,17 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Mutabl
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByRequest) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.creator":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildId":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildJoinBypassLevel":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildJoinBypassLevel":
 		return protoreflect.ValueOfEnum(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -8618,7 +8618,7 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByRequest) NewFie
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByRequest) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -9012,17 +9012,17 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Range(f
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.creator":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildId":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildId":
 		return x.GuildId != ""
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildJoinBypassLevel":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildJoinBypassLevel":
 		return x.GuildJoinBypassLevel != 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9034,17 +9034,17 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Has(fd 
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.creator":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.creator":
 		x.Creator = ""
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildId":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildId":
 		x.GuildId = ""
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildJoinBypassLevel":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildJoinBypassLevel":
 		x.GuildJoinBypassLevel = 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9056,20 +9056,20 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Clear(f
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.creator":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildId":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildId":
 		value := x.GuildId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildJoinBypassLevel":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildJoinBypassLevel":
 		value := x.GuildJoinBypassLevel
 		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -9085,17 +9085,17 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Get(des
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.creator":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildId":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildId":
 		x.GuildId = value.Interface().(string)
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildJoinBypassLevel":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildJoinBypassLevel":
 		x.GuildJoinBypassLevel = (GuildJoinBypassLevel)(value.Enum())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9111,17 +9111,17 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Set(fd 
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite is not mutable"))
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildId":
-		panic(fmt.Errorf("field guildId of message structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite is not mutable"))
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildJoinBypassLevel":
-		panic(fmt.Errorf("field guildJoinBypassLevel of message structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite is not mutable"))
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite is not mutable"))
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildId":
+		panic(fmt.Errorf("field guildId of message structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite is not mutable"))
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildJoinBypassLevel":
+		panic(fmt.Errorf("field guildJoinBypassLevel of message structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9130,17 +9130,17 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Mutable
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByInvite) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.creator":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildId":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildJoinBypassLevel":
+	case "structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildJoinBypassLevel":
 		return protoreflect.ValueOfEnum(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9150,7 +9150,7 @@ func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByInvite) NewFiel
 func (x *fastReflection_MsgGuildUpdateJoinInfusionMinimumBypassByInvite) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -9522,9 +9522,9 @@ func (x *fastReflection_MsgGuildUpdateResponse) Has(fd protoreflect.FieldDescrip
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9538,9 +9538,9 @@ func (x *fastReflection_MsgGuildUpdateResponse) Clear(fd protoreflect.FieldDescr
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9554,9 +9554,9 @@ func (x *fastReflection_MsgGuildUpdateResponse) Get(descriptor protoreflect.Fiel
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -9574,9 +9574,9 @@ func (x *fastReflection_MsgGuildUpdateResponse) Set(fd protoreflect.FieldDescrip
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9594,9 +9594,9 @@ func (x *fastReflection_MsgGuildUpdateResponse) Mutable(fd protoreflect.FieldDes
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9607,9 +9607,9 @@ func (x *fastReflection_MsgGuildUpdateResponse) NewField(fd protoreflect.FieldDe
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildUpdateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildUpdateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildUpdateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildUpdateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9619,7 +9619,7 @@ func (x *fastReflection_MsgGuildUpdateResponse) NewField(fd protoreflect.FieldDe
 func (x *fastReflection_MsgGuildUpdateResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgGuildUpdateResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgGuildUpdateResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -9900,17 +9900,17 @@ func (x *fastReflection_MsgGuildJoinProxy) Range(f func(protoreflect.FieldDescri
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgGuildJoinProxy) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildJoinProxy.creator":
+	case "structs.MsgGuildJoinProxy.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgGuildJoinProxy.address":
+	case "structs.MsgGuildJoinProxy.address":
 		return x.Address != ""
-	case "structs.structs.MsgGuildJoinProxy.substationId":
+	case "structs.MsgGuildJoinProxy.substationId":
 		return x.SubstationId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoinProxy"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoinProxy"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoinProxy does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoinProxy does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9922,17 +9922,17 @@ func (x *fastReflection_MsgGuildJoinProxy) Has(fd protoreflect.FieldDescriptor) 
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildJoinProxy) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildJoinProxy.creator":
+	case "structs.MsgGuildJoinProxy.creator":
 		x.Creator = ""
-	case "structs.structs.MsgGuildJoinProxy.address":
+	case "structs.MsgGuildJoinProxy.address":
 		x.Address = ""
-	case "structs.structs.MsgGuildJoinProxy.substationId":
+	case "structs.MsgGuildJoinProxy.substationId":
 		x.SubstationId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoinProxy"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoinProxy"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoinProxy does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoinProxy does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9944,20 +9944,20 @@ func (x *fastReflection_MsgGuildJoinProxy) Clear(fd protoreflect.FieldDescriptor
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgGuildJoinProxy) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgGuildJoinProxy.creator":
+	case "structs.MsgGuildJoinProxy.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildJoinProxy.address":
+	case "structs.MsgGuildJoinProxy.address":
 		value := x.Address
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildJoinProxy.substationId":
+	case "structs.MsgGuildJoinProxy.substationId":
 		value := x.SubstationId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoinProxy"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoinProxy"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoinProxy does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoinProxy does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -9973,17 +9973,17 @@ func (x *fastReflection_MsgGuildJoinProxy) Get(descriptor protoreflect.FieldDesc
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildJoinProxy) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildJoinProxy.creator":
+	case "structs.MsgGuildJoinProxy.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgGuildJoinProxy.address":
+	case "structs.MsgGuildJoinProxy.address":
 		x.Address = value.Interface().(string)
-	case "structs.structs.MsgGuildJoinProxy.substationId":
+	case "structs.MsgGuildJoinProxy.substationId":
 		x.SubstationId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoinProxy"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoinProxy"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoinProxy does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoinProxy does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -9999,17 +9999,17 @@ func (x *fastReflection_MsgGuildJoinProxy) Set(fd protoreflect.FieldDescriptor, 
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildJoinProxy) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildJoinProxy.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgGuildJoinProxy is not mutable"))
-	case "structs.structs.MsgGuildJoinProxy.address":
-		panic(fmt.Errorf("field address of message structs.structs.MsgGuildJoinProxy is not mutable"))
-	case "structs.structs.MsgGuildJoinProxy.substationId":
-		panic(fmt.Errorf("field substationId of message structs.structs.MsgGuildJoinProxy is not mutable"))
+	case "structs.MsgGuildJoinProxy.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgGuildJoinProxy is not mutable"))
+	case "structs.MsgGuildJoinProxy.address":
+		panic(fmt.Errorf("field address of message structs.MsgGuildJoinProxy is not mutable"))
+	case "structs.MsgGuildJoinProxy.substationId":
+		panic(fmt.Errorf("field substationId of message structs.MsgGuildJoinProxy is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoinProxy"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoinProxy"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoinProxy does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoinProxy does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10018,17 +10018,17 @@ func (x *fastReflection_MsgGuildJoinProxy) Mutable(fd protoreflect.FieldDescript
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgGuildJoinProxy) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildJoinProxy.creator":
+	case "structs.MsgGuildJoinProxy.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildJoinProxy.address":
+	case "structs.MsgGuildJoinProxy.address":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildJoinProxy.substationId":
+	case "structs.MsgGuildJoinProxy.substationId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoinProxy"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoinProxy"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoinProxy does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoinProxy does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10038,7 +10038,7 @@ func (x *fastReflection_MsgGuildJoinProxy) NewField(fd protoreflect.FieldDescrip
 func (x *fastReflection_MsgGuildJoinProxy) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgGuildJoinProxy", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgGuildJoinProxy", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -10426,9 +10426,9 @@ func (x *fastReflection_MsgGuildJoinProxyResponse) Has(fd protoreflect.FieldDesc
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoinProxyResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoinProxyResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoinProxyResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoinProxyResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10442,9 +10442,9 @@ func (x *fastReflection_MsgGuildJoinProxyResponse) Clear(fd protoreflect.FieldDe
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoinProxyResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoinProxyResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoinProxyResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoinProxyResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10458,9 +10458,9 @@ func (x *fastReflection_MsgGuildJoinProxyResponse) Get(descriptor protoreflect.F
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoinProxyResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoinProxyResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoinProxyResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoinProxyResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -10478,9 +10478,9 @@ func (x *fastReflection_MsgGuildJoinProxyResponse) Set(fd protoreflect.FieldDesc
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoinProxyResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoinProxyResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoinProxyResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoinProxyResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10498,9 +10498,9 @@ func (x *fastReflection_MsgGuildJoinProxyResponse) Mutable(fd protoreflect.Field
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoinProxyResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoinProxyResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoinProxyResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoinProxyResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10511,9 +10511,9 @@ func (x *fastReflection_MsgGuildJoinProxyResponse) NewField(fd protoreflect.Fiel
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoinProxyResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoinProxyResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoinProxyResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoinProxyResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10523,7 +10523,7 @@ func (x *fastReflection_MsgGuildJoinProxyResponse) NewField(fd protoreflect.Fiel
 func (x *fastReflection_MsgGuildJoinProxyResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgGuildJoinProxyResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgGuildJoinProxyResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -10796,15 +10796,15 @@ func (x *fastReflection_MsgGuildJoin) Range(f func(protoreflect.FieldDescriptor,
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgGuildJoin) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildJoin.creator":
+	case "structs.MsgGuildJoin.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgGuildJoin.guildId":
+	case "structs.MsgGuildJoin.guildId":
 		return x.GuildId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoin"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoin"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoin does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoin does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10816,15 +10816,15 @@ func (x *fastReflection_MsgGuildJoin) Has(fd protoreflect.FieldDescriptor) bool 
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildJoin) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildJoin.creator":
+	case "structs.MsgGuildJoin.creator":
 		x.Creator = ""
-	case "structs.structs.MsgGuildJoin.guildId":
+	case "structs.MsgGuildJoin.guildId":
 		x.GuildId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoin"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoin"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoin does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoin does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10836,17 +10836,17 @@ func (x *fastReflection_MsgGuildJoin) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgGuildJoin) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgGuildJoin.creator":
+	case "structs.MsgGuildJoin.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgGuildJoin.guildId":
+	case "structs.MsgGuildJoin.guildId":
 		value := x.GuildId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoin"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoin"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoin does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoin does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -10862,15 +10862,15 @@ func (x *fastReflection_MsgGuildJoin) Get(descriptor protoreflect.FieldDescripto
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildJoin) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildJoin.creator":
+	case "structs.MsgGuildJoin.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgGuildJoin.guildId":
+	case "structs.MsgGuildJoin.guildId":
 		x.GuildId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoin"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoin"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoin does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoin does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10886,15 +10886,15 @@ func (x *fastReflection_MsgGuildJoin) Set(fd protoreflect.FieldDescriptor, value
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgGuildJoin) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildJoin.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgGuildJoin is not mutable"))
-	case "structs.structs.MsgGuildJoin.guildId":
-		panic(fmt.Errorf("field guildId of message structs.structs.MsgGuildJoin is not mutable"))
+	case "structs.MsgGuildJoin.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgGuildJoin is not mutable"))
+	case "structs.MsgGuildJoin.guildId":
+		panic(fmt.Errorf("field guildId of message structs.MsgGuildJoin is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoin"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoin"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoin does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoin does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10903,15 +10903,15 @@ func (x *fastReflection_MsgGuildJoin) Mutable(fd protoreflect.FieldDescriptor) p
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgGuildJoin) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgGuildJoin.creator":
+	case "structs.MsgGuildJoin.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgGuildJoin.guildId":
+	case "structs.MsgGuildJoin.guildId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoin"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoin"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoin does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoin does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -10921,7 +10921,7 @@ func (x *fastReflection_MsgGuildJoin) NewField(fd protoreflect.FieldDescriptor) 
 func (x *fastReflection_MsgGuildJoin) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgGuildJoin", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgGuildJoin", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -11266,9 +11266,9 @@ func (x *fastReflection_MsgGuildJoinResponse) Has(fd protoreflect.FieldDescripto
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoinResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoinResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoinResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoinResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11282,9 +11282,9 @@ func (x *fastReflection_MsgGuildJoinResponse) Clear(fd protoreflect.FieldDescrip
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoinResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoinResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoinResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoinResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11298,9 +11298,9 @@ func (x *fastReflection_MsgGuildJoinResponse) Get(descriptor protoreflect.FieldD
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoinResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoinResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoinResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoinResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -11318,9 +11318,9 @@ func (x *fastReflection_MsgGuildJoinResponse) Set(fd protoreflect.FieldDescripto
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoinResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoinResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoinResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoinResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11338,9 +11338,9 @@ func (x *fastReflection_MsgGuildJoinResponse) Mutable(fd protoreflect.FieldDescr
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoinResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoinResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoinResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoinResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11351,9 +11351,9 @@ func (x *fastReflection_MsgGuildJoinResponse) NewField(fd protoreflect.FieldDesc
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildJoinResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgGuildJoinResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgGuildJoinResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgGuildJoinResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11363,7 +11363,7 @@ func (x *fastReflection_MsgGuildJoinResponse) NewField(fd protoreflect.FieldDesc
 func (x *fastReflection_MsgGuildJoinResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgGuildJoinResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgGuildJoinResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -11652,19 +11652,19 @@ func (x *fastReflection_MsgPermissionGrantOnObject) Range(f func(protoreflect.Fi
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgPermissionGrantOnObject) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionGrantOnObject.creator":
+	case "structs.MsgPermissionGrantOnObject.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgPermissionGrantOnObject.objectId":
+	case "structs.MsgPermissionGrantOnObject.objectId":
 		return x.ObjectId != ""
-	case "structs.structs.MsgPermissionGrantOnObject.playerId":
+	case "structs.MsgPermissionGrantOnObject.playerId":
 		return x.PlayerId != ""
-	case "structs.structs.MsgPermissionGrantOnObject.permissions":
+	case "structs.MsgPermissionGrantOnObject.permissions":
 		return x.Permissions != uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionGrantOnObject"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionGrantOnObject"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionGrantOnObject does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionGrantOnObject does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11676,19 +11676,19 @@ func (x *fastReflection_MsgPermissionGrantOnObject) Has(fd protoreflect.FieldDes
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPermissionGrantOnObject) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionGrantOnObject.creator":
+	case "structs.MsgPermissionGrantOnObject.creator":
 		x.Creator = ""
-	case "structs.structs.MsgPermissionGrantOnObject.objectId":
+	case "structs.MsgPermissionGrantOnObject.objectId":
 		x.ObjectId = ""
-	case "structs.structs.MsgPermissionGrantOnObject.playerId":
+	case "structs.MsgPermissionGrantOnObject.playerId":
 		x.PlayerId = ""
-	case "structs.structs.MsgPermissionGrantOnObject.permissions":
+	case "structs.MsgPermissionGrantOnObject.permissions":
 		x.Permissions = uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionGrantOnObject"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionGrantOnObject"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionGrantOnObject does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionGrantOnObject does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11700,23 +11700,23 @@ func (x *fastReflection_MsgPermissionGrantOnObject) Clear(fd protoreflect.FieldD
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgPermissionGrantOnObject) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgPermissionGrantOnObject.creator":
+	case "structs.MsgPermissionGrantOnObject.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgPermissionGrantOnObject.objectId":
+	case "structs.MsgPermissionGrantOnObject.objectId":
 		value := x.ObjectId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgPermissionGrantOnObject.playerId":
+	case "structs.MsgPermissionGrantOnObject.playerId":
 		value := x.PlayerId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgPermissionGrantOnObject.permissions":
+	case "structs.MsgPermissionGrantOnObject.permissions":
 		value := x.Permissions
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionGrantOnObject"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionGrantOnObject"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionGrantOnObject does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionGrantOnObject does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -11732,19 +11732,19 @@ func (x *fastReflection_MsgPermissionGrantOnObject) Get(descriptor protoreflect.
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPermissionGrantOnObject) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionGrantOnObject.creator":
+	case "structs.MsgPermissionGrantOnObject.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgPermissionGrantOnObject.objectId":
+	case "structs.MsgPermissionGrantOnObject.objectId":
 		x.ObjectId = value.Interface().(string)
-	case "structs.structs.MsgPermissionGrantOnObject.playerId":
+	case "structs.MsgPermissionGrantOnObject.playerId":
 		x.PlayerId = value.Interface().(string)
-	case "structs.structs.MsgPermissionGrantOnObject.permissions":
+	case "structs.MsgPermissionGrantOnObject.permissions":
 		x.Permissions = value.Uint()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionGrantOnObject"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionGrantOnObject"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionGrantOnObject does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionGrantOnObject does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11760,19 +11760,19 @@ func (x *fastReflection_MsgPermissionGrantOnObject) Set(fd protoreflect.FieldDes
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPermissionGrantOnObject) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionGrantOnObject.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgPermissionGrantOnObject is not mutable"))
-	case "structs.structs.MsgPermissionGrantOnObject.objectId":
-		panic(fmt.Errorf("field objectId of message structs.structs.MsgPermissionGrantOnObject is not mutable"))
-	case "structs.structs.MsgPermissionGrantOnObject.playerId":
-		panic(fmt.Errorf("field playerId of message structs.structs.MsgPermissionGrantOnObject is not mutable"))
-	case "structs.structs.MsgPermissionGrantOnObject.permissions":
-		panic(fmt.Errorf("field permissions of message structs.structs.MsgPermissionGrantOnObject is not mutable"))
+	case "structs.MsgPermissionGrantOnObject.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgPermissionGrantOnObject is not mutable"))
+	case "structs.MsgPermissionGrantOnObject.objectId":
+		panic(fmt.Errorf("field objectId of message structs.MsgPermissionGrantOnObject is not mutable"))
+	case "structs.MsgPermissionGrantOnObject.playerId":
+		panic(fmt.Errorf("field playerId of message structs.MsgPermissionGrantOnObject is not mutable"))
+	case "structs.MsgPermissionGrantOnObject.permissions":
+		panic(fmt.Errorf("field permissions of message structs.MsgPermissionGrantOnObject is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionGrantOnObject"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionGrantOnObject"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionGrantOnObject does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionGrantOnObject does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11781,19 +11781,19 @@ func (x *fastReflection_MsgPermissionGrantOnObject) Mutable(fd protoreflect.Fiel
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgPermissionGrantOnObject) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionGrantOnObject.creator":
+	case "structs.MsgPermissionGrantOnObject.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgPermissionGrantOnObject.objectId":
+	case "structs.MsgPermissionGrantOnObject.objectId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgPermissionGrantOnObject.playerId":
+	case "structs.MsgPermissionGrantOnObject.playerId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgPermissionGrantOnObject.permissions":
+	case "structs.MsgPermissionGrantOnObject.permissions":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionGrantOnObject"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionGrantOnObject"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionGrantOnObject does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionGrantOnObject does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -11803,7 +11803,7 @@ func (x *fastReflection_MsgPermissionGrantOnObject) NewField(fd protoreflect.Fie
 func (x *fastReflection_MsgPermissionGrantOnObject) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgPermissionGrantOnObject", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgPermissionGrantOnObject", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -12240,17 +12240,17 @@ func (x *fastReflection_MsgPermissionGrantOnAddress) Range(f func(protoreflect.F
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgPermissionGrantOnAddress) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionGrantOnAddress.creator":
+	case "structs.MsgPermissionGrantOnAddress.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgPermissionGrantOnAddress.address":
+	case "structs.MsgPermissionGrantOnAddress.address":
 		return x.Address != ""
-	case "structs.structs.MsgPermissionGrantOnAddress.permissions":
+	case "structs.MsgPermissionGrantOnAddress.permissions":
 		return x.Permissions != uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionGrantOnAddress"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionGrantOnAddress"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionGrantOnAddress does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionGrantOnAddress does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12262,17 +12262,17 @@ func (x *fastReflection_MsgPermissionGrantOnAddress) Has(fd protoreflect.FieldDe
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPermissionGrantOnAddress) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionGrantOnAddress.creator":
+	case "structs.MsgPermissionGrantOnAddress.creator":
 		x.Creator = ""
-	case "structs.structs.MsgPermissionGrantOnAddress.address":
+	case "structs.MsgPermissionGrantOnAddress.address":
 		x.Address = ""
-	case "structs.structs.MsgPermissionGrantOnAddress.permissions":
+	case "structs.MsgPermissionGrantOnAddress.permissions":
 		x.Permissions = uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionGrantOnAddress"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionGrantOnAddress"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionGrantOnAddress does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionGrantOnAddress does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12284,20 +12284,20 @@ func (x *fastReflection_MsgPermissionGrantOnAddress) Clear(fd protoreflect.Field
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgPermissionGrantOnAddress) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgPermissionGrantOnAddress.creator":
+	case "structs.MsgPermissionGrantOnAddress.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgPermissionGrantOnAddress.address":
+	case "structs.MsgPermissionGrantOnAddress.address":
 		value := x.Address
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgPermissionGrantOnAddress.permissions":
+	case "structs.MsgPermissionGrantOnAddress.permissions":
 		value := x.Permissions
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionGrantOnAddress"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionGrantOnAddress"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionGrantOnAddress does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionGrantOnAddress does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -12313,17 +12313,17 @@ func (x *fastReflection_MsgPermissionGrantOnAddress) Get(descriptor protoreflect
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPermissionGrantOnAddress) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionGrantOnAddress.creator":
+	case "structs.MsgPermissionGrantOnAddress.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgPermissionGrantOnAddress.address":
+	case "structs.MsgPermissionGrantOnAddress.address":
 		x.Address = value.Interface().(string)
-	case "structs.structs.MsgPermissionGrantOnAddress.permissions":
+	case "structs.MsgPermissionGrantOnAddress.permissions":
 		x.Permissions = value.Uint()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionGrantOnAddress"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionGrantOnAddress"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionGrantOnAddress does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionGrantOnAddress does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12339,17 +12339,17 @@ func (x *fastReflection_MsgPermissionGrantOnAddress) Set(fd protoreflect.FieldDe
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPermissionGrantOnAddress) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionGrantOnAddress.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgPermissionGrantOnAddress is not mutable"))
-	case "structs.structs.MsgPermissionGrantOnAddress.address":
-		panic(fmt.Errorf("field address of message structs.structs.MsgPermissionGrantOnAddress is not mutable"))
-	case "structs.structs.MsgPermissionGrantOnAddress.permissions":
-		panic(fmt.Errorf("field permissions of message structs.structs.MsgPermissionGrantOnAddress is not mutable"))
+	case "structs.MsgPermissionGrantOnAddress.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgPermissionGrantOnAddress is not mutable"))
+	case "structs.MsgPermissionGrantOnAddress.address":
+		panic(fmt.Errorf("field address of message structs.MsgPermissionGrantOnAddress is not mutable"))
+	case "structs.MsgPermissionGrantOnAddress.permissions":
+		panic(fmt.Errorf("field permissions of message structs.MsgPermissionGrantOnAddress is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionGrantOnAddress"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionGrantOnAddress"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionGrantOnAddress does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionGrantOnAddress does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12358,17 +12358,17 @@ func (x *fastReflection_MsgPermissionGrantOnAddress) Mutable(fd protoreflect.Fie
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgPermissionGrantOnAddress) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionGrantOnAddress.creator":
+	case "structs.MsgPermissionGrantOnAddress.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgPermissionGrantOnAddress.address":
+	case "structs.MsgPermissionGrantOnAddress.address":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgPermissionGrantOnAddress.permissions":
+	case "structs.MsgPermissionGrantOnAddress.permissions":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionGrantOnAddress"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionGrantOnAddress"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionGrantOnAddress does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionGrantOnAddress does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12378,7 +12378,7 @@ func (x *fastReflection_MsgPermissionGrantOnAddress) NewField(fd protoreflect.Fi
 func (x *fastReflection_MsgPermissionGrantOnAddress) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgPermissionGrantOnAddress", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgPermissionGrantOnAddress", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -12780,19 +12780,19 @@ func (x *fastReflection_MsgPermissionRevokeOnObject) Range(f func(protoreflect.F
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgPermissionRevokeOnObject) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionRevokeOnObject.creator":
+	case "structs.MsgPermissionRevokeOnObject.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgPermissionRevokeOnObject.objectId":
+	case "structs.MsgPermissionRevokeOnObject.objectId":
 		return x.ObjectId != ""
-	case "structs.structs.MsgPermissionRevokeOnObject.playerId":
+	case "structs.MsgPermissionRevokeOnObject.playerId":
 		return x.PlayerId != ""
-	case "structs.structs.MsgPermissionRevokeOnObject.permissions":
+	case "structs.MsgPermissionRevokeOnObject.permissions":
 		return x.Permissions != uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionRevokeOnObject"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionRevokeOnObject"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionRevokeOnObject does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionRevokeOnObject does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12804,19 +12804,19 @@ func (x *fastReflection_MsgPermissionRevokeOnObject) Has(fd protoreflect.FieldDe
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPermissionRevokeOnObject) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionRevokeOnObject.creator":
+	case "structs.MsgPermissionRevokeOnObject.creator":
 		x.Creator = ""
-	case "structs.structs.MsgPermissionRevokeOnObject.objectId":
+	case "structs.MsgPermissionRevokeOnObject.objectId":
 		x.ObjectId = ""
-	case "structs.structs.MsgPermissionRevokeOnObject.playerId":
+	case "structs.MsgPermissionRevokeOnObject.playerId":
 		x.PlayerId = ""
-	case "structs.structs.MsgPermissionRevokeOnObject.permissions":
+	case "structs.MsgPermissionRevokeOnObject.permissions":
 		x.Permissions = uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionRevokeOnObject"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionRevokeOnObject"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionRevokeOnObject does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionRevokeOnObject does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12828,23 +12828,23 @@ func (x *fastReflection_MsgPermissionRevokeOnObject) Clear(fd protoreflect.Field
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgPermissionRevokeOnObject) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgPermissionRevokeOnObject.creator":
+	case "structs.MsgPermissionRevokeOnObject.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgPermissionRevokeOnObject.objectId":
+	case "structs.MsgPermissionRevokeOnObject.objectId":
 		value := x.ObjectId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgPermissionRevokeOnObject.playerId":
+	case "structs.MsgPermissionRevokeOnObject.playerId":
 		value := x.PlayerId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgPermissionRevokeOnObject.permissions":
+	case "structs.MsgPermissionRevokeOnObject.permissions":
 		value := x.Permissions
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionRevokeOnObject"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionRevokeOnObject"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionRevokeOnObject does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionRevokeOnObject does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -12860,19 +12860,19 @@ func (x *fastReflection_MsgPermissionRevokeOnObject) Get(descriptor protoreflect
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPermissionRevokeOnObject) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionRevokeOnObject.creator":
+	case "structs.MsgPermissionRevokeOnObject.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgPermissionRevokeOnObject.objectId":
+	case "structs.MsgPermissionRevokeOnObject.objectId":
 		x.ObjectId = value.Interface().(string)
-	case "structs.structs.MsgPermissionRevokeOnObject.playerId":
+	case "structs.MsgPermissionRevokeOnObject.playerId":
 		x.PlayerId = value.Interface().(string)
-	case "structs.structs.MsgPermissionRevokeOnObject.permissions":
+	case "structs.MsgPermissionRevokeOnObject.permissions":
 		x.Permissions = value.Uint()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionRevokeOnObject"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionRevokeOnObject"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionRevokeOnObject does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionRevokeOnObject does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12888,19 +12888,19 @@ func (x *fastReflection_MsgPermissionRevokeOnObject) Set(fd protoreflect.FieldDe
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPermissionRevokeOnObject) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionRevokeOnObject.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgPermissionRevokeOnObject is not mutable"))
-	case "structs.structs.MsgPermissionRevokeOnObject.objectId":
-		panic(fmt.Errorf("field objectId of message structs.structs.MsgPermissionRevokeOnObject is not mutable"))
-	case "structs.structs.MsgPermissionRevokeOnObject.playerId":
-		panic(fmt.Errorf("field playerId of message structs.structs.MsgPermissionRevokeOnObject is not mutable"))
-	case "structs.structs.MsgPermissionRevokeOnObject.permissions":
-		panic(fmt.Errorf("field permissions of message structs.structs.MsgPermissionRevokeOnObject is not mutable"))
+	case "structs.MsgPermissionRevokeOnObject.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgPermissionRevokeOnObject is not mutable"))
+	case "structs.MsgPermissionRevokeOnObject.objectId":
+		panic(fmt.Errorf("field objectId of message structs.MsgPermissionRevokeOnObject is not mutable"))
+	case "structs.MsgPermissionRevokeOnObject.playerId":
+		panic(fmt.Errorf("field playerId of message structs.MsgPermissionRevokeOnObject is not mutable"))
+	case "structs.MsgPermissionRevokeOnObject.permissions":
+		panic(fmt.Errorf("field permissions of message structs.MsgPermissionRevokeOnObject is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionRevokeOnObject"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionRevokeOnObject"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionRevokeOnObject does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionRevokeOnObject does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12909,19 +12909,19 @@ func (x *fastReflection_MsgPermissionRevokeOnObject) Mutable(fd protoreflect.Fie
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgPermissionRevokeOnObject) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionRevokeOnObject.creator":
+	case "structs.MsgPermissionRevokeOnObject.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgPermissionRevokeOnObject.objectId":
+	case "structs.MsgPermissionRevokeOnObject.objectId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgPermissionRevokeOnObject.playerId":
+	case "structs.MsgPermissionRevokeOnObject.playerId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgPermissionRevokeOnObject.permissions":
+	case "structs.MsgPermissionRevokeOnObject.permissions":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionRevokeOnObject"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionRevokeOnObject"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionRevokeOnObject does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionRevokeOnObject does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -12931,7 +12931,7 @@ func (x *fastReflection_MsgPermissionRevokeOnObject) NewField(fd protoreflect.Fi
 func (x *fastReflection_MsgPermissionRevokeOnObject) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgPermissionRevokeOnObject", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgPermissionRevokeOnObject", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -13368,17 +13368,17 @@ func (x *fastReflection_MsgPermissionRevokeOnAddress) Range(f func(protoreflect.
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgPermissionRevokeOnAddress) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionRevokeOnAddress.creator":
+	case "structs.MsgPermissionRevokeOnAddress.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgPermissionRevokeOnAddress.address":
+	case "structs.MsgPermissionRevokeOnAddress.address":
 		return x.Address != ""
-	case "structs.structs.MsgPermissionRevokeOnAddress.permissions":
+	case "structs.MsgPermissionRevokeOnAddress.permissions":
 		return x.Permissions != uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionRevokeOnAddress"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionRevokeOnAddress"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionRevokeOnAddress does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionRevokeOnAddress does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13390,17 +13390,17 @@ func (x *fastReflection_MsgPermissionRevokeOnAddress) Has(fd protoreflect.FieldD
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPermissionRevokeOnAddress) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionRevokeOnAddress.creator":
+	case "structs.MsgPermissionRevokeOnAddress.creator":
 		x.Creator = ""
-	case "structs.structs.MsgPermissionRevokeOnAddress.address":
+	case "structs.MsgPermissionRevokeOnAddress.address":
 		x.Address = ""
-	case "structs.structs.MsgPermissionRevokeOnAddress.permissions":
+	case "structs.MsgPermissionRevokeOnAddress.permissions":
 		x.Permissions = uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionRevokeOnAddress"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionRevokeOnAddress"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionRevokeOnAddress does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionRevokeOnAddress does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13412,20 +13412,20 @@ func (x *fastReflection_MsgPermissionRevokeOnAddress) Clear(fd protoreflect.Fiel
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgPermissionRevokeOnAddress) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgPermissionRevokeOnAddress.creator":
+	case "structs.MsgPermissionRevokeOnAddress.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgPermissionRevokeOnAddress.address":
+	case "structs.MsgPermissionRevokeOnAddress.address":
 		value := x.Address
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgPermissionRevokeOnAddress.permissions":
+	case "structs.MsgPermissionRevokeOnAddress.permissions":
 		value := x.Permissions
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionRevokeOnAddress"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionRevokeOnAddress"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionRevokeOnAddress does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionRevokeOnAddress does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -13441,17 +13441,17 @@ func (x *fastReflection_MsgPermissionRevokeOnAddress) Get(descriptor protoreflec
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPermissionRevokeOnAddress) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionRevokeOnAddress.creator":
+	case "structs.MsgPermissionRevokeOnAddress.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgPermissionRevokeOnAddress.address":
+	case "structs.MsgPermissionRevokeOnAddress.address":
 		x.Address = value.Interface().(string)
-	case "structs.structs.MsgPermissionRevokeOnAddress.permissions":
+	case "structs.MsgPermissionRevokeOnAddress.permissions":
 		x.Permissions = value.Uint()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionRevokeOnAddress"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionRevokeOnAddress"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionRevokeOnAddress does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionRevokeOnAddress does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13467,17 +13467,17 @@ func (x *fastReflection_MsgPermissionRevokeOnAddress) Set(fd protoreflect.FieldD
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPermissionRevokeOnAddress) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionRevokeOnAddress.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgPermissionRevokeOnAddress is not mutable"))
-	case "structs.structs.MsgPermissionRevokeOnAddress.address":
-		panic(fmt.Errorf("field address of message structs.structs.MsgPermissionRevokeOnAddress is not mutable"))
-	case "structs.structs.MsgPermissionRevokeOnAddress.permissions":
-		panic(fmt.Errorf("field permissions of message structs.structs.MsgPermissionRevokeOnAddress is not mutable"))
+	case "structs.MsgPermissionRevokeOnAddress.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgPermissionRevokeOnAddress is not mutable"))
+	case "structs.MsgPermissionRevokeOnAddress.address":
+		panic(fmt.Errorf("field address of message structs.MsgPermissionRevokeOnAddress is not mutable"))
+	case "structs.MsgPermissionRevokeOnAddress.permissions":
+		panic(fmt.Errorf("field permissions of message structs.MsgPermissionRevokeOnAddress is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionRevokeOnAddress"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionRevokeOnAddress"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionRevokeOnAddress does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionRevokeOnAddress does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13486,17 +13486,17 @@ func (x *fastReflection_MsgPermissionRevokeOnAddress) Mutable(fd protoreflect.Fi
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgPermissionRevokeOnAddress) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgPermissionRevokeOnAddress.creator":
+	case "structs.MsgPermissionRevokeOnAddress.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgPermissionRevokeOnAddress.address":
+	case "structs.MsgPermissionRevokeOnAddress.address":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgPermissionRevokeOnAddress.permissions":
+	case "structs.MsgPermissionRevokeOnAddress.permissions":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionRevokeOnAddress"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionRevokeOnAddress"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionRevokeOnAddress does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionRevokeOnAddress does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13506,7 +13506,7 @@ func (x *fastReflection_MsgPermissionRevokeOnAddress) NewField(fd protoreflect.F
 func (x *fastReflection_MsgPermissionRevokeOnAddress) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgPermissionRevokeOnAddress", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgPermissionRevokeOnAddress", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -13878,9 +13878,9 @@ func (x *fastReflection_MsgPermissionResponse) Has(fd protoreflect.FieldDescript
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13894,9 +13894,9 @@ func (x *fastReflection_MsgPermissionResponse) Clear(fd protoreflect.FieldDescri
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13910,9 +13910,9 @@ func (x *fastReflection_MsgPermissionResponse) Get(descriptor protoreflect.Field
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -13930,9 +13930,9 @@ func (x *fastReflection_MsgPermissionResponse) Set(fd protoreflect.FieldDescript
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13950,9 +13950,9 @@ func (x *fastReflection_MsgPermissionResponse) Mutable(fd protoreflect.FieldDesc
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13963,9 +13963,9 @@ func (x *fastReflection_MsgPermissionResponse) NewField(fd protoreflect.FieldDes
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPermissionResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPermissionResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPermissionResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPermissionResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -13975,7 +13975,7 @@ func (x *fastReflection_MsgPermissionResponse) NewField(fd protoreflect.FieldDes
 func (x *fastReflection_MsgPermissionResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgPermissionResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgPermissionResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -14240,13 +14240,13 @@ func (x *fastReflection_MsgPlanetExplore) Range(f func(protoreflect.FieldDescrip
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgPlanetExplore) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgPlanetExplore.creator":
+	case "structs.MsgPlanetExplore.creator":
 		return x.Creator != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetExplore"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlanetExplore"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlanetExplore does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlanetExplore does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14258,13 +14258,13 @@ func (x *fastReflection_MsgPlanetExplore) Has(fd protoreflect.FieldDescriptor) b
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPlanetExplore) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgPlanetExplore.creator":
+	case "structs.MsgPlanetExplore.creator":
 		x.Creator = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetExplore"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlanetExplore"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlanetExplore does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlanetExplore does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14276,14 +14276,14 @@ func (x *fastReflection_MsgPlanetExplore) Clear(fd protoreflect.FieldDescriptor)
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgPlanetExplore) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgPlanetExplore.creator":
+	case "structs.MsgPlanetExplore.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetExplore"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlanetExplore"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlanetExplore does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlanetExplore does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -14299,13 +14299,13 @@ func (x *fastReflection_MsgPlanetExplore) Get(descriptor protoreflect.FieldDescr
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPlanetExplore) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgPlanetExplore.creator":
+	case "structs.MsgPlanetExplore.creator":
 		x.Creator = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetExplore"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlanetExplore"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlanetExplore does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlanetExplore does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14321,13 +14321,13 @@ func (x *fastReflection_MsgPlanetExplore) Set(fd protoreflect.FieldDescriptor, v
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPlanetExplore) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgPlanetExplore.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgPlanetExplore is not mutable"))
+	case "structs.MsgPlanetExplore.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgPlanetExplore is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetExplore"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlanetExplore"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlanetExplore does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlanetExplore does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14336,13 +14336,13 @@ func (x *fastReflection_MsgPlanetExplore) Mutable(fd protoreflect.FieldDescripto
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgPlanetExplore) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgPlanetExplore.creator":
+	case "structs.MsgPlanetExplore.creator":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetExplore"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlanetExplore"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlanetExplore does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlanetExplore does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14352,7 +14352,7 @@ func (x *fastReflection_MsgPlanetExplore) NewField(fd protoreflect.FieldDescript
 func (x *fastReflection_MsgPlanetExplore) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgPlanetExplore", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgPlanetExplore", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -14660,13 +14660,13 @@ func (x *fastReflection_MsgPlanetExploreResponse) Range(f func(protoreflect.Fiel
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgPlanetExploreResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgPlanetExploreResponse.planet":
+	case "structs.MsgPlanetExploreResponse.planet":
 		return x.Planet != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetExploreResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlanetExploreResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlanetExploreResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlanetExploreResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14678,13 +14678,13 @@ func (x *fastReflection_MsgPlanetExploreResponse) Has(fd protoreflect.FieldDescr
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPlanetExploreResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgPlanetExploreResponse.planet":
+	case "structs.MsgPlanetExploreResponse.planet":
 		x.Planet = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetExploreResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlanetExploreResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlanetExploreResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlanetExploreResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14696,14 +14696,14 @@ func (x *fastReflection_MsgPlanetExploreResponse) Clear(fd protoreflect.FieldDes
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgPlanetExploreResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgPlanetExploreResponse.planet":
+	case "structs.MsgPlanetExploreResponse.planet":
 		value := x.Planet
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetExploreResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlanetExploreResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlanetExploreResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlanetExploreResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -14719,13 +14719,13 @@ func (x *fastReflection_MsgPlanetExploreResponse) Get(descriptor protoreflect.Fi
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPlanetExploreResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgPlanetExploreResponse.planet":
+	case "structs.MsgPlanetExploreResponse.planet":
 		x.Planet = value.Message().Interface().(*Planet)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetExploreResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlanetExploreResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlanetExploreResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlanetExploreResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14741,16 +14741,16 @@ func (x *fastReflection_MsgPlanetExploreResponse) Set(fd protoreflect.FieldDescr
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPlanetExploreResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgPlanetExploreResponse.planet":
+	case "structs.MsgPlanetExploreResponse.planet":
 		if x.Planet == nil {
 			x.Planet = new(Planet)
 		}
 		return protoreflect.ValueOfMessage(x.Planet.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetExploreResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlanetExploreResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlanetExploreResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlanetExploreResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14759,14 +14759,14 @@ func (x *fastReflection_MsgPlanetExploreResponse) Mutable(fd protoreflect.FieldD
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgPlanetExploreResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgPlanetExploreResponse.planet":
+	case "structs.MsgPlanetExploreResponse.planet":
 		m := new(Planet)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetExploreResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlanetExploreResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlanetExploreResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlanetExploreResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -14776,7 +14776,7 @@ func (x *fastReflection_MsgPlanetExploreResponse) NewField(fd protoreflect.Field
 func (x *fastReflection_MsgPlanetExploreResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgPlanetExploreResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgPlanetExploreResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -15103,15 +15103,15 @@ func (x *fastReflection_MsgPlayerUpdatePrimaryAddress) Range(f func(protoreflect
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgPlayerUpdatePrimaryAddress) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgPlayerUpdatePrimaryAddress.creator":
+	case "structs.MsgPlayerUpdatePrimaryAddress.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgPlayerUpdatePrimaryAddress.primaryAddress":
+	case "structs.MsgPlayerUpdatePrimaryAddress.primaryAddress":
 		return x.PrimaryAddress != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlayerUpdatePrimaryAddress"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlayerUpdatePrimaryAddress"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlayerUpdatePrimaryAddress does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlayerUpdatePrimaryAddress does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15123,15 +15123,15 @@ func (x *fastReflection_MsgPlayerUpdatePrimaryAddress) Has(fd protoreflect.Field
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPlayerUpdatePrimaryAddress) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgPlayerUpdatePrimaryAddress.creator":
+	case "structs.MsgPlayerUpdatePrimaryAddress.creator":
 		x.Creator = ""
-	case "structs.structs.MsgPlayerUpdatePrimaryAddress.primaryAddress":
+	case "structs.MsgPlayerUpdatePrimaryAddress.primaryAddress":
 		x.PrimaryAddress = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlayerUpdatePrimaryAddress"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlayerUpdatePrimaryAddress"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlayerUpdatePrimaryAddress does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlayerUpdatePrimaryAddress does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15143,17 +15143,17 @@ func (x *fastReflection_MsgPlayerUpdatePrimaryAddress) Clear(fd protoreflect.Fie
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgPlayerUpdatePrimaryAddress) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgPlayerUpdatePrimaryAddress.creator":
+	case "structs.MsgPlayerUpdatePrimaryAddress.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgPlayerUpdatePrimaryAddress.primaryAddress":
+	case "structs.MsgPlayerUpdatePrimaryAddress.primaryAddress":
 		value := x.PrimaryAddress
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlayerUpdatePrimaryAddress"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlayerUpdatePrimaryAddress"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlayerUpdatePrimaryAddress does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlayerUpdatePrimaryAddress does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -15169,15 +15169,15 @@ func (x *fastReflection_MsgPlayerUpdatePrimaryAddress) Get(descriptor protorefle
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPlayerUpdatePrimaryAddress) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgPlayerUpdatePrimaryAddress.creator":
+	case "structs.MsgPlayerUpdatePrimaryAddress.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgPlayerUpdatePrimaryAddress.primaryAddress":
+	case "structs.MsgPlayerUpdatePrimaryAddress.primaryAddress":
 		x.PrimaryAddress = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlayerUpdatePrimaryAddress"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlayerUpdatePrimaryAddress"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlayerUpdatePrimaryAddress does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlayerUpdatePrimaryAddress does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15193,15 +15193,15 @@ func (x *fastReflection_MsgPlayerUpdatePrimaryAddress) Set(fd protoreflect.Field
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgPlayerUpdatePrimaryAddress) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgPlayerUpdatePrimaryAddress.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgPlayerUpdatePrimaryAddress is not mutable"))
-	case "structs.structs.MsgPlayerUpdatePrimaryAddress.primaryAddress":
-		panic(fmt.Errorf("field primaryAddress of message structs.structs.MsgPlayerUpdatePrimaryAddress is not mutable"))
+	case "structs.MsgPlayerUpdatePrimaryAddress.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgPlayerUpdatePrimaryAddress is not mutable"))
+	case "structs.MsgPlayerUpdatePrimaryAddress.primaryAddress":
+		panic(fmt.Errorf("field primaryAddress of message structs.MsgPlayerUpdatePrimaryAddress is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlayerUpdatePrimaryAddress"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlayerUpdatePrimaryAddress"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlayerUpdatePrimaryAddress does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlayerUpdatePrimaryAddress does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15210,15 +15210,15 @@ func (x *fastReflection_MsgPlayerUpdatePrimaryAddress) Mutable(fd protoreflect.F
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgPlayerUpdatePrimaryAddress) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgPlayerUpdatePrimaryAddress.creator":
+	case "structs.MsgPlayerUpdatePrimaryAddress.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgPlayerUpdatePrimaryAddress.primaryAddress":
+	case "structs.MsgPlayerUpdatePrimaryAddress.primaryAddress":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlayerUpdatePrimaryAddress"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlayerUpdatePrimaryAddress"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlayerUpdatePrimaryAddress does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlayerUpdatePrimaryAddress does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15228,7 +15228,7 @@ func (x *fastReflection_MsgPlayerUpdatePrimaryAddress) NewField(fd protoreflect.
 func (x *fastReflection_MsgPlayerUpdatePrimaryAddress) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgPlayerUpdatePrimaryAddress", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgPlayerUpdatePrimaryAddress", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -15573,9 +15573,9 @@ func (x *fastReflection_MsgPlayerUpdatePrimaryAddressResponse) Has(fd protorefle
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlayerUpdatePrimaryAddressResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlayerUpdatePrimaryAddressResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlayerUpdatePrimaryAddressResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlayerUpdatePrimaryAddressResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15589,9 +15589,9 @@ func (x *fastReflection_MsgPlayerUpdatePrimaryAddressResponse) Clear(fd protoref
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlayerUpdatePrimaryAddressResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlayerUpdatePrimaryAddressResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlayerUpdatePrimaryAddressResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlayerUpdatePrimaryAddressResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15605,9 +15605,9 @@ func (x *fastReflection_MsgPlayerUpdatePrimaryAddressResponse) Get(descriptor pr
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlayerUpdatePrimaryAddressResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlayerUpdatePrimaryAddressResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlayerUpdatePrimaryAddressResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlayerUpdatePrimaryAddressResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -15625,9 +15625,9 @@ func (x *fastReflection_MsgPlayerUpdatePrimaryAddressResponse) Set(fd protorefle
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlayerUpdatePrimaryAddressResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlayerUpdatePrimaryAddressResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlayerUpdatePrimaryAddressResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlayerUpdatePrimaryAddressResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15645,9 +15645,9 @@ func (x *fastReflection_MsgPlayerUpdatePrimaryAddressResponse) Mutable(fd protor
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlayerUpdatePrimaryAddressResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlayerUpdatePrimaryAddressResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlayerUpdatePrimaryAddressResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlayerUpdatePrimaryAddressResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15658,9 +15658,9 @@ func (x *fastReflection_MsgPlayerUpdatePrimaryAddressResponse) NewField(fd proto
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlayerUpdatePrimaryAddressResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgPlayerUpdatePrimaryAddressResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgPlayerUpdatePrimaryAddressResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgPlayerUpdatePrimaryAddressResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15670,7 +15670,7 @@ func (x *fastReflection_MsgPlayerUpdatePrimaryAddressResponse) NewField(fd proto
 func (x *fastReflection_MsgPlayerUpdatePrimaryAddressResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgPlayerUpdatePrimaryAddressResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgPlayerUpdatePrimaryAddressResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -15943,15 +15943,15 @@ func (x *fastReflection_MsgStructActivate) Range(f func(protoreflect.FieldDescri
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructActivate) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructActivate.creator":
+	case "structs.MsgStructActivate.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgStructActivate.structId":
+	case "structs.MsgStructActivate.structId":
 		return x.StructId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructActivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructActivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructActivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructActivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15963,15 +15963,15 @@ func (x *fastReflection_MsgStructActivate) Has(fd protoreflect.FieldDescriptor) 
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructActivate) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructActivate.creator":
+	case "structs.MsgStructActivate.creator":
 		x.Creator = ""
-	case "structs.structs.MsgStructActivate.structId":
+	case "structs.MsgStructActivate.structId":
 		x.StructId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructActivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructActivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructActivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructActivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -15983,17 +15983,17 @@ func (x *fastReflection_MsgStructActivate) Clear(fd protoreflect.FieldDescriptor
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructActivate) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructActivate.creator":
+	case "structs.MsgStructActivate.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructActivate.structId":
+	case "structs.MsgStructActivate.structId":
 		value := x.StructId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructActivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructActivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructActivate does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructActivate does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -16009,15 +16009,15 @@ func (x *fastReflection_MsgStructActivate) Get(descriptor protoreflect.FieldDesc
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructActivate) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructActivate.creator":
+	case "structs.MsgStructActivate.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgStructActivate.structId":
+	case "structs.MsgStructActivate.structId":
 		x.StructId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructActivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructActivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructActivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructActivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16033,15 +16033,15 @@ func (x *fastReflection_MsgStructActivate) Set(fd protoreflect.FieldDescriptor, 
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructActivate) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructActivate.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgStructActivate is not mutable"))
-	case "structs.structs.MsgStructActivate.structId":
-		panic(fmt.Errorf("field structId of message structs.structs.MsgStructActivate is not mutable"))
+	case "structs.MsgStructActivate.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgStructActivate is not mutable"))
+	case "structs.MsgStructActivate.structId":
+		panic(fmt.Errorf("field structId of message structs.MsgStructActivate is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructActivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructActivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructActivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructActivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16050,15 +16050,15 @@ func (x *fastReflection_MsgStructActivate) Mutable(fd protoreflect.FieldDescript
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructActivate) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructActivate.creator":
+	case "structs.MsgStructActivate.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructActivate.structId":
+	case "structs.MsgStructActivate.structId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructActivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructActivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructActivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructActivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16068,7 +16068,7 @@ func (x *fastReflection_MsgStructActivate) NewField(fd protoreflect.FieldDescrip
 func (x *fastReflection_MsgStructActivate) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructActivate", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructActivate", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -16419,13 +16419,13 @@ func (x *fastReflection_MsgStructActivateResponse) Range(f func(protoreflect.Fie
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructActivateResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructActivateResponse.struct":
+	case "structs.MsgStructActivateResponse.struct":
 		return x.Struct != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructActivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructActivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructActivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructActivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16437,13 +16437,13 @@ func (x *fastReflection_MsgStructActivateResponse) Has(fd protoreflect.FieldDesc
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructActivateResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructActivateResponse.struct":
+	case "structs.MsgStructActivateResponse.struct":
 		x.Struct = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructActivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructActivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructActivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructActivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16455,14 +16455,14 @@ func (x *fastReflection_MsgStructActivateResponse) Clear(fd protoreflect.FieldDe
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructActivateResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructActivateResponse.struct":
+	case "structs.MsgStructActivateResponse.struct":
 		value := x.Struct
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructActivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructActivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructActivateResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructActivateResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -16478,13 +16478,13 @@ func (x *fastReflection_MsgStructActivateResponse) Get(descriptor protoreflect.F
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructActivateResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructActivateResponse.struct":
+	case "structs.MsgStructActivateResponse.struct":
 		x.Struct = value.Message().Interface().(*Struct)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructActivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructActivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructActivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructActivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16500,16 +16500,16 @@ func (x *fastReflection_MsgStructActivateResponse) Set(fd protoreflect.FieldDesc
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructActivateResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructActivateResponse.struct":
+	case "structs.MsgStructActivateResponse.struct":
 		if x.Struct == nil {
 			x.Struct = new(Struct)
 		}
 		return protoreflect.ValueOfMessage(x.Struct.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructActivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructActivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructActivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructActivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16518,14 +16518,14 @@ func (x *fastReflection_MsgStructActivateResponse) Mutable(fd protoreflect.Field
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructActivateResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructActivateResponse.struct":
+	case "structs.MsgStructActivateResponse.struct":
 		m := new(Struct)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructActivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructActivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructActivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructActivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16535,7 +16535,7 @@ func (x *fastReflection_MsgStructActivateResponse) NewField(fd protoreflect.Fiel
 func (x *fastReflection_MsgStructActivateResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructActivateResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructActivateResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -16878,19 +16878,19 @@ func (x *fastReflection_MsgStructBuildInitiate) Range(f func(protoreflect.FieldD
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructBuildInitiate) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildInitiate.creator":
+	case "structs.MsgStructBuildInitiate.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgStructBuildInitiate.structType":
+	case "structs.MsgStructBuildInitiate.structType":
 		return x.StructType != ""
-	case "structs.structs.MsgStructBuildInitiate.planetId":
+	case "structs.MsgStructBuildInitiate.planetId":
 		return x.PlanetId != ""
-	case "structs.structs.MsgStructBuildInitiate.slot":
+	case "structs.MsgStructBuildInitiate.slot":
 		return x.Slot != uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildInitiate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildInitiate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildInitiate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildInitiate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16902,19 +16902,19 @@ func (x *fastReflection_MsgStructBuildInitiate) Has(fd protoreflect.FieldDescrip
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructBuildInitiate) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildInitiate.creator":
+	case "structs.MsgStructBuildInitiate.creator":
 		x.Creator = ""
-	case "structs.structs.MsgStructBuildInitiate.structType":
+	case "structs.MsgStructBuildInitiate.structType":
 		x.StructType = ""
-	case "structs.structs.MsgStructBuildInitiate.planetId":
+	case "structs.MsgStructBuildInitiate.planetId":
 		x.PlanetId = ""
-	case "structs.structs.MsgStructBuildInitiate.slot":
+	case "structs.MsgStructBuildInitiate.slot":
 		x.Slot = uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildInitiate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildInitiate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildInitiate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildInitiate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16926,23 +16926,23 @@ func (x *fastReflection_MsgStructBuildInitiate) Clear(fd protoreflect.FieldDescr
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructBuildInitiate) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructBuildInitiate.creator":
+	case "structs.MsgStructBuildInitiate.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructBuildInitiate.structType":
+	case "structs.MsgStructBuildInitiate.structType":
 		value := x.StructType
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructBuildInitiate.planetId":
+	case "structs.MsgStructBuildInitiate.planetId":
 		value := x.PlanetId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructBuildInitiate.slot":
+	case "structs.MsgStructBuildInitiate.slot":
 		value := x.Slot
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildInitiate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildInitiate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildInitiate does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildInitiate does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -16958,19 +16958,19 @@ func (x *fastReflection_MsgStructBuildInitiate) Get(descriptor protoreflect.Fiel
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructBuildInitiate) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildInitiate.creator":
+	case "structs.MsgStructBuildInitiate.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgStructBuildInitiate.structType":
+	case "structs.MsgStructBuildInitiate.structType":
 		x.StructType = value.Interface().(string)
-	case "structs.structs.MsgStructBuildInitiate.planetId":
+	case "structs.MsgStructBuildInitiate.planetId":
 		x.PlanetId = value.Interface().(string)
-	case "structs.structs.MsgStructBuildInitiate.slot":
+	case "structs.MsgStructBuildInitiate.slot":
 		x.Slot = value.Uint()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildInitiate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildInitiate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildInitiate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildInitiate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -16986,19 +16986,19 @@ func (x *fastReflection_MsgStructBuildInitiate) Set(fd protoreflect.FieldDescrip
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructBuildInitiate) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildInitiate.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgStructBuildInitiate is not mutable"))
-	case "structs.structs.MsgStructBuildInitiate.structType":
-		panic(fmt.Errorf("field structType of message structs.structs.MsgStructBuildInitiate is not mutable"))
-	case "structs.structs.MsgStructBuildInitiate.planetId":
-		panic(fmt.Errorf("field planetId of message structs.structs.MsgStructBuildInitiate is not mutable"))
-	case "structs.structs.MsgStructBuildInitiate.slot":
-		panic(fmt.Errorf("field slot of message structs.structs.MsgStructBuildInitiate is not mutable"))
+	case "structs.MsgStructBuildInitiate.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgStructBuildInitiate is not mutable"))
+	case "structs.MsgStructBuildInitiate.structType":
+		panic(fmt.Errorf("field structType of message structs.MsgStructBuildInitiate is not mutable"))
+	case "structs.MsgStructBuildInitiate.planetId":
+		panic(fmt.Errorf("field planetId of message structs.MsgStructBuildInitiate is not mutable"))
+	case "structs.MsgStructBuildInitiate.slot":
+		panic(fmt.Errorf("field slot of message structs.MsgStructBuildInitiate is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildInitiate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildInitiate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildInitiate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildInitiate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17007,19 +17007,19 @@ func (x *fastReflection_MsgStructBuildInitiate) Mutable(fd protoreflect.FieldDes
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructBuildInitiate) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildInitiate.creator":
+	case "structs.MsgStructBuildInitiate.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructBuildInitiate.structType":
+	case "structs.MsgStructBuildInitiate.structType":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructBuildInitiate.planetId":
+	case "structs.MsgStructBuildInitiate.planetId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructBuildInitiate.slot":
+	case "structs.MsgStructBuildInitiate.slot":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildInitiate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildInitiate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildInitiate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildInitiate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17029,7 +17029,7 @@ func (x *fastReflection_MsgStructBuildInitiate) NewField(fd protoreflect.FieldDe
 func (x *fastReflection_MsgStructBuildInitiate) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructBuildInitiate", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructBuildInitiate", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -17450,13 +17450,13 @@ func (x *fastReflection_MsgStructBuildInitiateResponse) Range(f func(protoreflec
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructBuildInitiateResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildInitiateResponse.struct":
+	case "structs.MsgStructBuildInitiateResponse.struct":
 		return x.Struct != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildInitiateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildInitiateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildInitiateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildInitiateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17468,13 +17468,13 @@ func (x *fastReflection_MsgStructBuildInitiateResponse) Has(fd protoreflect.Fiel
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructBuildInitiateResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildInitiateResponse.struct":
+	case "structs.MsgStructBuildInitiateResponse.struct":
 		x.Struct = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildInitiateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildInitiateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildInitiateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildInitiateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17486,14 +17486,14 @@ func (x *fastReflection_MsgStructBuildInitiateResponse) Clear(fd protoreflect.Fi
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructBuildInitiateResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructBuildInitiateResponse.struct":
+	case "structs.MsgStructBuildInitiateResponse.struct":
 		value := x.Struct
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildInitiateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildInitiateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildInitiateResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildInitiateResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -17509,13 +17509,13 @@ func (x *fastReflection_MsgStructBuildInitiateResponse) Get(descriptor protorefl
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructBuildInitiateResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildInitiateResponse.struct":
+	case "structs.MsgStructBuildInitiateResponse.struct":
 		x.Struct = value.Message().Interface().(*Struct)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildInitiateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildInitiateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildInitiateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildInitiateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17531,16 +17531,16 @@ func (x *fastReflection_MsgStructBuildInitiateResponse) Set(fd protoreflect.Fiel
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructBuildInitiateResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildInitiateResponse.struct":
+	case "structs.MsgStructBuildInitiateResponse.struct":
 		if x.Struct == nil {
 			x.Struct = new(Struct)
 		}
 		return protoreflect.ValueOfMessage(x.Struct.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildInitiateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildInitiateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildInitiateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildInitiateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17549,14 +17549,14 @@ func (x *fastReflection_MsgStructBuildInitiateResponse) Mutable(fd protoreflect.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructBuildInitiateResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildInitiateResponse.struct":
+	case "structs.MsgStructBuildInitiateResponse.struct":
 		m := new(Struct)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildInitiateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildInitiateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildInitiateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildInitiateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17566,7 +17566,7 @@ func (x *fastReflection_MsgStructBuildInitiateResponse) NewField(fd protoreflect
 func (x *fastReflection_MsgStructBuildInitiateResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructBuildInitiateResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructBuildInitiateResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -17909,19 +17909,19 @@ func (x *fastReflection_MsgStructBuildComplete) Range(f func(protoreflect.FieldD
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructBuildComplete) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildComplete.creator":
+	case "structs.MsgStructBuildComplete.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgStructBuildComplete.structId":
+	case "structs.MsgStructBuildComplete.structId":
 		return x.StructId != ""
-	case "structs.structs.MsgStructBuildComplete.proof":
+	case "structs.MsgStructBuildComplete.proof":
 		return x.Proof != ""
-	case "structs.structs.MsgStructBuildComplete.nonce":
+	case "structs.MsgStructBuildComplete.nonce":
 		return x.Nonce != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildComplete"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildComplete"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildComplete does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildComplete does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17933,19 +17933,19 @@ func (x *fastReflection_MsgStructBuildComplete) Has(fd protoreflect.FieldDescrip
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructBuildComplete) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildComplete.creator":
+	case "structs.MsgStructBuildComplete.creator":
 		x.Creator = ""
-	case "structs.structs.MsgStructBuildComplete.structId":
+	case "structs.MsgStructBuildComplete.structId":
 		x.StructId = ""
-	case "structs.structs.MsgStructBuildComplete.proof":
+	case "structs.MsgStructBuildComplete.proof":
 		x.Proof = ""
-	case "structs.structs.MsgStructBuildComplete.nonce":
+	case "structs.MsgStructBuildComplete.nonce":
 		x.Nonce = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildComplete"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildComplete"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildComplete does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildComplete does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -17957,23 +17957,23 @@ func (x *fastReflection_MsgStructBuildComplete) Clear(fd protoreflect.FieldDescr
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructBuildComplete) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructBuildComplete.creator":
+	case "structs.MsgStructBuildComplete.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructBuildComplete.structId":
+	case "structs.MsgStructBuildComplete.structId":
 		value := x.StructId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructBuildComplete.proof":
+	case "structs.MsgStructBuildComplete.proof":
 		value := x.Proof
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructBuildComplete.nonce":
+	case "structs.MsgStructBuildComplete.nonce":
 		value := x.Nonce
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildComplete"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildComplete"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildComplete does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildComplete does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -17989,19 +17989,19 @@ func (x *fastReflection_MsgStructBuildComplete) Get(descriptor protoreflect.Fiel
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructBuildComplete) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildComplete.creator":
+	case "structs.MsgStructBuildComplete.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgStructBuildComplete.structId":
+	case "structs.MsgStructBuildComplete.structId":
 		x.StructId = value.Interface().(string)
-	case "structs.structs.MsgStructBuildComplete.proof":
+	case "structs.MsgStructBuildComplete.proof":
 		x.Proof = value.Interface().(string)
-	case "structs.structs.MsgStructBuildComplete.nonce":
+	case "structs.MsgStructBuildComplete.nonce":
 		x.Nonce = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildComplete"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildComplete"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildComplete does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildComplete does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18017,19 +18017,19 @@ func (x *fastReflection_MsgStructBuildComplete) Set(fd protoreflect.FieldDescrip
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructBuildComplete) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildComplete.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgStructBuildComplete is not mutable"))
-	case "structs.structs.MsgStructBuildComplete.structId":
-		panic(fmt.Errorf("field structId of message structs.structs.MsgStructBuildComplete is not mutable"))
-	case "structs.structs.MsgStructBuildComplete.proof":
-		panic(fmt.Errorf("field proof of message structs.structs.MsgStructBuildComplete is not mutable"))
-	case "structs.structs.MsgStructBuildComplete.nonce":
-		panic(fmt.Errorf("field nonce of message structs.structs.MsgStructBuildComplete is not mutable"))
+	case "structs.MsgStructBuildComplete.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgStructBuildComplete is not mutable"))
+	case "structs.MsgStructBuildComplete.structId":
+		panic(fmt.Errorf("field structId of message structs.MsgStructBuildComplete is not mutable"))
+	case "structs.MsgStructBuildComplete.proof":
+		panic(fmt.Errorf("field proof of message structs.MsgStructBuildComplete is not mutable"))
+	case "structs.MsgStructBuildComplete.nonce":
+		panic(fmt.Errorf("field nonce of message structs.MsgStructBuildComplete is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildComplete"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildComplete"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildComplete does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildComplete does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18038,19 +18038,19 @@ func (x *fastReflection_MsgStructBuildComplete) Mutable(fd protoreflect.FieldDes
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructBuildComplete) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildComplete.creator":
+	case "structs.MsgStructBuildComplete.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructBuildComplete.structId":
+	case "structs.MsgStructBuildComplete.structId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructBuildComplete.proof":
+	case "structs.MsgStructBuildComplete.proof":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructBuildComplete.nonce":
+	case "structs.MsgStructBuildComplete.nonce":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildComplete"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildComplete"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildComplete does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildComplete does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18060,7 +18060,7 @@ func (x *fastReflection_MsgStructBuildComplete) NewField(fd protoreflect.FieldDe
 func (x *fastReflection_MsgStructBuildComplete) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructBuildComplete", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructBuildComplete", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -18497,13 +18497,13 @@ func (x *fastReflection_MsgStructBuildCompleteResponse) Range(f func(protoreflec
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructBuildCompleteResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildCompleteResponse.struct":
+	case "structs.MsgStructBuildCompleteResponse.struct":
 		return x.Struct != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildCompleteResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildCompleteResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildCompleteResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildCompleteResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18515,13 +18515,13 @@ func (x *fastReflection_MsgStructBuildCompleteResponse) Has(fd protoreflect.Fiel
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructBuildCompleteResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildCompleteResponse.struct":
+	case "structs.MsgStructBuildCompleteResponse.struct":
 		x.Struct = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildCompleteResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildCompleteResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildCompleteResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildCompleteResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18533,14 +18533,14 @@ func (x *fastReflection_MsgStructBuildCompleteResponse) Clear(fd protoreflect.Fi
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructBuildCompleteResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructBuildCompleteResponse.struct":
+	case "structs.MsgStructBuildCompleteResponse.struct":
 		value := x.Struct
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildCompleteResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildCompleteResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildCompleteResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildCompleteResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -18556,13 +18556,13 @@ func (x *fastReflection_MsgStructBuildCompleteResponse) Get(descriptor protorefl
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructBuildCompleteResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildCompleteResponse.struct":
+	case "structs.MsgStructBuildCompleteResponse.struct":
 		x.Struct = value.Message().Interface().(*Struct)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildCompleteResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildCompleteResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildCompleteResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildCompleteResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18578,16 +18578,16 @@ func (x *fastReflection_MsgStructBuildCompleteResponse) Set(fd protoreflect.Fiel
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructBuildCompleteResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildCompleteResponse.struct":
+	case "structs.MsgStructBuildCompleteResponse.struct":
 		if x.Struct == nil {
 			x.Struct = new(Struct)
 		}
 		return protoreflect.ValueOfMessage(x.Struct.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildCompleteResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildCompleteResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildCompleteResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildCompleteResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18596,14 +18596,14 @@ func (x *fastReflection_MsgStructBuildCompleteResponse) Mutable(fd protoreflect.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructBuildCompleteResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructBuildCompleteResponse.struct":
+	case "structs.MsgStructBuildCompleteResponse.struct":
 		m := new(Struct)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructBuildCompleteResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructBuildCompleteResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructBuildCompleteResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructBuildCompleteResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18613,7 +18613,7 @@ func (x *fastReflection_MsgStructBuildCompleteResponse) NewField(fd protoreflect
 func (x *fastReflection_MsgStructBuildCompleteResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructBuildCompleteResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructBuildCompleteResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -18948,17 +18948,17 @@ func (x *fastReflection_MsgStructInfuse) Range(f func(protoreflect.FieldDescript
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructInfuse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructInfuse.creator":
+	case "structs.MsgStructInfuse.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgStructInfuse.structId":
+	case "structs.MsgStructInfuse.structId":
 		return x.StructId != ""
-	case "structs.structs.MsgStructInfuse.infuseAmount":
+	case "structs.MsgStructInfuse.infuseAmount":
 		return x.InfuseAmount != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructInfuse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructInfuse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructInfuse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructInfuse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18970,17 +18970,17 @@ func (x *fastReflection_MsgStructInfuse) Has(fd protoreflect.FieldDescriptor) bo
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructInfuse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructInfuse.creator":
+	case "structs.MsgStructInfuse.creator":
 		x.Creator = ""
-	case "structs.structs.MsgStructInfuse.structId":
+	case "structs.MsgStructInfuse.structId":
 		x.StructId = ""
-	case "structs.structs.MsgStructInfuse.infuseAmount":
+	case "structs.MsgStructInfuse.infuseAmount":
 		x.InfuseAmount = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructInfuse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructInfuse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructInfuse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructInfuse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -18992,20 +18992,20 @@ func (x *fastReflection_MsgStructInfuse) Clear(fd protoreflect.FieldDescriptor) 
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructInfuse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructInfuse.creator":
+	case "structs.MsgStructInfuse.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructInfuse.structId":
+	case "structs.MsgStructInfuse.structId":
 		value := x.StructId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructInfuse.infuseAmount":
+	case "structs.MsgStructInfuse.infuseAmount":
 		value := x.InfuseAmount
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructInfuse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructInfuse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructInfuse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructInfuse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -19021,17 +19021,17 @@ func (x *fastReflection_MsgStructInfuse) Get(descriptor protoreflect.FieldDescri
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructInfuse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructInfuse.creator":
+	case "structs.MsgStructInfuse.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgStructInfuse.structId":
+	case "structs.MsgStructInfuse.structId":
 		x.StructId = value.Interface().(string)
-	case "structs.structs.MsgStructInfuse.infuseAmount":
+	case "structs.MsgStructInfuse.infuseAmount":
 		x.InfuseAmount = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructInfuse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructInfuse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructInfuse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructInfuse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19047,17 +19047,17 @@ func (x *fastReflection_MsgStructInfuse) Set(fd protoreflect.FieldDescriptor, va
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructInfuse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructInfuse.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgStructInfuse is not mutable"))
-	case "structs.structs.MsgStructInfuse.structId":
-		panic(fmt.Errorf("field structId of message structs.structs.MsgStructInfuse is not mutable"))
-	case "structs.structs.MsgStructInfuse.infuseAmount":
-		panic(fmt.Errorf("field infuseAmount of message structs.structs.MsgStructInfuse is not mutable"))
+	case "structs.MsgStructInfuse.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgStructInfuse is not mutable"))
+	case "structs.MsgStructInfuse.structId":
+		panic(fmt.Errorf("field structId of message structs.MsgStructInfuse is not mutable"))
+	case "structs.MsgStructInfuse.infuseAmount":
+		panic(fmt.Errorf("field infuseAmount of message structs.MsgStructInfuse is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructInfuse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructInfuse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructInfuse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructInfuse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19066,17 +19066,17 @@ func (x *fastReflection_MsgStructInfuse) Mutable(fd protoreflect.FieldDescriptor
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructInfuse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructInfuse.creator":
+	case "structs.MsgStructInfuse.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructInfuse.structId":
+	case "structs.MsgStructInfuse.structId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructInfuse.infuseAmount":
+	case "structs.MsgStructInfuse.infuseAmount":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructInfuse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructInfuse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructInfuse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructInfuse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19086,7 +19086,7 @@ func (x *fastReflection_MsgStructInfuse) NewField(fd protoreflect.FieldDescripto
 func (x *fastReflection_MsgStructInfuse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructInfuse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructInfuse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -19474,9 +19474,9 @@ func (x *fastReflection_MsgStructInfuseResponse) Has(fd protoreflect.FieldDescri
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructInfuseResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructInfuseResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructInfuseResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructInfuseResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19490,9 +19490,9 @@ func (x *fastReflection_MsgStructInfuseResponse) Clear(fd protoreflect.FieldDesc
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructInfuseResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructInfuseResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructInfuseResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructInfuseResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19506,9 +19506,9 @@ func (x *fastReflection_MsgStructInfuseResponse) Get(descriptor protoreflect.Fie
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructInfuseResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructInfuseResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructInfuseResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructInfuseResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -19526,9 +19526,9 @@ func (x *fastReflection_MsgStructInfuseResponse) Set(fd protoreflect.FieldDescri
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructInfuseResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructInfuseResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructInfuseResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructInfuseResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19546,9 +19546,9 @@ func (x *fastReflection_MsgStructInfuseResponse) Mutable(fd protoreflect.FieldDe
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructInfuseResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructInfuseResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructInfuseResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructInfuseResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19559,9 +19559,9 @@ func (x *fastReflection_MsgStructInfuseResponse) NewField(fd protoreflect.FieldD
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructInfuseResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructInfuseResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructInfuseResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructInfuseResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19571,7 +19571,7 @@ func (x *fastReflection_MsgStructInfuseResponse) NewField(fd protoreflect.FieldD
 func (x *fastReflection_MsgStructInfuseResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructInfuseResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructInfuseResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -19844,15 +19844,15 @@ func (x *fastReflection_MsgStructMineActivate) Range(f func(protoreflect.FieldDe
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructMineActivate) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineActivate.creator":
+	case "structs.MsgStructMineActivate.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgStructMineActivate.structId":
+	case "structs.MsgStructMineActivate.structId":
 		return x.StructId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineActivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineActivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineActivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineActivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19864,15 +19864,15 @@ func (x *fastReflection_MsgStructMineActivate) Has(fd protoreflect.FieldDescript
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructMineActivate) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineActivate.creator":
+	case "structs.MsgStructMineActivate.creator":
 		x.Creator = ""
-	case "structs.structs.MsgStructMineActivate.structId":
+	case "structs.MsgStructMineActivate.structId":
 		x.StructId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineActivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineActivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineActivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineActivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19884,17 +19884,17 @@ func (x *fastReflection_MsgStructMineActivate) Clear(fd protoreflect.FieldDescri
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructMineActivate) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructMineActivate.creator":
+	case "structs.MsgStructMineActivate.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructMineActivate.structId":
+	case "structs.MsgStructMineActivate.structId":
 		value := x.StructId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineActivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineActivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineActivate does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineActivate does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -19910,15 +19910,15 @@ func (x *fastReflection_MsgStructMineActivate) Get(descriptor protoreflect.Field
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructMineActivate) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineActivate.creator":
+	case "structs.MsgStructMineActivate.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgStructMineActivate.structId":
+	case "structs.MsgStructMineActivate.structId":
 		x.StructId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineActivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineActivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineActivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineActivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19934,15 +19934,15 @@ func (x *fastReflection_MsgStructMineActivate) Set(fd protoreflect.FieldDescript
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructMineActivate) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineActivate.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgStructMineActivate is not mutable"))
-	case "structs.structs.MsgStructMineActivate.structId":
-		panic(fmt.Errorf("field structId of message structs.structs.MsgStructMineActivate is not mutable"))
+	case "structs.MsgStructMineActivate.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgStructMineActivate is not mutable"))
+	case "structs.MsgStructMineActivate.structId":
+		panic(fmt.Errorf("field structId of message structs.MsgStructMineActivate is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineActivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineActivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineActivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineActivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19951,15 +19951,15 @@ func (x *fastReflection_MsgStructMineActivate) Mutable(fd protoreflect.FieldDesc
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructMineActivate) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineActivate.creator":
+	case "structs.MsgStructMineActivate.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructMineActivate.structId":
+	case "structs.MsgStructMineActivate.structId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineActivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineActivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineActivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineActivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -19969,7 +19969,7 @@ func (x *fastReflection_MsgStructMineActivate) NewField(fd protoreflect.FieldDes
 func (x *fastReflection_MsgStructMineActivate) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructMineActivate", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructMineActivate", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -20320,13 +20320,13 @@ func (x *fastReflection_MsgStructMineActivateResponse) Range(f func(protoreflect
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructMineActivateResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineActivateResponse.struct":
+	case "structs.MsgStructMineActivateResponse.struct":
 		return x.Struct != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineActivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineActivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineActivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineActivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20338,13 +20338,13 @@ func (x *fastReflection_MsgStructMineActivateResponse) Has(fd protoreflect.Field
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructMineActivateResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineActivateResponse.struct":
+	case "structs.MsgStructMineActivateResponse.struct":
 		x.Struct = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineActivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineActivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineActivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineActivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20356,14 +20356,14 @@ func (x *fastReflection_MsgStructMineActivateResponse) Clear(fd protoreflect.Fie
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructMineActivateResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructMineActivateResponse.struct":
+	case "structs.MsgStructMineActivateResponse.struct":
 		value := x.Struct
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineActivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineActivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineActivateResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineActivateResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -20379,13 +20379,13 @@ func (x *fastReflection_MsgStructMineActivateResponse) Get(descriptor protorefle
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructMineActivateResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineActivateResponse.struct":
+	case "structs.MsgStructMineActivateResponse.struct":
 		x.Struct = value.Message().Interface().(*Struct)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineActivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineActivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineActivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineActivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20401,16 +20401,16 @@ func (x *fastReflection_MsgStructMineActivateResponse) Set(fd protoreflect.Field
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructMineActivateResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineActivateResponse.struct":
+	case "structs.MsgStructMineActivateResponse.struct":
 		if x.Struct == nil {
 			x.Struct = new(Struct)
 		}
 		return protoreflect.ValueOfMessage(x.Struct.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineActivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineActivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineActivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineActivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20419,14 +20419,14 @@ func (x *fastReflection_MsgStructMineActivateResponse) Mutable(fd protoreflect.F
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructMineActivateResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineActivateResponse.struct":
+	case "structs.MsgStructMineActivateResponse.struct":
 		m := new(Struct)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineActivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineActivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineActivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineActivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20436,7 +20436,7 @@ func (x *fastReflection_MsgStructMineActivateResponse) NewField(fd protoreflect.
 func (x *fastReflection_MsgStructMineActivateResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructMineActivateResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructMineActivateResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -20763,15 +20763,15 @@ func (x *fastReflection_MsgStructMineDeactivate) Range(f func(protoreflect.Field
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructMineDeactivate) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineDeactivate.creator":
+	case "structs.MsgStructMineDeactivate.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgStructMineDeactivate.structId":
+	case "structs.MsgStructMineDeactivate.structId":
 		return x.StructId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineDeactivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineDeactivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineDeactivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineDeactivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20783,15 +20783,15 @@ func (x *fastReflection_MsgStructMineDeactivate) Has(fd protoreflect.FieldDescri
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructMineDeactivate) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineDeactivate.creator":
+	case "structs.MsgStructMineDeactivate.creator":
 		x.Creator = ""
-	case "structs.structs.MsgStructMineDeactivate.structId":
+	case "structs.MsgStructMineDeactivate.structId":
 		x.StructId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineDeactivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineDeactivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineDeactivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineDeactivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20803,17 +20803,17 @@ func (x *fastReflection_MsgStructMineDeactivate) Clear(fd protoreflect.FieldDesc
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructMineDeactivate) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructMineDeactivate.creator":
+	case "structs.MsgStructMineDeactivate.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructMineDeactivate.structId":
+	case "structs.MsgStructMineDeactivate.structId":
 		value := x.StructId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineDeactivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineDeactivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineDeactivate does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineDeactivate does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -20829,15 +20829,15 @@ func (x *fastReflection_MsgStructMineDeactivate) Get(descriptor protoreflect.Fie
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructMineDeactivate) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineDeactivate.creator":
+	case "structs.MsgStructMineDeactivate.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgStructMineDeactivate.structId":
+	case "structs.MsgStructMineDeactivate.structId":
 		x.StructId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineDeactivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineDeactivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineDeactivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineDeactivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20853,15 +20853,15 @@ func (x *fastReflection_MsgStructMineDeactivate) Set(fd protoreflect.FieldDescri
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructMineDeactivate) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineDeactivate.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgStructMineDeactivate is not mutable"))
-	case "structs.structs.MsgStructMineDeactivate.structId":
-		panic(fmt.Errorf("field structId of message structs.structs.MsgStructMineDeactivate is not mutable"))
+	case "structs.MsgStructMineDeactivate.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgStructMineDeactivate is not mutable"))
+	case "structs.MsgStructMineDeactivate.structId":
+		panic(fmt.Errorf("field structId of message structs.MsgStructMineDeactivate is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineDeactivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineDeactivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineDeactivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineDeactivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20870,15 +20870,15 @@ func (x *fastReflection_MsgStructMineDeactivate) Mutable(fd protoreflect.FieldDe
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructMineDeactivate) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineDeactivate.creator":
+	case "structs.MsgStructMineDeactivate.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructMineDeactivate.structId":
+	case "structs.MsgStructMineDeactivate.structId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineDeactivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineDeactivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineDeactivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineDeactivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -20888,7 +20888,7 @@ func (x *fastReflection_MsgStructMineDeactivate) NewField(fd protoreflect.FieldD
 func (x *fastReflection_MsgStructMineDeactivate) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructMineDeactivate", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructMineDeactivate", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -21239,13 +21239,13 @@ func (x *fastReflection_MsgStructMineDeactivateResponse) Range(f func(protorefle
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructMineDeactivateResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineDeactivateResponse.struct":
+	case "structs.MsgStructMineDeactivateResponse.struct":
 		return x.Struct != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineDeactivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineDeactivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineDeactivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineDeactivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21257,13 +21257,13 @@ func (x *fastReflection_MsgStructMineDeactivateResponse) Has(fd protoreflect.Fie
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructMineDeactivateResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineDeactivateResponse.struct":
+	case "structs.MsgStructMineDeactivateResponse.struct":
 		x.Struct = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineDeactivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineDeactivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineDeactivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineDeactivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21275,14 +21275,14 @@ func (x *fastReflection_MsgStructMineDeactivateResponse) Clear(fd protoreflect.F
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructMineDeactivateResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructMineDeactivateResponse.struct":
+	case "structs.MsgStructMineDeactivateResponse.struct":
 		value := x.Struct
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineDeactivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineDeactivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineDeactivateResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineDeactivateResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -21298,13 +21298,13 @@ func (x *fastReflection_MsgStructMineDeactivateResponse) Get(descriptor protoref
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructMineDeactivateResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineDeactivateResponse.struct":
+	case "structs.MsgStructMineDeactivateResponse.struct":
 		x.Struct = value.Message().Interface().(*Struct)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineDeactivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineDeactivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineDeactivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineDeactivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21320,16 +21320,16 @@ func (x *fastReflection_MsgStructMineDeactivateResponse) Set(fd protoreflect.Fie
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructMineDeactivateResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineDeactivateResponse.struct":
+	case "structs.MsgStructMineDeactivateResponse.struct":
 		if x.Struct == nil {
 			x.Struct = new(Struct)
 		}
 		return protoreflect.ValueOfMessage(x.Struct.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineDeactivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineDeactivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineDeactivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineDeactivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21338,14 +21338,14 @@ func (x *fastReflection_MsgStructMineDeactivateResponse) Mutable(fd protoreflect
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructMineDeactivateResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineDeactivateResponse.struct":
+	case "structs.MsgStructMineDeactivateResponse.struct":
 		m := new(Struct)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineDeactivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineDeactivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineDeactivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineDeactivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21355,7 +21355,7 @@ func (x *fastReflection_MsgStructMineDeactivateResponse) NewField(fd protoreflec
 func (x *fastReflection_MsgStructMineDeactivateResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructMineDeactivateResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructMineDeactivateResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -21698,19 +21698,19 @@ func (x *fastReflection_MsgStructMine) Range(f func(protoreflect.FieldDescriptor
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructMine) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMine.creator":
+	case "structs.MsgStructMine.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgStructMine.structId":
+	case "structs.MsgStructMine.structId":
 		return x.StructId != ""
-	case "structs.structs.MsgStructMine.proof":
+	case "structs.MsgStructMine.proof":
 		return x.Proof != ""
-	case "structs.structs.MsgStructMine.nonce":
+	case "structs.MsgStructMine.nonce":
 		return x.Nonce != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMine"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMine"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMine does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMine does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21722,19 +21722,19 @@ func (x *fastReflection_MsgStructMine) Has(fd protoreflect.FieldDescriptor) bool
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructMine) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMine.creator":
+	case "structs.MsgStructMine.creator":
 		x.Creator = ""
-	case "structs.structs.MsgStructMine.structId":
+	case "structs.MsgStructMine.structId":
 		x.StructId = ""
-	case "structs.structs.MsgStructMine.proof":
+	case "structs.MsgStructMine.proof":
 		x.Proof = ""
-	case "structs.structs.MsgStructMine.nonce":
+	case "structs.MsgStructMine.nonce":
 		x.Nonce = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMine"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMine"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMine does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMine does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21746,23 +21746,23 @@ func (x *fastReflection_MsgStructMine) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructMine) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructMine.creator":
+	case "structs.MsgStructMine.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructMine.structId":
+	case "structs.MsgStructMine.structId":
 		value := x.StructId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructMine.proof":
+	case "structs.MsgStructMine.proof":
 		value := x.Proof
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructMine.nonce":
+	case "structs.MsgStructMine.nonce":
 		value := x.Nonce
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMine"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMine"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMine does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMine does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -21778,19 +21778,19 @@ func (x *fastReflection_MsgStructMine) Get(descriptor protoreflect.FieldDescript
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructMine) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMine.creator":
+	case "structs.MsgStructMine.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgStructMine.structId":
+	case "structs.MsgStructMine.structId":
 		x.StructId = value.Interface().(string)
-	case "structs.structs.MsgStructMine.proof":
+	case "structs.MsgStructMine.proof":
 		x.Proof = value.Interface().(string)
-	case "structs.structs.MsgStructMine.nonce":
+	case "structs.MsgStructMine.nonce":
 		x.Nonce = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMine"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMine"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMine does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMine does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21806,19 +21806,19 @@ func (x *fastReflection_MsgStructMine) Set(fd protoreflect.FieldDescriptor, valu
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructMine) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMine.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgStructMine is not mutable"))
-	case "structs.structs.MsgStructMine.structId":
-		panic(fmt.Errorf("field structId of message structs.structs.MsgStructMine is not mutable"))
-	case "structs.structs.MsgStructMine.proof":
-		panic(fmt.Errorf("field proof of message structs.structs.MsgStructMine is not mutable"))
-	case "structs.structs.MsgStructMine.nonce":
-		panic(fmt.Errorf("field nonce of message structs.structs.MsgStructMine is not mutable"))
+	case "structs.MsgStructMine.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgStructMine is not mutable"))
+	case "structs.MsgStructMine.structId":
+		panic(fmt.Errorf("field structId of message structs.MsgStructMine is not mutable"))
+	case "structs.MsgStructMine.proof":
+		panic(fmt.Errorf("field proof of message structs.MsgStructMine is not mutable"))
+	case "structs.MsgStructMine.nonce":
+		panic(fmt.Errorf("field nonce of message structs.MsgStructMine is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMine"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMine"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMine does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMine does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21827,19 +21827,19 @@ func (x *fastReflection_MsgStructMine) Mutable(fd protoreflect.FieldDescriptor) 
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructMine) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMine.creator":
+	case "structs.MsgStructMine.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructMine.structId":
+	case "structs.MsgStructMine.structId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructMine.proof":
+	case "structs.MsgStructMine.proof":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructMine.nonce":
+	case "structs.MsgStructMine.nonce":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMine"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMine"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMine does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMine does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -21849,7 +21849,7 @@ func (x *fastReflection_MsgStructMine) NewField(fd protoreflect.FieldDescriptor)
 func (x *fastReflection_MsgStructMine) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructMine", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructMine", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -22286,13 +22286,13 @@ func (x *fastReflection_MsgStructMineResponse) Range(f func(protoreflect.FieldDe
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructMineResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineResponse.struct":
+	case "structs.MsgStructMineResponse.struct":
 		return x.Struct != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -22304,13 +22304,13 @@ func (x *fastReflection_MsgStructMineResponse) Has(fd protoreflect.FieldDescript
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructMineResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineResponse.struct":
+	case "structs.MsgStructMineResponse.struct":
 		x.Struct = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -22322,14 +22322,14 @@ func (x *fastReflection_MsgStructMineResponse) Clear(fd protoreflect.FieldDescri
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructMineResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructMineResponse.struct":
+	case "structs.MsgStructMineResponse.struct":
 		value := x.Struct
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -22345,13 +22345,13 @@ func (x *fastReflection_MsgStructMineResponse) Get(descriptor protoreflect.Field
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructMineResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineResponse.struct":
+	case "structs.MsgStructMineResponse.struct":
 		x.Struct = value.Message().Interface().(*Struct)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -22367,16 +22367,16 @@ func (x *fastReflection_MsgStructMineResponse) Set(fd protoreflect.FieldDescript
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructMineResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineResponse.struct":
+	case "structs.MsgStructMineResponse.struct":
 		if x.Struct == nil {
 			x.Struct = new(Struct)
 		}
 		return protoreflect.ValueOfMessage(x.Struct.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -22385,14 +22385,14 @@ func (x *fastReflection_MsgStructMineResponse) Mutable(fd protoreflect.FieldDesc
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructMineResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructMineResponse.struct":
+	case "structs.MsgStructMineResponse.struct":
 		m := new(Struct)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructMineResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructMineResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructMineResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructMineResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -22402,7 +22402,7 @@ func (x *fastReflection_MsgStructMineResponse) NewField(fd protoreflect.FieldDes
 func (x *fastReflection_MsgStructMineResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructMineResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructMineResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -22729,15 +22729,15 @@ func (x *fastReflection_MsgStructRefineActivate) Range(f func(protoreflect.Field
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructRefineActivate) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineActivate.creator":
+	case "structs.MsgStructRefineActivate.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgStructRefineActivate.structId":
+	case "structs.MsgStructRefineActivate.structId":
 		return x.StructId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineActivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineActivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineActivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineActivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -22749,15 +22749,15 @@ func (x *fastReflection_MsgStructRefineActivate) Has(fd protoreflect.FieldDescri
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructRefineActivate) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineActivate.creator":
+	case "structs.MsgStructRefineActivate.creator":
 		x.Creator = ""
-	case "structs.structs.MsgStructRefineActivate.structId":
+	case "structs.MsgStructRefineActivate.structId":
 		x.StructId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineActivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineActivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineActivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineActivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -22769,17 +22769,17 @@ func (x *fastReflection_MsgStructRefineActivate) Clear(fd protoreflect.FieldDesc
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructRefineActivate) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructRefineActivate.creator":
+	case "structs.MsgStructRefineActivate.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructRefineActivate.structId":
+	case "structs.MsgStructRefineActivate.structId":
 		value := x.StructId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineActivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineActivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineActivate does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineActivate does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -22795,15 +22795,15 @@ func (x *fastReflection_MsgStructRefineActivate) Get(descriptor protoreflect.Fie
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructRefineActivate) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineActivate.creator":
+	case "structs.MsgStructRefineActivate.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgStructRefineActivate.structId":
+	case "structs.MsgStructRefineActivate.structId":
 		x.StructId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineActivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineActivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineActivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineActivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -22819,15 +22819,15 @@ func (x *fastReflection_MsgStructRefineActivate) Set(fd protoreflect.FieldDescri
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructRefineActivate) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineActivate.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgStructRefineActivate is not mutable"))
-	case "structs.structs.MsgStructRefineActivate.structId":
-		panic(fmt.Errorf("field structId of message structs.structs.MsgStructRefineActivate is not mutable"))
+	case "structs.MsgStructRefineActivate.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgStructRefineActivate is not mutable"))
+	case "structs.MsgStructRefineActivate.structId":
+		panic(fmt.Errorf("field structId of message structs.MsgStructRefineActivate is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineActivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineActivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineActivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineActivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -22836,15 +22836,15 @@ func (x *fastReflection_MsgStructRefineActivate) Mutable(fd protoreflect.FieldDe
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructRefineActivate) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineActivate.creator":
+	case "structs.MsgStructRefineActivate.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructRefineActivate.structId":
+	case "structs.MsgStructRefineActivate.structId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineActivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineActivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineActivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineActivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -22854,7 +22854,7 @@ func (x *fastReflection_MsgStructRefineActivate) NewField(fd protoreflect.FieldD
 func (x *fastReflection_MsgStructRefineActivate) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructRefineActivate", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructRefineActivate", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -23205,13 +23205,13 @@ func (x *fastReflection_MsgStructRefineActivateResponse) Range(f func(protorefle
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructRefineActivateResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineActivateResponse.struct":
+	case "structs.MsgStructRefineActivateResponse.struct":
 		return x.Struct != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineActivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineActivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineActivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineActivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -23223,13 +23223,13 @@ func (x *fastReflection_MsgStructRefineActivateResponse) Has(fd protoreflect.Fie
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructRefineActivateResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineActivateResponse.struct":
+	case "structs.MsgStructRefineActivateResponse.struct":
 		x.Struct = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineActivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineActivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineActivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineActivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -23241,14 +23241,14 @@ func (x *fastReflection_MsgStructRefineActivateResponse) Clear(fd protoreflect.F
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructRefineActivateResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructRefineActivateResponse.struct":
+	case "structs.MsgStructRefineActivateResponse.struct":
 		value := x.Struct
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineActivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineActivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineActivateResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineActivateResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -23264,13 +23264,13 @@ func (x *fastReflection_MsgStructRefineActivateResponse) Get(descriptor protoref
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructRefineActivateResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineActivateResponse.struct":
+	case "structs.MsgStructRefineActivateResponse.struct":
 		x.Struct = value.Message().Interface().(*Struct)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineActivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineActivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineActivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineActivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -23286,16 +23286,16 @@ func (x *fastReflection_MsgStructRefineActivateResponse) Set(fd protoreflect.Fie
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructRefineActivateResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineActivateResponse.struct":
+	case "structs.MsgStructRefineActivateResponse.struct":
 		if x.Struct == nil {
 			x.Struct = new(Struct)
 		}
 		return protoreflect.ValueOfMessage(x.Struct.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineActivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineActivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineActivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineActivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -23304,14 +23304,14 @@ func (x *fastReflection_MsgStructRefineActivateResponse) Mutable(fd protoreflect
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructRefineActivateResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineActivateResponse.struct":
+	case "structs.MsgStructRefineActivateResponse.struct":
 		m := new(Struct)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineActivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineActivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineActivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineActivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -23321,7 +23321,7 @@ func (x *fastReflection_MsgStructRefineActivateResponse) NewField(fd protoreflec
 func (x *fastReflection_MsgStructRefineActivateResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructRefineActivateResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructRefineActivateResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -23648,15 +23648,15 @@ func (x *fastReflection_MsgStructRefineDeactivate) Range(f func(protoreflect.Fie
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructRefineDeactivate) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineDeactivate.creator":
+	case "structs.MsgStructRefineDeactivate.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgStructRefineDeactivate.structId":
+	case "structs.MsgStructRefineDeactivate.structId":
 		return x.StructId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineDeactivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineDeactivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineDeactivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineDeactivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -23668,15 +23668,15 @@ func (x *fastReflection_MsgStructRefineDeactivate) Has(fd protoreflect.FieldDesc
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructRefineDeactivate) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineDeactivate.creator":
+	case "structs.MsgStructRefineDeactivate.creator":
 		x.Creator = ""
-	case "structs.structs.MsgStructRefineDeactivate.structId":
+	case "structs.MsgStructRefineDeactivate.structId":
 		x.StructId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineDeactivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineDeactivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineDeactivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineDeactivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -23688,17 +23688,17 @@ func (x *fastReflection_MsgStructRefineDeactivate) Clear(fd protoreflect.FieldDe
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructRefineDeactivate) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructRefineDeactivate.creator":
+	case "structs.MsgStructRefineDeactivate.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructRefineDeactivate.structId":
+	case "structs.MsgStructRefineDeactivate.structId":
 		value := x.StructId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineDeactivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineDeactivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineDeactivate does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineDeactivate does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -23714,15 +23714,15 @@ func (x *fastReflection_MsgStructRefineDeactivate) Get(descriptor protoreflect.F
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructRefineDeactivate) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineDeactivate.creator":
+	case "structs.MsgStructRefineDeactivate.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgStructRefineDeactivate.structId":
+	case "structs.MsgStructRefineDeactivate.structId":
 		x.StructId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineDeactivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineDeactivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineDeactivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineDeactivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -23738,15 +23738,15 @@ func (x *fastReflection_MsgStructRefineDeactivate) Set(fd protoreflect.FieldDesc
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructRefineDeactivate) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineDeactivate.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgStructRefineDeactivate is not mutable"))
-	case "structs.structs.MsgStructRefineDeactivate.structId":
-		panic(fmt.Errorf("field structId of message structs.structs.MsgStructRefineDeactivate is not mutable"))
+	case "structs.MsgStructRefineDeactivate.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgStructRefineDeactivate is not mutable"))
+	case "structs.MsgStructRefineDeactivate.structId":
+		panic(fmt.Errorf("field structId of message structs.MsgStructRefineDeactivate is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineDeactivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineDeactivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineDeactivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineDeactivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -23755,15 +23755,15 @@ func (x *fastReflection_MsgStructRefineDeactivate) Mutable(fd protoreflect.Field
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructRefineDeactivate) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineDeactivate.creator":
+	case "structs.MsgStructRefineDeactivate.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructRefineDeactivate.structId":
+	case "structs.MsgStructRefineDeactivate.structId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineDeactivate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineDeactivate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineDeactivate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineDeactivate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -23773,7 +23773,7 @@ func (x *fastReflection_MsgStructRefineDeactivate) NewField(fd protoreflect.Fiel
 func (x *fastReflection_MsgStructRefineDeactivate) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructRefineDeactivate", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructRefineDeactivate", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -24124,13 +24124,13 @@ func (x *fastReflection_MsgStructRefineDeactivateResponse) Range(f func(protoref
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructRefineDeactivateResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineDeactivateResponse.struct":
+	case "structs.MsgStructRefineDeactivateResponse.struct":
 		return x.Struct != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineDeactivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineDeactivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineDeactivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineDeactivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -24142,13 +24142,13 @@ func (x *fastReflection_MsgStructRefineDeactivateResponse) Has(fd protoreflect.F
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructRefineDeactivateResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineDeactivateResponse.struct":
+	case "structs.MsgStructRefineDeactivateResponse.struct":
 		x.Struct = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineDeactivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineDeactivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineDeactivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineDeactivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -24160,14 +24160,14 @@ func (x *fastReflection_MsgStructRefineDeactivateResponse) Clear(fd protoreflect
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructRefineDeactivateResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructRefineDeactivateResponse.struct":
+	case "structs.MsgStructRefineDeactivateResponse.struct":
 		value := x.Struct
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineDeactivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineDeactivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineDeactivateResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineDeactivateResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -24183,13 +24183,13 @@ func (x *fastReflection_MsgStructRefineDeactivateResponse) Get(descriptor protor
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructRefineDeactivateResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineDeactivateResponse.struct":
+	case "structs.MsgStructRefineDeactivateResponse.struct":
 		x.Struct = value.Message().Interface().(*Struct)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineDeactivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineDeactivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineDeactivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineDeactivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -24205,16 +24205,16 @@ func (x *fastReflection_MsgStructRefineDeactivateResponse) Set(fd protoreflect.F
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructRefineDeactivateResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineDeactivateResponse.struct":
+	case "structs.MsgStructRefineDeactivateResponse.struct":
 		if x.Struct == nil {
 			x.Struct = new(Struct)
 		}
 		return protoreflect.ValueOfMessage(x.Struct.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineDeactivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineDeactivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineDeactivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineDeactivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -24223,14 +24223,14 @@ func (x *fastReflection_MsgStructRefineDeactivateResponse) Mutable(fd protorefle
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructRefineDeactivateResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineDeactivateResponse.struct":
+	case "structs.MsgStructRefineDeactivateResponse.struct":
 		m := new(Struct)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineDeactivateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineDeactivateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineDeactivateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineDeactivateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -24240,7 +24240,7 @@ func (x *fastReflection_MsgStructRefineDeactivateResponse) NewField(fd protorefl
 func (x *fastReflection_MsgStructRefineDeactivateResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructRefineDeactivateResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructRefineDeactivateResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -24583,19 +24583,19 @@ func (x *fastReflection_MsgStructRefine) Range(f func(protoreflect.FieldDescript
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructRefine) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefine.creator":
+	case "structs.MsgStructRefine.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgStructRefine.structId":
+	case "structs.MsgStructRefine.structId":
 		return x.StructId != ""
-	case "structs.structs.MsgStructRefine.proof":
+	case "structs.MsgStructRefine.proof":
 		return x.Proof != ""
-	case "structs.structs.MsgStructRefine.nonce":
+	case "structs.MsgStructRefine.nonce":
 		return x.Nonce != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefine"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefine"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefine does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefine does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -24607,19 +24607,19 @@ func (x *fastReflection_MsgStructRefine) Has(fd protoreflect.FieldDescriptor) bo
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructRefine) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefine.creator":
+	case "structs.MsgStructRefine.creator":
 		x.Creator = ""
-	case "structs.structs.MsgStructRefine.structId":
+	case "structs.MsgStructRefine.structId":
 		x.StructId = ""
-	case "structs.structs.MsgStructRefine.proof":
+	case "structs.MsgStructRefine.proof":
 		x.Proof = ""
-	case "structs.structs.MsgStructRefine.nonce":
+	case "structs.MsgStructRefine.nonce":
 		x.Nonce = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefine"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefine"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefine does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefine does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -24631,23 +24631,23 @@ func (x *fastReflection_MsgStructRefine) Clear(fd protoreflect.FieldDescriptor) 
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructRefine) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructRefine.creator":
+	case "structs.MsgStructRefine.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructRefine.structId":
+	case "structs.MsgStructRefine.structId":
 		value := x.StructId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructRefine.proof":
+	case "structs.MsgStructRefine.proof":
 		value := x.Proof
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructRefine.nonce":
+	case "structs.MsgStructRefine.nonce":
 		value := x.Nonce
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefine"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefine"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefine does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefine does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -24663,19 +24663,19 @@ func (x *fastReflection_MsgStructRefine) Get(descriptor protoreflect.FieldDescri
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructRefine) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefine.creator":
+	case "structs.MsgStructRefine.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgStructRefine.structId":
+	case "structs.MsgStructRefine.structId":
 		x.StructId = value.Interface().(string)
-	case "structs.structs.MsgStructRefine.proof":
+	case "structs.MsgStructRefine.proof":
 		x.Proof = value.Interface().(string)
-	case "structs.structs.MsgStructRefine.nonce":
+	case "structs.MsgStructRefine.nonce":
 		x.Nonce = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefine"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefine"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefine does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefine does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -24691,19 +24691,19 @@ func (x *fastReflection_MsgStructRefine) Set(fd protoreflect.FieldDescriptor, va
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructRefine) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefine.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgStructRefine is not mutable"))
-	case "structs.structs.MsgStructRefine.structId":
-		panic(fmt.Errorf("field structId of message structs.structs.MsgStructRefine is not mutable"))
-	case "structs.structs.MsgStructRefine.proof":
-		panic(fmt.Errorf("field proof of message structs.structs.MsgStructRefine is not mutable"))
-	case "structs.structs.MsgStructRefine.nonce":
-		panic(fmt.Errorf("field nonce of message structs.structs.MsgStructRefine is not mutable"))
+	case "structs.MsgStructRefine.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgStructRefine is not mutable"))
+	case "structs.MsgStructRefine.structId":
+		panic(fmt.Errorf("field structId of message structs.MsgStructRefine is not mutable"))
+	case "structs.MsgStructRefine.proof":
+		panic(fmt.Errorf("field proof of message structs.MsgStructRefine is not mutable"))
+	case "structs.MsgStructRefine.nonce":
+		panic(fmt.Errorf("field nonce of message structs.MsgStructRefine is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefine"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefine"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefine does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefine does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -24712,19 +24712,19 @@ func (x *fastReflection_MsgStructRefine) Mutable(fd protoreflect.FieldDescriptor
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructRefine) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefine.creator":
+	case "structs.MsgStructRefine.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructRefine.structId":
+	case "structs.MsgStructRefine.structId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructRefine.proof":
+	case "structs.MsgStructRefine.proof":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructRefine.nonce":
+	case "structs.MsgStructRefine.nonce":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefine"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefine"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefine does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefine does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -24734,7 +24734,7 @@ func (x *fastReflection_MsgStructRefine) NewField(fd protoreflect.FieldDescripto
 func (x *fastReflection_MsgStructRefine) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructRefine", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructRefine", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -25171,13 +25171,13 @@ func (x *fastReflection_MsgStructRefineResponse) Range(f func(protoreflect.Field
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgStructRefineResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineResponse.struct":
+	case "structs.MsgStructRefineResponse.struct":
 		return x.Struct != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -25189,13 +25189,13 @@ func (x *fastReflection_MsgStructRefineResponse) Has(fd protoreflect.FieldDescri
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructRefineResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineResponse.struct":
+	case "structs.MsgStructRefineResponse.struct":
 		x.Struct = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -25207,14 +25207,14 @@ func (x *fastReflection_MsgStructRefineResponse) Clear(fd protoreflect.FieldDesc
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgStructRefineResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgStructRefineResponse.struct":
+	case "structs.MsgStructRefineResponse.struct":
 		value := x.Struct
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -25230,13 +25230,13 @@ func (x *fastReflection_MsgStructRefineResponse) Get(descriptor protoreflect.Fie
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructRefineResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineResponse.struct":
+	case "structs.MsgStructRefineResponse.struct":
 		x.Struct = value.Message().Interface().(*Struct)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -25252,16 +25252,16 @@ func (x *fastReflection_MsgStructRefineResponse) Set(fd protoreflect.FieldDescri
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructRefineResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineResponse.struct":
+	case "structs.MsgStructRefineResponse.struct":
 		if x.Struct == nil {
 			x.Struct = new(Struct)
 		}
 		return protoreflect.ValueOfMessage(x.Struct.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -25270,14 +25270,14 @@ func (x *fastReflection_MsgStructRefineResponse) Mutable(fd protoreflect.FieldDe
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgStructRefineResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgStructRefineResponse.struct":
+	case "structs.MsgStructRefineResponse.struct":
 		m := new(Struct)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgStructRefineResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgStructRefineResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgStructRefineResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgStructRefineResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -25287,7 +25287,7 @@ func (x *fastReflection_MsgStructRefineResponse) NewField(fd protoreflect.FieldD
 func (x *fastReflection_MsgStructRefineResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgStructRefineResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgStructRefineResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -25622,17 +25622,17 @@ func (x *fastReflection_MsgSubstationCreate) Range(f func(protoreflect.FieldDesc
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgSubstationCreate) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationCreate.creator":
+	case "structs.MsgSubstationCreate.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgSubstationCreate.owner":
+	case "structs.MsgSubstationCreate.owner":
 		return x.Owner != ""
-	case "structs.structs.MsgSubstationCreate.allocationId":
+	case "structs.MsgSubstationCreate.allocationId":
 		return x.AllocationId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationCreate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationCreate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationCreate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationCreate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -25644,17 +25644,17 @@ func (x *fastReflection_MsgSubstationCreate) Has(fd protoreflect.FieldDescriptor
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationCreate) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationCreate.creator":
+	case "structs.MsgSubstationCreate.creator":
 		x.Creator = ""
-	case "structs.structs.MsgSubstationCreate.owner":
+	case "structs.MsgSubstationCreate.owner":
 		x.Owner = ""
-	case "structs.structs.MsgSubstationCreate.allocationId":
+	case "structs.MsgSubstationCreate.allocationId":
 		x.AllocationId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationCreate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationCreate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationCreate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationCreate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -25666,20 +25666,20 @@ func (x *fastReflection_MsgSubstationCreate) Clear(fd protoreflect.FieldDescript
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgSubstationCreate) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgSubstationCreate.creator":
+	case "structs.MsgSubstationCreate.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgSubstationCreate.owner":
+	case "structs.MsgSubstationCreate.owner":
 		value := x.Owner
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgSubstationCreate.allocationId":
+	case "structs.MsgSubstationCreate.allocationId":
 		value := x.AllocationId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationCreate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationCreate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationCreate does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationCreate does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -25695,17 +25695,17 @@ func (x *fastReflection_MsgSubstationCreate) Get(descriptor protoreflect.FieldDe
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationCreate) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationCreate.creator":
+	case "structs.MsgSubstationCreate.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgSubstationCreate.owner":
+	case "structs.MsgSubstationCreate.owner":
 		x.Owner = value.Interface().(string)
-	case "structs.structs.MsgSubstationCreate.allocationId":
+	case "structs.MsgSubstationCreate.allocationId":
 		x.AllocationId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationCreate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationCreate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationCreate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationCreate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -25721,17 +25721,17 @@ func (x *fastReflection_MsgSubstationCreate) Set(fd protoreflect.FieldDescriptor
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationCreate) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationCreate.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgSubstationCreate is not mutable"))
-	case "structs.structs.MsgSubstationCreate.owner":
-		panic(fmt.Errorf("field owner of message structs.structs.MsgSubstationCreate is not mutable"))
-	case "structs.structs.MsgSubstationCreate.allocationId":
-		panic(fmt.Errorf("field allocationId of message structs.structs.MsgSubstationCreate is not mutable"))
+	case "structs.MsgSubstationCreate.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgSubstationCreate is not mutable"))
+	case "structs.MsgSubstationCreate.owner":
+		panic(fmt.Errorf("field owner of message structs.MsgSubstationCreate is not mutable"))
+	case "structs.MsgSubstationCreate.allocationId":
+		panic(fmt.Errorf("field allocationId of message structs.MsgSubstationCreate is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationCreate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationCreate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationCreate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationCreate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -25740,17 +25740,17 @@ func (x *fastReflection_MsgSubstationCreate) Mutable(fd protoreflect.FieldDescri
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgSubstationCreate) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationCreate.creator":
+	case "structs.MsgSubstationCreate.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgSubstationCreate.owner":
+	case "structs.MsgSubstationCreate.owner":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgSubstationCreate.allocationId":
+	case "structs.MsgSubstationCreate.allocationId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationCreate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationCreate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationCreate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationCreate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -25760,7 +25760,7 @@ func (x *fastReflection_MsgSubstationCreate) NewField(fd protoreflect.FieldDescr
 func (x *fastReflection_MsgSubstationCreate) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgSubstationCreate", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgSubstationCreate", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -26154,13 +26154,13 @@ func (x *fastReflection_MsgSubstationCreateResponse) Range(f func(protoreflect.F
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgSubstationCreateResponse) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationCreateResponse.substationId":
+	case "structs.MsgSubstationCreateResponse.substationId":
 		return x.SubstationId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationCreateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationCreateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationCreateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationCreateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -26172,13 +26172,13 @@ func (x *fastReflection_MsgSubstationCreateResponse) Has(fd protoreflect.FieldDe
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationCreateResponse) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationCreateResponse.substationId":
+	case "structs.MsgSubstationCreateResponse.substationId":
 		x.SubstationId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationCreateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationCreateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationCreateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationCreateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -26190,14 +26190,14 @@ func (x *fastReflection_MsgSubstationCreateResponse) Clear(fd protoreflect.Field
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgSubstationCreateResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgSubstationCreateResponse.substationId":
+	case "structs.MsgSubstationCreateResponse.substationId":
 		value := x.SubstationId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationCreateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationCreateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationCreateResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationCreateResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -26213,13 +26213,13 @@ func (x *fastReflection_MsgSubstationCreateResponse) Get(descriptor protoreflect
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationCreateResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationCreateResponse.substationId":
+	case "structs.MsgSubstationCreateResponse.substationId":
 		x.SubstationId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationCreateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationCreateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationCreateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationCreateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -26235,13 +26235,13 @@ func (x *fastReflection_MsgSubstationCreateResponse) Set(fd protoreflect.FieldDe
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationCreateResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationCreateResponse.substationId":
-		panic(fmt.Errorf("field substationId of message structs.structs.MsgSubstationCreateResponse is not mutable"))
+	case "structs.MsgSubstationCreateResponse.substationId":
+		panic(fmt.Errorf("field substationId of message structs.MsgSubstationCreateResponse is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationCreateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationCreateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationCreateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationCreateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -26250,13 +26250,13 @@ func (x *fastReflection_MsgSubstationCreateResponse) Mutable(fd protoreflect.Fie
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgSubstationCreateResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationCreateResponse.substationId":
+	case "structs.MsgSubstationCreateResponse.substationId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationCreateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationCreateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationCreateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationCreateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -26266,7 +26266,7 @@ func (x *fastReflection_MsgSubstationCreateResponse) NewField(fd protoreflect.Fi
 func (x *fastReflection_MsgSubstationCreateResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgSubstationCreateResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgSubstationCreateResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -26590,17 +26590,17 @@ func (x *fastReflection_MsgSubstationDelete) Range(f func(protoreflect.FieldDesc
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgSubstationDelete) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationDelete.creator":
+	case "structs.MsgSubstationDelete.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgSubstationDelete.substationId":
+	case "structs.MsgSubstationDelete.substationId":
 		return x.SubstationId != ""
-	case "structs.structs.MsgSubstationDelete.migrationSubstationId":
+	case "structs.MsgSubstationDelete.migrationSubstationId":
 		return x.MigrationSubstationId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationDelete"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationDelete"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationDelete does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationDelete does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -26612,17 +26612,17 @@ func (x *fastReflection_MsgSubstationDelete) Has(fd protoreflect.FieldDescriptor
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationDelete) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationDelete.creator":
+	case "structs.MsgSubstationDelete.creator":
 		x.Creator = ""
-	case "structs.structs.MsgSubstationDelete.substationId":
+	case "structs.MsgSubstationDelete.substationId":
 		x.SubstationId = ""
-	case "structs.structs.MsgSubstationDelete.migrationSubstationId":
+	case "structs.MsgSubstationDelete.migrationSubstationId":
 		x.MigrationSubstationId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationDelete"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationDelete"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationDelete does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationDelete does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -26634,20 +26634,20 @@ func (x *fastReflection_MsgSubstationDelete) Clear(fd protoreflect.FieldDescript
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgSubstationDelete) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgSubstationDelete.creator":
+	case "structs.MsgSubstationDelete.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgSubstationDelete.substationId":
+	case "structs.MsgSubstationDelete.substationId":
 		value := x.SubstationId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgSubstationDelete.migrationSubstationId":
+	case "structs.MsgSubstationDelete.migrationSubstationId":
 		value := x.MigrationSubstationId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationDelete"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationDelete"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationDelete does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationDelete does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -26663,17 +26663,17 @@ func (x *fastReflection_MsgSubstationDelete) Get(descriptor protoreflect.FieldDe
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationDelete) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationDelete.creator":
+	case "structs.MsgSubstationDelete.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgSubstationDelete.substationId":
+	case "structs.MsgSubstationDelete.substationId":
 		x.SubstationId = value.Interface().(string)
-	case "structs.structs.MsgSubstationDelete.migrationSubstationId":
+	case "structs.MsgSubstationDelete.migrationSubstationId":
 		x.MigrationSubstationId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationDelete"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationDelete"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationDelete does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationDelete does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -26689,17 +26689,17 @@ func (x *fastReflection_MsgSubstationDelete) Set(fd protoreflect.FieldDescriptor
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationDelete) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationDelete.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgSubstationDelete is not mutable"))
-	case "structs.structs.MsgSubstationDelete.substationId":
-		panic(fmt.Errorf("field substationId of message structs.structs.MsgSubstationDelete is not mutable"))
-	case "structs.structs.MsgSubstationDelete.migrationSubstationId":
-		panic(fmt.Errorf("field migrationSubstationId of message structs.structs.MsgSubstationDelete is not mutable"))
+	case "structs.MsgSubstationDelete.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgSubstationDelete is not mutable"))
+	case "structs.MsgSubstationDelete.substationId":
+		panic(fmt.Errorf("field substationId of message structs.MsgSubstationDelete is not mutable"))
+	case "structs.MsgSubstationDelete.migrationSubstationId":
+		panic(fmt.Errorf("field migrationSubstationId of message structs.MsgSubstationDelete is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationDelete"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationDelete"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationDelete does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationDelete does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -26708,17 +26708,17 @@ func (x *fastReflection_MsgSubstationDelete) Mutable(fd protoreflect.FieldDescri
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgSubstationDelete) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationDelete.creator":
+	case "structs.MsgSubstationDelete.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgSubstationDelete.substationId":
+	case "structs.MsgSubstationDelete.substationId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgSubstationDelete.migrationSubstationId":
+	case "structs.MsgSubstationDelete.migrationSubstationId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationDelete"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationDelete"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationDelete does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationDelete does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -26728,7 +26728,7 @@ func (x *fastReflection_MsgSubstationDelete) NewField(fd protoreflect.FieldDescr
 func (x *fastReflection_MsgSubstationDelete) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgSubstationDelete", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgSubstationDelete", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -27116,9 +27116,9 @@ func (x *fastReflection_MsgSubstationDeleteResponse) Has(fd protoreflect.FieldDe
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationDeleteResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationDeleteResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationDeleteResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationDeleteResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -27132,9 +27132,9 @@ func (x *fastReflection_MsgSubstationDeleteResponse) Clear(fd protoreflect.Field
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationDeleteResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationDeleteResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationDeleteResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationDeleteResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -27148,9 +27148,9 @@ func (x *fastReflection_MsgSubstationDeleteResponse) Get(descriptor protoreflect
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationDeleteResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationDeleteResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationDeleteResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationDeleteResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -27168,9 +27168,9 @@ func (x *fastReflection_MsgSubstationDeleteResponse) Set(fd protoreflect.FieldDe
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationDeleteResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationDeleteResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationDeleteResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationDeleteResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -27188,9 +27188,9 @@ func (x *fastReflection_MsgSubstationDeleteResponse) Mutable(fd protoreflect.Fie
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationDeleteResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationDeleteResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationDeleteResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationDeleteResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -27201,9 +27201,9 @@ func (x *fastReflection_MsgSubstationDeleteResponse) NewField(fd protoreflect.Fi
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationDeleteResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationDeleteResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationDeleteResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationDeleteResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -27213,7 +27213,7 @@ func (x *fastReflection_MsgSubstationDeleteResponse) NewField(fd protoreflect.Fi
 func (x *fastReflection_MsgSubstationDeleteResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgSubstationDeleteResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgSubstationDeleteResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -27494,17 +27494,17 @@ func (x *fastReflection_MsgSubstationAllocationConnect) Range(f func(protoreflec
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgSubstationAllocationConnect) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationAllocationConnect.creator":
+	case "structs.MsgSubstationAllocationConnect.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgSubstationAllocationConnect.allocationId":
+	case "structs.MsgSubstationAllocationConnect.allocationId":
 		return x.AllocationId != ""
-	case "structs.structs.MsgSubstationAllocationConnect.destinationId":
+	case "structs.MsgSubstationAllocationConnect.destinationId":
 		return x.DestinationId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationConnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationConnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationConnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationConnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -27516,17 +27516,17 @@ func (x *fastReflection_MsgSubstationAllocationConnect) Has(fd protoreflect.Fiel
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationAllocationConnect) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationAllocationConnect.creator":
+	case "structs.MsgSubstationAllocationConnect.creator":
 		x.Creator = ""
-	case "structs.structs.MsgSubstationAllocationConnect.allocationId":
+	case "structs.MsgSubstationAllocationConnect.allocationId":
 		x.AllocationId = ""
-	case "structs.structs.MsgSubstationAllocationConnect.destinationId":
+	case "structs.MsgSubstationAllocationConnect.destinationId":
 		x.DestinationId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationConnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationConnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationConnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationConnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -27538,20 +27538,20 @@ func (x *fastReflection_MsgSubstationAllocationConnect) Clear(fd protoreflect.Fi
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgSubstationAllocationConnect) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgSubstationAllocationConnect.creator":
+	case "structs.MsgSubstationAllocationConnect.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgSubstationAllocationConnect.allocationId":
+	case "structs.MsgSubstationAllocationConnect.allocationId":
 		value := x.AllocationId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgSubstationAllocationConnect.destinationId":
+	case "structs.MsgSubstationAllocationConnect.destinationId":
 		value := x.DestinationId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationConnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationConnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationConnect does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationConnect does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -27567,17 +27567,17 @@ func (x *fastReflection_MsgSubstationAllocationConnect) Get(descriptor protorefl
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationAllocationConnect) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationAllocationConnect.creator":
+	case "structs.MsgSubstationAllocationConnect.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgSubstationAllocationConnect.allocationId":
+	case "structs.MsgSubstationAllocationConnect.allocationId":
 		x.AllocationId = value.Interface().(string)
-	case "structs.structs.MsgSubstationAllocationConnect.destinationId":
+	case "structs.MsgSubstationAllocationConnect.destinationId":
 		x.DestinationId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationConnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationConnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationConnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationConnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -27593,17 +27593,17 @@ func (x *fastReflection_MsgSubstationAllocationConnect) Set(fd protoreflect.Fiel
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationAllocationConnect) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationAllocationConnect.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgSubstationAllocationConnect is not mutable"))
-	case "structs.structs.MsgSubstationAllocationConnect.allocationId":
-		panic(fmt.Errorf("field allocationId of message structs.structs.MsgSubstationAllocationConnect is not mutable"))
-	case "structs.structs.MsgSubstationAllocationConnect.destinationId":
-		panic(fmt.Errorf("field destinationId of message structs.structs.MsgSubstationAllocationConnect is not mutable"))
+	case "structs.MsgSubstationAllocationConnect.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgSubstationAllocationConnect is not mutable"))
+	case "structs.MsgSubstationAllocationConnect.allocationId":
+		panic(fmt.Errorf("field allocationId of message structs.MsgSubstationAllocationConnect is not mutable"))
+	case "structs.MsgSubstationAllocationConnect.destinationId":
+		panic(fmt.Errorf("field destinationId of message structs.MsgSubstationAllocationConnect is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationConnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationConnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationConnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationConnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -27612,17 +27612,17 @@ func (x *fastReflection_MsgSubstationAllocationConnect) Mutable(fd protoreflect.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgSubstationAllocationConnect) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationAllocationConnect.creator":
+	case "structs.MsgSubstationAllocationConnect.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgSubstationAllocationConnect.allocationId":
+	case "structs.MsgSubstationAllocationConnect.allocationId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgSubstationAllocationConnect.destinationId":
+	case "structs.MsgSubstationAllocationConnect.destinationId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationConnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationConnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationConnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationConnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -27632,7 +27632,7 @@ func (x *fastReflection_MsgSubstationAllocationConnect) NewField(fd protoreflect
 func (x *fastReflection_MsgSubstationAllocationConnect) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgSubstationAllocationConnect", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgSubstationAllocationConnect", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -28020,9 +28020,9 @@ func (x *fastReflection_MsgSubstationAllocationConnectResponse) Has(fd protorefl
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationConnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationConnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationConnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationConnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -28036,9 +28036,9 @@ func (x *fastReflection_MsgSubstationAllocationConnectResponse) Clear(fd protore
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationConnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationConnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationConnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationConnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -28052,9 +28052,9 @@ func (x *fastReflection_MsgSubstationAllocationConnectResponse) Get(descriptor p
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationConnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationConnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationConnectResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationConnectResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -28072,9 +28072,9 @@ func (x *fastReflection_MsgSubstationAllocationConnectResponse) Set(fd protorefl
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationConnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationConnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationConnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationConnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -28092,9 +28092,9 @@ func (x *fastReflection_MsgSubstationAllocationConnectResponse) Mutable(fd proto
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationConnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationConnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationConnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationConnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -28105,9 +28105,9 @@ func (x *fastReflection_MsgSubstationAllocationConnectResponse) NewField(fd prot
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationConnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationConnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationConnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationConnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -28117,7 +28117,7 @@ func (x *fastReflection_MsgSubstationAllocationConnectResponse) NewField(fd prot
 func (x *fastReflection_MsgSubstationAllocationConnectResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgSubstationAllocationConnectResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgSubstationAllocationConnectResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -28390,15 +28390,15 @@ func (x *fastReflection_MsgSubstationAllocationDisconnect) Range(f func(protoref
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgSubstationAllocationDisconnect) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationAllocationDisconnect.creator":
+	case "structs.MsgSubstationAllocationDisconnect.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgSubstationAllocationDisconnect.allocationId":
+	case "structs.MsgSubstationAllocationDisconnect.allocationId":
 		return x.AllocationId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationDisconnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationDisconnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationDisconnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationDisconnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -28410,15 +28410,15 @@ func (x *fastReflection_MsgSubstationAllocationDisconnect) Has(fd protoreflect.F
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationAllocationDisconnect) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationAllocationDisconnect.creator":
+	case "structs.MsgSubstationAllocationDisconnect.creator":
 		x.Creator = ""
-	case "structs.structs.MsgSubstationAllocationDisconnect.allocationId":
+	case "structs.MsgSubstationAllocationDisconnect.allocationId":
 		x.AllocationId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationDisconnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationDisconnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationDisconnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationDisconnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -28430,17 +28430,17 @@ func (x *fastReflection_MsgSubstationAllocationDisconnect) Clear(fd protoreflect
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgSubstationAllocationDisconnect) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgSubstationAllocationDisconnect.creator":
+	case "structs.MsgSubstationAllocationDisconnect.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgSubstationAllocationDisconnect.allocationId":
+	case "structs.MsgSubstationAllocationDisconnect.allocationId":
 		value := x.AllocationId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationDisconnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationDisconnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationDisconnect does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationDisconnect does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -28456,15 +28456,15 @@ func (x *fastReflection_MsgSubstationAllocationDisconnect) Get(descriptor protor
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationAllocationDisconnect) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationAllocationDisconnect.creator":
+	case "structs.MsgSubstationAllocationDisconnect.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgSubstationAllocationDisconnect.allocationId":
+	case "structs.MsgSubstationAllocationDisconnect.allocationId":
 		x.AllocationId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationDisconnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationDisconnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationDisconnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationDisconnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -28480,15 +28480,15 @@ func (x *fastReflection_MsgSubstationAllocationDisconnect) Set(fd protoreflect.F
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationAllocationDisconnect) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationAllocationDisconnect.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgSubstationAllocationDisconnect is not mutable"))
-	case "structs.structs.MsgSubstationAllocationDisconnect.allocationId":
-		panic(fmt.Errorf("field allocationId of message structs.structs.MsgSubstationAllocationDisconnect is not mutable"))
+	case "structs.MsgSubstationAllocationDisconnect.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgSubstationAllocationDisconnect is not mutable"))
+	case "structs.MsgSubstationAllocationDisconnect.allocationId":
+		panic(fmt.Errorf("field allocationId of message structs.MsgSubstationAllocationDisconnect is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationDisconnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationDisconnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationDisconnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationDisconnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -28497,15 +28497,15 @@ func (x *fastReflection_MsgSubstationAllocationDisconnect) Mutable(fd protorefle
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgSubstationAllocationDisconnect) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationAllocationDisconnect.creator":
+	case "structs.MsgSubstationAllocationDisconnect.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgSubstationAllocationDisconnect.allocationId":
+	case "structs.MsgSubstationAllocationDisconnect.allocationId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationDisconnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationDisconnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationDisconnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationDisconnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -28515,7 +28515,7 @@ func (x *fastReflection_MsgSubstationAllocationDisconnect) NewField(fd protorefl
 func (x *fastReflection_MsgSubstationAllocationDisconnect) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgSubstationAllocationDisconnect", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgSubstationAllocationDisconnect", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -28860,9 +28860,9 @@ func (x *fastReflection_MsgSubstationAllocationDisconnectResponse) Has(fd protor
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationDisconnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationDisconnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationDisconnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationDisconnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -28876,9 +28876,9 @@ func (x *fastReflection_MsgSubstationAllocationDisconnectResponse) Clear(fd prot
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationDisconnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationDisconnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationDisconnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationDisconnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -28892,9 +28892,9 @@ func (x *fastReflection_MsgSubstationAllocationDisconnectResponse) Get(descripto
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationDisconnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationDisconnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationDisconnectResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationDisconnectResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -28912,9 +28912,9 @@ func (x *fastReflection_MsgSubstationAllocationDisconnectResponse) Set(fd protor
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationDisconnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationDisconnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationDisconnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationDisconnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -28932,9 +28932,9 @@ func (x *fastReflection_MsgSubstationAllocationDisconnectResponse) Mutable(fd pr
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationDisconnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationDisconnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationDisconnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationDisconnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -28945,9 +28945,9 @@ func (x *fastReflection_MsgSubstationAllocationDisconnectResponse) NewField(fd p
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationAllocationDisconnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationAllocationDisconnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationAllocationDisconnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationAllocationDisconnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -28957,7 +28957,7 @@ func (x *fastReflection_MsgSubstationAllocationDisconnectResponse) NewField(fd p
 func (x *fastReflection_MsgSubstationAllocationDisconnectResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgSubstationAllocationDisconnectResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgSubstationAllocationDisconnectResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -29238,17 +29238,17 @@ func (x *fastReflection_MsgSubstationPlayerConnect) Range(f func(protoreflect.Fi
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgSubstationPlayerConnect) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationPlayerConnect.creator":
+	case "structs.MsgSubstationPlayerConnect.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgSubstationPlayerConnect.substationId":
+	case "structs.MsgSubstationPlayerConnect.substationId":
 		return x.SubstationId != ""
-	case "structs.structs.MsgSubstationPlayerConnect.playerId":
+	case "structs.MsgSubstationPlayerConnect.playerId":
 		return x.PlayerId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerConnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerConnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerConnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerConnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -29260,17 +29260,17 @@ func (x *fastReflection_MsgSubstationPlayerConnect) Has(fd protoreflect.FieldDes
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationPlayerConnect) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationPlayerConnect.creator":
+	case "structs.MsgSubstationPlayerConnect.creator":
 		x.Creator = ""
-	case "structs.structs.MsgSubstationPlayerConnect.substationId":
+	case "structs.MsgSubstationPlayerConnect.substationId":
 		x.SubstationId = ""
-	case "structs.structs.MsgSubstationPlayerConnect.playerId":
+	case "structs.MsgSubstationPlayerConnect.playerId":
 		x.PlayerId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerConnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerConnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerConnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerConnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -29282,20 +29282,20 @@ func (x *fastReflection_MsgSubstationPlayerConnect) Clear(fd protoreflect.FieldD
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgSubstationPlayerConnect) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgSubstationPlayerConnect.creator":
+	case "structs.MsgSubstationPlayerConnect.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgSubstationPlayerConnect.substationId":
+	case "structs.MsgSubstationPlayerConnect.substationId":
 		value := x.SubstationId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgSubstationPlayerConnect.playerId":
+	case "structs.MsgSubstationPlayerConnect.playerId":
 		value := x.PlayerId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerConnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerConnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerConnect does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerConnect does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -29311,17 +29311,17 @@ func (x *fastReflection_MsgSubstationPlayerConnect) Get(descriptor protoreflect.
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationPlayerConnect) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationPlayerConnect.creator":
+	case "structs.MsgSubstationPlayerConnect.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgSubstationPlayerConnect.substationId":
+	case "structs.MsgSubstationPlayerConnect.substationId":
 		x.SubstationId = value.Interface().(string)
-	case "structs.structs.MsgSubstationPlayerConnect.playerId":
+	case "structs.MsgSubstationPlayerConnect.playerId":
 		x.PlayerId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerConnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerConnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerConnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerConnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -29337,17 +29337,17 @@ func (x *fastReflection_MsgSubstationPlayerConnect) Set(fd protoreflect.FieldDes
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationPlayerConnect) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationPlayerConnect.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgSubstationPlayerConnect is not mutable"))
-	case "structs.structs.MsgSubstationPlayerConnect.substationId":
-		panic(fmt.Errorf("field substationId of message structs.structs.MsgSubstationPlayerConnect is not mutable"))
-	case "structs.structs.MsgSubstationPlayerConnect.playerId":
-		panic(fmt.Errorf("field playerId of message structs.structs.MsgSubstationPlayerConnect is not mutable"))
+	case "structs.MsgSubstationPlayerConnect.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgSubstationPlayerConnect is not mutable"))
+	case "structs.MsgSubstationPlayerConnect.substationId":
+		panic(fmt.Errorf("field substationId of message structs.MsgSubstationPlayerConnect is not mutable"))
+	case "structs.MsgSubstationPlayerConnect.playerId":
+		panic(fmt.Errorf("field playerId of message structs.MsgSubstationPlayerConnect is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerConnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerConnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerConnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerConnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -29356,17 +29356,17 @@ func (x *fastReflection_MsgSubstationPlayerConnect) Mutable(fd protoreflect.Fiel
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgSubstationPlayerConnect) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationPlayerConnect.creator":
+	case "structs.MsgSubstationPlayerConnect.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgSubstationPlayerConnect.substationId":
+	case "structs.MsgSubstationPlayerConnect.substationId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgSubstationPlayerConnect.playerId":
+	case "structs.MsgSubstationPlayerConnect.playerId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerConnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerConnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerConnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerConnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -29376,7 +29376,7 @@ func (x *fastReflection_MsgSubstationPlayerConnect) NewField(fd protoreflect.Fie
 func (x *fastReflection_MsgSubstationPlayerConnect) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgSubstationPlayerConnect", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgSubstationPlayerConnect", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -29764,9 +29764,9 @@ func (x *fastReflection_MsgSubstationPlayerConnectResponse) Has(fd protoreflect.
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerConnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerConnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerConnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerConnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -29780,9 +29780,9 @@ func (x *fastReflection_MsgSubstationPlayerConnectResponse) Clear(fd protoreflec
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerConnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerConnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerConnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerConnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -29796,9 +29796,9 @@ func (x *fastReflection_MsgSubstationPlayerConnectResponse) Get(descriptor proto
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerConnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerConnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerConnectResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerConnectResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -29816,9 +29816,9 @@ func (x *fastReflection_MsgSubstationPlayerConnectResponse) Set(fd protoreflect.
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerConnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerConnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerConnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerConnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -29836,9 +29836,9 @@ func (x *fastReflection_MsgSubstationPlayerConnectResponse) Mutable(fd protorefl
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerConnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerConnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerConnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerConnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -29849,9 +29849,9 @@ func (x *fastReflection_MsgSubstationPlayerConnectResponse) NewField(fd protoref
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerConnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerConnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerConnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerConnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -29861,7 +29861,7 @@ func (x *fastReflection_MsgSubstationPlayerConnectResponse) NewField(fd protoref
 func (x *fastReflection_MsgSubstationPlayerConnectResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgSubstationPlayerConnectResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgSubstationPlayerConnectResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -30134,15 +30134,15 @@ func (x *fastReflection_MsgSubstationPlayerDisconnect) Range(f func(protoreflect
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgSubstationPlayerDisconnect) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationPlayerDisconnect.creator":
+	case "structs.MsgSubstationPlayerDisconnect.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgSubstationPlayerDisconnect.playerId":
+	case "structs.MsgSubstationPlayerDisconnect.playerId":
 		return x.PlayerId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerDisconnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerDisconnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerDisconnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerDisconnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -30154,15 +30154,15 @@ func (x *fastReflection_MsgSubstationPlayerDisconnect) Has(fd protoreflect.Field
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationPlayerDisconnect) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationPlayerDisconnect.creator":
+	case "structs.MsgSubstationPlayerDisconnect.creator":
 		x.Creator = ""
-	case "structs.structs.MsgSubstationPlayerDisconnect.playerId":
+	case "structs.MsgSubstationPlayerDisconnect.playerId":
 		x.PlayerId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerDisconnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerDisconnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerDisconnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerDisconnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -30174,17 +30174,17 @@ func (x *fastReflection_MsgSubstationPlayerDisconnect) Clear(fd protoreflect.Fie
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgSubstationPlayerDisconnect) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgSubstationPlayerDisconnect.creator":
+	case "structs.MsgSubstationPlayerDisconnect.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgSubstationPlayerDisconnect.playerId":
+	case "structs.MsgSubstationPlayerDisconnect.playerId":
 		value := x.PlayerId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerDisconnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerDisconnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerDisconnect does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerDisconnect does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -30200,15 +30200,15 @@ func (x *fastReflection_MsgSubstationPlayerDisconnect) Get(descriptor protorefle
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationPlayerDisconnect) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationPlayerDisconnect.creator":
+	case "structs.MsgSubstationPlayerDisconnect.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgSubstationPlayerDisconnect.playerId":
+	case "structs.MsgSubstationPlayerDisconnect.playerId":
 		x.PlayerId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerDisconnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerDisconnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerDisconnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerDisconnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -30224,15 +30224,15 @@ func (x *fastReflection_MsgSubstationPlayerDisconnect) Set(fd protoreflect.Field
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationPlayerDisconnect) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationPlayerDisconnect.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgSubstationPlayerDisconnect is not mutable"))
-	case "structs.structs.MsgSubstationPlayerDisconnect.playerId":
-		panic(fmt.Errorf("field playerId of message structs.structs.MsgSubstationPlayerDisconnect is not mutable"))
+	case "structs.MsgSubstationPlayerDisconnect.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgSubstationPlayerDisconnect is not mutable"))
+	case "structs.MsgSubstationPlayerDisconnect.playerId":
+		panic(fmt.Errorf("field playerId of message structs.MsgSubstationPlayerDisconnect is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerDisconnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerDisconnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerDisconnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerDisconnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -30241,15 +30241,15 @@ func (x *fastReflection_MsgSubstationPlayerDisconnect) Mutable(fd protoreflect.F
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgSubstationPlayerDisconnect) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationPlayerDisconnect.creator":
+	case "structs.MsgSubstationPlayerDisconnect.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgSubstationPlayerDisconnect.playerId":
+	case "structs.MsgSubstationPlayerDisconnect.playerId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerDisconnect"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerDisconnect"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerDisconnect does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerDisconnect does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -30259,7 +30259,7 @@ func (x *fastReflection_MsgSubstationPlayerDisconnect) NewField(fd protoreflect.
 func (x *fastReflection_MsgSubstationPlayerDisconnect) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgSubstationPlayerDisconnect", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgSubstationPlayerDisconnect", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -30604,9 +30604,9 @@ func (x *fastReflection_MsgSubstationPlayerDisconnectResponse) Has(fd protorefle
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerDisconnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerDisconnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerDisconnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerDisconnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -30620,9 +30620,9 @@ func (x *fastReflection_MsgSubstationPlayerDisconnectResponse) Clear(fd protoref
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerDisconnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerDisconnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerDisconnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerDisconnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -30636,9 +30636,9 @@ func (x *fastReflection_MsgSubstationPlayerDisconnectResponse) Get(descriptor pr
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerDisconnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerDisconnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerDisconnectResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerDisconnectResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -30656,9 +30656,9 @@ func (x *fastReflection_MsgSubstationPlayerDisconnectResponse) Set(fd protorefle
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerDisconnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerDisconnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerDisconnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerDisconnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -30676,9 +30676,9 @@ func (x *fastReflection_MsgSubstationPlayerDisconnectResponse) Mutable(fd protor
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerDisconnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerDisconnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerDisconnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerDisconnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -30689,9 +30689,9 @@ func (x *fastReflection_MsgSubstationPlayerDisconnectResponse) NewField(fd proto
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerDisconnectResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerDisconnectResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerDisconnectResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerDisconnectResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -30701,7 +30701,7 @@ func (x *fastReflection_MsgSubstationPlayerDisconnectResponse) NewField(fd proto
 func (x *fastReflection_MsgSubstationPlayerDisconnectResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgSubstationPlayerDisconnectResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgSubstationPlayerDisconnectResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -31028,17 +31028,17 @@ func (x *fastReflection_MsgSubstationPlayerMigrate) Range(f func(protoreflect.Fi
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgSubstationPlayerMigrate) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationPlayerMigrate.creator":
+	case "structs.MsgSubstationPlayerMigrate.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgSubstationPlayerMigrate.substationId":
+	case "structs.MsgSubstationPlayerMigrate.substationId":
 		return x.SubstationId != ""
-	case "structs.structs.MsgSubstationPlayerMigrate.playerId":
+	case "structs.MsgSubstationPlayerMigrate.playerId":
 		return len(x.PlayerId) != 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerMigrate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerMigrate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerMigrate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerMigrate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -31050,17 +31050,17 @@ func (x *fastReflection_MsgSubstationPlayerMigrate) Has(fd protoreflect.FieldDes
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationPlayerMigrate) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationPlayerMigrate.creator":
+	case "structs.MsgSubstationPlayerMigrate.creator":
 		x.Creator = ""
-	case "structs.structs.MsgSubstationPlayerMigrate.substationId":
+	case "structs.MsgSubstationPlayerMigrate.substationId":
 		x.SubstationId = ""
-	case "structs.structs.MsgSubstationPlayerMigrate.playerId":
+	case "structs.MsgSubstationPlayerMigrate.playerId":
 		x.PlayerId = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerMigrate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerMigrate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerMigrate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerMigrate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -31072,13 +31072,13 @@ func (x *fastReflection_MsgSubstationPlayerMigrate) Clear(fd protoreflect.FieldD
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgSubstationPlayerMigrate) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgSubstationPlayerMigrate.creator":
+	case "structs.MsgSubstationPlayerMigrate.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgSubstationPlayerMigrate.substationId":
+	case "structs.MsgSubstationPlayerMigrate.substationId":
 		value := x.SubstationId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgSubstationPlayerMigrate.playerId":
+	case "structs.MsgSubstationPlayerMigrate.playerId":
 		if len(x.PlayerId) == 0 {
 			return protoreflect.ValueOfList(&_MsgSubstationPlayerMigrate_3_list{})
 		}
@@ -31086,9 +31086,9 @@ func (x *fastReflection_MsgSubstationPlayerMigrate) Get(descriptor protoreflect.
 		return protoreflect.ValueOfList(listValue)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerMigrate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerMigrate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerMigrate does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerMigrate does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -31104,19 +31104,19 @@ func (x *fastReflection_MsgSubstationPlayerMigrate) Get(descriptor protoreflect.
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationPlayerMigrate) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationPlayerMigrate.creator":
+	case "structs.MsgSubstationPlayerMigrate.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgSubstationPlayerMigrate.substationId":
+	case "structs.MsgSubstationPlayerMigrate.substationId":
 		x.SubstationId = value.Interface().(string)
-	case "structs.structs.MsgSubstationPlayerMigrate.playerId":
+	case "structs.MsgSubstationPlayerMigrate.playerId":
 		lv := value.List()
 		clv := lv.(*_MsgSubstationPlayerMigrate_3_list)
 		x.PlayerId = *clv.list
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerMigrate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerMigrate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerMigrate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerMigrate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -31132,21 +31132,21 @@ func (x *fastReflection_MsgSubstationPlayerMigrate) Set(fd protoreflect.FieldDes
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSubstationPlayerMigrate) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationPlayerMigrate.playerId":
+	case "structs.MsgSubstationPlayerMigrate.playerId":
 		if x.PlayerId == nil {
 			x.PlayerId = []string{}
 		}
 		value := &_MsgSubstationPlayerMigrate_3_list{list: &x.PlayerId}
 		return protoreflect.ValueOfList(value)
-	case "structs.structs.MsgSubstationPlayerMigrate.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgSubstationPlayerMigrate is not mutable"))
-	case "structs.structs.MsgSubstationPlayerMigrate.substationId":
-		panic(fmt.Errorf("field substationId of message structs.structs.MsgSubstationPlayerMigrate is not mutable"))
+	case "structs.MsgSubstationPlayerMigrate.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgSubstationPlayerMigrate is not mutable"))
+	case "structs.MsgSubstationPlayerMigrate.substationId":
+		panic(fmt.Errorf("field substationId of message structs.MsgSubstationPlayerMigrate is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerMigrate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerMigrate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerMigrate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerMigrate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -31155,18 +31155,18 @@ func (x *fastReflection_MsgSubstationPlayerMigrate) Mutable(fd protoreflect.Fiel
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgSubstationPlayerMigrate) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgSubstationPlayerMigrate.creator":
+	case "structs.MsgSubstationPlayerMigrate.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgSubstationPlayerMigrate.substationId":
+	case "structs.MsgSubstationPlayerMigrate.substationId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgSubstationPlayerMigrate.playerId":
+	case "structs.MsgSubstationPlayerMigrate.playerId":
 		list := []string{}
 		return protoreflect.ValueOfList(&_MsgSubstationPlayerMigrate_3_list{list: &list})
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerMigrate"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerMigrate"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerMigrate does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerMigrate does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -31176,7 +31176,7 @@ func (x *fastReflection_MsgSubstationPlayerMigrate) NewField(fd protoreflect.Fie
 func (x *fastReflection_MsgSubstationPlayerMigrate) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgSubstationPlayerMigrate", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgSubstationPlayerMigrate", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -31568,9 +31568,9 @@ func (x *fastReflection_MsgSubstationPlayerMigrateResponse) Has(fd protoreflect.
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerMigrateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerMigrateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerMigrateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerMigrateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -31584,9 +31584,9 @@ func (x *fastReflection_MsgSubstationPlayerMigrateResponse) Clear(fd protoreflec
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerMigrateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerMigrateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerMigrateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerMigrateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -31600,9 +31600,9 @@ func (x *fastReflection_MsgSubstationPlayerMigrateResponse) Get(descriptor proto
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerMigrateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerMigrateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerMigrateResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerMigrateResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -31620,9 +31620,9 @@ func (x *fastReflection_MsgSubstationPlayerMigrateResponse) Set(fd protoreflect.
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerMigrateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerMigrateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerMigrateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerMigrateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -31640,9 +31640,9 @@ func (x *fastReflection_MsgSubstationPlayerMigrateResponse) Mutable(fd protorefl
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerMigrateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerMigrateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerMigrateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerMigrateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -31653,9 +31653,9 @@ func (x *fastReflection_MsgSubstationPlayerMigrateResponse) NewField(fd protoref
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSubstationPlayerMigrateResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSubstationPlayerMigrateResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSubstationPlayerMigrateResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSubstationPlayerMigrateResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -31665,7 +31665,7 @@ func (x *fastReflection_MsgSubstationPlayerMigrateResponse) NewField(fd protoref
 func (x *fastReflection_MsgSubstationPlayerMigrateResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgSubstationPlayerMigrateResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgSubstationPlayerMigrateResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -31954,19 +31954,19 @@ func (x *fastReflection_MsgSabotage) Range(f func(protoreflect.FieldDescriptor, 
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_MsgSabotage) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgSabotage.creator":
+	case "structs.MsgSabotage.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgSabotage.structId":
+	case "structs.MsgSabotage.structId":
 		return x.StructId != ""
-	case "structs.structs.MsgSabotage.proof":
+	case "structs.MsgSabotage.proof":
 		return x.Proof != ""
-	case "structs.structs.MsgSabotage.nonce":
+	case "structs.MsgSabotage.nonce":
 		return x.Nonce != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSabotage"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSabotage"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSabotage does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSabotage does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -31978,19 +31978,19 @@ func (x *fastReflection_MsgSabotage) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSabotage) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgSabotage.creator":
+	case "structs.MsgSabotage.creator":
 		x.Creator = ""
-	case "structs.structs.MsgSabotage.structId":
+	case "structs.MsgSabotage.structId":
 		x.StructId = ""
-	case "structs.structs.MsgSabotage.proof":
+	case "structs.MsgSabotage.proof":
 		x.Proof = ""
-	case "structs.structs.MsgSabotage.nonce":
+	case "structs.MsgSabotage.nonce":
 		x.Nonce = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSabotage"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSabotage"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSabotage does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSabotage does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -32002,23 +32002,23 @@ func (x *fastReflection_MsgSabotage) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_MsgSabotage) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgSabotage.creator":
+	case "structs.MsgSabotage.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgSabotage.structId":
+	case "structs.MsgSabotage.structId":
 		value := x.StructId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgSabotage.proof":
+	case "structs.MsgSabotage.proof":
 		value := x.Proof
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgSabotage.nonce":
+	case "structs.MsgSabotage.nonce":
 		value := x.Nonce
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSabotage"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSabotage"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSabotage does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgSabotage does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -32034,19 +32034,19 @@ func (x *fastReflection_MsgSabotage) Get(descriptor protoreflect.FieldDescriptor
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSabotage) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgSabotage.creator":
+	case "structs.MsgSabotage.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgSabotage.structId":
+	case "structs.MsgSabotage.structId":
 		x.StructId = value.Interface().(string)
-	case "structs.structs.MsgSabotage.proof":
+	case "structs.MsgSabotage.proof":
 		x.Proof = value.Interface().(string)
-	case "structs.structs.MsgSabotage.nonce":
+	case "structs.MsgSabotage.nonce":
 		x.Nonce = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSabotage"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSabotage"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSabotage does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSabotage does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -32062,19 +32062,19 @@ func (x *fastReflection_MsgSabotage) Set(fd protoreflect.FieldDescriptor, value 
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgSabotage) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgSabotage.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgSabotage is not mutable"))
-	case "structs.structs.MsgSabotage.structId":
-		panic(fmt.Errorf("field structId of message structs.structs.MsgSabotage is not mutable"))
-	case "structs.structs.MsgSabotage.proof":
-		panic(fmt.Errorf("field proof of message structs.structs.MsgSabotage is not mutable"))
-	case "structs.structs.MsgSabotage.nonce":
-		panic(fmt.Errorf("field nonce of message structs.structs.MsgSabotage is not mutable"))
+	case "structs.MsgSabotage.creator":
+		panic(fmt.Errorf("field creator of message structs.MsgSabotage is not mutable"))
+	case "structs.MsgSabotage.structId":
+		panic(fmt.Errorf("field structId of message structs.MsgSabotage is not mutable"))
+	case "structs.MsgSabotage.proof":
+		panic(fmt.Errorf("field proof of message structs.MsgSabotage is not mutable"))
+	case "structs.MsgSabotage.nonce":
+		panic(fmt.Errorf("field nonce of message structs.MsgSabotage is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSabotage"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSabotage"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSabotage does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSabotage does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -32083,19 +32083,19 @@ func (x *fastReflection_MsgSabotage) Mutable(fd protoreflect.FieldDescriptor) pr
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_MsgSabotage) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgSabotage.creator":
+	case "structs.MsgSabotage.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgSabotage.structId":
+	case "structs.MsgSabotage.structId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgSabotage.proof":
+	case "structs.MsgSabotage.proof":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgSabotage.nonce":
+	case "structs.MsgSabotage.nonce":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSabotage"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSabotage"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSabotage does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSabotage does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -32105,7 +32105,7 @@ func (x *fastReflection_MsgSabotage) NewField(fd protoreflect.FieldDescriptor) p
 func (x *fastReflection_MsgSabotage) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgSabotage", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgSabotage", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -32536,9 +32536,9 @@ func (x *fastReflection_MsgSabotageResponse) Has(fd protoreflect.FieldDescriptor
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSabotageResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSabotageResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSabotageResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSabotageResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -32552,9 +32552,9 @@ func (x *fastReflection_MsgSabotageResponse) Clear(fd protoreflect.FieldDescript
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSabotageResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSabotageResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSabotageResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSabotageResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -32568,9 +32568,9 @@ func (x *fastReflection_MsgSabotageResponse) Get(descriptor protoreflect.FieldDe
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSabotageResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSabotageResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSabotageResponse does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.MsgSabotageResponse does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -32588,9 +32588,9 @@ func (x *fastReflection_MsgSabotageResponse) Set(fd protoreflect.FieldDescriptor
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSabotageResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSabotageResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSabotageResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSabotageResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -32608,9 +32608,9 @@ func (x *fastReflection_MsgSabotageResponse) Mutable(fd protoreflect.FieldDescri
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSabotageResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSabotageResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSabotageResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSabotageResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -32621,9 +32621,9 @@ func (x *fastReflection_MsgSabotageResponse) NewField(fd protoreflect.FieldDescr
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgSabotageResponse"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.MsgSabotageResponse"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgSabotageResponse does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.MsgSabotageResponse does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -32633,7 +32633,7 @@ func (x *fastReflection_MsgSabotageResponse) NewField(fd protoreflect.FieldDescr
 func (x *fastReflection_MsgSabotageResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgSabotageResponse", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.MsgSabotageResponse", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -33103,7 +33103,7 @@ type MsgAllocationCreate struct {
 	Creator        string         `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	Controller     string         `protobuf:"bytes,2,opt,name=controller,proto3" json:"controller,omitempty"`
 	SourceObjectId string         `protobuf:"bytes,3,opt,name=sourceObjectId,proto3" json:"sourceObjectId,omitempty"`
-	AllocationType AllocationType `protobuf:"varint,4,opt,name=allocationType,proto3,enum=structs.structs.AllocationType" json:"allocationType,omitempty"`
+	AllocationType AllocationType `protobuf:"varint,4,opt,name=allocationType,proto3,enum=structs.AllocationType" json:"allocationType,omitempty"`
 	Power          uint64         `protobuf:"varint,5,opt,name=power,proto3" json:"power,omitempty"`
 }
 
@@ -33579,7 +33579,7 @@ type MsgGuildUpdateJoinInfusionMinimumBypassByRequest struct {
 
 	Creator              string               `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	GuildId              string               `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
-	GuildJoinBypassLevel GuildJoinBypassLevel `protobuf:"varint,3,opt,name=guildJoinBypassLevel,proto3,enum=structs.structs.GuildJoinBypassLevel" json:"guildJoinBypassLevel,omitempty"`
+	GuildJoinBypassLevel GuildJoinBypassLevel `protobuf:"varint,3,opt,name=guildJoinBypassLevel,proto3,enum=structs.GuildJoinBypassLevel" json:"guildJoinBypassLevel,omitempty"`
 }
 
 func (x *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) Reset() {
@@ -33630,7 +33630,7 @@ type MsgGuildUpdateJoinInfusionMinimumBypassByInvite struct {
 
 	Creator              string               `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	GuildId              string               `protobuf:"bytes,2,opt,name=guildId,proto3" json:"guildId,omitempty"`
-	GuildJoinBypassLevel GuildJoinBypassLevel `protobuf:"varint,3,opt,name=guildJoinBypassLevel,proto3,enum=structs.structs.GuildJoinBypassLevel" json:"guildJoinBypassLevel,omitempty"`
+	GuildJoinBypassLevel GuildJoinBypassLevel `protobuf:"varint,3,opt,name=guildJoinBypassLevel,proto3,enum=structs.GuildJoinBypassLevel" json:"guildJoinBypassLevel,omitempty"`
 }
 
 func (x *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) Reset() {
@@ -35695,28 +35695,27 @@ var File_structs_structs_tx_proto protoreflect.FileDescriptor
 
 var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x0a, 0x18, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x74, 0x78, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0f, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x1a, 0x11, 0x61, 0x6d, 0x69,
-	0x6e, 0x6f, 0x2f, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x17,
-	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x6d, 0x73, 0x67, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x73,
-	0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x19, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5f,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x1a, 0x14, 0x67, 0x6f, 0x67, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f,
-	0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73,
-	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x6b, 0x65, 0x79, 0x73, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x73, 0x2f, 0x74, 0x78, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x07, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x1a, 0x11, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2f, 0x61, 0x6d, 0x69, 0x6e, 0x6f,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x17, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x6d,
+	0x73, 0x67, 0x2f, 0x76, 0x31, 0x2f, 0x6d, 0x73, 0x67, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a,
+	0x19, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x14, 0x67, 0x6f, 0x67, 0x6f,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
 	0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xbb,
-	0x01, 0x0a, 0x0f, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61,
-	0x6d, 0x73, 0x12, 0x36, 0x0a, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2, 0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52,
-	0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x12, 0x3a, 0x0a, 0x06, 0x70, 0x61,
-	0x72, 0x61, 0x6d, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x61, 0x72,
+	0x73, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1a,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
+	0x6b, 0x65, 0x79, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x6e,
+	0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xb3, 0x01, 0x0a, 0x0f, 0x4d, 0x73, 0x67, 0x55, 0x70,
+	0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x36, 0x0a, 0x09, 0x61, 0x75,
+	0x74, 0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x18, 0xd2,
+	0xb4, 0x2d, 0x14, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
+	0x73, 0x53, 0x74, 0x72, 0x69, 0x6e, 0x67, 0x52, 0x09, 0x61, 0x75, 0x74, 0x68, 0x6f, 0x72, 0x69,
+	0x74, 0x79, 0x12, 0x32, 0x0a, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x61, 0x72,
 	0x61, 0x6d, 0x73, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x06,
 	0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x3a, 0x34, 0x82, 0xe7, 0xb0, 0x2a, 0x09, 0x61, 0x75, 0x74,
 	0x68, 0x6f, 0x72, 0x69, 0x74, 0x79, 0x8a, 0xe7, 0xb0, 0x2a, 0x21, 0x73, 0x74, 0x72, 0x75, 0x63,
@@ -35749,7 +35748,7 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x3a, 0x0c, 0x82,
 	0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x1a, 0x0a, 0x18, 0x4d,
 	0x73, 0x67, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xe4, 0x01, 0x0a, 0x13, 0x4d, 0x73, 0x67, 0x41,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0xdc, 0x01, 0x0a, 0x13, 0x4d, 0x73, 0x67, 0x41,
 	0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x12,
 	0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1e, 0x0a, 0x0a, 0x63, 0x6f, 0x6e,
@@ -35757,163 +35756,161 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x6c, 0x65, 0x72, 0x12, 0x26, 0x0a, 0x0e, 0x73, 0x6f, 0x75,
 	0x72, 0x63, 0x65, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x0e, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49,
-	0x64, 0x12, 0x47, 0x0a, 0x0e, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54,
-	0x79, 0x70, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1f, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x61, 0x6c, 0x6c, 0x6f,
-	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0e, 0x61, 0x6c, 0x6c, 0x6f,
-	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x70, 0x6f,
-	0x77, 0x65, 0x72, 0x18, 0x05, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x70, 0x6f, 0x77, 0x65, 0x72,
-	0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x41,
-	0x0a, 0x1b, 0x4d, 0x73, 0x67, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43,
-	0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x22, 0x0a,
-	0x0c, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x0c, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49,
-	0x64, 0x22, 0x91, 0x01, 0x0a, 0x17, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x41, 0x70,
-	0x70, 0x72, 0x6f, 0x76, 0x65, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x12, 0x18, 0x0a,
-	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
-	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x70, 0x70, 0x72, 0x6f,
-	0x76, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x61, 0x70, 0x70, 0x72, 0x6f, 0x76,
-	0x65, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70,
-	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70,
-	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72,
-	0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x21, 0x0a, 0x1f, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c,
-	0x64, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x82, 0x01, 0x0a, 0x0e, 0x4d, 0x73, 0x67,
-	0x47, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x63,
-	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72,
-	0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x65, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e,
-	0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x65, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e,
-	0x74, 0x12, 0x2c, 0x0a, 0x11, 0x65, 0x6e, 0x74, 0x72, 0x79, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x65, 0x6e,
-	0x74, 0x72, 0x79, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x3a,
-	0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x32, 0x0a,
-	0x16, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64,
-	0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49,
-	0x64, 0x22, 0x6f, 0x0a, 0x15, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64,
-	0x61, 0x74, 0x65, 0x4f, 0x77, 0x6e, 0x65, 0x72, 0x49, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72,
-	0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65,
-	0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12, 0x14,
-	0x0a, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6f,
-	0x77, 0x6e, 0x65, 0x72, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74,
-	0x6f, 0x72, 0x22, 0x91, 0x01, 0x0a, 0x1f, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f,
-	0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
-	0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12, 0x2c, 0x0a, 0x11, 0x65, 0x6e,
-	0x74, 0x72, 0x79, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x65, 0x6e, 0x74, 0x72, 0x79, 0x53, 0x75, 0x62, 0x73,
-	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63,
-	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x76, 0x0a, 0x16, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69,
-	0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74,
-	0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75,
-	0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69,
-	0x6c, 0x64, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x65, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x65, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74,
-	0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x97,
-	0x01, 0x0a, 0x21, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74,
-	0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e,
-	0x69, 0x6d, 0x75, 0x6d, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18,
-	0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12, 0x30, 0x0a, 0x13, 0x6a, 0x6f, 0x69, 0x6e,
-	0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x6a, 0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66, 0x75, 0x73,
-	0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a,
-	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0xcf, 0x01, 0x0a, 0x30, 0x4d, 0x73, 0x67,
-	0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49,
-	0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x42, 0x79,
-	0x70, 0x61, 0x73, 0x73, 0x42, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x18, 0x0a,
-	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
-	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64,
-	0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49,
-	0x64, 0x12, 0x59, 0x0a, 0x14, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x42, 0x79,
-	0x70, 0x61, 0x73, 0x73, 0x4c, 0x65, 0x76, 0x65, 0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32,
-	0x25, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x64, 0x12, 0x3f, 0x0a, 0x0e, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54,
+	0x79, 0x70, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79,
+	0x70, 0x65, 0x52, 0x0e, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79,
+	0x70, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x70, 0x6f, 0x77, 0x65, 0x72, 0x18, 0x05, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x05, 0x70, 0x6f, 0x77, 0x65, 0x72, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63,
+	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x41, 0x0a, 0x1b, 0x4d, 0x73, 0x67, 0x41, 0x6c, 0x6c,
+	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x22, 0x0a, 0x0c, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x61, 0x6c, 0x6c,
+	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x22, 0x91, 0x01, 0x0a, 0x17, 0x4d, 0x73,
+	0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x52, 0x65, 0x67,
+	0x69, 0x73, 0x74, 0x65, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12,
+	0x18, 0x0a, 0x07, 0x61, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08,
+	0x52, 0x07, 0x61, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69,
+	0x6c, 0x64, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c,
+	0x64, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18,
+	0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x3a,
+	0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x21, 0x0a,
+	0x1f, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65,
+	0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x82, 0x01, 0x0a, 0x0e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x72, 0x65,
+	0x61, 0x74, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1a, 0x0a,
+	0x08, 0x65, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x08, 0x65, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x12, 0x2c, 0x0a, 0x11, 0x65, 0x6e, 0x74,
+	0x72, 0x79, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x65, 0x6e, 0x74, 0x72, 0x79, 0x53, 0x75, 0x62, 0x73, 0x74,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72,
+	0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x32, 0x0a, 0x16, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c,
+	0x64, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x22, 0x6f, 0x0a, 0x15, 0x4d, 0x73, 0x67,
+	0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x77, 0x6e, 0x65, 0x72,
+	0x49, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07,
+	0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67,
+	0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x18,
+	0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x3a, 0x0c, 0x82, 0xe7,
+	0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x91, 0x01, 0x0a, 0x1f, 0x4d,
+	0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x74,
+	0x72, 0x79, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x18,
+	0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c,
+	0x64, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64,
+	0x49, 0x64, 0x12, 0x2c, 0x0a, 0x11, 0x65, 0x6e, 0x74, 0x72, 0x79, 0x53, 0x75, 0x62, 0x73, 0x74,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x65,
+	0x6e, 0x74, 0x72, 0x79, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64,
+	0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x76,
+	0x0a, 0x16, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
+	0x45, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61,
+	0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74,
+	0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08,
+	0x65, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
+	0x65, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63,
+	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x97, 0x01, 0x0a, 0x21, 0x4d, 0x73, 0x67, 0x47, 0x75,
+	0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66,
+	0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x12, 0x18, 0x0a, 0x07,
+	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63,
+	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49,
+	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64,
+	0x12, 0x30, 0x0a, 0x13, 0x6a, 0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e,
+	0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x6a,
+	0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d,
+	0x75, 0x6d, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
+	0x22, 0xc7, 0x01, 0x0a, 0x30, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d,
+	0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x42, 0x79, 0x70, 0x61, 0x73, 0x73, 0x42, 0x79, 0x52, 0x65,
+	0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12,
+	0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12, 0x51, 0x0a, 0x14, 0x67, 0x75, 0x69,
+	0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x42, 0x79, 0x70, 0x61, 0x73, 0x73, 0x4c, 0x65, 0x76, 0x65,
+	0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x73, 0x2e, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x42, 0x79, 0x70, 0x61, 0x73,
 	0x73, 0x4c, 0x65, 0x76, 0x65, 0x6c, 0x52, 0x14, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69,
 	0x6e, 0x42, 0x79, 0x70, 0x61, 0x73, 0x73, 0x4c, 0x65, 0x76, 0x65, 0x6c, 0x3a, 0x0c, 0x82, 0xe7,
-	0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0xce, 0x01, 0x0a, 0x2f, 0x4d,
+	0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0xc6, 0x01, 0x0a, 0x2f, 0x4d,
 	0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69,
 	0x6e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d,
 	0x42, 0x79, 0x70, 0x61, 0x73, 0x73, 0x42, 0x79, 0x49, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x12, 0x18,
 	0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
 	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c,
 	0x64, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64,
-	0x49, 0x64, 0x12, 0x59, 0x0a, 0x14, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x42,
+	0x49, 0x64, 0x12, 0x51, 0x0a, 0x14, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x42,
 	0x79, 0x70, 0x61, 0x73, 0x73, 0x4c, 0x65, 0x76, 0x65, 0x6c, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e,
-	0x32, 0x25, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x42, 0x79, 0x70, 0x61,
-	0x73, 0x73, 0x4c, 0x65, 0x76, 0x65, 0x6c, 0x52, 0x14, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f,
-	0x69, 0x6e, 0x42, 0x79, 0x70, 0x61, 0x73, 0x73, 0x4c, 0x65, 0x76, 0x65, 0x6c, 0x3a, 0x0c, 0x82,
-	0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x18, 0x0a, 0x16, 0x4d,
-	0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x79, 0x0a, 0x11, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c,
-	0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x50, 0x72, 0x6f, 0x78, 0x79, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72,
-	0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65,
-	0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x22,
-	0x0a, 0x0c, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
-	0x22, 0x1b, 0x0a, 0x19, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e,
-	0x50, 0x72, 0x6f, 0x78, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x50, 0x0a,
-	0x0c, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x12, 0x18, 0x0a,
-	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
-	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64,
-	0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49,
-	0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22,
-	0x16, 0x0a, 0x14, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x9e, 0x01, 0x0a, 0x1a, 0x4d, 0x73, 0x67, 0x50,
-	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x4f, 0x6e,
-	0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f,
-	0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
-	0x12, 0x1a, 0x0a, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08,
-	0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
-	0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x70, 0x65, 0x72, 0x6d,
-	0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x70,
-	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a,
-	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x81, 0x01, 0x0a, 0x1b, 0x4d, 0x73, 0x67,
-	0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x4f,
-	0x6e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61,
-	0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74,
-	0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x20, 0x0a, 0x0b,
-	0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x0b, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x3a, 0x0c,
-	0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x9f, 0x01, 0x0a,
-	0x1b, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65,
-	0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x6e, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x18, 0x0a, 0x07,
-	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63,
-	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74,
-	0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74,
-	0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x20,
-	0x0a, 0x0b, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x04, 0x20,
-	0x01, 0x28, 0x04, 0x52, 0x0b, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73,
-	0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x82,
-	0x01, 0x0a, 0x1c, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e,
-	0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x6e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12,
-	0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64,
-	0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72,
-	0x65, 0x73, 0x73, 0x12, 0x20, 0x0a, 0x0b, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f,
-	0x6e, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73,
-	0x73, 0x69, 0x6f, 0x6e, 0x73, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61,
-	0x74, 0x6f, 0x72, 0x22, 0x17, 0x0a, 0x15, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73,
-	0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x3a, 0x0a, 0x10,
-	0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x45, 0x78, 0x70, 0x6c, 0x6f, 0x72, 0x65,
+	0x32, 0x1d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x67, 0x75, 0x69, 0x6c, 0x64,
+	0x4a, 0x6f, 0x69, 0x6e, 0x42, 0x79, 0x70, 0x61, 0x73, 0x73, 0x4c, 0x65, 0x76, 0x65, 0x6c, 0x52,
+	0x14, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x42, 0x79, 0x70, 0x61, 0x73, 0x73,
+	0x4c, 0x65, 0x76, 0x65, 0x6c, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61,
+	0x74, 0x6f, 0x72, 0x22, 0x18, 0x0a, 0x16, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x79, 0x0a,
+	0x11, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x50, 0x72, 0x6f,
+	0x78, 0x79, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07,
+	0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x22, 0x0a, 0x0c, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x73, 0x75,
+	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a,
+	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x1b, 0x0a, 0x19, 0x4d, 0x73, 0x67, 0x47,
+	0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x50, 0x72, 0x6f, 0x78, 0x79, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x50, 0x0a, 0x0c, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c,
+	0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12,
+	0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07,
+	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x16, 0x0a, 0x14, 0x4d, 0x73, 0x67, 0x47, 0x75,
+	0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0x9e, 0x01, 0x0a, 0x1a, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f,
+	0x6e, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x4f, 0x6e, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x18,
+	0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x6f, 0x62, 0x6a, 0x65,
+	0x63, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6f, 0x62, 0x6a, 0x65,
+	0x63, 0x74, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64,
+	0x12, 0x20, 0x0a, 0x0b, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18,
+	0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f,
+	0x6e, 0x73, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
+	0x22, 0x81, 0x01, 0x0a, 0x1b, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69,
+	0x6f, 0x6e, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x4f, 0x6e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
 	0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a,
-	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x51, 0x0a, 0x18, 0x4d, 0x73, 0x67, 0x50,
-	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x45, 0x78, 0x70, 0x6c, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x35, 0x0a, 0x06, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x12, 0x20, 0x0a, 0x0b, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69,
+	0x6f, 0x6e, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x70, 0x65, 0x72, 0x6d, 0x69,
+	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65,
+	0x61, 0x74, 0x6f, 0x72, 0x22, 0x9f, 0x01, 0x0a, 0x1b, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d,
+	0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x6e, 0x4f, 0x62,
+	0x6a, 0x65, 0x63, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1a,
+	0x0a, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73,
+	0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x70, 0x65, 0x72,
+	0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63,
+	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x82, 0x01, 0x0a, 0x1c, 0x4d, 0x73, 0x67, 0x50, 0x65,
+	0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x6e,
+	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74,
+	0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f,
+	0x72, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x20, 0x0a, 0x0b, 0x70,
+	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x0b, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x3a, 0x0c, 0x82,
+	0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x17, 0x0a, 0x15, 0x4d,
+	0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x22, 0x3a, 0x0a, 0x10, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65,
+	0x74, 0x45, 0x78, 0x70, 0x6c, 0x6f, 0x72, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61,
+	0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74,
+	0x6f, 0x72, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
+	0x22, 0x49, 0x0a, 0x18, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x45, 0x78, 0x70,
+	0x6c, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d, 0x0a, 0x06,
+	0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x73,
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x42, 0x04, 0xc8,
 	0xde, 0x1f, 0x00, 0x52, 0x06, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x22, 0x6f, 0x0a, 0x1d, 0x4d,
 	0x73, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72,
@@ -35930,26 +35927,25 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65,
 	0x61, 0x74, 0x6f, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64,
 	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64,
-	0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x52,
+	0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x4a,
 	0x0a, 0x19, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x63, 0x74, 0x69, 0x76,
-	0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x35, 0x0a, 0x06, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x22, 0x90, 0x01, 0x0a, 0x16, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x42, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x6e, 0x69, 0x74, 0x69, 0x61, 0x74, 0x65, 0x12, 0x18, 0x0a,
-	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
-	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1e, 0x0a, 0x0a, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x54, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65,
-	0x74, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65,
-	0x74, 0x49, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x73, 0x6c, 0x6f, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x04, 0x73, 0x6c, 0x6f, 0x74, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72,
-	0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x57, 0x0a, 0x1e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x6e, 0x69, 0x74, 0x69, 0x61, 0x74, 0x65, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x35, 0x0a, 0x06, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d, 0x0a, 0x06, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x04, 0xc8, 0xde,
+	0x1f, 0x00, 0x52, 0x06, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x22, 0x90, 0x01, 0x0a, 0x16, 0x4d,
+	0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x6e, 0x69,
+	0x74, 0x69, 0x61, 0x74, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12,
+	0x1e, 0x0a, 0x0a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x0a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12,
+	0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x73,
+	0x6c, 0x6f, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x04, 0x73, 0x6c, 0x6f, 0x74, 0x3a,
+	0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x4f, 0x0a,
+	0x1e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x49,
+	0x6e, 0x69, 0x74, 0x69, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x2d, 0x0a, 0x06, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x0f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x22, 0x88,
 	0x01, 0x0a, 0x16, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c,
 	0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65,
@@ -35959,31 +35955,30 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x14, 0x0a, 0x05, 0x70, 0x72, 0x6f, 0x6f, 0x66, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05,
 	0x70, 0x72, 0x6f, 0x6f, 0x66, 0x12, 0x14, 0x0a, 0x05, 0x6e, 0x6f, 0x6e, 0x63, 0x65, 0x18, 0x04,
 	0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6e, 0x6f, 0x6e, 0x63, 0x65, 0x3a, 0x0c, 0x82, 0xe7, 0xb0,
-	0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x57, 0x0a, 0x1e, 0x4d, 0x73, 0x67,
+	0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x4f, 0x0a, 0x1e, 0x4d, 0x73, 0x67,
 	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c,
-	0x65, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x35, 0x0a, 0x06, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x22, 0x79, 0x0a, 0x0f, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49,
-	0x6e, 0x66, 0x75, 0x73, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12,
-	0x1a, 0x0a, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x22, 0x0a, 0x0c, 0x69,
-	0x6e, 0x66, 0x75, 0x73, 0x65, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x0c, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x3a,
-	0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x19, 0x0a,
-	0x17, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x5b, 0x0a, 0x15, 0x4d, 0x73, 0x67, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x69, 0x6e, 0x65, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74,
-	0x65, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72,
-	0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x56, 0x0a, 0x1d, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x4d, 0x69, 0x6e, 0x65, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x35, 0x0a, 0x06, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x65, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d, 0x0a, 0x06, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x04, 0xc8, 0xde,
+	0x1f, 0x00, 0x52, 0x06, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x22, 0x79, 0x0a, 0x0f, 0x4d, 0x73,
+	0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x12, 0x18, 0x0a,
+	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
+	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x49, 0x64, 0x12, 0x22, 0x0a, 0x0c, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x41, 0x6d, 0x6f,
+	0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x69, 0x6e, 0x66, 0x75, 0x73,
+	0x65, 0x41, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72,
+	0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x19, 0x0a, 0x17, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x5b, 0x0a, 0x15, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x69, 0x6e,
+	0x65, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65,
+	0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61,
+	0x74, 0x6f, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x3a,
+	0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x4e, 0x0a,
+	0x1d, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x69, 0x6e, 0x65, 0x41, 0x63,
+	0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d,
+	0x0a, 0x06, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42,
 	0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x22, 0x5d, 0x0a,
 	0x17, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x69, 0x6e, 0x65, 0x44, 0x65,
@@ -35991,24 +35986,23 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74,
 	0x6f, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x02,
 	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x3a, 0x0c,
-	0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x58, 0x0a, 0x1f,
+	0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x50, 0x0a, 0x1f,
 	0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x61,
 	0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x35, 0x0a, 0x06, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x22, 0x7f, 0x0a, 0x0d, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x4d, 0x69, 0x6e, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74,
-	0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f,
-	0x72, 0x12, 0x1a, 0x0a, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x14, 0x0a,
-	0x05, 0x70, 0x72, 0x6f, 0x6f, 0x66, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x70, 0x72,
-	0x6f, 0x6f, 0x66, 0x12, 0x14, 0x0a, 0x05, 0x6e, 0x6f, 0x6e, 0x63, 0x65, 0x18, 0x04, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x05, 0x6e, 0x6f, 0x6e, 0x63, 0x65, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07,
-	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x4e, 0x0a, 0x15, 0x4d, 0x73, 0x67, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x4d, 0x69, 0x6e, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x35, 0x0a, 0x06, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
-	0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x2d, 0x0a, 0x06, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x0f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x22, 0x7f,
+	0x0a, 0x0d, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x69, 0x6e, 0x65, 0x12,
+	0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x70, 0x72, 0x6f, 0x6f, 0x66, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x70, 0x72, 0x6f, 0x6f, 0x66, 0x12, 0x14, 0x0a, 0x05, 0x6e,
+	0x6f, 0x6e, 0x63, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6e, 0x6f, 0x6e, 0x63,
+	0x65, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22,
+	0x46, 0x0a, 0x15, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x69, 0x6e, 0x65,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d, 0x0a, 0x06, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
 	0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52,
 	0x06, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x22, 0x5d, 0x0a, 0x17, 0x4d, 0x73, 0x67, 0x53, 0x74,
 	0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61,
@@ -36016,22 +36010,21 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1a, 0x0a, 0x08,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63,
-	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x58, 0x0a, 0x1f, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72,
+	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x50, 0x0a, 0x1f, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72,
 	0x75, 0x63, 0x74, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74,
-	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x35, 0x0a, 0x06, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x22, 0x5f, 0x0a, 0x19, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x66,
-	0x69, 0x6e, 0x65, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x18, 0x0a,
-	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
-	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f,
-	0x72, 0x22, 0x5a, 0x0a, 0x21, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65,
-	0x66, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x35, 0x0a, 0x06, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d, 0x0a, 0x06, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00,
+	0x52, 0x06, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x22, 0x5f, 0x0a, 0x19, 0x4d, 0x73, 0x67, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x61, 0x63, 0x74,
+	0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12,
+	0x1a, 0x0a, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0,
+	0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x52, 0x0a, 0x21, 0x4d, 0x73, 0x67,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x61, 0x63,
+	0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d,
+	0x0a, 0x06, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42,
 	0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x22, 0x81, 0x01,
 	0x0a, 0x0f, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x66, 0x69, 0x6e,
@@ -36042,381 +36035,339 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x70, 0x72, 0x6f, 0x6f, 0x66, 0x12, 0x14, 0x0a,
 	0x05, 0x6e, 0x6f, 0x6e, 0x63, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6e, 0x6f,
 	0x6e, 0x63, 0x65, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f,
-	0x72, 0x22, 0x50, 0x0a, 0x17, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65,
-	0x66, 0x69, 0x6e, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x35, 0x0a, 0x06,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x22, 0x77, 0x0a, 0x13, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72,
-	0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65,
-	0x61, 0x74, 0x6f, 0x72, 0x12, 0x14, 0x0a, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x12, 0x22, 0x0a, 0x0c, 0x61, 0x6c,
-	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x0c, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x3a, 0x0c,
-	0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x41, 0x0a, 0x1b,
-	0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65,
-	0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x22, 0x0a, 0x0c, 0x73,
-	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x0c, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x22,
-	0x97, 0x01, 0x0a, 0x13, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74,
-	0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f,
-	0x72, 0x12, 0x22, 0x0a, 0x0c, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49,
-	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x34, 0x0a, 0x15, 0x6d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x15, 0x6d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53,
-	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0,
-	0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x1d, 0x0a, 0x1b, 0x4d, 0x73, 0x67,
-	0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65,
-	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x92, 0x01, 0x0a, 0x1e, 0x4d, 0x73, 0x67,
-	0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x63,
-	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72,
-	0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x22, 0x0a, 0x0c, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x61, 0x6c, 0x6c,
-	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x24, 0x0a, 0x0d, 0x64, 0x65, 0x73,
-	0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x0d, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x3a,
-	0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x28, 0x0a,
-	0x26, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c,
-	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x6f, 0x0a, 0x21, 0x4d, 0x73, 0x67, 0x53, 0x75,
-	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x18, 0x0a, 0x07,
-	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63,
-	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x22, 0x0a, 0x0c, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x61, 0x6c,
-	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a,
-	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x2b, 0x0a, 0x29, 0x4d, 0x73, 0x67, 0x53,
-	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x84, 0x01, 0x0a, 0x1a, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62,
-	0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e,
-	0x6e, 0x65, 0x63, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x22,
-	0x0a, 0x0c, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x3a, 0x0c,
-	0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x24, 0x0a, 0x22,
-	0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61,
-	0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x22, 0x63, 0x0a, 0x1d, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e,
-	0x65, 0x63, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1a, 0x0a,
-	0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07,
-	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x27, 0x0a, 0x25, 0x4d, 0x73, 0x67, 0x53, 0x75,
-	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69,
-	0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x22, 0x84, 0x01, 0x0a, 0x1a, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x12,
+	0x72, 0x22, 0x48, 0x0a, 0x17, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65,
+	0x66, 0x69, 0x6e, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x2d, 0x0a, 0x06,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x04, 0xc8,
+	0xde, 0x1f, 0x00, 0x52, 0x06, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x22, 0x77, 0x0a, 0x13, 0x4d,
+	0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61,
+	0x74, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x14, 0x0a, 0x05,
+	0x6f, 0x77, 0x6e, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x77, 0x6e,
+	0x65, 0x72, 0x12, 0x22, 0x0a, 0x0c, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65,
+	0x61, 0x74, 0x6f, 0x72, 0x22, 0x41, 0x0a, 0x1b, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x22, 0x0a, 0x0c, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x73, 0x75, 0x62, 0x73, 0x74,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x22, 0x97, 0x01, 0x0a, 0x13, 0x4d, 0x73, 0x67, 0x53,
+	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12,
 	0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
 	0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x22, 0x0a, 0x0c, 0x73, 0x75, 0x62,
 	0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x0c, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x1a, 0x0a,
-	0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x52,
-	0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07,
-	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x24, 0x0a, 0x22, 0x4d, 0x73, 0x67, 0x53, 0x75,
-	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4d, 0x69,
-	0x67, 0x72, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x7d, 0x0a,
-	0x0b, 0x4d, 0x73, 0x67, 0x53, 0x61, 0x62, 0x6f, 0x74, 0x61, 0x67, 0x65, 0x12, 0x18, 0x0a, 0x07,
+	0x0c, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x34, 0x0a,
+	0x15, 0x6d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x15, 0x6d, 0x69,
+	0x67, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f,
+	0x72, 0x22, 0x1d, 0x0a, 0x1b, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
+	0x22, 0x92, 0x01, 0x0a, 0x1e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e,
+	0x65, 0x63, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x22, 0x0a,
+	0x0c, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x0c, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49,
+	0x64, 0x12, 0x24, 0x0a, 0x0d, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72,
+	0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x28, 0x0a, 0x26, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73,
+	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22,
+	0x6f, 0x0a, 0x21, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e,
+	0x6e, 0x65, 0x63, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x22,
+	0x0a, 0x0c, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
+	0x22, 0x2b, 0x0a, 0x29, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73, 0x63, 0x6f,
+	0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x84, 0x01,
+	0x0a, 0x1a, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x18, 0x0a, 0x07,
 	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63,
-	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x70, 0x72, 0x6f, 0x6f, 0x66, 0x18, 0x03, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x05, 0x70, 0x72, 0x6f, 0x6f, 0x66, 0x12, 0x14, 0x0a, 0x05, 0x6e, 0x6f, 0x6e, 0x63,
-	0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6e, 0x6f, 0x6e, 0x63, 0x65, 0x3a, 0x0c,
-	0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x15, 0x0a, 0x13,
-	0x4d, 0x73, 0x67, 0x53, 0x61, 0x62, 0x6f, 0x74, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x32, 0x9b, 0x22, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x5a, 0x0a, 0x0c, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x20, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
-	0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x1a, 0x28, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x63, 0x0a, 0x0f, 0x41, 0x64, 0x64, 0x72, 0x65,
-	0x73, 0x73, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x12, 0x23, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
+	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x22, 0x0a, 0x0c, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x73, 0x75,
+	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65,
+	0x61, 0x74, 0x6f, 0x72, 0x22, 0x24, 0x0a, 0x22, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e, 0x65,
+	0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x63, 0x0a, 0x1d, 0x4d, 0x73,
+	0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65,
+	0x72, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x18, 0x0a, 0x07, 0x63,
+	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72,
+	0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49,
+	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49,
+	0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22,
+	0x27, 0x0a, 0x25, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x84, 0x01, 0x0a, 0x1a, 0x4d, 0x73, 0x67,
+	0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72,
+	0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74,
+	0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f,
+	0x72, 0x12, 0x22, 0x0a, 0x0c, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49,
+	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49,
+	0x64, 0x18, 0x03, 0x20, 0x03, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49,
+	0x64, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22,
+	0x24, 0x0a, 0x22, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x22, 0x7d, 0x0a, 0x0b, 0x4d, 0x73, 0x67, 0x53, 0x61, 0x62, 0x6f,
+	0x74, 0x61, 0x67, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1a,
+	0x0a, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x70, 0x72,
+	0x6f, 0x6f, 0x66, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x70, 0x72, 0x6f, 0x6f, 0x66,
+	0x12, 0x14, 0x0a, 0x05, 0x6e, 0x6f, 0x6e, 0x63, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x05, 0x6e, 0x6f, 0x6e, 0x63, 0x65, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65,
+	0x61, 0x74, 0x6f, 0x72, 0x22, 0x15, 0x0a, 0x13, 0x4d, 0x73, 0x67, 0x53, 0x61, 0x62, 0x6f, 0x74,
+	0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x32, 0xa8, 0x1d, 0x0a, 0x03,
+	0x4d, 0x73, 0x67, 0x12, 0x4a, 0x0a, 0x0c, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72,
+	0x61, 0x6d, 0x73, 0x12, 0x18, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
+	0x67, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x1a, 0x20, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x55, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x53, 0x0a, 0x0f, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74,
+	0x65, 0x72, 0x12, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
 	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x1a,
-	0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x67, 0x69,
-	0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x71, 0x0a, 0x16,
-	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x52, 0x65,
-	0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x12, 0x2a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64,
+	0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x61, 0x0a, 0x16, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41,
+	0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x12, 0x22,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64, 0x72,
 	0x65, 0x73, 0x73, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74,
-	0x65, 0x72, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52,
-	0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x5d, 0x0a, 0x0d, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65,
-	0x12, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x65, 0x72, 0x1a, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
+	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4d, 0x0a, 0x0d, 0x41, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x12, 0x19, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
 	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x76,
-	0x6f, 0x6b, 0x65, 0x1a, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
-	0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x66,
-	0x0a, 0x10, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61,
-	0x74, 0x65, 0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x6f, 0x6b, 0x65, 0x1a, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
+	0x67, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x56, 0x0a, 0x10, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x1c, 0x2e, 0x73, 0x74, 0x72,
 	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x1a, 0x2c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x6c,
-	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x57, 0x0a, 0x0b, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x43,
-	0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x1f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x47,
+	0x0a, 0x0b, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x17, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64,
-	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c,
-	0x64, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
-	0x65, 0x0a, 0x12, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x77,
-	0x6e, 0x65, 0x72, 0x49, 0x64, 0x12, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x1a, 0x1f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x55, 0x0a, 0x12, 0x47, 0x75, 0x69, 0x6c, 0x64,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x77, 0x6e, 0x65, 0x72, 0x49, 0x64, 0x12, 0x1e, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64,
-	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x77, 0x6e, 0x65, 0x72, 0x49, 0x64, 0x1a, 0x27, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x79, 0x0a, 0x1c, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x30, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4f, 0x77, 0x6e, 0x65, 0x72, 0x49, 0x64, 0x1a, 0x1f, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x69,
+	0x0a, 0x1c, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x74,
+	0x72, 0x79, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x28,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c,
 	0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x53, 0x75, 0x62, 0x73,
-	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75,
-	0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x67, 0x0a, 0x13, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
-	0x45, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74, 0x12, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75,
+	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x1a, 0x1f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x57, 0x0a, 0x13, 0x47, 0x75, 0x69,
+	0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e, 0x74,
+	0x12, 0x1f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75,
 	0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x45, 0x6e, 0x64, 0x70, 0x6f, 0x69, 0x6e,
-	0x74, 0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61,
-	0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7d, 0x0a, 0x1e, 0x47, 0x75,
-	0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66,
-	0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x12, 0x32, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
+	0x74, 0x1a, 0x1f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47,
+	0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x6d, 0x0a, 0x1e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e,
+	0x69, 0x6d, 0x75, 0x6d, 0x12, 0x2a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
 	0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69,
 	0x6e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d,
-	0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74,
-	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x99, 0x01, 0x0a, 0x2c, 0x47, 0x75,
-	0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66,
-	0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x42, 0x79, 0x70, 0x61,
-	0x73, 0x73, 0x42, 0x79, 0x49, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x12, 0x40, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
+	0x1a, 0x1f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75,
+	0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x89, 0x01, 0x0a, 0x2c, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74,
+	0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e,
+	0x69, 0x6d, 0x75, 0x6d, 0x42, 0x79, 0x70, 0x61, 0x73, 0x73, 0x42, 0x79, 0x49, 0x6e, 0x76, 0x69,
+	0x74, 0x65, 0x12, 0x38, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
 	0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49,
 	0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x42, 0x79,
-	0x70, 0x61, 0x73, 0x73, 0x42, 0x79, 0x49, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x1a, 0x27, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
-	0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x9b, 0x01, 0x0a, 0x2d, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55,
-	0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f,
-	0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x42, 0x79, 0x70, 0x61, 0x73, 0x73, 0x42, 0x79,
-	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x41, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69,
+	0x70, 0x61, 0x73, 0x73, 0x42, 0x79, 0x49, 0x6e, 0x76, 0x69, 0x74, 0x65, 0x1a, 0x1f, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55,
+	0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x8b, 0x01,
+	0x0a, 0x2d, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69,
+	0x6e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d,
+	0x42, 0x79, 0x70, 0x61, 0x73, 0x73, 0x42, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12,
+	0x39, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69,
 	0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4a, 0x6f, 0x69, 0x6e, 0x49, 0x6e, 0x66, 0x75,
 	0x73, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x42, 0x79, 0x70, 0x61, 0x73,
-	0x73, 0x42, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x27, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
-	0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x72, 0x0a, 0x14, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x41, 0x70, 0x70, 0x72,
-	0x6f, 0x76, 0x65, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x12, 0x28, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
+	0x73, 0x42, 0x79, 0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x1a, 0x1f, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x62, 0x0a, 0x14, 0x47,
+	0x75, 0x69, 0x6c, 0x64, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x52, 0x65, 0x67, 0x69, 0x73,
+	0x74, 0x65, 0x72, 0x12, 0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
 	0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x52, 0x65, 0x67,
-	0x69, 0x73, 0x74, 0x65, 0x72, 0x1a, 0x30, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x69, 0x73, 0x74, 0x65, 0x72, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x52,
+	0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x50, 0x0a, 0x0e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x50, 0x72, 0x6f, 0x78,
+	0x79, 0x12, 0x1a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47,
+	0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x50, 0x72, 0x6f, 0x78, 0x79, 0x1a, 0x22, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64,
-	0x41, 0x70, 0x70, 0x72, 0x6f, 0x76, 0x65, 0x52, 0x65, 0x67, 0x69, 0x73, 0x74, 0x65, 0x72, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x0e, 0x47, 0x75, 0x69, 0x6c, 0x64,
-	0x4a, 0x6f, 0x69, 0x6e, 0x50, 0x72, 0x6f, 0x78, 0x79, 0x12, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47,
-	0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x50, 0x72, 0x6f, 0x78, 0x79, 0x1a, 0x2a, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x50, 0x72, 0x6f, 0x78,
-	0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x51, 0x0a, 0x09, 0x47, 0x75, 0x69,
-	0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x12, 0x1d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x4a, 0x6f, 0x69, 0x6e, 0x50, 0x72, 0x6f, 0x78, 0x79, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x41, 0x0a, 0x09, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x12, 0x15,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c,
-	0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x1a, 0x25, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64,
-	0x4a, 0x6f, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x70, 0x0a, 0x18,
-	0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x4f,
-	0x6e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x2c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65,
+	0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x1a, 0x1d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4a, 0x6f, 0x69, 0x6e, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x18, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69,
+	0x6f, 0x6e, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x4f, 0x6e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65,
 	0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x4f, 0x6e, 0x41,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x1a, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d,
-	0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6e,
-	0x0a, 0x17, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x61, 0x6e,
-	0x74, 0x4f, 0x6e, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50,
-	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x4f, 0x6e,
-	0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x1a, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d,
-	0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x72,
-	0x0a, 0x19, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x76, 0x6f,
-	0x6b, 0x65, 0x4f, 0x6e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x2d, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
-	0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x76, 0x6f, 0x6b,
-	0x65, 0x4f, 0x6e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x1a, 0x26, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
-	0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x12, 0x70, 0x0a, 0x18, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e,
-	0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x6e, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x2c,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x1a, 0x1e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
 	0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65,
-	0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x6e, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x1a, 0x26, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
-	0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5d, 0x0a, 0x0d, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x45, 0x78,
-	0x70, 0x6c, 0x6f, 0x72, 0x65, 0x12, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5e, 0x0a, 0x17, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73,
+	0x73, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x4f, 0x6e, 0x4f, 0x62, 0x6a, 0x65, 0x63,
+	0x74, 0x12, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50,
+	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x47, 0x72, 0x61, 0x6e, 0x74, 0x4f, 0x6e,
+	0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x1a, 0x1e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65,
+	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x62, 0x0a, 0x19, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73,
+	0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x6e, 0x41, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x12, 0x25, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
+	0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x76, 0x6f, 0x6b,
+	0x65, 0x4f, 0x6e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x1a, 0x1e, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69,
+	0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x18, 0x50, 0x65,
+	0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x6e,
+	0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65,
+	0x76, 0x6f, 0x6b, 0x65, 0x4f, 0x6e, 0x4f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x1a, 0x1e, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73,
+	0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4d, 0x0a, 0x0d,
+	0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x45, 0x78, 0x70, 0x6c, 0x6f, 0x72, 0x65, 0x12, 0x19, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65,
-	0x74, 0x45, 0x78, 0x70, 0x6c, 0x6f, 0x72, 0x65, 0x1a, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c,
-	0x61, 0x6e, 0x65, 0x74, 0x45, 0x78, 0x70, 0x6c, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x84, 0x01, 0x0a, 0x1a, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65,
-	0x73, 0x73, 0x12, 0x2e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65,
-	0x73, 0x73, 0x1a, 0x36, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65,
-	0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x60, 0x0a, 0x0e, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x22, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
-	0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65,
-	0x1a, 0x2a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x63, 0x74, 0x69,
-	0x76, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a, 0x13,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x6e, 0x69, 0x74, 0x69,
-	0x61, 0x74, 0x65, 0x12, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x74, 0x45, 0x78, 0x70, 0x6c, 0x6f, 0x72, 0x65, 0x1a, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x45, 0x78, 0x70, 0x6c,
+	0x6f, 0x72, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x74, 0x0a, 0x1a, 0x50,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x69, 0x6d, 0x61,
+	0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64,
+	0x61, 0x74, 0x65, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
+	0x73, 0x1a, 0x2e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x69, 0x6d, 0x61,
+	0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x50, 0x0a, 0x0e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x63, 0x74, 0x69, 0x76,
+	0x61, 0x74, 0x65, 0x12, 0x1a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
+	0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x1a,
+	0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x5f, 0x0a, 0x13, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69,
+	0x6c, 0x64, 0x49, 0x6e, 0x69, 0x74, 0x69, 0x61, 0x74, 0x65, 0x12, 0x1f, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75,
+	0x69, 0x6c, 0x64, 0x49, 0x6e, 0x69, 0x74, 0x69, 0x61, 0x74, 0x65, 0x1a, 0x27, 0x2e, 0x73, 0x74,
 	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42,
-	0x75, 0x69, 0x6c, 0x64, 0x49, 0x6e, 0x69, 0x74, 0x69, 0x61, 0x74, 0x65, 0x1a, 0x2f, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
-	0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x6e, 0x69,
-	0x74, 0x69, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6f, 0x0a,
-	0x13, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x6f, 0x6d, 0x70,
-	0x6c, 0x65, 0x74, 0x65, 0x12, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x75, 0x69, 0x6c, 0x64, 0x49, 0x6e, 0x69, 0x74, 0x69, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70,
+	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5f, 0x0a, 0x13, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75,
+	0x69, 0x6c, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x1f, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42,
+	0x75, 0x69, 0x6c, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x1a, 0x27, 0x2e, 0x73,
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x42, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x1a, 0x2f, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x6f,
-	0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c,
-	0x0a, 0x12, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x69, 0x6e, 0x65, 0x41, 0x63, 0x74, 0x69,
-	0x76, 0x61, 0x74, 0x65, 0x12, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x4d, 0x69, 0x6e, 0x65, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x1a, 0x2e, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
-	0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x69, 0x6e, 0x65, 0x41, 0x63, 0x74, 0x69,
-	0x76, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x72, 0x0a, 0x14,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69,
-	0x76, 0x61, 0x74, 0x65, 0x12, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x4d, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x1a, 0x30,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x69, 0x6e, 0x65, 0x44, 0x65,
-	0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x54, 0x0a, 0x0a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x69, 0x6e, 0x65, 0x12, 0x1e,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x69, 0x6e, 0x65, 0x1a, 0x26,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x69, 0x6e, 0x65, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x72, 0x0a, 0x14, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x28,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65,
-	0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x1a, 0x30, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61,
-	0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x78, 0x0a, 0x16, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69,
-	0x76, 0x61, 0x74, 0x65, 0x12, 0x2a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65,
-	0x1a, 0x32, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x66, 0x69,
-	0x6e, 0x65, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5a, 0x0a, 0x0c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65,
-	0x66, 0x69, 0x6e, 0x65, 0x12, 0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65,
-	0x12, 0x5a, 0x0a, 0x0c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65,
-	0x12, 0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x75,
-	0x73, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x6e,
-	0x66, 0x75, 0x73, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x66, 0x0a, 0x10,
-	0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65,
-	0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x1a, 0x2c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73,
-	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x66, 0x0a, 0x10, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75,
-	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x1a, 0x2c,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65,
-	0x6c, 0x65, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x87, 0x01, 0x0a,
-	0x1b, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x2f, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
-	0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f,
-	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x1a, 0x37, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c,
-	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x90, 0x01, 0x0a, 0x1e, 0x53, 0x75, 0x62, 0x73, 0x74,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44,
-	0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x32, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53,
-	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x1a, 0x3a, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c,
-	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63,
-	0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a, 0x17, 0x53, 0x75, 0x62,
+	0x42, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5c, 0x0a, 0x12, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d,
+	0x69, 0x6e, 0x65, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x1e, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d,
+	0x69, 0x6e, 0x65, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x1a, 0x26, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d,
+	0x69, 0x6e, 0x65, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x62, 0x0a, 0x14, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x69, 0x6e,
+	0x65, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x20, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d,
+	0x69, 0x6e, 0x65, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x1a, 0x28, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x4d, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x44, 0x0a, 0x0a, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x4d, 0x69, 0x6e, 0x65, 0x12, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x69, 0x6e, 0x65, 0x1a, 0x1e, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x4d, 0x69, 0x6e, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x62, 0x0a,
+	0x14, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x41, 0x63, 0x74,
+	0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x41,
+	0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x66, 0x69, 0x6e,
+	0x65, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
+	0x65, 0x12, 0x68, 0x0a, 0x16, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x66, 0x69, 0x6e,
+	0x65, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x22, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52,
+	0x65, 0x66, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x1a,
+	0x2a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76,
+	0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4a, 0x0a, 0x0c, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x12, 0x18, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52,
+	0x65, 0x66, 0x69, 0x6e, 0x65, 0x1a, 0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4a, 0x0a, 0x0c, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x12, 0x18, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x75, 0x73,
+	0x65, 0x1a, 0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x56, 0x0a, 0x10, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x12, 0x1c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43,
+	0x72, 0x65, 0x61, 0x74, 0x65, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65,
+	0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x56, 0x0a, 0x10, 0x53,
+	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12,
+	0x1c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62,
+	0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x1a, 0x24, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x77, 0x0a, 0x1b, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65,
+	0x63, 0x74, 0x12, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
+	0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x1a, 0x2f, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e,
+	0x6e, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x80, 0x01, 0x0a,
+	0x1e, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12,
+	0x2a, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62,
+	0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x1a, 0x32, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73,
+	0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x6b, 0x0a, 0x17, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61,
+	0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x23, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x1a,
+	0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62,
 	0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e,
-	0x6e, 0x65, 0x63, 0x74, 0x12, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63,
-	0x74, 0x1a, 0x33, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52, 0x65,
-	0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x84, 0x01, 0x0a, 0x1a, 0x53, 0x75, 0x62, 0x73, 0x74,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69, 0x73, 0x63, 0x6f,
-	0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x2e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69, 0x73, 0x63, 0x6f,
-	0x6e, 0x6e, 0x65, 0x63, 0x74, 0x1a, 0x36, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69, 0x73, 0x63, 0x6f,
-	0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a,
-	0x17, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65,
-	0x72, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x12, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75,
-	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4d, 0x69,
-	0x67, 0x72, 0x61, 0x74, 0x65, 0x1a, 0x33, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x6e, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x74, 0x0a, 0x1a,
+	0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72,
+	0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x26, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65,
+	0x63, 0x74, 0x1a, 0x2e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
+	0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72,
+	0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x6b, 0x0a, 0x17, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x12, 0x23, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74,
 	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4d, 0x69, 0x67, 0x72, 0x61,
-	0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x4e, 0x0a, 0x08, 0x53, 0x61,
-	0x62, 0x6f, 0x74, 0x61, 0x67, 0x65, 0x12, 0x1c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x61, 0x62, 0x6f,
-	0x74, 0x61, 0x67, 0x65, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x61, 0x62, 0x6f, 0x74, 0x61,
-	0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x1a, 0x05, 0x80, 0xe7, 0xb0, 0x2a,
-	0x01, 0x42, 0x9d, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72, 0x6f,
-	0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e,
-	0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02,
-	0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02,
-	0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x65, 0x1a, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
+	0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72,
+	0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x3e, 0x0a, 0x08, 0x53, 0x61, 0x62, 0x6f, 0x74, 0x61, 0x67, 0x65, 0x12, 0x14, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x61, 0x62, 0x6f, 0x74, 0x61, 0x67,
+	0x65, 0x1a, 0x1c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53,
+	0x61, 0x62, 0x6f, 0x74, 0x61, 0x67, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x1a,
+	0x05, 0x80, 0xe7, 0xb0, 0x2a, 0x01, 0x42, 0x74, 0x0a, 0x0b, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01,
+	0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61,
+	0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x58, 0x58, 0xaa, 0x02, 0x07, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0xca, 0x02, 0x07, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x13, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
+	0x74, 0x61, 0xea, 0x02, 0x07, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -36433,174 +36384,174 @@ func file_structs_structs_tx_proto_rawDescGZIP() []byte {
 
 var file_structs_structs_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 69)
 var file_structs_structs_tx_proto_goTypes = []interface{}{
-	(*MsgUpdateParams)(nil),                                  // 0: structs.structs.MsgUpdateParams
-	(*MsgUpdateParamsResponse)(nil),                          // 1: structs.structs.MsgUpdateParamsResponse
-	(*MsgAddressApproveRegister)(nil),                        // 2: structs.structs.MsgAddressApproveRegister
-	(*MsgAddressRegister)(nil),                               // 3: structs.structs.MsgAddressRegister
-	(*MsgAddressRegisterResponse)(nil),                       // 4: structs.structs.MsgAddressRegisterResponse
-	(*MsgAddressRevoke)(nil),                                 // 5: structs.structs.MsgAddressRevoke
-	(*MsgAddressRevokeResponse)(nil),                         // 6: structs.structs.MsgAddressRevokeResponse
-	(*MsgAllocationCreate)(nil),                              // 7: structs.structs.MsgAllocationCreate
-	(*MsgAllocationCreateResponse)(nil),                      // 8: structs.structs.MsgAllocationCreateResponse
-	(*MsgGuildApproveRegister)(nil),                          // 9: structs.structs.MsgGuildApproveRegister
-	(*MsgGuildApproveRegisterResponse)(nil),                  // 10: structs.structs.MsgGuildApproveRegisterResponse
-	(*MsgGuildCreate)(nil),                                   // 11: structs.structs.MsgGuildCreate
-	(*MsgGuildCreateResponse)(nil),                           // 12: structs.structs.MsgGuildCreateResponse
-	(*MsgGuildUpdateOwnerId)(nil),                            // 13: structs.structs.MsgGuildUpdateOwnerId
-	(*MsgGuildUpdateEntrySubstationId)(nil),                  // 14: structs.structs.MsgGuildUpdateEntrySubstationId
-	(*MsgGuildUpdateEndpoint)(nil),                           // 15: structs.structs.MsgGuildUpdateEndpoint
-	(*MsgGuildUpdateJoinInfusionMinimum)(nil),                // 16: structs.structs.MsgGuildUpdateJoinInfusionMinimum
-	(*MsgGuildUpdateJoinInfusionMinimumBypassByRequest)(nil), // 17: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest
-	(*MsgGuildUpdateJoinInfusionMinimumBypassByInvite)(nil),  // 18: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite
-	(*MsgGuildUpdateResponse)(nil),                           // 19: structs.structs.MsgGuildUpdateResponse
-	(*MsgGuildJoinProxy)(nil),                                // 20: structs.structs.MsgGuildJoinProxy
-	(*MsgGuildJoinProxyResponse)(nil),                        // 21: structs.structs.MsgGuildJoinProxyResponse
-	(*MsgGuildJoin)(nil),                                     // 22: structs.structs.MsgGuildJoin
-	(*MsgGuildJoinResponse)(nil),                             // 23: structs.structs.MsgGuildJoinResponse
-	(*MsgPermissionGrantOnObject)(nil),                       // 24: structs.structs.MsgPermissionGrantOnObject
-	(*MsgPermissionGrantOnAddress)(nil),                      // 25: structs.structs.MsgPermissionGrantOnAddress
-	(*MsgPermissionRevokeOnObject)(nil),                      // 26: structs.structs.MsgPermissionRevokeOnObject
-	(*MsgPermissionRevokeOnAddress)(nil),                     // 27: structs.structs.MsgPermissionRevokeOnAddress
-	(*MsgPermissionResponse)(nil),                            // 28: structs.structs.MsgPermissionResponse
-	(*MsgPlanetExplore)(nil),                                 // 29: structs.structs.MsgPlanetExplore
-	(*MsgPlanetExploreResponse)(nil),                         // 30: structs.structs.MsgPlanetExploreResponse
-	(*MsgPlayerUpdatePrimaryAddress)(nil),                    // 31: structs.structs.MsgPlayerUpdatePrimaryAddress
-	(*MsgPlayerUpdatePrimaryAddressResponse)(nil),            // 32: structs.structs.MsgPlayerUpdatePrimaryAddressResponse
-	(*MsgStructActivate)(nil),                                // 33: structs.structs.MsgStructActivate
-	(*MsgStructActivateResponse)(nil),                        // 34: structs.structs.MsgStructActivateResponse
-	(*MsgStructBuildInitiate)(nil),                           // 35: structs.structs.MsgStructBuildInitiate
-	(*MsgStructBuildInitiateResponse)(nil),                   // 36: structs.structs.MsgStructBuildInitiateResponse
-	(*MsgStructBuildComplete)(nil),                           // 37: structs.structs.MsgStructBuildComplete
-	(*MsgStructBuildCompleteResponse)(nil),                   // 38: structs.structs.MsgStructBuildCompleteResponse
-	(*MsgStructInfuse)(nil),                                  // 39: structs.structs.MsgStructInfuse
-	(*MsgStructInfuseResponse)(nil),                          // 40: structs.structs.MsgStructInfuseResponse
-	(*MsgStructMineActivate)(nil),                            // 41: structs.structs.MsgStructMineActivate
-	(*MsgStructMineActivateResponse)(nil),                    // 42: structs.structs.MsgStructMineActivateResponse
-	(*MsgStructMineDeactivate)(nil),                          // 43: structs.structs.MsgStructMineDeactivate
-	(*MsgStructMineDeactivateResponse)(nil),                  // 44: structs.structs.MsgStructMineDeactivateResponse
-	(*MsgStructMine)(nil),                                    // 45: structs.structs.MsgStructMine
-	(*MsgStructMineResponse)(nil),                            // 46: structs.structs.MsgStructMineResponse
-	(*MsgStructRefineActivate)(nil),                          // 47: structs.structs.MsgStructRefineActivate
-	(*MsgStructRefineActivateResponse)(nil),                  // 48: structs.structs.MsgStructRefineActivateResponse
-	(*MsgStructRefineDeactivate)(nil),                        // 49: structs.structs.MsgStructRefineDeactivate
-	(*MsgStructRefineDeactivateResponse)(nil),                // 50: structs.structs.MsgStructRefineDeactivateResponse
-	(*MsgStructRefine)(nil),                                  // 51: structs.structs.MsgStructRefine
-	(*MsgStructRefineResponse)(nil),                          // 52: structs.structs.MsgStructRefineResponse
-	(*MsgSubstationCreate)(nil),                              // 53: structs.structs.MsgSubstationCreate
-	(*MsgSubstationCreateResponse)(nil),                      // 54: structs.structs.MsgSubstationCreateResponse
-	(*MsgSubstationDelete)(nil),                              // 55: structs.structs.MsgSubstationDelete
-	(*MsgSubstationDeleteResponse)(nil),                      // 56: structs.structs.MsgSubstationDeleteResponse
-	(*MsgSubstationAllocationConnect)(nil),                   // 57: structs.structs.MsgSubstationAllocationConnect
-	(*MsgSubstationAllocationConnectResponse)(nil),           // 58: structs.structs.MsgSubstationAllocationConnectResponse
-	(*MsgSubstationAllocationDisconnect)(nil),                // 59: structs.structs.MsgSubstationAllocationDisconnect
-	(*MsgSubstationAllocationDisconnectResponse)(nil),        // 60: structs.structs.MsgSubstationAllocationDisconnectResponse
-	(*MsgSubstationPlayerConnect)(nil),                       // 61: structs.structs.MsgSubstationPlayerConnect
-	(*MsgSubstationPlayerConnectResponse)(nil),               // 62: structs.structs.MsgSubstationPlayerConnectResponse
-	(*MsgSubstationPlayerDisconnect)(nil),                    // 63: structs.structs.MsgSubstationPlayerDisconnect
-	(*MsgSubstationPlayerDisconnectResponse)(nil),            // 64: structs.structs.MsgSubstationPlayerDisconnectResponse
-	(*MsgSubstationPlayerMigrate)(nil),                       // 65: structs.structs.MsgSubstationPlayerMigrate
-	(*MsgSubstationPlayerMigrateResponse)(nil),               // 66: structs.structs.MsgSubstationPlayerMigrateResponse
-	(*MsgSabotage)(nil),                                      // 67: structs.structs.MsgSabotage
-	(*MsgSabotageResponse)(nil),                              // 68: structs.structs.MsgSabotageResponse
-	(*Params)(nil),                                           // 69: structs.structs.Params
-	(AllocationType)(0),                                      // 70: structs.structs.allocationType
-	(GuildJoinBypassLevel)(0),                                // 71: structs.structs.guildJoinBypassLevel
-	(*Planet)(nil),                                           // 72: structs.structs.Planet
-	(*Struct)(nil),                                           // 73: structs.structs.Struct
+	(*MsgUpdateParams)(nil),                                  // 0: structs.MsgUpdateParams
+	(*MsgUpdateParamsResponse)(nil),                          // 1: structs.MsgUpdateParamsResponse
+	(*MsgAddressApproveRegister)(nil),                        // 2: structs.MsgAddressApproveRegister
+	(*MsgAddressRegister)(nil),                               // 3: structs.MsgAddressRegister
+	(*MsgAddressRegisterResponse)(nil),                       // 4: structs.MsgAddressRegisterResponse
+	(*MsgAddressRevoke)(nil),                                 // 5: structs.MsgAddressRevoke
+	(*MsgAddressRevokeResponse)(nil),                         // 6: structs.MsgAddressRevokeResponse
+	(*MsgAllocationCreate)(nil),                              // 7: structs.MsgAllocationCreate
+	(*MsgAllocationCreateResponse)(nil),                      // 8: structs.MsgAllocationCreateResponse
+	(*MsgGuildApproveRegister)(nil),                          // 9: structs.MsgGuildApproveRegister
+	(*MsgGuildApproveRegisterResponse)(nil),                  // 10: structs.MsgGuildApproveRegisterResponse
+	(*MsgGuildCreate)(nil),                                   // 11: structs.MsgGuildCreate
+	(*MsgGuildCreateResponse)(nil),                           // 12: structs.MsgGuildCreateResponse
+	(*MsgGuildUpdateOwnerId)(nil),                            // 13: structs.MsgGuildUpdateOwnerId
+	(*MsgGuildUpdateEntrySubstationId)(nil),                  // 14: structs.MsgGuildUpdateEntrySubstationId
+	(*MsgGuildUpdateEndpoint)(nil),                           // 15: structs.MsgGuildUpdateEndpoint
+	(*MsgGuildUpdateJoinInfusionMinimum)(nil),                // 16: structs.MsgGuildUpdateJoinInfusionMinimum
+	(*MsgGuildUpdateJoinInfusionMinimumBypassByRequest)(nil), // 17: structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest
+	(*MsgGuildUpdateJoinInfusionMinimumBypassByInvite)(nil),  // 18: structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite
+	(*MsgGuildUpdateResponse)(nil),                           // 19: structs.MsgGuildUpdateResponse
+	(*MsgGuildJoinProxy)(nil),                                // 20: structs.MsgGuildJoinProxy
+	(*MsgGuildJoinProxyResponse)(nil),                        // 21: structs.MsgGuildJoinProxyResponse
+	(*MsgGuildJoin)(nil),                                     // 22: structs.MsgGuildJoin
+	(*MsgGuildJoinResponse)(nil),                             // 23: structs.MsgGuildJoinResponse
+	(*MsgPermissionGrantOnObject)(nil),                       // 24: structs.MsgPermissionGrantOnObject
+	(*MsgPermissionGrantOnAddress)(nil),                      // 25: structs.MsgPermissionGrantOnAddress
+	(*MsgPermissionRevokeOnObject)(nil),                      // 26: structs.MsgPermissionRevokeOnObject
+	(*MsgPermissionRevokeOnAddress)(nil),                     // 27: structs.MsgPermissionRevokeOnAddress
+	(*MsgPermissionResponse)(nil),                            // 28: structs.MsgPermissionResponse
+	(*MsgPlanetExplore)(nil),                                 // 29: structs.MsgPlanetExplore
+	(*MsgPlanetExploreResponse)(nil),                         // 30: structs.MsgPlanetExploreResponse
+	(*MsgPlayerUpdatePrimaryAddress)(nil),                    // 31: structs.MsgPlayerUpdatePrimaryAddress
+	(*MsgPlayerUpdatePrimaryAddressResponse)(nil),            // 32: structs.MsgPlayerUpdatePrimaryAddressResponse
+	(*MsgStructActivate)(nil),                                // 33: structs.MsgStructActivate
+	(*MsgStructActivateResponse)(nil),                        // 34: structs.MsgStructActivateResponse
+	(*MsgStructBuildInitiate)(nil),                           // 35: structs.MsgStructBuildInitiate
+	(*MsgStructBuildInitiateResponse)(nil),                   // 36: structs.MsgStructBuildInitiateResponse
+	(*MsgStructBuildComplete)(nil),                           // 37: structs.MsgStructBuildComplete
+	(*MsgStructBuildCompleteResponse)(nil),                   // 38: structs.MsgStructBuildCompleteResponse
+	(*MsgStructInfuse)(nil),                                  // 39: structs.MsgStructInfuse
+	(*MsgStructInfuseResponse)(nil),                          // 40: structs.MsgStructInfuseResponse
+	(*MsgStructMineActivate)(nil),                            // 41: structs.MsgStructMineActivate
+	(*MsgStructMineActivateResponse)(nil),                    // 42: structs.MsgStructMineActivateResponse
+	(*MsgStructMineDeactivate)(nil),                          // 43: structs.MsgStructMineDeactivate
+	(*MsgStructMineDeactivateResponse)(nil),                  // 44: structs.MsgStructMineDeactivateResponse
+	(*MsgStructMine)(nil),                                    // 45: structs.MsgStructMine
+	(*MsgStructMineResponse)(nil),                            // 46: structs.MsgStructMineResponse
+	(*MsgStructRefineActivate)(nil),                          // 47: structs.MsgStructRefineActivate
+	(*MsgStructRefineActivateResponse)(nil),                  // 48: structs.MsgStructRefineActivateResponse
+	(*MsgStructRefineDeactivate)(nil),                        // 49: structs.MsgStructRefineDeactivate
+	(*MsgStructRefineDeactivateResponse)(nil),                // 50: structs.MsgStructRefineDeactivateResponse
+	(*MsgStructRefine)(nil),                                  // 51: structs.MsgStructRefine
+	(*MsgStructRefineResponse)(nil),                          // 52: structs.MsgStructRefineResponse
+	(*MsgSubstationCreate)(nil),                              // 53: structs.MsgSubstationCreate
+	(*MsgSubstationCreateResponse)(nil),                      // 54: structs.MsgSubstationCreateResponse
+	(*MsgSubstationDelete)(nil),                              // 55: structs.MsgSubstationDelete
+	(*MsgSubstationDeleteResponse)(nil),                      // 56: structs.MsgSubstationDeleteResponse
+	(*MsgSubstationAllocationConnect)(nil),                   // 57: structs.MsgSubstationAllocationConnect
+	(*MsgSubstationAllocationConnectResponse)(nil),           // 58: structs.MsgSubstationAllocationConnectResponse
+	(*MsgSubstationAllocationDisconnect)(nil),                // 59: structs.MsgSubstationAllocationDisconnect
+	(*MsgSubstationAllocationDisconnectResponse)(nil),        // 60: structs.MsgSubstationAllocationDisconnectResponse
+	(*MsgSubstationPlayerConnect)(nil),                       // 61: structs.MsgSubstationPlayerConnect
+	(*MsgSubstationPlayerConnectResponse)(nil),               // 62: structs.MsgSubstationPlayerConnectResponse
+	(*MsgSubstationPlayerDisconnect)(nil),                    // 63: structs.MsgSubstationPlayerDisconnect
+	(*MsgSubstationPlayerDisconnectResponse)(nil),            // 64: structs.MsgSubstationPlayerDisconnectResponse
+	(*MsgSubstationPlayerMigrate)(nil),                       // 65: structs.MsgSubstationPlayerMigrate
+	(*MsgSubstationPlayerMigrateResponse)(nil),               // 66: structs.MsgSubstationPlayerMigrateResponse
+	(*MsgSabotage)(nil),                                      // 67: structs.MsgSabotage
+	(*MsgSabotageResponse)(nil),                              // 68: structs.MsgSabotageResponse
+	(*Params)(nil),                                           // 69: structs.Params
+	(AllocationType)(0),                                      // 70: structs.allocationType
+	(GuildJoinBypassLevel)(0),                                // 71: structs.guildJoinBypassLevel
+	(*Planet)(nil),                                           // 72: structs.Planet
+	(*Struct)(nil),                                           // 73: structs.Struct
 }
 var file_structs_structs_tx_proto_depIdxs = []int32{
-	69, // 0: structs.structs.MsgUpdateParams.params:type_name -> structs.structs.Params
-	70, // 1: structs.structs.MsgAllocationCreate.allocationType:type_name -> structs.structs.allocationType
-	71, // 2: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildJoinBypassLevel:type_name -> structs.structs.guildJoinBypassLevel
-	71, // 3: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildJoinBypassLevel:type_name -> structs.structs.guildJoinBypassLevel
-	72, // 4: structs.structs.MsgPlanetExploreResponse.planet:type_name -> structs.structs.Planet
-	73, // 5: structs.structs.MsgStructActivateResponse.struct:type_name -> structs.structs.Struct
-	73, // 6: structs.structs.MsgStructBuildInitiateResponse.struct:type_name -> structs.structs.Struct
-	73, // 7: structs.structs.MsgStructBuildCompleteResponse.struct:type_name -> structs.structs.Struct
-	73, // 8: structs.structs.MsgStructMineActivateResponse.struct:type_name -> structs.structs.Struct
-	73, // 9: structs.structs.MsgStructMineDeactivateResponse.struct:type_name -> structs.structs.Struct
-	73, // 10: structs.structs.MsgStructMineResponse.struct:type_name -> structs.structs.Struct
-	73, // 11: structs.structs.MsgStructRefineActivateResponse.struct:type_name -> structs.structs.Struct
-	73, // 12: structs.structs.MsgStructRefineDeactivateResponse.struct:type_name -> structs.structs.Struct
-	73, // 13: structs.structs.MsgStructRefineResponse.struct:type_name -> structs.structs.Struct
-	0,  // 14: structs.structs.Msg.UpdateParams:input_type -> structs.structs.MsgUpdateParams
-	3,  // 15: structs.structs.Msg.AddressRegister:input_type -> structs.structs.MsgAddressRegister
-	2,  // 16: structs.structs.Msg.AddressApproveRegister:input_type -> structs.structs.MsgAddressApproveRegister
-	5,  // 17: structs.structs.Msg.AddressRevoke:input_type -> structs.structs.MsgAddressRevoke
-	7,  // 18: structs.structs.Msg.AllocationCreate:input_type -> structs.structs.MsgAllocationCreate
-	11, // 19: structs.structs.Msg.GuildCreate:input_type -> structs.structs.MsgGuildCreate
-	13, // 20: structs.structs.Msg.GuildUpdateOwnerId:input_type -> structs.structs.MsgGuildUpdateOwnerId
-	14, // 21: structs.structs.Msg.GuildUpdateEntrySubstationId:input_type -> structs.structs.MsgGuildUpdateEntrySubstationId
-	15, // 22: structs.structs.Msg.GuildUpdateEndpoint:input_type -> structs.structs.MsgGuildUpdateEndpoint
-	16, // 23: structs.structs.Msg.GuildUpdateJoinInfusionMinimum:input_type -> structs.structs.MsgGuildUpdateJoinInfusionMinimum
-	18, // 24: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByInvite:input_type -> structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite
-	17, // 25: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByRequest:input_type -> structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest
-	9,  // 26: structs.structs.Msg.GuildApproveRegister:input_type -> structs.structs.MsgGuildApproveRegister
-	20, // 27: structs.structs.Msg.GuildJoinProxy:input_type -> structs.structs.MsgGuildJoinProxy
-	22, // 28: structs.structs.Msg.GuildJoin:input_type -> structs.structs.MsgGuildJoin
-	25, // 29: structs.structs.Msg.PermissionGrantOnAddress:input_type -> structs.structs.MsgPermissionGrantOnAddress
-	24, // 30: structs.structs.Msg.PermissionGrantOnObject:input_type -> structs.structs.MsgPermissionGrantOnObject
-	27, // 31: structs.structs.Msg.PermissionRevokeOnAddress:input_type -> structs.structs.MsgPermissionRevokeOnAddress
-	26, // 32: structs.structs.Msg.PermissionRevokeOnObject:input_type -> structs.structs.MsgPermissionRevokeOnObject
-	29, // 33: structs.structs.Msg.PlanetExplore:input_type -> structs.structs.MsgPlanetExplore
-	31, // 34: structs.structs.Msg.PlayerUpdatePrimaryAddress:input_type -> structs.structs.MsgPlayerUpdatePrimaryAddress
-	33, // 35: structs.structs.Msg.StructActivate:input_type -> structs.structs.MsgStructActivate
-	35, // 36: structs.structs.Msg.StructBuildInitiate:input_type -> structs.structs.MsgStructBuildInitiate
-	37, // 37: structs.structs.Msg.StructBuildComplete:input_type -> structs.structs.MsgStructBuildComplete
-	41, // 38: structs.structs.Msg.StructMineActivate:input_type -> structs.structs.MsgStructMineActivate
-	43, // 39: structs.structs.Msg.StructMineDeactivate:input_type -> structs.structs.MsgStructMineDeactivate
-	45, // 40: structs.structs.Msg.StructMine:input_type -> structs.structs.MsgStructMine
-	47, // 41: structs.structs.Msg.StructRefineActivate:input_type -> structs.structs.MsgStructRefineActivate
-	49, // 42: structs.structs.Msg.StructRefineDeactivate:input_type -> structs.structs.MsgStructRefineDeactivate
-	51, // 43: structs.structs.Msg.StructRefine:input_type -> structs.structs.MsgStructRefine
-	39, // 44: structs.structs.Msg.StructInfuse:input_type -> structs.structs.MsgStructInfuse
-	53, // 45: structs.structs.Msg.SubstationCreate:input_type -> structs.structs.MsgSubstationCreate
-	55, // 46: structs.structs.Msg.SubstationDelete:input_type -> structs.structs.MsgSubstationDelete
-	57, // 47: structs.structs.Msg.SubstationAllocationConnect:input_type -> structs.structs.MsgSubstationAllocationConnect
-	59, // 48: structs.structs.Msg.SubstationAllocationDisconnect:input_type -> structs.structs.MsgSubstationAllocationDisconnect
-	61, // 49: structs.structs.Msg.SubstationPlayerConnect:input_type -> structs.structs.MsgSubstationPlayerConnect
-	63, // 50: structs.structs.Msg.SubstationPlayerDisconnect:input_type -> structs.structs.MsgSubstationPlayerDisconnect
-	65, // 51: structs.structs.Msg.SubstationPlayerMigrate:input_type -> structs.structs.MsgSubstationPlayerMigrate
-	67, // 52: structs.structs.Msg.Sabotage:input_type -> structs.structs.MsgSabotage
-	1,  // 53: structs.structs.Msg.UpdateParams:output_type -> structs.structs.MsgUpdateParamsResponse
-	4,  // 54: structs.structs.Msg.AddressRegister:output_type -> structs.structs.MsgAddressRegisterResponse
-	4,  // 55: structs.structs.Msg.AddressApproveRegister:output_type -> structs.structs.MsgAddressRegisterResponse
-	6,  // 56: structs.structs.Msg.AddressRevoke:output_type -> structs.structs.MsgAddressRevokeResponse
-	8,  // 57: structs.structs.Msg.AllocationCreate:output_type -> structs.structs.MsgAllocationCreateResponse
-	12, // 58: structs.structs.Msg.GuildCreate:output_type -> structs.structs.MsgGuildCreateResponse
-	19, // 59: structs.structs.Msg.GuildUpdateOwnerId:output_type -> structs.structs.MsgGuildUpdateResponse
-	19, // 60: structs.structs.Msg.GuildUpdateEntrySubstationId:output_type -> structs.structs.MsgGuildUpdateResponse
-	19, // 61: structs.structs.Msg.GuildUpdateEndpoint:output_type -> structs.structs.MsgGuildUpdateResponse
-	19, // 62: structs.structs.Msg.GuildUpdateJoinInfusionMinimum:output_type -> structs.structs.MsgGuildUpdateResponse
-	19, // 63: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByInvite:output_type -> structs.structs.MsgGuildUpdateResponse
-	19, // 64: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByRequest:output_type -> structs.structs.MsgGuildUpdateResponse
-	10, // 65: structs.structs.Msg.GuildApproveRegister:output_type -> structs.structs.MsgGuildApproveRegisterResponse
-	21, // 66: structs.structs.Msg.GuildJoinProxy:output_type -> structs.structs.MsgGuildJoinProxyResponse
-	23, // 67: structs.structs.Msg.GuildJoin:output_type -> structs.structs.MsgGuildJoinResponse
-	28, // 68: structs.structs.Msg.PermissionGrantOnAddress:output_type -> structs.structs.MsgPermissionResponse
-	28, // 69: structs.structs.Msg.PermissionGrantOnObject:output_type -> structs.structs.MsgPermissionResponse
-	28, // 70: structs.structs.Msg.PermissionRevokeOnAddress:output_type -> structs.structs.MsgPermissionResponse
-	28, // 71: structs.structs.Msg.PermissionRevokeOnObject:output_type -> structs.structs.MsgPermissionResponse
-	30, // 72: structs.structs.Msg.PlanetExplore:output_type -> structs.structs.MsgPlanetExploreResponse
-	32, // 73: structs.structs.Msg.PlayerUpdatePrimaryAddress:output_type -> structs.structs.MsgPlayerUpdatePrimaryAddressResponse
-	34, // 74: structs.structs.Msg.StructActivate:output_type -> structs.structs.MsgStructActivateResponse
-	36, // 75: structs.structs.Msg.StructBuildInitiate:output_type -> structs.structs.MsgStructBuildInitiateResponse
-	38, // 76: structs.structs.Msg.StructBuildComplete:output_type -> structs.structs.MsgStructBuildCompleteResponse
-	42, // 77: structs.structs.Msg.StructMineActivate:output_type -> structs.structs.MsgStructMineActivateResponse
-	44, // 78: structs.structs.Msg.StructMineDeactivate:output_type -> structs.structs.MsgStructMineDeactivateResponse
-	46, // 79: structs.structs.Msg.StructMine:output_type -> structs.structs.MsgStructMineResponse
-	48, // 80: structs.structs.Msg.StructRefineActivate:output_type -> structs.structs.MsgStructRefineActivateResponse
-	50, // 81: structs.structs.Msg.StructRefineDeactivate:output_type -> structs.structs.MsgStructRefineDeactivateResponse
-	52, // 82: structs.structs.Msg.StructRefine:output_type -> structs.structs.MsgStructRefineResponse
-	40, // 83: structs.structs.Msg.StructInfuse:output_type -> structs.structs.MsgStructInfuseResponse
-	54, // 84: structs.structs.Msg.SubstationCreate:output_type -> structs.structs.MsgSubstationCreateResponse
-	56, // 85: structs.structs.Msg.SubstationDelete:output_type -> structs.structs.MsgSubstationDeleteResponse
-	58, // 86: structs.structs.Msg.SubstationAllocationConnect:output_type -> structs.structs.MsgSubstationAllocationConnectResponse
-	60, // 87: structs.structs.Msg.SubstationAllocationDisconnect:output_type -> structs.structs.MsgSubstationAllocationDisconnectResponse
-	62, // 88: structs.structs.Msg.SubstationPlayerConnect:output_type -> structs.structs.MsgSubstationPlayerConnectResponse
-	64, // 89: structs.structs.Msg.SubstationPlayerDisconnect:output_type -> structs.structs.MsgSubstationPlayerDisconnectResponse
-	66, // 90: structs.structs.Msg.SubstationPlayerMigrate:output_type -> structs.structs.MsgSubstationPlayerMigrateResponse
-	68, // 91: structs.structs.Msg.Sabotage:output_type -> structs.structs.MsgSabotageResponse
+	69, // 0: structs.MsgUpdateParams.params:type_name -> structs.Params
+	70, // 1: structs.MsgAllocationCreate.allocationType:type_name -> structs.allocationType
+	71, // 2: structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildJoinBypassLevel:type_name -> structs.guildJoinBypassLevel
+	71, // 3: structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildJoinBypassLevel:type_name -> structs.guildJoinBypassLevel
+	72, // 4: structs.MsgPlanetExploreResponse.planet:type_name -> structs.Planet
+	73, // 5: structs.MsgStructActivateResponse.struct:type_name -> structs.Struct
+	73, // 6: structs.MsgStructBuildInitiateResponse.struct:type_name -> structs.Struct
+	73, // 7: structs.MsgStructBuildCompleteResponse.struct:type_name -> structs.Struct
+	73, // 8: structs.MsgStructMineActivateResponse.struct:type_name -> structs.Struct
+	73, // 9: structs.MsgStructMineDeactivateResponse.struct:type_name -> structs.Struct
+	73, // 10: structs.MsgStructMineResponse.struct:type_name -> structs.Struct
+	73, // 11: structs.MsgStructRefineActivateResponse.struct:type_name -> structs.Struct
+	73, // 12: structs.MsgStructRefineDeactivateResponse.struct:type_name -> structs.Struct
+	73, // 13: structs.MsgStructRefineResponse.struct:type_name -> structs.Struct
+	0,  // 14: structs.Msg.UpdateParams:input_type -> structs.MsgUpdateParams
+	3,  // 15: structs.Msg.AddressRegister:input_type -> structs.MsgAddressRegister
+	2,  // 16: structs.Msg.AddressApproveRegister:input_type -> structs.MsgAddressApproveRegister
+	5,  // 17: structs.Msg.AddressRevoke:input_type -> structs.MsgAddressRevoke
+	7,  // 18: structs.Msg.AllocationCreate:input_type -> structs.MsgAllocationCreate
+	11, // 19: structs.Msg.GuildCreate:input_type -> structs.MsgGuildCreate
+	13, // 20: structs.Msg.GuildUpdateOwnerId:input_type -> structs.MsgGuildUpdateOwnerId
+	14, // 21: structs.Msg.GuildUpdateEntrySubstationId:input_type -> structs.MsgGuildUpdateEntrySubstationId
+	15, // 22: structs.Msg.GuildUpdateEndpoint:input_type -> structs.MsgGuildUpdateEndpoint
+	16, // 23: structs.Msg.GuildUpdateJoinInfusionMinimum:input_type -> structs.MsgGuildUpdateJoinInfusionMinimum
+	18, // 24: structs.Msg.GuildUpdateJoinInfusionMinimumBypassByInvite:input_type -> structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite
+	17, // 25: structs.Msg.GuildUpdateJoinInfusionMinimumBypassByRequest:input_type -> structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest
+	9,  // 26: structs.Msg.GuildApproveRegister:input_type -> structs.MsgGuildApproveRegister
+	20, // 27: structs.Msg.GuildJoinProxy:input_type -> structs.MsgGuildJoinProxy
+	22, // 28: structs.Msg.GuildJoin:input_type -> structs.MsgGuildJoin
+	25, // 29: structs.Msg.PermissionGrantOnAddress:input_type -> structs.MsgPermissionGrantOnAddress
+	24, // 30: structs.Msg.PermissionGrantOnObject:input_type -> structs.MsgPermissionGrantOnObject
+	27, // 31: structs.Msg.PermissionRevokeOnAddress:input_type -> structs.MsgPermissionRevokeOnAddress
+	26, // 32: structs.Msg.PermissionRevokeOnObject:input_type -> structs.MsgPermissionRevokeOnObject
+	29, // 33: structs.Msg.PlanetExplore:input_type -> structs.MsgPlanetExplore
+	31, // 34: structs.Msg.PlayerUpdatePrimaryAddress:input_type -> structs.MsgPlayerUpdatePrimaryAddress
+	33, // 35: structs.Msg.StructActivate:input_type -> structs.MsgStructActivate
+	35, // 36: structs.Msg.StructBuildInitiate:input_type -> structs.MsgStructBuildInitiate
+	37, // 37: structs.Msg.StructBuildComplete:input_type -> structs.MsgStructBuildComplete
+	41, // 38: structs.Msg.StructMineActivate:input_type -> structs.MsgStructMineActivate
+	43, // 39: structs.Msg.StructMineDeactivate:input_type -> structs.MsgStructMineDeactivate
+	45, // 40: structs.Msg.StructMine:input_type -> structs.MsgStructMine
+	47, // 41: structs.Msg.StructRefineActivate:input_type -> structs.MsgStructRefineActivate
+	49, // 42: structs.Msg.StructRefineDeactivate:input_type -> structs.MsgStructRefineDeactivate
+	51, // 43: structs.Msg.StructRefine:input_type -> structs.MsgStructRefine
+	39, // 44: structs.Msg.StructInfuse:input_type -> structs.MsgStructInfuse
+	53, // 45: structs.Msg.SubstationCreate:input_type -> structs.MsgSubstationCreate
+	55, // 46: structs.Msg.SubstationDelete:input_type -> structs.MsgSubstationDelete
+	57, // 47: structs.Msg.SubstationAllocationConnect:input_type -> structs.MsgSubstationAllocationConnect
+	59, // 48: structs.Msg.SubstationAllocationDisconnect:input_type -> structs.MsgSubstationAllocationDisconnect
+	61, // 49: structs.Msg.SubstationPlayerConnect:input_type -> structs.MsgSubstationPlayerConnect
+	63, // 50: structs.Msg.SubstationPlayerDisconnect:input_type -> structs.MsgSubstationPlayerDisconnect
+	65, // 51: structs.Msg.SubstationPlayerMigrate:input_type -> structs.MsgSubstationPlayerMigrate
+	67, // 52: structs.Msg.Sabotage:input_type -> structs.MsgSabotage
+	1,  // 53: structs.Msg.UpdateParams:output_type -> structs.MsgUpdateParamsResponse
+	4,  // 54: structs.Msg.AddressRegister:output_type -> structs.MsgAddressRegisterResponse
+	4,  // 55: structs.Msg.AddressApproveRegister:output_type -> structs.MsgAddressRegisterResponse
+	6,  // 56: structs.Msg.AddressRevoke:output_type -> structs.MsgAddressRevokeResponse
+	8,  // 57: structs.Msg.AllocationCreate:output_type -> structs.MsgAllocationCreateResponse
+	12, // 58: structs.Msg.GuildCreate:output_type -> structs.MsgGuildCreateResponse
+	19, // 59: structs.Msg.GuildUpdateOwnerId:output_type -> structs.MsgGuildUpdateResponse
+	19, // 60: structs.Msg.GuildUpdateEntrySubstationId:output_type -> structs.MsgGuildUpdateResponse
+	19, // 61: structs.Msg.GuildUpdateEndpoint:output_type -> structs.MsgGuildUpdateResponse
+	19, // 62: structs.Msg.GuildUpdateJoinInfusionMinimum:output_type -> structs.MsgGuildUpdateResponse
+	19, // 63: structs.Msg.GuildUpdateJoinInfusionMinimumBypassByInvite:output_type -> structs.MsgGuildUpdateResponse
+	19, // 64: structs.Msg.GuildUpdateJoinInfusionMinimumBypassByRequest:output_type -> structs.MsgGuildUpdateResponse
+	10, // 65: structs.Msg.GuildApproveRegister:output_type -> structs.MsgGuildApproveRegisterResponse
+	21, // 66: structs.Msg.GuildJoinProxy:output_type -> structs.MsgGuildJoinProxyResponse
+	23, // 67: structs.Msg.GuildJoin:output_type -> structs.MsgGuildJoinResponse
+	28, // 68: structs.Msg.PermissionGrantOnAddress:output_type -> structs.MsgPermissionResponse
+	28, // 69: structs.Msg.PermissionGrantOnObject:output_type -> structs.MsgPermissionResponse
+	28, // 70: structs.Msg.PermissionRevokeOnAddress:output_type -> structs.MsgPermissionResponse
+	28, // 71: structs.Msg.PermissionRevokeOnObject:output_type -> structs.MsgPermissionResponse
+	30, // 72: structs.Msg.PlanetExplore:output_type -> structs.MsgPlanetExploreResponse
+	32, // 73: structs.Msg.PlayerUpdatePrimaryAddress:output_type -> structs.MsgPlayerUpdatePrimaryAddressResponse
+	34, // 74: structs.Msg.StructActivate:output_type -> structs.MsgStructActivateResponse
+	36, // 75: structs.Msg.StructBuildInitiate:output_type -> structs.MsgStructBuildInitiateResponse
+	38, // 76: structs.Msg.StructBuildComplete:output_type -> structs.MsgStructBuildCompleteResponse
+	42, // 77: structs.Msg.StructMineActivate:output_type -> structs.MsgStructMineActivateResponse
+	44, // 78: structs.Msg.StructMineDeactivate:output_type -> structs.MsgStructMineDeactivateResponse
+	46, // 79: structs.Msg.StructMine:output_type -> structs.MsgStructMineResponse
+	48, // 80: structs.Msg.StructRefineActivate:output_type -> structs.MsgStructRefineActivateResponse
+	50, // 81: structs.Msg.StructRefineDeactivate:output_type -> structs.MsgStructRefineDeactivateResponse
+	52, // 82: structs.Msg.StructRefine:output_type -> structs.MsgStructRefineResponse
+	40, // 83: structs.Msg.StructInfuse:output_type -> structs.MsgStructInfuseResponse
+	54, // 84: structs.Msg.SubstationCreate:output_type -> structs.MsgSubstationCreateResponse
+	56, // 85: structs.Msg.SubstationDelete:output_type -> structs.MsgSubstationDeleteResponse
+	58, // 86: structs.Msg.SubstationAllocationConnect:output_type -> structs.MsgSubstationAllocationConnectResponse
+	60, // 87: structs.Msg.SubstationAllocationDisconnect:output_type -> structs.MsgSubstationAllocationDisconnectResponse
+	62, // 88: structs.Msg.SubstationPlayerConnect:output_type -> structs.MsgSubstationPlayerConnectResponse
+	64, // 89: structs.Msg.SubstationPlayerDisconnect:output_type -> structs.MsgSubstationPlayerDisconnectResponse
+	66, // 90: structs.Msg.SubstationPlayerMigrate:output_type -> structs.MsgSubstationPlayerMigrateResponse
+	68, // 91: structs.Msg.Sabotage:output_type -> structs.MsgSabotageResponse
 	53, // [53:92] is the sub-list for method output_type
 	14, // [14:53] is the sub-list for method input_type
 	14, // [14:14] is the sub-list for extension type_name

@@ -19,32 +19,32 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Query_GetBlockHeight_FullMethodName     = "/structs.structs.Query/GetBlockHeight"
-	Query_Params_FullMethodName             = "/structs.structs.Query/Params"
-	Query_Address_FullMethodName            = "/structs.structs.Query/Address"
-	Query_AddressAll_FullMethodName         = "/structs.structs.Query/AddressAll"
-	Query_AddressAllByPlayer_FullMethodName = "/structs.structs.Query/AddressAllByPlayer"
-	Query_Allocation_FullMethodName         = "/structs.structs.Query/Allocation"
-	Query_AllocationAll_FullMethodName      = "/structs.structs.Query/AllocationAll"
-	Query_Guild_FullMethodName              = "/structs.structs.Query/Guild"
-	Query_GuildAll_FullMethodName           = "/structs.structs.Query/GuildAll"
-	Query_Infusion_FullMethodName           = "/structs.structs.Query/Infusion"
-	Query_InfusionAll_FullMethodName        = "/structs.structs.Query/InfusionAll"
-	Query_Permission_FullMethodName         = "/structs.structs.Query/Permission"
-	Query_PermissionByObject_FullMethodName = "/structs.structs.Query/PermissionByObject"
-	Query_PermissionByPlayer_FullMethodName = "/structs.structs.Query/PermissionByPlayer"
-	Query_PermissionAll_FullMethodName      = "/structs.structs.Query/PermissionAll"
-	Query_Player_FullMethodName             = "/structs.structs.Query/Player"
-	Query_PlayerAll_FullMethodName          = "/structs.structs.Query/PlayerAll"
-	Query_Planet_FullMethodName             = "/structs.structs.Query/Planet"
-	Query_PlanetAll_FullMethodName          = "/structs.structs.Query/PlanetAll"
-	Query_PlanetAllByPlayer_FullMethodName  = "/structs.structs.Query/PlanetAllByPlayer"
-	Query_Reactor_FullMethodName            = "/structs.structs.Query/Reactor"
-	Query_ReactorAll_FullMethodName         = "/structs.structs.Query/ReactorAll"
-	Query_Struct_FullMethodName             = "/structs.structs.Query/Struct"
-	Query_StructAll_FullMethodName          = "/structs.structs.Query/StructAll"
-	Query_Substation_FullMethodName         = "/structs.structs.Query/Substation"
-	Query_SubstationAll_FullMethodName      = "/structs.structs.Query/SubstationAll"
+	Query_GetBlockHeight_FullMethodName     = "/structs.Query/GetBlockHeight"
+	Query_Params_FullMethodName             = "/structs.Query/Params"
+	Query_Address_FullMethodName            = "/structs.Query/Address"
+	Query_AddressAll_FullMethodName         = "/structs.Query/AddressAll"
+	Query_AddressAllByPlayer_FullMethodName = "/structs.Query/AddressAllByPlayer"
+	Query_Allocation_FullMethodName         = "/structs.Query/Allocation"
+	Query_AllocationAll_FullMethodName      = "/structs.Query/AllocationAll"
+	Query_Guild_FullMethodName              = "/structs.Query/Guild"
+	Query_GuildAll_FullMethodName           = "/structs.Query/GuildAll"
+	Query_Infusion_FullMethodName           = "/structs.Query/Infusion"
+	Query_InfusionAll_FullMethodName        = "/structs.Query/InfusionAll"
+	Query_Permission_FullMethodName         = "/structs.Query/Permission"
+	Query_PermissionByObject_FullMethodName = "/structs.Query/PermissionByObject"
+	Query_PermissionByPlayer_FullMethodName = "/structs.Query/PermissionByPlayer"
+	Query_PermissionAll_FullMethodName      = "/structs.Query/PermissionAll"
+	Query_Player_FullMethodName             = "/structs.Query/Player"
+	Query_PlayerAll_FullMethodName          = "/structs.Query/PlayerAll"
+	Query_Planet_FullMethodName             = "/structs.Query/Planet"
+	Query_PlanetAll_FullMethodName          = "/structs.Query/PlanetAll"
+	Query_PlanetAllByPlayer_FullMethodName  = "/structs.Query/PlanetAllByPlayer"
+	Query_Reactor_FullMethodName            = "/structs.Query/Reactor"
+	Query_ReactorAll_FullMethodName         = "/structs.Query/ReactorAll"
+	Query_Struct_FullMethodName             = "/structs.Query/Struct"
+	Query_StructAll_FullMethodName          = "/structs.Query/StructAll"
+	Query_Substation_FullMethodName         = "/structs.Query/Substation"
+	Query_SubstationAll_FullMethodName      = "/structs.Query/SubstationAll"
 )
 
 // QueryClient is the client API for Query service.
@@ -949,7 +949,7 @@ func _Query_SubstationAll_Handler(srv interface{}, ctx context.Context, dec func
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Query_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "structs.structs.Query",
+	ServiceName: "structs.Query",
 	HandlerType: (*QueryServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{

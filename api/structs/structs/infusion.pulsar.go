@@ -159,25 +159,25 @@ func (x *fastReflection_Infusion) Range(f func(protoreflect.FieldDescriptor, pro
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_Infusion) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.Infusion.destinationType":
+	case "structs.Infusion.destinationType":
 		return x.DestinationType != 0
-	case "structs.structs.Infusion.destinationId":
+	case "structs.Infusion.destinationId":
 		return x.DestinationId != ""
-	case "structs.structs.Infusion.fuel":
+	case "structs.Infusion.fuel":
 		return x.Fuel != uint64(0)
-	case "structs.structs.Infusion.power":
+	case "structs.Infusion.power":
 		return x.Power != uint64(0)
-	case "structs.structs.Infusion.commission":
+	case "structs.Infusion.commission":
 		return x.Commission != ""
-	case "structs.structs.Infusion.playerId":
+	case "structs.Infusion.playerId":
 		return x.PlayerId != ""
-	case "structs.structs.Infusion.address":
+	case "structs.Infusion.address":
 		return x.Address != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Infusion"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.Infusion"))
 		}
-		panic(fmt.Errorf("message structs.structs.Infusion does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.Infusion does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -189,25 +189,25 @@ func (x *fastReflection_Infusion) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Infusion) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.Infusion.destinationType":
+	case "structs.Infusion.destinationType":
 		x.DestinationType = 0
-	case "structs.structs.Infusion.destinationId":
+	case "structs.Infusion.destinationId":
 		x.DestinationId = ""
-	case "structs.structs.Infusion.fuel":
+	case "structs.Infusion.fuel":
 		x.Fuel = uint64(0)
-	case "structs.structs.Infusion.power":
+	case "structs.Infusion.power":
 		x.Power = uint64(0)
-	case "structs.structs.Infusion.commission":
+	case "structs.Infusion.commission":
 		x.Commission = ""
-	case "structs.structs.Infusion.playerId":
+	case "structs.Infusion.playerId":
 		x.PlayerId = ""
-	case "structs.structs.Infusion.address":
+	case "structs.Infusion.address":
 		x.Address = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Infusion"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.Infusion"))
 		}
-		panic(fmt.Errorf("message structs.structs.Infusion does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.Infusion does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -219,32 +219,32 @@ func (x *fastReflection_Infusion) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_Infusion) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.Infusion.destinationType":
+	case "structs.Infusion.destinationType":
 		value := x.DestinationType
 		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
-	case "structs.structs.Infusion.destinationId":
+	case "structs.Infusion.destinationId":
 		value := x.DestinationId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.Infusion.fuel":
+	case "structs.Infusion.fuel":
 		value := x.Fuel
 		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Infusion.power":
+	case "structs.Infusion.power":
 		value := x.Power
 		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Infusion.commission":
+	case "structs.Infusion.commission":
 		value := x.Commission
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.Infusion.playerId":
+	case "structs.Infusion.playerId":
 		value := x.PlayerId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.Infusion.address":
+	case "structs.Infusion.address":
 		value := x.Address
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Infusion"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.Infusion"))
 		}
-		panic(fmt.Errorf("message structs.structs.Infusion does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.Infusion does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -260,25 +260,25 @@ func (x *fastReflection_Infusion) Get(descriptor protoreflect.FieldDescriptor) p
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Infusion) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.Infusion.destinationType":
+	case "structs.Infusion.destinationType":
 		x.DestinationType = (ObjectType)(value.Enum())
-	case "structs.structs.Infusion.destinationId":
+	case "structs.Infusion.destinationId":
 		x.DestinationId = value.Interface().(string)
-	case "structs.structs.Infusion.fuel":
+	case "structs.Infusion.fuel":
 		x.Fuel = value.Uint()
-	case "structs.structs.Infusion.power":
+	case "structs.Infusion.power":
 		x.Power = value.Uint()
-	case "structs.structs.Infusion.commission":
+	case "structs.Infusion.commission":
 		x.Commission = value.Interface().(string)
-	case "structs.structs.Infusion.playerId":
+	case "structs.Infusion.playerId":
 		x.PlayerId = value.Interface().(string)
-	case "structs.structs.Infusion.address":
+	case "structs.Infusion.address":
 		x.Address = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Infusion"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.Infusion"))
 		}
-		panic(fmt.Errorf("message structs.structs.Infusion does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.Infusion does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -294,25 +294,25 @@ func (x *fastReflection_Infusion) Set(fd protoreflect.FieldDescriptor, value pro
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Infusion) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.Infusion.destinationType":
-		panic(fmt.Errorf("field destinationType of message structs.structs.Infusion is not mutable"))
-	case "structs.structs.Infusion.destinationId":
-		panic(fmt.Errorf("field destinationId of message structs.structs.Infusion is not mutable"))
-	case "structs.structs.Infusion.fuel":
-		panic(fmt.Errorf("field fuel of message structs.structs.Infusion is not mutable"))
-	case "structs.structs.Infusion.power":
-		panic(fmt.Errorf("field power of message structs.structs.Infusion is not mutable"))
-	case "structs.structs.Infusion.commission":
-		panic(fmt.Errorf("field commission of message structs.structs.Infusion is not mutable"))
-	case "structs.structs.Infusion.playerId":
-		panic(fmt.Errorf("field playerId of message structs.structs.Infusion is not mutable"))
-	case "structs.structs.Infusion.address":
-		panic(fmt.Errorf("field address of message structs.structs.Infusion is not mutable"))
+	case "structs.Infusion.destinationType":
+		panic(fmt.Errorf("field destinationType of message structs.Infusion is not mutable"))
+	case "structs.Infusion.destinationId":
+		panic(fmt.Errorf("field destinationId of message structs.Infusion is not mutable"))
+	case "structs.Infusion.fuel":
+		panic(fmt.Errorf("field fuel of message structs.Infusion is not mutable"))
+	case "structs.Infusion.power":
+		panic(fmt.Errorf("field power of message structs.Infusion is not mutable"))
+	case "structs.Infusion.commission":
+		panic(fmt.Errorf("field commission of message structs.Infusion is not mutable"))
+	case "structs.Infusion.playerId":
+		panic(fmt.Errorf("field playerId of message structs.Infusion is not mutable"))
+	case "structs.Infusion.address":
+		panic(fmt.Errorf("field address of message structs.Infusion is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Infusion"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.Infusion"))
 		}
-		panic(fmt.Errorf("message structs.structs.Infusion does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.Infusion does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -321,25 +321,25 @@ func (x *fastReflection_Infusion) Mutable(fd protoreflect.FieldDescriptor) proto
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_Infusion) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.Infusion.destinationType":
+	case "structs.Infusion.destinationType":
 		return protoreflect.ValueOfEnum(0)
-	case "structs.structs.Infusion.destinationId":
+	case "structs.Infusion.destinationId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.Infusion.fuel":
+	case "structs.Infusion.fuel":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Infusion.power":
+	case "structs.Infusion.power":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Infusion.commission":
+	case "structs.Infusion.commission":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.Infusion.playerId":
+	case "structs.Infusion.playerId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.Infusion.address":
+	case "structs.Infusion.address":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Infusion"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.Infusion"))
 		}
-		panic(fmt.Errorf("message structs.structs.Infusion does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.Infusion does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -349,7 +349,7 @@ func (x *fastReflection_Infusion) NewField(fd protoreflect.FieldDescriptor) prot
 func (x *fastReflection_Infusion) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.Infusion", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.Infusion", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -788,7 +788,7 @@ type Infusion struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	DestinationType ObjectType `protobuf:"varint,1,opt,name=destinationType,proto3,enum=structs.structs.ObjectType" json:"destinationType,omitempty"`
+	DestinationType ObjectType `protobuf:"varint,1,opt,name=destinationType,proto3,enum=structs.ObjectType" json:"destinationType,omitempty"`
 	DestinationId   string     `protobuf:"bytes,2,opt,name=destinationId,proto3" json:"destinationId,omitempty"`
 	Fuel            uint64     `protobuf:"varint,3,opt,name=fuel,proto3" json:"fuel,omitempty"`
 	Power           uint64     `protobuf:"varint,4,opt,name=power,proto3" json:"power,omitempty"`
@@ -871,15 +871,14 @@ var File_structs_structs_infusion_proto protoreflect.FileDescriptor
 var file_structs_structs_infusion_proto_rawDesc = []byte{
 	0x0a, 0x1e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x73, 0x2f, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x12, 0x0f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x1a, 0x19, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x5f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f,
-	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x14, 0x67, 0x6f,
-	0x67, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x1a, 0x1a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2f, 0x6b, 0x65, 0x79, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xaa,
-	0x02, 0x0a, 0x08, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x45, 0x0a, 0x0f, 0x64,
-	0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x12, 0x07, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x1a, 0x19, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
+	0x73, 0x5f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x14, 0x67, 0x6f, 0x67, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f,
+	0x67, 0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1a, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x6b, 0x65, 0x79, 0x73,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xa2, 0x02, 0x0a, 0x08, 0x49, 0x6e, 0x66, 0x75, 0x73,
+	0x69, 0x6f, 0x6e, 0x12, 0x3d, 0x0a, 0x0f, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x13, 0x2e, 0x73,
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54, 0x79, 0x70,
 	0x65, 0x52, 0x0f, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79,
 	0x70, 0x65, 0x12, 0x24, 0x0a, 0x0d, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61, 0x74, 0x69, 0x6f,
@@ -895,18 +894,15 @@ var file_structs_structs_infusion_proto_rawDesc = []byte{
 	0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49,
 	0x64, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49,
 	0x64, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x07, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x42, 0xa3, 0x01, 0x0a, 0x13,
-	0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x42, 0x0d, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x50, 0x72, 0x6f,
-	0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e,
-	0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02,
-	0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02,
-	0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x42, 0x7a, 0x0a, 0x0b, 0x63,
+	0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0d, 0x49, 0x6e, 0x66, 0x75,
+	0x73, 0x69, 0x6f, 0x6e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03,
+	0x53, 0x58, 0x58, 0xaa, 0x02, 0x07, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x07,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x13, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x07,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -923,11 +919,11 @@ func file_structs_structs_infusion_proto_rawDescGZIP() []byte {
 
 var file_structs_structs_infusion_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_structs_structs_infusion_proto_goTypes = []interface{}{
-	(*Infusion)(nil), // 0: structs.structs.Infusion
-	(ObjectType)(0),  // 1: structs.structs.objectType
+	(*Infusion)(nil), // 0: structs.Infusion
+	(ObjectType)(0),  // 1: structs.objectType
 }
 var file_structs_structs_infusion_proto_depIdxs = []int32{
-	1, // 0: structs.structs.Infusion.destinationType:type_name -> structs.structs.objectType
+	1, // 0: structs.Infusion.destinationType:type_name -> structs.objectType
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
