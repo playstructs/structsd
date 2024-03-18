@@ -111,13 +111,13 @@ func (x *fastReflection_EventAllocation) Range(f func(protoreflect.FieldDescript
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventAllocation) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.EventAllocation.allocation":
+	case "structs.structs.EventAllocation.allocation":
 		return x.Allocation != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventAllocation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAllocation"))
 		}
-		panic(fmt.Errorf("message structs.EventAllocation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventAllocation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -129,13 +129,13 @@ func (x *fastReflection_EventAllocation) Has(fd protoreflect.FieldDescriptor) bo
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventAllocation) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.EventAllocation.allocation":
+	case "structs.structs.EventAllocation.allocation":
 		x.Allocation = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventAllocation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAllocation"))
 		}
-		panic(fmt.Errorf("message structs.EventAllocation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventAllocation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -147,14 +147,14 @@ func (x *fastReflection_EventAllocation) Clear(fd protoreflect.FieldDescriptor) 
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventAllocation) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.EventAllocation.allocation":
+	case "structs.structs.EventAllocation.allocation":
 		value := x.Allocation
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventAllocation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAllocation"))
 		}
-		panic(fmt.Errorf("message structs.EventAllocation does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventAllocation does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -170,13 +170,13 @@ func (x *fastReflection_EventAllocation) Get(descriptor protoreflect.FieldDescri
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventAllocation) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.EventAllocation.allocation":
+	case "structs.structs.EventAllocation.allocation":
 		x.Allocation = value.Message().Interface().(*Allocation)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventAllocation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAllocation"))
 		}
-		panic(fmt.Errorf("message structs.EventAllocation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventAllocation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -192,16 +192,16 @@ func (x *fastReflection_EventAllocation) Set(fd protoreflect.FieldDescriptor, va
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventAllocation) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventAllocation.allocation":
+	case "structs.structs.EventAllocation.allocation":
 		if x.Allocation == nil {
 			x.Allocation = new(Allocation)
 		}
 		return protoreflect.ValueOfMessage(x.Allocation.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventAllocation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAllocation"))
 		}
-		panic(fmt.Errorf("message structs.EventAllocation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventAllocation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -210,14 +210,14 @@ func (x *fastReflection_EventAllocation) Mutable(fd protoreflect.FieldDescriptor
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventAllocation) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventAllocation.allocation":
+	case "structs.structs.EventAllocation.allocation":
 		m := new(Allocation)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventAllocation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAllocation"))
 		}
-		panic(fmt.Errorf("message structs.EventAllocation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventAllocation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -227,7 +227,7 @@ func (x *fastReflection_EventAllocation) NewField(fd protoreflect.FieldDescripto
 func (x *fastReflection_EventAllocation) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.EventAllocation", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventAllocation", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -546,13 +546,13 @@ func (x *fastReflection_EventGuild) Range(f func(protoreflect.FieldDescriptor, p
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventGuild) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.EventGuild.guild":
+	case "structs.structs.EventGuild.guild":
 		return x.Guild != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventGuild"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuild"))
 		}
-		panic(fmt.Errorf("message structs.EventGuild does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventGuild does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -564,13 +564,13 @@ func (x *fastReflection_EventGuild) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventGuild) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.EventGuild.guild":
+	case "structs.structs.EventGuild.guild":
 		x.Guild = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventGuild"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuild"))
 		}
-		panic(fmt.Errorf("message structs.EventGuild does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventGuild does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -582,14 +582,14 @@ func (x *fastReflection_EventGuild) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventGuild) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.EventGuild.guild":
+	case "structs.structs.EventGuild.guild":
 		value := x.Guild
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventGuild"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuild"))
 		}
-		panic(fmt.Errorf("message structs.EventGuild does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventGuild does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -605,13 +605,13 @@ func (x *fastReflection_EventGuild) Get(descriptor protoreflect.FieldDescriptor)
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventGuild) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.EventGuild.guild":
+	case "structs.structs.EventGuild.guild":
 		x.Guild = value.Message().Interface().(*Guild)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventGuild"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuild"))
 		}
-		panic(fmt.Errorf("message structs.EventGuild does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventGuild does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -627,16 +627,16 @@ func (x *fastReflection_EventGuild) Set(fd protoreflect.FieldDescriptor, value p
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventGuild) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventGuild.guild":
+	case "structs.structs.EventGuild.guild":
 		if x.Guild == nil {
 			x.Guild = new(Guild)
 		}
 		return protoreflect.ValueOfMessage(x.Guild.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventGuild"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuild"))
 		}
-		panic(fmt.Errorf("message structs.EventGuild does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventGuild does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -645,14 +645,14 @@ func (x *fastReflection_EventGuild) Mutable(fd protoreflect.FieldDescriptor) pro
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventGuild) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventGuild.guild":
+	case "structs.structs.EventGuild.guild":
 		m := new(Guild)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventGuild"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuild"))
 		}
-		panic(fmt.Errorf("message structs.EventGuild does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventGuild does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -662,7 +662,7 @@ func (x *fastReflection_EventGuild) NewField(fd protoreflect.FieldDescriptor) pr
 func (x *fastReflection_EventGuild) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.EventGuild", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventGuild", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -981,13 +981,13 @@ func (x *fastReflection_EventInfusion) Range(f func(protoreflect.FieldDescriptor
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventInfusion) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.EventInfusion.infusion":
+	case "structs.structs.EventInfusion.infusion":
 		return x.Infusion != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventInfusion"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventInfusion"))
 		}
-		panic(fmt.Errorf("message structs.EventInfusion does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventInfusion does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -999,13 +999,13 @@ func (x *fastReflection_EventInfusion) Has(fd protoreflect.FieldDescriptor) bool
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventInfusion) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.EventInfusion.infusion":
+	case "structs.structs.EventInfusion.infusion":
 		x.Infusion = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventInfusion"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventInfusion"))
 		}
-		panic(fmt.Errorf("message structs.EventInfusion does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventInfusion does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1017,14 +1017,14 @@ func (x *fastReflection_EventInfusion) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventInfusion) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.EventInfusion.infusion":
+	case "structs.structs.EventInfusion.infusion":
 		value := x.Infusion
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventInfusion"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventInfusion"))
 		}
-		panic(fmt.Errorf("message structs.EventInfusion does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventInfusion does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -1040,13 +1040,13 @@ func (x *fastReflection_EventInfusion) Get(descriptor protoreflect.FieldDescript
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventInfusion) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.EventInfusion.infusion":
+	case "structs.structs.EventInfusion.infusion":
 		x.Infusion = value.Message().Interface().(*Infusion)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventInfusion"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventInfusion"))
 		}
-		panic(fmt.Errorf("message structs.EventInfusion does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventInfusion does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1062,16 +1062,16 @@ func (x *fastReflection_EventInfusion) Set(fd protoreflect.FieldDescriptor, valu
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventInfusion) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventInfusion.infusion":
+	case "structs.structs.EventInfusion.infusion":
 		if x.Infusion == nil {
 			x.Infusion = new(Infusion)
 		}
 		return protoreflect.ValueOfMessage(x.Infusion.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventInfusion"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventInfusion"))
 		}
-		panic(fmt.Errorf("message structs.EventInfusion does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventInfusion does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1080,14 +1080,14 @@ func (x *fastReflection_EventInfusion) Mutable(fd protoreflect.FieldDescriptor) 
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventInfusion) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventInfusion.infusion":
+	case "structs.structs.EventInfusion.infusion":
 		m := new(Infusion)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventInfusion"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventInfusion"))
 		}
-		panic(fmt.Errorf("message structs.EventInfusion does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventInfusion does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1097,7 +1097,7 @@ func (x *fastReflection_EventInfusion) NewField(fd protoreflect.FieldDescriptor)
 func (x *fastReflection_EventInfusion) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.EventInfusion", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventInfusion", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -1416,13 +1416,13 @@ func (x *fastReflection_EventPlanet) Range(f func(protoreflect.FieldDescriptor, 
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventPlanet) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.EventPlanet.planet":
+	case "structs.structs.EventPlanet.planet":
 		return x.Planet != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventPlanet"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPlanet"))
 		}
-		panic(fmt.Errorf("message structs.EventPlanet does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventPlanet does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1434,13 +1434,13 @@ func (x *fastReflection_EventPlanet) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventPlanet) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.EventPlanet.planet":
+	case "structs.structs.EventPlanet.planet":
 		x.Planet = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventPlanet"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPlanet"))
 		}
-		panic(fmt.Errorf("message structs.EventPlanet does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventPlanet does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1452,14 +1452,14 @@ func (x *fastReflection_EventPlanet) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventPlanet) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.EventPlanet.planet":
+	case "structs.structs.EventPlanet.planet":
 		value := x.Planet
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventPlanet"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPlanet"))
 		}
-		panic(fmt.Errorf("message structs.EventPlanet does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventPlanet does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -1475,13 +1475,13 @@ func (x *fastReflection_EventPlanet) Get(descriptor protoreflect.FieldDescriptor
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventPlanet) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.EventPlanet.planet":
+	case "structs.structs.EventPlanet.planet":
 		x.Planet = value.Message().Interface().(*Planet)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventPlanet"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPlanet"))
 		}
-		panic(fmt.Errorf("message structs.EventPlanet does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventPlanet does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1497,16 +1497,16 @@ func (x *fastReflection_EventPlanet) Set(fd protoreflect.FieldDescriptor, value 
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventPlanet) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventPlanet.planet":
+	case "structs.structs.EventPlanet.planet":
 		if x.Planet == nil {
 			x.Planet = new(Planet)
 		}
 		return protoreflect.ValueOfMessage(x.Planet.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventPlanet"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPlanet"))
 		}
-		panic(fmt.Errorf("message structs.EventPlanet does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventPlanet does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1515,14 +1515,14 @@ func (x *fastReflection_EventPlanet) Mutable(fd protoreflect.FieldDescriptor) pr
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventPlanet) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventPlanet.planet":
+	case "structs.structs.EventPlanet.planet":
 		m := new(Planet)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventPlanet"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPlanet"))
 		}
-		panic(fmt.Errorf("message structs.EventPlanet does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventPlanet does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1532,7 +1532,7 @@ func (x *fastReflection_EventPlanet) NewField(fd protoreflect.FieldDescriptor) p
 func (x *fastReflection_EventPlanet) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.EventPlanet", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventPlanet", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -1851,13 +1851,13 @@ func (x *fastReflection_EventPlayer) Range(f func(protoreflect.FieldDescriptor, 
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventPlayer) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.EventPlayer.player":
+	case "structs.structs.EventPlayer.player":
 		return x.Player != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventPlayer"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPlayer"))
 		}
-		panic(fmt.Errorf("message structs.EventPlayer does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventPlayer does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1869,13 +1869,13 @@ func (x *fastReflection_EventPlayer) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventPlayer) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.EventPlayer.player":
+	case "structs.structs.EventPlayer.player":
 		x.Player = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventPlayer"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPlayer"))
 		}
-		panic(fmt.Errorf("message structs.EventPlayer does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventPlayer does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1887,14 +1887,14 @@ func (x *fastReflection_EventPlayer) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventPlayer) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.EventPlayer.player":
+	case "structs.structs.EventPlayer.player":
 		value := x.Player
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventPlayer"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPlayer"))
 		}
-		panic(fmt.Errorf("message structs.EventPlayer does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventPlayer does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -1910,13 +1910,13 @@ func (x *fastReflection_EventPlayer) Get(descriptor protoreflect.FieldDescriptor
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventPlayer) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.EventPlayer.player":
+	case "structs.structs.EventPlayer.player":
 		x.Player = value.Message().Interface().(*Player)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventPlayer"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPlayer"))
 		}
-		panic(fmt.Errorf("message structs.EventPlayer does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventPlayer does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1932,16 +1932,16 @@ func (x *fastReflection_EventPlayer) Set(fd protoreflect.FieldDescriptor, value 
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventPlayer) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventPlayer.player":
+	case "structs.structs.EventPlayer.player":
 		if x.Player == nil {
 			x.Player = new(Player)
 		}
 		return protoreflect.ValueOfMessage(x.Player.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventPlayer"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPlayer"))
 		}
-		panic(fmt.Errorf("message structs.EventPlayer does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventPlayer does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1950,14 +1950,14 @@ func (x *fastReflection_EventPlayer) Mutable(fd protoreflect.FieldDescriptor) pr
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventPlayer) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventPlayer.player":
+	case "structs.structs.EventPlayer.player":
 		m := new(Player)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventPlayer"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPlayer"))
 		}
-		panic(fmt.Errorf("message structs.EventPlayer does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventPlayer does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -1967,7 +1967,7 @@ func (x *fastReflection_EventPlayer) NewField(fd protoreflect.FieldDescriptor) p
 func (x *fastReflection_EventPlayer) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.EventPlayer", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventPlayer", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2286,13 +2286,13 @@ func (x *fastReflection_EventReactor) Range(f func(protoreflect.FieldDescriptor,
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventReactor) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.EventReactor.reactor":
+	case "structs.structs.EventReactor.reactor":
 		return x.Reactor != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventReactor"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactor"))
 		}
-		panic(fmt.Errorf("message structs.EventReactor does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventReactor does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2304,13 +2304,13 @@ func (x *fastReflection_EventReactor) Has(fd protoreflect.FieldDescriptor) bool 
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventReactor) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.EventReactor.reactor":
+	case "structs.structs.EventReactor.reactor":
 		x.Reactor = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventReactor"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactor"))
 		}
-		panic(fmt.Errorf("message structs.EventReactor does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventReactor does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2322,14 +2322,14 @@ func (x *fastReflection_EventReactor) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventReactor) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.EventReactor.reactor":
+	case "structs.structs.EventReactor.reactor":
 		value := x.Reactor
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventReactor"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactor"))
 		}
-		panic(fmt.Errorf("message structs.EventReactor does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventReactor does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -2345,13 +2345,13 @@ func (x *fastReflection_EventReactor) Get(descriptor protoreflect.FieldDescripto
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventReactor) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.EventReactor.reactor":
+	case "structs.structs.EventReactor.reactor":
 		x.Reactor = value.Message().Interface().(*Reactor)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventReactor"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactor"))
 		}
-		panic(fmt.Errorf("message structs.EventReactor does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventReactor does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2367,16 +2367,16 @@ func (x *fastReflection_EventReactor) Set(fd protoreflect.FieldDescriptor, value
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventReactor) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventReactor.reactor":
+	case "structs.structs.EventReactor.reactor":
 		if x.Reactor == nil {
 			x.Reactor = new(Reactor)
 		}
 		return protoreflect.ValueOfMessage(x.Reactor.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventReactor"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactor"))
 		}
-		panic(fmt.Errorf("message structs.EventReactor does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventReactor does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2385,14 +2385,14 @@ func (x *fastReflection_EventReactor) Mutable(fd protoreflect.FieldDescriptor) p
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventReactor) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventReactor.reactor":
+	case "structs.structs.EventReactor.reactor":
 		m := new(Reactor)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventReactor"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventReactor"))
 		}
-		panic(fmt.Errorf("message structs.EventReactor does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventReactor does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2402,7 +2402,7 @@ func (x *fastReflection_EventReactor) NewField(fd protoreflect.FieldDescriptor) 
 func (x *fastReflection_EventReactor) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.EventReactor", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventReactor", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -2721,13 +2721,13 @@ func (x *fastReflection_EventStruct) Range(f func(protoreflect.FieldDescriptor, 
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventStruct) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.EventStruct.structure":
+	case "structs.structs.EventStruct.structure":
 		return x.Structure != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventStruct"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventStruct"))
 		}
-		panic(fmt.Errorf("message structs.EventStruct does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventStruct does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2739,13 +2739,13 @@ func (x *fastReflection_EventStruct) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventStruct) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.EventStruct.structure":
+	case "structs.structs.EventStruct.structure":
 		x.Structure = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventStruct"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventStruct"))
 		}
-		panic(fmt.Errorf("message structs.EventStruct does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventStruct does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2757,14 +2757,14 @@ func (x *fastReflection_EventStruct) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventStruct) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.EventStruct.structure":
+	case "structs.structs.EventStruct.structure":
 		value := x.Structure
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventStruct"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventStruct"))
 		}
-		panic(fmt.Errorf("message structs.EventStruct does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventStruct does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -2780,13 +2780,13 @@ func (x *fastReflection_EventStruct) Get(descriptor protoreflect.FieldDescriptor
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventStruct) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.EventStruct.structure":
+	case "structs.structs.EventStruct.structure":
 		x.Structure = value.Message().Interface().(*Struct)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventStruct"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventStruct"))
 		}
-		panic(fmt.Errorf("message structs.EventStruct does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventStruct does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2802,16 +2802,16 @@ func (x *fastReflection_EventStruct) Set(fd protoreflect.FieldDescriptor, value 
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventStruct) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventStruct.structure":
+	case "structs.structs.EventStruct.structure":
 		if x.Structure == nil {
 			x.Structure = new(Struct)
 		}
 		return protoreflect.ValueOfMessage(x.Structure.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventStruct"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventStruct"))
 		}
-		panic(fmt.Errorf("message structs.EventStruct does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventStruct does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2820,14 +2820,14 @@ func (x *fastReflection_EventStruct) Mutable(fd protoreflect.FieldDescriptor) pr
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventStruct) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventStruct.structure":
+	case "structs.structs.EventStruct.structure":
 		m := new(Struct)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventStruct"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventStruct"))
 		}
-		panic(fmt.Errorf("message structs.EventStruct does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventStruct does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -2837,7 +2837,7 @@ func (x *fastReflection_EventStruct) NewField(fd protoreflect.FieldDescriptor) p
 func (x *fastReflection_EventStruct) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.EventStruct", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventStruct", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -3156,13 +3156,13 @@ func (x *fastReflection_EventSubstation) Range(f func(protoreflect.FieldDescript
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventSubstation) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.EventSubstation.substation":
+	case "structs.structs.EventSubstation.substation":
 		return x.Substation != nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventSubstation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventSubstation"))
 		}
-		panic(fmt.Errorf("message structs.EventSubstation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventSubstation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3174,13 +3174,13 @@ func (x *fastReflection_EventSubstation) Has(fd protoreflect.FieldDescriptor) bo
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventSubstation) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.EventSubstation.substation":
+	case "structs.structs.EventSubstation.substation":
 		x.Substation = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventSubstation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventSubstation"))
 		}
-		panic(fmt.Errorf("message structs.EventSubstation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventSubstation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3192,14 +3192,14 @@ func (x *fastReflection_EventSubstation) Clear(fd protoreflect.FieldDescriptor) 
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventSubstation) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.EventSubstation.substation":
+	case "structs.structs.EventSubstation.substation":
 		value := x.Substation
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventSubstation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventSubstation"))
 		}
-		panic(fmt.Errorf("message structs.EventSubstation does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventSubstation does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -3215,13 +3215,13 @@ func (x *fastReflection_EventSubstation) Get(descriptor protoreflect.FieldDescri
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventSubstation) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.EventSubstation.substation":
+	case "structs.structs.EventSubstation.substation":
 		x.Substation = value.Message().Interface().(*Substation)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventSubstation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventSubstation"))
 		}
-		panic(fmt.Errorf("message structs.EventSubstation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventSubstation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3237,16 +3237,16 @@ func (x *fastReflection_EventSubstation) Set(fd protoreflect.FieldDescriptor, va
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventSubstation) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventSubstation.substation":
+	case "structs.structs.EventSubstation.substation":
 		if x.Substation == nil {
 			x.Substation = new(Substation)
 		}
 		return protoreflect.ValueOfMessage(x.Substation.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventSubstation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventSubstation"))
 		}
-		panic(fmt.Errorf("message structs.EventSubstation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventSubstation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3255,14 +3255,14 @@ func (x *fastReflection_EventSubstation) Mutable(fd protoreflect.FieldDescriptor
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventSubstation) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventSubstation.substation":
+	case "structs.structs.EventSubstation.substation":
 		m := new(Substation)
 		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventSubstation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventSubstation"))
 		}
-		panic(fmt.Errorf("message structs.EventSubstation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventSubstation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3272,7 +3272,7 @@ func (x *fastReflection_EventSubstation) NewField(fd protoreflect.FieldDescripto
 func (x *fastReflection_EventSubstation) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.EventSubstation", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventSubstation", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -3599,15 +3599,15 @@ func (x *fastReflection_EventPermission) Range(f func(protoreflect.FieldDescript
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventPermission) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.EventPermission.permissionId":
+	case "structs.structs.EventPermission.permissionId":
 		return x.PermissionId != ""
-	case "structs.EventPermission.value":
+	case "structs.structs.EventPermission.value":
 		return x.Value != uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventPermission"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPermission"))
 		}
-		panic(fmt.Errorf("message structs.EventPermission does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventPermission does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3619,15 +3619,15 @@ func (x *fastReflection_EventPermission) Has(fd protoreflect.FieldDescriptor) bo
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventPermission) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.EventPermission.permissionId":
+	case "structs.structs.EventPermission.permissionId":
 		x.PermissionId = ""
-	case "structs.EventPermission.value":
+	case "structs.structs.EventPermission.value":
 		x.Value = uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventPermission"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPermission"))
 		}
-		panic(fmt.Errorf("message structs.EventPermission does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventPermission does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3639,17 +3639,17 @@ func (x *fastReflection_EventPermission) Clear(fd protoreflect.FieldDescriptor) 
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventPermission) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.EventPermission.permissionId":
+	case "structs.structs.EventPermission.permissionId":
 		value := x.PermissionId
 		return protoreflect.ValueOfString(value)
-	case "structs.EventPermission.value":
+	case "structs.structs.EventPermission.value":
 		value := x.Value
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventPermission"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPermission"))
 		}
-		panic(fmt.Errorf("message structs.EventPermission does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventPermission does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -3665,15 +3665,15 @@ func (x *fastReflection_EventPermission) Get(descriptor protoreflect.FieldDescri
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventPermission) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.EventPermission.permissionId":
+	case "structs.structs.EventPermission.permissionId":
 		x.PermissionId = value.Interface().(string)
-	case "structs.EventPermission.value":
+	case "structs.structs.EventPermission.value":
 		x.Value = value.Uint()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventPermission"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPermission"))
 		}
-		panic(fmt.Errorf("message structs.EventPermission does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventPermission does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3689,15 +3689,15 @@ func (x *fastReflection_EventPermission) Set(fd protoreflect.FieldDescriptor, va
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventPermission) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventPermission.permissionId":
-		panic(fmt.Errorf("field permissionId of message structs.EventPermission is not mutable"))
-	case "structs.EventPermission.value":
-		panic(fmt.Errorf("field value of message structs.EventPermission is not mutable"))
+	case "structs.structs.EventPermission.permissionId":
+		panic(fmt.Errorf("field permissionId of message structs.structs.EventPermission is not mutable"))
+	case "structs.structs.EventPermission.value":
+		panic(fmt.Errorf("field value of message structs.structs.EventPermission is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventPermission"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPermission"))
 		}
-		panic(fmt.Errorf("message structs.EventPermission does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventPermission does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3706,15 +3706,15 @@ func (x *fastReflection_EventPermission) Mutable(fd protoreflect.FieldDescriptor
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventPermission) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventPermission.permissionId":
+	case "structs.structs.EventPermission.permissionId":
 		return protoreflect.ValueOfString("")
-	case "structs.EventPermission.value":
+	case "structs.structs.EventPermission.value":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventPermission"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPermission"))
 		}
-		panic(fmt.Errorf("message structs.EventPermission does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventPermission does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -3724,7 +3724,7 @@ func (x *fastReflection_EventPermission) NewField(fd protoreflect.FieldDescripto
 func (x *fastReflection_EventPermission) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.EventPermission", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventPermission", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -4067,15 +4067,15 @@ func (x *fastReflection_EventGrid) Range(f func(protoreflect.FieldDescriptor, pr
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventGrid) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.EventGrid.attributeId":
+	case "structs.structs.EventGrid.attributeId":
 		return x.AttributeId != ""
-	case "structs.EventGrid.value":
+	case "structs.structs.EventGrid.value":
 		return x.Value != uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventGrid"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGrid"))
 		}
-		panic(fmt.Errorf("message structs.EventGrid does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventGrid does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4087,15 +4087,15 @@ func (x *fastReflection_EventGrid) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventGrid) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.EventGrid.attributeId":
+	case "structs.structs.EventGrid.attributeId":
 		x.AttributeId = ""
-	case "structs.EventGrid.value":
+	case "structs.structs.EventGrid.value":
 		x.Value = uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventGrid"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGrid"))
 		}
-		panic(fmt.Errorf("message structs.EventGrid does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventGrid does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4107,17 +4107,17 @@ func (x *fastReflection_EventGrid) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventGrid) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.EventGrid.attributeId":
+	case "structs.structs.EventGrid.attributeId":
 		value := x.AttributeId
 		return protoreflect.ValueOfString(value)
-	case "structs.EventGrid.value":
+	case "structs.structs.EventGrid.value":
 		value := x.Value
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventGrid"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGrid"))
 		}
-		panic(fmt.Errorf("message structs.EventGrid does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventGrid does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -4133,15 +4133,15 @@ func (x *fastReflection_EventGrid) Get(descriptor protoreflect.FieldDescriptor) 
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventGrid) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.EventGrid.attributeId":
+	case "structs.structs.EventGrid.attributeId":
 		x.AttributeId = value.Interface().(string)
-	case "structs.EventGrid.value":
+	case "structs.structs.EventGrid.value":
 		x.Value = value.Uint()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventGrid"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGrid"))
 		}
-		panic(fmt.Errorf("message structs.EventGrid does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventGrid does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4157,15 +4157,15 @@ func (x *fastReflection_EventGrid) Set(fd protoreflect.FieldDescriptor, value pr
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventGrid) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventGrid.attributeId":
-		panic(fmt.Errorf("field attributeId of message structs.EventGrid is not mutable"))
-	case "structs.EventGrid.value":
-		panic(fmt.Errorf("field value of message structs.EventGrid is not mutable"))
+	case "structs.structs.EventGrid.attributeId":
+		panic(fmt.Errorf("field attributeId of message structs.structs.EventGrid is not mutable"))
+	case "structs.structs.EventGrid.value":
+		panic(fmt.Errorf("field value of message structs.structs.EventGrid is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventGrid"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGrid"))
 		}
-		panic(fmt.Errorf("message structs.EventGrid does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventGrid does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4174,15 +4174,15 @@ func (x *fastReflection_EventGrid) Mutable(fd protoreflect.FieldDescriptor) prot
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventGrid) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventGrid.attributeId":
+	case "structs.structs.EventGrid.attributeId":
 		return protoreflect.ValueOfString("")
-	case "structs.EventGrid.value":
+	case "structs.structs.EventGrid.value":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventGrid"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGrid"))
 		}
-		panic(fmt.Errorf("message structs.EventGrid does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventGrid does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4192,7 +4192,7 @@ func (x *fastReflection_EventGrid) NewField(fd protoreflect.FieldDescriptor) pro
 func (x *fastReflection_EventGrid) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.EventGrid", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventGrid", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -4527,13 +4527,13 @@ func (x *fastReflection_EventDelete) Range(f func(protoreflect.FieldDescriptor, 
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventDelete) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.EventDelete.objectId":
+	case "structs.structs.EventDelete.objectId":
 		return x.ObjectId != ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventDelete"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventDelete"))
 		}
-		panic(fmt.Errorf("message structs.EventDelete does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventDelete does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4545,13 +4545,13 @@ func (x *fastReflection_EventDelete) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventDelete) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.EventDelete.objectId":
+	case "structs.structs.EventDelete.objectId":
 		x.ObjectId = ""
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventDelete"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventDelete"))
 		}
-		panic(fmt.Errorf("message structs.EventDelete does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventDelete does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4563,14 +4563,14 @@ func (x *fastReflection_EventDelete) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventDelete) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.EventDelete.objectId":
+	case "structs.structs.EventDelete.objectId":
 		value := x.ObjectId
 		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventDelete"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventDelete"))
 		}
-		panic(fmt.Errorf("message structs.EventDelete does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventDelete does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -4586,13 +4586,13 @@ func (x *fastReflection_EventDelete) Get(descriptor protoreflect.FieldDescriptor
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventDelete) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.EventDelete.objectId":
+	case "structs.structs.EventDelete.objectId":
 		x.ObjectId = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventDelete"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventDelete"))
 		}
-		panic(fmt.Errorf("message structs.EventDelete does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventDelete does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4608,13 +4608,13 @@ func (x *fastReflection_EventDelete) Set(fd protoreflect.FieldDescriptor, value 
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventDelete) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventDelete.objectId":
-		panic(fmt.Errorf("field objectId of message structs.EventDelete is not mutable"))
+	case "structs.structs.EventDelete.objectId":
+		panic(fmt.Errorf("field objectId of message structs.structs.EventDelete is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventDelete"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventDelete"))
 		}
-		panic(fmt.Errorf("message structs.EventDelete does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventDelete does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4623,13 +4623,13 @@ func (x *fastReflection_EventDelete) Mutable(fd protoreflect.FieldDescriptor) pr
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventDelete) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventDelete.objectId":
+	case "structs.structs.EventDelete.objectId":
 		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventDelete"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventDelete"))
 		}
-		panic(fmt.Errorf("message structs.EventDelete does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventDelete does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4639,7 +4639,7 @@ func (x *fastReflection_EventDelete) NewField(fd protoreflect.FieldDescriptor) p
 func (x *fastReflection_EventDelete) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.EventDelete", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventDelete", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -4963,17 +4963,17 @@ func (x *fastReflection_EventAddressAssociation) Range(f func(protoreflect.Field
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventAddressAssociation) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.EventAddressAssociation.address":
+	case "structs.structs.EventAddressAssociation.address":
 		return x.Address != ""
-	case "structs.EventAddressAssociation.playerIndex":
+	case "structs.structs.EventAddressAssociation.playerIndex":
 		return x.PlayerIndex != uint64(0)
-	case "structs.EventAddressAssociation.registrationStatus":
+	case "structs.structs.EventAddressAssociation.registrationStatus":
 		return x.RegistrationStatus != 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventAddressAssociation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAddressAssociation"))
 		}
-		panic(fmt.Errorf("message structs.EventAddressAssociation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventAddressAssociation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -4985,17 +4985,17 @@ func (x *fastReflection_EventAddressAssociation) Has(fd protoreflect.FieldDescri
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventAddressAssociation) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.EventAddressAssociation.address":
+	case "structs.structs.EventAddressAssociation.address":
 		x.Address = ""
-	case "structs.EventAddressAssociation.playerIndex":
+	case "structs.structs.EventAddressAssociation.playerIndex":
 		x.PlayerIndex = uint64(0)
-	case "structs.EventAddressAssociation.registrationStatus":
+	case "structs.structs.EventAddressAssociation.registrationStatus":
 		x.RegistrationStatus = 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventAddressAssociation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAddressAssociation"))
 		}
-		panic(fmt.Errorf("message structs.EventAddressAssociation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventAddressAssociation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5007,20 +5007,20 @@ func (x *fastReflection_EventAddressAssociation) Clear(fd protoreflect.FieldDesc
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventAddressAssociation) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.EventAddressAssociation.address":
+	case "structs.structs.EventAddressAssociation.address":
 		value := x.Address
 		return protoreflect.ValueOfString(value)
-	case "structs.EventAddressAssociation.playerIndex":
+	case "structs.structs.EventAddressAssociation.playerIndex":
 		value := x.PlayerIndex
 		return protoreflect.ValueOfUint64(value)
-	case "structs.EventAddressAssociation.registrationStatus":
+	case "structs.structs.EventAddressAssociation.registrationStatus":
 		value := x.RegistrationStatus
 		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventAddressAssociation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAddressAssociation"))
 		}
-		panic(fmt.Errorf("message structs.EventAddressAssociation does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventAddressAssociation does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -5036,17 +5036,17 @@ func (x *fastReflection_EventAddressAssociation) Get(descriptor protoreflect.Fie
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventAddressAssociation) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.EventAddressAssociation.address":
+	case "structs.structs.EventAddressAssociation.address":
 		x.Address = value.Interface().(string)
-	case "structs.EventAddressAssociation.playerIndex":
+	case "structs.structs.EventAddressAssociation.playerIndex":
 		x.PlayerIndex = value.Uint()
-	case "structs.EventAddressAssociation.registrationStatus":
+	case "structs.structs.EventAddressAssociation.registrationStatus":
 		x.RegistrationStatus = (RegistrationStatus)(value.Enum())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventAddressAssociation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAddressAssociation"))
 		}
-		panic(fmt.Errorf("message structs.EventAddressAssociation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventAddressAssociation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5062,17 +5062,17 @@ func (x *fastReflection_EventAddressAssociation) Set(fd protoreflect.FieldDescri
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventAddressAssociation) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventAddressAssociation.address":
-		panic(fmt.Errorf("field address of message structs.EventAddressAssociation is not mutable"))
-	case "structs.EventAddressAssociation.playerIndex":
-		panic(fmt.Errorf("field playerIndex of message structs.EventAddressAssociation is not mutable"))
-	case "structs.EventAddressAssociation.registrationStatus":
-		panic(fmt.Errorf("field registrationStatus of message structs.EventAddressAssociation is not mutable"))
+	case "structs.structs.EventAddressAssociation.address":
+		panic(fmt.Errorf("field address of message structs.structs.EventAddressAssociation is not mutable"))
+	case "structs.structs.EventAddressAssociation.playerIndex":
+		panic(fmt.Errorf("field playerIndex of message structs.structs.EventAddressAssociation is not mutable"))
+	case "structs.structs.EventAddressAssociation.registrationStatus":
+		panic(fmt.Errorf("field registrationStatus of message structs.structs.EventAddressAssociation is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventAddressAssociation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAddressAssociation"))
 		}
-		panic(fmt.Errorf("message structs.EventAddressAssociation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventAddressAssociation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5081,17 +5081,17 @@ func (x *fastReflection_EventAddressAssociation) Mutable(fd protoreflect.FieldDe
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventAddressAssociation) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventAddressAssociation.address":
+	case "structs.structs.EventAddressAssociation.address":
 		return protoreflect.ValueOfString("")
-	case "structs.EventAddressAssociation.playerIndex":
+	case "structs.structs.EventAddressAssociation.playerIndex":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.EventAddressAssociation.registrationStatus":
+	case "structs.structs.EventAddressAssociation.registrationStatus":
 		return protoreflect.ValueOfEnum(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventAddressAssociation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAddressAssociation"))
 		}
-		panic(fmt.Errorf("message structs.EventAddressAssociation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventAddressAssociation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5101,7 +5101,7 @@ func (x *fastReflection_EventAddressAssociation) NewField(fd protoreflect.FieldD
 func (x *fastReflection_EventAddressAssociation) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.EventAddressAssociation", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventAddressAssociation", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -5479,17 +5479,17 @@ func (x *fastReflection_EventGuildAssociation) Range(f func(protoreflect.FieldDe
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventGuildAssociation) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.EventGuildAssociation.guildId":
+	case "structs.structs.EventGuildAssociation.guildId":
 		return x.GuildId != ""
-	case "structs.EventGuildAssociation.playerId":
+	case "structs.structs.EventGuildAssociation.playerId":
 		return x.PlayerId != ""
-	case "structs.EventGuildAssociation.registrationStatus":
+	case "structs.structs.EventGuildAssociation.registrationStatus":
 		return x.RegistrationStatus != 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventGuildAssociation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildAssociation"))
 		}
-		panic(fmt.Errorf("message structs.EventGuildAssociation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventGuildAssociation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5501,17 +5501,17 @@ func (x *fastReflection_EventGuildAssociation) Has(fd protoreflect.FieldDescript
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventGuildAssociation) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.EventGuildAssociation.guildId":
+	case "structs.structs.EventGuildAssociation.guildId":
 		x.GuildId = ""
-	case "structs.EventGuildAssociation.playerId":
+	case "structs.structs.EventGuildAssociation.playerId":
 		x.PlayerId = ""
-	case "structs.EventGuildAssociation.registrationStatus":
+	case "structs.structs.EventGuildAssociation.registrationStatus":
 		x.RegistrationStatus = 0
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventGuildAssociation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildAssociation"))
 		}
-		panic(fmt.Errorf("message structs.EventGuildAssociation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventGuildAssociation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5523,20 +5523,20 @@ func (x *fastReflection_EventGuildAssociation) Clear(fd protoreflect.FieldDescri
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventGuildAssociation) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.EventGuildAssociation.guildId":
+	case "structs.structs.EventGuildAssociation.guildId":
 		value := x.GuildId
 		return protoreflect.ValueOfString(value)
-	case "structs.EventGuildAssociation.playerId":
+	case "structs.structs.EventGuildAssociation.playerId":
 		value := x.PlayerId
 		return protoreflect.ValueOfString(value)
-	case "structs.EventGuildAssociation.registrationStatus":
+	case "structs.structs.EventGuildAssociation.registrationStatus":
 		value := x.RegistrationStatus
 		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventGuildAssociation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildAssociation"))
 		}
-		panic(fmt.Errorf("message structs.EventGuildAssociation does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventGuildAssociation does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -5552,17 +5552,17 @@ func (x *fastReflection_EventGuildAssociation) Get(descriptor protoreflect.Field
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventGuildAssociation) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.EventGuildAssociation.guildId":
+	case "structs.structs.EventGuildAssociation.guildId":
 		x.GuildId = value.Interface().(string)
-	case "structs.EventGuildAssociation.playerId":
+	case "structs.structs.EventGuildAssociation.playerId":
 		x.PlayerId = value.Interface().(string)
-	case "structs.EventGuildAssociation.registrationStatus":
+	case "structs.structs.EventGuildAssociation.registrationStatus":
 		x.RegistrationStatus = (RegistrationStatus)(value.Enum())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventGuildAssociation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildAssociation"))
 		}
-		panic(fmt.Errorf("message structs.EventGuildAssociation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventGuildAssociation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5578,17 +5578,17 @@ func (x *fastReflection_EventGuildAssociation) Set(fd protoreflect.FieldDescript
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventGuildAssociation) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventGuildAssociation.guildId":
-		panic(fmt.Errorf("field guildId of message structs.EventGuildAssociation is not mutable"))
-	case "structs.EventGuildAssociation.playerId":
-		panic(fmt.Errorf("field playerId of message structs.EventGuildAssociation is not mutable"))
-	case "structs.EventGuildAssociation.registrationStatus":
-		panic(fmt.Errorf("field registrationStatus of message structs.EventGuildAssociation is not mutable"))
+	case "structs.structs.EventGuildAssociation.guildId":
+		panic(fmt.Errorf("field guildId of message structs.structs.EventGuildAssociation is not mutable"))
+	case "structs.structs.EventGuildAssociation.playerId":
+		panic(fmt.Errorf("field playerId of message structs.structs.EventGuildAssociation is not mutable"))
+	case "structs.structs.EventGuildAssociation.registrationStatus":
+		panic(fmt.Errorf("field registrationStatus of message structs.structs.EventGuildAssociation is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventGuildAssociation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildAssociation"))
 		}
-		panic(fmt.Errorf("message structs.EventGuildAssociation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventGuildAssociation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5597,17 +5597,17 @@ func (x *fastReflection_EventGuildAssociation) Mutable(fd protoreflect.FieldDesc
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventGuildAssociation) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.EventGuildAssociation.guildId":
+	case "structs.structs.EventGuildAssociation.guildId":
 		return protoreflect.ValueOfString("")
-	case "structs.EventGuildAssociation.playerId":
+	case "structs.structs.EventGuildAssociation.playerId":
 		return protoreflect.ValueOfString("")
-	case "structs.EventGuildAssociation.registrationStatus":
+	case "structs.structs.EventGuildAssociation.registrationStatus":
 		return protoreflect.ValueOfEnum(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.EventGuildAssociation"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildAssociation"))
 		}
-		panic(fmt.Errorf("message structs.EventGuildAssociation does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.EventGuildAssociation does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -5617,7 +5617,7 @@ func (x *fastReflection_EventGuildAssociation) NewField(fd protoreflect.FieldDes
 func (x *fastReflection_EventGuildAssociation) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.EventGuildAssociation", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventGuildAssociation", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -6319,7 +6319,7 @@ type EventAddressAssociation struct {
 
 	Address            string             `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
 	PlayerIndex        uint64             `protobuf:"varint,2,opt,name=playerIndex,proto3" json:"playerIndex,omitempty"`
-	RegistrationStatus RegistrationStatus `protobuf:"varint,3,opt,name=registrationStatus,proto3,enum=structs.RegistrationStatus" json:"registrationStatus,omitempty"`
+	RegistrationStatus RegistrationStatus `protobuf:"varint,3,opt,name=registrationStatus,proto3,enum=structs.structs.RegistrationStatus" json:"registrationStatus,omitempty"`
 }
 
 func (x *EventAddressAssociation) Reset() {
@@ -6370,7 +6370,7 @@ type EventGuildAssociation struct {
 
 	GuildId            string             `protobuf:"bytes,1,opt,name=guildId,proto3" json:"guildId,omitempty"`
 	PlayerId           string             `protobuf:"bytes,2,opt,name=playerId,proto3" json:"playerId,omitempty"`
-	RegistrationStatus RegistrationStatus `protobuf:"varint,3,opt,name=registrationStatus,proto3,enum=structs.RegistrationStatus" json:"registrationStatus,omitempty"`
+	RegistrationStatus RegistrationStatus `protobuf:"varint,3,opt,name=registrationStatus,proto3,enum=structs.structs.RegistrationStatus" json:"registrationStatus,omitempty"`
 }
 
 func (x *EventGuildAssociation) Reset() {
@@ -6418,101 +6418,109 @@ var File_structs_structs_events_proto protoreflect.FileDescriptor
 
 var file_structs_structs_events_proto_rawDesc = []byte{
 	0x0a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x07,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x1a, 0x14, 0x67, 0x6f, 0x67, 0x6f, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x67,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x61, 0x6e, 0x6e, 0x6f, 0x74, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x61, 0x72,
-	0x61, 0x6d, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x6c, 0x6c, 0x6f, 0x63,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1b, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x75, 0x69,
-	0x6c, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69,
-	0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x6b, 0x65, 0x79, 0x73, 0x2e, 0x70,
-	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x1a, 0x1d, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a,
-	0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73,
-	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22,
-	0x46, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x12, 0x33, 0x0a, 0x0a, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x73, 0x2f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0f,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x1a,
+	0x14, 0x67, 0x6f, 0x67, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x67, 0x6f, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x61, 0x70,
+	0x69, 0x2f, 0x61, 0x6e, 0x6e, 0x6f, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2f, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x1a, 0x1b, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x1a, 0x1e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2f, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x1a, 0x1a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2f, 0x6b, 0x65, 0x79, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x6e,
+	0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1d, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f,
+	0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x4e, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74,
+	0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x3b, 0x0a, 0x0a, 0x61, 0x6c,
+	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
 	0x2e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0a, 0x61, 0x6c, 0x6c,
-	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x32, 0x0a, 0x0a, 0x45, 0x76, 0x65, 0x6e, 0x74,
-	0x47, 0x75, 0x69, 0x6c, 0x64, 0x12, 0x24, 0x0a, 0x05, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x47,
-	0x75, 0x69, 0x6c, 0x64, 0x52, 0x05, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x22, 0x3e, 0x0a, 0x0d, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x2d, 0x0a, 0x08,
-	0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x11,
+	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x3a, 0x0a, 0x0a, 0x45, 0x76, 0x65, 0x6e, 0x74,
+	0x47, 0x75, 0x69, 0x6c, 0x64, 0x12, 0x2c, 0x0a, 0x05, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x05, 0x67, 0x75,
+	0x69, 0x6c, 0x64, 0x22, 0x46, 0x0a, 0x0d, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x49, 0x6e, 0x66, 0x75,
+	0x73, 0x69, 0x6f, 0x6e, 0x12, 0x35, 0x0a, 0x08, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f,
-	0x6e, 0x52, 0x08, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x36, 0x0a, 0x0b, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x12, 0x27, 0x0a, 0x06, 0x70, 0x6c,
-	0x61, 0x6e, 0x65, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x06, 0x70, 0x6c, 0x61,
-	0x6e, 0x65, 0x74, 0x22, 0x36, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x6c, 0x61, 0x79,
-	0x65, 0x72, 0x12, 0x27, 0x0a, 0x06, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61,
-	0x79, 0x65, 0x72, 0x52, 0x06, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x22, 0x3a, 0x0a, 0x0c, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x12, 0x2a, 0x0a, 0x07, 0x72,
-	0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x10, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x07,
-	0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x22, 0x3c, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x12, 0x2d, 0x0a, 0x09, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x75, 0x72, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x6e, 0x52, 0x08, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x3e, 0x0a, 0x0b, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x12, 0x2f, 0x0a, 0x06, 0x70, 0x6c,
+	0x61, 0x6e, 0x65, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61,
+	0x6e, 0x65, 0x74, 0x52, 0x06, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x22, 0x3e, 0x0a, 0x0b, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x2f, 0x0a, 0x06, 0x70, 0x6c,
+	0x61, 0x79, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61,
+	0x79, 0x65, 0x72, 0x52, 0x06, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x22, 0x42, 0x0a, 0x0c, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x12, 0x32, 0x0a, 0x07, 0x72,
+	0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x18, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x52,
+	0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x07, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x22,
+	0x44, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x12, 0x35,
+	0x0a, 0x09, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x75, 0x72, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
 	0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x09, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x75, 0x72, 0x65, 0x22, 0x46, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x75,
-	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x33, 0x0a, 0x0a, 0x73, 0x75, 0x62, 0x73,
-	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x52, 0x0a, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x4b, 0x0a,
-	0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e,
-	0x12, 0x22, 0x0a, 0x0c, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x64,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69,
-	0x6f, 0x6e, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20,
-	0x01, 0x28, 0x04, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x43, 0x0a, 0x09, 0x45, 0x76,
-	0x65, 0x6e, 0x74, 0x47, 0x72, 0x69, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69,
-	0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x61, 0x74,
-	0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c,
-	0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22,
-	0x29, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x1a,
-	0x0a, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x22, 0xa2, 0x01, 0x0a, 0x17, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x73, 0x73, 0x6f, 0x63,
-	0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73,
-	0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
-	0x12, 0x20, 0x0a, 0x0b, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x6e, 0x64,
-	0x65, 0x78, 0x12, 0x4b, 0x0a, 0x12, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x72, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b,
+	0x63, 0x74, 0x75, 0x72, 0x65, 0x22, 0x4e, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x75,
+	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x3b, 0x0a, 0x0a, 0x73, 0x75, 0x62, 0x73,
+	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53,
+	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0a, 0x73, 0x75, 0x62, 0x73, 0x74,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x4b, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x65,
+	0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x22, 0x0a, 0x0c, 0x70, 0x65, 0x72, 0x6d,
+	0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c,
+	0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05,
+	0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x76, 0x61, 0x6c,
+	0x75, 0x65, 0x22, 0x43, 0x0a, 0x09, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x72, 0x69, 0x64, 0x12,
+	0x20, 0x0a, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49,
+	0x64, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x29, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74,
+	0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74,
+	0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74,
+	0x49, 0x64, 0x22, 0xaa, 0x01, 0x0a, 0x17, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x41, 0x73, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x18,
+	0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x20, 0x0a, 0x0b, 0x70, 0x6c, 0x61, 0x79,
+	0x65, 0x72, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x70,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x12, 0x53, 0x0a, 0x12, 0x72, 0x65,
+	0x67, 0x69, 0x73, 0x74, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73,
+	0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x72,
 	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x12, 0x72, 0x65, 0x67,
 	0x69, 0x73, 0x74, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x22,
-	0x9a, 0x01, 0x0a, 0x15, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x41, 0x73,
+	0xa2, 0x01, 0x0a, 0x15, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x41, 0x73,
 	0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69,
 	0x6c, 0x64, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c,
 	0x64, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18,
 	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12,
-	0x4b, 0x0a, 0x12, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53,
-	0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x72, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x12, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74,
-	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x42, 0x78, 0x0a, 0x0b,
-	0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x45, 0x76, 0x65,
-	0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d,
-	0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53,
-	0x58, 0x58, 0xaa, 0x02, 0x07, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x07, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x13, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x07, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x53, 0x0a, 0x12, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53,
+	0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x23, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x72, 0x65,
+	0x67, 0x69, 0x73, 0x74, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73,
+	0x52, 0x12, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03,
+	0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74,
+	0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a,
+	0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -6529,40 +6537,40 @@ func file_structs_structs_events_proto_rawDescGZIP() []byte {
 
 var file_structs_structs_events_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_structs_structs_events_proto_goTypes = []interface{}{
-	(*EventAllocation)(nil),         // 0: structs.EventAllocation
-	(*EventGuild)(nil),              // 1: structs.EventGuild
-	(*EventInfusion)(nil),           // 2: structs.EventInfusion
-	(*EventPlanet)(nil),             // 3: structs.EventPlanet
-	(*EventPlayer)(nil),             // 4: structs.EventPlayer
-	(*EventReactor)(nil),            // 5: structs.EventReactor
-	(*EventStruct)(nil),             // 6: structs.EventStruct
-	(*EventSubstation)(nil),         // 7: structs.EventSubstation
-	(*EventPermission)(nil),         // 8: structs.EventPermission
-	(*EventGrid)(nil),               // 9: structs.EventGrid
-	(*EventDelete)(nil),             // 10: structs.EventDelete
-	(*EventAddressAssociation)(nil), // 11: structs.EventAddressAssociation
-	(*EventGuildAssociation)(nil),   // 12: structs.EventGuildAssociation
-	(*Allocation)(nil),              // 13: structs.Allocation
-	(*Guild)(nil),                   // 14: structs.Guild
-	(*Infusion)(nil),                // 15: structs.Infusion
-	(*Planet)(nil),                  // 16: structs.Planet
-	(*Player)(nil),                  // 17: structs.Player
-	(*Reactor)(nil),                 // 18: structs.Reactor
-	(*Struct)(nil),                  // 19: structs.Struct
-	(*Substation)(nil),              // 20: structs.Substation
-	(RegistrationStatus)(0),         // 21: structs.registrationStatus
+	(*EventAllocation)(nil),         // 0: structs.structs.EventAllocation
+	(*EventGuild)(nil),              // 1: structs.structs.EventGuild
+	(*EventInfusion)(nil),           // 2: structs.structs.EventInfusion
+	(*EventPlanet)(nil),             // 3: structs.structs.EventPlanet
+	(*EventPlayer)(nil),             // 4: structs.structs.EventPlayer
+	(*EventReactor)(nil),            // 5: structs.structs.EventReactor
+	(*EventStruct)(nil),             // 6: structs.structs.EventStruct
+	(*EventSubstation)(nil),         // 7: structs.structs.EventSubstation
+	(*EventPermission)(nil),         // 8: structs.structs.EventPermission
+	(*EventGrid)(nil),               // 9: structs.structs.EventGrid
+	(*EventDelete)(nil),             // 10: structs.structs.EventDelete
+	(*EventAddressAssociation)(nil), // 11: structs.structs.EventAddressAssociation
+	(*EventGuildAssociation)(nil),   // 12: structs.structs.EventGuildAssociation
+	(*Allocation)(nil),              // 13: structs.structs.Allocation
+	(*Guild)(nil),                   // 14: structs.structs.Guild
+	(*Infusion)(nil),                // 15: structs.structs.Infusion
+	(*Planet)(nil),                  // 16: structs.structs.Planet
+	(*Player)(nil),                  // 17: structs.structs.Player
+	(*Reactor)(nil),                 // 18: structs.structs.Reactor
+	(*Struct)(nil),                  // 19: structs.structs.Struct
+	(*Substation)(nil),              // 20: structs.structs.Substation
+	(RegistrationStatus)(0),         // 21: structs.structs.registrationStatus
 }
 var file_structs_structs_events_proto_depIdxs = []int32{
-	13, // 0: structs.EventAllocation.allocation:type_name -> structs.Allocation
-	14, // 1: structs.EventGuild.guild:type_name -> structs.Guild
-	15, // 2: structs.EventInfusion.infusion:type_name -> structs.Infusion
-	16, // 3: structs.EventPlanet.planet:type_name -> structs.Planet
-	17, // 4: structs.EventPlayer.player:type_name -> structs.Player
-	18, // 5: structs.EventReactor.reactor:type_name -> structs.Reactor
-	19, // 6: structs.EventStruct.structure:type_name -> structs.Struct
-	20, // 7: structs.EventSubstation.substation:type_name -> structs.Substation
-	21, // 8: structs.EventAddressAssociation.registrationStatus:type_name -> structs.registrationStatus
-	21, // 9: structs.EventGuildAssociation.registrationStatus:type_name -> structs.registrationStatus
+	13, // 0: structs.structs.EventAllocation.allocation:type_name -> structs.structs.Allocation
+	14, // 1: structs.structs.EventGuild.guild:type_name -> structs.structs.Guild
+	15, // 2: structs.structs.EventInfusion.infusion:type_name -> structs.structs.Infusion
+	16, // 3: structs.structs.EventPlanet.planet:type_name -> structs.structs.Planet
+	17, // 4: structs.structs.EventPlayer.player:type_name -> structs.structs.Player
+	18, // 5: structs.structs.EventReactor.reactor:type_name -> structs.structs.Reactor
+	19, // 6: structs.structs.EventStruct.structure:type_name -> structs.structs.Struct
+	20, // 7: structs.structs.EventSubstation.substation:type_name -> structs.structs.Substation
+	21, // 8: structs.structs.EventAddressAssociation.registrationStatus:type_name -> structs.structs.registrationStatus
+	21, // 9: structs.structs.EventGuildAssociation.registrationStatus:type_name -> structs.structs.registrationStatus
 	10, // [10:10] is the sub-list for method output_type
 	10, // [10:10] is the sub-list for method input_type
 	10, // [10:10] is the sub-list for extension type_name

@@ -1,5 +1,5 @@
 syntax = "proto3";
-package structs.module;
+package structs.structs.module;
 
 import "cosmos/app/v1alpha1/module.proto";
 

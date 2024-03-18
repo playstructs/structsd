@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package structs;
+package structs.structs;
 
 import "gogoproto/gogo.proto";
 //import "cosmos_proto/cosmos.proto";

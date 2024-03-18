@@ -405,41 +405,41 @@ func (x *fastReflection_Planet) Range(f func(protoreflect.FieldDescriptor, proto
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_Planet) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.Planet.id":
+	case "structs.structs.Planet.id":
 		return x.Id != ""
-	case "structs.Planet.maxOre":
+	case "structs.structs.Planet.maxOre":
 		return x.MaxOre != uint64(0)
-	case "structs.Planet.OreRemaining":
+	case "structs.structs.Planet.OreRemaining":
 		return x.OreRemaining != uint64(0)
-	case "structs.Planet.OreStored":
+	case "structs.structs.Planet.OreStored":
 		return x.OreStored != uint64(0)
-	case "structs.Planet.creator":
+	case "structs.structs.Planet.creator":
 		return x.Creator != ""
-	case "structs.Planet.owner":
+	case "structs.structs.Planet.owner":
 		return x.Owner != ""
-	case "structs.Planet.space":
+	case "structs.structs.Planet.space":
 		return len(x.Space) != 0
-	case "structs.Planet.sky":
+	case "structs.structs.Planet.sky":
 		return len(x.Sky) != 0
-	case "structs.Planet.land":
+	case "structs.structs.Planet.land":
 		return len(x.Land) != 0
-	case "structs.Planet.water":
+	case "structs.structs.Planet.water":
 		return len(x.Water) != 0
-	case "structs.Planet.spaceSlots":
+	case "structs.structs.Planet.spaceSlots":
 		return x.SpaceSlots != uint64(0)
-	case "structs.Planet.skySlots":
+	case "structs.structs.Planet.skySlots":
 		return x.SkySlots != uint64(0)
-	case "structs.Planet.landSlots":
+	case "structs.structs.Planet.landSlots":
 		return x.LandSlots != uint64(0)
-	case "structs.Planet.waterSlots":
+	case "structs.structs.Planet.waterSlots":
 		return x.WaterSlots != uint64(0)
-	case "structs.Planet.status":
+	case "structs.structs.Planet.status":
 		return x.Status != uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.Planet"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Planet"))
 		}
-		panic(fmt.Errorf("message structs.Planet does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.Planet does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -451,41 +451,41 @@ func (x *fastReflection_Planet) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Planet) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.Planet.id":
+	case "structs.structs.Planet.id":
 		x.Id = ""
-	case "structs.Planet.maxOre":
+	case "structs.structs.Planet.maxOre":
 		x.MaxOre = uint64(0)
-	case "structs.Planet.OreRemaining":
+	case "structs.structs.Planet.OreRemaining":
 		x.OreRemaining = uint64(0)
-	case "structs.Planet.OreStored":
+	case "structs.structs.Planet.OreStored":
 		x.OreStored = uint64(0)
-	case "structs.Planet.creator":
+	case "structs.structs.Planet.creator":
 		x.Creator = ""
-	case "structs.Planet.owner":
+	case "structs.structs.Planet.owner":
 		x.Owner = ""
-	case "structs.Planet.space":
+	case "structs.structs.Planet.space":
 		x.Space = nil
-	case "structs.Planet.sky":
+	case "structs.structs.Planet.sky":
 		x.Sky = nil
-	case "structs.Planet.land":
+	case "structs.structs.Planet.land":
 		x.Land = nil
-	case "structs.Planet.water":
+	case "structs.structs.Planet.water":
 		x.Water = nil
-	case "structs.Planet.spaceSlots":
+	case "structs.structs.Planet.spaceSlots":
 		x.SpaceSlots = uint64(0)
-	case "structs.Planet.skySlots":
+	case "structs.structs.Planet.skySlots":
 		x.SkySlots = uint64(0)
-	case "structs.Planet.landSlots":
+	case "structs.structs.Planet.landSlots":
 		x.LandSlots = uint64(0)
-	case "structs.Planet.waterSlots":
+	case "structs.structs.Planet.waterSlots":
 		x.WaterSlots = uint64(0)
-	case "structs.Planet.status":
+	case "structs.structs.Planet.status":
 		x.Status = uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.Planet"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Planet"))
 		}
-		panic(fmt.Errorf("message structs.Planet does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.Planet does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -497,68 +497,68 @@ func (x *fastReflection_Planet) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_Planet) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.Planet.id":
+	case "structs.structs.Planet.id":
 		value := x.Id
 		return protoreflect.ValueOfString(value)
-	case "structs.Planet.maxOre":
+	case "structs.structs.Planet.maxOre":
 		value := x.MaxOre
 		return protoreflect.ValueOfUint64(value)
-	case "structs.Planet.OreRemaining":
+	case "structs.structs.Planet.OreRemaining":
 		value := x.OreRemaining
 		return protoreflect.ValueOfUint64(value)
-	case "structs.Planet.OreStored":
+	case "structs.structs.Planet.OreStored":
 		value := x.OreStored
 		return protoreflect.ValueOfUint64(value)
-	case "structs.Planet.creator":
+	case "structs.structs.Planet.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.Planet.owner":
+	case "structs.structs.Planet.owner":
 		value := x.Owner
 		return protoreflect.ValueOfString(value)
-	case "structs.Planet.space":
+	case "structs.structs.Planet.space":
 		if len(x.Space) == 0 {
 			return protoreflect.ValueOfList(&_Planet_7_list{})
 		}
 		listValue := &_Planet_7_list{list: &x.Space}
 		return protoreflect.ValueOfList(listValue)
-	case "structs.Planet.sky":
+	case "structs.structs.Planet.sky":
 		if len(x.Sky) == 0 {
 			return protoreflect.ValueOfList(&_Planet_8_list{})
 		}
 		listValue := &_Planet_8_list{list: &x.Sky}
 		return protoreflect.ValueOfList(listValue)
-	case "structs.Planet.land":
+	case "structs.structs.Planet.land":
 		if len(x.Land) == 0 {
 			return protoreflect.ValueOfList(&_Planet_9_list{})
 		}
 		listValue := &_Planet_9_list{list: &x.Land}
 		return protoreflect.ValueOfList(listValue)
-	case "structs.Planet.water":
+	case "structs.structs.Planet.water":
 		if len(x.Water) == 0 {
 			return protoreflect.ValueOfList(&_Planet_10_list{})
 		}
 		listValue := &_Planet_10_list{list: &x.Water}
 		return protoreflect.ValueOfList(listValue)
-	case "structs.Planet.spaceSlots":
+	case "structs.structs.Planet.spaceSlots":
 		value := x.SpaceSlots
 		return protoreflect.ValueOfUint64(value)
-	case "structs.Planet.skySlots":
+	case "structs.structs.Planet.skySlots":
 		value := x.SkySlots
 		return protoreflect.ValueOfUint64(value)
-	case "structs.Planet.landSlots":
+	case "structs.structs.Planet.landSlots":
 		value := x.LandSlots
 		return protoreflect.ValueOfUint64(value)
-	case "structs.Planet.waterSlots":
+	case "structs.structs.Planet.waterSlots":
 		value := x.WaterSlots
 		return protoreflect.ValueOfUint64(value)
-	case "structs.Planet.status":
+	case "structs.structs.Planet.status":
 		value := x.Status
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.Planet"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Planet"))
 		}
-		panic(fmt.Errorf("message structs.Planet does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.Planet does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -574,49 +574,49 @@ func (x *fastReflection_Planet) Get(descriptor protoreflect.FieldDescriptor) pro
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Planet) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.Planet.id":
+	case "structs.structs.Planet.id":
 		x.Id = value.Interface().(string)
-	case "structs.Planet.maxOre":
+	case "structs.structs.Planet.maxOre":
 		x.MaxOre = value.Uint()
-	case "structs.Planet.OreRemaining":
+	case "structs.structs.Planet.OreRemaining":
 		x.OreRemaining = value.Uint()
-	case "structs.Planet.OreStored":
+	case "structs.structs.Planet.OreStored":
 		x.OreStored = value.Uint()
-	case "structs.Planet.creator":
+	case "structs.structs.Planet.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.Planet.owner":
+	case "structs.structs.Planet.owner":
 		x.Owner = value.Interface().(string)
-	case "structs.Planet.space":
+	case "structs.structs.Planet.space":
 		lv := value.List()
 		clv := lv.(*_Planet_7_list)
 		x.Space = *clv.list
-	case "structs.Planet.sky":
+	case "structs.structs.Planet.sky":
 		lv := value.List()
 		clv := lv.(*_Planet_8_list)
 		x.Sky = *clv.list
-	case "structs.Planet.land":
+	case "structs.structs.Planet.land":
 		lv := value.List()
 		clv := lv.(*_Planet_9_list)
 		x.Land = *clv.list
-	case "structs.Planet.water":
+	case "structs.structs.Planet.water":
 		lv := value.List()
 		clv := lv.(*_Planet_10_list)
 		x.Water = *clv.list
-	case "structs.Planet.spaceSlots":
+	case "structs.structs.Planet.spaceSlots":
 		x.SpaceSlots = value.Uint()
-	case "structs.Planet.skySlots":
+	case "structs.structs.Planet.skySlots":
 		x.SkySlots = value.Uint()
-	case "structs.Planet.landSlots":
+	case "structs.structs.Planet.landSlots":
 		x.LandSlots = value.Uint()
-	case "structs.Planet.waterSlots":
+	case "structs.structs.Planet.waterSlots":
 		x.WaterSlots = value.Uint()
-	case "structs.Planet.status":
+	case "structs.structs.Planet.status":
 		x.Status = value.Uint()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.Planet"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Planet"))
 		}
-		panic(fmt.Errorf("message structs.Planet does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.Planet does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -632,57 +632,57 @@ func (x *fastReflection_Planet) Set(fd protoreflect.FieldDescriptor, value proto
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_Planet) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.Planet.space":
+	case "structs.structs.Planet.space":
 		if x.Space == nil {
 			x.Space = []string{}
 		}
 		value := &_Planet_7_list{list: &x.Space}
 		return protoreflect.ValueOfList(value)
-	case "structs.Planet.sky":
+	case "structs.structs.Planet.sky":
 		if x.Sky == nil {
 			x.Sky = []string{}
 		}
 		value := &_Planet_8_list{list: &x.Sky}
 		return protoreflect.ValueOfList(value)
-	case "structs.Planet.land":
+	case "structs.structs.Planet.land":
 		if x.Land == nil {
 			x.Land = []string{}
 		}
 		value := &_Planet_9_list{list: &x.Land}
 		return protoreflect.ValueOfList(value)
-	case "structs.Planet.water":
+	case "structs.structs.Planet.water":
 		if x.Water == nil {
 			x.Water = []string{}
 		}
 		value := &_Planet_10_list{list: &x.Water}
 		return protoreflect.ValueOfList(value)
-	case "structs.Planet.id":
-		panic(fmt.Errorf("field id of message structs.Planet is not mutable"))
-	case "structs.Planet.maxOre":
-		panic(fmt.Errorf("field maxOre of message structs.Planet is not mutable"))
-	case "structs.Planet.OreRemaining":
-		panic(fmt.Errorf("field OreRemaining of message structs.Planet is not mutable"))
-	case "structs.Planet.OreStored":
-		panic(fmt.Errorf("field OreStored of message structs.Planet is not mutable"))
-	case "structs.Planet.creator":
-		panic(fmt.Errorf("field creator of message structs.Planet is not mutable"))
-	case "structs.Planet.owner":
-		panic(fmt.Errorf("field owner of message structs.Planet is not mutable"))
-	case "structs.Planet.spaceSlots":
-		panic(fmt.Errorf("field spaceSlots of message structs.Planet is not mutable"))
-	case "structs.Planet.skySlots":
-		panic(fmt.Errorf("field skySlots of message structs.Planet is not mutable"))
-	case "structs.Planet.landSlots":
-		panic(fmt.Errorf("field landSlots of message structs.Planet is not mutable"))
-	case "structs.Planet.waterSlots":
-		panic(fmt.Errorf("field waterSlots of message structs.Planet is not mutable"))
-	case "structs.Planet.status":
-		panic(fmt.Errorf("field status of message structs.Planet is not mutable"))
+	case "structs.structs.Planet.id":
+		panic(fmt.Errorf("field id of message structs.structs.Planet is not mutable"))
+	case "structs.structs.Planet.maxOre":
+		panic(fmt.Errorf("field maxOre of message structs.structs.Planet is not mutable"))
+	case "structs.structs.Planet.OreRemaining":
+		panic(fmt.Errorf("field OreRemaining of message structs.structs.Planet is not mutable"))
+	case "structs.structs.Planet.OreStored":
+		panic(fmt.Errorf("field OreStored of message structs.structs.Planet is not mutable"))
+	case "structs.structs.Planet.creator":
+		panic(fmt.Errorf("field creator of message structs.structs.Planet is not mutable"))
+	case "structs.structs.Planet.owner":
+		panic(fmt.Errorf("field owner of message structs.structs.Planet is not mutable"))
+	case "structs.structs.Planet.spaceSlots":
+		panic(fmt.Errorf("field spaceSlots of message structs.structs.Planet is not mutable"))
+	case "structs.structs.Planet.skySlots":
+		panic(fmt.Errorf("field skySlots of message structs.structs.Planet is not mutable"))
+	case "structs.structs.Planet.landSlots":
+		panic(fmt.Errorf("field landSlots of message structs.structs.Planet is not mutable"))
+	case "structs.structs.Planet.waterSlots":
+		panic(fmt.Errorf("field waterSlots of message structs.structs.Planet is not mutable"))
+	case "structs.structs.Planet.status":
+		panic(fmt.Errorf("field status of message structs.structs.Planet is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.Planet"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Planet"))
 		}
-		panic(fmt.Errorf("message structs.Planet does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.Planet does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -691,45 +691,45 @@ func (x *fastReflection_Planet) Mutable(fd protoreflect.FieldDescriptor) protore
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_Planet) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.Planet.id":
+	case "structs.structs.Planet.id":
 		return protoreflect.ValueOfString("")
-	case "structs.Planet.maxOre":
+	case "structs.structs.Planet.maxOre":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.Planet.OreRemaining":
+	case "structs.structs.Planet.OreRemaining":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.Planet.OreStored":
+	case "structs.structs.Planet.OreStored":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.Planet.creator":
+	case "structs.structs.Planet.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.Planet.owner":
+	case "structs.structs.Planet.owner":
 		return protoreflect.ValueOfString("")
-	case "structs.Planet.space":
+	case "structs.structs.Planet.space":
 		list := []string{}
 		return protoreflect.ValueOfList(&_Planet_7_list{list: &list})
-	case "structs.Planet.sky":
+	case "structs.structs.Planet.sky":
 		list := []string{}
 		return protoreflect.ValueOfList(&_Planet_8_list{list: &list})
-	case "structs.Planet.land":
+	case "structs.structs.Planet.land":
 		list := []string{}
 		return protoreflect.ValueOfList(&_Planet_9_list{list: &list})
-	case "structs.Planet.water":
+	case "structs.structs.Planet.water":
 		list := []string{}
 		return protoreflect.ValueOfList(&_Planet_10_list{list: &list})
-	case "structs.Planet.spaceSlots":
+	case "structs.structs.Planet.spaceSlots":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.Planet.skySlots":
+	case "structs.structs.Planet.skySlots":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.Planet.landSlots":
+	case "structs.structs.Planet.landSlots":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.Planet.waterSlots":
+	case "structs.structs.Planet.waterSlots":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.Planet.status":
+	case "structs.structs.Planet.status":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.Planet"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Planet"))
 		}
-		panic(fmt.Errorf("message structs.Planet does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.Planet does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -739,7 +739,7 @@ func (x *fastReflection_Planet) NewField(fd protoreflect.FieldDescriptor) protor
 func (x *fastReflection_Planet) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.Planet", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.Planet", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -1604,41 +1604,44 @@ var File_structs_structs_planet_proto protoreflect.FileDescriptor
 
 var file_structs_structs_planet_proto_rawDesc = []byte{
 	0x0a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x07,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x22, 0x86, 0x03, 0x0a, 0x06, 0x50, 0x6c, 0x61, 0x6e,
-	0x65, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02,
-	0x69, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x6d, 0x61, 0x78, 0x4f, 0x72, 0x65, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x06, 0x6d, 0x61, 0x78, 0x4f, 0x72, 0x65, 0x12, 0x22, 0x0a, 0x0c, 0x4f, 0x72,
-	0x65, 0x52, 0x65, 0x6d, 0x61, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x0c, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x6d, 0x61, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x12, 0x1c,
-	0x0a, 0x09, 0x4f, 0x72, 0x65, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x09, 0x4f, 0x72, 0x65, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x64, 0x12, 0x18, 0x0a, 0x07,
-	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63,
-	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x14, 0x0a, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x18,
-	0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x12, 0x14, 0x0a, 0x05,
-	0x73, 0x70, 0x61, 0x63, 0x65, 0x18, 0x07, 0x20, 0x03, 0x28, 0x09, 0x52, 0x05, 0x73, 0x70, 0x61,
-	0x63, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x73, 0x6b, 0x79, 0x18, 0x08, 0x20, 0x03, 0x28, 0x09, 0x52,
-	0x03, 0x73, 0x6b, 0x79, 0x12, 0x12, 0x0a, 0x04, 0x6c, 0x61, 0x6e, 0x64, 0x18, 0x09, 0x20, 0x03,
-	0x28, 0x09, 0x52, 0x04, 0x6c, 0x61, 0x6e, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x77, 0x61, 0x74, 0x65,
-	0x72, 0x18, 0x0a, 0x20, 0x03, 0x28, 0x09, 0x52, 0x05, 0x77, 0x61, 0x74, 0x65, 0x72, 0x12, 0x1e,
-	0x0a, 0x0a, 0x73, 0x70, 0x61, 0x63, 0x65, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x18, 0x0b, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x0a, 0x73, 0x70, 0x61, 0x63, 0x65, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x12, 0x1a,
-	0x0a, 0x08, 0x73, 0x6b, 0x79, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x08, 0x73, 0x6b, 0x79, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x12, 0x1c, 0x0a, 0x09, 0x6c, 0x61,
-	0x6e, 0x64, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x18, 0x0d, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x6c,
-	0x61, 0x6e, 0x64, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x12, 0x1e, 0x0a, 0x0a, 0x77, 0x61, 0x74, 0x65,
-	0x72, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x77, 0x61,
-	0x74, 0x65, 0x72, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74,
-	0x75, 0x73, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73,
-	0x42, 0x78, 0x0a, 0x0b, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42,
-	0x0b, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20,
-	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69,
-	0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0xa2, 0x02, 0x03, 0x53, 0x58, 0x58, 0xaa, 0x02, 0x07, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0xca, 0x02, 0x07, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x13, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
-	0xea, 0x02, 0x07, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x73, 0x2f, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0f,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x22,
+	0x86, 0x03, 0x0a, 0x06, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x6d, 0x61,
+	0x78, 0x4f, 0x72, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x6d, 0x61, 0x78, 0x4f,
+	0x72, 0x65, 0x12, 0x22, 0x0a, 0x0c, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x6d, 0x61, 0x69, 0x6e, 0x69,
+	0x6e, 0x67, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0c, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x6d,
+	0x61, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x12, 0x1c, 0x0a, 0x09, 0x4f, 0x72, 0x65, 0x53, 0x74, 0x6f,
+	0x72, 0x65, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x4f, 0x72, 0x65, 0x53, 0x74,
+	0x6f, 0x72, 0x65, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18,
+	0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x14,
+	0x0a, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6f,
+	0x77, 0x6e, 0x65, 0x72, 0x12, 0x14, 0x0a, 0x05, 0x73, 0x70, 0x61, 0x63, 0x65, 0x18, 0x07, 0x20,
+	0x03, 0x28, 0x09, 0x52, 0x05, 0x73, 0x70, 0x61, 0x63, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x73, 0x6b,
+	0x79, 0x18, 0x08, 0x20, 0x03, 0x28, 0x09, 0x52, 0x03, 0x73, 0x6b, 0x79, 0x12, 0x12, 0x0a, 0x04,
+	0x6c, 0x61, 0x6e, 0x64, 0x18, 0x09, 0x20, 0x03, 0x28, 0x09, 0x52, 0x04, 0x6c, 0x61, 0x6e, 0x64,
+	0x12, 0x14, 0x0a, 0x05, 0x77, 0x61, 0x74, 0x65, 0x72, 0x18, 0x0a, 0x20, 0x03, 0x28, 0x09, 0x52,
+	0x05, 0x77, 0x61, 0x74, 0x65, 0x72, 0x12, 0x1e, 0x0a, 0x0a, 0x73, 0x70, 0x61, 0x63, 0x65, 0x53,
+	0x6c, 0x6f, 0x74, 0x73, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x73, 0x70, 0x61, 0x63,
+	0x65, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x12, 0x1a, 0x0a, 0x08, 0x73, 0x6b, 0x79, 0x53, 0x6c, 0x6f,
+	0x74, 0x73, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x04, 0x52, 0x08, 0x73, 0x6b, 0x79, 0x53, 0x6c, 0x6f,
+	0x74, 0x73, 0x12, 0x1c, 0x0a, 0x09, 0x6c, 0x61, 0x6e, 0x64, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x18,
+	0x0d, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x6c, 0x61, 0x6e, 0x64, 0x53, 0x6c, 0x6f, 0x74, 0x73,
+	0x12, 0x1e, 0x0a, 0x0a, 0x77, 0x61, 0x74, 0x65, 0x72, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x18, 0x0e,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x77, 0x61, 0x74, 0x65, 0x72, 0x53, 0x6c, 0x6f, 0x74, 0x73,
+	0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x42, 0x0b, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a,
+	0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70,
+	0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50,
+	0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -1655,7 +1658,7 @@ func file_structs_structs_planet_proto_rawDescGZIP() []byte {
 
 var file_structs_structs_planet_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_structs_structs_planet_proto_goTypes = []interface{}{
-	(*Planet)(nil), // 0: structs.Planet
+	(*Planet)(nil), // 0: structs.structs.Planet
 }
 var file_structs_structs_planet_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type

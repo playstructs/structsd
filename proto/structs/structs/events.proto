@@ -1,7 +1,7 @@
 syntax = "proto3";
 
 
-package structs;
+package structs.structs;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";

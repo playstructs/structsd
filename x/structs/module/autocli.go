@@ -42,6 +42,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     Short:          "Show the details of a specific Planet",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
                 },
+                {
+                    RpcMethod:      "Player",
+                    Use:            "player [player id]",
+                    Short:          "Show the details of a specific Player",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
+                },
 				{
                     RpcMethod:      "Reactor",
                     Use:            "reactor [reactor id]",

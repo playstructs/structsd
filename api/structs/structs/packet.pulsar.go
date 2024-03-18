@@ -113,7 +113,7 @@ func (x *fastReflection_StructsPacketData) Range(f func(protoreflect.FieldDescri
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_StructsPacketData) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.StructsPacketData.noData":
+	case "structs.structs.StructsPacketData.noData":
 		if x.Packet == nil {
 			return false
 		} else if _, ok := x.Packet.(*StructsPacketData_NoData); ok {
@@ -123,9 +123,9 @@ func (x *fastReflection_StructsPacketData) Has(fd protoreflect.FieldDescriptor) 
 		}
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.StructsPacketData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructsPacketData"))
 		}
-		panic(fmt.Errorf("message structs.StructsPacketData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.StructsPacketData does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -137,13 +137,13 @@ func (x *fastReflection_StructsPacketData) Has(fd protoreflect.FieldDescriptor) 
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_StructsPacketData) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.StructsPacketData.noData":
+	case "structs.structs.StructsPacketData.noData":
 		x.Packet = nil
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.StructsPacketData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructsPacketData"))
 		}
-		panic(fmt.Errorf("message structs.StructsPacketData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.StructsPacketData does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -155,7 +155,7 @@ func (x *fastReflection_StructsPacketData) Clear(fd protoreflect.FieldDescriptor
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_StructsPacketData) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.StructsPacketData.noData":
+	case "structs.structs.StructsPacketData.noData":
 		if x.Packet == nil {
 			return protoreflect.ValueOfMessage((*NoData)(nil).ProtoReflect())
 		} else if v, ok := x.Packet.(*StructsPacketData_NoData); ok {
@@ -165,9 +165,9 @@ func (x *fastReflection_StructsPacketData) Get(descriptor protoreflect.FieldDesc
 		}
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.StructsPacketData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructsPacketData"))
 		}
-		panic(fmt.Errorf("message structs.StructsPacketData does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.StructsPacketData does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -183,14 +183,14 @@ func (x *fastReflection_StructsPacketData) Get(descriptor protoreflect.FieldDesc
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_StructsPacketData) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.StructsPacketData.noData":
+	case "structs.structs.StructsPacketData.noData":
 		cv := value.Message().Interface().(*NoData)
 		x.Packet = &StructsPacketData_NoData{NoData: cv}
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.StructsPacketData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructsPacketData"))
 		}
-		panic(fmt.Errorf("message structs.StructsPacketData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.StructsPacketData does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -206,7 +206,7 @@ func (x *fastReflection_StructsPacketData) Set(fd protoreflect.FieldDescriptor, 
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_StructsPacketData) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.StructsPacketData.noData":
+	case "structs.structs.StructsPacketData.noData":
 		if x.Packet == nil {
 			value := &NoData{}
 			oneofValue := &StructsPacketData_NoData{NoData: value}
@@ -224,9 +224,9 @@ func (x *fastReflection_StructsPacketData) Mutable(fd protoreflect.FieldDescript
 		}
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.StructsPacketData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructsPacketData"))
 		}
-		panic(fmt.Errorf("message structs.StructsPacketData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.StructsPacketData does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -235,14 +235,14 @@ func (x *fastReflection_StructsPacketData) Mutable(fd protoreflect.FieldDescript
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_StructsPacketData) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.StructsPacketData.noData":
+	case "structs.structs.StructsPacketData.noData":
 		value := &NoData{}
 		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.StructsPacketData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructsPacketData"))
 		}
-		panic(fmt.Errorf("message structs.StructsPacketData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.StructsPacketData does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -251,7 +251,7 @@ func (x *fastReflection_StructsPacketData) NewField(fd protoreflect.FieldDescrip
 // It panics if the oneof descriptor does not belong to this message.
 func (x *fastReflection_StructsPacketData) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
-	case "structs.StructsPacketData.packet":
+	case "structs.structs.StructsPacketData.packet":
 		if x.Packet == nil {
 			return nil
 		}
@@ -260,7 +260,7 @@ func (x *fastReflection_StructsPacketData) WhichOneof(d protoreflect.OneofDescri
 			return x.Descriptor().Fields().ByName("noData")
 		}
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.StructsPacketData", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.StructsPacketData", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -577,9 +577,9 @@ func (x *fastReflection_NoData) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.NoData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.NoData"))
 		}
-		panic(fmt.Errorf("message structs.NoData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.NoData does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -593,9 +593,9 @@ func (x *fastReflection_NoData) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.NoData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.NoData"))
 		}
-		panic(fmt.Errorf("message structs.NoData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.NoData does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -609,9 +609,9 @@ func (x *fastReflection_NoData) Get(descriptor protoreflect.FieldDescriptor) pro
 	switch descriptor.FullName() {
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.NoData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.NoData"))
 		}
-		panic(fmt.Errorf("message structs.NoData does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.NoData does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -629,9 +629,9 @@ func (x *fastReflection_NoData) Set(fd protoreflect.FieldDescriptor, value proto
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.NoData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.NoData"))
 		}
-		panic(fmt.Errorf("message structs.NoData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.NoData does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -649,9 +649,9 @@ func (x *fastReflection_NoData) Mutable(fd protoreflect.FieldDescriptor) protore
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.NoData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.NoData"))
 		}
-		panic(fmt.Errorf("message structs.NoData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.NoData does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -662,9 +662,9 @@ func (x *fastReflection_NoData) NewField(fd protoreflect.FieldDescriptor) protor
 	switch fd.FullName() {
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.NoData"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.NoData"))
 		}
-		panic(fmt.Errorf("message structs.NoData does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.NoData does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -674,7 +674,7 @@ func (x *fastReflection_NoData) NewField(fd protoreflect.FieldDescriptor) protor
 func (x *fastReflection_NoData) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.NoData", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.NoData", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -940,21 +940,25 @@ var File_structs_structs_packet_proto protoreflect.FileDescriptor
 
 var file_structs_structs_packet_proto_rawDesc = []byte{
 	0x0a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x70, 0x61, 0x63, 0x6b, 0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x07,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x22, 0x48, 0x0a, 0x11, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x50, 0x61, 0x63, 0x6b, 0x65, 0x74, 0x44, 0x61, 0x74, 0x61, 0x12, 0x29, 0x0a, 0x06,
-	0x6e, 0x6f, 0x44, 0x61, 0x74, 0x61, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x0f, 0x2e, 0x73,
+	0x73, 0x2f, 0x70, 0x61, 0x63, 0x6b, 0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0f,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x22,
+	0x50, 0x0a, 0x11, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x50, 0x61, 0x63, 0x6b, 0x65, 0x74,
+	0x44, 0x61, 0x74, 0x61, 0x12, 0x31, 0x0a, 0x06, 0x6e, 0x6f, 0x44, 0x61, 0x74, 0x61, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4e, 0x6f, 0x44, 0x61, 0x74, 0x61, 0x48, 0x00, 0x52,
 	0x06, 0x6e, 0x6f, 0x44, 0x61, 0x74, 0x61, 0x42, 0x08, 0x0a, 0x06, 0x70, 0x61, 0x63, 0x6b, 0x65,
-	0x74, 0x22, 0x08, 0x0a, 0x06, 0x4e, 0x6f, 0x44, 0x61, 0x74, 0x61, 0x42, 0x78, 0x0a, 0x0b, 0x63,
-	0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x50, 0x61, 0x63, 0x6b,
-	0x65, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x58,
-	0x58, 0xaa, 0x02, 0x07, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x07, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x13, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c,
-	0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x07, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x22, 0x08, 0x0a, 0x06, 0x4e, 0x6f, 0x44, 0x61, 0x74, 0x61, 0x42, 0xa1, 0x01, 0x0a, 0x13,
+	0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x42, 0x0b, 0x50, 0x61, 0x63, 0x6b, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f,
+	0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f,
+	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02,
+	0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62,
+	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -971,11 +975,11 @@ func file_structs_structs_packet_proto_rawDescGZIP() []byte {
 
 var file_structs_structs_packet_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_structs_structs_packet_proto_goTypes = []interface{}{
-	(*StructsPacketData)(nil), // 0: structs.StructsPacketData
-	(*NoData)(nil),            // 1: structs.NoData
+	(*StructsPacketData)(nil), // 0: structs.structs.StructsPacketData
+	(*NoData)(nil),            // 1: structs.structs.NoData
 }
 var file_structs_structs_packet_proto_depIdxs = []int32{
-	1, // 0: structs.StructsPacketData.noData:type_name -> structs.NoData
+	1, // 0: structs.structs.StructsPacketData.noData:type_name -> structs.structs.NoData
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

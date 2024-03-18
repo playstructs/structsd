@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package structs;
+package structs.structs;
 
 option go_package = "structs/x/structs/types";
 
