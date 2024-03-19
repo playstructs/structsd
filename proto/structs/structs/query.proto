@@ -9,6 +9,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "structs/structs/params.proto";
 
 import "structs/structs/allocation.proto";
+import "structs/structs/grid.proto";
 import "structs/structs/guild.proto";
 import "structs/structs/infusion.proto";
 import "structs/structs/keys.proto";
@@ -52,6 +53,16 @@ service Query {
 
   rpc AllocationAll (QueryAllAllocationRequest) returns (QueryAllAllocationResponse) {
     option (google.api.http).get = "/structs/allocation";
+  }
+
+  // Queries a specific Grid details
+  rpc Grid (QueryGetGridRequest) returns (QueryGetGridResponse) {
+    option (google.api.http).get = "/structs/grid/{attributeId}";
+  }
+
+  // Queries a list of all Grid details
+  rpc GridAll (QueryAllGridRequest) returns (QueryAllGridResponse) {
+    option (google.api.http).get = "/structs/grid";
   }
 
   // Queries a list of Guild items.
@@ -203,6 +214,25 @@ message QueryAllAllocationResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
   repeated uint64                                 status     = 3;
 }
+
+message QueryGetGridRequest {
+  string attributeId = 1;
+}
+
+message QueryAllGridRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+// Generic Responses for Permissions
+message QueryGetGridResponse {
+  GridRecord gridRecord = 1;
+}
+
+message QueryAllGridResponse {
+  repeated GridRecord gridRecords = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
 
 message QueryGetGuildRequest {
   string id = 1;

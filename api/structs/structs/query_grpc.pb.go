@@ -26,6 +26,8 @@ const (
 	Query_AddressAllByPlayer_FullMethodName = "/structs.structs.Query/AddressAllByPlayer"
 	Query_Allocation_FullMethodName         = "/structs.structs.Query/Allocation"
 	Query_AllocationAll_FullMethodName      = "/structs.structs.Query/AllocationAll"
+	Query_Grid_FullMethodName               = "/structs.structs.Query/Grid"
+	Query_GridAll_FullMethodName            = "/structs.structs.Query/GridAll"
 	Query_Guild_FullMethodName              = "/structs.structs.Query/Guild"
 	Query_GuildAll_FullMethodName           = "/structs.structs.Query/GuildAll"
 	Query_Infusion_FullMethodName           = "/structs.structs.Query/Infusion"
@@ -61,6 +63,10 @@ type QueryClient interface {
 	// Queries a list of Allocation items.
 	Allocation(ctx context.Context, in *QueryGetAllocationRequest, opts ...grpc.CallOption) (*QueryGetAllocationResponse, error)
 	AllocationAll(ctx context.Context, in *QueryAllAllocationRequest, opts ...grpc.CallOption) (*QueryAllAllocationResponse, error)
+	// Queries a specific Grid details
+	Grid(ctx context.Context, in *QueryGetGridRequest, opts ...grpc.CallOption) (*QueryGetGridResponse, error)
+	// Queries a list of all Grid details
+	GridAll(ctx context.Context, in *QueryAllGridRequest, opts ...grpc.CallOption) (*QueryAllGridResponse, error)
 	// Queries a list of Guild items.
 	Guild(ctx context.Context, in *QueryGetGuildRequest, opts ...grpc.CallOption) (*QueryGetGuildResponse, error)
 	GuildAll(ctx context.Context, in *QueryAllGuildRequest, opts ...grpc.CallOption) (*QueryAllGuildResponse, error)
@@ -158,6 +164,24 @@ func (c *queryClient) Allocation(ctx context.Context, in *QueryGetAllocationRequ
 func (c *queryClient) AllocationAll(ctx context.Context, in *QueryAllAllocationRequest, opts ...grpc.CallOption) (*QueryAllAllocationResponse, error) {
 	out := new(QueryAllAllocationResponse)
 	err := c.cc.Invoke(ctx, Query_AllocationAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Grid(ctx context.Context, in *QueryGetGridRequest, opts ...grpc.CallOption) (*QueryGetGridResponse, error) {
+	out := new(QueryGetGridResponse)
+	err := c.cc.Invoke(ctx, Query_Grid_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GridAll(ctx context.Context, in *QueryAllGridRequest, opts ...grpc.CallOption) (*QueryAllGridResponse, error) {
+	out := new(QueryAllGridResponse)
+	err := c.cc.Invoke(ctx, Query_GridAll_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -349,6 +373,10 @@ type QueryServer interface {
 	// Queries a list of Allocation items.
 	Allocation(context.Context, *QueryGetAllocationRequest) (*QueryGetAllocationResponse, error)
 	AllocationAll(context.Context, *QueryAllAllocationRequest) (*QueryAllAllocationResponse, error)
+	// Queries a specific Grid details
+	Grid(context.Context, *QueryGetGridRequest) (*QueryGetGridResponse, error)
+	// Queries a list of all Grid details
+	GridAll(context.Context, *QueryAllGridRequest) (*QueryAllGridResponse, error)
 	// Queries a list of Guild items.
 	Guild(context.Context, *QueryGetGuildRequest) (*QueryGetGuildResponse, error)
 	GuildAll(context.Context, *QueryAllGuildRequest) (*QueryAllGuildResponse, error)
@@ -406,6 +434,12 @@ func (UnimplementedQueryServer) Allocation(context.Context, *QueryGetAllocationR
 }
 func (UnimplementedQueryServer) AllocationAll(context.Context, *QueryAllAllocationRequest) (*QueryAllAllocationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllocationAll not implemented")
+}
+func (UnimplementedQueryServer) Grid(context.Context, *QueryGetGridRequest) (*QueryGetGridResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Grid not implemented")
+}
+func (UnimplementedQueryServer) GridAll(context.Context, *QueryAllGridRequest) (*QueryAllGridResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GridAll not implemented")
 }
 func (UnimplementedQueryServer) Guild(context.Context, *QueryGetGuildRequest) (*QueryGetGuildResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Guild not implemented")
@@ -599,6 +633,42 @@ func _Query_AllocationAll_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).AllocationAll(ctx, req.(*QueryAllAllocationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Grid_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetGridRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Grid(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_Grid_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Grid(ctx, req.(*QueryGetGridRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GridAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllGridRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GridAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_GridAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GridAll(ctx, req.(*QueryAllGridRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -979,6 +1049,14 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AllocationAll",
 			Handler:    _Query_AllocationAll_Handler,
+		},
+		{
+			MethodName: "Grid",
+			Handler:    _Query_Grid_Handler,
+		},
+		{
+			MethodName: "GridAll",
+			Handler:    _Query_GridAll_Handler,
 		},
 		{
 			MethodName: "Guild",
