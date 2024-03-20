@@ -220,7 +220,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                  },
                  {
                      RpcMethod:      "StructBuildInitiate",
-                     Use:            "struct-build-complete [struct type] [planet id] [slot]",
+                     Use:            "struct-build-initiate [struct type] [planet id] [slot]",
                      Short:          "Initiate the construction of a new Struct",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structType"},{ProtoField: "planetId"},{ProtoField: "slot"}},
                  },

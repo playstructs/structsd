@@ -67,7 +67,7 @@ func (k Keeper) SetGridAttribute(ctx context.Context, gridAttributeId string, am
 	store.Set([]byte(gridAttributeId), bz)
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGrid{AttributeId: gridAttributeId, Value: amount})
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGrid{&types.GridRecord{AttributeId: gridAttributeId, Value: amount}})
     fmt.Printf("Grid Change (Set): (%s) %d \n", gridAttributeId, amount)
 }
 

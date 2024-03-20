@@ -134,7 +134,7 @@ func (k Keeper) GuildSetRegisterRequest(ctx context.Context, guild types.Guild, 
     store.Set([]byte(player.Id), bz)
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildAssociation{GuildId: guild.Id, PlayerId: player.Id, RegistrationStatus: types.RegistrationStatus_proposed})
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildAssociation{&types.GuildAssociation{GuildId: guild.Id, PlayerId: player.Id, RegistrationStatus: types.RegistrationStatus_proposed}})
 }
 
 func (k Keeper) GuildApproveRegisterRequest(ctx context.Context, guild types.Guild, player types.Player) {
@@ -164,7 +164,7 @@ func (k Keeper) GuildApproveRegisterRequest(ctx context.Context, guild types.Gui
             store.Delete([]byte(player.Id))
 
             ctxSDK := sdk.UnwrapSDKContext(ctx)
-            _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildAssociation{GuildId: guild.Id, PlayerId: player.Id, RegistrationStatus: types.RegistrationStatus_approved})
+            _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildAssociation{&types.GuildAssociation{GuildId: guild.Id, PlayerId: player.Id, RegistrationStatus: types.RegistrationStatus_approved}})
 
     }
 
@@ -177,7 +177,7 @@ func (k Keeper) GuildDenyRegisterRequest(ctx context.Context, guild types.Guild,
         store.Delete([]byte(player.Id))
 
         ctxSDK := sdk.UnwrapSDKContext(ctx)
-        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildAssociation{GuildId: guild.Id, PlayerId: player.Id, RegistrationStatus: types.RegistrationStatus_denied})
+        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildAssociation{&types.GuildAssociation{GuildId: guild.Id, PlayerId: player.Id, RegistrationStatus: types.RegistrationStatus_denied}})
     }
 }
 

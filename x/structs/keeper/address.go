@@ -34,7 +34,7 @@ func (k Keeper) SetPlayerIndexForAddress(ctx context.Context, address string, pl
 	store.Set(types.KeyPrefix(address), bz)
 
     ctxSDK := sdk.UnwrapSDKContext(ctx)
-	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAddressAssociation{Address: address, PlayerIndex: playerIndex, RegistrationStatus: types.RegistrationStatus_approved})
+	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAddressAssociation{&types.AddressAssociation{Address: address, PlayerIndex: playerIndex, RegistrationStatus: types.RegistrationStatus_approved}})
 }
 
 
@@ -47,7 +47,7 @@ func (k Keeper) AddressSetRegisterRequest(ctx context.Context, player types.Play
     store.Set(types.KeyPrefix(address), bz)
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAddressAssociation{Address: address, PlayerIndex: player.Index, RegistrationStatus: types.RegistrationStatus_proposed})
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAddressAssociation{&types.AddressAssociation{Address: address, PlayerIndex: player.Index, RegistrationStatus: types.RegistrationStatus_proposed}})
 }
 
 func (k Keeper) AddressApproveRegisterRequest(ctx context.Context, player types.Player, address string, permissions types.Permission) {
@@ -64,7 +64,7 @@ func (k Keeper) AddressApproveRegisterRequest(ctx context.Context, player types.
     }
 
  	ctxSDK := sdk.UnwrapSDKContext(ctx)
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAddressAssociation{Address: address, PlayerIndex: player.Index, RegistrationStatus: types.RegistrationStatus_approved})
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAddressAssociation{&types.AddressAssociation{Address: address, PlayerIndex: player.Index, RegistrationStatus: types.RegistrationStatus_approved}})
 }
 
 func (k Keeper) AddressDenyRegisterRequest(ctx context.Context, player types.Player, address string) {
@@ -76,7 +76,7 @@ func (k Keeper) AddressDenyRegisterRequest(ctx context.Context, player types.Pla
     }
 
  	ctxSDK := sdk.UnwrapSDKContext(ctx)
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAddressAssociation{Address: address, PlayerIndex: player.Index, RegistrationStatus: types.RegistrationStatus_denied})
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAddressAssociation{&types.AddressAssociation{Address: address, PlayerIndex: player.Index, RegistrationStatus: types.RegistrationStatus_denied}})
 
 }
 

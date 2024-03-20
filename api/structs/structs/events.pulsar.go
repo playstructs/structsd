@@ -3495,16 +3495,14 @@ func (x *fastReflection_EventSubstation) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_EventPermission              protoreflect.MessageDescriptor
-	fd_EventPermission_permissionId protoreflect.FieldDescriptor
-	fd_EventPermission_value        protoreflect.FieldDescriptor
+	md_EventPermission                  protoreflect.MessageDescriptor
+	fd_EventPermission_permissionRecord protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_structs_structs_events_proto_init()
 	md_EventPermission = File_structs_structs_events_proto.Messages().ByName("EventPermission")
-	fd_EventPermission_permissionId = md_EventPermission.Fields().ByName("permissionId")
-	fd_EventPermission_value = md_EventPermission.Fields().ByName("value")
+	fd_EventPermission_permissionRecord = md_EventPermission.Fields().ByName("permissionRecord")
 }
 
 var _ protoreflect.Message = (*fastReflection_EventPermission)(nil)
@@ -3572,15 +3570,9 @@ func (x *fastReflection_EventPermission) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_EventPermission) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.PermissionId != "" {
-		value := protoreflect.ValueOfString(x.PermissionId)
-		if !f(fd_EventPermission_permissionId, value) {
-			return
-		}
-	}
-	if x.Value != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.Value)
-		if !f(fd_EventPermission_value, value) {
+	if x.PermissionRecord != nil {
+		value := protoreflect.ValueOfMessage(x.PermissionRecord.ProtoReflect())
+		if !f(fd_EventPermission_permissionRecord, value) {
 			return
 		}
 	}
@@ -3599,10 +3591,8 @@ func (x *fastReflection_EventPermission) Range(f func(protoreflect.FieldDescript
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventPermission) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.EventPermission.permissionId":
-		return x.PermissionId != ""
-	case "structs.structs.EventPermission.value":
-		return x.Value != uint64(0)
+	case "structs.structs.EventPermission.permissionRecord":
+		return x.PermissionRecord != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPermission"))
@@ -3619,10 +3609,8 @@ func (x *fastReflection_EventPermission) Has(fd protoreflect.FieldDescriptor) bo
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventPermission) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.EventPermission.permissionId":
-		x.PermissionId = ""
-	case "structs.structs.EventPermission.value":
-		x.Value = uint64(0)
+	case "structs.structs.EventPermission.permissionRecord":
+		x.PermissionRecord = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPermission"))
@@ -3639,12 +3627,9 @@ func (x *fastReflection_EventPermission) Clear(fd protoreflect.FieldDescriptor) 
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventPermission) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.EventPermission.permissionId":
-		value := x.PermissionId
-		return protoreflect.ValueOfString(value)
-	case "structs.structs.EventPermission.value":
-		value := x.Value
-		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventPermission.permissionRecord":
+		value := x.PermissionRecord
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPermission"))
@@ -3665,10 +3650,8 @@ func (x *fastReflection_EventPermission) Get(descriptor protoreflect.FieldDescri
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventPermission) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.EventPermission.permissionId":
-		x.PermissionId = value.Interface().(string)
-	case "structs.structs.EventPermission.value":
-		x.Value = value.Uint()
+	case "structs.structs.EventPermission.permissionRecord":
+		x.PermissionRecord = value.Message().Interface().(*PermissionRecord)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPermission"))
@@ -3689,10 +3672,11 @@ func (x *fastReflection_EventPermission) Set(fd protoreflect.FieldDescriptor, va
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventPermission) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.EventPermission.permissionId":
-		panic(fmt.Errorf("field permissionId of message structs.structs.EventPermission is not mutable"))
-	case "structs.structs.EventPermission.value":
-		panic(fmt.Errorf("field value of message structs.structs.EventPermission is not mutable"))
+	case "structs.structs.EventPermission.permissionRecord":
+		if x.PermissionRecord == nil {
+			x.PermissionRecord = new(PermissionRecord)
+		}
+		return protoreflect.ValueOfMessage(x.PermissionRecord.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPermission"))
@@ -3706,10 +3690,9 @@ func (x *fastReflection_EventPermission) Mutable(fd protoreflect.FieldDescriptor
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventPermission) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.EventPermission.permissionId":
-		return protoreflect.ValueOfString("")
-	case "structs.structs.EventPermission.value":
-		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventPermission.permissionRecord":
+		m := new(PermissionRecord)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventPermission"))
@@ -3779,12 +3762,9 @@ func (x *fastReflection_EventPermission) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		l = len(x.PermissionId)
-		if l > 0 {
+		if x.PermissionRecord != nil {
+			l = options.Size(x.PermissionRecord)
 			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.Value != 0 {
-			n += 1 + runtime.Sov(uint64(x.Value))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -3815,15 +3795,17 @@ func (x *fastReflection_EventPermission) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.Value != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.Value))
-			i--
-			dAtA[i] = 0x10
-		}
-		if len(x.PermissionId) > 0 {
-			i -= len(x.PermissionId)
-			copy(dAtA[i:], x.PermissionId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.PermissionId)))
+		if x.PermissionRecord != nil {
+			encoded, err := options.Marshal(x.PermissionRecord)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -3878,9 +3860,9 @@ func (x *fastReflection_EventPermission) ProtoMethods() *protoiface.Methods {
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PermissionId", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PermissionRecord", wireType)
 				}
-				var stringLen uint64
+				var msglen int
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -3890,43 +3872,28 @@ func (x *fastReflection_EventPermission) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					msglen |= int(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
+				if msglen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + intStringLen
+				postIndex := iNdEx + msglen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.PermissionId = string(dAtA[iNdEx:postIndex])
+				if x.PermissionRecord == nil {
+					x.PermissionRecord = &PermissionRecord{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.PermissionRecord); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
 				iNdEx = postIndex
-			case 2:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Value", wireType)
-				}
-				x.Value = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.Value |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -3963,16 +3930,14 @@ func (x *fastReflection_EventPermission) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_EventGrid             protoreflect.MessageDescriptor
-	fd_EventGrid_attributeId protoreflect.FieldDescriptor
-	fd_EventGrid_value       protoreflect.FieldDescriptor
+	md_EventGrid            protoreflect.MessageDescriptor
+	fd_EventGrid_gridRecord protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_structs_structs_events_proto_init()
 	md_EventGrid = File_structs_structs_events_proto.Messages().ByName("EventGrid")
-	fd_EventGrid_attributeId = md_EventGrid.Fields().ByName("attributeId")
-	fd_EventGrid_value = md_EventGrid.Fields().ByName("value")
+	fd_EventGrid_gridRecord = md_EventGrid.Fields().ByName("gridRecord")
 }
 
 var _ protoreflect.Message = (*fastReflection_EventGrid)(nil)
@@ -4040,15 +4005,9 @@ func (x *fastReflection_EventGrid) Interface() protoreflect.ProtoMessage {
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_EventGrid) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.AttributeId != "" {
-		value := protoreflect.ValueOfString(x.AttributeId)
-		if !f(fd_EventGrid_attributeId, value) {
-			return
-		}
-	}
-	if x.Value != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.Value)
-		if !f(fd_EventGrid_value, value) {
+	if x.GridRecord != nil {
+		value := protoreflect.ValueOfMessage(x.GridRecord.ProtoReflect())
+		if !f(fd_EventGrid_gridRecord, value) {
 			return
 		}
 	}
@@ -4067,10 +4026,8 @@ func (x *fastReflection_EventGrid) Range(f func(protoreflect.FieldDescriptor, pr
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventGrid) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.EventGrid.attributeId":
-		return x.AttributeId != ""
-	case "structs.structs.EventGrid.value":
-		return x.Value != uint64(0)
+	case "structs.structs.EventGrid.gridRecord":
+		return x.GridRecord != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGrid"))
@@ -4087,10 +4044,8 @@ func (x *fastReflection_EventGrid) Has(fd protoreflect.FieldDescriptor) bool {
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventGrid) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.EventGrid.attributeId":
-		x.AttributeId = ""
-	case "structs.structs.EventGrid.value":
-		x.Value = uint64(0)
+	case "structs.structs.EventGrid.gridRecord":
+		x.GridRecord = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGrid"))
@@ -4107,12 +4062,9 @@ func (x *fastReflection_EventGrid) Clear(fd protoreflect.FieldDescriptor) {
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventGrid) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.EventGrid.attributeId":
-		value := x.AttributeId
-		return protoreflect.ValueOfString(value)
-	case "structs.structs.EventGrid.value":
-		value := x.Value
-		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventGrid.gridRecord":
+		value := x.GridRecord
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGrid"))
@@ -4133,10 +4085,8 @@ func (x *fastReflection_EventGrid) Get(descriptor protoreflect.FieldDescriptor) 
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventGrid) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.EventGrid.attributeId":
-		x.AttributeId = value.Interface().(string)
-	case "structs.structs.EventGrid.value":
-		x.Value = value.Uint()
+	case "structs.structs.EventGrid.gridRecord":
+		x.GridRecord = value.Message().Interface().(*GridRecord)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGrid"))
@@ -4157,10 +4107,11 @@ func (x *fastReflection_EventGrid) Set(fd protoreflect.FieldDescriptor, value pr
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventGrid) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.EventGrid.attributeId":
-		panic(fmt.Errorf("field attributeId of message structs.structs.EventGrid is not mutable"))
-	case "structs.structs.EventGrid.value":
-		panic(fmt.Errorf("field value of message structs.structs.EventGrid is not mutable"))
+	case "structs.structs.EventGrid.gridRecord":
+		if x.GridRecord == nil {
+			x.GridRecord = new(GridRecord)
+		}
+		return protoreflect.ValueOfMessage(x.GridRecord.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGrid"))
@@ -4174,10 +4125,9 @@ func (x *fastReflection_EventGrid) Mutable(fd protoreflect.FieldDescriptor) prot
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventGrid) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.EventGrid.attributeId":
-		return protoreflect.ValueOfString("")
-	case "structs.structs.EventGrid.value":
-		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventGrid.gridRecord":
+		m := new(GridRecord)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGrid"))
@@ -4247,12 +4197,9 @@ func (x *fastReflection_EventGrid) ProtoMethods() *protoiface.Methods {
 		var n int
 		var l int
 		_ = l
-		l = len(x.AttributeId)
-		if l > 0 {
+		if x.GridRecord != nil {
+			l = options.Size(x.GridRecord)
 			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.Value != 0 {
-			n += 1 + runtime.Sov(uint64(x.Value))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -4283,15 +4230,17 @@ func (x *fastReflection_EventGrid) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.Value != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.Value))
-			i--
-			dAtA[i] = 0x10
-		}
-		if len(x.AttributeId) > 0 {
-			i -= len(x.AttributeId)
-			copy(dAtA[i:], x.AttributeId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.AttributeId)))
+		if x.GridRecord != nil {
+			encoded, err := options.Marshal(x.GridRecord)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -4346,9 +4295,9 @@ func (x *fastReflection_EventGrid) ProtoMethods() *protoiface.Methods {
 			switch fieldNum {
 			case 1:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AttributeId", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GridRecord", wireType)
 				}
-				var stringLen uint64
+				var msglen int
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -4358,43 +4307,28 @@ func (x *fastReflection_EventGrid) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					msglen |= int(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
+				if msglen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + intStringLen
+				postIndex := iNdEx + msglen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.AttributeId = string(dAtA[iNdEx:postIndex])
+				if x.GridRecord == nil {
+					x.GridRecord = &GridRecord{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.GridRecord); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
 				iNdEx = postIndex
-			case 2:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Value", wireType)
-				}
-				x.Value = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.Value |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -4852,17 +4786,13 @@ func (x *fastReflection_EventDelete) ProtoMethods() *protoiface.Methods {
 
 var (
 	md_EventAddressAssociation                    protoreflect.MessageDescriptor
-	fd_EventAddressAssociation_address            protoreflect.FieldDescriptor
-	fd_EventAddressAssociation_playerIndex        protoreflect.FieldDescriptor
-	fd_EventAddressAssociation_registrationStatus protoreflect.FieldDescriptor
+	fd_EventAddressAssociation_addressAssociation protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_structs_structs_events_proto_init()
 	md_EventAddressAssociation = File_structs_structs_events_proto.Messages().ByName("EventAddressAssociation")
-	fd_EventAddressAssociation_address = md_EventAddressAssociation.Fields().ByName("address")
-	fd_EventAddressAssociation_playerIndex = md_EventAddressAssociation.Fields().ByName("playerIndex")
-	fd_EventAddressAssociation_registrationStatus = md_EventAddressAssociation.Fields().ByName("registrationStatus")
+	fd_EventAddressAssociation_addressAssociation = md_EventAddressAssociation.Fields().ByName("addressAssociation")
 }
 
 var _ protoreflect.Message = (*fastReflection_EventAddressAssociation)(nil)
@@ -4930,21 +4860,9 @@ func (x *fastReflection_EventAddressAssociation) Interface() protoreflect.ProtoM
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_EventAddressAssociation) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.Address != "" {
-		value := protoreflect.ValueOfString(x.Address)
-		if !f(fd_EventAddressAssociation_address, value) {
-			return
-		}
-	}
-	if x.PlayerIndex != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.PlayerIndex)
-		if !f(fd_EventAddressAssociation_playerIndex, value) {
-			return
-		}
-	}
-	if x.RegistrationStatus != 0 {
-		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.RegistrationStatus))
-		if !f(fd_EventAddressAssociation_registrationStatus, value) {
+	if x.AddressAssociation != nil {
+		value := protoreflect.ValueOfMessage(x.AddressAssociation.ProtoReflect())
+		if !f(fd_EventAddressAssociation_addressAssociation, value) {
 			return
 		}
 	}
@@ -4963,12 +4881,8 @@ func (x *fastReflection_EventAddressAssociation) Range(f func(protoreflect.Field
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventAddressAssociation) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.EventAddressAssociation.address":
-		return x.Address != ""
-	case "structs.structs.EventAddressAssociation.playerIndex":
-		return x.PlayerIndex != uint64(0)
-	case "structs.structs.EventAddressAssociation.registrationStatus":
-		return x.RegistrationStatus != 0
+	case "structs.structs.EventAddressAssociation.addressAssociation":
+		return x.AddressAssociation != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAddressAssociation"))
@@ -4985,12 +4899,8 @@ func (x *fastReflection_EventAddressAssociation) Has(fd protoreflect.FieldDescri
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventAddressAssociation) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.EventAddressAssociation.address":
-		x.Address = ""
-	case "structs.structs.EventAddressAssociation.playerIndex":
-		x.PlayerIndex = uint64(0)
-	case "structs.structs.EventAddressAssociation.registrationStatus":
-		x.RegistrationStatus = 0
+	case "structs.structs.EventAddressAssociation.addressAssociation":
+		x.AddressAssociation = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAddressAssociation"))
@@ -5007,15 +4917,9 @@ func (x *fastReflection_EventAddressAssociation) Clear(fd protoreflect.FieldDesc
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventAddressAssociation) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.EventAddressAssociation.address":
-		value := x.Address
-		return protoreflect.ValueOfString(value)
-	case "structs.structs.EventAddressAssociation.playerIndex":
-		value := x.PlayerIndex
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.EventAddressAssociation.registrationStatus":
-		value := x.RegistrationStatus
-		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	case "structs.structs.EventAddressAssociation.addressAssociation":
+		value := x.AddressAssociation
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAddressAssociation"))
@@ -5036,12 +4940,8 @@ func (x *fastReflection_EventAddressAssociation) Get(descriptor protoreflect.Fie
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventAddressAssociation) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.EventAddressAssociation.address":
-		x.Address = value.Interface().(string)
-	case "structs.structs.EventAddressAssociation.playerIndex":
-		x.PlayerIndex = value.Uint()
-	case "structs.structs.EventAddressAssociation.registrationStatus":
-		x.RegistrationStatus = (RegistrationStatus)(value.Enum())
+	case "structs.structs.EventAddressAssociation.addressAssociation":
+		x.AddressAssociation = value.Message().Interface().(*AddressAssociation)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAddressAssociation"))
@@ -5062,12 +4962,11 @@ func (x *fastReflection_EventAddressAssociation) Set(fd protoreflect.FieldDescri
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventAddressAssociation) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.EventAddressAssociation.address":
-		panic(fmt.Errorf("field address of message structs.structs.EventAddressAssociation is not mutable"))
-	case "structs.structs.EventAddressAssociation.playerIndex":
-		panic(fmt.Errorf("field playerIndex of message structs.structs.EventAddressAssociation is not mutable"))
-	case "structs.structs.EventAddressAssociation.registrationStatus":
-		panic(fmt.Errorf("field registrationStatus of message structs.structs.EventAddressAssociation is not mutable"))
+	case "structs.structs.EventAddressAssociation.addressAssociation":
+		if x.AddressAssociation == nil {
+			x.AddressAssociation = new(AddressAssociation)
+		}
+		return protoreflect.ValueOfMessage(x.AddressAssociation.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAddressAssociation"))
@@ -5081,12 +4980,9 @@ func (x *fastReflection_EventAddressAssociation) Mutable(fd protoreflect.FieldDe
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventAddressAssociation) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.EventAddressAssociation.address":
-		return protoreflect.ValueOfString("")
-	case "structs.structs.EventAddressAssociation.playerIndex":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.EventAddressAssociation.registrationStatus":
-		return protoreflect.ValueOfEnum(0)
+	case "structs.structs.EventAddressAssociation.addressAssociation":
+		m := new(AddressAssociation)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAddressAssociation"))
@@ -5156,15 +5052,9 @@ func (x *fastReflection_EventAddressAssociation) ProtoMethods() *protoiface.Meth
 		var n int
 		var l int
 		_ = l
-		l = len(x.Address)
-		if l > 0 {
+		if x.AddressAssociation != nil {
+			l = options.Size(x.AddressAssociation)
 			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.PlayerIndex != 0 {
-			n += 1 + runtime.Sov(uint64(x.PlayerIndex))
-		}
-		if x.RegistrationStatus != 0 {
-			n += 1 + runtime.Sov(uint64(x.RegistrationStatus))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -5195,20 +5085,17 @@ func (x *fastReflection_EventAddressAssociation) ProtoMethods() *protoiface.Meth
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.RegistrationStatus != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.RegistrationStatus))
-			i--
-			dAtA[i] = 0x18
-		}
-		if x.PlayerIndex != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.PlayerIndex))
-			i--
-			dAtA[i] = 0x10
-		}
-		if len(x.Address) > 0 {
-			i -= len(x.Address)
-			copy(dAtA[i:], x.Address)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Address)))
+		if x.AddressAssociation != nil {
+			encoded, err := options.Marshal(x.AddressAssociation)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -5259,6 +5146,488 @@ func (x *fastReflection_EventAddressAssociation) ProtoMethods() *protoiface.Meth
 			}
 			if fieldNum <= 0 {
 				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventAddressAssociation: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AddressAssociation", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.AddressAssociation == nil {
+					x.AddressAssociation = &AddressAssociation{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.AddressAssociation); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_AddressAssociation                    protoreflect.MessageDescriptor
+	fd_AddressAssociation_address            protoreflect.FieldDescriptor
+	fd_AddressAssociation_playerIndex        protoreflect.FieldDescriptor
+	fd_AddressAssociation_registrationStatus protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_AddressAssociation = File_structs_structs_events_proto.Messages().ByName("AddressAssociation")
+	fd_AddressAssociation_address = md_AddressAssociation.Fields().ByName("address")
+	fd_AddressAssociation_playerIndex = md_AddressAssociation.Fields().ByName("playerIndex")
+	fd_AddressAssociation_registrationStatus = md_AddressAssociation.Fields().ByName("registrationStatus")
+}
+
+var _ protoreflect.Message = (*fastReflection_AddressAssociation)(nil)
+
+type fastReflection_AddressAssociation AddressAssociation
+
+func (x *AddressAssociation) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_AddressAssociation)(x)
+}
+
+func (x *AddressAssociation) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_AddressAssociation_messageType fastReflection_AddressAssociation_messageType
+var _ protoreflect.MessageType = fastReflection_AddressAssociation_messageType{}
+
+type fastReflection_AddressAssociation_messageType struct{}
+
+func (x fastReflection_AddressAssociation_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_AddressAssociation)(nil)
+}
+func (x fastReflection_AddressAssociation_messageType) New() protoreflect.Message {
+	return new(fastReflection_AddressAssociation)
+}
+func (x fastReflection_AddressAssociation_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_AddressAssociation
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_AddressAssociation) Descriptor() protoreflect.MessageDescriptor {
+	return md_AddressAssociation
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_AddressAssociation) Type() protoreflect.MessageType {
+	return _fastReflection_AddressAssociation_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_AddressAssociation) New() protoreflect.Message {
+	return new(fastReflection_AddressAssociation)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_AddressAssociation) Interface() protoreflect.ProtoMessage {
+	return (*AddressAssociation)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_AddressAssociation) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Address != "" {
+		value := protoreflect.ValueOfString(x.Address)
+		if !f(fd_AddressAssociation_address, value) {
+			return
+		}
+	}
+	if x.PlayerIndex != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.PlayerIndex)
+		if !f(fd_AddressAssociation_playerIndex, value) {
+			return
+		}
+	}
+	if x.RegistrationStatus != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.RegistrationStatus))
+		if !f(fd_AddressAssociation_registrationStatus, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_AddressAssociation) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.AddressAssociation.address":
+		return x.Address != ""
+	case "structs.structs.AddressAssociation.playerIndex":
+		return x.PlayerIndex != uint64(0)
+	case "structs.structs.AddressAssociation.registrationStatus":
+		return x.RegistrationStatus != 0
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.AddressAssociation"))
+		}
+		panic(fmt.Errorf("message structs.structs.AddressAssociation does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_AddressAssociation) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.AddressAssociation.address":
+		x.Address = ""
+	case "structs.structs.AddressAssociation.playerIndex":
+		x.PlayerIndex = uint64(0)
+	case "structs.structs.AddressAssociation.registrationStatus":
+		x.RegistrationStatus = 0
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.AddressAssociation"))
+		}
+		panic(fmt.Errorf("message structs.structs.AddressAssociation does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_AddressAssociation) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.AddressAssociation.address":
+		value := x.Address
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.AddressAssociation.playerIndex":
+		value := x.PlayerIndex
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.AddressAssociation.registrationStatus":
+		value := x.RegistrationStatus
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.AddressAssociation"))
+		}
+		panic(fmt.Errorf("message structs.structs.AddressAssociation does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_AddressAssociation) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.AddressAssociation.address":
+		x.Address = value.Interface().(string)
+	case "structs.structs.AddressAssociation.playerIndex":
+		x.PlayerIndex = value.Uint()
+	case "structs.structs.AddressAssociation.registrationStatus":
+		x.RegistrationStatus = (RegistrationStatus)(value.Enum())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.AddressAssociation"))
+		}
+		panic(fmt.Errorf("message structs.structs.AddressAssociation does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_AddressAssociation) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.AddressAssociation.address":
+		panic(fmt.Errorf("field address of message structs.structs.AddressAssociation is not mutable"))
+	case "structs.structs.AddressAssociation.playerIndex":
+		panic(fmt.Errorf("field playerIndex of message structs.structs.AddressAssociation is not mutable"))
+	case "structs.structs.AddressAssociation.registrationStatus":
+		panic(fmt.Errorf("field registrationStatus of message structs.structs.AddressAssociation is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.AddressAssociation"))
+		}
+		panic(fmt.Errorf("message structs.structs.AddressAssociation does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_AddressAssociation) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.AddressAssociation.address":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.AddressAssociation.playerIndex":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.AddressAssociation.registrationStatus":
+		return protoreflect.ValueOfEnum(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.AddressAssociation"))
+		}
+		panic(fmt.Errorf("message structs.structs.AddressAssociation does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_AddressAssociation) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.AddressAssociation", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_AddressAssociation) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_AddressAssociation) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_AddressAssociation) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_AddressAssociation) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*AddressAssociation)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.Address)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.PlayerIndex != 0 {
+			n += 1 + runtime.Sov(uint64(x.PlayerIndex))
+		}
+		if x.RegistrationStatus != 0 {
+			n += 1 + runtime.Sov(uint64(x.RegistrationStatus))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*AddressAssociation)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.RegistrationStatus != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.RegistrationStatus))
+			i--
+			dAtA[i] = 0x18
+		}
+		if x.PlayerIndex != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PlayerIndex))
+			i--
+			dAtA[i] = 0x10
+		}
+		if len(x.Address) > 0 {
+			i -= len(x.Address)
+			copy(dAtA[i:], x.Address)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Address)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*AddressAssociation)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AddressAssociation: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: AddressAssociation: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -5367,18 +5736,14 @@ func (x *fastReflection_EventAddressAssociation) ProtoMethods() *protoiface.Meth
 }
 
 var (
-	md_EventGuildAssociation                    protoreflect.MessageDescriptor
-	fd_EventGuildAssociation_guildId            protoreflect.FieldDescriptor
-	fd_EventGuildAssociation_playerId           protoreflect.FieldDescriptor
-	fd_EventGuildAssociation_registrationStatus protoreflect.FieldDescriptor
+	md_EventGuildAssociation                  protoreflect.MessageDescriptor
+	fd_EventGuildAssociation_guildAssociation protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_structs_structs_events_proto_init()
 	md_EventGuildAssociation = File_structs_structs_events_proto.Messages().ByName("EventGuildAssociation")
-	fd_EventGuildAssociation_guildId = md_EventGuildAssociation.Fields().ByName("guildId")
-	fd_EventGuildAssociation_playerId = md_EventGuildAssociation.Fields().ByName("playerId")
-	fd_EventGuildAssociation_registrationStatus = md_EventGuildAssociation.Fields().ByName("registrationStatus")
+	fd_EventGuildAssociation_guildAssociation = md_EventGuildAssociation.Fields().ByName("guildAssociation")
 }
 
 var _ protoreflect.Message = (*fastReflection_EventGuildAssociation)(nil)
@@ -5390,7 +5755,7 @@ func (x *EventGuildAssociation) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventGuildAssociation) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[12]
+	mi := &file_structs_structs_events_proto_msgTypes[13]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5446,21 +5811,9 @@ func (x *fastReflection_EventGuildAssociation) Interface() protoreflect.ProtoMes
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
 func (x *fastReflection_EventGuildAssociation) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
-	if x.GuildId != "" {
-		value := protoreflect.ValueOfString(x.GuildId)
-		if !f(fd_EventGuildAssociation_guildId, value) {
-			return
-		}
-	}
-	if x.PlayerId != "" {
-		value := protoreflect.ValueOfString(x.PlayerId)
-		if !f(fd_EventGuildAssociation_playerId, value) {
-			return
-		}
-	}
-	if x.RegistrationStatus != 0 {
-		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.RegistrationStatus))
-		if !f(fd_EventGuildAssociation_registrationStatus, value) {
+	if x.GuildAssociation != nil {
+		value := protoreflect.ValueOfMessage(x.GuildAssociation.ProtoReflect())
+		if !f(fd_EventGuildAssociation_guildAssociation, value) {
 			return
 		}
 	}
@@ -5479,12 +5832,8 @@ func (x *fastReflection_EventGuildAssociation) Range(f func(protoreflect.FieldDe
 // a repeated field is populated if it is non-empty.
 func (x *fastReflection_EventGuildAssociation) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.EventGuildAssociation.guildId":
-		return x.GuildId != ""
-	case "structs.structs.EventGuildAssociation.playerId":
-		return x.PlayerId != ""
-	case "structs.structs.EventGuildAssociation.registrationStatus":
-		return x.RegistrationStatus != 0
+	case "structs.structs.EventGuildAssociation.guildAssociation":
+		return x.GuildAssociation != nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildAssociation"))
@@ -5501,12 +5850,8 @@ func (x *fastReflection_EventGuildAssociation) Has(fd protoreflect.FieldDescript
 // Clear is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventGuildAssociation) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.EventGuildAssociation.guildId":
-		x.GuildId = ""
-	case "structs.structs.EventGuildAssociation.playerId":
-		x.PlayerId = ""
-	case "structs.structs.EventGuildAssociation.registrationStatus":
-		x.RegistrationStatus = 0
+	case "structs.structs.EventGuildAssociation.guildAssociation":
+		x.GuildAssociation = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildAssociation"))
@@ -5523,15 +5868,9 @@ func (x *fastReflection_EventGuildAssociation) Clear(fd protoreflect.FieldDescri
 // of the value; to obtain a mutable reference, use Mutable.
 func (x *fastReflection_EventGuildAssociation) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.EventGuildAssociation.guildId":
-		value := x.GuildId
-		return protoreflect.ValueOfString(value)
-	case "structs.structs.EventGuildAssociation.playerId":
-		value := x.PlayerId
-		return protoreflect.ValueOfString(value)
-	case "structs.structs.EventGuildAssociation.registrationStatus":
-		value := x.RegistrationStatus
-		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	case "structs.structs.EventGuildAssociation.guildAssociation":
+		value := x.GuildAssociation
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildAssociation"))
@@ -5552,12 +5891,8 @@ func (x *fastReflection_EventGuildAssociation) Get(descriptor protoreflect.Field
 // Set is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventGuildAssociation) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.EventGuildAssociation.guildId":
-		x.GuildId = value.Interface().(string)
-	case "structs.structs.EventGuildAssociation.playerId":
-		x.PlayerId = value.Interface().(string)
-	case "structs.structs.EventGuildAssociation.registrationStatus":
-		x.RegistrationStatus = (RegistrationStatus)(value.Enum())
+	case "structs.structs.EventGuildAssociation.guildAssociation":
+		x.GuildAssociation = value.Message().Interface().(*GuildAssociation)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildAssociation"))
@@ -5578,12 +5913,11 @@ func (x *fastReflection_EventGuildAssociation) Set(fd protoreflect.FieldDescript
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_EventGuildAssociation) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.EventGuildAssociation.guildId":
-		panic(fmt.Errorf("field guildId of message structs.structs.EventGuildAssociation is not mutable"))
-	case "structs.structs.EventGuildAssociation.playerId":
-		panic(fmt.Errorf("field playerId of message structs.structs.EventGuildAssociation is not mutable"))
-	case "structs.structs.EventGuildAssociation.registrationStatus":
-		panic(fmt.Errorf("field registrationStatus of message structs.structs.EventGuildAssociation is not mutable"))
+	case "structs.structs.EventGuildAssociation.guildAssociation":
+		if x.GuildAssociation == nil {
+			x.GuildAssociation = new(GuildAssociation)
+		}
+		return protoreflect.ValueOfMessage(x.GuildAssociation.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildAssociation"))
@@ -5597,12 +5931,9 @@ func (x *fastReflection_EventGuildAssociation) Mutable(fd protoreflect.FieldDesc
 // For lists, maps, and messages, this returns a new, empty, mutable value.
 func (x *fastReflection_EventGuildAssociation) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.EventGuildAssociation.guildId":
-		return protoreflect.ValueOfString("")
-	case "structs.structs.EventGuildAssociation.playerId":
-		return protoreflect.ValueOfString("")
-	case "structs.structs.EventGuildAssociation.registrationStatus":
-		return protoreflect.ValueOfEnum(0)
+	case "structs.structs.EventGuildAssociation.guildAssociation":
+		m := new(GuildAssociation)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildAssociation"))
@@ -5672,16 +6003,9 @@ func (x *fastReflection_EventGuildAssociation) ProtoMethods() *protoiface.Method
 		var n int
 		var l int
 		_ = l
-		l = len(x.GuildId)
-		if l > 0 {
+		if x.GuildAssociation != nil {
+			l = options.Size(x.GuildAssociation)
 			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		l = len(x.PlayerId)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.RegistrationStatus != 0 {
-			n += 1 + runtime.Sov(uint64(x.RegistrationStatus))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -5712,22 +6036,17 @@ func (x *fastReflection_EventGuildAssociation) ProtoMethods() *protoiface.Method
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.RegistrationStatus != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.RegistrationStatus))
-			i--
-			dAtA[i] = 0x18
-		}
-		if len(x.PlayerId) > 0 {
-			i -= len(x.PlayerId)
-			copy(dAtA[i:], x.PlayerId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.PlayerId)))
-			i--
-			dAtA[i] = 0x12
-		}
-		if len(x.GuildId) > 0 {
-			i -= len(x.GuildId)
-			copy(dAtA[i:], x.GuildId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.GuildId)))
+		if x.GuildAssociation != nil {
+			encoded, err := options.Marshal(x.GuildAssociation)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 			i--
 			dAtA[i] = 0xa
 		}
@@ -5778,6 +6097,491 @@ func (x *fastReflection_EventGuildAssociation) ProtoMethods() *protoiface.Method
 			}
 			if fieldNum <= 0 {
 				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventGuildAssociation: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GuildAssociation", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.GuildAssociation == nil {
+					x.GuildAssociation = &GuildAssociation{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.GuildAssociation); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_GuildAssociation                    protoreflect.MessageDescriptor
+	fd_GuildAssociation_guildId            protoreflect.FieldDescriptor
+	fd_GuildAssociation_playerId           protoreflect.FieldDescriptor
+	fd_GuildAssociation_registrationStatus protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_GuildAssociation = File_structs_structs_events_proto.Messages().ByName("GuildAssociation")
+	fd_GuildAssociation_guildId = md_GuildAssociation.Fields().ByName("guildId")
+	fd_GuildAssociation_playerId = md_GuildAssociation.Fields().ByName("playerId")
+	fd_GuildAssociation_registrationStatus = md_GuildAssociation.Fields().ByName("registrationStatus")
+}
+
+var _ protoreflect.Message = (*fastReflection_GuildAssociation)(nil)
+
+type fastReflection_GuildAssociation GuildAssociation
+
+func (x *GuildAssociation) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_GuildAssociation)(x)
+}
+
+func (x *GuildAssociation) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[14]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_GuildAssociation_messageType fastReflection_GuildAssociation_messageType
+var _ protoreflect.MessageType = fastReflection_GuildAssociation_messageType{}
+
+type fastReflection_GuildAssociation_messageType struct{}
+
+func (x fastReflection_GuildAssociation_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_GuildAssociation)(nil)
+}
+func (x fastReflection_GuildAssociation_messageType) New() protoreflect.Message {
+	return new(fastReflection_GuildAssociation)
+}
+func (x fastReflection_GuildAssociation_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_GuildAssociation
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_GuildAssociation) Descriptor() protoreflect.MessageDescriptor {
+	return md_GuildAssociation
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_GuildAssociation) Type() protoreflect.MessageType {
+	return _fastReflection_GuildAssociation_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_GuildAssociation) New() protoreflect.Message {
+	return new(fastReflection_GuildAssociation)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_GuildAssociation) Interface() protoreflect.ProtoMessage {
+	return (*GuildAssociation)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_GuildAssociation) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.GuildId != "" {
+		value := protoreflect.ValueOfString(x.GuildId)
+		if !f(fd_GuildAssociation_guildId, value) {
+			return
+		}
+	}
+	if x.PlayerId != "" {
+		value := protoreflect.ValueOfString(x.PlayerId)
+		if !f(fd_GuildAssociation_playerId, value) {
+			return
+		}
+	}
+	if x.RegistrationStatus != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.RegistrationStatus))
+		if !f(fd_GuildAssociation_registrationStatus, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_GuildAssociation) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.GuildAssociation.guildId":
+		return x.GuildId != ""
+	case "structs.structs.GuildAssociation.playerId":
+		return x.PlayerId != ""
+	case "structs.structs.GuildAssociation.registrationStatus":
+		return x.RegistrationStatus != 0
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GuildAssociation"))
+		}
+		panic(fmt.Errorf("message structs.structs.GuildAssociation does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_GuildAssociation) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.GuildAssociation.guildId":
+		x.GuildId = ""
+	case "structs.structs.GuildAssociation.playerId":
+		x.PlayerId = ""
+	case "structs.structs.GuildAssociation.registrationStatus":
+		x.RegistrationStatus = 0
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GuildAssociation"))
+		}
+		panic(fmt.Errorf("message structs.structs.GuildAssociation does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_GuildAssociation) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.GuildAssociation.guildId":
+		value := x.GuildId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.GuildAssociation.playerId":
+		value := x.PlayerId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.GuildAssociation.registrationStatus":
+		value := x.RegistrationStatus
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GuildAssociation"))
+		}
+		panic(fmt.Errorf("message structs.structs.GuildAssociation does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_GuildAssociation) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.GuildAssociation.guildId":
+		x.GuildId = value.Interface().(string)
+	case "structs.structs.GuildAssociation.playerId":
+		x.PlayerId = value.Interface().(string)
+	case "structs.structs.GuildAssociation.registrationStatus":
+		x.RegistrationStatus = (RegistrationStatus)(value.Enum())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GuildAssociation"))
+		}
+		panic(fmt.Errorf("message structs.structs.GuildAssociation does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_GuildAssociation) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.GuildAssociation.guildId":
+		panic(fmt.Errorf("field guildId of message structs.structs.GuildAssociation is not mutable"))
+	case "structs.structs.GuildAssociation.playerId":
+		panic(fmt.Errorf("field playerId of message structs.structs.GuildAssociation is not mutable"))
+	case "structs.structs.GuildAssociation.registrationStatus":
+		panic(fmt.Errorf("field registrationStatus of message structs.structs.GuildAssociation is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GuildAssociation"))
+		}
+		panic(fmt.Errorf("message structs.structs.GuildAssociation does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_GuildAssociation) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.GuildAssociation.guildId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.GuildAssociation.playerId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.GuildAssociation.registrationStatus":
+		return protoreflect.ValueOfEnum(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GuildAssociation"))
+		}
+		panic(fmt.Errorf("message structs.structs.GuildAssociation does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_GuildAssociation) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.GuildAssociation", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_GuildAssociation) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_GuildAssociation) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_GuildAssociation) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_GuildAssociation) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*GuildAssociation)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.GuildId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.PlayerId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.RegistrationStatus != 0 {
+			n += 1 + runtime.Sov(uint64(x.RegistrationStatus))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*GuildAssociation)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.RegistrationStatus != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.RegistrationStatus))
+			i--
+			dAtA[i] = 0x18
+		}
+		if len(x.PlayerId) > 0 {
+			i -= len(x.PlayerId)
+			copy(dAtA[i:], x.PlayerId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.PlayerId)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.GuildId) > 0 {
+			i -= len(x.GuildId)
+			copy(dAtA[i:], x.GuildId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.GuildId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*GuildAssociation)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: GuildAssociation: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: GuildAssociation: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -6196,8 +7000,7 @@ type EventPermission struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	PermissionId string `protobuf:"bytes,1,opt,name=permissionId,proto3" json:"permissionId,omitempty"`
-	Value        uint64 `protobuf:"varint,2,opt,name=value,proto3" json:"value,omitempty"`
+	PermissionRecord *PermissionRecord `protobuf:"bytes,1,opt,name=permissionRecord,proto3" json:"permissionRecord,omitempty"`
 }
 
 func (x *EventPermission) Reset() {
@@ -6220,18 +7023,11 @@ func (*EventPermission) Descriptor() ([]byte, []int) {
 	return file_structs_structs_events_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *EventPermission) GetPermissionId() string {
+func (x *EventPermission) GetPermissionRecord() *PermissionRecord {
 	if x != nil {
-		return x.PermissionId
+		return x.PermissionRecord
 	}
-	return ""
-}
-
-func (x *EventPermission) GetValue() uint64 {
-	if x != nil {
-		return x.Value
-	}
-	return 0
+	return nil
 }
 
 type EventGrid struct {
@@ -6239,8 +7035,7 @@ type EventGrid struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	AttributeId string `protobuf:"bytes,1,opt,name=attributeId,proto3" json:"attributeId,omitempty"`
-	Value       uint64 `protobuf:"varint,2,opt,name=value,proto3" json:"value,omitempty"`
+	GridRecord *GridRecord `protobuf:"bytes,1,opt,name=gridRecord,proto3" json:"gridRecord,omitempty"`
 }
 
 func (x *EventGrid) Reset() {
@@ -6263,18 +7058,11 @@ func (*EventGrid) Descriptor() ([]byte, []int) {
 	return file_structs_structs_events_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *EventGrid) GetAttributeId() string {
+func (x *EventGrid) GetGridRecord() *GridRecord {
 	if x != nil {
-		return x.AttributeId
+		return x.GridRecord
 	}
-	return ""
-}
-
-func (x *EventGrid) GetValue() uint64 {
-	if x != nil {
-		return x.Value
-	}
-	return 0
+	return nil
 }
 
 type EventDelete struct {
@@ -6317,9 +7105,7 @@ type EventAddressAssociation struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Address            string             `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
-	PlayerIndex        uint64             `protobuf:"varint,2,opt,name=playerIndex,proto3" json:"playerIndex,omitempty"`
-	RegistrationStatus RegistrationStatus `protobuf:"varint,3,opt,name=registrationStatus,proto3,enum=structs.structs.RegistrationStatus" json:"registrationStatus,omitempty"`
+	AddressAssociation *AddressAssociation `protobuf:"bytes,1,opt,name=addressAssociation,proto3" json:"addressAssociation,omitempty"`
 }
 
 func (x *EventAddressAssociation) Reset() {
@@ -6342,21 +7128,58 @@ func (*EventAddressAssociation) Descriptor() ([]byte, []int) {
 	return file_structs_structs_events_proto_rawDescGZIP(), []int{11}
 }
 
-func (x *EventAddressAssociation) GetAddress() string {
+func (x *EventAddressAssociation) GetAddressAssociation() *AddressAssociation {
+	if x != nil {
+		return x.AddressAssociation
+	}
+	return nil
+}
+
+type AddressAssociation struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Address            string             `protobuf:"bytes,1,opt,name=address,proto3" json:"address,omitempty"`
+	PlayerIndex        uint64             `protobuf:"varint,2,opt,name=playerIndex,proto3" json:"playerIndex,omitempty"`
+	RegistrationStatus RegistrationStatus `protobuf:"varint,3,opt,name=registrationStatus,proto3,enum=structs.structs.RegistrationStatus" json:"registrationStatus,omitempty"`
+}
+
+func (x *AddressAssociation) Reset() {
+	*x = AddressAssociation{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *AddressAssociation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddressAssociation) ProtoMessage() {}
+
+// Deprecated: Use AddressAssociation.ProtoReflect.Descriptor instead.
+func (*AddressAssociation) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *AddressAssociation) GetAddress() string {
 	if x != nil {
 		return x.Address
 	}
 	return ""
 }
 
-func (x *EventAddressAssociation) GetPlayerIndex() uint64 {
+func (x *AddressAssociation) GetPlayerIndex() uint64 {
 	if x != nil {
 		return x.PlayerIndex
 	}
 	return 0
 }
 
-func (x *EventAddressAssociation) GetRegistrationStatus() RegistrationStatus {
+func (x *AddressAssociation) GetRegistrationStatus() RegistrationStatus {
 	if x != nil {
 		return x.RegistrationStatus
 	}
@@ -6368,15 +7191,13 @@ type EventGuildAssociation struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	GuildId            string             `protobuf:"bytes,1,opt,name=guildId,proto3" json:"guildId,omitempty"`
-	PlayerId           string             `protobuf:"bytes,2,opt,name=playerId,proto3" json:"playerId,omitempty"`
-	RegistrationStatus RegistrationStatus `protobuf:"varint,3,opt,name=registrationStatus,proto3,enum=structs.structs.RegistrationStatus" json:"registrationStatus,omitempty"`
+	GuildAssociation *GuildAssociation `protobuf:"bytes,1,opt,name=guildAssociation,proto3" json:"guildAssociation,omitempty"`
 }
 
 func (x *EventGuildAssociation) Reset() {
 	*x = EventGuildAssociation{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[12]
+		mi := &file_structs_structs_events_proto_msgTypes[13]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -6390,24 +7211,61 @@ func (*EventGuildAssociation) ProtoMessage() {}
 
 // Deprecated: Use EventGuildAssociation.ProtoReflect.Descriptor instead.
 func (*EventGuildAssociation) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{12}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{13}
 }
 
-func (x *EventGuildAssociation) GetGuildId() string {
+func (x *EventGuildAssociation) GetGuildAssociation() *GuildAssociation {
+	if x != nil {
+		return x.GuildAssociation
+	}
+	return nil
+}
+
+type GuildAssociation struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	GuildId            string             `protobuf:"bytes,1,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	PlayerId           string             `protobuf:"bytes,2,opt,name=playerId,proto3" json:"playerId,omitempty"`
+	RegistrationStatus RegistrationStatus `protobuf:"varint,3,opt,name=registrationStatus,proto3,enum=structs.structs.RegistrationStatus" json:"registrationStatus,omitempty"`
+}
+
+func (x *GuildAssociation) Reset() {
+	*x = GuildAssociation{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[14]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GuildAssociation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GuildAssociation) ProtoMessage() {}
+
+// Deprecated: Use GuildAssociation.ProtoReflect.Descriptor instead.
+func (*GuildAssociation) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *GuildAssociation) GetGuildId() string {
 	if x != nil {
 		return x.GuildId
 	}
 	return ""
 }
 
-func (x *EventGuildAssociation) GetPlayerId() string {
+func (x *GuildAssociation) GetPlayerId() string {
 	if x != nil {
 		return x.PlayerId
 	}
 	return ""
 }
 
-func (x *EventGuildAssociation) GetRegistrationStatus() RegistrationStatus {
+func (x *GuildAssociation) GetRegistrationStatus() RegistrationStatus {
 	if x != nil {
 		return x.RegistrationStatus
 	}
@@ -6427,100 +7285,119 @@ var file_structs_structs_events_proto_rawDesc = []byte{
 	0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74,
 	0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63,
 	0x74, 0x73, 0x2f, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x1a, 0x1b, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x1a, 0x1e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x1a, 0x1a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x6b, 0x65, 0x79, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c,
-	0x61, 0x79, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x6e,
-	0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1d, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f,
-	0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x4e, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74,
-	0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x3b, 0x0a, 0x0a, 0x61, 0x6c,
-	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0a, 0x61, 0x6c, 0x6c,
-	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x3a, 0x0a, 0x0a, 0x45, 0x76, 0x65, 0x6e, 0x74,
-	0x47, 0x75, 0x69, 0x6c, 0x64, 0x12, 0x2c, 0x0a, 0x05, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x05, 0x67, 0x75,
-	0x69, 0x6c, 0x64, 0x22, 0x46, 0x0a, 0x0d, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x49, 0x6e, 0x66, 0x75,
-	0x73, 0x69, 0x6f, 0x6e, 0x12, 0x35, 0x0a, 0x08, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f,
-	0x6e, 0x52, 0x08, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x3e, 0x0a, 0x0b, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x12, 0x2f, 0x0a, 0x06, 0x70, 0x6c,
-	0x61, 0x6e, 0x65, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61,
-	0x6e, 0x65, 0x74, 0x52, 0x06, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x22, 0x3e, 0x0a, 0x0b, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x2f, 0x0a, 0x06, 0x70, 0x6c,
-	0x61, 0x79, 0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61,
-	0x79, 0x65, 0x72, 0x52, 0x06, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x22, 0x42, 0x0a, 0x0c, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x12, 0x32, 0x0a, 0x07, 0x72,
-	0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x18, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x52,
-	0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x52, 0x07, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x22,
-	0x44, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x12, 0x35,
-	0x0a, 0x09, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x75, 0x72, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x09, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x75, 0x72, 0x65, 0x22, 0x4e, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x75,
-	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x3b, 0x0a, 0x0a, 0x73, 0x75, 0x62, 0x73,
-	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53,
-	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0a, 0x73, 0x75, 0x62, 0x73, 0x74,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x4b, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x65,
-	0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x22, 0x0a, 0x0c, 0x70, 0x65, 0x72, 0x6d,
-	0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c,
-	0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05,
-	0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x76, 0x61, 0x6c,
-	0x75, 0x65, 0x22, 0x43, 0x0a, 0x09, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x72, 0x69, 0x64, 0x12,
-	0x20, 0x0a, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49,
-	0x64, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x29, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74,
-	0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74,
-	0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74,
-	0x49, 0x64, 0x22, 0xaa, 0x01, 0x0a, 0x17, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x64, 0x64, 0x72,
-	0x65, 0x73, 0x73, 0x41, 0x73, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x18,
-	0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x20, 0x0a, 0x0b, 0x70, 0x6c, 0x61, 0x79,
-	0x65, 0x72, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x70,
-	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x12, 0x53, 0x0a, 0x12, 0x72, 0x65,
-	0x67, 0x69, 0x73, 0x74, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x72,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x12, 0x72, 0x65, 0x67,
-	0x69, 0x73, 0x74, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x22,
-	0xa2, 0x01, 0x0a, 0x15, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x41, 0x73,
-	0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69,
-	0x6c, 0x64, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c,
-	0x64, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12,
-	0x53, 0x0a, 0x12, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53,
-	0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x23, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x72, 0x65,
-	0x67, 0x69, 0x73, 0x74, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73,
-	0x52, 0x12, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74,
-	0x61, 0x74, 0x75, 0x73, 0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x45, 0x76,
-	0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73,
-	0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03,
-	0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74,
-	0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a,
-	0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x74, 0x6f, 0x1a, 0x1a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x72, 0x69, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a,
+	0x1b, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2f, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x69, 0x6e,
+	0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1a, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x6b, 0x65,
+	0x79, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73,
+	0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x79,
+	0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1d, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x2e, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x4e, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c,
+	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x3b, 0x0a, 0x0a, 0x61, 0x6c, 0x6c, 0x6f,
+	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x41,
+	0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0a, 0x61, 0x6c, 0x6c, 0x6f, 0x63,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x3a, 0x0a, 0x0a, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75,
+	0x69, 0x6c, 0x64, 0x12, 0x2c, 0x0a, 0x05, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x52, 0x05, 0x67, 0x75, 0x69, 0x6c,
+	0x64, 0x22, 0x46, 0x0a, 0x0d, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69,
+	0x6f, 0x6e, 0x12, 0x35, 0x0a, 0x08, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x52,
+	0x08, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x22, 0x3e, 0x0a, 0x0b, 0x45, 0x76, 0x65,
+	0x6e, 0x74, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x12, 0x2f, 0x0a, 0x06, 0x70, 0x6c, 0x61, 0x6e,
+	0x65, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61, 0x6e, 0x65,
+	0x74, 0x52, 0x06, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x22, 0x3e, 0x0a, 0x0b, 0x45, 0x76, 0x65,
+	0x6e, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x12, 0x2f, 0x0a, 0x06, 0x70, 0x6c, 0x61, 0x79,
+	0x65, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61, 0x79, 0x65,
+	0x72, 0x52, 0x06, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x22, 0x42, 0x0a, 0x0c, 0x45, 0x76, 0x65,
+	0x6e, 0x74, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x12, 0x32, 0x0a, 0x07, 0x72, 0x65, 0x61,
+	0x63, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x18, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x61,
+	0x63, 0x74, 0x6f, 0x72, 0x52, 0x07, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x22, 0x44, 0x0a,
+	0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x12, 0x35, 0x0a, 0x09,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x75, 0x72, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x09, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x75, 0x72, 0x65, 0x22, 0x4e, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x53, 0x75, 0x62, 0x73,
+	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x3b, 0x0a, 0x0a, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x75, 0x62,
+	0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0a, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x22, 0x60, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x50, 0x65, 0x72, 0x6d,
+	0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x4d, 0x0a, 0x10, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73,
+	0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52, 0x65, 0x63,
+	0x6f, 0x72, 0x64, 0x52, 0x10, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52,
+	0x65, 0x63, 0x6f, 0x72, 0x64, 0x22, 0x48, 0x0a, 0x09, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x72,
+	0x69, 0x64, 0x12, 0x3b, 0x0a, 0x0a, 0x67, 0x72, 0x69, 0x64, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x47, 0x72, 0x69, 0x64, 0x52, 0x65, 0x63,
+	0x6f, 0x72, 0x64, 0x52, 0x0a, 0x67, 0x72, 0x69, 0x64, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x22,
+	0x29, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x1a,
+	0x0a, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x22, 0x6e, 0x0a, 0x17, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x73, 0x73, 0x6f, 0x63, 0x69,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x53, 0x0a, 0x12, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x41, 0x73, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x73, 0x73, 0x6f, 0x63,
+	0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x12, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41,
+	0x73, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xa5, 0x01, 0x0a, 0x12, 0x41,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x73, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x20, 0x0a, 0x0b, 0x70,
+	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x0b, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x12, 0x53, 0x0a,
+	0x12, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61,
+	0x74, 0x75, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x72, 0x65, 0x67, 0x69,
+	0x73, 0x74, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x12,
+	0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74,
+	0x75, 0x73, 0x22, 0x66, 0x0a, 0x15, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64,
+	0x41, 0x73, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x4d, 0x0a, 0x10, 0x67,
+	0x75, 0x69, 0x6c, 0x64, 0x41, 0x73, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x41, 0x73, 0x73,
+	0x6f, 0x63, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x10, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x41,
+	0x73, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x9d, 0x01, 0x0a, 0x10, 0x47,
+	0x75, 0x69, 0x6c, 0x64, 0x41, 0x73, 0x73, 0x6f, 0x63, 0x69, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12,
+	0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61,
+	0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61,
+	0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x53, 0x0a, 0x12, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x0e, 0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x12, 0x72, 0x65, 0x67, 0x69, 0x73, 0x74, 0x72, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63,
+	0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
+	0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f,
+	0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c,
+	0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -6535,7 +7412,7 @@ func file_structs_structs_events_proto_rawDescGZIP() []byte {
 	return file_structs_structs_events_proto_rawDescData
 }
 
-var file_structs_structs_events_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_structs_structs_events_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_structs_structs_events_proto_goTypes = []interface{}{
 	(*EventAllocation)(nil),         // 0: structs.structs.EventAllocation
 	(*EventGuild)(nil),              // 1: structs.structs.EventGuild
@@ -6549,33 +7426,41 @@ var file_structs_structs_events_proto_goTypes = []interface{}{
 	(*EventGrid)(nil),               // 9: structs.structs.EventGrid
 	(*EventDelete)(nil),             // 10: structs.structs.EventDelete
 	(*EventAddressAssociation)(nil), // 11: structs.structs.EventAddressAssociation
-	(*EventGuildAssociation)(nil),   // 12: structs.structs.EventGuildAssociation
-	(*Allocation)(nil),              // 13: structs.structs.Allocation
-	(*Guild)(nil),                   // 14: structs.structs.Guild
-	(*Infusion)(nil),                // 15: structs.structs.Infusion
-	(*Planet)(nil),                  // 16: structs.structs.Planet
-	(*Player)(nil),                  // 17: structs.structs.Player
-	(*Reactor)(nil),                 // 18: structs.structs.Reactor
-	(*Struct)(nil),                  // 19: structs.structs.Struct
-	(*Substation)(nil),              // 20: structs.structs.Substation
-	(RegistrationStatus)(0),         // 21: structs.structs.registrationStatus
+	(*AddressAssociation)(nil),      // 12: structs.structs.AddressAssociation
+	(*EventGuildAssociation)(nil),   // 13: structs.structs.EventGuildAssociation
+	(*GuildAssociation)(nil),        // 14: structs.structs.GuildAssociation
+	(*Allocation)(nil),              // 15: structs.structs.Allocation
+	(*Guild)(nil),                   // 16: structs.structs.Guild
+	(*Infusion)(nil),                // 17: structs.structs.Infusion
+	(*Planet)(nil),                  // 18: structs.structs.Planet
+	(*Player)(nil),                  // 19: structs.structs.Player
+	(*Reactor)(nil),                 // 20: structs.structs.Reactor
+	(*Struct)(nil),                  // 21: structs.structs.Struct
+	(*Substation)(nil),              // 22: structs.structs.Substation
+	(*PermissionRecord)(nil),        // 23: structs.structs.PermissionRecord
+	(*GridRecord)(nil),              // 24: structs.structs.GridRecord
+	(RegistrationStatus)(0),         // 25: structs.structs.registrationStatus
 }
 var file_structs_structs_events_proto_depIdxs = []int32{
-	13, // 0: structs.structs.EventAllocation.allocation:type_name -> structs.structs.Allocation
-	14, // 1: structs.structs.EventGuild.guild:type_name -> structs.structs.Guild
-	15, // 2: structs.structs.EventInfusion.infusion:type_name -> structs.structs.Infusion
-	16, // 3: structs.structs.EventPlanet.planet:type_name -> structs.structs.Planet
-	17, // 4: structs.structs.EventPlayer.player:type_name -> structs.structs.Player
-	18, // 5: structs.structs.EventReactor.reactor:type_name -> structs.structs.Reactor
-	19, // 6: structs.structs.EventStruct.structure:type_name -> structs.structs.Struct
-	20, // 7: structs.structs.EventSubstation.substation:type_name -> structs.structs.Substation
-	21, // 8: structs.structs.EventAddressAssociation.registrationStatus:type_name -> structs.structs.registrationStatus
-	21, // 9: structs.structs.EventGuildAssociation.registrationStatus:type_name -> structs.structs.registrationStatus
-	10, // [10:10] is the sub-list for method output_type
-	10, // [10:10] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	15, // 0: structs.structs.EventAllocation.allocation:type_name -> structs.structs.Allocation
+	16, // 1: structs.structs.EventGuild.guild:type_name -> structs.structs.Guild
+	17, // 2: structs.structs.EventInfusion.infusion:type_name -> structs.structs.Infusion
+	18, // 3: structs.structs.EventPlanet.planet:type_name -> structs.structs.Planet
+	19, // 4: structs.structs.EventPlayer.player:type_name -> structs.structs.Player
+	20, // 5: structs.structs.EventReactor.reactor:type_name -> structs.structs.Reactor
+	21, // 6: structs.structs.EventStruct.structure:type_name -> structs.structs.Struct
+	22, // 7: structs.structs.EventSubstation.substation:type_name -> structs.structs.Substation
+	23, // 8: structs.structs.EventPermission.permissionRecord:type_name -> structs.structs.PermissionRecord
+	24, // 9: structs.structs.EventGrid.gridRecord:type_name -> structs.structs.GridRecord
+	12, // 10: structs.structs.EventAddressAssociation.addressAssociation:type_name -> structs.structs.AddressAssociation
+	25, // 11: structs.structs.AddressAssociation.registrationStatus:type_name -> structs.structs.registrationStatus
+	14, // 12: structs.structs.EventGuildAssociation.guildAssociation:type_name -> structs.structs.GuildAssociation
+	25, // 13: structs.structs.GuildAssociation.registrationStatus:type_name -> structs.structs.registrationStatus
+	14, // [14:14] is the sub-list for method output_type
+	14, // [14:14] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_structs_structs_events_proto_init() }
@@ -6585,9 +7470,11 @@ func file_structs_structs_events_proto_init() {
 	}
 	file_structs_structs_params_proto_init()
 	file_structs_structs_allocation_proto_init()
+	file_structs_structs_grid_proto_init()
 	file_structs_structs_guild_proto_init()
 	file_structs_structs_infusion_proto_init()
 	file_structs_structs_keys_proto_init()
+	file_structs_structs_permission_proto_init()
 	file_structs_structs_player_proto_init()
 	file_structs_structs_planet_proto_init()
 	file_structs_structs_reactor_proto_init()
@@ -6739,7 +7626,31 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*AddressAssociation); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[13].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*EventGuildAssociation); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[14].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GuildAssociation); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -6757,7 +7668,7 @@ func file_structs_structs_events_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_structs_structs_events_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   13,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
