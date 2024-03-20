@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+
+package structs.structs;
+
+import "gogoproto/gogo.proto";
+import "google/api/annotations.proto";
+import "structs/structs/keys.proto";
+
+option go_package = "structs/x/structs/types";
+
+message AddressRecord {
+  string address = 1;
+  uint64 playerIndex = 2;
+}
+
+message AddressAssociation {
+  string address = 1;
+  uint64 playerIndex = 2;
+  registrationStatus registrationStatus = 3;
+}
+
+
+

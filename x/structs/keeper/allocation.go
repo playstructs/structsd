@@ -200,6 +200,19 @@ func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation) 
 
 
 
+// ImportAllocation set a specific allocation in the store
+// Assumes Grid updates happen elsewhere
+func (k Keeper) ImportAllocation(ctx context.Context, allocation types.Allocation){
+    store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AllocationKey))
+    b := k.cdc.MustMarshal(&allocation)
+    store.Set([]byte(allocation.Id), b)
+
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAllocation{Allocation: &allocation})
+}
+
+
+
 // RemoveAllocation removes a allocation from the store
 func (k Keeper) RemoveAllocation(ctx context.Context, allocationId string) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AllocationKey))

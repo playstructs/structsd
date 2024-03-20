@@ -7,6 +7,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "structs/structs/params.proto";
 
+import "structs/structs/address.proto";
 import "structs/structs/allocation.proto";
 import "structs/structs/grid.proto";
 import "structs/structs/guild.proto";
@@ -22,6 +23,17 @@ import "structs/structs/substation.proto";
 option go_package = "structs/x/structs/types";
 
 
+/*
+ * These all take the form of Container{ Object{} } rather than
+ * using Object{ attrA: "val", attrB: "lav"} so that when they
+ * are added to the database as an index record, it ads a single
+ * json blob for the object, rather than one line per attribute.
+ *
+ * The only time Object{} should be used as an event without a
+ * container, is when there is only a single attribute in
+ * the results, such as EventDelete{ string objectId = 1; }
+ */
+
 message EventAllocation   { Allocation allocation = 1; }
 message EventGuild        { Guild guild = 1; }
 message EventInfusion     { Infusion infusion = 1; }
@@ -36,19 +48,8 @@ message EventGrid { GridRecord gridRecord = 1; }
 
 message EventDelete { string objectId = 1; }
 
-
 message EventAddressAssociation { AddressAssociation addressAssociation = 1; }
-message AddressAssociation {
-  string address = 1;
-  uint64 playerIndex = 2;
-  registrationStatus registrationStatus = 3;
-}
 
 message EventGuildAssociation { GuildAssociation guildAssociation = 1; }
-message GuildAssociation {
-  string guildId = 1;
-  string playerId = 2;
-  registrationStatus registrationStatus = 3;
-}
 
 

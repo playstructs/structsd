@@ -8,6 +8,8 @@ import (
     "github.com/cosmos/cosmos-sdk/runtime"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	storetypes "cosmossdk.io/store/types"
+
 	"structs/x/structs/types"
 )
 
@@ -37,6 +39,19 @@ func (k Keeper) SetPlayerIndexForAddress(ctx context.Context, address string, pl
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAddressAssociation{&types.AddressAssociation{Address: address, PlayerIndex: playerIndex, RegistrationStatus: types.RegistrationStatus_approved}})
 }
 
+// GetAllAddressExport returns all player addresses
+func (k Keeper) GetAllAddressExport(ctx context.Context) (list []*types.AddressRecord) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AddressPlayerKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		list = append(list, &types.AddressRecord{Address: string(iterator.Key()), PlayerIndex: binary.BigEndian.Uint64(iterator.Value())})
+	}
+
+	return
+}
 
 func (k Keeper) AddressSetRegisterRequest(ctx context.Context, player types.Player, address string) {
     store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AddressRegistrationKey))

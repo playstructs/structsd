@@ -124,3 +124,17 @@ func (k Keeper) GetPermissionsByPlayer(ctx context.Context, playerId string) (li
 	}
 	return
 }
+
+// GetAllPermissionExport returns all grid attributes
+func (k Keeper) GetAllPermissionExport(ctx context.Context) (list []*types.PermissionRecord) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PermissionKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		list = append(list, &types.PermissionRecord{PermissionId: string(iterator.Key()), Value: binary.BigEndian.Uint64(iterator.Value())})
+	}
+
+	return
+}

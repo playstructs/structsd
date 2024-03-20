@@ -65,367 +65,418 @@ func (x *_GenesisState_3_list) IsValid() bool {
 	return x.list != nil
 }
 
-var _ protoreflect.List = (*_GenesisState_5_list)(nil)
+var _ protoreflect.List = (*_GenesisState_4_list)(nil)
 
-type _GenesisState_5_list struct {
+type _GenesisState_4_list struct {
 	list *[]*Infusion
 }
 
-func (x *_GenesisState_5_list) Len() int {
+func (x *_GenesisState_4_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_GenesisState_5_list) Get(i int) protoreflect.Value {
+func (x *_GenesisState_4_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
 }
 
-func (x *_GenesisState_5_list) Set(i int, value protoreflect.Value) {
+func (x *_GenesisState_4_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*Infusion)
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_GenesisState_5_list) Append(value protoreflect.Value) {
+func (x *_GenesisState_4_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*Infusion)
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_GenesisState_5_list) AppendMutable() protoreflect.Value {
+func (x *_GenesisState_4_list) AppendMutable() protoreflect.Value {
 	v := new(Infusion)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_GenesisState_5_list) Truncate(n int) {
+func (x *_GenesisState_4_list) Truncate(n int) {
 	for i := n; i < len(*x.list); i++ {
 		(*x.list)[i] = nil
 	}
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_GenesisState_5_list) NewElement() protoreflect.Value {
+func (x *_GenesisState_4_list) NewElement() protoreflect.Value {
 	v := new(Infusion)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_GenesisState_5_list) IsValid() bool {
+func (x *_GenesisState_4_list) IsValid() bool {
 	return x.list != nil
 }
 
-var _ protoreflect.List = (*_GenesisState_7_list)(nil)
+var _ protoreflect.List = (*_GenesisState_6_list)(nil)
 
-type _GenesisState_7_list struct {
+type _GenesisState_6_list struct {
 	list *[]*Guild
 }
 
-func (x *_GenesisState_7_list) Len() int {
+func (x *_GenesisState_6_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_GenesisState_7_list) Get(i int) protoreflect.Value {
+func (x *_GenesisState_6_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
 }
 
-func (x *_GenesisState_7_list) Set(i int, value protoreflect.Value) {
+func (x *_GenesisState_6_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*Guild)
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_GenesisState_7_list) Append(value protoreflect.Value) {
+func (x *_GenesisState_6_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*Guild)
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_GenesisState_7_list) AppendMutable() protoreflect.Value {
+func (x *_GenesisState_6_list) AppendMutable() protoreflect.Value {
 	v := new(Guild)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_GenesisState_7_list) Truncate(n int) {
+func (x *_GenesisState_6_list) Truncate(n int) {
 	for i := n; i < len(*x.list); i++ {
 		(*x.list)[i] = nil
 	}
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_GenesisState_7_list) NewElement() protoreflect.Value {
+func (x *_GenesisState_6_list) NewElement() protoreflect.Value {
 	v := new(Guild)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_GenesisState_7_list) IsValid() bool {
+func (x *_GenesisState_6_list) IsValid() bool {
 	return x.list != nil
 }
 
-var _ protoreflect.List = (*_GenesisState_9_list)(nil)
+var _ protoreflect.List = (*_GenesisState_8_list)(nil)
 
-type _GenesisState_9_list struct {
+type _GenesisState_8_list struct {
 	list *[]*Planet
 }
 
-func (x *_GenesisState_9_list) Len() int {
+func (x *_GenesisState_8_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_GenesisState_9_list) Get(i int) protoreflect.Value {
+func (x *_GenesisState_8_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
 }
 
-func (x *_GenesisState_9_list) Set(i int, value protoreflect.Value) {
+func (x *_GenesisState_8_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*Planet)
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_GenesisState_9_list) Append(value protoreflect.Value) {
+func (x *_GenesisState_8_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*Planet)
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_GenesisState_9_list) AppendMutable() protoreflect.Value {
+func (x *_GenesisState_8_list) AppendMutable() protoreflect.Value {
 	v := new(Planet)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_GenesisState_9_list) Truncate(n int) {
+func (x *_GenesisState_8_list) Truncate(n int) {
 	for i := n; i < len(*x.list); i++ {
 		(*x.list)[i] = nil
 	}
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_GenesisState_9_list) NewElement() protoreflect.Value {
+func (x *_GenesisState_8_list) NewElement() protoreflect.Value {
 	v := new(Planet)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_GenesisState_9_list) IsValid() bool {
+func (x *_GenesisState_8_list) IsValid() bool {
 	return x.list != nil
 }
 
-var _ protoreflect.List = (*_GenesisState_11_list)(nil)
+var _ protoreflect.List = (*_GenesisState_10_list)(nil)
 
-type _GenesisState_11_list struct {
+type _GenesisState_10_list struct {
 	list *[]*Player
 }
 
-func (x *_GenesisState_11_list) Len() int {
+func (x *_GenesisState_10_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_GenesisState_11_list) Get(i int) protoreflect.Value {
+func (x *_GenesisState_10_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
 }
 
-func (x *_GenesisState_11_list) Set(i int, value protoreflect.Value) {
+func (x *_GenesisState_10_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*Player)
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_GenesisState_11_list) Append(value protoreflect.Value) {
+func (x *_GenesisState_10_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*Player)
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_GenesisState_11_list) AppendMutable() protoreflect.Value {
+func (x *_GenesisState_10_list) AppendMutable() protoreflect.Value {
 	v := new(Player)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_GenesisState_11_list) Truncate(n int) {
+func (x *_GenesisState_10_list) Truncate(n int) {
 	for i := n; i < len(*x.list); i++ {
 		(*x.list)[i] = nil
 	}
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_GenesisState_11_list) NewElement() protoreflect.Value {
+func (x *_GenesisState_10_list) NewElement() protoreflect.Value {
 	v := new(Player)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_GenesisState_11_list) IsValid() bool {
+func (x *_GenesisState_10_list) IsValid() bool {
 	return x.list != nil
 }
 
-var _ protoreflect.List = (*_GenesisState_13_list)(nil)
+var _ protoreflect.List = (*_GenesisState_12_list)(nil)
 
-type _GenesisState_13_list struct {
+type _GenesisState_12_list struct {
 	list *[]*Reactor
 }
 
-func (x *_GenesisState_13_list) Len() int {
+func (x *_GenesisState_12_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_GenesisState_13_list) Get(i int) protoreflect.Value {
+func (x *_GenesisState_12_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
 }
 
-func (x *_GenesisState_13_list) Set(i int, value protoreflect.Value) {
+func (x *_GenesisState_12_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*Reactor)
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_GenesisState_13_list) Append(value protoreflect.Value) {
+func (x *_GenesisState_12_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*Reactor)
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_GenesisState_13_list) AppendMutable() protoreflect.Value {
+func (x *_GenesisState_12_list) AppendMutable() protoreflect.Value {
 	v := new(Reactor)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_GenesisState_13_list) Truncate(n int) {
+func (x *_GenesisState_12_list) Truncate(n int) {
 	for i := n; i < len(*x.list); i++ {
 		(*x.list)[i] = nil
 	}
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_GenesisState_13_list) NewElement() protoreflect.Value {
+func (x *_GenesisState_12_list) NewElement() protoreflect.Value {
 	v := new(Reactor)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_GenesisState_13_list) IsValid() bool {
+func (x *_GenesisState_12_list) IsValid() bool {
 	return x.list != nil
 }
 
-var _ protoreflect.List = (*_GenesisState_15_list)(nil)
+var _ protoreflect.List = (*_GenesisState_14_list)(nil)
 
-type _GenesisState_15_list struct {
+type _GenesisState_14_list struct {
 	list *[]*Struct
 }
 
-func (x *_GenesisState_15_list) Len() int {
+func (x *_GenesisState_14_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_GenesisState_15_list) Get(i int) protoreflect.Value {
+func (x *_GenesisState_14_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
 }
 
-func (x *_GenesisState_15_list) Set(i int, value protoreflect.Value) {
+func (x *_GenesisState_14_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*Struct)
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_GenesisState_15_list) Append(value protoreflect.Value) {
+func (x *_GenesisState_14_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*Struct)
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_GenesisState_15_list) AppendMutable() protoreflect.Value {
+func (x *_GenesisState_14_list) AppendMutable() protoreflect.Value {
 	v := new(Struct)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_GenesisState_15_list) Truncate(n int) {
+func (x *_GenesisState_14_list) Truncate(n int) {
 	for i := n; i < len(*x.list); i++ {
 		(*x.list)[i] = nil
 	}
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_GenesisState_15_list) NewElement() protoreflect.Value {
+func (x *_GenesisState_14_list) NewElement() protoreflect.Value {
 	v := new(Struct)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_GenesisState_15_list) IsValid() bool {
+func (x *_GenesisState_14_list) IsValid() bool {
 	return x.list != nil
 }
 
-var _ protoreflect.List = (*_GenesisState_17_list)(nil)
+var _ protoreflect.List = (*_GenesisState_16_list)(nil)
 
-type _GenesisState_17_list struct {
+type _GenesisState_16_list struct {
 	list *[]*Substation
 }
 
-func (x *_GenesisState_17_list) Len() int {
+func (x *_GenesisState_16_list) Len() int {
 	if x.list == nil {
 		return 0
 	}
 	return len(*x.list)
 }
 
-func (x *_GenesisState_17_list) Get(i int) protoreflect.Value {
+func (x *_GenesisState_16_list) Get(i int) protoreflect.Value {
 	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
 }
 
-func (x *_GenesisState_17_list) Set(i int, value protoreflect.Value) {
+func (x *_GenesisState_16_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*Substation)
 	(*x.list)[i] = concreteValue
 }
 
-func (x *_GenesisState_17_list) Append(value protoreflect.Value) {
+func (x *_GenesisState_16_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
 	concreteValue := valueUnwrapped.Interface().(*Substation)
 	*x.list = append(*x.list, concreteValue)
 }
 
-func (x *_GenesisState_17_list) AppendMutable() protoreflect.Value {
+func (x *_GenesisState_16_list) AppendMutable() protoreflect.Value {
 	v := new(Substation)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_GenesisState_17_list) Truncate(n int) {
+func (x *_GenesisState_16_list) Truncate(n int) {
 	for i := n; i < len(*x.list); i++ {
 		(*x.list)[i] = nil
 	}
 	*x.list = (*x.list)[:n]
 }
 
-func (x *_GenesisState_17_list) NewElement() protoreflect.Value {
+func (x *_GenesisState_16_list) NewElement() protoreflect.Value {
 	v := new(Substation)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
-func (x *_GenesisState_17_list) IsValid() bool {
+func (x *_GenesisState_16_list) IsValid() bool {
+	return x.list != nil
+}
+
+var _ protoreflect.List = (*_GenesisState_18_list)(nil)
+
+type _GenesisState_18_list struct {
+	list *[]*PermissionRecord
+}
+
+func (x *_GenesisState_18_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_GenesisState_18_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_GenesisState_18_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*PermissionRecord)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_GenesisState_18_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*PermissionRecord)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_GenesisState_18_list) AppendMutable() protoreflect.Value {
+	v := new(PermissionRecord)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_GenesisState_18_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_GenesisState_18_list) NewElement() protoreflect.Value {
+	v := new(PermissionRecord)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_GenesisState_18_list) IsValid() bool {
 	return x.list != nil
 }
 
 var _ protoreflect.List = (*_GenesisState_19_list)(nil)
 
 type _GenesisState_19_list struct {
-	list *[]*PermissionRecord
+	list *[]*GridRecord
 }
 
 func (x *_GenesisState_19_list) Len() int {
@@ -441,18 +492,18 @@ func (x *_GenesisState_19_list) Get(i int) protoreflect.Value {
 
 func (x *_GenesisState_19_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*PermissionRecord)
+	concreteValue := valueUnwrapped.Interface().(*GridRecord)
 	(*x.list)[i] = concreteValue
 }
 
 func (x *_GenesisState_19_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*PermissionRecord)
+	concreteValue := valueUnwrapped.Interface().(*GridRecord)
 	*x.list = append(*x.list, concreteValue)
 }
 
 func (x *_GenesisState_19_list) AppendMutable() protoreflect.Value {
-	v := new(PermissionRecord)
+	v := new(GridRecord)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
@@ -465,7 +516,7 @@ func (x *_GenesisState_19_list) Truncate(n int) {
 }
 
 func (x *_GenesisState_19_list) NewElement() protoreflect.Value {
-	v := new(PermissionRecord)
+	v := new(GridRecord)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
@@ -476,7 +527,7 @@ func (x *_GenesisState_19_list) IsValid() bool {
 var _ protoreflect.List = (*_GenesisState_20_list)(nil)
 
 type _GenesisState_20_list struct {
-	list *[]*GridRecord
+	list *[]*AddressRecord
 }
 
 func (x *_GenesisState_20_list) Len() int {
@@ -492,18 +543,18 @@ func (x *_GenesisState_20_list) Get(i int) protoreflect.Value {
 
 func (x *_GenesisState_20_list) Set(i int, value protoreflect.Value) {
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*GridRecord)
+	concreteValue := valueUnwrapped.Interface().(*AddressRecord)
 	(*x.list)[i] = concreteValue
 }
 
 func (x *_GenesisState_20_list) Append(value protoreflect.Value) {
 	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*GridRecord)
+	concreteValue := valueUnwrapped.Interface().(*AddressRecord)
 	*x.list = append(*x.list, concreteValue)
 }
 
 func (x *_GenesisState_20_list) AppendMutable() protoreflect.Value {
-	v := new(GridRecord)
+	v := new(AddressRecord)
 	*x.list = append(*x.list, v)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
@@ -516,7 +567,7 @@ func (x *_GenesisState_20_list) Truncate(n int) {
 }
 
 func (x *_GenesisState_20_list) NewElement() protoreflect.Value {
-	v := new(GridRecord)
+	v := new(AddressRecord)
 	return protoreflect.ValueOfMessage(v.ProtoReflect())
 }
 
@@ -529,9 +580,7 @@ var (
 	fd_GenesisState_params          protoreflect.FieldDescriptor
 	fd_GenesisState_port_id         protoreflect.FieldDescriptor
 	fd_GenesisState_allocationList  protoreflect.FieldDescriptor
-	fd_GenesisState_allocationCount protoreflect.FieldDescriptor
 	fd_GenesisState_infusionList    protoreflect.FieldDescriptor
-	fd_GenesisState_infusionCount   protoreflect.FieldDescriptor
 	fd_GenesisState_guildList       protoreflect.FieldDescriptor
 	fd_GenesisState_guildCount      protoreflect.FieldDescriptor
 	fd_GenesisState_planetList      protoreflect.FieldDescriptor
@@ -546,6 +595,7 @@ var (
 	fd_GenesisState_substationCount protoreflect.FieldDescriptor
 	fd_GenesisState_permissionList  protoreflect.FieldDescriptor
 	fd_GenesisState_gridList        protoreflect.FieldDescriptor
+	fd_GenesisState_addressList     protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -554,9 +604,7 @@ func init() {
 	fd_GenesisState_params = md_GenesisState.Fields().ByName("params")
 	fd_GenesisState_port_id = md_GenesisState.Fields().ByName("port_id")
 	fd_GenesisState_allocationList = md_GenesisState.Fields().ByName("allocationList")
-	fd_GenesisState_allocationCount = md_GenesisState.Fields().ByName("allocationCount")
 	fd_GenesisState_infusionList = md_GenesisState.Fields().ByName("infusionList")
-	fd_GenesisState_infusionCount = md_GenesisState.Fields().ByName("infusionCount")
 	fd_GenesisState_guildList = md_GenesisState.Fields().ByName("guildList")
 	fd_GenesisState_guildCount = md_GenesisState.Fields().ByName("guildCount")
 	fd_GenesisState_planetList = md_GenesisState.Fields().ByName("planetList")
@@ -571,6 +619,7 @@ func init() {
 	fd_GenesisState_substationCount = md_GenesisState.Fields().ByName("substationCount")
 	fd_GenesisState_permissionList = md_GenesisState.Fields().ByName("permissionList")
 	fd_GenesisState_gridList = md_GenesisState.Fields().ByName("gridList")
+	fd_GenesisState_addressList = md_GenesisState.Fields().ByName("addressList")
 }
 
 var _ protoreflect.Message = (*fastReflection_GenesisState)(nil)
@@ -656,26 +705,14 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 			return
 		}
 	}
-	if x.AllocationCount != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.AllocationCount)
-		if !f(fd_GenesisState_allocationCount, value) {
-			return
-		}
-	}
 	if len(x.InfusionList) != 0 {
-		value := protoreflect.ValueOfList(&_GenesisState_5_list{list: &x.InfusionList})
+		value := protoreflect.ValueOfList(&_GenesisState_4_list{list: &x.InfusionList})
 		if !f(fd_GenesisState_infusionList, value) {
 			return
 		}
 	}
-	if x.InfusionCount != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.InfusionCount)
-		if !f(fd_GenesisState_infusionCount, value) {
-			return
-		}
-	}
 	if len(x.GuildList) != 0 {
-		value := protoreflect.ValueOfList(&_GenesisState_7_list{list: &x.GuildList})
+		value := protoreflect.ValueOfList(&_GenesisState_6_list{list: &x.GuildList})
 		if !f(fd_GenesisState_guildList, value) {
 			return
 		}
@@ -687,7 +724,7 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 		}
 	}
 	if len(x.PlanetList) != 0 {
-		value := protoreflect.ValueOfList(&_GenesisState_9_list{list: &x.PlanetList})
+		value := protoreflect.ValueOfList(&_GenesisState_8_list{list: &x.PlanetList})
 		if !f(fd_GenesisState_planetList, value) {
 			return
 		}
@@ -699,7 +736,7 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 		}
 	}
 	if len(x.PlayerList) != 0 {
-		value := protoreflect.ValueOfList(&_GenesisState_11_list{list: &x.PlayerList})
+		value := protoreflect.ValueOfList(&_GenesisState_10_list{list: &x.PlayerList})
 		if !f(fd_GenesisState_playerList, value) {
 			return
 		}
@@ -711,7 +748,7 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 		}
 	}
 	if len(x.ReactorList) != 0 {
-		value := protoreflect.ValueOfList(&_GenesisState_13_list{list: &x.ReactorList})
+		value := protoreflect.ValueOfList(&_GenesisState_12_list{list: &x.ReactorList})
 		if !f(fd_GenesisState_reactorList, value) {
 			return
 		}
@@ -723,7 +760,7 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 		}
 	}
 	if len(x.StructList) != 0 {
-		value := protoreflect.ValueOfList(&_GenesisState_15_list{list: &x.StructList})
+		value := protoreflect.ValueOfList(&_GenesisState_14_list{list: &x.StructList})
 		if !f(fd_GenesisState_structList, value) {
 			return
 		}
@@ -735,7 +772,7 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 		}
 	}
 	if len(x.SubstationList) != 0 {
-		value := protoreflect.ValueOfList(&_GenesisState_17_list{list: &x.SubstationList})
+		value := protoreflect.ValueOfList(&_GenesisState_16_list{list: &x.SubstationList})
 		if !f(fd_GenesisState_substationList, value) {
 			return
 		}
@@ -747,14 +784,20 @@ func (x *fastReflection_GenesisState) Range(f func(protoreflect.FieldDescriptor,
 		}
 	}
 	if len(x.PermissionList) != 0 {
-		value := protoreflect.ValueOfList(&_GenesisState_19_list{list: &x.PermissionList})
+		value := protoreflect.ValueOfList(&_GenesisState_18_list{list: &x.PermissionList})
 		if !f(fd_GenesisState_permissionList, value) {
 			return
 		}
 	}
 	if len(x.GridList) != 0 {
-		value := protoreflect.ValueOfList(&_GenesisState_20_list{list: &x.GridList})
+		value := protoreflect.ValueOfList(&_GenesisState_19_list{list: &x.GridList})
 		if !f(fd_GenesisState_gridList, value) {
+			return
+		}
+	}
+	if len(x.AddressList) != 0 {
+		value := protoreflect.ValueOfList(&_GenesisState_20_list{list: &x.AddressList})
+		if !f(fd_GenesisState_addressList, value) {
 			return
 		}
 	}
@@ -779,12 +822,8 @@ func (x *fastReflection_GenesisState) Has(fd protoreflect.FieldDescriptor) bool 
 		return x.PortId != ""
 	case "structs.structs.GenesisState.allocationList":
 		return len(x.AllocationList) != 0
-	case "structs.structs.GenesisState.allocationCount":
-		return x.AllocationCount != uint64(0)
 	case "structs.structs.GenesisState.infusionList":
 		return len(x.InfusionList) != 0
-	case "structs.structs.GenesisState.infusionCount":
-		return x.InfusionCount != uint64(0)
 	case "structs.structs.GenesisState.guildList":
 		return len(x.GuildList) != 0
 	case "structs.structs.GenesisState.guildCount":
@@ -813,6 +852,8 @@ func (x *fastReflection_GenesisState) Has(fd protoreflect.FieldDescriptor) bool 
 		return len(x.PermissionList) != 0
 	case "structs.structs.GenesisState.gridList":
 		return len(x.GridList) != 0
+	case "structs.structs.GenesisState.addressList":
+		return len(x.AddressList) != 0
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GenesisState"))
@@ -835,12 +876,8 @@ func (x *fastReflection_GenesisState) Clear(fd protoreflect.FieldDescriptor) {
 		x.PortId = ""
 	case "structs.structs.GenesisState.allocationList":
 		x.AllocationList = nil
-	case "structs.structs.GenesisState.allocationCount":
-		x.AllocationCount = uint64(0)
 	case "structs.structs.GenesisState.infusionList":
 		x.InfusionList = nil
-	case "structs.structs.GenesisState.infusionCount":
-		x.InfusionCount = uint64(0)
 	case "structs.structs.GenesisState.guildList":
 		x.GuildList = nil
 	case "structs.structs.GenesisState.guildCount":
@@ -869,6 +906,8 @@ func (x *fastReflection_GenesisState) Clear(fd protoreflect.FieldDescriptor) {
 		x.PermissionList = nil
 	case "structs.structs.GenesisState.gridList":
 		x.GridList = nil
+	case "structs.structs.GenesisState.addressList":
+		x.AddressList = nil
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GenesisState"))
@@ -897,83 +936,83 @@ func (x *fastReflection_GenesisState) Get(descriptor protoreflect.FieldDescripto
 		}
 		listValue := &_GenesisState_3_list{list: &x.AllocationList}
 		return protoreflect.ValueOfList(listValue)
-	case "structs.structs.GenesisState.allocationCount":
-		value := x.AllocationCount
-		return protoreflect.ValueOfUint64(value)
 	case "structs.structs.GenesisState.infusionList":
 		if len(x.InfusionList) == 0 {
-			return protoreflect.ValueOfList(&_GenesisState_5_list{})
+			return protoreflect.ValueOfList(&_GenesisState_4_list{})
 		}
-		listValue := &_GenesisState_5_list{list: &x.InfusionList}
+		listValue := &_GenesisState_4_list{list: &x.InfusionList}
 		return protoreflect.ValueOfList(listValue)
-	case "structs.structs.GenesisState.infusionCount":
-		value := x.InfusionCount
-		return protoreflect.ValueOfUint64(value)
 	case "structs.structs.GenesisState.guildList":
 		if len(x.GuildList) == 0 {
-			return protoreflect.ValueOfList(&_GenesisState_7_list{})
+			return protoreflect.ValueOfList(&_GenesisState_6_list{})
 		}
-		listValue := &_GenesisState_7_list{list: &x.GuildList}
+		listValue := &_GenesisState_6_list{list: &x.GuildList}
 		return protoreflect.ValueOfList(listValue)
 	case "structs.structs.GenesisState.guildCount":
 		value := x.GuildCount
 		return protoreflect.ValueOfUint64(value)
 	case "structs.structs.GenesisState.planetList":
 		if len(x.PlanetList) == 0 {
-			return protoreflect.ValueOfList(&_GenesisState_9_list{})
+			return protoreflect.ValueOfList(&_GenesisState_8_list{})
 		}
-		listValue := &_GenesisState_9_list{list: &x.PlanetList}
+		listValue := &_GenesisState_8_list{list: &x.PlanetList}
 		return protoreflect.ValueOfList(listValue)
 	case "structs.structs.GenesisState.planetCount":
 		value := x.PlanetCount
 		return protoreflect.ValueOfUint64(value)
 	case "structs.structs.GenesisState.playerList":
 		if len(x.PlayerList) == 0 {
-			return protoreflect.ValueOfList(&_GenesisState_11_list{})
+			return protoreflect.ValueOfList(&_GenesisState_10_list{})
 		}
-		listValue := &_GenesisState_11_list{list: &x.PlayerList}
+		listValue := &_GenesisState_10_list{list: &x.PlayerList}
 		return protoreflect.ValueOfList(listValue)
 	case "structs.structs.GenesisState.playerCount":
 		value := x.PlayerCount
 		return protoreflect.ValueOfUint64(value)
 	case "structs.structs.GenesisState.reactorList":
 		if len(x.ReactorList) == 0 {
-			return protoreflect.ValueOfList(&_GenesisState_13_list{})
+			return protoreflect.ValueOfList(&_GenesisState_12_list{})
 		}
-		listValue := &_GenesisState_13_list{list: &x.ReactorList}
+		listValue := &_GenesisState_12_list{list: &x.ReactorList}
 		return protoreflect.ValueOfList(listValue)
 	case "structs.structs.GenesisState.reactorCount":
 		value := x.ReactorCount
 		return protoreflect.ValueOfUint64(value)
 	case "structs.structs.GenesisState.structList":
 		if len(x.StructList) == 0 {
-			return protoreflect.ValueOfList(&_GenesisState_15_list{})
+			return protoreflect.ValueOfList(&_GenesisState_14_list{})
 		}
-		listValue := &_GenesisState_15_list{list: &x.StructList}
+		listValue := &_GenesisState_14_list{list: &x.StructList}
 		return protoreflect.ValueOfList(listValue)
 	case "structs.structs.GenesisState.structCount":
 		value := x.StructCount
 		return protoreflect.ValueOfUint64(value)
 	case "structs.structs.GenesisState.substationList":
 		if len(x.SubstationList) == 0 {
-			return protoreflect.ValueOfList(&_GenesisState_17_list{})
+			return protoreflect.ValueOfList(&_GenesisState_16_list{})
 		}
-		listValue := &_GenesisState_17_list{list: &x.SubstationList}
+		listValue := &_GenesisState_16_list{list: &x.SubstationList}
 		return protoreflect.ValueOfList(listValue)
 	case "structs.structs.GenesisState.substationCount":
 		value := x.SubstationCount
 		return protoreflect.ValueOfUint64(value)
 	case "structs.structs.GenesisState.permissionList":
 		if len(x.PermissionList) == 0 {
-			return protoreflect.ValueOfList(&_GenesisState_19_list{})
+			return protoreflect.ValueOfList(&_GenesisState_18_list{})
 		}
-		listValue := &_GenesisState_19_list{list: &x.PermissionList}
+		listValue := &_GenesisState_18_list{list: &x.PermissionList}
 		return protoreflect.ValueOfList(listValue)
 	case "structs.structs.GenesisState.gridList":
 		if len(x.GridList) == 0 {
+			return protoreflect.ValueOfList(&_GenesisState_19_list{})
+		}
+		listValue := &_GenesisState_19_list{list: &x.GridList}
+		return protoreflect.ValueOfList(listValue)
+	case "structs.structs.GenesisState.addressList":
+		if len(x.AddressList) == 0 {
 			return protoreflect.ValueOfList(&_GenesisState_20_list{})
 		}
-		listValue := &_GenesisState_20_list{list: &x.GridList}
+		listValue := &_GenesisState_20_list{list: &x.AddressList}
 		return protoreflect.ValueOfList(listValue)
 	default:
 		if descriptor.IsExtension() {
@@ -1003,58 +1042,58 @@ func (x *fastReflection_GenesisState) Set(fd protoreflect.FieldDescriptor, value
 		lv := value.List()
 		clv := lv.(*_GenesisState_3_list)
 		x.AllocationList = *clv.list
-	case "structs.structs.GenesisState.allocationCount":
-		x.AllocationCount = value.Uint()
 	case "structs.structs.GenesisState.infusionList":
 		lv := value.List()
-		clv := lv.(*_GenesisState_5_list)
+		clv := lv.(*_GenesisState_4_list)
 		x.InfusionList = *clv.list
-	case "structs.structs.GenesisState.infusionCount":
-		x.InfusionCount = value.Uint()
 	case "structs.structs.GenesisState.guildList":
 		lv := value.List()
-		clv := lv.(*_GenesisState_7_list)
+		clv := lv.(*_GenesisState_6_list)
 		x.GuildList = *clv.list
 	case "structs.structs.GenesisState.guildCount":
 		x.GuildCount = value.Uint()
 	case "structs.structs.GenesisState.planetList":
 		lv := value.List()
-		clv := lv.(*_GenesisState_9_list)
+		clv := lv.(*_GenesisState_8_list)
 		x.PlanetList = *clv.list
 	case "structs.structs.GenesisState.planetCount":
 		x.PlanetCount = value.Uint()
 	case "structs.structs.GenesisState.playerList":
 		lv := value.List()
-		clv := lv.(*_GenesisState_11_list)
+		clv := lv.(*_GenesisState_10_list)
 		x.PlayerList = *clv.list
 	case "structs.structs.GenesisState.playerCount":
 		x.PlayerCount = value.Uint()
 	case "structs.structs.GenesisState.reactorList":
 		lv := value.List()
-		clv := lv.(*_GenesisState_13_list)
+		clv := lv.(*_GenesisState_12_list)
 		x.ReactorList = *clv.list
 	case "structs.structs.GenesisState.reactorCount":
 		x.ReactorCount = value.Uint()
 	case "structs.structs.GenesisState.structList":
 		lv := value.List()
-		clv := lv.(*_GenesisState_15_list)
+		clv := lv.(*_GenesisState_14_list)
 		x.StructList = *clv.list
 	case "structs.structs.GenesisState.structCount":
 		x.StructCount = value.Uint()
 	case "structs.structs.GenesisState.substationList":
 		lv := value.List()
-		clv := lv.(*_GenesisState_17_list)
+		clv := lv.(*_GenesisState_16_list)
 		x.SubstationList = *clv.list
 	case "structs.structs.GenesisState.substationCount":
 		x.SubstationCount = value.Uint()
 	case "structs.structs.GenesisState.permissionList":
 		lv := value.List()
-		clv := lv.(*_GenesisState_19_list)
+		clv := lv.(*_GenesisState_18_list)
 		x.PermissionList = *clv.list
 	case "structs.structs.GenesisState.gridList":
 		lv := value.List()
-		clv := lv.(*_GenesisState_20_list)
+		clv := lv.(*_GenesisState_19_list)
 		x.GridList = *clv.list
+	case "structs.structs.GenesisState.addressList":
+		lv := value.List()
+		clv := lv.(*_GenesisState_20_list)
+		x.AddressList = *clv.list
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GenesisState"))
@@ -1090,62 +1129,64 @@ func (x *fastReflection_GenesisState) Mutable(fd protoreflect.FieldDescriptor) p
 		if x.InfusionList == nil {
 			x.InfusionList = []*Infusion{}
 		}
-		value := &_GenesisState_5_list{list: &x.InfusionList}
+		value := &_GenesisState_4_list{list: &x.InfusionList}
 		return protoreflect.ValueOfList(value)
 	case "structs.structs.GenesisState.guildList":
 		if x.GuildList == nil {
 			x.GuildList = []*Guild{}
 		}
-		value := &_GenesisState_7_list{list: &x.GuildList}
+		value := &_GenesisState_6_list{list: &x.GuildList}
 		return protoreflect.ValueOfList(value)
 	case "structs.structs.GenesisState.planetList":
 		if x.PlanetList == nil {
 			x.PlanetList = []*Planet{}
 		}
-		value := &_GenesisState_9_list{list: &x.PlanetList}
+		value := &_GenesisState_8_list{list: &x.PlanetList}
 		return protoreflect.ValueOfList(value)
 	case "structs.structs.GenesisState.playerList":
 		if x.PlayerList == nil {
 			x.PlayerList = []*Player{}
 		}
-		value := &_GenesisState_11_list{list: &x.PlayerList}
+		value := &_GenesisState_10_list{list: &x.PlayerList}
 		return protoreflect.ValueOfList(value)
 	case "structs.structs.GenesisState.reactorList":
 		if x.ReactorList == nil {
 			x.ReactorList = []*Reactor{}
 		}
-		value := &_GenesisState_13_list{list: &x.ReactorList}
+		value := &_GenesisState_12_list{list: &x.ReactorList}
 		return protoreflect.ValueOfList(value)
 	case "structs.structs.GenesisState.structList":
 		if x.StructList == nil {
 			x.StructList = []*Struct{}
 		}
-		value := &_GenesisState_15_list{list: &x.StructList}
+		value := &_GenesisState_14_list{list: &x.StructList}
 		return protoreflect.ValueOfList(value)
 	case "structs.structs.GenesisState.substationList":
 		if x.SubstationList == nil {
 			x.SubstationList = []*Substation{}
 		}
-		value := &_GenesisState_17_list{list: &x.SubstationList}
+		value := &_GenesisState_16_list{list: &x.SubstationList}
 		return protoreflect.ValueOfList(value)
 	case "structs.structs.GenesisState.permissionList":
 		if x.PermissionList == nil {
 			x.PermissionList = []*PermissionRecord{}
 		}
-		value := &_GenesisState_19_list{list: &x.PermissionList}
+		value := &_GenesisState_18_list{list: &x.PermissionList}
 		return protoreflect.ValueOfList(value)
 	case "structs.structs.GenesisState.gridList":
 		if x.GridList == nil {
 			x.GridList = []*GridRecord{}
 		}
-		value := &_GenesisState_20_list{list: &x.GridList}
+		value := &_GenesisState_19_list{list: &x.GridList}
+		return protoreflect.ValueOfList(value)
+	case "structs.structs.GenesisState.addressList":
+		if x.AddressList == nil {
+			x.AddressList = []*AddressRecord{}
+		}
+		value := &_GenesisState_20_list{list: &x.AddressList}
 		return protoreflect.ValueOfList(value)
 	case "structs.structs.GenesisState.port_id":
 		panic(fmt.Errorf("field port_id of message structs.structs.GenesisState is not mutable"))
-	case "structs.structs.GenesisState.allocationCount":
-		panic(fmt.Errorf("field allocationCount of message structs.structs.GenesisState is not mutable"))
-	case "structs.structs.GenesisState.infusionCount":
-		panic(fmt.Errorf("field infusionCount of message structs.structs.GenesisState is not mutable"))
 	case "structs.structs.GenesisState.guildCount":
 		panic(fmt.Errorf("field guildCount of message structs.structs.GenesisState is not mutable"))
 	case "structs.structs.GenesisState.planetCount":
@@ -1179,48 +1220,47 @@ func (x *fastReflection_GenesisState) NewField(fd protoreflect.FieldDescriptor) 
 	case "structs.structs.GenesisState.allocationList":
 		list := []*Allocation{}
 		return protoreflect.ValueOfList(&_GenesisState_3_list{list: &list})
-	case "structs.structs.GenesisState.allocationCount":
-		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.GenesisState.infusionList":
 		list := []*Infusion{}
-		return protoreflect.ValueOfList(&_GenesisState_5_list{list: &list})
-	case "structs.structs.GenesisState.infusionCount":
-		return protoreflect.ValueOfUint64(uint64(0))
+		return protoreflect.ValueOfList(&_GenesisState_4_list{list: &list})
 	case "structs.structs.GenesisState.guildList":
 		list := []*Guild{}
-		return protoreflect.ValueOfList(&_GenesisState_7_list{list: &list})
+		return protoreflect.ValueOfList(&_GenesisState_6_list{list: &list})
 	case "structs.structs.GenesisState.guildCount":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.GenesisState.planetList":
 		list := []*Planet{}
-		return protoreflect.ValueOfList(&_GenesisState_9_list{list: &list})
+		return protoreflect.ValueOfList(&_GenesisState_8_list{list: &list})
 	case "structs.structs.GenesisState.planetCount":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.GenesisState.playerList":
 		list := []*Player{}
-		return protoreflect.ValueOfList(&_GenesisState_11_list{list: &list})
+		return protoreflect.ValueOfList(&_GenesisState_10_list{list: &list})
 	case "structs.structs.GenesisState.playerCount":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.GenesisState.reactorList":
 		list := []*Reactor{}
-		return protoreflect.ValueOfList(&_GenesisState_13_list{list: &list})
+		return protoreflect.ValueOfList(&_GenesisState_12_list{list: &list})
 	case "structs.structs.GenesisState.reactorCount":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.GenesisState.structList":
 		list := []*Struct{}
-		return protoreflect.ValueOfList(&_GenesisState_15_list{list: &list})
+		return protoreflect.ValueOfList(&_GenesisState_14_list{list: &list})
 	case "structs.structs.GenesisState.structCount":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.GenesisState.substationList":
 		list := []*Substation{}
-		return protoreflect.ValueOfList(&_GenesisState_17_list{list: &list})
+		return protoreflect.ValueOfList(&_GenesisState_16_list{list: &list})
 	case "structs.structs.GenesisState.substationCount":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.GenesisState.permissionList":
 		list := []*PermissionRecord{}
-		return protoreflect.ValueOfList(&_GenesisState_19_list{list: &list})
+		return protoreflect.ValueOfList(&_GenesisState_18_list{list: &list})
 	case "structs.structs.GenesisState.gridList":
 		list := []*GridRecord{}
+		return protoreflect.ValueOfList(&_GenesisState_19_list{list: &list})
+	case "structs.structs.GenesisState.addressList":
+		list := []*AddressRecord{}
 		return protoreflect.ValueOfList(&_GenesisState_20_list{list: &list})
 	default:
 		if fd.IsExtension() {
@@ -1305,17 +1345,11 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
-		if x.AllocationCount != 0 {
-			n += 1 + runtime.Sov(uint64(x.AllocationCount))
-		}
 		if len(x.InfusionList) > 0 {
 			for _, e := range x.InfusionList {
 				l = options.Size(e)
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
-		}
-		if x.InfusionCount != 0 {
-			n += 1 + runtime.Sov(uint64(x.InfusionCount))
 		}
 		if len(x.GuildList) > 0 {
 			for _, e := range x.GuildList {
@@ -1360,7 +1394,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 			}
 		}
 		if x.StructCount != 0 {
-			n += 2 + runtime.Sov(uint64(x.StructCount))
+			n += 1 + runtime.Sov(uint64(x.StructCount))
 		}
 		if len(x.SubstationList) > 0 {
 			for _, e := range x.SubstationList {
@@ -1379,6 +1413,12 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 		}
 		if len(x.GridList) > 0 {
 			for _, e := range x.GridList {
+				l = options.Size(e)
+				n += 2 + l + runtime.Sov(uint64(l))
+			}
+		}
+		if len(x.AddressList) > 0 {
+			for _, e := range x.AddressList {
 				l = options.Size(e)
 				n += 2 + l + runtime.Sov(uint64(l))
 			}
@@ -1412,6 +1452,24 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
+		if len(x.AddressList) > 0 {
+			for iNdEx := len(x.AddressList) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.AddressList[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0x1
+				i--
+				dAtA[i] = 0xa2
+			}
+		}
 		if len(x.GridList) > 0 {
 			for iNdEx := len(x.GridList) - 1; iNdEx >= 0; iNdEx-- {
 				encoded, err := options.Marshal(x.GridList[iNdEx])
@@ -1427,7 +1485,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				i--
 				dAtA[i] = 0x1
 				i--
-				dAtA[i] = 0xa2
+				dAtA[i] = 0x9a
 			}
 		}
 		if len(x.PermissionList) > 0 {
@@ -1445,7 +1503,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				i--
 				dAtA[i] = 0x1
 				i--
-				dAtA[i] = 0x9a
+				dAtA[i] = 0x92
 			}
 		}
 		if x.SubstationCount != 0 {
@@ -1453,7 +1511,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x1
 			i--
-			dAtA[i] = 0x90
+			dAtA[i] = 0x88
 		}
 		if len(x.SubstationList) > 0 {
 			for iNdEx := len(x.SubstationList) - 1; iNdEx >= 0; iNdEx-- {
@@ -1470,15 +1528,13 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				i--
 				dAtA[i] = 0x1
 				i--
-				dAtA[i] = 0x8a
+				dAtA[i] = 0x82
 			}
 		}
 		if x.StructCount != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.StructCount))
 			i--
-			dAtA[i] = 0x1
-			i--
-			dAtA[i] = 0x80
+			dAtA[i] = 0x78
 		}
 		if len(x.StructList) > 0 {
 			for iNdEx := len(x.StructList) - 1; iNdEx >= 0; iNdEx-- {
@@ -1493,13 +1549,13 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				copy(dAtA[i:], encoded)
 				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 				i--
-				dAtA[i] = 0x7a
+				dAtA[i] = 0x72
 			}
 		}
 		if x.ReactorCount != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.ReactorCount))
 			i--
-			dAtA[i] = 0x70
+			dAtA[i] = 0x68
 		}
 		if len(x.ReactorList) > 0 {
 			for iNdEx := len(x.ReactorList) - 1; iNdEx >= 0; iNdEx-- {
@@ -1514,13 +1570,13 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				copy(dAtA[i:], encoded)
 				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 				i--
-				dAtA[i] = 0x6a
+				dAtA[i] = 0x62
 			}
 		}
 		if x.PlayerCount != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.PlayerCount))
 			i--
-			dAtA[i] = 0x60
+			dAtA[i] = 0x58
 		}
 		if len(x.PlayerList) > 0 {
 			for iNdEx := len(x.PlayerList) - 1; iNdEx >= 0; iNdEx-- {
@@ -1535,13 +1591,13 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				copy(dAtA[i:], encoded)
 				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 				i--
-				dAtA[i] = 0x5a
+				dAtA[i] = 0x52
 			}
 		}
 		if x.PlanetCount != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.PlanetCount))
 			i--
-			dAtA[i] = 0x50
+			dAtA[i] = 0x48
 		}
 		if len(x.PlanetList) > 0 {
 			for iNdEx := len(x.PlanetList) - 1; iNdEx >= 0; iNdEx-- {
@@ -1556,13 +1612,13 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				copy(dAtA[i:], encoded)
 				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 				i--
-				dAtA[i] = 0x4a
+				dAtA[i] = 0x42
 			}
 		}
 		if x.GuildCount != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.GuildCount))
 			i--
-			dAtA[i] = 0x40
+			dAtA[i] = 0x38
 		}
 		if len(x.GuildList) > 0 {
 			for iNdEx := len(x.GuildList) - 1; iNdEx >= 0; iNdEx-- {
@@ -1577,13 +1633,8 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				copy(dAtA[i:], encoded)
 				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 				i--
-				dAtA[i] = 0x3a
+				dAtA[i] = 0x32
 			}
-		}
-		if x.InfusionCount != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.InfusionCount))
-			i--
-			dAtA[i] = 0x30
 		}
 		if len(x.InfusionList) > 0 {
 			for iNdEx := len(x.InfusionList) - 1; iNdEx >= 0; iNdEx-- {
@@ -1598,13 +1649,8 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				copy(dAtA[i:], encoded)
 				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
 				i--
-				dAtA[i] = 0x2a
+				dAtA[i] = 0x22
 			}
-		}
-		if x.AllocationCount != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.AllocationCount))
-			i--
-			dAtA[i] = 0x20
 		}
 		if len(x.AllocationList) > 0 {
 			for iNdEx := len(x.AllocationList) - 1; iNdEx >= 0; iNdEx-- {
@@ -1795,25 +1841,6 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				}
 				iNdEx = postIndex
 			case 4:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AllocationCount", wireType)
-				}
-				x.AllocationCount = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.AllocationCount |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 5:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field InfusionList", wireType)
 				}
@@ -1848,25 +1875,6 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				}
 				iNdEx = postIndex
 			case 6:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field InfusionCount", wireType)
-				}
-				x.InfusionCount = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.InfusionCount |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 7:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GuildList", wireType)
 				}
@@ -1900,7 +1908,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
-			case 8:
+			case 7:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GuildCount", wireType)
 				}
@@ -1919,7 +1927,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 9:
+			case 8:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlanetList", wireType)
 				}
@@ -1953,7 +1961,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
-			case 10:
+			case 9:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlanetCount", wireType)
 				}
@@ -1972,7 +1980,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 11:
+			case 10:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlayerList", wireType)
 				}
@@ -2006,7 +2014,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
-			case 12:
+			case 11:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlayerCount", wireType)
 				}
@@ -2025,7 +2033,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 13:
+			case 12:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ReactorList", wireType)
 				}
@@ -2059,7 +2067,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
-			case 14:
+			case 13:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ReactorCount", wireType)
 				}
@@ -2078,7 +2086,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 15:
+			case 14:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field StructList", wireType)
 				}
@@ -2112,7 +2120,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
-			case 16:
+			case 15:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field StructCount", wireType)
 				}
@@ -2131,7 +2139,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 17:
+			case 16:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SubstationList", wireType)
 				}
@@ -2165,7 +2173,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
-			case 18:
+			case 17:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SubstationCount", wireType)
 				}
@@ -2184,7 +2192,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 19:
+			case 18:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PermissionList", wireType)
 				}
@@ -2218,7 +2226,7 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
-			case 20:
+			case 19:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GridList", wireType)
 				}
@@ -2249,6 +2257,40 @@ func (x *fastReflection_GenesisState) ProtoMethods() *protoiface.Methods {
 				}
 				x.GridList = append(x.GridList, &GridRecord{})
 				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.GridList[len(x.GridList)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 20:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AddressList", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.AddressList = append(x.AddressList, &AddressRecord{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.AddressList[len(x.AddressList)-1]); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -2310,23 +2352,22 @@ type GenesisState struct {
 	Params          *Params             `protobuf:"bytes,1,opt,name=params,proto3" json:"params,omitempty"`
 	PortId          string              `protobuf:"bytes,2,opt,name=port_id,json=portId,proto3" json:"port_id,omitempty"`
 	AllocationList  []*Allocation       `protobuf:"bytes,3,rep,name=allocationList,proto3" json:"allocationList,omitempty"`
-	AllocationCount uint64              `protobuf:"varint,4,opt,name=allocationCount,proto3" json:"allocationCount,omitempty"`
-	InfusionList    []*Infusion         `protobuf:"bytes,5,rep,name=infusionList,proto3" json:"infusionList,omitempty"`
-	InfusionCount   uint64              `protobuf:"varint,6,opt,name=infusionCount,proto3" json:"infusionCount,omitempty"`
-	GuildList       []*Guild            `protobuf:"bytes,7,rep,name=guildList,proto3" json:"guildList,omitempty"`
-	GuildCount      uint64              `protobuf:"varint,8,opt,name=guildCount,proto3" json:"guildCount,omitempty"`
-	PlanetList      []*Planet           `protobuf:"bytes,9,rep,name=planetList,proto3" json:"planetList,omitempty"`
-	PlanetCount     uint64              `protobuf:"varint,10,opt,name=planetCount,proto3" json:"planetCount,omitempty"`
-	PlayerList      []*Player           `protobuf:"bytes,11,rep,name=playerList,proto3" json:"playerList,omitempty"`
-	PlayerCount     uint64              `protobuf:"varint,12,opt,name=playerCount,proto3" json:"playerCount,omitempty"`
-	ReactorList     []*Reactor          `protobuf:"bytes,13,rep,name=reactorList,proto3" json:"reactorList,omitempty"`
-	ReactorCount    uint64              `protobuf:"varint,14,opt,name=reactorCount,proto3" json:"reactorCount,omitempty"`
-	StructList      []*Struct           `protobuf:"bytes,15,rep,name=structList,proto3" json:"structList,omitempty"`
-	StructCount     uint64              `protobuf:"varint,16,opt,name=structCount,proto3" json:"structCount,omitempty"`
-	SubstationList  []*Substation       `protobuf:"bytes,17,rep,name=substationList,proto3" json:"substationList,omitempty"`
-	SubstationCount uint64              `protobuf:"varint,18,opt,name=substationCount,proto3" json:"substationCount,omitempty"`
-	PermissionList  []*PermissionRecord `protobuf:"bytes,19,rep,name=permissionList,proto3" json:"permissionList,omitempty"`
-	GridList        []*GridRecord       `protobuf:"bytes,20,rep,name=gridList,proto3" json:"gridList,omitempty"`
+	InfusionList    []*Infusion         `protobuf:"bytes,4,rep,name=infusionList,proto3" json:"infusionList,omitempty"`
+	GuildList       []*Guild            `protobuf:"bytes,6,rep,name=guildList,proto3" json:"guildList,omitempty"`
+	GuildCount      uint64              `protobuf:"varint,7,opt,name=guildCount,proto3" json:"guildCount,omitempty"`
+	PlanetList      []*Planet           `protobuf:"bytes,8,rep,name=planetList,proto3" json:"planetList,omitempty"`
+	PlanetCount     uint64              `protobuf:"varint,9,opt,name=planetCount,proto3" json:"planetCount,omitempty"`
+	PlayerList      []*Player           `protobuf:"bytes,10,rep,name=playerList,proto3" json:"playerList,omitempty"`
+	PlayerCount     uint64              `protobuf:"varint,11,opt,name=playerCount,proto3" json:"playerCount,omitempty"`
+	ReactorList     []*Reactor          `protobuf:"bytes,12,rep,name=reactorList,proto3" json:"reactorList,omitempty"`
+	ReactorCount    uint64              `protobuf:"varint,13,opt,name=reactorCount,proto3" json:"reactorCount,omitempty"`
+	StructList      []*Struct           `protobuf:"bytes,14,rep,name=structList,proto3" json:"structList,omitempty"`
+	StructCount     uint64              `protobuf:"varint,15,opt,name=structCount,proto3" json:"structCount,omitempty"`
+	SubstationList  []*Substation       `protobuf:"bytes,16,rep,name=substationList,proto3" json:"substationList,omitempty"`
+	SubstationCount uint64              `protobuf:"varint,17,opt,name=substationCount,proto3" json:"substationCount,omitempty"`
+	PermissionList  []*PermissionRecord `protobuf:"bytes,18,rep,name=permissionList,proto3" json:"permissionList,omitempty"`
+	GridList        []*GridRecord       `protobuf:"bytes,19,rep,name=gridList,proto3" json:"gridList,omitempty"`
+	AddressList     []*AddressRecord    `protobuf:"bytes,20,rep,name=addressList,proto3" json:"addressList,omitempty"`
 }
 
 func (x *GenesisState) Reset() {
@@ -2370,25 +2411,11 @@ func (x *GenesisState) GetAllocationList() []*Allocation {
 	return nil
 }
 
-func (x *GenesisState) GetAllocationCount() uint64 {
-	if x != nil {
-		return x.AllocationCount
-	}
-	return 0
-}
-
 func (x *GenesisState) GetInfusionList() []*Infusion {
 	if x != nil {
 		return x.InfusionList
 	}
 	return nil
-}
-
-func (x *GenesisState) GetInfusionCount() uint64 {
-	if x != nil {
-		return x.InfusionCount
-	}
-	return 0
 }
 
 func (x *GenesisState) GetGuildList() []*Guild {
@@ -2489,6 +2516,13 @@ func (x *GenesisState) GetGridList() []*GridRecord {
 	return nil
 }
 
+func (x *GenesisState) GetAddressList() []*AddressRecord {
+	if x != nil {
+		return x.AddressList
+	}
+	return nil
+}
+
 var File_structs_structs_genesis_proto protoreflect.FileDescriptor
 
 var file_structs_structs_genesis_proto_rawDesc = []byte{
@@ -2499,105 +2533,106 @@ var file_structs_structs_genesis_proto_rawDesc = []byte{
 	0x6f, 0x74, 0x6f, 0x1a, 0x14, 0x67, 0x6f, 0x67, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67,
 	0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63,
 	0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70, 0x61, 0x72, 0x61, 0x6d,
-	0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1a, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x72, 0x69, 0x64, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1b, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x1a, 0x1e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2f, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x1a, 0x1a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2f, 0x6b, 0x65, 0x79, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
-	0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f,
-	0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
-	0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1d, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x72, 0x65,
-	0x61, 0x63, 0x74, 0x6f, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x75, 0x62, 0x73, 0x74,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xa1, 0x08, 0x0a, 0x0c,
-	0x47, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x3a, 0x0a, 0x06,
-	0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50,
-	0x61, 0x72, 0x61, 0x6d, 0x73, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01,
-	0x52, 0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x17, 0x0a, 0x07, 0x70, 0x6f, 0x72, 0x74,
-	0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x70, 0x6f, 0x72, 0x74, 0x49,
-	0x64, 0x12, 0x49, 0x0a, 0x0e, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4c,
-	0x69, 0x73, 0x74, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x41, 0x6c, 0x6c, 0x6f,
-	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0e, 0x61, 0x6c,
-	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x28, 0x0a, 0x0f,
-	0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x18,
-	0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x43, 0x0a, 0x0c, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69,
-	0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x18, 0x05, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x49,
-	0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0c, 0x69,
-	0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x24, 0x0a, 0x0d, 0x69,
-	0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x06, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x0d, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x75, 0x6e,
-	0x74, 0x12, 0x3a, 0x0a, 0x09, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x4c, 0x69, 0x73, 0x74, 0x18, 0x07,
-	0x20, 0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x04, 0xc8, 0xde,
-	0x1f, 0x00, 0x52, 0x09, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x1e, 0x0a,
-	0x0a, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x08, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x0a, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x3d, 0x0a,
-	0x0a, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x4c, 0x69, 0x73, 0x74, 0x18, 0x09, 0x20, 0x03, 0x28,
+	0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1d, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x72, 0x69, 0x64, 0x2e, 0x70,
+	0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1b, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x1a, 0x1e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2f, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x1a, 0x1a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2f, 0x6b, 0x65, 0x79, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70,
+	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a,
+	0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2f, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x70,
+	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1d, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x72, 0x65, 0x61,
+	0x63, 0x74, 0x6f, 0x72, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1c, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x93, 0x08, 0x0a, 0x0c, 0x47,
+	0x65, 0x6e, 0x65, 0x73, 0x69, 0x73, 0x53, 0x74, 0x61, 0x74, 0x65, 0x12, 0x3a, 0x0a, 0x06, 0x70,
+	0x61, 0x72, 0x61, 0x6d, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x61,
+	0x72, 0x61, 0x6d, 0x73, 0x42, 0x09, 0xc8, 0xde, 0x1f, 0x00, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52,
+	0x06, 0x70, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x17, 0x0a, 0x07, 0x70, 0x6f, 0x72, 0x74, 0x5f,
+	0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x70, 0x6f, 0x72, 0x74, 0x49, 0x64,
+	0x12, 0x49, 0x0a, 0x0e, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4c, 0x69,
+	0x73, 0x74, 0x18, 0x03, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x41, 0x6c, 0x6c, 0x6f, 0x63,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0e, 0x61, 0x6c, 0x6c,
+	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x43, 0x0a, 0x0c, 0x69,
+	0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x18, 0x04, 0x20, 0x03, 0x28,
+	0x0b, 0x32, 0x19, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde,
+	0x1f, 0x00, 0x52, 0x0c, 0x69, 0x6e, 0x66, 0x75, 0x73, 0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74,
+	0x12, 0x3a, 0x0a, 0x09, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x4c, 0x69, 0x73, 0x74, 0x18, 0x06, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x04, 0xc8, 0xde, 0x1f,
+	0x00, 0x52, 0x09, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x1e, 0x0a, 0x0a,
+	0x67, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x0a, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x3d, 0x0a, 0x0a,
+	0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x4c, 0x69, 0x73, 0x74, 0x18, 0x08, 0x20, 0x03, 0x28, 0x0b,
+	0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52,
+	0x0a, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x20, 0x0a, 0x0b, 0x70,
+	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x09, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x0b, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x3d, 0x0a,
+	0x0a, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4c, 0x69, 0x73, 0x74, 0x18, 0x0a, 0x20, 0x03, 0x28,
 	0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00,
-	0x52, 0x0a, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x20, 0x0a, 0x0b,
-	0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x0a, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x0b, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x3d,
-	0x0a, 0x0a, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4c, 0x69, 0x73, 0x74, 0x18, 0x0b, 0x20, 0x03,
-	0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x42, 0x04, 0xc8, 0xde, 0x1f,
-	0x00, 0x52, 0x0a, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x20, 0x0a,
-	0x0b, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x0c, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x0b, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12,
-	0x40, 0x0a, 0x0b, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x4c, 0x69, 0x73, 0x74, 0x18, 0x0d,
-	0x20, 0x03, 0x28, 0x0b, 0x32, 0x18, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x42, 0x04,
-	0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0b, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x4c, 0x69, 0x73,
-	0x74, 0x12, 0x22, 0x0a, 0x0c, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x43, 0x6f, 0x75, 0x6e,
-	0x74, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0c, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72,
-	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x3d, 0x0a, 0x0a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c,
-	0x69, 0x73, 0x74, 0x18, 0x0f, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x4c, 0x69, 0x73, 0x74, 0x12, 0x20, 0x0a, 0x0b, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x43, 0x6f,
-	0x75, 0x6e, 0x74, 0x18, 0x10, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x49, 0x0a, 0x0e, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x18, 0x11, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f,
-	0x00, 0x52, 0x0e, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73,
-	0x74, 0x12, 0x28, 0x0a, 0x0f, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43,
-	0x6f, 0x75, 0x6e, 0x74, 0x18, 0x12, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x73, 0x75, 0x62, 0x73,
-	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x49, 0x0a, 0x0e, 0x70,
-	0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x18, 0x13, 0x20,
-	0x03, 0x28, 0x0b, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e,
-	0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x52, 0x0e, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69,
-	0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x37, 0x0a, 0x08, 0x67, 0x72, 0x69, 0x64, 0x4c, 0x69,
-	0x73, 0x74, 0x18, 0x14, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x47, 0x72, 0x69, 0x64, 0x52,
-	0x65, 0x63, 0x6f, 0x72, 0x64, 0x52, 0x08, 0x67, 0x72, 0x69, 0x64, 0x4c, 0x69, 0x73, 0x74, 0x42,
-	0xa2, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0c, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69, 0x73,
-	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73,
-	0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa,
-	0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
-	0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00,
+	0x52, 0x0a, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x20, 0x0a, 0x0b,
+	0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x0b, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x0b, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x40,
+	0x0a, 0x0b, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x4c, 0x69, 0x73, 0x74, 0x18, 0x0c, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x18, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x52, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x42, 0x04, 0xc8,
+	0xde, 0x1f, 0x00, 0x52, 0x0b, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x4c, 0x69, 0x73, 0x74,
+	0x12, 0x22, 0x0a, 0x0c, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74,
+	0x18, 0x0d, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0c, 0x72, 0x65, 0x61, 0x63, 0x74, 0x6f, 0x72, 0x43,
+	0x6f, 0x75, 0x6e, 0x74, 0x12, 0x3d, 0x0a, 0x0a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x69,
+	0x73, 0x74, 0x18, 0x0e, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x0a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c,
+	0x69, 0x73, 0x74, 0x12, 0x20, 0x0a, 0x0b, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x43, 0x6f, 0x75,
+	0x6e, 0x74, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x49, 0x0a, 0x0e, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x18, 0x10, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00,
+	0x52, 0x0e, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74,
+	0x12, 0x28, 0x0a, 0x0f, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f,
+	0x75, 0x6e, 0x74, 0x18, 0x11, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x73, 0x75, 0x62, 0x73, 0x74,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x49, 0x0a, 0x0e, 0x70, 0x65,
+	0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x18, 0x12, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x52,
+	0x65, 0x63, 0x6f, 0x72, 0x64, 0x52, 0x0e, 0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f,
+	0x6e, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x37, 0x0a, 0x08, 0x67, 0x72, 0x69, 0x64, 0x4c, 0x69, 0x73,
+	0x74, 0x18, 0x13, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x47, 0x72, 0x69, 0x64, 0x52, 0x65,
+	0x63, 0x6f, 0x72, 0x64, 0x52, 0x08, 0x67, 0x72, 0x69, 0x64, 0x4c, 0x69, 0x73, 0x74, 0x12, 0x40,
+	0x0a, 0x0b, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x4c, 0x69, 0x73, 0x74, 0x18, 0x14, 0x20,
+	0x03, 0x28, 0x0b, 0x32, 0x1e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x63,
+	0x6f, 0x72, 0x64, 0x52, 0x0b, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x4c, 0x69, 0x73, 0x74,
+	0x42, 0xa2, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0c, 0x47, 0x65, 0x6e, 0x65, 0x73, 0x69,
+	0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73,
+	0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58,
+	0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61,
+	0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -2626,6 +2661,7 @@ var file_structs_structs_genesis_proto_goTypes = []interface{}{
 	(*Substation)(nil),       // 9: structs.structs.Substation
 	(*PermissionRecord)(nil), // 10: structs.structs.PermissionRecord
 	(*GridRecord)(nil),       // 11: structs.structs.GridRecord
+	(*AddressRecord)(nil),    // 12: structs.structs.AddressRecord
 }
 var file_structs_structs_genesis_proto_depIdxs = []int32{
 	1,  // 0: structs.structs.GenesisState.params:type_name -> structs.structs.Params
@@ -2639,11 +2675,12 @@ var file_structs_structs_genesis_proto_depIdxs = []int32{
 	9,  // 8: structs.structs.GenesisState.substationList:type_name -> structs.structs.Substation
 	10, // 9: structs.structs.GenesisState.permissionList:type_name -> structs.structs.PermissionRecord
 	11, // 10: structs.structs.GenesisState.gridList:type_name -> structs.structs.GridRecord
-	11, // [11:11] is the sub-list for method output_type
-	11, // [11:11] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	12, // 11: structs.structs.GenesisState.addressList:type_name -> structs.structs.AddressRecord
+	12, // [12:12] is the sub-list for method output_type
+	12, // [12:12] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_structs_structs_genesis_proto_init() }
@@ -2652,6 +2689,7 @@ func file_structs_structs_genesis_proto_init() {
 		return
 	}
 	file_structs_structs_params_proto_init()
+	file_structs_structs_address_proto_init()
 	file_structs_structs_allocation_proto_init()
 	file_structs_structs_grid_proto_init()
 	file_structs_structs_guild_proto_init()

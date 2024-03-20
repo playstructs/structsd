@@ -7,6 +7,7 @@ import "amino/amino.proto";
 import "gogoproto/gogo.proto";
 import "structs/structs/params.proto";
 
+import "structs/structs/address.proto";
 import "structs/structs/allocation.proto";
 import "structs/structs/grid.proto";
 import "structs/structs/guild.proto";
@@ -29,30 +30,31 @@ message GenesisState {
   string port_id = 2;
 
   repeated  Allocation allocationList   =  3 [(gogoproto.nullable) = false];
-            uint64     allocationCount  =  4;
 
-  repeated  Infusion   infusionList     =  5 [(gogoproto.nullable) = false];
-            uint64     infusionCount    =  6;
+  repeated  Infusion   infusionList     =  4 [(gogoproto.nullable) = false];
 
-  repeated  Guild      guildList        = 7 [(gogoproto.nullable) = false];
-            uint64     guildCount       = 8;
+  repeated  Guild      guildList        = 6 [(gogoproto.nullable) = false];
+            uint64     guildCount       = 7;
 
-  repeated  Planet     planetList       = 9 [(gogoproto.nullable) = false];
-            uint64     planetCount      = 10;
+  repeated  Planet     planetList       = 8 [(gogoproto.nullable) = false];
+            uint64     planetCount      = 9;
 
-  repeated  Player     playerList       = 11 [(gogoproto.nullable) = false];
-            uint64     playerCount      = 12;
+  repeated  Player     playerList       = 10 [(gogoproto.nullable) = false];
+            uint64     playerCount      = 11;
 
-  repeated  Reactor    reactorList      =  13 [(gogoproto.nullable) = false];
-            uint64     reactorCount     =  14;
+  repeated  Reactor    reactorList      =  12 [(gogoproto.nullable) = false];
+            uint64     reactorCount     =  13;
 
-  repeated  Struct     structList       =  15 [(gogoproto.nullable) = false];
-            uint64     structCount      =  16;
+  repeated  Struct     structList       =  14 [(gogoproto.nullable) = false];
+            uint64     structCount      =  15;
 
-  repeated  Substation substationList   =  17 [(gogoproto.nullable) = false];
-            uint64     substationCount  =  18;
+  repeated  Substation substationList   =  16 [(gogoproto.nullable) = false];
+            uint64     substationCount  =  17;
 
-  repeated  PermissionRecord  permissionList  = 19;
-  repeated  GridRecord        gridList        = 20;
+  repeated  PermissionRecord    permissionList  = 18;
+  repeated  GridRecord          gridList        = 19;
+
+  repeated  AddressRecord       addressList     = 20;
+
 }
 

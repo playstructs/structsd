@@ -207,3 +207,18 @@ func (k Keeper) UpdateGridConnectionCapacity(ctx context.Context, objectId strin
         k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, objectId), 0)
     }
 }
+
+
+// GetAllGridExport returns all grid attributes
+func (k Keeper) GetAllGridExport(ctx context.Context) (list []*types.GridRecord) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridAttributeKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		list = append(list, &types.GridRecord{AttributeId: string(iterator.Key()), Value: binary.BigEndian.Uint64(iterator.Value())})
+	}
+
+	return
+}

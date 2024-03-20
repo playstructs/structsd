@@ -21,3 +21,9 @@ message Guild {
   string primaryReactorId    = 9;
   string entrySubstationId   = 10;
 }
+
+message GuildAssociation {
+  string guildId = 1;
+  string playerId = 2;
+  registrationStatus registrationStatus = 3;
+}
