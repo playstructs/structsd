@@ -19,17 +19,32 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     Short:          "Show the details of a specific Allocation",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
                 },
+                {
+                    RpcMethod:      "AllocationAll",
+                    Use:            "allocation-all",
+                    Short:          "Returns all Allocations",
+                },
 				{
                     RpcMethod:      "Guild",
                     Use:            "guild [guild id]",
                     Short:          "Show the details of a specific Allocation",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
                 },
+                {
+                    RpcMethod:      "GuildAll",
+                    Use:            "guild-all",
+                    Short:          "Returns all Guilds",
+                },
 				{
                     RpcMethod:      "Infusion",
                     Use:            "infusion [destination id] [address]",
                     Short:          "Show the details of a specific Infusion",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "destinationId"},{ProtoField: "address"}},
+                },
+                {
+                    RpcMethod:      "InfusionAll",
+                    Use:            "infusion-all",
+                    Short:          "Returns all Infusions",
                 },
 				{
 					RpcMethod: "Params",
@@ -43,10 +58,20 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
                 },
                 {
+                    RpcMethod:      "PlanetAll",
+                    Use:            "planet-all",
+                    Short:          "Returns all Planets",
+                },
+                {
                     RpcMethod:      "Player",
                     Use:            "player [player id]",
                     Short:          "Show the details of a specific Player",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
+                },
+                {
+                    RpcMethod:      "PlayerAll",
+                    Use:            "player-all",
+                    Short:          "Returns all Players",
                 },
 				{
                     RpcMethod:      "Reactor",
@@ -54,11 +79,21 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     Short:          "Show the details of a specific Reactor",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
                 },
+                {
+                    RpcMethod:      "ReactorAll",
+                    Use:            "reactor-all",
+                    Short:          "Returns all Reactors",
+                },
 				{
                     RpcMethod:      "Struct",
                     Use:            "struct [struct id]",
                     Short:          "Show the details of a specific Struct",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
+                },
+                {
+                    RpcMethod:      "StructAll",
+                    Use:            "struct-all",
+                    Short:          "Returns all Structs",
                 },
 				{
                     RpcMethod:      "Substation",
@@ -66,7 +101,11 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     Short:          "Show the details of a specific Substation",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
                 },
-
+                {
+                    RpcMethod:      "SubstationAll",
+                    Use:            "substation-all",
+                    Short:          "Returns all Substations",
+                },
 				// this line is used by ignite scaffolding # autocli/query
 			},
 		},
