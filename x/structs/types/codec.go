@@ -30,6 +30,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateOwnerId{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildApproveRegister{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildJoin{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildJoinProxy{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPermissionGrantOnObject{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPermissionGrantOnAddress{},)
@@ -38,7 +39,6 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlanetExplore{},)
 
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerCreateProxy{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerUpdatePrimaryAddress{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructActivate{},)

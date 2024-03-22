@@ -33,12 +33,12 @@ const (
 	Msg_GuildUpdateJoinInfusionMinimumBypassByRequest_FullMethodName = "/structs.structs.Msg/GuildUpdateJoinInfusionMinimumBypassByRequest"
 	Msg_GuildApproveRegister_FullMethodName                          = "/structs.structs.Msg/GuildApproveRegister"
 	Msg_GuildJoin_FullMethodName                                     = "/structs.structs.Msg/GuildJoin"
+	Msg_GuildJoinProxy_FullMethodName                                = "/structs.structs.Msg/GuildJoinProxy"
 	Msg_PermissionGrantOnAddress_FullMethodName                      = "/structs.structs.Msg/PermissionGrantOnAddress"
 	Msg_PermissionGrantOnObject_FullMethodName                       = "/structs.structs.Msg/PermissionGrantOnObject"
 	Msg_PermissionRevokeOnAddress_FullMethodName                     = "/structs.structs.Msg/PermissionRevokeOnAddress"
 	Msg_PermissionRevokeOnObject_FullMethodName                      = "/structs.structs.Msg/PermissionRevokeOnObject"
 	Msg_PlanetExplore_FullMethodName                                 = "/structs.structs.Msg/PlanetExplore"
-	Msg_PlayerCreateProxy_FullMethodName                             = "/structs.structs.Msg/PlayerCreateProxy"
 	Msg_PlayerUpdatePrimaryAddress_FullMethodName                    = "/structs.structs.Msg/PlayerUpdatePrimaryAddress"
 	Msg_StructActivate_FullMethodName                                = "/structs.structs.Msg/StructActivate"
 	Msg_StructBuildInitiate_FullMethodName                           = "/structs.structs.Msg/StructBuildInitiate"
@@ -80,12 +80,12 @@ type MsgClient interface {
 	GuildUpdateJoinInfusionMinimumBypassByRequest(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimumBypassByRequest, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildApproveRegister(ctx context.Context, in *MsgGuildApproveRegister, opts ...grpc.CallOption) (*MsgGuildApproveRegisterResponse, error)
 	GuildJoin(ctx context.Context, in *MsgGuildJoin, opts ...grpc.CallOption) (*MsgGuildJoinResponse, error)
+	GuildJoinProxy(ctx context.Context, in *MsgGuildJoinProxy, opts ...grpc.CallOption) (*MsgGuildJoinProxyResponse, error)
 	PermissionGrantOnAddress(ctx context.Context, in *MsgPermissionGrantOnAddress, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
 	PermissionGrantOnObject(ctx context.Context, in *MsgPermissionGrantOnObject, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
 	PermissionRevokeOnAddress(ctx context.Context, in *MsgPermissionRevokeOnAddress, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
 	PermissionRevokeOnObject(ctx context.Context, in *MsgPermissionRevokeOnObject, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
 	PlanetExplore(ctx context.Context, in *MsgPlanetExplore, opts ...grpc.CallOption) (*MsgPlanetExploreResponse, error)
-	PlayerCreateProxy(ctx context.Context, in *MsgPlayerCreateProxy, opts ...grpc.CallOption) (*MsgPlayerCreateProxyResponse, error)
 	PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlayerUpdatePrimaryAddress, opts ...grpc.CallOption) (*MsgPlayerUpdatePrimaryAddressResponse, error)
 	StructActivate(ctx context.Context, in *MsgStructActivate, opts ...grpc.CallOption) (*MsgStructActivateResponse, error)
 	StructBuildInitiate(ctx context.Context, in *MsgStructBuildInitiate, opts ...grpc.CallOption) (*MsgStructBuildInitiateResponse, error)
@@ -242,6 +242,15 @@ func (c *msgClient) GuildJoin(ctx context.Context, in *MsgGuildJoin, opts ...grp
 	return out, nil
 }
 
+func (c *msgClient) GuildJoinProxy(ctx context.Context, in *MsgGuildJoinProxy, opts ...grpc.CallOption) (*MsgGuildJoinProxyResponse, error) {
+	out := new(MsgGuildJoinProxyResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildJoinProxy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) PermissionGrantOnAddress(ctx context.Context, in *MsgPermissionGrantOnAddress, opts ...grpc.CallOption) (*MsgPermissionResponse, error) {
 	out := new(MsgPermissionResponse)
 	err := c.cc.Invoke(ctx, Msg_PermissionGrantOnAddress_FullMethodName, in, out, opts...)
@@ -281,15 +290,6 @@ func (c *msgClient) PermissionRevokeOnObject(ctx context.Context, in *MsgPermiss
 func (c *msgClient) PlanetExplore(ctx context.Context, in *MsgPlanetExplore, opts ...grpc.CallOption) (*MsgPlanetExploreResponse, error) {
 	out := new(MsgPlanetExploreResponse)
 	err := c.cc.Invoke(ctx, Msg_PlanetExplore_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) PlayerCreateProxy(ctx context.Context, in *MsgPlayerCreateProxy, opts ...grpc.CallOption) (*MsgPlayerCreateProxyResponse, error) {
-	out := new(MsgPlayerCreateProxyResponse)
-	err := c.cc.Invoke(ctx, Msg_PlayerCreateProxy_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -487,12 +487,12 @@ type MsgServer interface {
 	GuildUpdateJoinInfusionMinimumBypassByRequest(context.Context, *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) (*MsgGuildUpdateResponse, error)
 	GuildApproveRegister(context.Context, *MsgGuildApproveRegister) (*MsgGuildApproveRegisterResponse, error)
 	GuildJoin(context.Context, *MsgGuildJoin) (*MsgGuildJoinResponse, error)
+	GuildJoinProxy(context.Context, *MsgGuildJoinProxy) (*MsgGuildJoinProxyResponse, error)
 	PermissionGrantOnAddress(context.Context, *MsgPermissionGrantOnAddress) (*MsgPermissionResponse, error)
 	PermissionGrantOnObject(context.Context, *MsgPermissionGrantOnObject) (*MsgPermissionResponse, error)
 	PermissionRevokeOnAddress(context.Context, *MsgPermissionRevokeOnAddress) (*MsgPermissionResponse, error)
 	PermissionRevokeOnObject(context.Context, *MsgPermissionRevokeOnObject) (*MsgPermissionResponse, error)
 	PlanetExplore(context.Context, *MsgPlanetExplore) (*MsgPlanetExploreResponse, error)
-	PlayerCreateProxy(context.Context, *MsgPlayerCreateProxy) (*MsgPlayerCreateProxyResponse, error)
 	PlayerUpdatePrimaryAddress(context.Context, *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error)
 	StructActivate(context.Context, *MsgStructActivate) (*MsgStructActivateResponse, error)
 	StructBuildInitiate(context.Context, *MsgStructBuildInitiate) (*MsgStructBuildInitiateResponse, error)
@@ -562,6 +562,9 @@ func (UnimplementedMsgServer) GuildApproveRegister(context.Context, *MsgGuildApp
 func (UnimplementedMsgServer) GuildJoin(context.Context, *MsgGuildJoin) (*MsgGuildJoinResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildJoin not implemented")
 }
+func (UnimplementedMsgServer) GuildJoinProxy(context.Context, *MsgGuildJoinProxy) (*MsgGuildJoinProxyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildJoinProxy not implemented")
+}
 func (UnimplementedMsgServer) PermissionGrantOnAddress(context.Context, *MsgPermissionGrantOnAddress) (*MsgPermissionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PermissionGrantOnAddress not implemented")
 }
@@ -576,9 +579,6 @@ func (UnimplementedMsgServer) PermissionRevokeOnObject(context.Context, *MsgPerm
 }
 func (UnimplementedMsgServer) PlanetExplore(context.Context, *MsgPlanetExplore) (*MsgPlanetExploreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlanetExplore not implemented")
-}
-func (UnimplementedMsgServer) PlayerCreateProxy(context.Context, *MsgPlayerCreateProxy) (*MsgPlayerCreateProxyResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PlayerCreateProxy not implemented")
 }
 func (UnimplementedMsgServer) PlayerUpdatePrimaryAddress(context.Context, *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlayerUpdatePrimaryAddress not implemented")
@@ -902,6 +902,24 @@ func _Msg_GuildJoin_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_GuildJoinProxy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildJoinProxy)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildJoinProxy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildJoinProxy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildJoinProxy(ctx, req.(*MsgGuildJoinProxy))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_PermissionGrantOnAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgPermissionGrantOnAddress)
 	if err := dec(in); err != nil {
@@ -988,24 +1006,6 @@ func _Msg_PlanetExplore_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).PlanetExplore(ctx, req.(*MsgPlanetExplore))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_PlayerCreateProxy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgPlayerCreateProxy)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).PlayerCreateProxy(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_PlayerCreateProxy_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).PlayerCreateProxy(ctx, req.(*MsgPlayerCreateProxy))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1416,6 +1416,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_GuildJoin_Handler,
 		},
 		{
+			MethodName: "GuildJoinProxy",
+			Handler:    _Msg_GuildJoinProxy_Handler,
+		},
+		{
 			MethodName: "PermissionGrantOnAddress",
 			Handler:    _Msg_PermissionGrantOnAddress_Handler,
 		},
@@ -1434,10 +1438,6 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PlanetExplore",
 			Handler:    _Msg_PlanetExplore_Handler,
-		},
-		{
-			MethodName: "PlayerCreateProxy",
-			Handler:    _Msg_PlayerCreateProxy_Handler,
 		},
 		{
 			MethodName: "PlayerUpdatePrimaryAddress",

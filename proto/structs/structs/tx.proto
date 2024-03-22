@@ -37,6 +37,7 @@ service Msg {
   rpc GuildUpdateJoinInfusionMinimumBypassByRequest (MsgGuildUpdateJoinInfusionMinimumBypassByRequest ) returns (MsgGuildUpdateResponse );
   rpc GuildApproveRegister                          (MsgGuildApproveRegister                          ) returns (MsgGuildApproveRegisterResponse );
   rpc GuildJoin                                     (MsgGuildJoin                                     ) returns (MsgGuildJoinResponse );
+  rpc GuildJoinProxy                                (MsgGuildJoinProxy                                ) returns (MsgGuildJoinProxyResponse );
 
   rpc PermissionGrantOnAddress       (MsgPermissionGrantOnAddress      ) returns (MsgPermissionResponse);
   rpc PermissionGrantOnObject        (MsgPermissionGrantOnObject       ) returns (MsgPermissionResponse);
@@ -45,7 +46,6 @@ service Msg {
 
   rpc PlanetExplore                  (MsgPlanetExplore                 ) returns (MsgPlanetExploreResponse                 );
 
-  rpc PlayerCreateProxy              (MsgPlayerCreateProxy             ) returns (MsgPlayerCreateProxyResponse );
   rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse    );
 
   rpc StructActivate                 (MsgStructActivate                ) returns (MsgStructActivateResponse                );
@@ -224,6 +224,21 @@ message MsgGuildJoin {
 message MsgGuildJoinResponse {}
 
 
+message MsgGuildJoinProxy {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator          = 1;
+  string address          = 2;
+  string substationId     = 3;
+
+  bytes proofPubKey       = 4;
+  bytes proofSignature    = 5;
+}
+
+message MsgGuildJoinProxyResponse {}
+
+
+
 message MsgPermissionGrantOnObject {
   option (cosmos.msg.v1.signer) = "creator";
 
@@ -268,18 +283,6 @@ message MsgPlanetExplore {
 message MsgPlanetExploreResponse {
   Planet planet = 1 [(gogoproto.nullable) = false];
 }
-
-
-message MsgPlayerCreateProxy {
-  option (cosmos.msg.v1.signer) = "creator";
-
-  string creator          = 1;
-  string address          = 2;
-  string substationId     = 3;
-}
-
-message MsgPlayerCreateProxyResponse {}
-
 
 message MsgPlayerUpdatePrimaryAddress {
   option (cosmos.msg.v1.signer) = "creator";

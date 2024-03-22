@@ -215,7 +215,7 @@ func (k Keeper) GetAllSubstation(ctx context.Context, full bool) (list []types.S
 
 
 
-func (k Keeper) SubstationConnectPlayer(ctx context.Context, substation types.Substation, player types.Player) (error) {
+func (k Keeper) SubstationConnectPlayer(ctx context.Context, substation types.Substation, player types.Player) (types.Player, error) {
 
     // If the player is already on a substation then disconnect them from it first
     if (player.SubstationId != "") {
@@ -235,11 +235,11 @@ func (k Keeper) SubstationConnectPlayer(ctx context.Context, substation types.Su
     // Update Connection Capacity
     k.UpdateGridConnectionCapacity(ctx, player.SubstationId)
 
-    return nil
+    return player, nil
 
 }
 
-func (k Keeper) SubstationDisconnectPlayer(ctx context.Context, player types.Player) (error) {
+func (k Keeper) SubstationDisconnectPlayer(ctx context.Context, player types.Player) (types.Player, error) {
 
     // If the player is already on a substation then disconnect them from it first
     if (player.SubstationId != "") {
@@ -253,5 +253,5 @@ func (k Keeper) SubstationDisconnectPlayer(ctx context.Context, player types.Pla
     // Commit the player changes
     k.SetPlayer(ctx, player)
 
-    return nil
+    return player, nil
 }

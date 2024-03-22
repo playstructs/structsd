@@ -160,6 +160,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"}},
                  },
                  {
+                      RpcMethod:      "GuildJoinProxy",
+                      Use:            "guild-join-proxy [address]",
+                      Short:          "Add an account a guild and connect them with some power",
+                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "address"}},
+                 },
+                 {
                      RpcMethod:      "GuildUpdateEndpoint",
                      Use:            "guild-update-endpoint [guild id] [endpoint]",
                      Short:          "Update the endpoint Guild setting",
@@ -226,12 +232,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      Use:            "planet-explore",
                      Short:          "Explore a new planet",
                  },
-                 {
-                      RpcMethod:      "PlayerCreateProxy",
-                      Use:            "player-create-proxy [address]",
-                      Short:          "Add an unknown account to the system and connect them with some power",
-                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "address"}},
-                  },
                  {
                      RpcMethod:      "PlayerUpdatePrimaryAddress",
                      Use:            "player-update-primary-address [address]",
