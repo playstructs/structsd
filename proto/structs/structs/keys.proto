@@ -51,6 +51,7 @@ enum registrationStatus {
     proposed  = 0;
     approved  = 1;
     denied    = 2;
+    revoked   = 3;
 }
 
 

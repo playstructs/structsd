@@ -39,6 +39,14 @@ func (k Keeper) SetPlayerIndexForAddress(ctx context.Context, address string, pl
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAddressAssociation{&types.AddressAssociation{Address: address, PlayerIndex: playerIndex, RegistrationStatus: types.RegistrationStatus_approved}})
 }
 
+func (k Keeper) RevokePlayerIndexForAddress(ctx context.Context, address string, playerIndex uint64)  {
+    store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AddressPlayerKey))
+	store.Delete(types.KeyPrefix(address))
+
+    ctxSDK := sdk.UnwrapSDKContext(ctx)
+	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAddressAssociation{&types.AddressAssociation{Address: address, PlayerIndex: playerIndex, RegistrationStatus: types.RegistrationStatus_revoked}})
+}
+
 // GetAllAddressExport returns all player addresses
 func (k Keeper) GetAllAddressExport(ctx context.Context) (list []*types.AddressRecord) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AddressPlayerKey))

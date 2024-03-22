@@ -22,11 +22,13 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
 
 
     if (playerFound) {
-        // TODO Add address proof signature verification
         playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Address)
         if (playerIndex == player.Index) {
             addressClearPermissionId := GetAddressPermissionIDBytes(msg.Address)
             k.PermissionClearAll(ctx, addressClearPermissionId)
+
+            k.RevokePlayerIndexForAddress(ctx, msg.Address, playerIndex)
+
         }
     }
 

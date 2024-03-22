@@ -177,6 +177,7 @@ var RegistrationStatus_enum = map[string]RegistrationStatus {
 	"proposed":  RegistrationStatus_proposed,
 	"approved":  RegistrationStatus_approved,
 	"denied":    RegistrationStatus_denied,
+    "revoked":   RegistrationStatus_revoked,
 }
 
 
