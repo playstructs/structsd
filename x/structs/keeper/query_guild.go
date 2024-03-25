@@ -58,3 +58,34 @@ func (k Keeper) Guild(goCtx context.Context, req *types.QueryGetGuildRequest) (*
 
 	return &types.QueryGetGuildResponse{Guild: guild}, nil
 }
+
+
+
+func (k Keeper) GuildAssociationAll(goCtx context.Context, req *types.QueryAllGuildAssociationRequest) (*types.QueryAllGuildAssociationResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+    var gridAssociation []*types.GridAssociation
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	gridAssociationStore := prefix.NewStore(store, types.KeyPrefix(types.GuildRegistrationKey))
+	pageRes, err = query.Paginate(gridAssociationStore, req.Pagination, func(key []byte, value []byte) error {
+		var address types.AddressAssociation
+
+        gridAssociation.GuildId = string(key)
+        gridAssociation.Player = binary.BigEndian.Uint64(value)
+        gridAssociation.RegistrationStatus = types.RegistrationStatus_proposed
+
+        addresses = append(addresses, &address)
+
+        return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryAllGuildAssociationResponse{GridAssociation: addresses, Pagination: pageRes}, nil
+}
