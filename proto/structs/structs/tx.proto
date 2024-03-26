@@ -9,6 +9,7 @@ import "gogoproto/gogo.proto";
 import "structs/structs/params.proto";
 
 import "structs/structs/keys.proto";
+import "structs/structs/guild.proto";
 import "structs/structs/planet.proto";
 import "structs/structs/struct.proto";
 
@@ -35,9 +36,19 @@ service Msg {
   rpc GuildUpdateJoinInfusionMinimum                (MsgGuildUpdateJoinInfusionMinimum                ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateJoinInfusionMinimumBypassByInvite  (MsgGuildUpdateJoinInfusionMinimumBypassByInvite  ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateJoinInfusionMinimumBypassByRequest (MsgGuildUpdateJoinInfusionMinimumBypassByRequest ) returns (MsgGuildUpdateResponse );
-  rpc GuildApproveRegister                          (MsgGuildApproveRegister                          ) returns (MsgGuildApproveRegisterResponse );
-  rpc GuildJoin                                     (MsgGuildJoin                                     ) returns (MsgGuildJoinResponse );
-  rpc GuildJoinProxy                                (MsgGuildJoinProxy                                ) returns (MsgGuildJoinProxyResponse );
+
+  rpc GuildMembershipInvite           (MsgGuildMembershipInvite        ) returns (MsgGuildMembershipResponse );
+  rpc GuildMembershipInviteApprove    (MsgGuildMembershipInviteApprove ) returns (MsgGuildMembershipResponse );
+  rpc GuildMembershipInviteDeny       (MsgGuildMembershipInviteDeny    ) returns (MsgGuildMembershipResponse );
+  rpc GuildMembershipInviteRevoke     (MsgGuildMembershipInviteRevoke  ) returns (MsgGuildMembershipResponse );
+  rpc GuildMembershipJoin             (MsgGuildMembershipJoin          ) returns (MsgGuildMembershipResponse );
+  rpc GuildMembershipJoinProxy        (MsgGuildMembershipJoinProxy     ) returns (MsgGuildMembershipResponse );
+  rpc GuildMembershipKick             (MsgGuildMembershipKick          ) returns (MsgGuildMembershipResponse );
+  rpc GuildMembershipRequest          (MsgGuildMembershipRequest       ) returns (MsgGuildMembershipResponse );
+  rpc GuildMembershipRequestApprove   (MsgGuildMembershipRequestApprove) returns (MsgGuildMembershipResponse );
+  rpc GuildMembershipRequestDeny      (MsgGuildMembershipRequestDeny   ) returns (MsgGuildMembershipResponse );
+  rpc GuildMembershipRequestRevoke    (MsgGuildMembershipRequestRevoke ) returns (MsgGuildMembershipResponse );
+
 
   rpc PermissionGrantOnAddress       (MsgPermissionGrantOnAddress      ) returns (MsgPermissionResponse);
   rpc PermissionGrantOnObject        (MsgPermissionGrantOnObject       ) returns (MsgPermissionResponse);
@@ -138,19 +149,6 @@ message MsgAllocationCreateResponse {
   string allocationId = 1;
 }
 
-
-message MsgGuildApproveRegister {
-  option (cosmos.msg.v1.signer) = "creator";
-
-  string creator     = 1;
-  bool   approve     = 2;
-  string guildId     = 3;
-  string playerId    = 4;
-}
-
-message MsgGuildApproveRegisterResponse {}
-
-
 message MsgGuildCreate {
   option (cosmos.msg.v1.signer) = "creator";
 
@@ -214,17 +212,53 @@ message MsgGuildUpdateJoinInfusionMinimumBypassByInvite {
 message MsgGuildUpdateResponse{}
 
 
-message MsgGuildJoin {
+message MsgGuildMembershipInvite {
   option (cosmos.msg.v1.signer) = "creator";
 
-  string creator = 1;
-  string guildId = 2;
+  string creator      = 1;
+  string guildId      = 2;
+  string playerId     = 3;
+  string substationId = 4;
 }
 
-message MsgGuildJoinResponse {}
+
+message MsgGuildMembershipInviteApprove {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator      = 1;
+  string guildId      = 2;
+  string playerId     = 3;
+  string substationId = 4;
+}
 
 
-message MsgGuildJoinProxy {
+message MsgGuildMembershipInviteDeny {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator     = 1;
+  string guildId     = 2;
+  string playerId    = 3;
+}
+
+message MsgGuildMembershipInviteRevoke {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator     = 1;
+  string guildId     = 2;
+  string playerId    = 3;
+}
+
+message MsgGuildMembershipJoin {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator              = 1;
+  string guildId              = 2;
+  string playerId             = 3;
+  string substationId         = 4;
+  repeated string infusionId  = 5;
+}
+
+message MsgGuildMembershipJoinProxy {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator          = 1;
@@ -235,8 +269,52 @@ message MsgGuildJoinProxy {
   bytes proofSignature    = 5;
 }
 
-message MsgGuildJoinProxyResponse {}
+message MsgGuildMembershipKick {
+  option (cosmos.msg.v1.signer) = "creator";
 
+  string creator     = 1;
+  string guildId     = 2;
+  string playerId    = 3;
+}
+
+
+message MsgGuildMembershipRequest {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator      = 1;
+  string guildId      = 2;
+  string playerId     = 3;
+  string substationId = 4;
+}
+
+
+message MsgGuildMembershipRequestApprove {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator     = 1;
+  string guildId     = 2;
+  string playerId    = 3;
+  string substationId = 4;
+}
+
+
+message MsgGuildMembershipRequestDeny {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator     = 1;
+  string guildId     = 2;
+  string playerId    = 3;
+}
+
+message MsgGuildMembershipRequestRevoke {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator     = 1;
+  string guildId     = 2;
+  string playerId    = 3;
+}
+
+message MsgGuildMembershipResponse { GuildMembershipApplication guildMembershipApplication = 1;}
 
 
 message MsgPermissionGrantOnObject {

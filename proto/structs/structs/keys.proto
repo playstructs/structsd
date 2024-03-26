@@ -47,6 +47,13 @@ enum guildJoinBypassLevel {
     member        = 2; // All members of the guild can contribute
 }
 
+enum guildJoinType {
+    invite   = 0;
+    request  = 1;
+    direct   = 2;
+    proxy    = 3;
+}
+
 enum registrationStatus {
     proposed  = 0;
     approved  = 1;

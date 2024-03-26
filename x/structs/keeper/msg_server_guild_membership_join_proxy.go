@@ -10,7 +10,7 @@ import (
 	crypto "github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 )
 
-func (k msgServer) GuildJoinProxy(goCtx context.Context, msg *types.MsgGuildJoinProxy) (*types.MsgGuildJoinProxyResponse, error) {
+func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.MsgGuildMembershipJoinProxy) (*types.MsgGuildMembershipResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
 	// Look up requesting account
@@ -19,7 +19,7 @@ func (k msgServer) GuildJoinProxy(goCtx context.Context, msg *types.MsgGuildJoin
 	// look up destination guild
 	guild, guildFound := k.GetGuild(ctx, proxyPlayer.GuildId)
     if (!guildFound) {
-        return &types.MsgGuildJoinProxyResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Referenced Guild (%d) not found", guild.Id)
+        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Referenced Guild (%d) not found", guild.Id)
     }
 
     // Verification that the proxy agent had the rights to do this
@@ -27,7 +27,7 @@ func (k msgServer) GuildJoinProxy(goCtx context.Context, msg *types.MsgGuildJoin
     pubKey.Key = msg.ProofPubKey
 
     if (pubKey.Address().String() != msg.Address) {
-         return &types.MsgGuildJoinProxyResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Proof mismatch for %s vs %s", pubKey.Address().String(), msg.Address)
+         return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Proof mismatch for %s vs %s", pubKey.Address().String(), msg.Address)
     }
 
     // We rebuild the message manually here rather than trust the client to provide it
@@ -35,7 +35,7 @@ func (k msgServer) GuildJoinProxy(goCtx context.Context, msg *types.MsgGuildJoin
     // would allow guilds to use the same proof repeatedly.
     hashInput := "GUILD" + guild.Id + "ADDRESS" + msg.Address
     if (!pubKey.VerifySignature([]byte(hashInput), msg.ProofSignature)) {
-         return &types.MsgGuildJoinProxyResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Proof signature verification failure")
+         return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Proof signature verification failure")
     }
 
     guildObjectPermissionId := GetObjectPermissionIDBytes(guild.Id, proxyPlayer.Id)
@@ -43,12 +43,12 @@ func (k msgServer) GuildJoinProxy(goCtx context.Context, msg *types.MsgGuildJoin
 
     // Check to make sure the player has permissions on the guild
     if (!k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.PermissionAssociations)) {
-        return &types.MsgGuildJoinProxyResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%d) has no Player Registration permissions ", proxyPlayer.Id)
+        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%d) has no Player Registration permissions ", proxyPlayer.Id)
     }
 
     // Make sure the address calling this has Associate permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssociations)) {
-        return &types.MsgGuildJoinProxyResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
+        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
     }
 
 
@@ -68,21 +68,21 @@ func (k msgServer) GuildJoinProxy(goCtx context.Context, msg *types.MsgGuildJoin
 	if (msg.SubstationId != "") {
 	    substation, substationFound = k.GetSubstation(ctx, msg.SubstationId, true)
         if (!substationFound) {
-            return &types.MsgGuildJoinProxyResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Provided Substation Override (%s) not found", msg.SubstationId)
+            return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Provided Substation Override (%s) not found", msg.SubstationId)
         }
 
         // Since the Guild Entry Substation is being overridden, let's make
         // sure the ProxyPlayer actually have authority over this substation
         substationObjectPermissionId := GetObjectPermissionIDBytes(substation.Id, proxyPlayer.Id)
         if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.PermissionGrid)) {
-            return &types.MsgGuildJoinProxyResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%d) has no Player Connect permissions on Substation (%s) used as override", proxyPlayer.Id, substation.Id)
+            return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%d) has no Player Connect permissions on Substation (%s) used as override", proxyPlayer.Id, substation.Id)
         }
 	}
 
     if (!substationFound) {
         substation, substationFound = k.GetSubstation(ctx, guild.EntrySubstationId, true)
         if (!substationFound) {
-            return &types.MsgGuildJoinProxyResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Entry Substation (%s) for Guild (%s) not found", guild.EntrySubstationId, guild.Id)
+            return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Entry Substation (%s) for Guild (%s) not found", guild.EntrySubstationId, guild.Id)
         }
     }
 
@@ -104,7 +104,6 @@ func (k msgServer) GuildJoinProxy(goCtx context.Context, msg *types.MsgGuildJoin
         if (player.SubstationId != "" && player.SubstationId == oldGuild.EntrySubstationId) {
             player, _ = k.SubstationDisconnectPlayer(ctx, player)
         }
-
     }
 
     // Add player to the guild
@@ -117,9 +116,5 @@ func (k msgServer) GuildJoinProxy(goCtx context.Context, msg *types.MsgGuildJoin
         k.SubstationConnectPlayer(ctx, substation, player)
     }
 
-    // Give this user (aka the guild) the ability to update their substation
-    playerObjectPermissionId := GetObjectPermissionIDBytes(player.Id, proxyPlayer.Id)
-    k.PermissionAdd(ctx, playerObjectPermissionId, types.PermissionGrid)
-
-	return &types.MsgGuildJoinProxyResponse{}, nil
+	return &types.MsgGuildMembershipResponse{}, nil
 }

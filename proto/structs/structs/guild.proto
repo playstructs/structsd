@@ -22,8 +22,12 @@ message Guild {
   string entrySubstationId   = 10;
 }
 
-message GuildAssociation {
+
+message GuildMembershipApplication {
   string guildId = 1;
   string playerId = 2;
-  registrationStatus registrationStatus = 3;
+  guildJoinType joinType = 3; // Invite | Request
+  registrationStatus registrationStatus = 4;
+  string proposer = 5;
+  string substationId = 6;
 }

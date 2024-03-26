@@ -19,35 +19,37 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Query_GetBlockHeight_FullMethodName        = "/structs.structs.Query/GetBlockHeight"
-	Query_Params_FullMethodName                = "/structs.structs.Query/Params"
-	Query_Address_FullMethodName               = "/structs.structs.Query/Address"
-	Query_AddressAll_FullMethodName            = "/structs.structs.Query/AddressAll"
-	Query_AddressAllByPlayer_FullMethodName    = "/structs.structs.Query/AddressAllByPlayer"
-	Query_AddressAssociationAll_FullMethodName = "/structs.structs.Query/AddressAssociationAll"
-	Query_Allocation_FullMethodName            = "/structs.structs.Query/Allocation"
-	Query_AllocationAll_FullMethodName         = "/structs.structs.Query/AllocationAll"
-	Query_Grid_FullMethodName                  = "/structs.structs.Query/Grid"
-	Query_GridAll_FullMethodName               = "/structs.structs.Query/GridAll"
-	Query_Guild_FullMethodName                 = "/structs.structs.Query/Guild"
-	Query_GuildAll_FullMethodName              = "/structs.structs.Query/GuildAll"
-	Query_Infusion_FullMethodName              = "/structs.structs.Query/Infusion"
-	Query_InfusionAll_FullMethodName           = "/structs.structs.Query/InfusionAll"
-	Query_Permission_FullMethodName            = "/structs.structs.Query/Permission"
-	Query_PermissionByObject_FullMethodName    = "/structs.structs.Query/PermissionByObject"
-	Query_PermissionByPlayer_FullMethodName    = "/structs.structs.Query/PermissionByPlayer"
-	Query_PermissionAll_FullMethodName         = "/structs.structs.Query/PermissionAll"
-	Query_Player_FullMethodName                = "/structs.structs.Query/Player"
-	Query_PlayerAll_FullMethodName             = "/structs.structs.Query/PlayerAll"
-	Query_Planet_FullMethodName                = "/structs.structs.Query/Planet"
-	Query_PlanetAll_FullMethodName             = "/structs.structs.Query/PlanetAll"
-	Query_PlanetAllByPlayer_FullMethodName     = "/structs.structs.Query/PlanetAllByPlayer"
-	Query_Reactor_FullMethodName               = "/structs.structs.Query/Reactor"
-	Query_ReactorAll_FullMethodName            = "/structs.structs.Query/ReactorAll"
-	Query_Struct_FullMethodName                = "/structs.structs.Query/Struct"
-	Query_StructAll_FullMethodName             = "/structs.structs.Query/StructAll"
-	Query_Substation_FullMethodName            = "/structs.structs.Query/Substation"
-	Query_SubstationAll_FullMethodName         = "/structs.structs.Query/SubstationAll"
+	Query_GetBlockHeight_FullMethodName                = "/structs.structs.Query/GetBlockHeight"
+	Query_Params_FullMethodName                        = "/structs.structs.Query/Params"
+	Query_Address_FullMethodName                       = "/structs.structs.Query/Address"
+	Query_AddressAll_FullMethodName                    = "/structs.structs.Query/AddressAll"
+	Query_AddressAllByPlayer_FullMethodName            = "/structs.structs.Query/AddressAllByPlayer"
+	Query_AddressAssociationAll_FullMethodName         = "/structs.structs.Query/AddressAssociationAll"
+	Query_Allocation_FullMethodName                    = "/structs.structs.Query/Allocation"
+	Query_AllocationAll_FullMethodName                 = "/structs.structs.Query/AllocationAll"
+	Query_Grid_FullMethodName                          = "/structs.structs.Query/Grid"
+	Query_GridAll_FullMethodName                       = "/structs.structs.Query/GridAll"
+	Query_Guild_FullMethodName                         = "/structs.structs.Query/Guild"
+	Query_GuildAll_FullMethodName                      = "/structs.structs.Query/GuildAll"
+	Query_GuildMembershipApplication_FullMethodName    = "/structs.structs.Query/GuildMembershipApplication"
+	Query_GuildMembershipApplicationAll_FullMethodName = "/structs.structs.Query/GuildMembershipApplicationAll"
+	Query_Infusion_FullMethodName                      = "/structs.structs.Query/Infusion"
+	Query_InfusionAll_FullMethodName                   = "/structs.structs.Query/InfusionAll"
+	Query_Permission_FullMethodName                    = "/structs.structs.Query/Permission"
+	Query_PermissionByObject_FullMethodName            = "/structs.structs.Query/PermissionByObject"
+	Query_PermissionByPlayer_FullMethodName            = "/structs.structs.Query/PermissionByPlayer"
+	Query_PermissionAll_FullMethodName                 = "/structs.structs.Query/PermissionAll"
+	Query_Player_FullMethodName                        = "/structs.structs.Query/Player"
+	Query_PlayerAll_FullMethodName                     = "/structs.structs.Query/PlayerAll"
+	Query_Planet_FullMethodName                        = "/structs.structs.Query/Planet"
+	Query_PlanetAll_FullMethodName                     = "/structs.structs.Query/PlanetAll"
+	Query_PlanetAllByPlayer_FullMethodName             = "/structs.structs.Query/PlanetAllByPlayer"
+	Query_Reactor_FullMethodName                       = "/structs.structs.Query/Reactor"
+	Query_ReactorAll_FullMethodName                    = "/structs.structs.Query/ReactorAll"
+	Query_Struct_FullMethodName                        = "/structs.structs.Query/Struct"
+	Query_StructAll_FullMethodName                     = "/structs.structs.Query/StructAll"
+	Query_Substation_FullMethodName                    = "/structs.structs.Query/Substation"
+	Query_SubstationAll_FullMethodName                 = "/structs.structs.Query/SubstationAll"
 )
 
 // QueryClient is the client API for Query service.
@@ -72,6 +74,8 @@ type QueryClient interface {
 	// Queries a list of Guild items.
 	Guild(ctx context.Context, in *QueryGetGuildRequest, opts ...grpc.CallOption) (*QueryGetGuildResponse, error)
 	GuildAll(ctx context.Context, in *QueryAllGuildRequest, opts ...grpc.CallOption) (*QueryAllGuildResponse, error)
+	GuildMembershipApplication(ctx context.Context, in *QueryGetGuildMembershipApplicationRequest, opts ...grpc.CallOption) (*QueryGetGuildMembershipApplicationResponse, error)
+	GuildMembershipApplicationAll(ctx context.Context, in *QueryAllGuildMembershipApplicationRequest, opts ...grpc.CallOption) (*QueryAllGuildMembershipApplicationResponse, error)
 	// Queries a list of Infusions.
 	Infusion(ctx context.Context, in *QueryGetInfusionRequest, opts ...grpc.CallOption) (*QueryGetInfusionResponse, error)
 	InfusionAll(ctx context.Context, in *QueryAllInfusionRequest, opts ...grpc.CallOption) (*QueryAllInfusionResponse, error)
@@ -211,6 +215,24 @@ func (c *queryClient) Guild(ctx context.Context, in *QueryGetGuildRequest, opts 
 func (c *queryClient) GuildAll(ctx context.Context, in *QueryAllGuildRequest, opts ...grpc.CallOption) (*QueryAllGuildResponse, error) {
 	out := new(QueryAllGuildResponse)
 	err := c.cc.Invoke(ctx, Query_GuildAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GuildMembershipApplication(ctx context.Context, in *QueryGetGuildMembershipApplicationRequest, opts ...grpc.CallOption) (*QueryGetGuildMembershipApplicationResponse, error) {
+	out := new(QueryGetGuildMembershipApplicationResponse)
+	err := c.cc.Invoke(ctx, Query_GuildMembershipApplication_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GuildMembershipApplicationAll(ctx context.Context, in *QueryAllGuildMembershipApplicationRequest, opts ...grpc.CallOption) (*QueryAllGuildMembershipApplicationResponse, error) {
+	out := new(QueryAllGuildMembershipApplicationResponse)
+	err := c.cc.Invoke(ctx, Query_GuildMembershipApplicationAll_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -392,6 +414,8 @@ type QueryServer interface {
 	// Queries a list of Guild items.
 	Guild(context.Context, *QueryGetGuildRequest) (*QueryGetGuildResponse, error)
 	GuildAll(context.Context, *QueryAllGuildRequest) (*QueryAllGuildResponse, error)
+	GuildMembershipApplication(context.Context, *QueryGetGuildMembershipApplicationRequest) (*QueryGetGuildMembershipApplicationResponse, error)
+	GuildMembershipApplicationAll(context.Context, *QueryAllGuildMembershipApplicationRequest) (*QueryAllGuildMembershipApplicationResponse, error)
 	// Queries a list of Infusions.
 	Infusion(context.Context, *QueryGetInfusionRequest) (*QueryGetInfusionResponse, error)
 	InfusionAll(context.Context, *QueryAllInfusionRequest) (*QueryAllInfusionResponse, error)
@@ -461,6 +485,12 @@ func (UnimplementedQueryServer) Guild(context.Context, *QueryGetGuildRequest) (*
 }
 func (UnimplementedQueryServer) GuildAll(context.Context, *QueryAllGuildRequest) (*QueryAllGuildResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildAll not implemented")
+}
+func (UnimplementedQueryServer) GuildMembershipApplication(context.Context, *QueryGetGuildMembershipApplicationRequest) (*QueryGetGuildMembershipApplicationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildMembershipApplication not implemented")
+}
+func (UnimplementedQueryServer) GuildMembershipApplicationAll(context.Context, *QueryAllGuildMembershipApplicationRequest) (*QueryAllGuildMembershipApplicationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildMembershipApplicationAll not implemented")
 }
 func (UnimplementedQueryServer) Infusion(context.Context, *QueryGetInfusionRequest) (*QueryGetInfusionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Infusion not implemented")
@@ -738,6 +768,42 @@ func _Query_GuildAll_Handler(srv interface{}, ctx context.Context, dec func(inte
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).GuildAll(ctx, req.(*QueryAllGuildRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GuildMembershipApplication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetGuildMembershipApplicationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GuildMembershipApplication(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_GuildMembershipApplication_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GuildMembershipApplication(ctx, req.(*QueryGetGuildMembershipApplicationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GuildMembershipApplicationAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllGuildMembershipApplicationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GuildMembershipApplicationAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_GuildMembershipApplicationAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GuildMembershipApplicationAll(ctx, req.(*QueryAllGuildMembershipApplicationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1102,6 +1168,14 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GuildAll",
 			Handler:    _Query_GuildAll_Handler,
+		},
+		{
+			MethodName: "GuildMembershipApplication",
+			Handler:    _Query_GuildMembershipApplication_Handler,
+		},
+		{
+			MethodName: "GuildMembershipApplicationAll",
+			Handler:    _Query_GuildMembershipApplicationAll_Handler,
 		},
 		{
 			MethodName: "Infusion",

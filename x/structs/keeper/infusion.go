@@ -61,6 +61,18 @@ func (k Keeper) GetInfusion(ctx context.Context, destinationId string, address s
 	return val, true
 }
 
+// GetInfusion returns a infusion from its id
+func (k Keeper) GetInfusionByID(ctx context.Context, infusionId string) (val types.Infusion, found bool) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionKey))
+	b := store.Get([]byte(infusionId))
+	if b == nil {
+		return val, false
+	}
+	k.cdc.MustUnmarshal(b, &val)
+	return val, true
+}
+
+
 func (k Keeper) UpsertInfusion(ctx context.Context, destinationType types.ObjectType, destinationId string, address string, player types.Player, fuel uint64, commission math.LegacyDec) (infusion types.Infusion, newInfusionFuel uint64, oldInfusionFuel uint64, newInfusionPower uint64, oldInfusionPower uint64, newCommissionPower uint64, oldCommissionPower uint64, newPlayerPower uint64, oldPlayerPower uint64, err error) {
 
     infusion, infusionFound := k.GetInfusion(ctx, destinationId, address)

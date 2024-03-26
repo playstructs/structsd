@@ -38,6 +38,8 @@ var (
 
     ErrGuildUpdate                          = sdkerrors.Register(ModuleName,  1581, "guild could not be updated")
     ErrInvalidGuildJoinBypassLevel          = sdkerrors.Register(ModuleName,  1582, "invalid guild join bypass level")
+    ErrGuildMembershipApplication           = sdkerrors.Register(ModuleName,  1583, "invalid application process")
+
 
 	ErrPermissionAssociation                = sdkerrors.Register(ModuleName, 1600, "Permission error during address association")
 	ErrPermissionRevoke                     = sdkerrors.Register(ModuleName, 1601, "Permission error during address revocation")

@@ -90,7 +90,7 @@ const (
 const (
 	GuildKey      = "Guild/value/"
 	GuildCountKey = "Guild/count/"
-	GuildRegistrationKey = "Guild/registration/"
+	GuildMembershipApplicationKey = "Guild/membershipApplication/"
 )
 
 

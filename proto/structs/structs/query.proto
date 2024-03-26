@@ -79,6 +79,14 @@ service Query {
     option (google.api.http).get = "/structs/guild";
   }
 
+  rpc GuildMembershipApplication (QueryGetGuildMembershipApplicationRequest) returns (QueryGetGuildMembershipApplicationResponse) {
+    option (google.api.http).get = "/structs/guild_membership_application/{guildId}/{playerId}";
+  }
+
+  rpc GuildMembershipApplicationAll (QueryAllGuildMembershipApplicationRequest) returns (QueryAllGuildMembershipApplicationResponse) {
+    option (google.api.http).get = "/structs/guild_membership_application";
+  }
+
   // Queries a list of Infusions.
   rpc Infusion    (QueryGetInfusionRequest) returns (QueryGetInfusionResponse) {
     option (google.api.http).get = "/structs/infusion/{destinationId}/{address}";
@@ -263,6 +271,25 @@ message QueryAllGuildRequest {
 
 message QueryAllGuildResponse {
   repeated Guild                                  Guild      = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+
+message QueryGetGuildMembershipApplicationRequest {
+  string guildId  = 1;
+  string playerId = 2;
+}
+
+message QueryGetGuildMembershipApplicationResponse {
+  GuildMembershipApplication GuildMembershipApplication = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllGuildMembershipApplicationRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllGuildMembershipApplicationResponse {
+  repeated GuildMembershipApplication GuildMembershipApplication      = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 

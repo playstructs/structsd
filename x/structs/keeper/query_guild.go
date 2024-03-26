@@ -60,25 +60,40 @@ func (k Keeper) Guild(goCtx context.Context, req *types.QueryGetGuildRequest) (*
 }
 
 
-
-func (k Keeper) GuildAssociationAll(goCtx context.Context, req *types.QueryAllGuildAssociationRequest) (*types.QueryAllGuildAssociationResponse, error) {
+func (k Keeper) GuildMembershipApplication(goCtx context.Context, req *types.QueryGetGuildMembershipApplicationRequest) (*types.QueryGetGuildMembershipApplicationResponse, error) {
 	if req == nil {
 		return nil, status.Error(codes.InvalidArgument, "invalid request")
 	}
 
-    var gridAssociation []*types.GridAssociation
-
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	guildMembershipApplication, found := k.GetGuildMembershipApplication(ctx, req.GuildId, req.PlayerId)
+	if !found {
+		return nil, types.ErrObjectNotFound
+	}
 
-	gridAssociationStore := prefix.NewStore(store, types.KeyPrefix(types.GuildRegistrationKey))
-	pageRes, err = query.Paginate(gridAssociationStore, req.Pagination, func(key []byte, value []byte) error {
-		var address types.AddressAssociation
+	return &types.QueryGetGuildMembershipApplicationResponse{GuildMembershipApplication: guildMembershipApplication}, nil
+}
 
-        gridAssociation.GuildId = string(key)
-        gridAssociation.Player = binary.BigEndian.Uint64(value)
-        gridAssociation.RegistrationStatus = types.RegistrationStatus_proposed
 
-        addresses = append(addresses, &address)
+
+func (k Keeper) GuildMembershipApplicationAll(goCtx context.Context, req *types.QueryAllGuildMembershipApplicationRequest) (*types.QueryAllGuildMembershipApplicationResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+    var guildMembershipApplications []types.GuildMembershipApplication
+
+    ctx := sdk.UnwrapSDKContext(goCtx)
+    store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	guildMembershipApplicationStore := prefix.NewStore(store, types.KeyPrefix(types.GuildMembershipApplicationKey))
+
+	pageRes, err := query.Paginate(guildMembershipApplicationStore, req.Pagination, func(key []byte, value []byte) error {
+		var guildMembershipApplication types.GuildMembershipApplication
+
+       	if err := k.cdc.Unmarshal(value, &guildMembershipApplication); err != nil {
+            return err
+        }
+        guildMembershipApplications = append(guildMembershipApplications, guildMembershipApplication)
 
         return nil
 	})
@@ -87,5 +102,5 @@ func (k Keeper) GuildAssociationAll(goCtx context.Context, req *types.QueryAllGu
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
-	return &types.QueryAllGuildAssociationResponse{GridAssociation: addresses, Pagination: pageRes}, nil
+	return &types.QueryAllGuildMembershipApplicationResponse{GuildMembershipApplication: guildMembershipApplications, Pagination: pageRes}, nil
 }

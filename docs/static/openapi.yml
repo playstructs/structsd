@@ -20348,6 +20348,216 @@ paths:
           type: string
       tags:
         - Query
+  /structs/guild_membership_application:
+    get:
+      operationId: StructsStructsQuery_GuildMembershipApplicationAll
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              GuildMembershipApplication:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    guildId:
+                      type: string
+                    playerId:
+                      type: string
+                    joinType:
+                      title: Invite | Request
+                      type: string
+                      enum:
+                        - invite
+                        - request
+                        - direct
+                        - proxy
+                      default: invite
+                    registrationStatus:
+                      type: string
+                      enum:
+                        - proposed
+                        - approved
+                        - denied
+                        - revoked
+                      default: proposed
+                    proposer:
+                      type: string
+                    substationId:
+                      type: string
+              pagination:
+                type: object
+                properties:
+                  next_key:
+                    type: string
+                    format: byte
+                    description: |-
+                      next_key is the key to be passed to PageRequest.key to
+                      query the next page most efficiently. It will be empty if
+                      there are no more results.
+                  total:
+                    type: string
+                    format: uint64
+                    title: >-
+                      total is total number of results available if
+                      PageRequest.count_total
+
+                      was set, its value is undefined otherwise
+                description: >-
+                  PageResponse is to be embedded in gRPC response messages where
+                  the
+
+                  corresponding request message has used PageRequest.
+
+                   message SomeResponse {
+                           repeated Bar results = 1;
+                           PageResponse page = 2;
+                   }
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: pagination.key
+          description: |-
+            key is a value returned in PageResponse.next_key to begin
+            querying the next page most efficiently. Only one of offset or key
+            should be set.
+          in: query
+          required: false
+          type: string
+          format: byte
+        - name: pagination.offset
+          description: >-
+            offset is a numeric offset that can be used when key is unavailable.
+
+            It is less efficient than using key. Only one of offset or key
+            should
+
+            be set.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.limit
+          description: >-
+            limit is the total number of results to be returned in the result
+            page.
+
+            If left empty it will default to a value to be set by each app.
+          in: query
+          required: false
+          type: string
+          format: uint64
+        - name: pagination.count_total
+          description: >-
+            count_total is set to true  to indicate that the result set should
+            include
+
+            a count of the total number of items available for pagination in
+            UIs.
+
+            count_total is only respected when offset is used. It is ignored
+            when key
+
+            is set.
+          in: query
+          required: false
+          type: boolean
+        - name: pagination.reverse
+          description: >-
+            reverse is set to true if results are to be returned in the
+            descending order.
+
+
+            Since: cosmos-sdk 0.43
+          in: query
+          required: false
+          type: boolean
+      tags:
+        - Query
+  /structs/guild_membership_application/{guildId}/{playerId}:
+    get:
+      operationId: StructsStructsQuery_GuildMembershipApplication
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              GuildMembershipApplication:
+                type: object
+                properties:
+                  guildId:
+                    type: string
+                  playerId:
+                    type: string
+                  joinType:
+                    title: Invite | Request
+                    type: string
+                    enum:
+                      - invite
+                      - request
+                      - direct
+                      - proxy
+                    default: invite
+                  registrationStatus:
+                    type: string
+                    enum:
+                      - proposed
+                      - approved
+                      - denied
+                      - revoked
+                    default: proposed
+                  proposer:
+                    type: string
+                  substationId:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: guildId
+          in: path
+          required: true
+          type: string
+        - name: playerId
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
   /structs/infusion:
     get:
       operationId: StructsStructsQuery_InfusionAll
@@ -22561,49 +22771,6 @@ paths:
                 format: uint64
       tags:
         - Msg
-  /structs.structs.Msg/GuildApproveRegister:
-    post:
-      operationId: StructsStructsMsg_GuildApproveRegister
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              creator:
-                type: string
-              approve:
-                type: boolean
-              guildId:
-                type: string
-              playerId:
-                type: string
-      tags:
-        - Msg
   /structs.structs.Msg/GuildCreate:
     post:
       operationId: StructsStructsMsg_GuildCreate
@@ -22648,14 +22815,43 @@ paths:
                 type: string
       tags:
         - Msg
-  /structs.structs.Msg/GuildJoin:
+  /structs.structs.Msg/GuildMembershipInvite:
     post:
-      operationId: StructsStructsMsg_GuildJoin
+      operationId: StructsStructsMsg_GuildMembershipInvite
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
+            properties:
+              guildMembershipApplication:
+                type: object
+                properties:
+                  guildId:
+                    type: string
+                  playerId:
+                    type: string
+                  joinType:
+                    title: Invite | Request
+                    type: string
+                    enum:
+                      - invite
+                      - request
+                      - direct
+                      - proxy
+                    default: invite
+                  registrationStatus:
+                    type: string
+                    enum:
+                      - proposed
+                      - approved
+                      - denied
+                      - revoked
+                    default: proposed
+                  proposer:
+                    type: string
+                  substationId:
+                    type: string
         default:
           description: An unexpected error response.
           schema:
@@ -22685,16 +22881,337 @@ paths:
                 type: string
               guildId:
                 type: string
+              playerId:
+                type: string
+              substationId:
+                type: string
       tags:
         - Msg
-  /structs.structs.Msg/GuildJoinProxy:
+  /structs.structs.Msg/GuildMembershipInviteApprove:
     post:
-      operationId: StructsStructsMsg_GuildJoinProxy
+      operationId: StructsStructsMsg_GuildMembershipInviteApprove
       responses:
         '200':
           description: A successful response.
           schema:
             type: object
+            properties:
+              guildMembershipApplication:
+                type: object
+                properties:
+                  guildId:
+                    type: string
+                  playerId:
+                    type: string
+                  joinType:
+                    title: Invite | Request
+                    type: string
+                    enum:
+                      - invite
+                      - request
+                      - direct
+                      - proxy
+                    default: invite
+                  registrationStatus:
+                    type: string
+                    enum:
+                      - proposed
+                      - approved
+                      - denied
+                      - revoked
+                    default: proposed
+                  proposer:
+                    type: string
+                  substationId:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              guildId:
+                type: string
+              playerId:
+                type: string
+              substationId:
+                type: string
+      tags:
+        - Msg
+  /structs.structs.Msg/GuildMembershipInviteDeny:
+    post:
+      operationId: StructsStructsMsg_GuildMembershipInviteDeny
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              guildMembershipApplication:
+                type: object
+                properties:
+                  guildId:
+                    type: string
+                  playerId:
+                    type: string
+                  joinType:
+                    title: Invite | Request
+                    type: string
+                    enum:
+                      - invite
+                      - request
+                      - direct
+                      - proxy
+                    default: invite
+                  registrationStatus:
+                    type: string
+                    enum:
+                      - proposed
+                      - approved
+                      - denied
+                      - revoked
+                    default: proposed
+                  proposer:
+                    type: string
+                  substationId:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              guildId:
+                type: string
+              playerId:
+                type: string
+      tags:
+        - Msg
+  /structs.structs.Msg/GuildMembershipInviteRevoke:
+    post:
+      operationId: StructsStructsMsg_GuildMembershipInviteRevoke
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              guildMembershipApplication:
+                type: object
+                properties:
+                  guildId:
+                    type: string
+                  playerId:
+                    type: string
+                  joinType:
+                    title: Invite | Request
+                    type: string
+                    enum:
+                      - invite
+                      - request
+                      - direct
+                      - proxy
+                    default: invite
+                  registrationStatus:
+                    type: string
+                    enum:
+                      - proposed
+                      - approved
+                      - denied
+                      - revoked
+                    default: proposed
+                  proposer:
+                    type: string
+                  substationId:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              guildId:
+                type: string
+              playerId:
+                type: string
+      tags:
+        - Msg
+  /structs.structs.Msg/GuildMembershipJoin:
+    post:
+      operationId: StructsStructsMsg_GuildMembershipJoin
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              guildMembershipApplication:
+                type: object
+                properties:
+                  guildId:
+                    type: string
+                  playerId:
+                    type: string
+                  joinType:
+                    title: Invite | Request
+                    type: string
+                    enum:
+                      - invite
+                      - request
+                      - direct
+                      - proxy
+                    default: invite
+                  registrationStatus:
+                    type: string
+                    enum:
+                      - proposed
+                      - approved
+                      - denied
+                      - revoked
+                    default: proposed
+                  proposer:
+                    type: string
+                  substationId:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              guildId:
+                type: string
+              playerId:
+                type: string
+              substationId:
+                type: string
+              infusionId:
+                type: array
+                items:
+                  type: string
+      tags:
+        - Msg
+  /structs.structs.Msg/GuildMembershipJoinProxy:
+    post:
+      operationId: StructsStructsMsg_GuildMembershipJoinProxy
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              guildMembershipApplication:
+                type: object
+                properties:
+                  guildId:
+                    type: string
+                  playerId:
+                    type: string
+                  joinType:
+                    title: Invite | Request
+                    type: string
+                    enum:
+                      - invite
+                      - request
+                      - direct
+                      - proxy
+                    default: invite
+                  registrationStatus:
+                    type: string
+                    enum:
+                      - proposed
+                      - approved
+                      - denied
+                      - revoked
+                    default: proposed
+                  proposer:
+                    type: string
+                  substationId:
+                    type: string
         default:
           description: An unexpected error response.
           schema:
@@ -22732,6 +23249,360 @@ paths:
               proofSignature:
                 type: string
                 format: byte
+      tags:
+        - Msg
+  /structs.structs.Msg/GuildMembershipKick:
+    post:
+      operationId: StructsStructsMsg_GuildMembershipKick
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              guildMembershipApplication:
+                type: object
+                properties:
+                  guildId:
+                    type: string
+                  playerId:
+                    type: string
+                  joinType:
+                    title: Invite | Request
+                    type: string
+                    enum:
+                      - invite
+                      - request
+                      - direct
+                      - proxy
+                    default: invite
+                  registrationStatus:
+                    type: string
+                    enum:
+                      - proposed
+                      - approved
+                      - denied
+                      - revoked
+                    default: proposed
+                  proposer:
+                    type: string
+                  substationId:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              guildId:
+                type: string
+              playerId:
+                type: string
+      tags:
+        - Msg
+  /structs.structs.Msg/GuildMembershipRequest:
+    post:
+      operationId: StructsStructsMsg_GuildMembershipRequest
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              guildMembershipApplication:
+                type: object
+                properties:
+                  guildId:
+                    type: string
+                  playerId:
+                    type: string
+                  joinType:
+                    title: Invite | Request
+                    type: string
+                    enum:
+                      - invite
+                      - request
+                      - direct
+                      - proxy
+                    default: invite
+                  registrationStatus:
+                    type: string
+                    enum:
+                      - proposed
+                      - approved
+                      - denied
+                      - revoked
+                    default: proposed
+                  proposer:
+                    type: string
+                  substationId:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              guildId:
+                type: string
+              playerId:
+                type: string
+              substationId:
+                type: string
+      tags:
+        - Msg
+  /structs.structs.Msg/GuildMembershipRequestApprove:
+    post:
+      operationId: StructsStructsMsg_GuildMembershipRequestApprove
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              guildMembershipApplication:
+                type: object
+                properties:
+                  guildId:
+                    type: string
+                  playerId:
+                    type: string
+                  joinType:
+                    title: Invite | Request
+                    type: string
+                    enum:
+                      - invite
+                      - request
+                      - direct
+                      - proxy
+                    default: invite
+                  registrationStatus:
+                    type: string
+                    enum:
+                      - proposed
+                      - approved
+                      - denied
+                      - revoked
+                    default: proposed
+                  proposer:
+                    type: string
+                  substationId:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              guildId:
+                type: string
+              playerId:
+                type: string
+              substationId:
+                type: string
+      tags:
+        - Msg
+  /structs.structs.Msg/GuildMembershipRequestDeny:
+    post:
+      operationId: StructsStructsMsg_GuildMembershipRequestDeny
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              guildMembershipApplication:
+                type: object
+                properties:
+                  guildId:
+                    type: string
+                  playerId:
+                    type: string
+                  joinType:
+                    title: Invite | Request
+                    type: string
+                    enum:
+                      - invite
+                      - request
+                      - direct
+                      - proxy
+                    default: invite
+                  registrationStatus:
+                    type: string
+                    enum:
+                      - proposed
+                      - approved
+                      - denied
+                      - revoked
+                    default: proposed
+                  proposer:
+                    type: string
+                  substationId:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              guildId:
+                type: string
+              playerId:
+                type: string
+      tags:
+        - Msg
+  /structs.structs.Msg/GuildMembershipRequestRevoke:
+    post:
+      operationId: StructsStructsMsg_GuildMembershipRequestRevoke
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              guildMembershipApplication:
+                type: object
+                properties:
+                  guildId:
+                    type: string
+                  playerId:
+                    type: string
+                  joinType:
+                    title: Invite | Request
+                    type: string
+                    enum:
+                      - invite
+                      - request
+                      - direct
+                      - proxy
+                    default: invite
+                  registrationStatus:
+                    type: string
+                    enum:
+                      - proposed
+                      - approved
+                      - denied
+                      - revoked
+                    default: proposed
+                  proposer:
+                    type: string
+                  substationId:
+                    type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              guildId:
+                type: string
+              playerId:
+                type: string
       tags:
         - Msg
   /structs.structs.Msg/GuildUpdateEndpoint:
@@ -32702,6 +33573,34 @@ definitions:
         type: string
       entrySubstationId:
         type: string
+  structs.structs.GuildMembershipApplication:
+    type: object
+    properties:
+      guildId:
+        type: string
+      playerId:
+        type: string
+      joinType:
+        title: Invite | Request
+        type: string
+        enum:
+          - invite
+          - request
+          - direct
+          - proxy
+        default: invite
+      registrationStatus:
+        type: string
+        enum:
+          - proposed
+          - approved
+          - denied
+          - revoked
+        default: proposed
+      proposer:
+        type: string
+      substationId:
+        type: string
   structs.structs.Infusion:
     type: object
     properties:
@@ -33012,6 +33911,65 @@ definitions:
             value:
               type: string
               format: uint64
+      pagination:
+        type: object
+        properties:
+          next_key:
+            type: string
+            format: byte
+            description: |-
+              next_key is the key to be passed to PageRequest.key to
+              query the next page most efficiently. It will be empty if
+              there are no more results.
+          total:
+            type: string
+            format: uint64
+            title: >-
+              total is total number of results available if
+              PageRequest.count_total
+
+              was set, its value is undefined otherwise
+        description: |-
+          PageResponse is to be embedded in gRPC response messages where the
+          corresponding request message has used PageRequest.
+
+           message SomeResponse {
+                   repeated Bar results = 1;
+                   PageResponse page = 2;
+           }
+  structs.structs.QueryAllGuildMembershipApplicationResponse:
+    type: object
+    properties:
+      GuildMembershipApplication:
+        type: array
+        items:
+          type: object
+          properties:
+            guildId:
+              type: string
+            playerId:
+              type: string
+            joinType:
+              title: Invite | Request
+              type: string
+              enum:
+                - invite
+                - request
+                - direct
+                - proxy
+              default: invite
+            registrationStatus:
+              type: string
+              enum:
+                - proposed
+                - approved
+                - denied
+                - revoked
+              default: proposed
+            proposer:
+              type: string
+            substationId:
+              type: string
       pagination:
         type: object
         properties:
@@ -33638,6 +34596,37 @@ definitions:
             type: string
             format: uint64
     title: Generic Responses for Permissions
+  structs.structs.QueryGetGuildMembershipApplicationResponse:
+    type: object
+    properties:
+      GuildMembershipApplication:
+        type: object
+        properties:
+          guildId:
+            type: string
+          playerId:
+            type: string
+          joinType:
+            title: Invite | Request
+            type: string
+            enum:
+              - invite
+              - request
+              - direct
+              - proxy
+            default: invite
+          registrationStatus:
+            type: string
+            enum:
+              - proposed
+              - approved
+              - denied
+              - revoked
+            default: proposed
+          proposer:
+            type: string
+          substationId:
+            type: string
   structs.structs.QueryGetGuildResponse:
     type: object
     properties:
@@ -34103,6 +35092,14 @@ definitions:
       - closed: Feature off
        - permissioned: Only those with permissions can do it
        - member: All members of the guild can contribute
+  structs.structs.guildJoinType:
+    type: string
+    enum:
+      - invite
+      - request
+      - direct
+      - proxy
+    default: invite
   structs.structs.objectType:
     type: string
     enum:
@@ -34180,19 +35177,6 @@ definitions:
     properties:
       allocationId:
         type: string
-  structs.structs.MsgGuildApproveRegister:
-    type: object
-    properties:
-      creator:
-        type: string
-      approve:
-        type: boolean
-      guildId:
-        type: string
-      playerId:
-        type: string
-  structs.structs.MsgGuildApproveRegisterResponse:
-    type: object
   structs.structs.MsgGuildCreate:
     type: object
     properties:
@@ -34207,14 +35191,62 @@ definitions:
     properties:
       guildId:
         type: string
-  structs.structs.MsgGuildJoin:
+  structs.structs.MsgGuildMembershipInvite:
     type: object
     properties:
       creator:
         type: string
       guildId:
         type: string
-  structs.structs.MsgGuildJoinProxy:
+      playerId:
+        type: string
+      substationId:
+        type: string
+  structs.structs.MsgGuildMembershipInviteApprove:
+    type: object
+    properties:
+      creator:
+        type: string
+      guildId:
+        type: string
+      playerId:
+        type: string
+      substationId:
+        type: string
+  structs.structs.MsgGuildMembershipInviteDeny:
+    type: object
+    properties:
+      creator:
+        type: string
+      guildId:
+        type: string
+      playerId:
+        type: string
+  structs.structs.MsgGuildMembershipInviteRevoke:
+    type: object
+    properties:
+      creator:
+        type: string
+      guildId:
+        type: string
+      playerId:
+        type: string
+  structs.structs.MsgGuildMembershipJoin:
+    type: object
+    properties:
+      creator:
+        type: string
+      guildId:
+        type: string
+      playerId:
+        type: string
+      substationId:
+        type: string
+      infusionId:
+        type: array
+        items:
+          type: string
+  structs.structs.MsgGuildMembershipJoinProxy:
     type: object
     properties:
       creator:
@@ -34229,10 +35261,86 @@ definitions:
       proofSignature:
         type: string
         format: byte
-  structs.structs.MsgGuildJoinProxyResponse:
+  structs.structs.MsgGuildMembershipKick:
     type: object
-  structs.structs.MsgGuildJoinResponse:
+    properties:
+      creator:
+        type: string
+      guildId:
+        type: string
+      playerId:
+        type: string
+  structs.structs.MsgGuildMembershipRequest:
     type: object
+    properties:
+      creator:
+        type: string
+      guildId:
+        type: string
+      playerId:
+        type: string
+      substationId:
+        type: string
+  structs.structs.MsgGuildMembershipRequestApprove:
+    type: object
+    properties:
+      creator:
+        type: string
+      guildId:
+        type: string
+      playerId:
+        type: string
+      substationId:
+        type: string
+  structs.structs.MsgGuildMembershipRequestDeny:
+    type: object
+    properties:
+      creator:
+        type: string
+      guildId:
+        type: string
+      playerId:
+        type: string
+  structs.structs.MsgGuildMembershipRequestRevoke:
+    type: object
+    properties:
+      creator:
+        type: string
+      guildId:
+        type: string
+      playerId:
+        type: string
+  structs.structs.MsgGuildMembershipResponse:
+    type: object
+    properties:
+      guildMembershipApplication:
+        type: object
+        properties:
+          guildId:
+            type: string
+          playerId:
+            type: string
+          joinType:
+            title: Invite | Request
+            type: string
+            enum:
+              - invite
+              - request
+              - direct
+              - proxy
+            default: invite
+          registrationStatus:
+            type: string
+            enum:
+              - proposed
+              - approved
+              - denied
+              - revoked
+            default: proposed
+          proposer:
+            type: string
+          substationId:
+            type: string
   structs.structs.MsgGuildUpdateEndpoint:
     type: object
     properties:

@@ -31,9 +31,17 @@ const (
 	Msg_GuildUpdateJoinInfusionMinimum_FullMethodName                = "/structs.structs.Msg/GuildUpdateJoinInfusionMinimum"
 	Msg_GuildUpdateJoinInfusionMinimumBypassByInvite_FullMethodName  = "/structs.structs.Msg/GuildUpdateJoinInfusionMinimumBypassByInvite"
 	Msg_GuildUpdateJoinInfusionMinimumBypassByRequest_FullMethodName = "/structs.structs.Msg/GuildUpdateJoinInfusionMinimumBypassByRequest"
-	Msg_GuildApproveRegister_FullMethodName                          = "/structs.structs.Msg/GuildApproveRegister"
-	Msg_GuildJoin_FullMethodName                                     = "/structs.structs.Msg/GuildJoin"
-	Msg_GuildJoinProxy_FullMethodName                                = "/structs.structs.Msg/GuildJoinProxy"
+	Msg_GuildMembershipInvite_FullMethodName                         = "/structs.structs.Msg/GuildMembershipInvite"
+	Msg_GuildMembershipInviteApprove_FullMethodName                  = "/structs.structs.Msg/GuildMembershipInviteApprove"
+	Msg_GuildMembershipInviteDeny_FullMethodName                     = "/structs.structs.Msg/GuildMembershipInviteDeny"
+	Msg_GuildMembershipInviteRevoke_FullMethodName                   = "/structs.structs.Msg/GuildMembershipInviteRevoke"
+	Msg_GuildMembershipJoin_FullMethodName                           = "/structs.structs.Msg/GuildMembershipJoin"
+	Msg_GuildMembershipJoinProxy_FullMethodName                      = "/structs.structs.Msg/GuildMembershipJoinProxy"
+	Msg_GuildMembershipKick_FullMethodName                           = "/structs.structs.Msg/GuildMembershipKick"
+	Msg_GuildMembershipRequest_FullMethodName                        = "/structs.structs.Msg/GuildMembershipRequest"
+	Msg_GuildMembershipRequestApprove_FullMethodName                 = "/structs.structs.Msg/GuildMembershipRequestApprove"
+	Msg_GuildMembershipRequestDeny_FullMethodName                    = "/structs.structs.Msg/GuildMembershipRequestDeny"
+	Msg_GuildMembershipRequestRevoke_FullMethodName                  = "/structs.structs.Msg/GuildMembershipRequestRevoke"
 	Msg_PermissionGrantOnAddress_FullMethodName                      = "/structs.structs.Msg/PermissionGrantOnAddress"
 	Msg_PermissionGrantOnObject_FullMethodName                       = "/structs.structs.Msg/PermissionGrantOnObject"
 	Msg_PermissionRevokeOnAddress_FullMethodName                     = "/structs.structs.Msg/PermissionRevokeOnAddress"
@@ -78,9 +86,17 @@ type MsgClient interface {
 	GuildUpdateJoinInfusionMinimum(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimum, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateJoinInfusionMinimumBypassByInvite(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimumBypassByInvite, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateJoinInfusionMinimumBypassByRequest(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimumBypassByRequest, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
-	GuildApproveRegister(ctx context.Context, in *MsgGuildApproveRegister, opts ...grpc.CallOption) (*MsgGuildApproveRegisterResponse, error)
-	GuildJoin(ctx context.Context, in *MsgGuildJoin, opts ...grpc.CallOption) (*MsgGuildJoinResponse, error)
-	GuildJoinProxy(ctx context.Context, in *MsgGuildJoinProxy, opts ...grpc.CallOption) (*MsgGuildJoinProxyResponse, error)
+	GuildMembershipInvite(ctx context.Context, in *MsgGuildMembershipInvite, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error)
+	GuildMembershipInviteApprove(ctx context.Context, in *MsgGuildMembershipInviteApprove, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error)
+	GuildMembershipInviteDeny(ctx context.Context, in *MsgGuildMembershipInviteDeny, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error)
+	GuildMembershipInviteRevoke(ctx context.Context, in *MsgGuildMembershipInviteRevoke, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error)
+	GuildMembershipJoin(ctx context.Context, in *MsgGuildMembershipJoin, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error)
+	GuildMembershipJoinProxy(ctx context.Context, in *MsgGuildMembershipJoinProxy, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error)
+	GuildMembershipKick(ctx context.Context, in *MsgGuildMembershipKick, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error)
+	GuildMembershipRequest(ctx context.Context, in *MsgGuildMembershipRequest, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error)
+	GuildMembershipRequestApprove(ctx context.Context, in *MsgGuildMembershipRequestApprove, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error)
+	GuildMembershipRequestDeny(ctx context.Context, in *MsgGuildMembershipRequestDeny, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error)
+	GuildMembershipRequestRevoke(ctx context.Context, in *MsgGuildMembershipRequestRevoke, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error)
 	PermissionGrantOnAddress(ctx context.Context, in *MsgPermissionGrantOnAddress, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
 	PermissionGrantOnObject(ctx context.Context, in *MsgPermissionGrantOnObject, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
 	PermissionRevokeOnAddress(ctx context.Context, in *MsgPermissionRevokeOnAddress, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
@@ -224,27 +240,99 @@ func (c *msgClient) GuildUpdateJoinInfusionMinimumBypassByRequest(ctx context.Co
 	return out, nil
 }
 
-func (c *msgClient) GuildApproveRegister(ctx context.Context, in *MsgGuildApproveRegister, opts ...grpc.CallOption) (*MsgGuildApproveRegisterResponse, error) {
-	out := new(MsgGuildApproveRegisterResponse)
-	err := c.cc.Invoke(ctx, Msg_GuildApproveRegister_FullMethodName, in, out, opts...)
+func (c *msgClient) GuildMembershipInvite(ctx context.Context, in *MsgGuildMembershipInvite, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error) {
+	out := new(MsgGuildMembershipResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildMembershipInvite_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) GuildJoin(ctx context.Context, in *MsgGuildJoin, opts ...grpc.CallOption) (*MsgGuildJoinResponse, error) {
-	out := new(MsgGuildJoinResponse)
-	err := c.cc.Invoke(ctx, Msg_GuildJoin_FullMethodName, in, out, opts...)
+func (c *msgClient) GuildMembershipInviteApprove(ctx context.Context, in *MsgGuildMembershipInviteApprove, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error) {
+	out := new(MsgGuildMembershipResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildMembershipInviteApprove_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) GuildJoinProxy(ctx context.Context, in *MsgGuildJoinProxy, opts ...grpc.CallOption) (*MsgGuildJoinProxyResponse, error) {
-	out := new(MsgGuildJoinProxyResponse)
-	err := c.cc.Invoke(ctx, Msg_GuildJoinProxy_FullMethodName, in, out, opts...)
+func (c *msgClient) GuildMembershipInviteDeny(ctx context.Context, in *MsgGuildMembershipInviteDeny, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error) {
+	out := new(MsgGuildMembershipResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildMembershipInviteDeny_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildMembershipInviteRevoke(ctx context.Context, in *MsgGuildMembershipInviteRevoke, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error) {
+	out := new(MsgGuildMembershipResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildMembershipInviteRevoke_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildMembershipJoin(ctx context.Context, in *MsgGuildMembershipJoin, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error) {
+	out := new(MsgGuildMembershipResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildMembershipJoin_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildMembershipJoinProxy(ctx context.Context, in *MsgGuildMembershipJoinProxy, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error) {
+	out := new(MsgGuildMembershipResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildMembershipJoinProxy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildMembershipKick(ctx context.Context, in *MsgGuildMembershipKick, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error) {
+	out := new(MsgGuildMembershipResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildMembershipKick_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildMembershipRequest(ctx context.Context, in *MsgGuildMembershipRequest, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error) {
+	out := new(MsgGuildMembershipResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildMembershipRequest_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildMembershipRequestApprove(ctx context.Context, in *MsgGuildMembershipRequestApprove, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error) {
+	out := new(MsgGuildMembershipResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildMembershipRequestApprove_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildMembershipRequestDeny(ctx context.Context, in *MsgGuildMembershipRequestDeny, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error) {
+	out := new(MsgGuildMembershipResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildMembershipRequestDeny_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildMembershipRequestRevoke(ctx context.Context, in *MsgGuildMembershipRequestRevoke, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error) {
+	out := new(MsgGuildMembershipResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildMembershipRequestRevoke_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -485,9 +573,17 @@ type MsgServer interface {
 	GuildUpdateJoinInfusionMinimum(context.Context, *MsgGuildUpdateJoinInfusionMinimum) (*MsgGuildUpdateResponse, error)
 	GuildUpdateJoinInfusionMinimumBypassByInvite(context.Context, *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) (*MsgGuildUpdateResponse, error)
 	GuildUpdateJoinInfusionMinimumBypassByRequest(context.Context, *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) (*MsgGuildUpdateResponse, error)
-	GuildApproveRegister(context.Context, *MsgGuildApproveRegister) (*MsgGuildApproveRegisterResponse, error)
-	GuildJoin(context.Context, *MsgGuildJoin) (*MsgGuildJoinResponse, error)
-	GuildJoinProxy(context.Context, *MsgGuildJoinProxy) (*MsgGuildJoinProxyResponse, error)
+	GuildMembershipInvite(context.Context, *MsgGuildMembershipInvite) (*MsgGuildMembershipResponse, error)
+	GuildMembershipInviteApprove(context.Context, *MsgGuildMembershipInviteApprove) (*MsgGuildMembershipResponse, error)
+	GuildMembershipInviteDeny(context.Context, *MsgGuildMembershipInviteDeny) (*MsgGuildMembershipResponse, error)
+	GuildMembershipInviteRevoke(context.Context, *MsgGuildMembershipInviteRevoke) (*MsgGuildMembershipResponse, error)
+	GuildMembershipJoin(context.Context, *MsgGuildMembershipJoin) (*MsgGuildMembershipResponse, error)
+	GuildMembershipJoinProxy(context.Context, *MsgGuildMembershipJoinProxy) (*MsgGuildMembershipResponse, error)
+	GuildMembershipKick(context.Context, *MsgGuildMembershipKick) (*MsgGuildMembershipResponse, error)
+	GuildMembershipRequest(context.Context, *MsgGuildMembershipRequest) (*MsgGuildMembershipResponse, error)
+	GuildMembershipRequestApprove(context.Context, *MsgGuildMembershipRequestApprove) (*MsgGuildMembershipResponse, error)
+	GuildMembershipRequestDeny(context.Context, *MsgGuildMembershipRequestDeny) (*MsgGuildMembershipResponse, error)
+	GuildMembershipRequestRevoke(context.Context, *MsgGuildMembershipRequestRevoke) (*MsgGuildMembershipResponse, error)
 	PermissionGrantOnAddress(context.Context, *MsgPermissionGrantOnAddress) (*MsgPermissionResponse, error)
 	PermissionGrantOnObject(context.Context, *MsgPermissionGrantOnObject) (*MsgPermissionResponse, error)
 	PermissionRevokeOnAddress(context.Context, *MsgPermissionRevokeOnAddress) (*MsgPermissionResponse, error)
@@ -556,14 +652,38 @@ func (UnimplementedMsgServer) GuildUpdateJoinInfusionMinimumBypassByInvite(conte
 func (UnimplementedMsgServer) GuildUpdateJoinInfusionMinimumBypassByRequest(context.Context, *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) (*MsgGuildUpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildUpdateJoinInfusionMinimumBypassByRequest not implemented")
 }
-func (UnimplementedMsgServer) GuildApproveRegister(context.Context, *MsgGuildApproveRegister) (*MsgGuildApproveRegisterResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GuildApproveRegister not implemented")
+func (UnimplementedMsgServer) GuildMembershipInvite(context.Context, *MsgGuildMembershipInvite) (*MsgGuildMembershipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildMembershipInvite not implemented")
 }
-func (UnimplementedMsgServer) GuildJoin(context.Context, *MsgGuildJoin) (*MsgGuildJoinResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GuildJoin not implemented")
+func (UnimplementedMsgServer) GuildMembershipInviteApprove(context.Context, *MsgGuildMembershipInviteApprove) (*MsgGuildMembershipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildMembershipInviteApprove not implemented")
 }
-func (UnimplementedMsgServer) GuildJoinProxy(context.Context, *MsgGuildJoinProxy) (*MsgGuildJoinProxyResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GuildJoinProxy not implemented")
+func (UnimplementedMsgServer) GuildMembershipInviteDeny(context.Context, *MsgGuildMembershipInviteDeny) (*MsgGuildMembershipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildMembershipInviteDeny not implemented")
+}
+func (UnimplementedMsgServer) GuildMembershipInviteRevoke(context.Context, *MsgGuildMembershipInviteRevoke) (*MsgGuildMembershipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildMembershipInviteRevoke not implemented")
+}
+func (UnimplementedMsgServer) GuildMembershipJoin(context.Context, *MsgGuildMembershipJoin) (*MsgGuildMembershipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildMembershipJoin not implemented")
+}
+func (UnimplementedMsgServer) GuildMembershipJoinProxy(context.Context, *MsgGuildMembershipJoinProxy) (*MsgGuildMembershipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildMembershipJoinProxy not implemented")
+}
+func (UnimplementedMsgServer) GuildMembershipKick(context.Context, *MsgGuildMembershipKick) (*MsgGuildMembershipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildMembershipKick not implemented")
+}
+func (UnimplementedMsgServer) GuildMembershipRequest(context.Context, *MsgGuildMembershipRequest) (*MsgGuildMembershipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildMembershipRequest not implemented")
+}
+func (UnimplementedMsgServer) GuildMembershipRequestApprove(context.Context, *MsgGuildMembershipRequestApprove) (*MsgGuildMembershipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildMembershipRequestApprove not implemented")
+}
+func (UnimplementedMsgServer) GuildMembershipRequestDeny(context.Context, *MsgGuildMembershipRequestDeny) (*MsgGuildMembershipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildMembershipRequestDeny not implemented")
+}
+func (UnimplementedMsgServer) GuildMembershipRequestRevoke(context.Context, *MsgGuildMembershipRequestRevoke) (*MsgGuildMembershipResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildMembershipRequestRevoke not implemented")
 }
 func (UnimplementedMsgServer) PermissionGrantOnAddress(context.Context, *MsgPermissionGrantOnAddress) (*MsgPermissionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PermissionGrantOnAddress not implemented")
@@ -866,56 +986,200 @@ func _Msg_GuildUpdateJoinInfusionMinimumBypassByRequest_Handler(srv interface{},
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_GuildApproveRegister_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgGuildApproveRegister)
+func _Msg_GuildMembershipInvite_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildMembershipInvite)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).GuildApproveRegister(ctx, in)
+		return srv.(MsgServer).GuildMembershipInvite(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Msg_GuildApproveRegister_FullMethodName,
+		FullMethod: Msg_GuildMembershipInvite_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).GuildApproveRegister(ctx, req.(*MsgGuildApproveRegister))
+		return srv.(MsgServer).GuildMembershipInvite(ctx, req.(*MsgGuildMembershipInvite))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_GuildJoin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgGuildJoin)
+func _Msg_GuildMembershipInviteApprove_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildMembershipInviteApprove)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).GuildJoin(ctx, in)
+		return srv.(MsgServer).GuildMembershipInviteApprove(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Msg_GuildJoin_FullMethodName,
+		FullMethod: Msg_GuildMembershipInviteApprove_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).GuildJoin(ctx, req.(*MsgGuildJoin))
+		return srv.(MsgServer).GuildMembershipInviteApprove(ctx, req.(*MsgGuildMembershipInviteApprove))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_GuildJoinProxy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgGuildJoinProxy)
+func _Msg_GuildMembershipInviteDeny_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildMembershipInviteDeny)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).GuildJoinProxy(ctx, in)
+		return srv.(MsgServer).GuildMembershipInviteDeny(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Msg_GuildJoinProxy_FullMethodName,
+		FullMethod: Msg_GuildMembershipInviteDeny_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).GuildJoinProxy(ctx, req.(*MsgGuildJoinProxy))
+		return srv.(MsgServer).GuildMembershipInviteDeny(ctx, req.(*MsgGuildMembershipInviteDeny))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildMembershipInviteRevoke_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildMembershipInviteRevoke)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildMembershipInviteRevoke(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildMembershipInviteRevoke_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildMembershipInviteRevoke(ctx, req.(*MsgGuildMembershipInviteRevoke))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildMembershipJoin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildMembershipJoin)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildMembershipJoin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildMembershipJoin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildMembershipJoin(ctx, req.(*MsgGuildMembershipJoin))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildMembershipJoinProxy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildMembershipJoinProxy)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildMembershipJoinProxy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildMembershipJoinProxy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildMembershipJoinProxy(ctx, req.(*MsgGuildMembershipJoinProxy))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildMembershipKick_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildMembershipKick)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildMembershipKick(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildMembershipKick_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildMembershipKick(ctx, req.(*MsgGuildMembershipKick))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildMembershipRequest_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildMembershipRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildMembershipRequest(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildMembershipRequest_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildMembershipRequest(ctx, req.(*MsgGuildMembershipRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildMembershipRequestApprove_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildMembershipRequestApprove)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildMembershipRequestApprove(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildMembershipRequestApprove_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildMembershipRequestApprove(ctx, req.(*MsgGuildMembershipRequestApprove))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildMembershipRequestDeny_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildMembershipRequestDeny)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildMembershipRequestDeny(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildMembershipRequestDeny_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildMembershipRequestDeny(ctx, req.(*MsgGuildMembershipRequestDeny))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildMembershipRequestRevoke_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildMembershipRequestRevoke)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildMembershipRequestRevoke(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildMembershipRequestRevoke_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildMembershipRequestRevoke(ctx, req.(*MsgGuildMembershipRequestRevoke))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1408,16 +1672,48 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_GuildUpdateJoinInfusionMinimumBypassByRequest_Handler,
 		},
 		{
-			MethodName: "GuildApproveRegister",
-			Handler:    _Msg_GuildApproveRegister_Handler,
+			MethodName: "GuildMembershipInvite",
+			Handler:    _Msg_GuildMembershipInvite_Handler,
 		},
 		{
-			MethodName: "GuildJoin",
-			Handler:    _Msg_GuildJoin_Handler,
+			MethodName: "GuildMembershipInviteApprove",
+			Handler:    _Msg_GuildMembershipInviteApprove_Handler,
 		},
 		{
-			MethodName: "GuildJoinProxy",
-			Handler:    _Msg_GuildJoinProxy_Handler,
+			MethodName: "GuildMembershipInviteDeny",
+			Handler:    _Msg_GuildMembershipInviteDeny_Handler,
+		},
+		{
+			MethodName: "GuildMembershipInviteRevoke",
+			Handler:    _Msg_GuildMembershipInviteRevoke_Handler,
+		},
+		{
+			MethodName: "GuildMembershipJoin",
+			Handler:    _Msg_GuildMembershipJoin_Handler,
+		},
+		{
+			MethodName: "GuildMembershipJoinProxy",
+			Handler:    _Msg_GuildMembershipJoinProxy_Handler,
+		},
+		{
+			MethodName: "GuildMembershipKick",
+			Handler:    _Msg_GuildMembershipKick_Handler,
+		},
+		{
+			MethodName: "GuildMembershipRequest",
+			Handler:    _Msg_GuildMembershipRequest_Handler,
+		},
+		{
+			MethodName: "GuildMembershipRequestApprove",
+			Handler:    _Msg_GuildMembershipRequestApprove_Handler,
+		},
+		{
+			MethodName: "GuildMembershipRequestDeny",
+			Handler:    _Msg_GuildMembershipRequestDeny_Handler,
+		},
+		{
+			MethodName: "GuildMembershipRequestRevoke",
+			Handler:    _Msg_GuildMembershipRequestRevoke_Handler,
 		},
 		{
 			MethodName: "PermissionGrantOnAddress",
