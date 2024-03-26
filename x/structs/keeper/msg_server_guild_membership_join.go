@@ -45,6 +45,17 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
     if (guild.JoinInfusionMinimum != 0) {
         var currentFuel uint64
 
+        /* We're going to iterate through all the infusion records
+         * that were provided in the message, checking to make sure
+         * that they collectively meet the infusion minimum (as defined
+         * by the guild), and that the infusion is actually relevant.
+         *
+         * Infusion is...
+         * - A valid infusion record
+         * - Owned by the player
+         * - Points to a Reactor
+         * - The Destination Reactor is part of the Guild
+         */
         for _, infusionId := range msg.InfusionId {
 
             infusion, infusionFound := k.GetInfusionByID(ctx, infusionId)
@@ -71,6 +82,12 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 
             currentFuel = currentFuel + infusion.Fuel
 
+            /* This is an expensive process, so fail fast.
+             *
+             * This could mean an infusion is provided in the message that doesn't
+             * meet these requirements but at this point, we've met the infusion
+             * minimum of the guild so that doesn't actually matter.
+             */
             if (currentFuel > guild.JoinInfusionMinimum) { break }
         }
 
