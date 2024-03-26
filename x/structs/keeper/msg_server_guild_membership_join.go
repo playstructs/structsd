@@ -56,6 +56,19 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
                 return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Infusion (%s) does not belong to player (%s)", infusionId, msg.PlayerId)
             }
 
+            if (infusion.DestinationType != types.ObjectType_reactor) {
+                return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Only Reactor infusions allowed, Infusion (%s) unacceptable", infusionId)
+            }
+
+            reactor, reactorFound := k.GetReactor(ctx, infusion.DestinationId, false)
+            if (!reactorFound) {
+                return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Somehow this reactor (%s) doesn't exist, you should tell an adult",infusion.DestinationId)
+            }
+
+            if (reactor.GuildId != msg.GuildId) {
+                return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Infusion (%s) is for a Reactor (%s) of a different Guild (%s)", infusionId, reactor.Id, reactor.GuildId)
+            }
+
             currentFuel = currentFuel + infusion.Fuel
 
             if (currentFuel > guild.JoinInfusionMinimum) { break }
