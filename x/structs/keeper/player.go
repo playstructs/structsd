@@ -50,17 +50,17 @@ func (k Keeper) AppendPlayer(
 
 	// Create the player
 	count := k.GetPlayerCount(ctx)
+    player.Index = count
 
 	// Set the ID of the appended value
-	player.Id = GetObjectID(types.ObjectType_player, count)
-	player.Index = count
+	player.Id = GetObjectID(types.ObjectType_player, player.Index)
 
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlayerKey))
 	appendedValue := k.cdc.MustMarshal(&player)
 	store.Set([]byte(player.Id), appendedValue)
 
 	// Update player count
-	k.SetPlayerCount(ctx, count+1)
+	k.SetPlayerCount(ctx, player.Index + 1)
 
 	//Add Address records
 	k.SetPlayerIndexForAddress(ctx, player.Creator, player.Index)

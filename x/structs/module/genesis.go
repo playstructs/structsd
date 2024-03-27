@@ -35,32 +35,33 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
         k.SetInfusion(ctx, elem)
     }
 
-    k.SetGuildCount(ctx, genState.GuildCount)
+    k.SetGuildCount(ctx, genState.GuildCount + k.GetGuildCount(ctx))
     for _, elem := range genState.GuildList {
         k.SetGuild(ctx, elem)
     }
 
-    k.SetPlanetCount(ctx, genState.PlanetCount)
+    k.SetPlanetCount(ctx, genState.PlanetCount + k.GetPlanetCount(ctx))
     for _, elem := range genState.PlanetList {
         k.SetPlanet(ctx, elem)
     }
 
-    k.SetPlayerCount(ctx, genState.PlayerCount)
+
+    k.SetPlayerCount(ctx, genState.PlayerCount + k.GetPlayerCount(ctx))
     for _, elem := range genState.PlayerList {
         k.SetPlayer(ctx, elem)
     }
 
-    k.SetReactorCount(ctx, genState.ReactorCount)
+    k.SetReactorCount(ctx, genState.ReactorCount + k.GetReactorCount(ctx))
     for _, elem := range genState.ReactorList {
         k.SetReactor(ctx, elem)
     }
 
-    k.SetStructCount(ctx, genState.StructCount)
+    k.SetStructCount(ctx, genState.StructCount + k.GetStructCount(ctx))
     for _, elem := range genState.StructList {
         k.SetStruct(ctx, elem)
     }
 
-    k.SetSubstationCount(ctx, genState.SubstationCount)
+    k.SetSubstationCount(ctx, genState.SubstationCount + k.GetSubstationCount(ctx))
     for _, elem := range genState.SubstationList {
         k.SetSubstation(ctx, elem)
     }
