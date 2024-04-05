@@ -1,32 +1,36 @@
 version: 1
 accounts:
-  - name: alice
-    coins:
-      - 200alpha
-  - name: bob
-    coins:
-      - 100alpha
-client:
-  openapi:
-    path: docs/static/openapi.yml
+- name: alice
+  coins:
+  - 200alpha
+- name: bob
+  coins:
+  - 100alpha
 faucet:
   name: bob
   coins:
-    - 100alpha
-validators:
-  - name: alice
-    bonded: 100alpha
+  - 100alpha
+client:
+  typescript:
+    path: ../structs-client-ts
+  composables:
+    path: ../struct-vue/src/composables
+  openapi:
+    path: docs/static/openapi.yml
 genesis:
   app_state:
     crisis:
       constant_fee:
-        denom: "alpha"
-    staking:
-      params:
-        bond_denom: "alpha"
+        denom: alpha
     gov:
       deposit_params:
         min_deposit:
-          - amount: "100"
-            denom: "alpha"
-  chain_id: "structstestnet-00"
+        - amount: "100"
+          denom: alpha
+    staking:
+      params:
+        bond_denom: alpha
+  chain_id: structstestnet-00
+validators:
+- name: alice
+  bonded: 100alpha
