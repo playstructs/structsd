@@ -15,6 +15,10 @@ import (
       //"encoding/base64"
 
       "github.com/cosmos/btcutil/bech32"
+
+      cometbftcrypto "github.com/cometbft/cometbft/crypto"
+    "encoding/hex"
+      "fmt"
 )
 
 func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.MsgGuildMembershipJoinProxy) (*types.MsgGuildMembershipResponse, error) {
@@ -55,7 +59,18 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
     // TODO, we need to eventually add replay protection here as right now this
     // would allow guilds to use the same proof repeatedly.
     hashInput := "GUILD" + guild.Id + "ADDRESS" + msg.Address
-    if (!pubKey.VerifySignature([]byte(hashInput), msg.ProofSignature)) {
+    fmt.Printf("Hash: %s \n", hashInput)
+    hashDigest := cometbftcrypto.Sha256([]byte(hashInput))
+    fmt.Printf("\n Digest ", hashDigest)
+    fmt.Printf("\n Digest %s \n", hex.EncodeToString(hashDigest))
+    fmt.Printf("Proof", msg.ProofSignature)
+    fmt.Printf("Proof\n")
+
+    fmt.Printf("Digest Length: %d \n", len(hashDigest))
+    fmt.Printf("Proof Length: %d \n", len(msg.ProofSignature))
+
+    // Proof needs to only be 64 characters. Some systems provide a checksum bit on the end that ruins it all
+    if (!pubKey.VerifySignature([]byte(hashInput), msg.ProofSignature[:64])) {
          return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Proof signature verification failure")
     }
 
