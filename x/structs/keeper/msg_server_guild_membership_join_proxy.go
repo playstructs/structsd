@@ -2,23 +2,16 @@ package keeper
 
 import (
 	"context"
+    "fmt"
+
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 
-
-	//cryptotypes "github.com/cosmos/cosmos-sdk/crypto/types"
 	crypto "github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 
-	 "crypto/sha256"
-      "golang.org/x/crypto/ripemd160"
-      //"encoding/base64"
-
-      "github.com/cosmos/btcutil/bech32"
-
-      cometbftcrypto "github.com/cometbft/cometbft/crypto"
-    "encoding/hex"
-      "fmt"
+    //cometbftcrypto "github.com/cometbft/cometbft/crypto"
+    //"encoding/hex"
 )
 
 func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.MsgGuildMembershipJoinProxy) (*types.MsgGuildMembershipResponse, error) {
@@ -33,32 +26,27 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
         return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Referenced Guild (%s) not found", guild.Id)
     }
 
-
-    // Thank you Sunny
-    // https://gist.github.com/arnabghose997/f2d33955d5359de255055d6ce8c619f7
-    // Hash pubKeyBytes as: RIPEMD160(SHA256(public_key_bytes))
-	pubKeySha256Hash := sha256.Sum256(msg.ProofPubKey)
-	ripemd160hash := ripemd160.New()
-	ripemd160hash.Write(pubKeySha256Hash[:])
-	addressBytes := ripemd160hash.Sum(nil)
-
-    // Convert addressBytes into a bech32 string
-	address := toBech32("structs", addressBytes)
+    // Convert provided pub key into a bech32 string (i.e., an address)
+	address := types.PubKeyToBech32(msg.ProofPubKey)
 
     if (address != msg.Address) {
          return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Proof mismatch for %s vs %s vs %s", address, msg.Address)
     }
 
-
-
     pubKey := crypto.PubKey{}
     pubKey.Key = msg.ProofPubKey
 
+    // Check to see if the account has ever been used before
+    // If it has, then grab the nonce to make sure there is not a replay attack being taken against the player
+    //
+    // A playerIndex of 0 should never return anything other than a nonce of 0
+    playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Address)
+    nonce := k.GetGridAttribute(ctx, GetGridAttributeID(types.GridAttributeType_proxyNonce, types.ObjectType_player, playerIndex))
 
     // We rebuild the message manually here rather than trust the client to provide it
-    // TODO, we need to eventually add replay protection here as right now this
-    // would allow guilds to use the same proof repeatedly.
-    hashInput := "GUILD" + guild.Id + "ADDRESS" + msg.Address
+    hashInput := fmt.Sprintf("GUILD%sADDRESS%sNONCE%d", guild.Id, msg.Address, nonce)
+
+    /*
     fmt.Printf("Hash: %s \n", hashInput)
     hashDigest := cometbftcrypto.Sha256([]byte(hashInput))
     fmt.Printf("\n Digest ", hashDigest)
@@ -68,6 +56,7 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 
     fmt.Printf("Digest Length: %d \n", len(hashDigest))
     fmt.Printf("Proof Length: %d \n", len(msg.ProofSignature))
+    */
 
     // Proof needs to only be 64 characters. Some systems provide a checksum bit on the end that ruins it all
     if (!pubKey.VerifySignature([]byte(hashInput), msg.ProofSignature[:64])) {
@@ -152,23 +141,10 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
         k.SubstationConnectPlayer(ctx, substation, player)
     }
 
+    // The proxy join has completely mostly successfully at this point
+    // Increase the nonce of the player account to prevent replay of this signed message
+    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_proxyNonce, player.Id), 1)
+
 	return &types.MsgGuildMembershipResponse{}, nil
 }
 
-// Thank you Sunny
-// https://gist.github.com/arnabghose997/f2d33955d5359de255055d6ce8c619f7
-// Code courtesy: https://github.com/cosmos/cosmos-sdk/blob/90c9c9a9eb4676d05d3f4b89d9a907bd3db8194f/types/bech32/bech32.go#L10
-// TODO move this to utils
-func toBech32(addrPrefix string, addrBytes []byte) string {
-  converted, err := bech32.ConvertBits(addrBytes, 8, 5, true)
-	if err != nil {
-		panic(err)
-	}
-
-	addr, err := bech32.Encode(addrPrefix, converted)
-  if err != nil {
-    panic(err)
-  }
-
-  return addr
-}

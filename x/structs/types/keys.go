@@ -154,6 +154,7 @@ var GridAttributeType_enum = map[string]GridAttributeType{
 	"connectionCount":          GridAttributeType_connectionCount,
 	"allocationPointerStart":   GridAttributeType_allocationPointerStart,
 	"allocationPointerEnd":     GridAttributeType_allocationPointerEnd,
+	"proxyNonce":               GridAttributeType_proxyNonce,
 }
 
 

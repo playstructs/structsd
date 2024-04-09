@@ -32,6 +32,7 @@ enum gridAttributeType {
     connectionCount         = 7;
     allocationPointerStart  = 8;
     allocationPointerEnd    = 9;
+    proxyNonce              = 10;
 }
 
 enum allocationType {
