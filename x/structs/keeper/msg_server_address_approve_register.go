@@ -11,6 +11,10 @@ import (
 func (k msgServer) AddressApproveRegister(goCtx context.Context, msg *types.MsgAddressApproveRegister) (*types.MsgAddressRegisterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+    // Add an Active Address record to the
+    // indexer for UI requirements
+	k.AddressEmitActivity(ctx, msg.Creator)
+
     player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator), false)
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)

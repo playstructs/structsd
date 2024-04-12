@@ -11,6 +11,10 @@ import (
 func (k msgServer) SubstationDelete(goCtx context.Context, msg *types.MsgSubstationDelete) (*types.MsgSubstationDeleteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+    // Add an Active Address record to the
+    // indexer for UI requirements
+	k.AddressEmitActivity(ctx, msg.Creator)
+
 	player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator), false)
     if (!playerFound) {
         return &types.MsgSubstationDeleteResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)

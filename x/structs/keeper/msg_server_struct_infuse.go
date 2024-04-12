@@ -14,6 +14,10 @@ import (
 func (k msgServer) StructInfuse(goCtx context.Context, msg *types.MsgStructInfuse) (*types.MsgStructInfuseResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+    // Add an Active Address record to the
+    // indexer for UI requirements
+	k.AddressEmitActivity(ctx, msg.Creator)
+
     playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
     if (playerIndex == 0) {
         return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct infuse requires Player account but none associated with %s", msg.Creator)

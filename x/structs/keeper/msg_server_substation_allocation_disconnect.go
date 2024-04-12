@@ -11,6 +11,10 @@ import (
 func (k msgServer) SubstationAllocationDisconnect(goCtx context.Context, msg *types.MsgSubstationAllocationDisconnect) (*types.MsgSubstationAllocationDisconnectResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+    // Add an Active Address record to the
+    // indexer for UI requirements
+	k.AddressEmitActivity(ctx, msg.Creator)
+
     var err error
 
 	player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator), true)

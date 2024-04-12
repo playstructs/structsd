@@ -119,3 +119,8 @@ func (k Keeper) AddressGetRegisterRequest(ctx context.Context, address string) (
 
 }
 
+
+func (k Keeper) AddressEmitActivity(ctx context.Context, address string) {
+    ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAddressActivity{&types.AddressActivity{Address: address, BlockHeight: ctxSDK.BlockHeight(), BlockTime: ctxSDK.HeaderInfo().Time }})
+}

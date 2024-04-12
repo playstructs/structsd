@@ -11,6 +11,10 @@ import (
 func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate) (*types.MsgGuildCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+    // Add an Active Address record to the
+    // indexer for UI requirements
+	k.AddressEmitActivity(ctx, msg.Creator)
+
     var playerAddress sdk.AccAddress
     playerAddress, _ = sdk.AccAddressFromBech32(msg.Creator)
 

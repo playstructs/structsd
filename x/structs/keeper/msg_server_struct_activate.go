@@ -12,6 +12,10 @@ import (
 func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructActivate) (*types.MsgStructActivateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+    // Add an Active Address record to the
+    // indexer for UI requirements
+	k.AddressEmitActivity(ctx, msg.Creator)
+
     playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
     if (playerIndex == 0) {
         return &types.MsgStructActivateResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct mining requires Player account but none associated with %s", msg.Creator)

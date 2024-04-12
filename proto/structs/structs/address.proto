@@ -5,6 +5,7 @@ package structs.structs;
 
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 import "structs/structs/keys.proto";
 
 option go_package = "structs/x/structs/types";
@@ -20,5 +21,10 @@ message AddressAssociation {
   registrationStatus registrationStatus = 3;
 }
 
+message AddressActivity {
+  string                        address     = 1;
+  int64                         blockHeight = 2;
+  google.protobuf.Timestamp     blockTime   = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+}
 
 

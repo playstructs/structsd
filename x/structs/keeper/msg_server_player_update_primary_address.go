@@ -10,6 +10,10 @@ import (
 func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.MsgPlayerUpdatePrimaryAddress) (*types.MsgPlayerUpdatePrimaryAddressResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+    // Add an Active Address record to the
+    // indexer for UI requirements
+	k.AddressEmitActivity(ctx, msg.Creator)
+
     callingPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
     if (callingPlayerIndex == 0) {
         return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Player Management requires Player account but none associated with %s", msg.Creator)

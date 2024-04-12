@@ -11,6 +11,10 @@ import (
 func (k msgServer) GuildMembershipInviteApprove(goCtx context.Context, msg *types.MsgGuildMembershipInviteApprove) (*types.MsgGuildMembershipResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+    // Add an Active Address record to the
+    // indexer for UI requirements
+	k.AddressEmitActivity(ctx, msg.Creator)
+
 	// Look up requesting account
 	player := k.UpsertPlayer(ctx, msg.Creator, true)
 

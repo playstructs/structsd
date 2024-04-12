@@ -11,6 +11,10 @@ import (
 func (k msgServer) GuildUpdateEndpoint(goCtx context.Context, msg *types.MsgGuildUpdateEndpoint) (*types.MsgGuildUpdateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+    // Add an Active Address record to the
+    // indexer for UI requirements
+	k.AddressEmitActivity(ctx, msg.Creator)
+
     playerId := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
     if (playerId == 0) {
         return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Guild update requires Player account but none associated with %s", msg.Creator)

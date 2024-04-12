@@ -11,6 +11,10 @@ import (
 func (k msgServer) StructMineDeactivate(goCtx context.Context, msg *types.MsgStructMineDeactivate) (*types.MsgStructMineDeactivateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
+    // Add an Active Address record to the
+    // indexer for UI requirements
+	k.AddressEmitActivity(ctx, msg.Creator)
+
     playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
     if (playerIndex == 0) {
         return &types.MsgStructMineDeactivateResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build initialization requires Player account but none associated with %s", msg.Creator)
