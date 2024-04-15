@@ -2,7 +2,10 @@ syntax = "proto3";
 
 package structs.structs;
 
+import "structs/structs/keys.proto";
+
 option go_package = "structs/x/structs/types";
+
 
 message Planet {
   string id             = 1;
@@ -25,5 +28,5 @@ message Planet {
   uint64 landSlots      = 13;
   uint64 waterSlots     = 14;
 
-  uint64 status         = 15;
+  planetStatus status   = 15;
 }

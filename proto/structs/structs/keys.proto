@@ -77,13 +77,18 @@ enum structCategory {
 
 enum structStatus {
     building    = 0;
-    active      = 1;
-    inactive    = 2;
+    online      = 1;
+    offline     = 2;
     destroyed   = 3;
 }
 
 enum structType {
     miningRig      = 0;
-    refinery        = 1;
+    refinery       = 1;
     smallGenerator = 2;
+}
+
+enum planetStatus {
+    active      = 0;
+    complete    = 1;
 }

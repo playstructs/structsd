@@ -136,7 +136,7 @@ func (k Keeper) PlanetComplete(ctx context.Context, planet types.Planet) (bool) 
         return false
     }
 
-    planet.SetStatus(1)
+    planet.SetStatus(types.PlanetStatus_complete)
     k.SetPlanet(ctx, planet)
     return true
 

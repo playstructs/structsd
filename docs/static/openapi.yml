@@ -20599,6 +20599,9 @@ paths:
                       type: string
                     address:
                       type: string
+                    ratio:
+                      type: string
+                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -20749,6 +20752,9 @@ paths:
                     type: string
                   address:
                     type: string
+                  ratio:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -21264,7 +21270,10 @@ paths:
                       format: uint64
                     status:
                       type: string
-                      format: uint64
+                      enum:
+                        - active
+                        - complete
+                      default: active
               pagination:
                 type: object
                 properties:
@@ -21428,7 +21437,10 @@ paths:
                     format: uint64
                   status:
                     type: string
-                    format: uint64
+                    enum:
+                      - active
+                      - complete
+                    default: active
         default:
           description: An unexpected error response.
           schema:
@@ -21513,7 +21525,10 @@ paths:
                       format: uint64
                     status:
                       type: string
-                      format: uint64
+                      enum:
+                        - active
+                        - complete
+                      default: active
               pagination:
                 type: object
                 properties:
@@ -24099,7 +24114,10 @@ paths:
                     format: uint64
                   status:
                     type: string
-                    format: uint64
+                    enum:
+                      - active
+                      - complete
+                    default: active
         default:
           description: An unexpected error response.
           schema:
@@ -33631,6 +33649,9 @@ definitions:
         type: string
       address:
         type: string
+      ratio:
+        type: string
+        format: uint64
   structs.structs.Params:
     type: object
     description: Params defines the parameters for the module.
@@ -33690,7 +33711,10 @@ definitions:
         format: uint64
       status:
         type: string
-        format: uint64
+        enum:
+          - active
+          - complete
+        default: active
   structs.structs.Player:
     type: object
     properties:
@@ -34105,6 +34129,9 @@ definitions:
               type: string
             address:
               type: string
+            ratio:
+              type: string
+              format: uint64
       pagination:
         type: object
         properties:
@@ -34228,7 +34255,10 @@ definitions:
               format: uint64
             status:
               type: string
-              format: uint64
+              enum:
+                - active
+                - complete
+              default: active
       pagination:
         type: object
         properties:
@@ -34706,6 +34736,9 @@ definitions:
             type: string
           address:
             type: string
+          ratio:
+            type: string
+            format: uint64
   structs.structs.QueryGetPermissionResponse:
     type: object
     properties:
@@ -34769,7 +34802,10 @@ definitions:
             format: uint64
           status:
             type: string
-            format: uint64
+            enum:
+              - active
+              - complete
+            default: active
   structs.structs.QueryGetPlayerResponse:
     type: object
     properties:
@@ -35113,6 +35149,12 @@ definitions:
       - infusion
       - address
     default: guild
+  structs.structs.planetStatus:
+    type: string
+    enum:
+      - active
+      - complete
+    default: active
   structs.structs.registrationStatus:
     type: string
     enum:
@@ -35518,7 +35560,10 @@ definitions:
             format: uint64
           status:
             type: string
-            format: uint64
+            enum:
+              - active
+              - complete
+            default: active
   structs.structs.MsgPlayerUpdatePrimaryAddress:
     type: object
     properties:

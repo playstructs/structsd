@@ -11,20 +11,24 @@ func (a *Infusion) SetCommission(newCommission math.LegacyDec) (
                                                 oldCommissionPower uint64,
                                                 newPlayerPower uint64,
                                                 oldPlayerPower uint64,
+                                                newRatio uint64,
+                                                oldRatio uint64,
                                                 err error)  {
 
+    oldRatio               = a.Ratio
     oldInfusionPower       = a.Power
     oldCommissionPower     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(oldInfusionPower))).RoundInt().Uint64()
     oldPlayerPower         = a.Power - oldCommissionPower
 
 
-    newInfusionPower       = CalculateInfusionPower(a.DestinationType, a.Fuel)
-    newCommissionPower     = newCommission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(newInfusionPower))).RoundInt().Uint64()
-    newPlayerPower         = newInfusionPower - newCommissionPower
+    newInfusionPower, newRatio  = CalculateInfusionPower(a.DestinationType, a.Fuel)
+    newCommissionPower          = newCommission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(newInfusionPower))).RoundInt().Uint64()
+    newPlayerPower              = newInfusionPower - newCommissionPower
 
 
 	a.Commission  = newCommission
-	a.Power      = newInfusionPower
+	a.Power       = newInfusionPower
+    a.Ratio       = newRatio
 
     err           = nil
 	return
@@ -40,21 +44,24 @@ func (a *Infusion) SetFuel(newFuel uint64) (
                                     oldCommissionPower uint64,
                                     newPlayerPower uint64,
                                     oldPlayerPower uint64,
+                                    newRatio uint64,
+                                    oldRatio uint64,
                                     err error)  {
 
-    oldInfusionFuel         = a.Fuel
+    oldRatio               = a.Ratio
+    oldInfusionFuel        = a.Fuel
     oldInfusionPower       = a.Power
     oldCommissionPower     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(oldInfusionPower))).RoundInt().Uint64()
     oldPlayerPower         = a.Power - oldCommissionPower
 
-    newInfusionFuel         = newFuel
-    newInfusionPower       = CalculateInfusionPower(a.DestinationType, newInfusionFuel)
-    newCommissionPower     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(newInfusionPower))).RoundInt().Uint64()
-    newPlayerPower         = newInfusionPower - newCommissionPower
+    newInfusionFuel             = newFuel
+    newInfusionPower, newRatio  = CalculateInfusionPower(a.DestinationType, newInfusionFuel)
+    newCommissionPower          = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(newInfusionPower))).RoundInt().Uint64()
+    newPlayerPower              = newInfusionPower - newCommissionPower
 
-
-    a.Fuel      = newFuel
+    a.Fuel     = newFuel
 	a.Power    = newInfusionPower
+    a.Ratio    = newRatio
 
     err         = nil
 	return
@@ -69,22 +76,26 @@ func (a *Infusion) SetFuelAndCommission(newFuel uint64, newCommission math.Legac
                                     oldCommissionPower uint64,
                                     newPlayerPower uint64,
                                     oldPlayerPower uint64,
+                                    newRatio uint64,
+                                    oldRatio uint64,
                                     err error)  {
 
-    oldInfusionFuel         = a.Fuel
+    oldRatio               = a.Ratio
+    oldInfusionFuel        = a.Fuel
     oldInfusionPower       = a.Power
     oldCommissionPower     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(oldInfusionPower))).RoundInt().Uint64()
     oldPlayerPower         = a.Power - oldCommissionPower
 
-    newInfusionFuel         = newFuel
-    newInfusionPower       = CalculateInfusionPower(a.DestinationType, newInfusionFuel)
-    newCommissionPower     = newCommission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(newInfusionPower))).RoundInt().Uint64()
-    newPlayerPower         = newInfusionPower - newCommissionPower
+    newInfusionFuel             = newFuel
+    newInfusionPower, newRatio  = CalculateInfusionPower(a.DestinationType, newInfusionFuel)
+    newCommissionPower          = newCommission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(newInfusionPower))).RoundInt().Uint64()
+    newPlayerPower              = newInfusionPower - newCommissionPower
 
 
     a.Commission    = newCommission
     a.Fuel          = newFuel
-	a.Power        = newInfusionPower
+	a.Power         = newInfusionPower
+    a.Ratio         = newRatio
 
     err         = nil
 	return
@@ -99,24 +110,28 @@ func (a *Infusion) GetPowerDistribution() (infusionPower uint64, commissionPower
         return
 }
 
-func CalculateInfusionPower(destinationType ObjectType, fuel uint64) (energy uint64) {
+func CalculateInfusionPower(destinationType ObjectType, fuel uint64) (energy uint64, ratio uint64) {
     switch destinationType {
         case ObjectType_reactor:
-            energy = CalculateReactorPower(fuel)
+            energy, ratio = CalculateReactorPower(fuel)
         case ObjectType_struct:
-            energy = CalculateStructPower(fuel)
+            energy, ratio = CalculateStructPower(fuel)
     }
 
     return
 }
 
 func CreateNewInfusion(destinationType ObjectType, destinationId string, playerAddress string, playerId string, fuel uint64, commission math.LegacyDec) Infusion {
+
+	power, ratio := CalculateInfusionPower(destinationType, fuel)
+
 	return Infusion{
 		DestinationType: destinationType,
 		DestinationId: destinationId,
 		Commission: commission,
 		Fuel: fuel,
-		Power: CalculateInfusionPower(destinationType, fuel),
+		Power: power,
+		Ratio: ratio,
 		Address: playerAddress,
 		PlayerId: playerId,
 	}

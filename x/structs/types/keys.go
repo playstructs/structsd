@@ -198,8 +198,8 @@ var StructCategory_enum = map[string]StructCategory {
 
 var StructStatus_enum = map[string]StructStatus {
     "building":     StructStatus_building,
-    "active":       StructStatus_active,
-    "inactive":     StructStatus_inactive,
+    "online":       StructStatus_online,
+    "offline":      StructStatus_offline,
     "destroyed":    StructStatus_destroyed,
 }
 
@@ -209,3 +209,7 @@ var StructType_enum = map[string]StructType {
     "small_generator": StructType_smallGenerator,
 }
 
+var PlanetStatus_enum = map[string]PlanetStatus {
+    "active":       PlanetStatus_active,
+    "complete":     PlanetStatus_complete,
+}

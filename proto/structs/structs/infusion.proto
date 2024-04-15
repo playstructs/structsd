@@ -23,6 +23,8 @@ message Infusion {
 
   string      playerId                      = 6;
   string      address                       = 7;
+
+  uint64      ratio                         = 8;
 }
 
 

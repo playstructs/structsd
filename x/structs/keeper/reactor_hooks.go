@@ -132,7 +132,6 @@ func (k Keeper) ReactorRemoveInfusion(ctx context.Context, unbondingId uint64) {
 
     unbondingDelegation, err := k.stakingKeeper.GetUnbondingDelegationByUnbondingID(ctx, unbondingId)
     if (err == nil) {
-
         var playerAddress sdk.AccAddress
         playerAddress, _ = sdk.AccAddressFromBech32(unbondingDelegation.DelegatorAddress)
         var validatorAddress sdk.ValAddress
@@ -143,7 +142,14 @@ func (k Keeper) ReactorRemoveInfusion(ctx context.Context, unbondingId uint64) {
         reactor, _ := k.GetReactorByBytes(ctx, reactorBytes, false)
 
         unbondingInfusion, _ := k.GetInfusion(ctx, reactor.Id, playerAddress.String())
+
+        // iterate through unbondingDelegation.Entries
+            // add together entry.Balance
+
+        // Update the Infusion Defusing amount
         k.DestroyInfusion(ctx, unbondingInfusion)
+
+
 
     }
 }

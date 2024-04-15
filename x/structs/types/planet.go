@@ -17,7 +17,7 @@ func (planet *Planet) SetOwner(playerId string) error {
 }
 
 
-func (planet *Planet) SetStatus(status uint64) error {
+func (planet *Planet) SetStatus(status PlanetStatus) error {
 	planet.Status = status
 	return nil
 }
@@ -37,7 +37,7 @@ func CreateEmptyPlanet() Planet {
 	return Planet{
 		Creator:  "",
 		Owner: "",
-		Status: 0,
+		Status: PlanetStatus_active,
 
         Space: defaultEmptySlots,
         Sky: defaultEmptySlots,
@@ -50,7 +50,6 @@ func CreateEmptyPlanet() Planet {
         SkySlots:   PlanetStartingSlots,
         LandSlots:  PlanetStartingSlots,
         WaterSlots: PlanetStartingSlots,
-
 
 	}
 }

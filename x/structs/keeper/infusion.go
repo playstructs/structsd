@@ -77,7 +77,7 @@ func (k Keeper) UpsertInfusion(ctx context.Context, destinationType types.Object
 
     infusion, infusionFound := k.GetInfusion(ctx, destinationId, address)
     if (infusionFound) {
-         newInfusionFuel, oldInfusionFuel, newInfusionPower, oldInfusionPower, newCommissionPower, oldCommissionPower, newPlayerPower, oldPlayerPower, err = infusion.SetFuelAndCommission(fuel, commission)
+         newInfusionFuel, oldInfusionFuel, newInfusionPower, oldInfusionPower, newCommissionPower, oldCommissionPower, newPlayerPower, oldPlayerPower, _, _, err = infusion.SetFuelAndCommission(fuel, commission)
     } else {
 
         infusion = types.CreateNewInfusion(destinationType, destinationId, address, player.Id, fuel, commission)
