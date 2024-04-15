@@ -7,6 +7,7 @@ import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "structs/structs/keys.proto";
+import "amino/amino.proto";
 
 option go_package = "structs/x/structs/types";
 
@@ -18,7 +19,7 @@ message AddressRecord {
 message AddressAssociation {
   string address = 1;
   uint64 playerIndex = 2;
-  registrationStatus registrationStatus = 3;
+  registrationStatus registrationStatus = 3 [(amino.dont_omitempty) = true];
 }
 
 message AddressActivity {

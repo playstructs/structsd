@@ -3,6 +3,8 @@ syntax = "proto3";
 package structs.structs;
 
 import "structs/structs/keys.proto";
+import "amino/amino.proto";
+
 option go_package = "structs/x/structs/types";
 
 message Guild {
@@ -15,8 +17,8 @@ message Guild {
   string owner              = 5;
 
   uint64 joinInfusionMinimum = 6;
-  guildJoinBypassLevel joinInfusionMinimumBypassByRequest   = 7;
-  guildJoinBypassLevel joinInfusionMinimumBypassByInvite    = 8;
+  guildJoinBypassLevel joinInfusionMinimumBypassByRequest   = 7 [(amino.dont_omitempty) = true];
+  guildJoinBypassLevel joinInfusionMinimumBypassByInvite    = 8 [(amino.dont_omitempty) = true];
 
   string primaryReactorId    = 9;
   string entrySubstationId   = 10;
@@ -24,10 +26,10 @@ message Guild {
 
 
 message GuildMembershipApplication {
-  string guildId = 1;
-  string playerId = 2;
-  guildJoinType joinType = 3; // Invite | Request
-  registrationStatus registrationStatus = 4;
-  string proposer = 5;
-  string substationId = 6;
+  string guildId                        = 1;
+  string playerId                       = 2;
+  guildJoinType joinType                = 3 [(amino.dont_omitempty) = true]; // Invite | Request
+  registrationStatus registrationStatus = 4 [(amino.dont_omitempty) = true];
+  string proposer                       = 5;
+  string substationId                   = 6;
 }

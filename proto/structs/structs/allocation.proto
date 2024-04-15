@@ -3,13 +3,15 @@ package structs.structs;
 
 import "gogoproto/gogo.proto";
 import "structs/structs/keys.proto";
+import "amino/amino.proto";
+
 option go_package = "structs/x/structs/types";
 
 
 
 message Allocation {
   string          id              = 1;
-  allocationType  type            = 2;
+  allocationType  type            = 2 [(amino.dont_omitempty) = true];
 
   // Core allocation details
   string      sourceObjectId      = 3;

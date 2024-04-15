@@ -7,9 +7,10 @@ option go_package = "structs/x/structs/types";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "structs/structs/keys.proto";
+import "amino/amino.proto";
 
 message Infusion {
-  objectType  destinationType               = 1;
+  objectType  destinationType               = 1 [(amino.dont_omitempty) = true];
   string      destinationId                 = 2;
 
   uint64      fuel                          = 3;
