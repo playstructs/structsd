@@ -20602,6 +20602,8 @@ paths:
                     ratio:
                       type: string
                       format: uint64
+                    defusing:
+                      type: string
               pagination:
                 type: object
                 properties:
@@ -20755,6 +20757,8 @@ paths:
                   ratio:
                     type: string
                     format: uint64
+                  defusing:
+                    type: string
         default:
           description: An unexpected error response.
           schema:
@@ -33652,6 +33656,8 @@ definitions:
       ratio:
         type: string
         format: uint64
+      defusing:
+        type: string
   structs.structs.Params:
     type: object
     description: Params defines the parameters for the module.
@@ -34132,6 +34138,8 @@ definitions:
             ratio:
               type: string
               format: uint64
+            defusing:
+              type: string
       pagination:
         type: object
         properties:
@@ -34739,6 +34747,8 @@ definitions:
           ratio:
             type: string
             format: uint64
+          defusing:
+            type: string
   structs.structs.QueryGetPermissionResponse:
     type: object
     properties:

@@ -9,6 +9,8 @@ import (
 	"structs/x/structs/types"
 	"cosmossdk.io/math"
 
+	"fmt"
+
 )
 
 
@@ -90,9 +92,7 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx context.Context, playerAddress
     if (err == nil) {
 
         delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
-
         player := k.UpsertPlayer(ctx, playerAddress.String(), true)
-
 
         /*
          * Returns if needed (
@@ -129,8 +129,12 @@ func (k Keeper) ReactorUpdateFromValidator(ctx context.Context, validatorAddress
 
 
 func (k Keeper) ReactorRemoveInfusion(ctx context.Context, unbondingId uint64) {
-
+    fmt.Printf("New Unbonding Request %d \n", unbondingId)
     unbondingDelegation, err := k.stakingKeeper.GetUnbondingDelegationByUnbondingID(ctx, unbondingId)
+
+    fmt.Printf("Delegator Address: %s \n", unbondingDelegation.DelegatorAddress)
+    fmt.Printf("Validator Address: %s \n", unbondingDelegation.ValidatorAddress)
+
     if (err == nil) {
         var playerAddress sdk.AccAddress
         playerAddress, _ = sdk.AccAddressFromBech32(unbondingDelegation.DelegatorAddress)
@@ -143,13 +147,12 @@ func (k Keeper) ReactorRemoveInfusion(ctx context.Context, unbondingId uint64) {
 
         unbondingInfusion, _ := k.GetInfusion(ctx, reactor.Id, playerAddress.String())
 
-        // iterate through unbondingDelegation.Entries
-            // add together entry.Balance
+        amount := math.ZeroInt()
+        for _, entry := range unbondingDelegation.Entries {
+            amount = amount.Add(entry.InitialBalance)
+        }
 
-        // Update the Infusion Defusing amount
-        k.DestroyInfusion(ctx, unbondingInfusion)
-
-
-
+        unbondingInfusion.Defusing = amount
+        k.SetInfusion(ctx, unbondingInfusion)
     }
 }

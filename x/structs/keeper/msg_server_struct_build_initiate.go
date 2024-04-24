@@ -53,12 +53,9 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet (%s) specified already has a struct on that slot", msg.PlanetId)
     }
 
-
-
     structure := k.AppendStruct(ctx, player, msg.StructType, planet, msg.Slot)
     planet.SetLandSlot(structure)
     k.SetPlanet(ctx, planet)
-
 
 	return &types.MsgStructBuildInitiateResponse{Struct: structure}, nil
 }
