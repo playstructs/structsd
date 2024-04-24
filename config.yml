@@ -30,6 +30,10 @@ genesis:
     staking:
       params:
         bond_denom: alpha
+    slashing:
+      params:
+        signed_blocks_window: "35000"
+        min_signed_per_window: "0.05"
   chain_id: structstestnet-00
 validators:
 - name: alice

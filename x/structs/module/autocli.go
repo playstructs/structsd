@@ -407,7 +407,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      Short:          "Migrate a list of Players to another Substation",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "substationId"},{ProtoField: "playerId"}},
                  },
-                // TODO GUIld commands onwards
 
 				// this line is used by ignite scaffolding # autocli/tx
 			},
