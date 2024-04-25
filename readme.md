@@ -19,10 +19,10 @@ ignite chain serve
 
 ## Learn more
 
-- [Structs](https://playstructs.com)
-- [Project Wiki](https://watt.wiki)
+- [PlayStructs.com](https://playstructs.com)
+- [Structs Wiki](https://watt.wiki)
 - [@PlayStructs Twitter](https://twitter.com/playstructs)
-
+- [/structs Farcaster Channel](https://warpcast.com/~/channel/structs)
 
 ## License
 
