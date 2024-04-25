@@ -30,12 +30,12 @@ const (
     InitialSubstationOwnerEnergy = 100
 
 
-    DifficultyBuildAgeRange  = 1800 // 10 // 1800 // 36000 // 1 days
-    DifficultyActionAgeRange = 3600 // 20 // 3600 // 252000 // 7 days
+    DifficultyBuildAgeRange  = 36000 // 10 // 1800 // 36000 // 1 days
+    DifficultyActionAgeRange = 252000 // 20 // 3600 // 252000 // 7 days
 
     DifficultySabotageRangeMine   = DifficultyActionAgeRange  // 36000 // 1 days
     DifficultySabotageRangeRefine = DifficultyActionAgeRange // 252000 // 7 days
-    DifficultySabotageRangePower  = 3600 // 252000 // 7 days
+    DifficultySabotageRangePower  = 252000 // 252000 // 7 days
 
 )
 
