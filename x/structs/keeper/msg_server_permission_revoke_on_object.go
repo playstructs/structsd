@@ -31,7 +31,7 @@ func (k msgServer) PermissionRevokeOnObject(goCtx context.Context, msg *types.Ms
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has the Permissions permission for editing permissions
-    if (k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.Permissions))) {
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permissions)) {
         return &types.MsgPermissionResponse{}, sdkerrors.Wrapf(types.ErrPermissionAssociation, "Calling address (%s) has no permissions permission", msg.Creator)
     }
 

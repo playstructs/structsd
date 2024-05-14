@@ -6,10 +6,10 @@ genesis:
   app_state:
     crisis:
       constant_fee:
-        denom: "alpha"
+        denom: alpha
     staking:
       params:
-        bond_denom: "alpha"
+        bond_denom: alpha
     slashing:
       params:
         signed_blocks_window: "35000"
@@ -18,5 +18,5 @@ genesis:
       deposit_params:
         min_deposit:
           - amount: "100"
-            denom: "alpha"
+            denom: alpha
   chain_id: "structstestnet-00"

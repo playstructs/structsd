@@ -20,7 +20,7 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
 
     // Make sure the address calling this has Revoke permissions
-    if (k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionDelete)) {
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionDelete)) {
         return &types.MsgAddressRevokeResponse{}, sdkerrors.Wrapf(types.ErrPermissionRevoke, "Calling address (%s) has no Revoke permissions ", msg.Creator)
     }
 

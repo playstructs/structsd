@@ -22,12 +22,12 @@ func (k msgServer) AddressApproveRegister(goCtx context.Context, msg *types.MsgA
     // Make sure the address calling this has Associate permissions
     // Might just remove this though since an address can probably always allow for another address
     // as long as the permissions are same or less.
-    if (k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssociations)) {
+    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssociations)) {
         return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionAssociation, "Calling address (%s) has no Association permissions ", msg.Creator)
     }
 
     // The calling address must have a minimum of the same permission level
-    if (k.PermissionHasAll(ctx, addressPermissionId, types.Permission(msg.Permissions))) {
+    if (!k.PermissionHasAll(ctx, addressPermissionId, types.Permission(msg.Permissions))) {
         return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionAssociation, "Calling address (%s) does not have permissions needed to allow address association of higher functionality ", msg.Creator)
     }
 
