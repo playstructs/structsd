@@ -15,6 +15,13 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    // Is the address already associated with an account?
+    playerFoundForAddress := k.GetPlayerIndexFromAddress(ctx, msg.Address)
+    if (playerFoundForAddress > 0) {
+        return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not associate an address when already has an account")
+    }
+
+
     player, playerFound := k.GetPlayer(ctx, msg.PlayerId, false)
     if (playerFound) {
         // TODO Add address proof signature verification

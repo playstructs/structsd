@@ -71,6 +71,7 @@ func (k Keeper) AddressSetRegisterRequest(ctx context.Context, player types.Play
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAddressAssociation{&types.AddressAssociation{Address: address, PlayerIndex: player.Index, RegistrationStatus: types.RegistrationStatus_proposed}})
+
 }
 
 func (k Keeper) AddressApproveRegisterRequest(ctx context.Context, player types.Player, address string, permissions types.Permission) {
