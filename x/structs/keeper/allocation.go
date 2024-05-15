@@ -184,6 +184,10 @@ func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation) 
 
             // Increment the Capacity of the new Destination
             k.SetGridAttributeIncrement(ctx, destinationCapacityId, allocation.Power)
+
+            // Deal with the player connection capacity
+            k.UpdateGridConnectionCapacity(ctx, allocation.DestinationId)
+
         }
     }
 
