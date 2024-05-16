@@ -25,13 +25,13 @@ func (k Keeper) Grid(goCtx context.Context, req *types.QueryGetGridRequest) (*ty
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-    var grids *types.GridRecord
+    var grids types.GridRecord
 
     gridsValue       := k.GetGridAttribute(ctx, req.AttributeId)
     grids.AttributeId   = req.AttributeId
     grids.Value         = uint64(gridsValue)
 
-	return &types.QueryGetGridResponse{GridRecord: grids}, nil
+	return &types.QueryGetGridResponse{GridRecord: &grids}, nil
 }
 
 

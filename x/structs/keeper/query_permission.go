@@ -25,13 +25,13 @@ func (k Keeper) Permission(goCtx context.Context, req *types.QueryGetPermissionR
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
-    var permissions *types.PermissionRecord
+    var permissions types.PermissionRecord
 
     permissionValue  := k.GetPermissionsByBytes(ctx, []byte(req.PermissionId))
     permissions.PermissionId    = req.PermissionId
     permissions.Value           = uint64(permissionValue)
 
-	return &types.QueryGetPermissionResponse{PermissionRecord: permissions}, nil
+	return &types.QueryGetPermissionResponse{PermissionRecord: &permissions}, nil
 }
 
 

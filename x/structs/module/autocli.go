@@ -14,6 +14,28 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 			EnhanceCustomCommand: true, // only required if you want to use the custom command
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
 				{
+                    RpcMethod:      "Address",
+                    Use:            "address [address]",
+                    Short:          "Show the details of a specific Address",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "address"}},
+                },
+                {
+                    RpcMethod:      "AddressAll",
+                    Use:            "address-all",
+                    Short:          "Returns all Addresses",
+                },
+				{
+                    RpcMethod:      "AddressAllByPlayer",
+                    Use:            "address-all-by-player [player id]",
+                    Short:          "Returns all Addresses for a specific Player",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"}},
+                },
+                {
+                    RpcMethod:      "AddressAssociationAll",
+                    Use:            "address-association-all",
+                    Short:          "Returns all Addresses that are pending association",
+                },
+                {
                     RpcMethod:      "Allocation",
                     Use:            "allocation [allocation id]",
                     Short:          "Show the details of a specific Allocation",
@@ -23,6 +45,17 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     RpcMethod:      "AllocationAll",
                     Use:            "allocation-all",
                     Short:          "Returns all Allocations",
+                },
+				{
+                    RpcMethod:      "Grid",
+                    Use:            "grid [grid attribute id]",
+                    Short:          "Show the details of a specific Grid Attribute",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "attributeId"}},
+                },
+                {
+                    RpcMethod:      "GridAll",
+                    Use:            "grid-all",
+                    Short:          "Returns all Grid Attributes",
                 },
 				{
                     RpcMethod:      "Guild",
@@ -58,10 +91,33 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     Short:          "Returns all Infusions",
                 },
 				{
-					RpcMethod: "Params",
-					Use:       "params",
-					Short:     "Shows the parameters of the module",
+					RpcMethod:      "Params",
+					Use:            "params",
+					Short:          "Shows the parameters of the module",
 				},
+				{
+                    RpcMethod:      "Permission",
+                    Use:            "permission [permission id]",
+                    Short:          "Show the details of a specific Permission",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "permissionId"}},
+                },
+                {
+                    RpcMethod:      "PermissionAll",
+                    Use:            "permission-all",
+                    Short:          "Returns all Permissions",
+                },
+				{
+                    RpcMethod:      "PermissionByObject",
+                    Use:            "permission-by-object [object id]",
+                    Short:          "Show the details of a specific Permission",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "objectId"}},
+                },
+				{
+                    RpcMethod:      "PermissionByPlayer",
+                    Use:            "permission-by-player [player id]",
+                    Short:          "Show the details of a specific Permission",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"}},
+                },
 				{
                     RpcMethod:      "Planet",
                     Use:            "planet [planet id]",
