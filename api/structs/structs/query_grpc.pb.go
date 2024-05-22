@@ -24,7 +24,6 @@ const (
 	Query_Address_FullMethodName                       = "/structs.structs.Query/Address"
 	Query_AddressAll_FullMethodName                    = "/structs.structs.Query/AddressAll"
 	Query_AddressAllByPlayer_FullMethodName            = "/structs.structs.Query/AddressAllByPlayer"
-	Query_AddressAssociationAll_FullMethodName         = "/structs.structs.Query/AddressAssociationAll"
 	Query_Allocation_FullMethodName                    = "/structs.structs.Query/Allocation"
 	Query_AllocationAll_FullMethodName                 = "/structs.structs.Query/AllocationAll"
 	Query_Grid_FullMethodName                          = "/structs.structs.Query/Grid"
@@ -63,7 +62,6 @@ type QueryClient interface {
 	Address(ctx context.Context, in *QueryGetAddressRequest, opts ...grpc.CallOption) (*QueryAddressResponse, error)
 	AddressAll(ctx context.Context, in *QueryAllAddressRequest, opts ...grpc.CallOption) (*QueryAllAddressResponse, error)
 	AddressAllByPlayer(ctx context.Context, in *QueryAllAddressByPlayerRequest, opts ...grpc.CallOption) (*QueryAllAddressResponse, error)
-	AddressAssociationAll(ctx context.Context, in *QueryAllAddressAssociationRequest, opts ...grpc.CallOption) (*QueryAllAddressAssociationResponse, error)
 	// Queries a list of Allocation items.
 	Allocation(ctx context.Context, in *QueryGetAllocationRequest, opts ...grpc.CallOption) (*QueryGetAllocationResponse, error)
 	AllocationAll(ctx context.Context, in *QueryAllAllocationRequest, opts ...grpc.CallOption) (*QueryAllAllocationResponse, error)
@@ -152,15 +150,6 @@ func (c *queryClient) AddressAll(ctx context.Context, in *QueryAllAddressRequest
 func (c *queryClient) AddressAllByPlayer(ctx context.Context, in *QueryAllAddressByPlayerRequest, opts ...grpc.CallOption) (*QueryAllAddressResponse, error) {
 	out := new(QueryAllAddressResponse)
 	err := c.cc.Invoke(ctx, Query_AddressAllByPlayer_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *queryClient) AddressAssociationAll(ctx context.Context, in *QueryAllAddressAssociationRequest, opts ...grpc.CallOption) (*QueryAllAddressAssociationResponse, error) {
-	out := new(QueryAllAddressAssociationResponse)
-	err := c.cc.Invoke(ctx, Query_AddressAssociationAll_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -403,7 +392,6 @@ type QueryServer interface {
 	Address(context.Context, *QueryGetAddressRequest) (*QueryAddressResponse, error)
 	AddressAll(context.Context, *QueryAllAddressRequest) (*QueryAllAddressResponse, error)
 	AddressAllByPlayer(context.Context, *QueryAllAddressByPlayerRequest) (*QueryAllAddressResponse, error)
-	AddressAssociationAll(context.Context, *QueryAllAddressAssociationRequest) (*QueryAllAddressAssociationResponse, error)
 	// Queries a list of Allocation items.
 	Allocation(context.Context, *QueryGetAllocationRequest) (*QueryGetAllocationResponse, error)
 	AllocationAll(context.Context, *QueryAllAllocationRequest) (*QueryAllAllocationResponse, error)
@@ -464,9 +452,6 @@ func (UnimplementedQueryServer) AddressAll(context.Context, *QueryAllAddressRequ
 }
 func (UnimplementedQueryServer) AddressAllByPlayer(context.Context, *QueryAllAddressByPlayerRequest) (*QueryAllAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddressAllByPlayer not implemented")
-}
-func (UnimplementedQueryServer) AddressAssociationAll(context.Context, *QueryAllAddressAssociationRequest) (*QueryAllAddressAssociationResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddressAssociationAll not implemented")
 }
 func (UnimplementedQueryServer) Allocation(context.Context, *QueryGetAllocationRequest) (*QueryGetAllocationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Allocation not implemented")
@@ -642,24 +627,6 @@ func _Query_AddressAllByPlayer_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).AddressAllByPlayer(ctx, req.(*QueryAllAddressByPlayerRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Query_AddressAssociationAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(QueryAllAddressAssociationRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(QueryServer).AddressAssociationAll(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Query_AddressAssociationAll_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(QueryServer).AddressAssociationAll(ctx, req.(*QueryAllAddressAssociationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1140,10 +1107,6 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddressAllByPlayer",
 			Handler:    _Query_AddressAllByPlayer_Handler,
-		},
-		{
-			MethodName: "AddressAssociationAll",
-			Handler:    _Query_AddressAssociationAll_Handler,
 		},
 		{
 			MethodName: "Allocation",

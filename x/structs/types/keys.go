@@ -103,7 +103,6 @@ const (
 
 const (
 	AddressPlayerKey = "Address/player/"
-	AddressRegistrationKey = "Address/registration/"
 )
 
 const (

@@ -31,11 +31,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"}},
                 },
                 {
-                    RpcMethod:      "AddressAssociationAll",
-                    Use:            "address-association-all",
-                    Short:          "Returns all Addresses that are pending association",
-                },
-                {
                     RpcMethod:      "Allocation",
                     Use:            "allocation [allocation id]",
                     Short:          "Show the details of a specific Allocation",
@@ -185,16 +180,10 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 					Skip:      true, // skipped because authority gated
 				},
                 {
-                    RpcMethod:      "AddressApproveRegister",
-                    Use:            "address-approve-register [approve] [address] [permissions]",
-                    Short:          "Provide a decision on an address registration attempt",
-                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{ {ProtoField: "approve"},{ProtoField: "address"},{ProtoField: "permissions", Optional: true }},
-                },
-                {
                     RpcMethod:      "AddressRegister",
-                    Use:            "address-register [player id] [address]",
+                    Use:            "address-register [address] [proof pubkey] [proof signature] [permissions] ",
                     Short:          "Submit a claim on an address, relating it to a player account",
-                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{ {ProtoField: "playerId"},{ProtoField: "address"}},
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "address"},{ProtoField: "proofPubKey"},{ProtoField: "proofSignature"},{ProtoField: "permissions"}},
                 },
                 {
                     RpcMethod:      "AddressRevoke",

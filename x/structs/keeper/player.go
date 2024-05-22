@@ -68,15 +68,6 @@ func (k Keeper) AppendPlayer(
 	addressPermissionId := GetAddressPermissionIDBytes(player.Creator)
 	k.PermissionAdd(ctx, addressPermissionId, types.PermissionAll)
 
-	// Add the Account keeper record
-	// This is needed for the proxy account creation
-	playerAccAddress, _ := sdk.AccAddressFromBech32(player.Creator)
-	playerAuthAccount := k.accountKeeper.GetAccount(ctx, playerAccAddress)
-    if playerAuthAccount == nil {
-        playerAuthAccount = k.accountKeeper.NewAccountWithAddress(ctx, playerAccAddress)
-        k.accountKeeper.SetAccount(ctx, playerAuthAccount)
-    }
-
     // Add the initial Player Load
     k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, player.Id), types.PlayerPassiveDraw)
 

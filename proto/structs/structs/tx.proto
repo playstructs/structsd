@@ -24,7 +24,6 @@ service Msg {
   rpc UpdateParams(MsgUpdateParams) returns (MsgUpdateParamsResponse);
 
   rpc AddressRegister                (MsgAddressRegister               ) returns (MsgAddressRegisterResponse );
-  rpc AddressApproveRegister         (MsgAddressApproveRegister        ) returns (MsgAddressRegisterResponse );
   rpc AddressRevoke                  (MsgAddressRevoke                 ) returns (MsgAddressRevokeResponse );
 
   rpc AllocationCreate               (MsgAllocationCreate              ) returns (MsgAllocationCreateResponse );
@@ -104,24 +103,14 @@ message MsgUpdateParams {
 // MsgUpdateParams message.
 message MsgUpdateParamsResponse {}
 
-
-message MsgAddressApproveRegister {
-  option (cosmos.msg.v1.signer) = "creator";
-
-  string creator     = 1;
-  bool   approve     = 2;
-  string address     = 3;
-  uint64 permissions = 4;
-}
-
-
 message MsgAddressRegister {
   option (cosmos.msg.v1.signer) = "creator";
 
-  string creator     = 1;
-  string playerId    = 2;
-  string address     = 3;
-
+  string creator        = 1;
+  string address        = 2;
+  bytes  proofPubKey    = 3;
+  bytes  proofSignature = 4;
+  uint64 permissions    = 5;
 }
 
 message MsgAddressRegisterResponse {}

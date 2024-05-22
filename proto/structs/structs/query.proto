@@ -47,10 +47,6 @@ service Query {
     option (google.api.http).get = "/structs/address_by_player/{playerId}";
   }
 
-  rpc AddressAssociationAll (QueryAllAddressAssociationRequest) returns (QueryAllAddressAssociationResponse) {
-    option (google.api.http).get = "/structs/address_association";
-  }
-
   // Queries a list of Allocation items.
   rpc Allocation    (QueryGetAllocationRequest) returns (QueryGetAllocationResponse) {
     option (google.api.http).get = "/structs/allocation/{id}";
@@ -209,16 +205,6 @@ message QueryAllAddressResponse {
   repeated QueryAddressResponse address = 1;
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
-
-message QueryAllAddressAssociationRequest {
-  cosmos.base.query.v1beta1.PageRequest pagination = 1;
-}
-
-message QueryAllAddressAssociationResponse {
-  repeated AddressAssociation addressAssociation = 1;
-  cosmos.base.query.v1beta1.PageResponse pagination = 2;
-}
-
 
 message QueryGetAllocationRequest {
   string id = 1;

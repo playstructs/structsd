@@ -21,7 +21,6 @@ const _ = grpc.SupportPackageIsVersion7
 const (
 	Msg_UpdateParams_FullMethodName                                  = "/structs.structs.Msg/UpdateParams"
 	Msg_AddressRegister_FullMethodName                               = "/structs.structs.Msg/AddressRegister"
-	Msg_AddressApproveRegister_FullMethodName                        = "/structs.structs.Msg/AddressApproveRegister"
 	Msg_AddressRevoke_FullMethodName                                 = "/structs.structs.Msg/AddressRevoke"
 	Msg_AllocationCreate_FullMethodName                              = "/structs.structs.Msg/AllocationCreate"
 	Msg_GuildCreate_FullMethodName                                   = "/structs.structs.Msg/GuildCreate"
@@ -76,7 +75,6 @@ type MsgClient interface {
 	// parameters. The authority defaults to the x/gov module account.
 	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
 	AddressRegister(ctx context.Context, in *MsgAddressRegister, opts ...grpc.CallOption) (*MsgAddressRegisterResponse, error)
-	AddressApproveRegister(ctx context.Context, in *MsgAddressApproveRegister, opts ...grpc.CallOption) (*MsgAddressRegisterResponse, error)
 	AddressRevoke(ctx context.Context, in *MsgAddressRevoke, opts ...grpc.CallOption) (*MsgAddressRevokeResponse, error)
 	AllocationCreate(ctx context.Context, in *MsgAllocationCreate, opts ...grpc.CallOption) (*MsgAllocationCreateResponse, error)
 	GuildCreate(ctx context.Context, in *MsgGuildCreate, opts ...grpc.CallOption) (*MsgGuildCreateResponse, error)
@@ -144,15 +142,6 @@ func (c *msgClient) UpdateParams(ctx context.Context, in *MsgUpdateParams, opts 
 func (c *msgClient) AddressRegister(ctx context.Context, in *MsgAddressRegister, opts ...grpc.CallOption) (*MsgAddressRegisterResponse, error) {
 	out := new(MsgAddressRegisterResponse)
 	err := c.cc.Invoke(ctx, Msg_AddressRegister_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) AddressApproveRegister(ctx context.Context, in *MsgAddressApproveRegister, opts ...grpc.CallOption) (*MsgAddressRegisterResponse, error) {
-	out := new(MsgAddressRegisterResponse)
-	err := c.cc.Invoke(ctx, Msg_AddressApproveRegister_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -563,7 +552,6 @@ type MsgServer interface {
 	// parameters. The authority defaults to the x/gov module account.
 	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
 	AddressRegister(context.Context, *MsgAddressRegister) (*MsgAddressRegisterResponse, error)
-	AddressApproveRegister(context.Context, *MsgAddressApproveRegister) (*MsgAddressRegisterResponse, error)
 	AddressRevoke(context.Context, *MsgAddressRevoke) (*MsgAddressRevokeResponse, error)
 	AllocationCreate(context.Context, *MsgAllocationCreate) (*MsgAllocationCreateResponse, error)
 	GuildCreate(context.Context, *MsgGuildCreate) (*MsgGuildCreateResponse, error)
@@ -621,9 +609,6 @@ func (UnimplementedMsgServer) UpdateParams(context.Context, *MsgUpdateParams) (*
 }
 func (UnimplementedMsgServer) AddressRegister(context.Context, *MsgAddressRegister) (*MsgAddressRegisterResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddressRegister not implemented")
-}
-func (UnimplementedMsgServer) AddressApproveRegister(context.Context, *MsgAddressApproveRegister) (*MsgAddressRegisterResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AddressApproveRegister not implemented")
 }
 func (UnimplementedMsgServer) AddressRevoke(context.Context, *MsgAddressRevoke) (*MsgAddressRevokeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddressRevoke not implemented")
@@ -802,24 +787,6 @@ func _Msg_AddressRegister_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).AddressRegister(ctx, req.(*MsgAddressRegister))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_AddressApproveRegister_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgAddressApproveRegister)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).AddressApproveRegister(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_AddressApproveRegister_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).AddressApproveRegister(ctx, req.(*MsgAddressApproveRegister))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1630,10 +1597,6 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AddressRegister",
 			Handler:    _Msg_AddressRegister_Handler,
-		},
-		{
-			MethodName: "AddressApproveRegister",
-			Handler:    _Msg_AddressApproveRegister_Handler,
 		},
 		{
 			MethodName: "AddressRevoke",
