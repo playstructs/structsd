@@ -108,8 +108,8 @@ message MsgAddressRegister {
 
   string creator        = 1;
   string address        = 2;
-  bytes  proofPubKey    = 3;
-  bytes  proofSignature = 4;
+  string proofPubKey    = 3;
+  string proofSignature = 4;
   uint64 permissions    = 5;
 }
 
@@ -254,8 +254,8 @@ message MsgGuildMembershipJoinProxy {
   string address          = 2;
   string substationId     = 3;
 
-  bytes proofPubKey       = 4;
-  bytes proofSignature    = 5;
+  string proofPubKey       = 4;
+  string proofSignature    = 5;
 }
 
 message MsgGuildMembershipKick {

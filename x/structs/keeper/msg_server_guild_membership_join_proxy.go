@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
     "fmt"
+    "encoding/hex"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
@@ -11,7 +12,6 @@ import (
 	crypto "github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
 
     //cometbftcrypto "github.com/cometbft/cometbft/crypto"
-    //"encoding/hex"
 )
 
 func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.MsgGuildMembershipJoinProxy) (*types.MsgGuildMembershipResponse, error) {
@@ -30,15 +30,23 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
         return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Referenced Guild (%s) not found", guild.Id)
     }
 
+	// Decode the PubKey from hex Encoding
+    fmt.Println("Encoding string:", msg.ProofPubKey)
+
+    decodedProofPubKey, decodeErr := hex.DecodeString(msg.ProofPubKey)
+    if decodeErr != nil {
+        fmt.Println("Error decoding string:", decodeErr)
+    }
+
     // Convert provided pub key into a bech32 string (i.e., an address)
-	address := types.PubKeyToBech32(msg.ProofPubKey)
+	address := types.PubKeyToBech32(decodedProofPubKey)
 
     if (address != msg.Address) {
          return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Proof mismatch for %s vs %s vs %s", address, msg.Address)
     }
 
     pubKey := crypto.PubKey{}
-    pubKey.Key = msg.ProofPubKey
+    pubKey.Key = decodedProofPubKey
 
     // Check to see if the account has ever been used before
     // If it has, then grab the nonce to make sure there is not a replay attack being taken against the player
@@ -62,8 +70,14 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
     fmt.Printf("Proof Length: %d \n", len(msg.ProofSignature))
     */
 
+    // Decode the Signature from Hex Encoding
+    decodedProofSignature, decodeErr := hex.DecodeString(msg.ProofSignature)
+    if decodeErr != nil {
+        fmt.Println("Error decoding string:", decodeErr)
+    }
+
     // Proof needs to only be 64 characters. Some systems provide a checksum bit on the end that ruins it all
-    if (!pubKey.VerifySignature([]byte(hashInput), msg.ProofSignature[:64])) {
+    if (!pubKey.VerifySignature([]byte(hashInput), decodedProofSignature[:64])) {
          return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Proof signature verification failure")
     }
 

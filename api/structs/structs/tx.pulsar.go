@@ -967,14 +967,14 @@ func (x *fastReflection_MsgAddressRegister) Range(f func(protoreflect.FieldDescr
 			return
 		}
 	}
-	if len(x.ProofPubKey) != 0 {
-		value := protoreflect.ValueOfBytes(x.ProofPubKey)
+	if x.ProofPubKey != "" {
+		value := protoreflect.ValueOfString(x.ProofPubKey)
 		if !f(fd_MsgAddressRegister_proofPubKey, value) {
 			return
 		}
 	}
-	if len(x.ProofSignature) != 0 {
-		value := protoreflect.ValueOfBytes(x.ProofSignature)
+	if x.ProofSignature != "" {
+		value := protoreflect.ValueOfString(x.ProofSignature)
 		if !f(fd_MsgAddressRegister_proofSignature, value) {
 			return
 		}
@@ -1005,9 +1005,9 @@ func (x *fastReflection_MsgAddressRegister) Has(fd protoreflect.FieldDescriptor)
 	case "structs.structs.MsgAddressRegister.address":
 		return x.Address != ""
 	case "structs.structs.MsgAddressRegister.proofPubKey":
-		return len(x.ProofPubKey) != 0
+		return x.ProofPubKey != ""
 	case "structs.structs.MsgAddressRegister.proofSignature":
-		return len(x.ProofSignature) != 0
+		return x.ProofSignature != ""
 	case "structs.structs.MsgAddressRegister.permissions":
 		return x.Permissions != uint64(0)
 	default:
@@ -1031,9 +1031,9 @@ func (x *fastReflection_MsgAddressRegister) Clear(fd protoreflect.FieldDescripto
 	case "structs.structs.MsgAddressRegister.address":
 		x.Address = ""
 	case "structs.structs.MsgAddressRegister.proofPubKey":
-		x.ProofPubKey = nil
+		x.ProofPubKey = ""
 	case "structs.structs.MsgAddressRegister.proofSignature":
-		x.ProofSignature = nil
+		x.ProofSignature = ""
 	case "structs.structs.MsgAddressRegister.permissions":
 		x.Permissions = uint64(0)
 	default:
@@ -1060,10 +1060,10 @@ func (x *fastReflection_MsgAddressRegister) Get(descriptor protoreflect.FieldDes
 		return protoreflect.ValueOfString(value)
 	case "structs.structs.MsgAddressRegister.proofPubKey":
 		value := x.ProofPubKey
-		return protoreflect.ValueOfBytes(value)
+		return protoreflect.ValueOfString(value)
 	case "structs.structs.MsgAddressRegister.proofSignature":
 		value := x.ProofSignature
-		return protoreflect.ValueOfBytes(value)
+		return protoreflect.ValueOfString(value)
 	case "structs.structs.MsgAddressRegister.permissions":
 		value := x.Permissions
 		return protoreflect.ValueOfUint64(value)
@@ -1092,9 +1092,9 @@ func (x *fastReflection_MsgAddressRegister) Set(fd protoreflect.FieldDescriptor,
 	case "structs.structs.MsgAddressRegister.address":
 		x.Address = value.Interface().(string)
 	case "structs.structs.MsgAddressRegister.proofPubKey":
-		x.ProofPubKey = value.Bytes()
+		x.ProofPubKey = value.Interface().(string)
 	case "structs.structs.MsgAddressRegister.proofSignature":
-		x.ProofSignature = value.Bytes()
+		x.ProofSignature = value.Interface().(string)
 	case "structs.structs.MsgAddressRegister.permissions":
 		x.Permissions = value.Uint()
 	default:
@@ -1145,9 +1145,9 @@ func (x *fastReflection_MsgAddressRegister) NewField(fd protoreflect.FieldDescri
 	case "structs.structs.MsgAddressRegister.address":
 		return protoreflect.ValueOfString("")
 	case "structs.structs.MsgAddressRegister.proofPubKey":
-		return protoreflect.ValueOfBytes(nil)
+		return protoreflect.ValueOfString("")
 	case "structs.structs.MsgAddressRegister.proofSignature":
-		return protoreflect.ValueOfBytes(nil)
+		return protoreflect.ValueOfString("")
 	case "structs.structs.MsgAddressRegister.permissions":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
@@ -1417,7 +1417,7 @@ func (x *fastReflection_MsgAddressRegister) ProtoMethods() *protoiface.Methods {
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ProofPubKey", wireType)
 				}
-				var byteLen int
+				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1427,31 +1427,29 @@ func (x *fastReflection_MsgAddressRegister) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					byteLen |= int(b&0x7F) << shift
+					stringLen |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				if byteLen < 0 {
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + byteLen
+				postIndex := iNdEx + intStringLen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.ProofPubKey = append(x.ProofPubKey[:0], dAtA[iNdEx:postIndex]...)
-				if x.ProofPubKey == nil {
-					x.ProofPubKey = []byte{}
-				}
+				x.ProofPubKey = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 4:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ProofSignature", wireType)
 				}
-				var byteLen int
+				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1461,25 +1459,23 @@ func (x *fastReflection_MsgAddressRegister) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					byteLen |= int(b&0x7F) << shift
+					stringLen |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				if byteLen < 0 {
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + byteLen
+				postIndex := iNdEx + intStringLen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.ProofSignature = append(x.ProofSignature[:0], dAtA[iNdEx:postIndex]...)
-				if x.ProofSignature == nil {
-					x.ProofSignature = []byte{}
-				}
+				x.ProofSignature = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 5:
 				if wireType != 0 {
@@ -11517,14 +11513,14 @@ func (x *fastReflection_MsgGuildMembershipJoinProxy) Range(f func(protoreflect.F
 			return
 		}
 	}
-	if len(x.ProofPubKey) != 0 {
-		value := protoreflect.ValueOfBytes(x.ProofPubKey)
+	if x.ProofPubKey != "" {
+		value := protoreflect.ValueOfString(x.ProofPubKey)
 		if !f(fd_MsgGuildMembershipJoinProxy_proofPubKey, value) {
 			return
 		}
 	}
-	if len(x.ProofSignature) != 0 {
-		value := protoreflect.ValueOfBytes(x.ProofSignature)
+	if x.ProofSignature != "" {
+		value := protoreflect.ValueOfString(x.ProofSignature)
 		if !f(fd_MsgGuildMembershipJoinProxy_proofSignature, value) {
 			return
 		}
@@ -11551,9 +11547,9 @@ func (x *fastReflection_MsgGuildMembershipJoinProxy) Has(fd protoreflect.FieldDe
 	case "structs.structs.MsgGuildMembershipJoinProxy.substationId":
 		return x.SubstationId != ""
 	case "structs.structs.MsgGuildMembershipJoinProxy.proofPubKey":
-		return len(x.ProofPubKey) != 0
+		return x.ProofPubKey != ""
 	case "structs.structs.MsgGuildMembershipJoinProxy.proofSignature":
-		return len(x.ProofSignature) != 0
+		return x.ProofSignature != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildMembershipJoinProxy"))
@@ -11577,9 +11573,9 @@ func (x *fastReflection_MsgGuildMembershipJoinProxy) Clear(fd protoreflect.Field
 	case "structs.structs.MsgGuildMembershipJoinProxy.substationId":
 		x.SubstationId = ""
 	case "structs.structs.MsgGuildMembershipJoinProxy.proofPubKey":
-		x.ProofPubKey = nil
+		x.ProofPubKey = ""
 	case "structs.structs.MsgGuildMembershipJoinProxy.proofSignature":
-		x.ProofSignature = nil
+		x.ProofSignature = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildMembershipJoinProxy"))
@@ -11607,10 +11603,10 @@ func (x *fastReflection_MsgGuildMembershipJoinProxy) Get(descriptor protoreflect
 		return protoreflect.ValueOfString(value)
 	case "structs.structs.MsgGuildMembershipJoinProxy.proofPubKey":
 		value := x.ProofPubKey
-		return protoreflect.ValueOfBytes(value)
+		return protoreflect.ValueOfString(value)
 	case "structs.structs.MsgGuildMembershipJoinProxy.proofSignature":
 		value := x.ProofSignature
-		return protoreflect.ValueOfBytes(value)
+		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildMembershipJoinProxy"))
@@ -11638,9 +11634,9 @@ func (x *fastReflection_MsgGuildMembershipJoinProxy) Set(fd protoreflect.FieldDe
 	case "structs.structs.MsgGuildMembershipJoinProxy.substationId":
 		x.SubstationId = value.Interface().(string)
 	case "structs.structs.MsgGuildMembershipJoinProxy.proofPubKey":
-		x.ProofPubKey = value.Bytes()
+		x.ProofPubKey = value.Interface().(string)
 	case "structs.structs.MsgGuildMembershipJoinProxy.proofSignature":
-		x.ProofSignature = value.Bytes()
+		x.ProofSignature = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildMembershipJoinProxy"))
@@ -11691,9 +11687,9 @@ func (x *fastReflection_MsgGuildMembershipJoinProxy) NewField(fd protoreflect.Fi
 	case "structs.structs.MsgGuildMembershipJoinProxy.substationId":
 		return protoreflect.ValueOfString("")
 	case "structs.structs.MsgGuildMembershipJoinProxy.proofPubKey":
-		return protoreflect.ValueOfBytes(nil)
+		return protoreflect.ValueOfString("")
 	case "structs.structs.MsgGuildMembershipJoinProxy.proofSignature":
-		return protoreflect.ValueOfBytes(nil)
+		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgGuildMembershipJoinProxy"))
@@ -11996,7 +11992,7 @@ func (x *fastReflection_MsgGuildMembershipJoinProxy) ProtoMethods() *protoiface.
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ProofPubKey", wireType)
 				}
-				var byteLen int
+				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -12006,31 +12002,29 @@ func (x *fastReflection_MsgGuildMembershipJoinProxy) ProtoMethods() *protoiface.
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					byteLen |= int(b&0x7F) << shift
+					stringLen |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				if byteLen < 0 {
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + byteLen
+				postIndex := iNdEx + intStringLen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.ProofPubKey = append(x.ProofPubKey[:0], dAtA[iNdEx:postIndex]...)
-				if x.ProofPubKey == nil {
-					x.ProofPubKey = []byte{}
-				}
+				x.ProofPubKey = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 5:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ProofSignature", wireType)
 				}
-				var byteLen int
+				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -12040,25 +12034,23 @@ func (x *fastReflection_MsgGuildMembershipJoinProxy) ProtoMethods() *protoiface.
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					byteLen |= int(b&0x7F) << shift
+					stringLen |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				if byteLen < 0 {
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + byteLen
+				postIndex := iNdEx + intStringLen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.ProofSignature = append(x.ProofSignature[:0], dAtA[iNdEx:postIndex]...)
-				if x.ProofSignature == nil {
-					x.ProofSignature = []byte{}
-				}
+				x.ProofSignature = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
@@ -36764,8 +36756,8 @@ type MsgAddressRegister struct {
 
 	Creator        string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	Address        string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
-	ProofPubKey    []byte `protobuf:"bytes,3,opt,name=proofPubKey,proto3" json:"proofPubKey,omitempty"`
-	ProofSignature []byte `protobuf:"bytes,4,opt,name=proofSignature,proto3" json:"proofSignature,omitempty"`
+	ProofPubKey    string `protobuf:"bytes,3,opt,name=proofPubKey,proto3" json:"proofPubKey,omitempty"`
+	ProofSignature string `protobuf:"bytes,4,opt,name=proofSignature,proto3" json:"proofSignature,omitempty"`
 	Permissions    uint64 `protobuf:"varint,5,opt,name=permissions,proto3" json:"permissions,omitempty"`
 }
 
@@ -36803,18 +36795,18 @@ func (x *MsgAddressRegister) GetAddress() string {
 	return ""
 }
 
-func (x *MsgAddressRegister) GetProofPubKey() []byte {
+func (x *MsgAddressRegister) GetProofPubKey() string {
 	if x != nil {
 		return x.ProofPubKey
 	}
-	return nil
+	return ""
 }
 
-func (x *MsgAddressRegister) GetProofSignature() []byte {
+func (x *MsgAddressRegister) GetProofSignature() string {
 	if x != nil {
 		return x.ProofSignature
 	}
-	return nil
+	return ""
 }
 
 func (x *MsgAddressRegister) GetPermissions() uint64 {
@@ -37734,8 +37726,8 @@ type MsgGuildMembershipJoinProxy struct {
 	Creator        string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	Address        string `protobuf:"bytes,2,opt,name=address,proto3" json:"address,omitempty"`
 	SubstationId   string `protobuf:"bytes,3,opt,name=substationId,proto3" json:"substationId,omitempty"`
-	ProofPubKey    []byte `protobuf:"bytes,4,opt,name=proofPubKey,proto3" json:"proofPubKey,omitempty"`
-	ProofSignature []byte `protobuf:"bytes,5,opt,name=proofSignature,proto3" json:"proofSignature,omitempty"`
+	ProofPubKey    string `protobuf:"bytes,4,opt,name=proofPubKey,proto3" json:"proofPubKey,omitempty"`
+	ProofSignature string `protobuf:"bytes,5,opt,name=proofSignature,proto3" json:"proofSignature,omitempty"`
 }
 
 func (x *MsgGuildMembershipJoinProxy) Reset() {
@@ -37779,18 +37771,18 @@ func (x *MsgGuildMembershipJoinProxy) GetSubstationId() string {
 	return ""
 }
 
-func (x *MsgGuildMembershipJoinProxy) GetProofPubKey() []byte {
+func (x *MsgGuildMembershipJoinProxy) GetProofPubKey() string {
 	if x != nil {
 		return x.ProofPubKey
 	}
-	return nil
+	return ""
 }
 
-func (x *MsgGuildMembershipJoinProxy) GetProofSignature() []byte {
+func (x *MsgGuildMembershipJoinProxy) GetProofSignature() string {
 	if x != nil {
 		return x.ProofSignature
 	}
-	return nil
+	return ""
 }
 
 type MsgGuildMembershipKick struct {
@@ -39984,9 +39976,9 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
 	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12,
 	0x20, 0x0a, 0x0b, 0x70, 0x72, 0x6f, 0x6f, 0x66, 0x50, 0x75, 0x62, 0x4b, 0x65, 0x79, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x0c, 0x52, 0x0b, 0x70, 0x72, 0x6f, 0x6f, 0x66, 0x50, 0x75, 0x62, 0x4b, 0x65,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x70, 0x72, 0x6f, 0x6f, 0x66, 0x50, 0x75, 0x62, 0x4b, 0x65,
 	0x79, 0x12, 0x26, 0x0a, 0x0e, 0x70, 0x72, 0x6f, 0x6f, 0x66, 0x53, 0x69, 0x67, 0x6e, 0x61, 0x74,
-	0x75, 0x72, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x0e, 0x70, 0x72, 0x6f, 0x6f, 0x66,
+	0x75, 0x72, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x70, 0x72, 0x6f, 0x6f, 0x66,
 	0x53, 0x69, 0x67, 0x6e, 0x61, 0x74, 0x75, 0x72, 0x65, 0x12, 0x20, 0x0a, 0x0b, 0x70, 0x65, 0x72,
 	0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x18, 0x05, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b,
 	0x70, 0x65, 0x72, 0x6d, 0x69, 0x73, 0x73, 0x69, 0x6f, 0x6e, 0x73, 0x3a, 0x0c, 0x82, 0xe7, 0xb0,
@@ -40147,10 +40139,10 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x72, 0x65, 0x73, 0x73, 0x12, 0x22, 0x0a, 0x0c, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69,
 	0x6f, 0x6e, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x73, 0x75, 0x62, 0x73,
 	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x70, 0x72, 0x6f, 0x6f,
-	0x66, 0x50, 0x75, 0x62, 0x4b, 0x65, 0x79, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0c, 0x52, 0x0b, 0x70,
+	0x66, 0x50, 0x75, 0x62, 0x4b, 0x65, 0x79, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x70,
 	0x72, 0x6f, 0x6f, 0x66, 0x50, 0x75, 0x62, 0x4b, 0x65, 0x79, 0x12, 0x26, 0x0a, 0x0e, 0x70, 0x72,
 	0x6f, 0x6f, 0x66, 0x53, 0x69, 0x67, 0x6e, 0x61, 0x74, 0x75, 0x72, 0x65, 0x18, 0x05, 0x20, 0x01,
-	0x28, 0x0c, 0x52, 0x0e, 0x70, 0x72, 0x6f, 0x6f, 0x66, 0x53, 0x69, 0x67, 0x6e, 0x61, 0x74, 0x75,
+	0x28, 0x09, 0x52, 0x0e, 0x70, 0x72, 0x6f, 0x6f, 0x66, 0x53, 0x69, 0x67, 0x6e, 0x61, 0x74, 0x75,
 	0x72, 0x65, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
 	0x22, 0x76, 0x0a, 0x16, 0x4d, 0x73, 0x67, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62,
 	0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x4b, 0x69, 0x63, 0x6b, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72,

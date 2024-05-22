@@ -3,12 +3,14 @@ package keeper
 import (
 	"context"
 	"fmt"
+    "encoding/hex"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 
     crypto "github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
+
 )
 
 func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressRegister) (*types.MsgAddressRegisterResponse, error) {
@@ -19,8 +21,8 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
 	k.AddressEmitActivity(ctx, msg.Creator)
 
     // Is the calling account a player?
-    playerId := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
-    if (playerId > 0) {
+    playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
+    if (playerIndex == 0) {
         return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Non-player account cannot associate new addresses with themselves")
     }
 
@@ -44,26 +46,40 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
 
 
 	// Does the signature verify in the proof
+	// Decode the PubKey from hex Encoding
+    fmt.Println("Encoding string:", msg.ProofPubKey)
+
+    decodedProofPubKey, decodeErr := hex.DecodeString(msg.ProofPubKey)
+    if decodeErr != nil {
+        fmt.Println("Error decoding string:", decodeErr)
+    }
     // Convert provided pub key into a bech32 string (i.e., an address)
-	address := types.PubKeyToBech32(msg.ProofPubKey)
+	address := types.PubKeyToBech32(decodedProofPubKey)
     if (address != msg.Address) {
-         return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Proof mismatch for %s vs %s vs %s", address, msg.Address)
+         return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrPlayerUpdate, "Proof mismatch for %s vs %s", address, msg.Address)
     }
 
     pubKey := crypto.PubKey{}
-    pubKey.Key = msg.ProofPubKey
+    pubKey.Key = decodedProofPubKey
 
     // We rebuild the message manually here rather than trust the client to provide it
-    hashInput := fmt.Sprintf("PLAYER%dADDRESS%s", playerId, msg.Address)
+    playerId  := GetObjectID(types.ObjectType_player, playerIndex)
+    hashInput := fmt.Sprintf("PLAYER%sADDRESS%s", playerId, msg.Address)
+    fmt.Println(hashInput)
 
+    // Decode the Signature from Hex Encoding
+    decodedProofSignature, decodeErr := hex.DecodeString(msg.ProofSignature)
+    if decodeErr != nil {
+        fmt.Println("Error decoding string:", decodeErr)
+    }
 
     // Proof needs to only be 64 characters. Some systems provide a checksum bit on the end that ruins it all
-    if (!pubKey.VerifySignature([]byte(hashInput), msg.ProofSignature[:64])) {
-         return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Proof signature verification failure")
+    if (!pubKey.VerifySignature([]byte(hashInput), decodedProofSignature[:64])) {
+         return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrPlayerUpdate, "Proof signature verification failure")
     }
 
 	// Add the address and player index to the keeper
-    k.SetPlayerIndexForAddress(ctx, msg.Address, playerId)
+    k.SetPlayerIndexForAddress(ctx, msg.Address, playerIndex)
 
 	// Add the permission to the new address
     newAddressPermissionId := GetAddressPermissionIDBytes(msg.Address)
