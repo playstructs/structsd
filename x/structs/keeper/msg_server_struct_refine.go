@@ -68,7 +68,7 @@ func (k msgServer) StructRefine(goCtx context.Context, msg *types.MsgStructRefin
         return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Planet (%s) is already complete. Move on bud, no work to be done here", structure.PlanetId)
     }
 
-    if (planet.OreRemaining == 0) {
+    if (planet.OreStored == 0) {
         return &types.MsgStructRefineResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Planet (%s) is empty, nothing to refine", structure.PlanetId)
     }
 
