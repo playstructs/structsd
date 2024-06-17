@@ -46,8 +46,13 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
 
     if (msg.EntrySubstationId != "") {
 
+        // Check that the Substation exists
+        _, substationFound := k.GetSubstation(ctx, msg.EntrySubstationId, false)
+        if (!substationFound) {
+            return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "proposed substation (%s) not found", msg.EntrySubstationId)
+        }
+
         // check that the calling player has substation permissions
-        // This also checks that the substation exists (otherwise there wouldn't be permissions)
         substationObjectPermissionId := GetObjectPermissionIDBytes(msg.EntrySubstationId, player.Id)
         if (k.PermissionHasOneOf(ctx,substationObjectPermissionId, types.PermissionGrid)) {
             return &types.MsgGuildCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%s) has no Substation Connect Player permissions ", player.Id)
