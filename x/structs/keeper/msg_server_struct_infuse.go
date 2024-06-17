@@ -22,7 +22,7 @@ func (k msgServer) StructInfuse(goCtx context.Context, msg *types.MsgStructInfus
     if (playerIndex == 0) {
         return &types.MsgStructInfuseResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct infuse requires Player account but none associated with %s", msg.Creator)
     }
-    player, _ := k.GetPlayerFromIndex(ctx, playerIndex, false)
+    player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has Play permissions

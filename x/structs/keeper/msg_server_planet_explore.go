@@ -18,7 +18,7 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
     if (playerIndex == 0) {
         return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Planet Exploration requires Player account but none associated with %s", msg.Creator)
     }
-    player, _ := k.GetPlayerFromIndex(ctx, playerIndex, false)
+    player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
 
 
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
