@@ -67,7 +67,6 @@ const (
 	ReactorCountKey     = "Reactor/count/"
 	ReactorValidatorKey = "Reactor/validator/"
 
-
 	ReactorFuelToEnergyConversion = 100
 )
 
@@ -108,6 +107,7 @@ const (
 const (
 	PlanetKey                = "Planet/value/"
 	PlanetCountKey           = "Planet/count/"
+	PlanetAttributeKey       = "Planet/attribute/"
 
 	// TODO Make these dynamic in the future
 	PlanetStartingOre = 5
@@ -117,10 +117,16 @@ const (
 const (
 	StructKey      = "Struct/value/"
 	StructCountKey  = "Struct/count/"
+	StructDefenderKey  = "Struct/defender/"
+    StructAttributeKey  = "Struct/attribute/"
 
 	StructFuelToEnergyConversion = 200
 )
 
+const (
+    StructTypeKey   = "StructType/value/"
+    StructTypeCount = "StructType/count/"
+)
 
 
 /*

@@ -19,6 +19,7 @@ enum objectType {
     allocation     = 6;
     infusion       = 7;
     address        = 8;
+    fleet          = 9;
 }
 
 enum gridAttributeType {
@@ -75,20 +76,123 @@ enum structCategory {
     fleet       = 1;
 }
 
-enum structStatus {
-    building    = 0;
-    online      = 1;
-    offline     = 2;
-    destroyed   = 3;
-}
-
-enum structType {
-    miningRig      = 0;
-    refinery       = 1;
-    smallGenerator = 2;
-}
 
 enum planetStatus {
     active      = 0;
     complete    = 1;
+}
+
+enum structStateAttributeType {
+    health                      = 0;
+    status                      = 1;
+
+    blockStartBuild             = 2;
+    blockStartOreMine           = 3;
+    blockStartOreRefine         = 4;
+    blockStartPrimaryWeapon     = 5;
+    blockStartSecondaryWeapon   = 6;
+
+    defenderPointerStart        = 7;
+    defenderPointerEnd          = 8;
+    defender                    = 9;
+    defending                   = 10;
+
+}
+
+
+enum planetStateAttributeType {
+    planetaryShield                                         = 0;
+    repairNetworkQuantity                                   = 1;
+    defensiveCannonQuantity                                 = 2;
+    coordinatedGlobalShieldNetworkQuantity                  = 3;
+
+    lowOrbitBallisticsInterceptorNetworkQuantity            = 4;
+    advancedLowOrbitBallisticsInterceptorNetworkQuantity    = 5;
+
+    orbitalJammingStationQuantity                           = 6;
+    advancedOrbitalJammingStationQuantity                   = 7;
+}
+
+enum techActiveWeaponry {
+    guidedWeaponry   = 0;
+    unguidedWeaponry = 1;
+    attackRun        = 2;
+    selfDestruct     = 3;
+}
+
+
+enum techPassiveWeaponry {
+    noPassiveWeaponry       = 0;
+    counterAttack           = 1;
+    advancedCounterAttack   = 2;
+    lastResort              = 3;
+}
+
+enum techFleetUnitDefenses {
+    noFleetUnitDefenses     = 0;
+    defensiveManeuver       = 1;
+    signalJamming           = 2;
+    armour                  = 3;
+    swiftBlock              = 4;
+    stealthMode             = 5;
+}
+
+enum techFleetOreReserveDefenses {
+    noFleetOreReserveDefenses           = 0;
+    coordinateReserveResponseTracker    = 1;
+    rapidResponsePackage                = 2;
+    activeScanning                      = 3;
+}
+
+
+enum techPlanetaryUnitDefenses {
+    noPlanetaryUnitDefenses     = 0;
+    PerimeterFencing            = 1;
+    SignalJamming               = 2;
+    ReinforcedWalls             = 3;
+}
+
+enum techPlanetaryDefenses {
+    noPlanetaryDefense                           = 0;
+    coordinatedGlobalShieldNetwork               = 1;
+    defensiveCannon                              = 2;
+    repairNetwork                                = 3;
+    lowOrbitBallisticInterceptorNetwork          = 4;
+    advancedLowOrbitBallisticInterceptorNetwork  = 5;
+    orbitalJammingStation                        = 6;
+    advancedOrbitalJammingStation                = 7;
+}
+
+
+enum techStorageFacilities {
+    noStorageFacilities = 0;
+    dock                = 1;
+    hanger              = 2;
+    fleetBase           = 3;
+}
+
+
+enum techPlanetaryOreReserveDefenses {
+    noPlanetaryOreReserveDefenses     = 0;
+    monitoringStation                 = 1;
+    coordinatedReserveResponseTracker = 2;
+    oreBunker                         = 3;
+}
+
+
+enum techPlanetaryMining {
+    noPlanetaryMining   = 0;
+    oreMiningRig        = 1;
+}
+
+enum techPlanetaryRefineries {
+    noPlanetaryRefinery = 0;
+    oreRefinery         = 1;
+}
+
+enum techPowerGeneration {
+    noPowerGeneration = 0;
+    smallGenerator    = 1;
+    mediumGenerator   = 2;
+    largeGenerator    = 3;
 }

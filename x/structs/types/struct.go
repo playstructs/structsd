@@ -157,3 +157,58 @@ func CreateBaseStruct(structType string) Struct {
 	}
 }
 
+
+
+var Feature_enum = map[string]Feature {
+	"featureless":                                      Featureless,
+    "coordinated_global_shield_network":                FeatureCoordinatedGlobalShieldNetwork,
+    "defensive_cannon":                                 FeatureDefensiveCannon,
+    "indirect_combat_module":                           FeatureIndirectCombatModule,
+    "last_resort":                                      FeatureLastResort,
+	"ore_mining":                                       FeatureOreMining,
+    "ore_refining":                                     FeatureOreRefining,
+    "repair_network":                                   FeatureRepairNetwork,
+    "stealth_mode":                                     FeatureStealthMode,
+    "movable":                                          FeatureMovable,
+    "low_orbit_ballistic_interceptor_network":          FeatureLowOrbitBallisticInterceptorNetwork,
+    "advanced_low_orbit_ballistic_interceptor_network": FeatureAdvancedLowOrbitBallisticInterceptorNetwork,
+    "orbital_jamming_station":                          FeatureOrbitalJammingStation,
+    "advanced_orbital_jamming_station":                 FeatureAdvancedOrbitalJammingStation,
+	"all":                                              FeatureAll,
+}
+
+
+
+type State uint64
+
+const (
+    // 1
+	StateBuilt State = 1 << iota
+	// 2
+	StateOnline
+	// 4
+	StateStored
+	// 8
+	StateStealth
+	// 16
+    StateDestroyed
+    // 32
+    StateLocked // Unsure if needed
+)
+
+const (
+    Stateless State = 0 << iota
+	StateAll = StateBuilt | StateOnline | StateStored | StateStealth | StateLocked
+)
+
+
+var State_enum = map[string]State {
+	"stateless":    Stateless,
+    "built":        StateBuilt,
+    "online":       StateOnline,
+    "stored":       StateStored,
+    "stealth":      StateStealth,
+    "destroyed":    StateDestroyed,
+    "locked":       StateLocked,
+	"all":          StateAll,
+}
