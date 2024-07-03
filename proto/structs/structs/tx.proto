@@ -58,16 +58,36 @@ service Msg {
 
   rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse    );
 
-  rpc StructActivate                 (MsgStructActivate                ) returns (MsgStructActivateResponse                );
-  rpc StructBuildInitiate            (MsgStructBuildInitiate           ) returns (MsgStructBuildInitiateResponse           );
-  rpc StructBuildComplete            (MsgStructBuildComplete           ) returns (MsgStructBuildCompleteResponse           );
-  rpc StructMineActivate             (MsgStructMineActivate            ) returns (MsgStructMineActivateResponse            );
-  rpc StructMineDeactivate           (MsgStructMineDeactivate          ) returns (MsgStructMineDeactivateResponse          );
-  rpc StructMine                     (MsgStructMine                    ) returns (MsgStructMineResponse                    );
-  rpc StructRefineActivate           (MsgStructRefineActivate          ) returns (MsgStructRefineActivateResponse          );
-  rpc StructRefineDeactivate         (MsgStructRefineDeactivate        ) returns (MsgStructRefineDeactivateResponse        );
-  rpc StructRefine                   (MsgStructRefine                  ) returns (MsgStructRefineResponse                  );
-  rpc StructInfuse                   (MsgStructInfuse                  ) returns (MsgStructInfuseResponse                  );
+  rpc StructActivate                 (MsgStructActivate                ) returns (MsgStructStatusResponse                  );
+  rpc StructDeactivate               (MsgStructDeactivate              ) returns (MsgStructStatusResponse                  );
+
+  rpc StructBuildInitiate            (MsgStructBuildInitiate           ) returns (MsgStructStatusResponse                  );
+  rpc StructBuildComplete            (MsgStructBuildComplete           ) returns (MsgStructStatusResponse                  );
+  rpc StructBuildCompleteAndStash    (MsgStructBuildCompleteAndStash   ) returns (MsgStructStatusResponse                  );
+
+  rpc StructDefenseSet               (MsgStructDefenseSet              ) returns (MsgStructStatusResponse                  );
+  rpc StructDefenseClear             (MsgStructDefenseClear            ) returns (MsgStructStatusResponse                  );
+
+  rpc StructMove                     (MsgStructMove                    ) returns (MsgStructStatusResponse                  );
+
+  rpc StructAttack                   (MsgStructAttack                  ) returns (MsgStructAttackResponse                  );
+
+  rpc StructStealthActivate          (MsgStructStealthActivate         ) returns (MsgStructStatusResponse                  );
+  rpc StructStealthDeactivate        (MsgStructStealthDeactivate       ) returns (MsgStructStatusResponse                  );
+
+  rpc StructGeneratorInfuse          (MsgStructGeneratorInfuse         ) returns (MsgStructGeneratorStatusResponse          );
+
+  rpc StructOreMinerActivate         (MsgStructOreMinerActivate        ) returns (MsgStructOreMinerStatusResponse          );
+  rpc StructOreMinerDeactivate       (MsgStructOreMinerDeactivate      ) returns (MsgStructOreMinerStatusResponse          );
+  rpc StructOreMinerComplete         (MsgStructOreMinerComplete        ) returns (MsgStructOreMinerStatusResponse          );
+
+  rpc StructOreRefineryActivate      (MsgStructOreRefineryActivate     ) returns (MsgStructOreRefineryStatusResponse       );
+  rpc StructOreRefineryDeactivate    (MsgStructOreRefineryDeactivate   ) returns (MsgStructOreRefineryStatusResponse       );
+  rpc StructOreRefineryComplete      (MsgStructOreRefineryComplete     ) returns (MsgStructOreRefineryStatusResponse       );
+
+  rpc StructStorageStash             (MsgStructStorageStash            ) returns (MsgStructStatusResponse                  );
+  rpc StructStorageRecall            (MsgStructStorageRecall           ) returns (MsgStructStatusResponse                  );
+
 
   rpc SubstationCreate               (MsgSubstationCreate              ) returns (MsgSubstationCreateResponse              );
   rpc SubstationDelete               (MsgSubstationDelete              ) returns (MsgSubstationDeleteResponse              );
@@ -360,6 +380,10 @@ message MsgPlayerUpdatePrimaryAddress {
 
 message MsgPlayerUpdatePrimaryAddressResponse {}
 
+message MsgStructStatusResponse {
+  Struct struct = 1 [(gogoproto.nullable) = false];
+}
+
 message MsgStructActivate {
   option (cosmos.msg.v1.signer) = "creator";
 
@@ -367,25 +391,25 @@ message MsgStructActivate {
   string structId     = 2;
 }
 
-message MsgStructActivateResponse {
-  Struct struct = 1 [(gogoproto.nullable) = false];
+message MsgStructDeactivate {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator      = 1;
+  string structId     = 2;
 }
+
+
 
 message MsgStructBuildInitiate {
   option (cosmos.msg.v1.signer) = "creator";
 
-  string creator      = 1;
-
-  string structType   = 2;
-  string planetId     = 3;
-  uint64 slot         = 4;
-
-
+  string creator        = 1;
+  uint64 structTypeId   = 2;
+  string planetId       = 3;
+  ambit operatingAmbit  = 4;
+  uint64 slot           = 5;
 }
 
-message MsgStructBuildInitiateResponse {
-  Struct struct = 1 [(gogoproto.nullable) = false];
-}
 
 message MsgStructBuildComplete {
   option (cosmos.msg.v1.signer) = "creator";
@@ -394,15 +418,74 @@ message MsgStructBuildComplete {
   string structId     = 2;
   string proof        = 3;
   string nonce        = 4;
-
+  bool   activate     = 5;
 }
 
-message MsgStructBuildCompleteResponse {
-  Struct struct = 1 [(gogoproto.nullable) = false];
+message MsgStructBuildCompleteAndStash {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator              = 1;
+  string structId             = 2;
+  string proof                = 3;
+  string nonce                = 4;
+
+  string storageDestinationId = 5;
+  ambit  storageAmbit         = 6;
+  uint64 storageSlot          = 7;
 }
 
 
-message MsgStructInfuse{
+message MsgStructDefenseSet {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator              = 1;
+  string defenderStructId     = 2;
+  string protectedStructId    = 3;
+}
+
+message MsgStructDefenseClear {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator              = 1;
+  string defenderStructId     = 2;
+}
+
+message MsgStructMove {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator      = 1;
+  string structId     = 2;
+  string locationId   = 3;
+  ambit  ambit        = 4;
+  uint64 slot         = 5;
+}
+
+message MsgStructAttack {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string operatingStructId  = 2;
+  string targetStructId     = 3;
+  techAttackMode attackMode = 4;
+}
+
+message MsgStructAttackResponse {}
+
+message MsgStructStealthActivate {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator   = 1;
+  string structId  = 2;
+}
+
+message MsgStructStealthDeactivate {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator   = 1;
+  string structId  = 2;
+}
+
+message MsgStructGeneratorInfuse{
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator        = 1;
@@ -410,32 +493,23 @@ message MsgStructInfuse{
   string infuseAmount   = 3;
 }
 
-message MsgStructInfuseResponse {}
+message MsgStructGeneratorStatusResponse {}
 
 
-message MsgStructMineActivate {
+message MsgStructOreMinerActivate {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator      = 1;
   string structId     = 2;
 }
 
-message MsgStructMineActivateResponse {
-  Struct struct = 1 [(gogoproto.nullable) = false];
-}
-
-message MsgStructMineDeactivate {
+message MsgStructOreMinerDeactivate {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator      = 1;
   string structId     = 2;
 }
-
-message MsgStructMineDeactivateResponse {
-  Struct struct = 1 [(gogoproto.nullable) = false];
-}
-
-message MsgStructMine {
+message MsgStructOreMinerComplete {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator      = 1;
@@ -444,33 +518,26 @@ message MsgStructMine {
   string nonce        = 4;
 }
 
-message MsgStructMineResponse {
+message MsgStructOreMinerStatusResponse {
   Struct struct = 1 [(gogoproto.nullable) = false];
 }
 
-message MsgStructRefineActivate {
+
+message MsgStructOreRefineryActivate {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator      = 1;
   string structId     = 2;
 }
 
-message MsgStructRefineActivateResponse {
-  Struct struct = 1 [(gogoproto.nullable) = false];
-}
-
-message MsgStructRefineDeactivate {
+message MsgStructOreRefineryDeactivate {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator      = 1;
   string structId     = 2;
 }
 
-message MsgStructRefineDeactivateResponse {
-  Struct struct = 1 [(gogoproto.nullable) = false];
-}
-
-message MsgStructRefine {
+message MsgStructOreRefineryComplete {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator      = 1;
@@ -479,9 +546,32 @@ message MsgStructRefine {
   string nonce        = 4;
 }
 
-message MsgStructRefineResponse {
+
+message MsgStructOreRefineryStatusResponse {
   Struct struct = 1 [(gogoproto.nullable) = false];
 }
+
+message MsgStructStorageStash {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator      = 1;
+  string structId     = 2;
+  string locationId   = 3;
+  ambit  ambit        = 4;
+  uint64 slot         = 5;
+}
+
+message MsgStructStorageRecall {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator      = 1;
+  string structId     = 2;
+  string locationId   = 3;
+  ambit  ambit        = 4;
+  uint64 slot         = 5;
+  bool   activate     = 6;
+}
+
 
 message MsgSubstationCreate {
   option (cosmos.msg.v1.signer) = "creator";

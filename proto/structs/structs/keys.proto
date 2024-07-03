@@ -113,6 +113,11 @@ enum planetStateAttributeType {
     advancedOrbitalJammingStationQuantity                   = 7;
 }
 
+enum techAttackMode {
+    primaryAttack   = 0;
+    secondaryAttack = 1;
+}
+
 enum techActiveWeaponry {
     guidedWeaponry   = 0;
     unguidedWeaponry = 1;

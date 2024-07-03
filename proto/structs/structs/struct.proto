@@ -85,14 +85,14 @@ message StructType {
 
 
   // Tech Tree Attributes
-  uint64 attackReduction              = 39;
+  uint64 attackReduction              = 39; // For Defensive Cannon
 
-  uint64 counterAttack                = 40;
-  uint64 counterAttackSameAmbit       = 41;
+  uint64 counterAttack                = 40; // Counter
+  uint64 counterAttackSameAmbit       = 41; // Advanced Counter
 
-  uint64 generatingRate               = 42;
+  uint64 generatingRate               = 42; // Power Generation
 
-  uint64 planetaryShieldContribution  = 43;
+  uint64 planetaryShieldContribution  = 43; // The shield that is added to the Planet
 
   uint64 storageLand                  = 44;
   uint64 storageWater                 = 45;
