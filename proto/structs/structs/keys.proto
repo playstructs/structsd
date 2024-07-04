@@ -34,6 +34,7 @@ enum gridAttributeType {
     allocationPointerStart  = 8;
     allocationPointerEnd    = 9;
     proxyNonce              = 10;
+    lastAction              = 11;
 }
 
 enum allocationType {
@@ -82,25 +83,22 @@ enum planetStatus {
     complete    = 1;
 }
 
-enum structStateAttributeType {
+enum structAttributeType {
     health                      = 0;
     status                      = 1;
 
     blockStartBuild             = 2;
     blockStartOreMine           = 3;
     blockStartOreRefine         = 4;
-    blockStartPrimaryWeapon     = 5;
-    blockStartSecondaryWeapon   = 6;
 
-    defenderPointerStart        = 7;
-    defenderPointerEnd          = 8;
-    defender                    = 9;
-    defending                   = 10;
+    defenderPointerStart        = 5;
+    defenderPointerEnd          = 6;
+    defending                   = 7;
 
 }
 
 
-enum planetStateAttributeType {
+enum planetAttributeType {
     planetaryShield                                         = 0;
     repairNetworkQuantity                                   = 1;
     defensiveCannonQuantity                                 = 2;
@@ -119,10 +117,11 @@ enum techWeaponSystem {
 }
 
 enum techActiveWeaponry {
-    guidedWeaponry   = 0;
-    unguidedWeaponry = 1;
-    attackRun        = 2;
-    selfDestruct     = 3;
+    noActiveWeaponry = 0;
+    guidedWeaponry   = 1;
+    unguidedWeaponry = 2;
+    attackRun        = 3;
+    selfDestruct     = 4;
 }
 
 

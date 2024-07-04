@@ -146,6 +146,7 @@ var ObjectType_enum = map[string]ObjectType{
 	"allocation": ObjectType_allocation,
 	"infusion":   ObjectType_infusion,
 	"address":    ObjectType_address,
+    "fleet":      ObjectType_fleet,
 }
 
 // Doing the same for GridAttributeType
@@ -161,6 +162,7 @@ var GridAttributeType_enum = map[string]GridAttributeType{
 	"allocationPointerStart":   GridAttributeType_allocationPointerStart,
 	"allocationPointerEnd":     GridAttributeType_allocationPointerEnd,
 	"proxyNonce":               GridAttributeType_proxyNonce,
+	"lastAction":               GridAttributeType_lastAction,
 }
 
 
@@ -172,6 +174,8 @@ var AllocationType_enum = map[string]AllocationType{
 
 }
 
+// Going to stop repeating the same "doin the same" comment,
+// but everything below is "doin the same"
 
 var GuildJoinBypassLevel_enum = map[string]GuildJoinBypassLevel {
 	"closed":        GuildJoinBypassLevel_closed,
@@ -196,26 +200,133 @@ var Ambit_enum = map[string]Ambit {
     "space": Ambit_space,
 }
 
+
+var PlanetStatus_enum = map[string]PlanetStatus {
+    "active":       PlanetStatus_active,
+    "complete":     PlanetStatus_complete,
+}
+
+
 var StructCategory_enum = map[string]StructCategory {
     "planetary":    StructCategory_planetary,
     "fleet":        StructCategory_fleet,
 }
 
 
-var StructStatus_enum = map[string]StructStatus {
-    "building":     StructStatus_building,
-    "online":       StructStatus_online,
-    "offline":      StructStatus_offline,
-    "destroyed":    StructStatus_destroyed,
+var StructAttributeType_enum = map[string]StructAttributeType {
+    "health":               StructAttributeType_health,
+    "status":               StructAttributeType_status,
+
+    "blockStartBuild":      StructAttributeType_blockStartBuild,
+    "blockStartOreMine":    StructAttributeType_blockStartOreMine,
+    "blockStartOreRefine":  StructAttributeType_blockStartOreRefine,
+
+    "defenderPointerStart": StructAttributeType_defenderPointerStart,
+    "defenderPointerEnd":   StructAttributeType_defenderPointerEnd,
+    "defending":            StructAttributeType_defending,
 }
 
-var StructType_enum = map[string]StructType {
-    "mining_rig": StructType_miningRig,
-    "refinery": StructType_refinery,
-    "small_generator": StructType_smallGenerator,
+var PlanetAttributeType_enum = map[string]PlanetAttributeType {
+    "planetaryShield":                                          PlanetAttributeType_planetaryShield,
+    "repairNetworkQuantity":                                    PlanetAttributeType_repairNetworkQuantity,
+    "defensiveCannonQuantity":                                  PlanetAttributeType_defensiveCannonQuantity,
+    "coordinatedGlobalShieldNetworkQuantity":                   PlanetAttributeType_coordinatedGlobalShieldNetworkQuantity,
+
+    "lowOrbitBallisticsInterceptorNetworkQuantity":             PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkQuantity,
+    "advancedLowOrbitBallisticsInterceptorNetworkQuantity":     PlanetAttributeType_advancedLowOrbitBallisticsInterceptorNetworkQuantity,
+
+    "orbitalJammingStationQuantity":                            PlanetAttributeType_orbitalJammingStationQuantity,
+    "advancedOrbitalJammingStationQuantity":                    PlanetAttributeType_advancedOrbitalJammingStationQuantity,
 }
 
-var PlanetStatus_enum = map[string]PlanetStatus {
-    "active":       PlanetStatus_active,
-    "complete":     PlanetStatus_complete,
+var TechWeaponSystem_enum = map[string]TechWeaponSystem {
+    "primaryWeapon":    TechWeaponSystem_primaryWeapon,
+    "secondaryWeapon":  TechWeaponSystem_secondaryWeapon,
 }
+
+var TechActiveWeaponry_enum = map[string]TechActiveWeaponry {
+    "noActiveWeaponry": TechActiveWeaponry_noActiveWeaponry,
+    "guidedWeaponry":   TechActiveWeaponry_guidedWeaponry,
+    "unguidedWeaponry": TechActiveWeaponry_unguidedWeaponry,
+    "attackRun":        TechActiveWeaponry_attackRun,
+    "selfDestruct":     TechActiveWeaponry_selfDestruct,
+}
+
+var TechPassiveWeaponry_enum = map[string]TechPassiveWeaponry {
+    "noPassiveWeaponry":        TechPassiveWeaponry_noPassiveWeaponry,
+    "counterAttack":            TechPassiveWeaponry_counterAttack,
+    "advancedCounterAttack":    TechPassiveWeaponry_advancedCounterAttack,
+    "lastResort":               TechPassiveWeaponry_lastResort,
+}
+
+var TechFleetUnitDefenses_enum = map[string]TechFleetUnitDefenses {
+    "noFleetUnitDefenses":  TechFleetUnitDefenses_noFleetUnitDefenses,
+    "defensiveManeuver":    TechFleetUnitDefenses_defensiveManeuver,
+    "signalJamming":        TechFleetUnitDefenses_signalJamming,
+    "armour":               TechFleetUnitDefenses_armour,
+    "swiftBlock":           TechFleetUnitDefenses_swiftBlock,
+    "stealthMode":          TechFleetUnitDefenses_stealthMode,
+}
+
+var TechFleetOreReserveDefenses_enum = map[string]TechFleetOreReserveDefenses {
+    "noFleetOreReserveDefenses":        TechFleetOreReserveDefenses_noFleetOreReserveDefenses,
+    "coordinateReserveResponseTracker": TechFleetOreReserveDefenses_coordinateReserveResponseTracker ,
+    "rapidResponsePackage":             TechFleetOreReserveDefenses_rapidResponsePackage,
+    "activeScanning":                   TechFleetOreReserveDefenses_activeScanning,
+}
+
+var TechPlanetaryUnitDefenses_enum = map[string]TechPlanetaryUnitDefenses {
+    "noPlanetaryUnitDefenses":  TechPlanetaryUnitDefenses_noPlanetaryUnitDefenses,
+    "PerimeterFencing":         TechPlanetaryUnitDefenses_PerimeterFencing,
+    "SignalJamming":            TechPlanetaryUnitDefenses_SignalJamming,
+    "ReinforcedWalls":          TechPlanetaryUnitDefenses_ReinforcedWalls,
+}
+
+
+var TechPlanetaryDefenses_enum = map[string]TechPlanetaryDefenses {
+    "noPlanetaryDefense":                           TechPlanetaryDefenses_noPlanetaryDefense,
+    "coordinatedGlobalShieldNetwork":               TechPlanetaryDefenses_coordinatedGlobalShieldNetwork,
+    "defensiveCannon":                              TechPlanetaryDefenses_defensiveCannon,
+    "repairNetwork":                                TechPlanetaryDefenses_repairNetwork,
+    "lowOrbitBallisticInterceptorNetwork":          TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork,
+    "advancedLowOrbitBallisticInterceptorNetwork":  TechPlanetaryDefenses_advancedLowOrbitBallisticInterceptorNetwork,
+    "orbitalJammingStation":                        TechPlanetaryDefenses_orbitalJammingStation,
+    "advancedOrbitalJammingStation":                TechPlanetaryDefenses_advancedOrbitalJammingStation,
+}
+
+
+
+var TechStorageFacilities_enum = map[string]TechStorageFacilities {
+    "noStorageFacilities":  TechStorageFacilities_noStorageFacilities ,
+    "dock":                 TechStorageFacilities_dock ,
+    "hanger":               TechStorageFacilities_hanger ,
+    "fleetBase":            TechStorageFacilities_fleetBase ,
+}
+
+
+var TechPlanetaryOreReserveDefenses_enum = map[string]TechPlanetaryOreReserveDefenses {
+    "noPlanetaryOreReserveDefenses":        TechPlanetaryOreReserveDefenses_noPlanetaryOreReserveDefenses,
+    "monitoringStation":                    TechPlanetaryOreReserveDefenses_monitoringStation,
+    "coordinatedReserveResponseTracker":    TechPlanetaryOreReserveDefenses_coordinatedReserveResponseTracker,
+    "oreBunker":                            TechPlanetaryOreReserveDefenses_oreBunker,
+}
+
+
+var TechPlanetaryMining_enum = map[string]TechPlanetaryMining {
+    "noPlanetaryMining":    TechPlanetaryMining_noPlanetaryMining ,
+    "oreMiningRig":         TechPlanetaryMining_oreMiningRig ,
+}
+
+
+var TechPlanetaryRefineries_enum = map[string]TechPlanetaryRefineries {
+    "noPlanetaryRefinery":  TechPlanetaryRefineries_noPlanetaryRefinery,
+    "oreRefinery":          TechPlanetaryRefineries_oreRefinery,
+}
+
+var TechPowerGeneration_enum = map[string]TechPowerGeneration {
+    "noPowerGeneration":    TechPowerGeneration_noPowerGeneration,
+    "smallGenerator":       TechPowerGeneration_smallGenerator,
+    "mediumGenerator":      TechPowerGeneration_mediumGenerator,
+    "largeGenerator":       TechPowerGeneration_largeGenerator,
+}
+

@@ -121,3 +121,8 @@ message StructDefender {
   uint64  counterAttack          = 4;
   uint64  counterAttackSameAmbit = 5;
 }
+
+message StructAttributeRecord {
+  string attributeId = 1;
+  uint64 value = 2;
+}
