@@ -124,9 +124,10 @@ const (
 )
 
 const (
-    StructTypeKey   = "StructType/value/"
-    StructTypeCount = "StructType/count/"
+	StructTypeKey       = "StructType/value/"
+	StructTypeCountKey  = "StructType/count/"
 )
+
 
 
 /*
