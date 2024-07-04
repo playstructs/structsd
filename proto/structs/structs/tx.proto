@@ -598,8 +598,8 @@ message MsgSubstationDeleteResponse {}
 message MsgSubstationAllocationConnect {
   option (cosmos.msg.v1.signer) = "creator";
 
-  string creator                 = 1;
-  string allocationId            = 2;
+  string creator       = 1;
+  string allocationId  = 2;
   string destinationId = 3;
 }
 

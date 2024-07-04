@@ -91,9 +91,7 @@ enum structAttributeType {
     blockStartOreMine           = 3;
     blockStartOreRefine         = 4;
 
-    defenderPointerStart        = 5;
-    defenderPointerEnd          = 6;
-    defending                   = 7;
+    protectedStructIndex        = 7;
 
 }
 

@@ -43,6 +43,7 @@ message EventPlayer           { Player player = 1; }
 message EventReactor          { Reactor reactor = 1; }
 message EventStruct           { Struct structure = 1; }
 message EventStructAttribute  { StructAttributeRecord structAttributeRecord = 1; }
+message EventStructDefender   { StructDefender structDefender = 1; }
 message EventStructType       { StructType structType = 1; }
 message EventSubstation       { Substation substation = 1; }
 

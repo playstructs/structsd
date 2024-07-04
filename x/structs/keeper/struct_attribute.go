@@ -106,6 +106,7 @@ func (k Keeper) SetStructAttributeIncrement(ctx context.Context, structAttribute
     return
 }
 
+/* The Struct Attribute Store also supports bitwise flags */
 
 func (k Keeper) SetStructAttributeFlagAdd(ctx context.Context, structAttributeId string, flag uint64) uint64 {
     currentFlags    := k.GetStructAttribute(ctx, structAttributeId)

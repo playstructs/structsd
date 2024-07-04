@@ -221,9 +221,7 @@ var StructAttributeType_enum = map[string]StructAttributeType {
     "blockStartOreMine":    StructAttributeType_blockStartOreMine,
     "blockStartOreRefine":  StructAttributeType_blockStartOreRefine,
 
-    "defenderPointerStart": StructAttributeType_defenderPointerStart,
-    "defenderPointerEnd":   StructAttributeType_defenderPointerEnd,
-    "defending":            StructAttributeType_defending,
+    "protectedStructIndex": StructAttributeType_protectedStructIndex,
 }
 
 var PlanetAttributeType_enum = map[string]PlanetAttributeType {

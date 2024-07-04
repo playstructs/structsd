@@ -61,7 +61,7 @@ func (k Keeper) AppendStructType(
 
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStructType{StructType: &structType})
 
-	return structure
+	return structType
 }
 
 // SetStructType set a specific struct type in the store

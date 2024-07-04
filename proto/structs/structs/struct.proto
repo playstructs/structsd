@@ -113,13 +113,14 @@ message StructType {
 }
 
 message StructDefender {
-  uint64  id                     = 1;
-  string  structId               = 2;
+  string  protectedStructId      = 1;
+  string  defendingStructId      = 2;
 
-  ambit   operatingAmbit         = 3;
+  string  locationId             = 3;
+  ambit   operatingAmbit         = 4;
 
-  uint64  counterAttack          = 4;
-  uint64  counterAttackSameAmbit = 5;
+  uint64  counterAttack          = 5;
+  uint64  counterAttackSameAmbit = 6;
 }
 
 message StructAttributeRecord {
