@@ -114,6 +114,12 @@ enum techWeaponSystem {
     secondaryWeapon = 1;
 }
 
+enum techWeaponControl {
+    noWeaponControl = 0;
+    guided          = 1;
+    unguided        = 2;
+}
+
 enum techActiveWeaponry {
     noActiveWeaponry = 0;
     guidedWeaponry   = 1;

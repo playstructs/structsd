@@ -35,77 +35,85 @@ message StructType {
 
   // Primary Weapon Configuration
   techActiveWeaponry  primaryWeapon                 = 9;
-  uint64              primaryWeaponCharge           = 10;
-  uint64              primaryWeaponTargets          = 11;
-  uint64              primaryWeaponShots            = 12;
-  uint64              primaryWeaponDamage           = 13;
-  string              primaryWeaponShotSuccessRate  = 14 [
+  techWeaponControl   primaryWeaponControl          = 10;
+  uint64              primaryWeaponCharge           = 11;
+  uint64              primaryWeaponTargets          = 12;
+  uint64              primaryWeaponShots            = 13;
+  uint64              primaryWeaponDamage           = 14;
+  bool                primaryWeaponBlockable        = 15;
+  bool                primaryWeaponCounterable      = 16;
+  uint64              primaryWeaponRecoilDamage     = 17;
+  string              primaryWeaponShotSuccessRate  = 18 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false
   ];
 
   // Secondary Weapon Configuration
-  techActiveWeaponry  secondaryWeapon                 = 15;
-  uint64              secondaryWeaponCharge           = 16;
-  uint64              secondaryWeaponTargets          = 17;
-  uint64              secondaryWeaponShots            = 18;
-  uint64              secondaryWeaponDamage           = 19;
-  string              secondaryWeaponShotSuccessRate  = 20 [
+  techActiveWeaponry  secondaryWeapon                 = 19;
+  techWeaponControl   secondaryWeaponControl          = 20;
+  uint64              secondaryWeaponCharge           = 21;
+  uint64              secondaryWeaponTargets          = 22;
+  uint64              secondaryWeaponShots            = 23;
+  uint64              secondaryWeaponDamage           = 24;
+  bool                secondaryWeaponBlockable        = 25;
+  bool                secondaryWeaponCounterable      = 26;
+  uint64              secondaryWeaponRecoilDamage     = 27;
+  string              secondaryWeaponShotSuccessRate  = 28 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false
   ];
 
   // Tech Tree Features
-  techPassiveWeaponry               passiveWeaponry             = 21;
+  techPassiveWeaponry               passiveWeaponry             = 29;
 
-  techFleetUnitDefenses             fleetUnitDefenses           = 22;
-  techFleetOreReserveDefenses       fleetOreReserveDefenses     = 23;
+  techFleetUnitDefenses             fleetUnitDefenses           = 30;
+  techFleetOreReserveDefenses       fleetOreReserveDefenses     = 31;
 
-  techPlanetaryUnitDefenses         planetaryUnitDefenses       = 24;
-  techPlanetaryDefenses             planetaryDefenses           = 25;
-  techPlanetaryOreReserveDefenses   planetaryOreReserveDefenses = 26;
-  techPlanetaryMining               planetaryMining             = 27;
-  techPlanetaryRefineries           planetaryRefinery           = 28;
+  techPlanetaryUnitDefenses         planetaryUnitDefenses       = 32;
+  techPlanetaryDefenses             planetaryDefenses           = 33;
+  techPlanetaryOreReserveDefenses   planetaryOreReserveDefenses = 34;
+  techPlanetaryMining               planetaryMining             = 35;
+  techPlanetaryRefineries           planetaryRefinery           = 36;
 
-  techStorageFacilities             storageFacility             = 29;
-  techPowerGeneration               powerGeneration             = 30;
+  techStorageFacilities             storageFacility             = 37;
+  techPowerGeneration               powerGeneration             = 38;
 
 
   // Charge uses
-  uint64 activateCharge             = 31;
-  uint64 buildCharge                = 32;
-  uint64 defendChangeCharge         = 33;
-  uint64 moveCharge                 = 34;
-  uint64 oreMiningActivateCharge    = 35;
-  uint64 oreRefiningActivateCharge  = 36;
-  uint64 stealthActivateCharge      = 37;
-  uint64 storageChangeCharge        = 38;
+  uint64 activateCharge             = 39;
+  uint64 buildCharge                = 40;
+  uint64 defendChangeCharge         = 41;
+  uint64 moveCharge                 = 42;
+  uint64 oreMiningActivateCharge    = 43;
+  uint64 oreRefiningActivateCharge  = 44;
+  uint64 stealthActivateCharge      = 45;
+  uint64 storageChangeCharge        = 46;
 
 
   // Tech Tree Attributes
-  uint64 attackReduction              = 39; // For Defensive Cannon
+  uint64 attackReduction              = 47; // For Defensive Cannon
 
-  uint64 counterAttack                = 40; // Counter
-  uint64 counterAttackSameAmbit       = 41; // Advanced Counter
+  uint64 counterAttack                = 48; // Counter
+  uint64 counterAttackSameAmbit       = 48; // Advanced Counter
 
-  uint64 generatingRate               = 42; // Power Generation
+  uint64 generatingRate               = 50; // Power Generation
 
-  uint64 planetaryShieldContribution  = 43; // The shield that is added to the Planet
+  uint64 planetaryShieldContribution  = 51; // The shield that is added to the Planet
 
-  uint64 storageLand                  = 44;
-  uint64 storageWater                 = 45;
-  uint64 storageAir                   = 46;
-  uint64 storageSpace                 = 47;
+  uint64 storageSpace                 = 52;
+  uint64 storageAir                   = 53;
+  uint64 storageLand                  = 54;
+  uint64 storageWater                 = 55;
 
-  string unguidedDefensiveSuccessRate = 48 [
+  string unguidedDefensiveSuccessRate = 56 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false
   ];
 
-  string guidedDefensiveSuccessRate   = 49 [
+  string guidedDefensiveSuccessRate   = 57 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false

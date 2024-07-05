@@ -242,6 +242,12 @@ var TechWeaponSystem_enum = map[string]TechWeaponSystem {
     "secondaryWeapon":  TechWeaponSystem_secondaryWeapon,
 }
 
+var TechWeaponControl_enum = map[string]TechWeaponControl {
+    "noWeaponControl":  TechWeaponControl_noWeaponControl,
+    "guided":           TechWeaponControl_guided,
+    "unguided":         TechWeaponControl_unguided,
+}
+
 var TechActiveWeaponry_enum = map[string]TechActiveWeaponry {
     "noActiveWeaponry": TechActiveWeaponry_noActiveWeaponry,
     "guidedWeaponry":   TechActiveWeaponry_guidedWeaponry,
