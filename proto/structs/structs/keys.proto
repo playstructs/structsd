@@ -70,6 +70,7 @@ enum ambit {
     land    = 1;
     air     = 2;
     space   = 3;
+    local   = 4;
 }
 
 enum structCategory {
@@ -132,43 +133,41 @@ enum techActiveWeaponry {
 enum techPassiveWeaponry {
     noPassiveWeaponry       = 0;
     counterAttack           = 1;
-    advancedCounterAttack   = 2;
-    lastResort              = 3;
+    strongCounterAttack     = 2;
+    advancedCounterAttack   = 3;
+    lastResort              = 4;
 }
 
-enum techFleetUnitDefenses {
-    noFleetUnitDefenses     = 0;
+enum techUnitDefenses {
+    noUnitDefenses          = 0;
     defensiveManeuver       = 1;
     signalJamming           = 2;
     armour                  = 3;
-    swiftBlock              = 4;
+    indirectCombatModule    = 4;
     stealthMode             = 5;
+    perimeterFencing        = 6;
+    reinforcedWalls         = 7;
 }
 
-enum techFleetOreReserveDefenses {
-    noFleetOreReserveDefenses           = 0;
-    coordinateReserveResponseTracker    = 1;
+enum techOreReserveDefenses {
+    noOreReserveDefenses                = 0;
+    coordinatedReserveResponseTracker   = 1;
     rapidResponsePackage                = 2;
     activeScanning                      = 3;
+    monitoringStation                   = 4;
+    oreBunker                           = 5;
 }
 
-
-enum techPlanetaryUnitDefenses {
-    noPlanetaryUnitDefenses     = 0;
-    PerimeterFencing            = 1;
-    SignalJamming               = 2;
-    ReinforcedWalls             = 3;
-}
 
 enum techPlanetaryDefenses {
     noPlanetaryDefense                           = 0;
-    coordinatedGlobalShieldNetwork               = 1;
-    defensiveCannon                              = 2;
-    repairNetwork                                = 3;
-    lowOrbitBallisticInterceptorNetwork          = 4;
-    advancedLowOrbitBallisticInterceptorNetwork  = 5;
-    orbitalJammingStation                        = 6;
-    advancedOrbitalJammingStation                = 7;
+    defensiveCannon                              = 1;
+    lowOrbitBallisticInterceptorNetwork          = 2;
+    //advancedLowOrbitBallisticInterceptorNetwork  = 3;
+    //repairNetwork                                = 4;
+    //coordinatedGlobalShieldNetwork               = 5;
+    //orbitalJammingStation                        = 6;
+    //advancedOrbitalJammingStation                = 7;
 }
 
 
@@ -179,13 +178,6 @@ enum techStorageFacilities {
     fleetBase           = 3;
 }
 
-
-enum techPlanetaryOreReserveDefenses {
-    noPlanetaryOreReserveDefenses     = 0;
-    monitoringStation                 = 1;
-    coordinatedReserveResponseTracker = 2;
-    oreBunker                         = 3;
-}
 
 
 enum techPlanetaryMining {

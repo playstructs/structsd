@@ -198,6 +198,7 @@ var Ambit_enum = map[string]Ambit {
     "land":  Ambit_land,
     "air":   Ambit_air,
     "space": Ambit_space,
+    "local": Ambit_local,
 }
 
 
@@ -259,43 +260,42 @@ var TechActiveWeaponry_enum = map[string]TechActiveWeaponry {
 var TechPassiveWeaponry_enum = map[string]TechPassiveWeaponry {
     "noPassiveWeaponry":        TechPassiveWeaponry_noPassiveWeaponry,
     "counterAttack":            TechPassiveWeaponry_counterAttack,
+    "strongCounterAttack":      TechPassiveWeaponry_strongCounterAttack,
     "advancedCounterAttack":    TechPassiveWeaponry_advancedCounterAttack,
     "lastResort":               TechPassiveWeaponry_lastResort,
 }
 
-var TechFleetUnitDefenses_enum = map[string]TechFleetUnitDefenses {
-    "noFleetUnitDefenses":  TechFleetUnitDefenses_noFleetUnitDefenses,
-    "defensiveManeuver":    TechFleetUnitDefenses_defensiveManeuver,
-    "signalJamming":        TechFleetUnitDefenses_signalJamming,
-    "armour":               TechFleetUnitDefenses_armour,
-    "swiftBlock":           TechFleetUnitDefenses_swiftBlock,
-    "stealthMode":          TechFleetUnitDefenses_stealthMode,
+var TechUnitDefenses_enum = map[string]TechUnitDefenses {
+    "noUnitDefenses":       TechUnitDefenses_noUnitDefenses,
+    "defensiveManeuver":    TechUnitDefenses_defensiveManeuver,
+    "signalJamming":        TechUnitDefenses_signalJamming,
+    "armour":               TechUnitDefenses_armour,
+    "indirectCombatModule": TechUnitDefenses_indirectCombatModule,
+    "stealthMode":          TechUnitDefenses_stealthMode,
+    "perimeterFencing":     TechUnitDefenses_perimeterFencing,
+    "reinforcedWalls":      TechUnitDefenses_reinforcedWalls,
 }
 
-var TechFleetOreReserveDefenses_enum = map[string]TechFleetOreReserveDefenses {
-    "noFleetOreReserveDefenses":        TechFleetOreReserveDefenses_noFleetOreReserveDefenses,
-    "coordinateReserveResponseTracker": TechFleetOreReserveDefenses_coordinateReserveResponseTracker ,
-    "rapidResponsePackage":             TechFleetOreReserveDefenses_rapidResponsePackage,
-    "activeScanning":                   TechFleetOreReserveDefenses_activeScanning,
-}
 
-var TechPlanetaryUnitDefenses_enum = map[string]TechPlanetaryUnitDefenses {
-    "noPlanetaryUnitDefenses":  TechPlanetaryUnitDefenses_noPlanetaryUnitDefenses,
-    "PerimeterFencing":         TechPlanetaryUnitDefenses_PerimeterFencing,
-    "SignalJamming":            TechPlanetaryUnitDefenses_SignalJamming,
-    "ReinforcedWalls":          TechPlanetaryUnitDefenses_ReinforcedWalls,
+var TechOreReserveDefenses_enum = map[string]TechOreReserveDefenses {
+    "noOreReserveDefenses":             TechOreReserveDefenses_noOreReserveDefenses,
+    "coordinatedReserveResponseTracker": TechOreReserveDefenses_coordinatedReserveResponseTracker ,
+    "rapidResponsePackage":             TechOreReserveDefenses_rapidResponsePackage,
+    "activeScanning":                   TechOreReserveDefenses_activeScanning,
+    "monitoringStation":                TechOreReserveDefenses_monitoringStation,
+    "oreBunker":                        TechOreReserveDefenses_oreBunker,
 }
 
 
 var TechPlanetaryDefenses_enum = map[string]TechPlanetaryDefenses {
     "noPlanetaryDefense":                           TechPlanetaryDefenses_noPlanetaryDefense,
-    "coordinatedGlobalShieldNetwork":               TechPlanetaryDefenses_coordinatedGlobalShieldNetwork,
     "defensiveCannon":                              TechPlanetaryDefenses_defensiveCannon,
-    "repairNetwork":                                TechPlanetaryDefenses_repairNetwork,
     "lowOrbitBallisticInterceptorNetwork":          TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork,
-    "advancedLowOrbitBallisticInterceptorNetwork":  TechPlanetaryDefenses_advancedLowOrbitBallisticInterceptorNetwork,
-    "orbitalJammingStation":                        TechPlanetaryDefenses_orbitalJammingStation,
-    "advancedOrbitalJammingStation":                TechPlanetaryDefenses_advancedOrbitalJammingStation,
+    //"advancedLowOrbitBallisticInterceptorNetwork":  TechPlanetaryDefenses_advancedLowOrbitBallisticInterceptorNetwork,
+    //"repairNetwork":                                TechPlanetaryDefenses_repairNetwork,
+    //"coordinatedGlobalShieldNetwork":               TechPlanetaryDefenses_coordinatedGlobalShieldNetwork,
+    //"orbitalJammingStation":                        TechPlanetaryDefenses_orbitalJammingStation,
+    //"advancedOrbitalJammingStation":                TechPlanetaryDefenses_advancedOrbitalJammingStation,
 }
 
 
@@ -307,13 +307,6 @@ var TechStorageFacilities_enum = map[string]TechStorageFacilities {
     "fleetBase":            TechStorageFacilities_fleetBase ,
 }
 
-
-var TechPlanetaryOreReserveDefenses_enum = map[string]TechPlanetaryOreReserveDefenses {
-    "noPlanetaryOreReserveDefenses":        TechPlanetaryOreReserveDefenses_noPlanetaryOreReserveDefenses,
-    "monitoringStation":                    TechPlanetaryOreReserveDefenses_monitoringStation,
-    "coordinatedReserveResponseTracker":    TechPlanetaryOreReserveDefenses_coordinatedReserveResponseTracker,
-    "oreBunker":                            TechPlanetaryOreReserveDefenses_oreBunker,
-}
 
 
 var TechPlanetaryMining_enum = map[string]TechPlanetaryMining {

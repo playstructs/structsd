@@ -68,52 +68,57 @@ message StructType {
   // Tech Tree Features
   techPassiveWeaponry               passiveWeaponry             = 29;
 
-  techFleetUnitDefenses             fleetUnitDefenses           = 30;
-  techFleetOreReserveDefenses       fleetOreReserveDefenses     = 31;
+  techUnitDefenses                  unitDefenses                = 30;
+  techOreReserveDefenses            oreReserveDefenses          = 31;
+  techPlanetaryDefenses             planetaryDefenses           = 32;
 
-  techPlanetaryUnitDefenses         planetaryUnitDefenses       = 32;
-  techPlanetaryDefenses             planetaryDefenses           = 33;
-  techPlanetaryOreReserveDefenses   planetaryOreReserveDefenses = 34;
-  techPlanetaryMining               planetaryMining             = 35;
-  techPlanetaryRefineries           planetaryRefinery           = 36;
+  techPlanetaryMining               planetaryMining             = 33;
+  techPlanetaryRefineries           planetaryRefinery           = 34;
 
-  techStorageFacilities             storageFacility             = 37;
-  techPowerGeneration               powerGeneration             = 38;
-
+  techPowerGeneration               powerGeneration             = 36;
 
   // Charge uses
-  uint64 activateCharge             = 39;
-  uint64 buildCharge                = 40;
-  uint64 defendChangeCharge         = 41;
-  uint64 moveCharge                 = 42;
-  uint64 oreMiningActivateCharge    = 43;
-  uint64 oreRefiningActivateCharge  = 44;
-  uint64 stealthActivateCharge      = 45;
-  uint64 storageChangeCharge        = 46;
+  uint64 activateCharge             = 37;
+  uint64 buildCharge                = 38;
+  uint64 defendChangeCharge         = 39;
+  uint64 moveCharge                 = 40;
+  uint64 oreMiningActivateCharge    = 41;
+  uint64 oreRefiningActivateCharge  = 42;
+  uint64 stealthActivateCharge      = 43;
 
 
   // Tech Tree Attributes
-  uint64 attackReduction              = 47; // For Defensive Cannon
+  uint64 attackReduction              = 45; // For Defensive Cannon
+  bool   attackCounterable            = 46; // For Indirect Combat Module
+  bool   stealthSystems               = 47; // For Stealth Mode
 
-  uint64 counterAttack                = 48; // Counter
-  uint64 counterAttackSameAmbit       = 48; // Advanced Counter
+  uint64 counterAttack                = 46; // Counter
+  uint64 counterAttackSameAmbit       = 47; // Advanced Counter
 
-  uint64 generatingRate               = 50; // Power Generation
+  uint64 postDestructionDamage        = 48;
 
-  uint64 planetaryShieldContribution  = 51; // The shield that is added to the Planet
+  uint64 generatingRate               = 49; // Power Generation
 
-  uint64 storageSpace                 = 52;
-  uint64 storageAir                   = 53;
-  uint64 storageLand                  = 54;
-  uint64 storageWater                 = 55;
+  uint64 planetaryShieldContribution  = 50; // The shield that is added to the Planet
 
-  string unguidedDefensiveSuccessRate = 56 [
+  /*  Storage Not in MVP
+
+  techStorageFacilities storageFacility  = x;
+  uint64 storageChangeCharge             = x;
+
+  uint64 storageSpace                 = x;
+  uint64 storageAir                   = x;
+  uint64 storageLand                  = x;
+  uint64 storageWater                 = x;
+  */
+
+  string unguidedDefensiveSuccessRate = 55 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false
   ];
 
-  string guidedDefensiveSuccessRate   = 57 [
+  string guidedDefensiveSuccessRate   = 56 [
     (cosmos_proto.scalar)  = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
     (gogoproto.nullable)   = false
