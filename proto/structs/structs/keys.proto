@@ -73,11 +73,6 @@ enum ambit {
     local   = 4;
 }
 
-enum structCategory {
-    planetary   = 0;
-    fleet       = 1;
-}
-
 
 enum planetStatus {
     active      = 0;

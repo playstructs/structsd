@@ -22,38 +22,18 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.GoGoProtoPackageIsVersion3 // please upgrade the proto package
 
-// This will all need to be reworked but let's
-// do some super basic crap here to get testnet up
 type Struct struct {
-	Id        string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Creator   string `protobuf:"bytes,2,opt,name=creator,proto3" json:"creator,omitempty"`
-	Owner     string `protobuf:"bytes,3,opt,name=owner,proto3" json:"owner,omitempty"`
-	Status    string `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"`
-	MaxHealth uint64 `protobuf:"varint,5,opt,name=maxHealth,proto3" json:"maxHealth,omitempty"`
-	Health    uint64 `protobuf:"varint,6,opt,name=health,proto3" json:"health,omitempty"`
-	// Planet or Fleet
-	Category string `protobuf:"bytes,7,opt,name=category,proto3" json:"category,omitempty"`
 	// What it is
-	Type string `protobuf:"bytes,8,opt,name=type,proto3" json:"type,omitempty"`
+	Id    string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Index uint64 `protobuf:"varint,2,opt,name=index,proto3" json:"index,omitempty"`
+	Type  uint64 `protobuf:"varint,3,opt,name=type,proto3" json:"type,omitempty"`
+	// Who is it
+	Creator string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
+	Owner   string `protobuf:"bytes,5,opt,name=owner,proto3" json:"owner,omitempty"`
 	// Where it is
-	Ambit    string `protobuf:"bytes,9,opt,name=ambit,proto3" json:"ambit,omitempty"`
-	PlanetId string `protobuf:"bytes,10,opt,name=planetId,proto3" json:"planetId,omitempty"`
-	Slot     uint64 `protobuf:"varint,11,opt,name=slot,proto3" json:"slot,omitempty"`
-	// Struct Features
-	MiningSystem              uint64 `protobuf:"varint,12,opt,name=miningSystem,proto3" json:"miningSystem,omitempty"`
-	RefiningSystem            uint64 `protobuf:"varint,13,opt,name=refiningSystem,proto3" json:"refiningSystem,omitempty"`
-	PowerSystem               uint64 `protobuf:"varint,14,opt,name=powerSystem,proto3" json:"powerSystem,omitempty"`
-	BuildStartBlock           uint64 `protobuf:"varint,15,opt,name=buildStartBlock,proto3" json:"buildStartBlock,omitempty"`
-	PassiveDraw               uint64 `protobuf:"varint,16,opt,name=passiveDraw,proto3" json:"passiveDraw,omitempty"`
-	ActiveMiningSystemDraw    uint64 `protobuf:"varint,17,opt,name=activeMiningSystemDraw,proto3" json:"activeMiningSystemDraw,omitempty"`
-	ActiveMiningSystemBlock   uint64 `protobuf:"varint,18,opt,name=activeMiningSystemBlock,proto3" json:"activeMiningSystemBlock,omitempty"`
-	ActiveRefiningSystemDraw  uint64 `protobuf:"varint,19,opt,name=activeRefiningSystemDraw,proto3" json:"activeRefiningSystemDraw,omitempty"`
-	ActiveRefiningSystemBlock uint64 `protobuf:"varint,20,opt,name=activeRefiningSystemBlock,proto3" json:"activeRefiningSystemBlock,omitempty"`
-	MiningSystemStatus        string `protobuf:"bytes,21,opt,name=miningSystemStatus,proto3" json:"miningSystemStatus,omitempty"`
-	RefiningSystemStatus      string `protobuf:"bytes,22,opt,name=refiningSystemStatus,proto3" json:"refiningSystemStatus,omitempty"`
-	PowerSystemFuel           uint64 `protobuf:"varint,23,opt,name=powerSystemFuel,proto3" json:"powerSystemFuel,omitempty"`
-	PowerSystemCapacity       uint64 `protobuf:"varint,24,opt,name=powerSystemCapacity,proto3" json:"powerSystemCapacity,omitempty"`
-	PowerSystemLoad           uint64 `protobuf:"varint,25,opt,name=powerSystemLoad,proto3" json:"powerSystemLoad,omitempty"`
+	LocationId     string `protobuf:"bytes,6,opt,name=locationId,proto3" json:"locationId,omitempty"`
+	OperatingAmbit Ambit  `protobuf:"varint,7,opt,name=operatingAmbit,proto3,enum=structs.structs.Ambit" json:"operatingAmbit,omitempty"`
+	Slot           uint64 `protobuf:"varint,8,opt,name=slot,proto3" json:"slot,omitempty"`
 }
 
 func (m *Struct) Reset()         { *m = Struct{} }
@@ -96,6 +76,20 @@ func (m *Struct) GetId() string {
 	return ""
 }
 
+func (m *Struct) GetIndex() uint64 {
+	if m != nil {
+		return m.Index
+	}
+	return 0
+}
+
+func (m *Struct) GetType() uint64 {
+	if m != nil {
+		return m.Type
+	}
+	return 0
+}
+
 func (m *Struct) GetCreator() string {
 	if m != nil {
 		return m.Creator
@@ -110,53 +104,18 @@ func (m *Struct) GetOwner() string {
 	return ""
 }
 
-func (m *Struct) GetStatus() string {
+func (m *Struct) GetLocationId() string {
 	if m != nil {
-		return m.Status
+		return m.LocationId
 	}
 	return ""
 }
 
-func (m *Struct) GetMaxHealth() uint64 {
+func (m *Struct) GetOperatingAmbit() Ambit {
 	if m != nil {
-		return m.MaxHealth
+		return m.OperatingAmbit
 	}
-	return 0
-}
-
-func (m *Struct) GetHealth() uint64 {
-	if m != nil {
-		return m.Health
-	}
-	return 0
-}
-
-func (m *Struct) GetCategory() string {
-	if m != nil {
-		return m.Category
-	}
-	return ""
-}
-
-func (m *Struct) GetType() string {
-	if m != nil {
-		return m.Type
-	}
-	return ""
-}
-
-func (m *Struct) GetAmbit() string {
-	if m != nil {
-		return m.Ambit
-	}
-	return ""
-}
-
-func (m *Struct) GetPlanetId() string {
-	if m != nil {
-		return m.PlanetId
-	}
-	return ""
+	return Ambit_water
 }
 
 func (m *Struct) GetSlot() uint64 {
@@ -166,142 +125,722 @@ func (m *Struct) GetSlot() uint64 {
 	return 0
 }
 
-func (m *Struct) GetMiningSystem() uint64 {
+type StructType struct {
+	Id   uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Type string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
+	// Fundamental attributes
+	Category        ObjectType `protobuf:"varint,3,opt,name=category,proto3,enum=structs.structs.ObjectType" json:"category,omitempty"`
+	BuildDifficulty uint64     `protobuf:"varint,4,opt,name=buildDifficulty,proto3" json:"buildDifficulty,omitempty"`
+	BuildDraw       uint64     `protobuf:"varint,5,opt,name=buildDraw,proto3" json:"buildDraw,omitempty"`
+	MaxHealth       uint64     `protobuf:"varint,6,opt,name=maxHealth,proto3" json:"maxHealth,omitempty"`
+	PassiveDraw     uint64     `protobuf:"varint,7,opt,name=passiveDraw,proto3" json:"passiveDraw,omitempty"`
+	PossibleAmbit   uint64     `protobuf:"varint,8,opt,name=possibleAmbit,proto3" json:"possibleAmbit,omitempty"`
+	// Primary Weapon Configuration
+	PrimaryWeapon                           TechActiveWeaponry `protobuf:"varint,9,opt,name=primaryWeapon,proto3,enum=structs.structs.TechActiveWeaponry" json:"primaryWeapon,omitempty"`
+	PrimaryWeaponControl                    TechWeaponControl  `protobuf:"varint,10,opt,name=primaryWeaponControl,proto3,enum=structs.structs.TechWeaponControl" json:"primaryWeaponControl,omitempty"`
+	PrimaryWeaponCharge                     uint64             `protobuf:"varint,11,opt,name=primaryWeaponCharge,proto3" json:"primaryWeaponCharge,omitempty"`
+	PrimaryWeaponTargets                    uint64             `protobuf:"varint,12,opt,name=primaryWeaponTargets,proto3" json:"primaryWeaponTargets,omitempty"`
+	PrimaryWeaponShots                      uint64             `protobuf:"varint,13,opt,name=primaryWeaponShots,proto3" json:"primaryWeaponShots,omitempty"`
+	PrimaryWeaponDamage                     uint64             `protobuf:"varint,14,opt,name=primaryWeaponDamage,proto3" json:"primaryWeaponDamage,omitempty"`
+	PrimaryWeaponBlockable                  bool               `protobuf:"varint,15,opt,name=primaryWeaponBlockable,proto3" json:"primaryWeaponBlockable,omitempty"`
+	PrimaryWeaponCounterable                bool               `protobuf:"varint,16,opt,name=primaryWeaponCounterable,proto3" json:"primaryWeaponCounterable,omitempty"`
+	PrimaryWeaponRecoilDamage               uint64             `protobuf:"varint,17,opt,name=primaryWeaponRecoilDamage,proto3" json:"primaryWeaponRecoilDamage,omitempty"`
+	PrimaryWeaponShotSuccessRateNumerator   uint64             `protobuf:"varint,18,opt,name=primaryWeaponShotSuccessRateNumerator,proto3" json:"primaryWeaponShotSuccessRateNumerator,omitempty"`
+	PrimaryWeaponShotSuccessRateDenominator uint64             `protobuf:"varint,19,opt,name=primaryWeaponShotSuccessRateDenominator,proto3" json:"primaryWeaponShotSuccessRateDenominator,omitempty"`
+	// Secondary Weapon Configuration
+	SecondaryWeapon                           TechActiveWeaponry `protobuf:"varint,20,opt,name=secondaryWeapon,proto3,enum=structs.structs.TechActiveWeaponry" json:"secondaryWeapon,omitempty"`
+	SecondaryWeaponControl                    TechWeaponControl  `protobuf:"varint,21,opt,name=secondaryWeaponControl,proto3,enum=structs.structs.TechWeaponControl" json:"secondaryWeaponControl,omitempty"`
+	SecondaryWeaponCharge                     uint64             `protobuf:"varint,22,opt,name=secondaryWeaponCharge,proto3" json:"secondaryWeaponCharge,omitempty"`
+	SecondaryWeaponTargets                    uint64             `protobuf:"varint,23,opt,name=secondaryWeaponTargets,proto3" json:"secondaryWeaponTargets,omitempty"`
+	SecondaryWeaponShots                      uint64             `protobuf:"varint,24,opt,name=secondaryWeaponShots,proto3" json:"secondaryWeaponShots,omitempty"`
+	SecondaryWeaponDamage                     uint64             `protobuf:"varint,25,opt,name=secondaryWeaponDamage,proto3" json:"secondaryWeaponDamage,omitempty"`
+	SecondaryWeaponBlockable                  bool               `protobuf:"varint,26,opt,name=secondaryWeaponBlockable,proto3" json:"secondaryWeaponBlockable,omitempty"`
+	SecondaryWeaponCounterable                bool               `protobuf:"varint,27,opt,name=secondaryWeaponCounterable,proto3" json:"secondaryWeaponCounterable,omitempty"`
+	SecondaryWeaponRecoilDamage               uint64             `protobuf:"varint,28,opt,name=secondaryWeaponRecoilDamage,proto3" json:"secondaryWeaponRecoilDamage,omitempty"`
+	SecondaryWeaponShotSuccessRateNumerator   uint64             `protobuf:"varint,29,opt,name=secondaryWeaponShotSuccessRateNumerator,proto3" json:"secondaryWeaponShotSuccessRateNumerator,omitempty"`
+	SecondaryWeaponShotSuccessRateDenominator uint64             `protobuf:"varint,30,opt,name=secondaryWeaponShotSuccessRateDenominator,proto3" json:"secondaryWeaponShotSuccessRateDenominator,omitempty"`
+	// Tech Tree Features
+	PassiveWeaponry    TechPassiveWeaponry     `protobuf:"varint,31,opt,name=passiveWeaponry,proto3,enum=structs.structs.TechPassiveWeaponry" json:"passiveWeaponry,omitempty"`
+	UnitDefenses       TechUnitDefenses        `protobuf:"varint,32,opt,name=unitDefenses,proto3,enum=structs.structs.TechUnitDefenses" json:"unitDefenses,omitempty"`
+	OreReserveDefenses TechOreReserveDefenses  `protobuf:"varint,33,opt,name=oreReserveDefenses,proto3,enum=structs.structs.TechOreReserveDefenses" json:"oreReserveDefenses,omitempty"`
+	PlanetaryDefenses  TechPlanetaryDefenses   `protobuf:"varint,34,opt,name=planetaryDefenses,proto3,enum=structs.structs.TechPlanetaryDefenses" json:"planetaryDefenses,omitempty"`
+	PlanetaryMining    TechPlanetaryMining     `protobuf:"varint,35,opt,name=planetaryMining,proto3,enum=structs.structs.TechPlanetaryMining" json:"planetaryMining,omitempty"`
+	PlanetaryRefinery  TechPlanetaryRefineries `protobuf:"varint,36,opt,name=planetaryRefinery,proto3,enum=structs.structs.TechPlanetaryRefineries" json:"planetaryRefinery,omitempty"`
+	PowerGeneration    TechPowerGeneration     `protobuf:"varint,37,opt,name=powerGeneration,proto3,enum=structs.structs.TechPowerGeneration" json:"powerGeneration,omitempty"`
+	// Charge uses
+	ActivateCharge            uint64 `protobuf:"varint,38,opt,name=activateCharge,proto3" json:"activateCharge,omitempty"`
+	BuildCharge               uint64 `protobuf:"varint,39,opt,name=buildCharge,proto3" json:"buildCharge,omitempty"`
+	DefendChangeCharge        uint64 `protobuf:"varint,40,opt,name=defendChangeCharge,proto3" json:"defendChangeCharge,omitempty"`
+	MoveCharge                uint64 `protobuf:"varint,41,opt,name=moveCharge,proto3" json:"moveCharge,omitempty"`
+	OreMiningActivateCharge   uint64 `protobuf:"varint,42,opt,name=oreMiningActivateCharge,proto3" json:"oreMiningActivateCharge,omitempty"`
+	OreRefiningActivateCharge uint64 `protobuf:"varint,43,opt,name=oreRefiningActivateCharge,proto3" json:"oreRefiningActivateCharge,omitempty"`
+	StealthActivateCharge     uint64 `protobuf:"varint,44,opt,name=stealthActivateCharge,proto3" json:"stealthActivateCharge,omitempty"`
+	// Tech Tree Attributes
+	AttackReduction                         uint64 `protobuf:"varint,45,opt,name=attackReduction,proto3" json:"attackReduction,omitempty"`
+	AttackCounterable                       bool   `protobuf:"varint,46,opt,name=attackCounterable,proto3" json:"attackCounterable,omitempty"`
+	StealthSystems                          bool   `protobuf:"varint,47,opt,name=stealthSystems,proto3" json:"stealthSystems,omitempty"`
+	CounterAttack                           uint64 `protobuf:"varint,48,opt,name=counterAttack,proto3" json:"counterAttack,omitempty"`
+	CounterAttackSameAmbit                  uint64 `protobuf:"varint,49,opt,name=counterAttackSameAmbit,proto3" json:"counterAttackSameAmbit,omitempty"`
+	PostDestructionDamage                   uint64 `protobuf:"varint,50,opt,name=postDestructionDamage,proto3" json:"postDestructionDamage,omitempty"`
+	GeneratingRate                          uint64 `protobuf:"varint,51,opt,name=generatingRate,proto3" json:"generatingRate,omitempty"`
+	PlanetaryShieldContribution             uint64 `protobuf:"varint,52,opt,name=planetaryShieldContribution,proto3" json:"planetaryShieldContribution,omitempty"`
+	UnguidedDefensiveSuccessRateNumerator   uint64 `protobuf:"varint,53,opt,name=unguidedDefensiveSuccessRateNumerator,proto3" json:"unguidedDefensiveSuccessRateNumerator,omitempty"`
+	UnguidedDefensiveSuccessRateDenominator uint64 `protobuf:"varint,54,opt,name=unguidedDefensiveSuccessRateDenominator,proto3" json:"unguidedDefensiveSuccessRateDenominator,omitempty"`
+	GuidedDefensiveSuccessRateNumerator     uint64 `protobuf:"varint,55,opt,name=guidedDefensiveSuccessRateNumerator,proto3" json:"guidedDefensiveSuccessRateNumerator,omitempty"`
+	GuidedDefensiveSuccessRateDenominator   uint64 `protobuf:"varint,56,opt,name=guidedDefensiveSuccessRateDenominator,proto3" json:"guidedDefensiveSuccessRateDenominator,omitempty"`
+}
+
+func (m *StructType) Reset()         { *m = StructType{} }
+func (m *StructType) String() string { return proto.CompactTextString(m) }
+func (*StructType) ProtoMessage()    {}
+func (*StructType) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c62b965c884df764, []int{1}
+}
+func (m *StructType) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *StructType) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_StructType.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *StructType) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StructType.Merge(m, src)
+}
+func (m *StructType) XXX_Size() int {
+	return m.Size()
+}
+func (m *StructType) XXX_DiscardUnknown() {
+	xxx_messageInfo_StructType.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_StructType proto.InternalMessageInfo
+
+func (m *StructType) GetId() uint64 {
 	if m != nil {
-		return m.MiningSystem
+		return m.Id
 	}
 	return 0
 }
 
-func (m *Struct) GetRefiningSystem() uint64 {
+func (m *StructType) GetType() string {
 	if m != nil {
-		return m.RefiningSystem
+		return m.Type
+	}
+	return ""
+}
+
+func (m *StructType) GetCategory() ObjectType {
+	if m != nil {
+		return m.Category
+	}
+	return ObjectType_guild
+}
+
+func (m *StructType) GetBuildDifficulty() uint64 {
+	if m != nil {
+		return m.BuildDifficulty
 	}
 	return 0
 }
 
-func (m *Struct) GetPowerSystem() uint64 {
+func (m *StructType) GetBuildDraw() uint64 {
 	if m != nil {
-		return m.PowerSystem
+		return m.BuildDraw
 	}
 	return 0
 }
 
-func (m *Struct) GetBuildStartBlock() uint64 {
+func (m *StructType) GetMaxHealth() uint64 {
 	if m != nil {
-		return m.BuildStartBlock
+		return m.MaxHealth
 	}
 	return 0
 }
 
-func (m *Struct) GetPassiveDraw() uint64 {
+func (m *StructType) GetPassiveDraw() uint64 {
 	if m != nil {
 		return m.PassiveDraw
 	}
 	return 0
 }
 
-func (m *Struct) GetActiveMiningSystemDraw() uint64 {
+func (m *StructType) GetPossibleAmbit() uint64 {
 	if m != nil {
-		return m.ActiveMiningSystemDraw
+		return m.PossibleAmbit
 	}
 	return 0
 }
 
-func (m *Struct) GetActiveMiningSystemBlock() uint64 {
+func (m *StructType) GetPrimaryWeapon() TechActiveWeaponry {
 	if m != nil {
-		return m.ActiveMiningSystemBlock
+		return m.PrimaryWeapon
+	}
+	return TechActiveWeaponry_noActiveWeaponry
+}
+
+func (m *StructType) GetPrimaryWeaponControl() TechWeaponControl {
+	if m != nil {
+		return m.PrimaryWeaponControl
+	}
+	return TechWeaponControl_noWeaponControl
+}
+
+func (m *StructType) GetPrimaryWeaponCharge() uint64 {
+	if m != nil {
+		return m.PrimaryWeaponCharge
 	}
 	return 0
 }
 
-func (m *Struct) GetActiveRefiningSystemDraw() uint64 {
+func (m *StructType) GetPrimaryWeaponTargets() uint64 {
 	if m != nil {
-		return m.ActiveRefiningSystemDraw
+		return m.PrimaryWeaponTargets
 	}
 	return 0
 }
 
-func (m *Struct) GetActiveRefiningSystemBlock() uint64 {
+func (m *StructType) GetPrimaryWeaponShots() uint64 {
 	if m != nil {
-		return m.ActiveRefiningSystemBlock
+		return m.PrimaryWeaponShots
 	}
 	return 0
 }
 
-func (m *Struct) GetMiningSystemStatus() string {
+func (m *StructType) GetPrimaryWeaponDamage() uint64 {
 	if m != nil {
-		return m.MiningSystemStatus
+		return m.PrimaryWeaponDamage
+	}
+	return 0
+}
+
+func (m *StructType) GetPrimaryWeaponBlockable() bool {
+	if m != nil {
+		return m.PrimaryWeaponBlockable
+	}
+	return false
+}
+
+func (m *StructType) GetPrimaryWeaponCounterable() bool {
+	if m != nil {
+		return m.PrimaryWeaponCounterable
+	}
+	return false
+}
+
+func (m *StructType) GetPrimaryWeaponRecoilDamage() uint64 {
+	if m != nil {
+		return m.PrimaryWeaponRecoilDamage
+	}
+	return 0
+}
+
+func (m *StructType) GetPrimaryWeaponShotSuccessRateNumerator() uint64 {
+	if m != nil {
+		return m.PrimaryWeaponShotSuccessRateNumerator
+	}
+	return 0
+}
+
+func (m *StructType) GetPrimaryWeaponShotSuccessRateDenominator() uint64 {
+	if m != nil {
+		return m.PrimaryWeaponShotSuccessRateDenominator
+	}
+	return 0
+}
+
+func (m *StructType) GetSecondaryWeapon() TechActiveWeaponry {
+	if m != nil {
+		return m.SecondaryWeapon
+	}
+	return TechActiveWeaponry_noActiveWeaponry
+}
+
+func (m *StructType) GetSecondaryWeaponControl() TechWeaponControl {
+	if m != nil {
+		return m.SecondaryWeaponControl
+	}
+	return TechWeaponControl_noWeaponControl
+}
+
+func (m *StructType) GetSecondaryWeaponCharge() uint64 {
+	if m != nil {
+		return m.SecondaryWeaponCharge
+	}
+	return 0
+}
+
+func (m *StructType) GetSecondaryWeaponTargets() uint64 {
+	if m != nil {
+		return m.SecondaryWeaponTargets
+	}
+	return 0
+}
+
+func (m *StructType) GetSecondaryWeaponShots() uint64 {
+	if m != nil {
+		return m.SecondaryWeaponShots
+	}
+	return 0
+}
+
+func (m *StructType) GetSecondaryWeaponDamage() uint64 {
+	if m != nil {
+		return m.SecondaryWeaponDamage
+	}
+	return 0
+}
+
+func (m *StructType) GetSecondaryWeaponBlockable() bool {
+	if m != nil {
+		return m.SecondaryWeaponBlockable
+	}
+	return false
+}
+
+func (m *StructType) GetSecondaryWeaponCounterable() bool {
+	if m != nil {
+		return m.SecondaryWeaponCounterable
+	}
+	return false
+}
+
+func (m *StructType) GetSecondaryWeaponRecoilDamage() uint64 {
+	if m != nil {
+		return m.SecondaryWeaponRecoilDamage
+	}
+	return 0
+}
+
+func (m *StructType) GetSecondaryWeaponShotSuccessRateNumerator() uint64 {
+	if m != nil {
+		return m.SecondaryWeaponShotSuccessRateNumerator
+	}
+	return 0
+}
+
+func (m *StructType) GetSecondaryWeaponShotSuccessRateDenominator() uint64 {
+	if m != nil {
+		return m.SecondaryWeaponShotSuccessRateDenominator
+	}
+	return 0
+}
+
+func (m *StructType) GetPassiveWeaponry() TechPassiveWeaponry {
+	if m != nil {
+		return m.PassiveWeaponry
+	}
+	return TechPassiveWeaponry_noPassiveWeaponry
+}
+
+func (m *StructType) GetUnitDefenses() TechUnitDefenses {
+	if m != nil {
+		return m.UnitDefenses
+	}
+	return TechUnitDefenses_noUnitDefenses
+}
+
+func (m *StructType) GetOreReserveDefenses() TechOreReserveDefenses {
+	if m != nil {
+		return m.OreReserveDefenses
+	}
+	return TechOreReserveDefenses_noOreReserveDefenses
+}
+
+func (m *StructType) GetPlanetaryDefenses() TechPlanetaryDefenses {
+	if m != nil {
+		return m.PlanetaryDefenses
+	}
+	return TechPlanetaryDefenses_noPlanetaryDefense
+}
+
+func (m *StructType) GetPlanetaryMining() TechPlanetaryMining {
+	if m != nil {
+		return m.PlanetaryMining
+	}
+	return TechPlanetaryMining_noPlanetaryMining
+}
+
+func (m *StructType) GetPlanetaryRefinery() TechPlanetaryRefineries {
+	if m != nil {
+		return m.PlanetaryRefinery
+	}
+	return TechPlanetaryRefineries_noPlanetaryRefinery
+}
+
+func (m *StructType) GetPowerGeneration() TechPowerGeneration {
+	if m != nil {
+		return m.PowerGeneration
+	}
+	return TechPowerGeneration_noPowerGeneration
+}
+
+func (m *StructType) GetActivateCharge() uint64 {
+	if m != nil {
+		return m.ActivateCharge
+	}
+	return 0
+}
+
+func (m *StructType) GetBuildCharge() uint64 {
+	if m != nil {
+		return m.BuildCharge
+	}
+	return 0
+}
+
+func (m *StructType) GetDefendChangeCharge() uint64 {
+	if m != nil {
+		return m.DefendChangeCharge
+	}
+	return 0
+}
+
+func (m *StructType) GetMoveCharge() uint64 {
+	if m != nil {
+		return m.MoveCharge
+	}
+	return 0
+}
+
+func (m *StructType) GetOreMiningActivateCharge() uint64 {
+	if m != nil {
+		return m.OreMiningActivateCharge
+	}
+	return 0
+}
+
+func (m *StructType) GetOreRefiningActivateCharge() uint64 {
+	if m != nil {
+		return m.OreRefiningActivateCharge
+	}
+	return 0
+}
+
+func (m *StructType) GetStealthActivateCharge() uint64 {
+	if m != nil {
+		return m.StealthActivateCharge
+	}
+	return 0
+}
+
+func (m *StructType) GetAttackReduction() uint64 {
+	if m != nil {
+		return m.AttackReduction
+	}
+	return 0
+}
+
+func (m *StructType) GetAttackCounterable() bool {
+	if m != nil {
+		return m.AttackCounterable
+	}
+	return false
+}
+
+func (m *StructType) GetStealthSystems() bool {
+	if m != nil {
+		return m.StealthSystems
+	}
+	return false
+}
+
+func (m *StructType) GetCounterAttack() uint64 {
+	if m != nil {
+		return m.CounterAttack
+	}
+	return 0
+}
+
+func (m *StructType) GetCounterAttackSameAmbit() uint64 {
+	if m != nil {
+		return m.CounterAttackSameAmbit
+	}
+	return 0
+}
+
+func (m *StructType) GetPostDestructionDamage() uint64 {
+	if m != nil {
+		return m.PostDestructionDamage
+	}
+	return 0
+}
+
+func (m *StructType) GetGeneratingRate() uint64 {
+	if m != nil {
+		return m.GeneratingRate
+	}
+	return 0
+}
+
+func (m *StructType) GetPlanetaryShieldContribution() uint64 {
+	if m != nil {
+		return m.PlanetaryShieldContribution
+	}
+	return 0
+}
+
+func (m *StructType) GetUnguidedDefensiveSuccessRateNumerator() uint64 {
+	if m != nil {
+		return m.UnguidedDefensiveSuccessRateNumerator
+	}
+	return 0
+}
+
+func (m *StructType) GetUnguidedDefensiveSuccessRateDenominator() uint64 {
+	if m != nil {
+		return m.UnguidedDefensiveSuccessRateDenominator
+	}
+	return 0
+}
+
+func (m *StructType) GetGuidedDefensiveSuccessRateNumerator() uint64 {
+	if m != nil {
+		return m.GuidedDefensiveSuccessRateNumerator
+	}
+	return 0
+}
+
+func (m *StructType) GetGuidedDefensiveSuccessRateDenominator() uint64 {
+	if m != nil {
+		return m.GuidedDefensiveSuccessRateDenominator
+	}
+	return 0
+}
+
+type StructDefender struct {
+	ProtectedStructId      string `protobuf:"bytes,1,opt,name=protectedStructId,proto3" json:"protectedStructId,omitempty"`
+	DefendingStructId      string `protobuf:"bytes,2,opt,name=defendingStructId,proto3" json:"defendingStructId,omitempty"`
+	LocationId             string `protobuf:"bytes,3,opt,name=locationId,proto3" json:"locationId,omitempty"`
+	OperatingAmbit         Ambit  `protobuf:"varint,4,opt,name=operatingAmbit,proto3,enum=structs.structs.Ambit" json:"operatingAmbit,omitempty"`
+	CounterAttack          uint64 `protobuf:"varint,5,opt,name=counterAttack,proto3" json:"counterAttack,omitempty"`
+	CounterAttackSameAmbit uint64 `protobuf:"varint,6,opt,name=counterAttackSameAmbit,proto3" json:"counterAttackSameAmbit,omitempty"`
+}
+
+func (m *StructDefender) Reset()         { *m = StructDefender{} }
+func (m *StructDefender) String() string { return proto.CompactTextString(m) }
+func (*StructDefender) ProtoMessage()    {}
+func (*StructDefender) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c62b965c884df764, []int{2}
+}
+func (m *StructDefender) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *StructDefender) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_StructDefender.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *StructDefender) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StructDefender.Merge(m, src)
+}
+func (m *StructDefender) XXX_Size() int {
+	return m.Size()
+}
+func (m *StructDefender) XXX_DiscardUnknown() {
+	xxx_messageInfo_StructDefender.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_StructDefender proto.InternalMessageInfo
+
+func (m *StructDefender) GetProtectedStructId() string {
+	if m != nil {
+		return m.ProtectedStructId
 	}
 	return ""
 }
 
-func (m *Struct) GetRefiningSystemStatus() string {
+func (m *StructDefender) GetDefendingStructId() string {
 	if m != nil {
-		return m.RefiningSystemStatus
+		return m.DefendingStructId
 	}
 	return ""
 }
 
-func (m *Struct) GetPowerSystemFuel() uint64 {
+func (m *StructDefender) GetLocationId() string {
 	if m != nil {
-		return m.PowerSystemFuel
+		return m.LocationId
+	}
+	return ""
+}
+
+func (m *StructDefender) GetOperatingAmbit() Ambit {
+	if m != nil {
+		return m.OperatingAmbit
+	}
+	return Ambit_water
+}
+
+func (m *StructDefender) GetCounterAttack() uint64 {
+	if m != nil {
+		return m.CounterAttack
 	}
 	return 0
 }
 
-func (m *Struct) GetPowerSystemCapacity() uint64 {
+func (m *StructDefender) GetCounterAttackSameAmbit() uint64 {
 	if m != nil {
-		return m.PowerSystemCapacity
+		return m.CounterAttackSameAmbit
 	}
 	return 0
 }
 
-func (m *Struct) GetPowerSystemLoad() uint64 {
+type StructAttributeRecord struct {
+	AttributeId string `protobuf:"bytes,1,opt,name=attributeId,proto3" json:"attributeId,omitempty"`
+	Value       uint64 `protobuf:"varint,2,opt,name=value,proto3" json:"value,omitempty"`
+}
+
+func (m *StructAttributeRecord) Reset()         { *m = StructAttributeRecord{} }
+func (m *StructAttributeRecord) String() string { return proto.CompactTextString(m) }
+func (*StructAttributeRecord) ProtoMessage()    {}
+func (*StructAttributeRecord) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c62b965c884df764, []int{3}
+}
+func (m *StructAttributeRecord) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *StructAttributeRecord) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_StructAttributeRecord.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *StructAttributeRecord) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_StructAttributeRecord.Merge(m, src)
+}
+func (m *StructAttributeRecord) XXX_Size() int {
+	return m.Size()
+}
+func (m *StructAttributeRecord) XXX_DiscardUnknown() {
+	xxx_messageInfo_StructAttributeRecord.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_StructAttributeRecord proto.InternalMessageInfo
+
+func (m *StructAttributeRecord) GetAttributeId() string {
 	if m != nil {
-		return m.PowerSystemLoad
+		return m.AttributeId
+	}
+	return ""
+}
+
+func (m *StructAttributeRecord) GetValue() uint64 {
+	if m != nil {
+		return m.Value
 	}
 	return 0
 }
 
 func init() {
 	proto.RegisterType((*Struct)(nil), "structs.structs.Struct")
+	proto.RegisterType((*StructType)(nil), "structs.structs.StructType")
+	proto.RegisterType((*StructDefender)(nil), "structs.structs.StructDefender")
+	proto.RegisterType((*StructAttributeRecord)(nil), "structs.structs.StructAttributeRecord")
 }
 
 func init() { proto.RegisterFile("structs/structs/struct.proto", fileDescriptor_c62b965c884df764) }
 
 var fileDescriptor_c62b965c884df764 = []byte{
-	// 468 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x74, 0x53, 0xcd, 0x6e, 0xd3, 0x40,
-	0x10, 0x8e, 0x43, 0x9a, 0x34, 0xd3, 0x92, 0xc0, 0x34, 0x24, 0x53, 0x54, 0x59, 0x51, 0x0f, 0x28,
-	0xa7, 0xf0, 0x27, 0x21, 0x84, 0x38, 0x15, 0x84, 0x40, 0x82, 0x4b, 0x72, 0xe3, 0xb6, 0xb1, 0x97,
-	0x76, 0x85, 0x93, 0xb5, 0x76, 0x37, 0x4d, 0xf3, 0x16, 0x3c, 0x00, 0x0f, 0xc4, 0xb1, 0x47, 0x8e,
-	0x28, 0x79, 0x11, 0xe4, 0x59, 0xa7, 0x75, 0xfe, 0x4e, 0xbb, 0xdf, 0xcf, 0x7c, 0x3b, 0xd6, 0x78,
-	0xe0, 0xcc, 0x3a, 0x33, 0x8d, 0x9c, 0x7d, 0xbe, 0x7e, 0xf6, 0x53, 0xa3, 0x9d, 0xc6, 0x66, 0xce,
-	0xf6, 0xf3, 0xf3, 0xfc, 0x77, 0x0d, 0xaa, 0x43, 0xbe, 0x63, 0x03, 0xca, 0x2a, 0xa6, 0xa0, 0x1b,
-	0xf4, 0xea, 0x83, 0xb2, 0x8a, 0x91, 0xa0, 0x16, 0x19, 0x29, 0x9c, 0x36, 0x54, 0x66, 0x72, 0x05,
-	0xb1, 0x05, 0x07, 0x7a, 0x36, 0x91, 0x86, 0x1e, 0x30, 0xef, 0x01, 0xb6, 0xa1, 0x6a, 0x9d, 0x70,
-	0x53, 0x4b, 0x15, 0xa6, 0x73, 0x84, 0x67, 0x50, 0x1f, 0x8b, 0x9b, 0xcf, 0x52, 0x24, 0xee, 0x8a,
-	0x0e, 0xba, 0x41, 0xaf, 0x32, 0xb8, 0x27, 0xb2, 0xaa, 0x2b, 0x2f, 0x55, 0x59, 0xca, 0x11, 0x3e,
-	0x85, 0xc3, 0x48, 0x38, 0x79, 0xa9, 0xcd, 0x9c, 0x6a, 0x9c, 0x77, 0x87, 0x11, 0xa1, 0xe2, 0xe6,
-	0xa9, 0xa4, 0x43, 0xe6, 0xf9, 0x9e, 0xf5, 0x24, 0xc6, 0x23, 0xe5, 0xa8, 0xee, 0x7b, 0x62, 0x90,
-	0xa5, 0xa4, 0x89, 0x98, 0x48, 0xf7, 0x25, 0x26, 0xf0, 0x29, 0x2b, 0x9c, 0xa5, 0xd8, 0x44, 0x3b,
-	0x3a, 0xe2, 0x77, 0xf9, 0x8e, 0xe7, 0x70, 0x3c, 0x56, 0x13, 0x35, 0xb9, 0x1c, 0xce, 0xad, 0x93,
-	0x63, 0x3a, 0x66, 0x6d, 0x8d, 0xc3, 0x67, 0xd0, 0x30, 0xf2, 0x47, 0xd1, 0xf5, 0x90, 0x5d, 0x1b,
-	0x2c, 0x76, 0xe1, 0x28, 0xd5, 0x33, 0x69, 0x72, 0x53, 0x83, 0x4d, 0x45, 0x0a, 0x7b, 0xd0, 0x1c,
-	0x4d, 0x55, 0x12, 0x0f, 0x9d, 0x30, 0xee, 0x22, 0xd1, 0xd1, 0x4f, 0x6a, 0xb2, 0x6b, 0x93, 0xe6,
-	0x2c, 0x61, 0xad, 0xba, 0x96, 0x1f, 0x8d, 0x98, 0xd1, 0xa3, 0x3c, 0xeb, 0x9e, 0xc2, 0x37, 0xd0,
-	0x16, 0x91, 0x53, 0xd7, 0xf2, 0x5b, 0xa1, 0x07, 0x36, 0x3f, 0x66, 0xf3, 0x1e, 0x15, 0xdf, 0x42,
-	0x67, 0x5b, 0xf1, 0xbd, 0x20, 0x17, 0xee, 0x93, 0xf1, 0x1d, 0x90, 0x97, 0x06, 0x6b, 0xdf, 0xcd,
-	0x6f, 0x9e, 0x70, 0xe9, 0x5e, 0x1d, 0xdf, 0xc3, 0xe9, 0x2e, 0xcd, 0xbf, 0xdb, 0xe2, 0xe2, 0xfd,
-	0x06, 0xec, 0x03, 0x16, 0x27, 0x32, 0xf4, 0x7f, 0xdd, 0x13, 0x9e, 0xef, 0x0e, 0x05, 0x5f, 0x41,
-	0x6b, 0x7d, 0x36, 0x79, 0x45, 0x9b, 0x2b, 0x76, 0x6a, 0xd9, 0x6c, 0x0a, 0xa3, 0xfa, 0x34, 0x95,
-	0x09, 0x75, 0xfc, 0x6c, 0x36, 0x68, 0x7c, 0x01, 0x27, 0x05, 0xea, 0x83, 0x48, 0x45, 0xa4, 0xdc,
-	0x9c, 0x88, 0xdd, 0xbb, 0xa4, 0x8d, 0xec, 0xaf, 0x5a, 0xc4, 0x74, 0xba, 0x95, 0x9d, 0xd1, 0x17,
-	0x2f, 0xff, 0x2c, 0xc2, 0xe0, 0x76, 0x11, 0x06, 0xff, 0x16, 0x61, 0xf0, 0x6b, 0x19, 0x96, 0x6e,
-	0x97, 0x61, 0xe9, 0xef, 0x32, 0x2c, 0x7d, 0xef, 0xac, 0xf6, 0xfb, 0xe6, 0x6e, 0xd3, 0xb3, 0x3d,
-	0xb0, 0xa3, 0x2a, 0x6f, 0xfa, 0xeb, 0xff, 0x01, 0x00, 0x00, 0xff, 0xff, 0x7e, 0x74, 0x9a, 0x6d,
-	0x09, 0x04, 0x00, 0x00,
+	// 1258 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x57, 0xdd, 0x52, 0x1b, 0x47,
+	0x13, 0xb5, 0xb0, 0x8c, 0x61, 0x6c, 0xc4, 0xc7, 0x98, 0x9f, 0x31, 0xf0, 0x29, 0xb2, 0xc0, 0x20,
+	0x27, 0x8e, 0x6c, 0x63, 0xc7, 0x76, 0xb9, 0x52, 0xae, 0xe0, 0x90, 0x4a, 0xb8, 0xf0, 0x4f, 0xad,
+	0x88, 0x9d, 0x72, 0xe5, 0x66, 0xb4, 0xdb, 0x88, 0x09, 0xab, 0x1d, 0xd5, 0xee, 0xac, 0x40, 0x6f,
+	0x91, 0xe7, 0xc8, 0x1b, 0xe4, 0x0d, 0x72, 0xe9, 0xcb, 0x5c, 0xa6, 0xa0, 0x2a, 0xcf, 0x91, 0x9a,
+	0x9e, 0x5d, 0x49, 0xfb, 0x23, 0xd5, 0xfa, 0x0a, 0xf6, 0x9c, 0xd3, 0x4d, 0x4f, 0x73, 0x66, 0xa6,
+	0x87, 0x6c, 0x06, 0xca, 0x0f, 0x6d, 0x15, 0x3c, 0x48, 0xfe, 0x6c, 0xf6, 0x7c, 0xa9, 0x24, 0x5d,
+	0x8c, 0xd0, 0x66, 0xf4, 0x73, 0x7d, 0x3d, 0x2d, 0x3f, 0x85, 0x41, 0x60, 0xc4, 0xf5, 0x7f, 0x4b,
+	0x64, 0xb6, 0x85, 0x30, 0xad, 0x90, 0x19, 0xe1, 0xb0, 0x52, 0xad, 0xd4, 0x98, 0xb7, 0x66, 0x84,
+	0x43, 0x97, 0xc9, 0x35, 0xe1, 0x39, 0x70, 0xce, 0x66, 0x6a, 0xa5, 0x46, 0xd9, 0x32, 0x1f, 0x94,
+	0x92, 0xb2, 0x1a, 0xf4, 0x80, 0x5d, 0x45, 0x10, 0x7f, 0xa7, 0x8c, 0x5c, 0xb7, 0x7d, 0xe0, 0x4a,
+	0xfa, 0xac, 0x8c, 0xe1, 0xf1, 0xa7, 0xce, 0x21, 0xcf, 0x3c, 0xf0, 0xd9, 0x35, 0xc4, 0xcd, 0x07,
+	0xad, 0x12, 0xe2, 0x4a, 0x9b, 0x2b, 0x21, 0xbd, 0x43, 0x87, 0xcd, 0x22, 0x35, 0x86, 0xd0, 0x97,
+	0xa4, 0x22, 0x7b, 0xe0, 0x73, 0x25, 0xbc, 0xce, 0x7e, 0xb7, 0x2d, 0x14, 0xbb, 0x5e, 0x2b, 0x35,
+	0x2a, 0x7b, 0xab, 0xcd, 0xd4, 0xd2, 0x9a, 0x5c, 0xb3, 0x56, 0x4a, 0xad, 0x6b, 0x0c, 0x5c, 0xa9,
+	0xd8, 0x9c, 0xa9, 0x51, 0xff, 0x5e, 0xff, 0x73, 0x9d, 0x10, 0xb3, 0xd0, 0x23, 0x5d, 0xf2, 0x68,
+	0xb1, 0x65, 0x5c, 0x6c, 0xbc, 0xac, 0x19, 0x2c, 0xc6, 0x2c, 0xeb, 0x19, 0x99, 0xb3, 0xb9, 0x82,
+	0x8e, 0xf4, 0x07, 0xb8, 0xdc, 0xca, 0xde, 0x46, 0xa6, 0x00, 0xd9, 0xfe, 0x0d, 0x4c, 0x4a, 0x6b,
+	0x28, 0xa6, 0x0d, 0xb2, 0xd8, 0x0e, 0x85, 0xeb, 0x1c, 0x88, 0xe3, 0x63, 0x61, 0x87, 0xae, 0x1a,
+	0x60, 0x5f, 0xca, 0x56, 0x1a, 0xa6, 0x9b, 0x64, 0xde, 0x40, 0x3e, 0x3f, 0xc3, 0x1e, 0x95, 0xad,
+	0x11, 0xa0, 0xd9, 0x2e, 0x3f, 0xff, 0x09, 0xb8, 0xab, 0x4e, 0xb0, 0x4d, 0x65, 0x6b, 0x04, 0xd0,
+	0x1a, 0xb9, 0xd1, 0xe3, 0x41, 0x20, 0xfa, 0x80, 0xd1, 0xd7, 0x91, 0x1f, 0x87, 0xe8, 0x36, 0x59,
+	0xe8, 0xc9, 0x20, 0x10, 0x6d, 0x17, 0x4c, 0x1b, 0x4d, 0x43, 0x92, 0x20, 0x3d, 0x24, 0x0b, 0x3d,
+	0x5f, 0x74, 0xb9, 0x3f, 0xf8, 0x00, 0xbc, 0x27, 0x3d, 0x36, 0x8f, 0x6b, 0xdd, 0xca, 0xac, 0x55,
+	0x81, 0x7d, 0xb2, 0x6f, 0x2b, 0xd1, 0x07, 0x23, 0xf4, 0x07, 0x56, 0x32, 0x92, 0xbe, 0x27, 0xcb,
+	0x09, 0xe0, 0x7b, 0xe9, 0x29, 0x5f, 0xba, 0x8c, 0x60, 0xc6, 0x7a, 0x6e, 0xc6, 0x84, 0xd2, 0xca,
+	0x8d, 0xa7, 0x0f, 0xc9, 0xad, 0x24, 0x7e, 0xc2, 0xfd, 0x0e, 0xb0, 0x1b, 0xb8, 0x9c, 0x3c, 0x8a,
+	0xee, 0xa5, 0x2a, 0x39, 0xd2, 0xa8, 0x0a, 0xd8, 0x4d, 0x0c, 0xc9, 0xe5, 0x68, 0x93, 0xd0, 0x04,
+	0xde, 0x3a, 0x91, 0x2a, 0x60, 0x0b, 0x18, 0x91, 0xc3, 0x64, 0xaa, 0x3a, 0xe0, 0x5d, 0xde, 0x01,
+	0x56, 0xc9, 0xa9, 0xca, 0x50, 0xf4, 0x29, 0x59, 0x4d, 0xc0, 0xaf, 0x5c, 0x69, 0x9f, 0xf2, 0xb6,
+	0x0b, 0x6c, 0xb1, 0x56, 0x6a, 0xcc, 0x59, 0x13, 0x58, 0xfa, 0x82, 0xb0, 0x54, 0x5f, 0x42, 0x4f,
+	0x81, 0x8f, 0x91, 0xff, 0xc3, 0xc8, 0x89, 0x3c, 0xfd, 0x96, 0xdc, 0x4e, 0x70, 0x16, 0xd8, 0x52,
+	0xb8, 0x51, 0xad, 0x4b, 0x58, 0xeb, 0x64, 0x01, 0x3d, 0x22, 0x77, 0x33, 0x2b, 0x6f, 0x85, 0xb6,
+	0x0d, 0x41, 0x60, 0x71, 0x05, 0x6f, 0xc2, 0xae, 0xde, 0x79, 0xd2, 0x67, 0x14, 0x33, 0x15, 0x13,
+	0xd3, 0x5f, 0xc8, 0xee, 0x34, 0xe1, 0x01, 0x78, 0xb2, 0x2b, 0x3c, 0xcc, 0x7b, 0x0b, 0xf3, 0x16,
+	0x95, 0xd3, 0xd7, 0x64, 0x31, 0x00, 0x5b, 0x7a, 0xce, 0xc8, 0xce, 0xcb, 0xc5, 0xed, 0x9c, 0x8e,
+	0xa5, 0x1f, 0xc9, 0x6a, 0x0a, 0x8a, 0x2d, 0xbd, 0x52, 0xd8, 0xd2, 0x13, 0x32, 0xd0, 0x27, 0x64,
+	0x25, 0xcd, 0x18, 0x5b, 0xaf, 0xe2, 0x92, 0xf3, 0x49, 0x6d, 0xa1, 0x14, 0x11, 0x5b, 0x7b, 0x0d,
+	0xc3, 0x26, 0xb0, 0x7a, 0x43, 0xa4, 0x18, 0x63, 0x6f, 0x66, 0x36, 0x44, 0x1e, 0x97, 0x53, 0x61,
+	0x64, 0x9b, 0xdb, 0xb9, 0x15, 0x46, 0x96, 0x79, 0x41, 0x58, 0x8a, 0x18, 0xd9, 0x7c, 0xdd, 0x98,
+	0x75, 0x12, 0x4f, 0x5f, 0x92, 0xf5, 0x4c, 0xb7, 0x46, 0x56, 0xdf, 0xc0, 0xe8, 0x29, 0x0a, 0xfa,
+	0x1d, 0xd9, 0x48, 0xb1, 0x09, 0xbb, 0x6f, 0x62, 0xdd, 0xd3, 0x24, 0xda, 0x9a, 0x39, 0xbd, 0xc8,
+	0xb5, 0xfc, 0xff, 0x8d, 0x35, 0x0b, 0xca, 0xe9, 0xaf, 0xe4, 0xde, 0x74, 0xe9, 0xb8, 0xed, 0xab,
+	0x98, 0xbb, 0x78, 0x00, 0x7d, 0x43, 0x16, 0xa3, 0xa3, 0x3f, 0x76, 0x33, 0xfb, 0x02, 0x2d, 0xba,
+	0x9d, 0x6b, 0xd1, 0x77, 0x49, 0xad, 0x95, 0x0e, 0xa6, 0x3f, 0x90, 0x9b, 0xa1, 0x27, 0xd4, 0x01,
+	0x1c, 0x83, 0x17, 0x40, 0xc0, 0x6a, 0x98, 0xec, 0x4e, 0x6e, 0xb2, 0x9f, 0xc7, 0x84, 0x56, 0x22,
+	0x8c, 0x7e, 0x20, 0x54, 0xfa, 0x60, 0x41, 0x00, 0x7e, 0x1f, 0x86, 0xc9, 0xee, 0x60, 0xb2, 0xdd,
+	0xdc, 0x64, 0x6f, 0x33, 0x72, 0x2b, 0x27, 0x05, 0x3d, 0x22, 0x4b, 0x3d, 0x97, 0x7b, 0xa0, 0xb8,
+	0x3f, 0x18, 0xe6, 0xad, 0x63, 0xde, 0x9d, 0xfc, 0x15, 0xa7, 0xd5, 0x56, 0x36, 0x01, 0x76, 0x31,
+	0x06, 0x5f, 0x0b, 0x4f, 0x78, 0x1d, 0xb6, 0x35, 0xad, 0x8b, 0x49, 0xad, 0x95, 0x0e, 0xa6, 0xef,
+	0xc7, 0xaa, 0xb4, 0xe0, 0x58, 0x78, 0xe0, 0x0f, 0xd8, 0x36, 0x66, 0x6c, 0x4c, 0xcf, 0x18, 0xa9,
+	0x45, 0xa2, 0xce, 0x38, 0x05, 0xd6, 0x29, 0xcf, 0xc0, 0xff, 0x11, 0x3c, 0x9c, 0x7c, 0xa4, 0xc7,
+	0xee, 0x4e, 0xab, 0x33, 0xa9, 0xb5, 0xd2, 0xc1, 0x74, 0x87, 0x54, 0xb8, 0x3e, 0x0a, 0xb9, 0x82,
+	0xe8, 0x10, 0xda, 0x41, 0x03, 0xa6, 0x50, 0x3d, 0x73, 0xe0, 0x78, 0x12, 0x89, 0x76, 0xcd, 0xcc,
+	0x31, 0x06, 0xe9, 0x4b, 0xd4, 0xd1, 0xdd, 0xd4, 0xdf, 0x5e, 0x27, 0xce, 0xd6, 0x30, 0x97, 0x68,
+	0x96, 0xd1, 0xb3, 0x60, 0x57, 0xf6, 0x63, 0xdd, 0x3d, 0xd4, 0x8d, 0x21, 0xf4, 0x39, 0x59, 0x93,
+	0x3e, 0x98, 0x76, 0xee, 0x27, 0x4b, 0xfc, 0x12, 0xc5, 0x93, 0x68, 0x7d, 0xf1, 0xa1, 0x6f, 0x8e,
+	0xf3, 0x62, 0xbf, 0x32, 0x17, 0xdf, 0x44, 0x01, 0x9e, 0x7d, 0x0a, 0x07, 0xad, 0x54, 0xe4, 0xfd,
+	0xe8, 0xec, 0xcb, 0x23, 0xf5, 0xe4, 0xc7, 0x95, 0xe2, 0xf6, 0xa9, 0x05, 0x4e, 0x68, 0xe3, 0xff,
+	0xe5, 0x6b, 0x33, 0xf9, 0xa5, 0x60, 0x7a, 0x9f, 0x2c, 0x19, 0x68, 0xfc, 0x80, 0x6b, 0xe2, 0x01,
+	0x97, 0x25, 0xf4, 0xff, 0x27, 0xfa, 0x83, 0xad, 0x41, 0xa0, 0xa0, 0x1b, 0xb0, 0x07, 0x28, 0x4d,
+	0xa1, 0x7a, 0xe2, 0xb3, 0x4d, 0xd8, 0x3e, 0xe6, 0x60, 0x0f, 0xcd, 0xc4, 0x97, 0x00, 0xf5, 0x1d,
+	0x92, 0x00, 0x5a, 0xbc, 0x1b, 0x0d, 0x88, 0x8f, 0xcc, 0x1d, 0x92, 0xcf, 0xea, 0x9e, 0xf4, 0x64,
+	0xa0, 0x0e, 0xc0, 0x78, 0x4b, 0x0c, 0xef, 0x83, 0x3d, 0xd3, 0x93, 0x5c, 0x52, 0xd7, 0xde, 0x89,
+	0x9c, 0xe6, 0x75, 0xf4, 0xb1, 0xc5, 0x1e, 0x1b, 0x6f, 0x25, 0x51, 0x7d, 0x76, 0x0f, 0x8d, 0xde,
+	0x3a, 0x11, 0xe0, 0x3a, 0x78, 0x53, 0x8a, 0x76, 0x88, 0x7d, 0x7c, 0x62, 0xce, 0xee, 0x29, 0x12,
+	0x3d, 0xac, 0x84, 0x5e, 0x27, 0x14, 0x0e, 0x38, 0x66, 0x47, 0x8b, 0x3e, 0xe4, 0x9e, 0xdc, 0xdf,
+	0x98, 0x61, 0xa5, 0x90, 0x58, 0xdf, 0x08, 0xd3, 0x84, 0xe3, 0xa7, 0xf6, 0x53, 0x73, 0x23, 0x14,
+	0x94, 0xd3, 0x77, 0x64, 0xab, 0x48, 0xb5, 0xcf, 0x30, 0x6b, 0x11, 0xa9, 0xee, 0x40, 0xb1, 0x4a,
+	0x9f, 0x9b, 0x0e, 0x14, 0x12, 0xd7, 0xff, 0x98, 0x21, 0x15, 0xf3, 0x76, 0x42, 0xa5, 0x03, 0xbe,
+	0xb6, 0xaf, 0x7e, 0x40, 0x82, 0xad, 0xc0, 0x31, 0xd4, 0x61, 0xfc, 0x76, 0xcc, 0x12, 0x5a, 0x6d,
+	0xb6, 0xbe, 0xf0, 0x3a, 0x43, 0xb5, 0x79, 0x6a, 0x65, 0x89, 0xd4, 0xf3, 0xf0, 0x6a, 0x81, 0xe7,
+	0x61, 0xf9, 0xb3, 0x9e, 0x87, 0x99, 0x4d, 0x72, 0xed, 0xf3, 0x36, 0xc9, 0xec, 0xb4, 0x4d, 0x52,
+	0x7f, 0x4b, 0x56, 0xcc, 0x4a, 0xf6, 0x95, 0x71, 0x26, 0xe8, 0xf9, 0xc2, 0x77, 0xf4, 0xd9, 0xc9,
+	0x63, 0x68, 0xd8, 0xac, 0x71, 0x48, 0xbf, 0x96, 0xfb, 0xdc, 0x0d, 0x21, 0x7e, 0x71, 0xe3, 0xc7,
+	0xab, 0x47, 0x7f, 0x5d, 0x54, 0x4b, 0x9f, 0x2e, 0xaa, 0xa5, 0x7f, 0x2e, 0xaa, 0xa5, 0xdf, 0x2f,
+	0xab, 0x57, 0x3e, 0x5d, 0x56, 0xaf, 0xfc, 0x7d, 0x59, 0xbd, 0xf2, 0x71, 0x2d, 0x7e, 0xd0, 0x9f,
+	0x0f, 0x9f, 0xf6, 0xfa, 0xe1, 0x1a, 0xb4, 0x67, 0xf1, 0x71, 0xff, 0xf8, 0xbf, 0x00, 0x00, 0x00,
+	0xff, 0xff, 0x7d, 0xb6, 0x7e, 0x1e, 0x29, 0x10, 0x00, 0x00,
 }
 
 func (m *Struct) Marshal() (dAtA []byte, err error) {
@@ -324,168 +863,562 @@ func (m *Struct) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	_ = i
 	var l int
 	_ = l
-	if m.PowerSystemLoad != 0 {
-		i = encodeVarintStruct(dAtA, i, uint64(m.PowerSystemLoad))
-		i--
-		dAtA[i] = 0x1
-		i--
-		dAtA[i] = 0xc8
-	}
-	if m.PowerSystemCapacity != 0 {
-		i = encodeVarintStruct(dAtA, i, uint64(m.PowerSystemCapacity))
-		i--
-		dAtA[i] = 0x1
-		i--
-		dAtA[i] = 0xc0
-	}
-	if m.PowerSystemFuel != 0 {
-		i = encodeVarintStruct(dAtA, i, uint64(m.PowerSystemFuel))
-		i--
-		dAtA[i] = 0x1
-		i--
-		dAtA[i] = 0xb8
-	}
-	if len(m.RefiningSystemStatus) > 0 {
-		i -= len(m.RefiningSystemStatus)
-		copy(dAtA[i:], m.RefiningSystemStatus)
-		i = encodeVarintStruct(dAtA, i, uint64(len(m.RefiningSystemStatus)))
-		i--
-		dAtA[i] = 0x1
-		i--
-		dAtA[i] = 0xb2
-	}
-	if len(m.MiningSystemStatus) > 0 {
-		i -= len(m.MiningSystemStatus)
-		copy(dAtA[i:], m.MiningSystemStatus)
-		i = encodeVarintStruct(dAtA, i, uint64(len(m.MiningSystemStatus)))
-		i--
-		dAtA[i] = 0x1
-		i--
-		dAtA[i] = 0xaa
-	}
-	if m.ActiveRefiningSystemBlock != 0 {
-		i = encodeVarintStruct(dAtA, i, uint64(m.ActiveRefiningSystemBlock))
-		i--
-		dAtA[i] = 0x1
-		i--
-		dAtA[i] = 0xa0
-	}
-	if m.ActiveRefiningSystemDraw != 0 {
-		i = encodeVarintStruct(dAtA, i, uint64(m.ActiveRefiningSystemDraw))
-		i--
-		dAtA[i] = 0x1
-		i--
-		dAtA[i] = 0x98
-	}
-	if m.ActiveMiningSystemBlock != 0 {
-		i = encodeVarintStruct(dAtA, i, uint64(m.ActiveMiningSystemBlock))
-		i--
-		dAtA[i] = 0x1
-		i--
-		dAtA[i] = 0x90
-	}
-	if m.ActiveMiningSystemDraw != 0 {
-		i = encodeVarintStruct(dAtA, i, uint64(m.ActiveMiningSystemDraw))
-		i--
-		dAtA[i] = 0x1
-		i--
-		dAtA[i] = 0x88
-	}
-	if m.PassiveDraw != 0 {
-		i = encodeVarintStruct(dAtA, i, uint64(m.PassiveDraw))
-		i--
-		dAtA[i] = 0x1
-		i--
-		dAtA[i] = 0x80
-	}
-	if m.BuildStartBlock != 0 {
-		i = encodeVarintStruct(dAtA, i, uint64(m.BuildStartBlock))
-		i--
-		dAtA[i] = 0x78
-	}
-	if m.PowerSystem != 0 {
-		i = encodeVarintStruct(dAtA, i, uint64(m.PowerSystem))
-		i--
-		dAtA[i] = 0x70
-	}
-	if m.RefiningSystem != 0 {
-		i = encodeVarintStruct(dAtA, i, uint64(m.RefiningSystem))
-		i--
-		dAtA[i] = 0x68
-	}
-	if m.MiningSystem != 0 {
-		i = encodeVarintStruct(dAtA, i, uint64(m.MiningSystem))
-		i--
-		dAtA[i] = 0x60
-	}
 	if m.Slot != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.Slot))
 		i--
-		dAtA[i] = 0x58
+		dAtA[i] = 0x40
 	}
-	if len(m.PlanetId) > 0 {
-		i -= len(m.PlanetId)
-		copy(dAtA[i:], m.PlanetId)
-		i = encodeVarintStruct(dAtA, i, uint64(len(m.PlanetId)))
+	if m.OperatingAmbit != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.OperatingAmbit))
 		i--
-		dAtA[i] = 0x52
+		dAtA[i] = 0x38
 	}
-	if len(m.Ambit) > 0 {
-		i -= len(m.Ambit)
-		copy(dAtA[i:], m.Ambit)
-		i = encodeVarintStruct(dAtA, i, uint64(len(m.Ambit)))
+	if len(m.LocationId) > 0 {
+		i -= len(m.LocationId)
+		copy(dAtA[i:], m.LocationId)
+		i = encodeVarintStruct(dAtA, i, uint64(len(m.LocationId)))
 		i--
-		dAtA[i] = 0x4a
-	}
-	if len(m.Type) > 0 {
-		i -= len(m.Type)
-		copy(dAtA[i:], m.Type)
-		i = encodeVarintStruct(dAtA, i, uint64(len(m.Type)))
-		i--
-		dAtA[i] = 0x42
-	}
-	if len(m.Category) > 0 {
-		i -= len(m.Category)
-		copy(dAtA[i:], m.Category)
-		i = encodeVarintStruct(dAtA, i, uint64(len(m.Category)))
-		i--
-		dAtA[i] = 0x3a
-	}
-	if m.Health != 0 {
-		i = encodeVarintStruct(dAtA, i, uint64(m.Health))
-		i--
-		dAtA[i] = 0x30
-	}
-	if m.MaxHealth != 0 {
-		i = encodeVarintStruct(dAtA, i, uint64(m.MaxHealth))
-		i--
-		dAtA[i] = 0x28
-	}
-	if len(m.Status) > 0 {
-		i -= len(m.Status)
-		copy(dAtA[i:], m.Status)
-		i = encodeVarintStruct(dAtA, i, uint64(len(m.Status)))
-		i--
-		dAtA[i] = 0x22
+		dAtA[i] = 0x32
 	}
 	if len(m.Owner) > 0 {
 		i -= len(m.Owner)
 		copy(dAtA[i:], m.Owner)
 		i = encodeVarintStruct(dAtA, i, uint64(len(m.Owner)))
 		i--
-		dAtA[i] = 0x1a
+		dAtA[i] = 0x2a
 	}
 	if len(m.Creator) > 0 {
 		i -= len(m.Creator)
 		copy(dAtA[i:], m.Creator)
 		i = encodeVarintStruct(dAtA, i, uint64(len(m.Creator)))
 		i--
-		dAtA[i] = 0x12
+		dAtA[i] = 0x22
+	}
+	if m.Type != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.Type))
+		i--
+		dAtA[i] = 0x18
+	}
+	if m.Index != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.Index))
+		i--
+		dAtA[i] = 0x10
 	}
 	if len(m.Id) > 0 {
 		i -= len(m.Id)
 		copy(dAtA[i:], m.Id)
 		i = encodeVarintStruct(dAtA, i, uint64(len(m.Id)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *StructType) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *StructType) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *StructType) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.GuidedDefensiveSuccessRateDenominator != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.GuidedDefensiveSuccessRateDenominator))
+		i--
+		dAtA[i] = 0x3
+		i--
+		dAtA[i] = 0xc0
+	}
+	if m.GuidedDefensiveSuccessRateNumerator != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.GuidedDefensiveSuccessRateNumerator))
+		i--
+		dAtA[i] = 0x3
+		i--
+		dAtA[i] = 0xb8
+	}
+	if m.UnguidedDefensiveSuccessRateDenominator != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.UnguidedDefensiveSuccessRateDenominator))
+		i--
+		dAtA[i] = 0x3
+		i--
+		dAtA[i] = 0xb0
+	}
+	if m.UnguidedDefensiveSuccessRateNumerator != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.UnguidedDefensiveSuccessRateNumerator))
+		i--
+		dAtA[i] = 0x3
+		i--
+		dAtA[i] = 0xa8
+	}
+	if m.PlanetaryShieldContribution != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PlanetaryShieldContribution))
+		i--
+		dAtA[i] = 0x3
+		i--
+		dAtA[i] = 0xa0
+	}
+	if m.GeneratingRate != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.GeneratingRate))
+		i--
+		dAtA[i] = 0x3
+		i--
+		dAtA[i] = 0x98
+	}
+	if m.PostDestructionDamage != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PostDestructionDamage))
+		i--
+		dAtA[i] = 0x3
+		i--
+		dAtA[i] = 0x90
+	}
+	if m.CounterAttackSameAmbit != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.CounterAttackSameAmbit))
+		i--
+		dAtA[i] = 0x3
+		i--
+		dAtA[i] = 0x88
+	}
+	if m.CounterAttack != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.CounterAttack))
+		i--
+		dAtA[i] = 0x3
+		i--
+		dAtA[i] = 0x80
+	}
+	if m.StealthSystems {
+		i--
+		if m.StealthSystems {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x2
+		i--
+		dAtA[i] = 0xf8
+	}
+	if m.AttackCounterable {
+		i--
+		if m.AttackCounterable {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x2
+		i--
+		dAtA[i] = 0xf0
+	}
+	if m.AttackReduction != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.AttackReduction))
+		i--
+		dAtA[i] = 0x2
+		i--
+		dAtA[i] = 0xe8
+	}
+	if m.StealthActivateCharge != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.StealthActivateCharge))
+		i--
+		dAtA[i] = 0x2
+		i--
+		dAtA[i] = 0xe0
+	}
+	if m.OreRefiningActivateCharge != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.OreRefiningActivateCharge))
+		i--
+		dAtA[i] = 0x2
+		i--
+		dAtA[i] = 0xd8
+	}
+	if m.OreMiningActivateCharge != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.OreMiningActivateCharge))
+		i--
+		dAtA[i] = 0x2
+		i--
+		dAtA[i] = 0xd0
+	}
+	if m.MoveCharge != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.MoveCharge))
+		i--
+		dAtA[i] = 0x2
+		i--
+		dAtA[i] = 0xc8
+	}
+	if m.DefendChangeCharge != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.DefendChangeCharge))
+		i--
+		dAtA[i] = 0x2
+		i--
+		dAtA[i] = 0xc0
+	}
+	if m.BuildCharge != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.BuildCharge))
+		i--
+		dAtA[i] = 0x2
+		i--
+		dAtA[i] = 0xb8
+	}
+	if m.ActivateCharge != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.ActivateCharge))
+		i--
+		dAtA[i] = 0x2
+		i--
+		dAtA[i] = 0xb0
+	}
+	if m.PowerGeneration != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PowerGeneration))
+		i--
+		dAtA[i] = 0x2
+		i--
+		dAtA[i] = 0xa8
+	}
+	if m.PlanetaryRefinery != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PlanetaryRefinery))
+		i--
+		dAtA[i] = 0x2
+		i--
+		dAtA[i] = 0xa0
+	}
+	if m.PlanetaryMining != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PlanetaryMining))
+		i--
+		dAtA[i] = 0x2
+		i--
+		dAtA[i] = 0x98
+	}
+	if m.PlanetaryDefenses != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PlanetaryDefenses))
+		i--
+		dAtA[i] = 0x2
+		i--
+		dAtA[i] = 0x90
+	}
+	if m.OreReserveDefenses != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.OreReserveDefenses))
+		i--
+		dAtA[i] = 0x2
+		i--
+		dAtA[i] = 0x88
+	}
+	if m.UnitDefenses != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.UnitDefenses))
+		i--
+		dAtA[i] = 0x2
+		i--
+		dAtA[i] = 0x80
+	}
+	if m.PassiveWeaponry != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PassiveWeaponry))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xf8
+	}
+	if m.SecondaryWeaponShotSuccessRateDenominator != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponShotSuccessRateDenominator))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xf0
+	}
+	if m.SecondaryWeaponShotSuccessRateNumerator != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponShotSuccessRateNumerator))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xe8
+	}
+	if m.SecondaryWeaponRecoilDamage != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponRecoilDamage))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xe0
+	}
+	if m.SecondaryWeaponCounterable {
+		i--
+		if m.SecondaryWeaponCounterable {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xd8
+	}
+	if m.SecondaryWeaponBlockable {
+		i--
+		if m.SecondaryWeaponBlockable {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xd0
+	}
+	if m.SecondaryWeaponDamage != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponDamage))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xc8
+	}
+	if m.SecondaryWeaponShots != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponShots))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xc0
+	}
+	if m.SecondaryWeaponTargets != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponTargets))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xb8
+	}
+	if m.SecondaryWeaponCharge != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponCharge))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xb0
+	}
+	if m.SecondaryWeaponControl != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponControl))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xa8
+	}
+	if m.SecondaryWeapon != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeapon))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xa0
+	}
+	if m.PrimaryWeaponShotSuccessRateDenominator != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponShotSuccessRateDenominator))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x98
+	}
+	if m.PrimaryWeaponShotSuccessRateNumerator != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponShotSuccessRateNumerator))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x90
+	}
+	if m.PrimaryWeaponRecoilDamage != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponRecoilDamage))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x88
+	}
+	if m.PrimaryWeaponCounterable {
+		i--
+		if m.PrimaryWeaponCounterable {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x80
+	}
+	if m.PrimaryWeaponBlockable {
+		i--
+		if m.PrimaryWeaponBlockable {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x78
+	}
+	if m.PrimaryWeaponDamage != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponDamage))
+		i--
+		dAtA[i] = 0x70
+	}
+	if m.PrimaryWeaponShots != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponShots))
+		i--
+		dAtA[i] = 0x68
+	}
+	if m.PrimaryWeaponTargets != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponTargets))
+		i--
+		dAtA[i] = 0x60
+	}
+	if m.PrimaryWeaponCharge != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponCharge))
+		i--
+		dAtA[i] = 0x58
+	}
+	if m.PrimaryWeaponControl != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponControl))
+		i--
+		dAtA[i] = 0x50
+	}
+	if m.PrimaryWeapon != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeapon))
+		i--
+		dAtA[i] = 0x48
+	}
+	if m.PossibleAmbit != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PossibleAmbit))
+		i--
+		dAtA[i] = 0x40
+	}
+	if m.PassiveDraw != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PassiveDraw))
+		i--
+		dAtA[i] = 0x38
+	}
+	if m.MaxHealth != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.MaxHealth))
+		i--
+		dAtA[i] = 0x30
+	}
+	if m.BuildDraw != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.BuildDraw))
+		i--
+		dAtA[i] = 0x28
+	}
+	if m.BuildDifficulty != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.BuildDifficulty))
+		i--
+		dAtA[i] = 0x20
+	}
+	if m.Category != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.Category))
+		i--
+		dAtA[i] = 0x18
+	}
+	if len(m.Type) > 0 {
+		i -= len(m.Type)
+		copy(dAtA[i:], m.Type)
+		i = encodeVarintStruct(dAtA, i, uint64(len(m.Type)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if m.Id != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.Id))
+		i--
+		dAtA[i] = 0x8
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *StructDefender) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *StructDefender) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *StructDefender) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.CounterAttackSameAmbit != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.CounterAttackSameAmbit))
+		i--
+		dAtA[i] = 0x30
+	}
+	if m.CounterAttack != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.CounterAttack))
+		i--
+		dAtA[i] = 0x28
+	}
+	if m.OperatingAmbit != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.OperatingAmbit))
+		i--
+		dAtA[i] = 0x20
+	}
+	if len(m.LocationId) > 0 {
+		i -= len(m.LocationId)
+		copy(dAtA[i:], m.LocationId)
+		i = encodeVarintStruct(dAtA, i, uint64(len(m.LocationId)))
+		i--
+		dAtA[i] = 0x1a
+	}
+	if len(m.DefendingStructId) > 0 {
+		i -= len(m.DefendingStructId)
+		copy(dAtA[i:], m.DefendingStructId)
+		i = encodeVarintStruct(dAtA, i, uint64(len(m.DefendingStructId)))
+		i--
+		dAtA[i] = 0x12
+	}
+	if len(m.ProtectedStructId) > 0 {
+		i -= len(m.ProtectedStructId)
+		copy(dAtA[i:], m.ProtectedStructId)
+		i = encodeVarintStruct(dAtA, i, uint64(len(m.ProtectedStructId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
+func (m *StructAttributeRecord) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *StructAttributeRecord) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *StructAttributeRecord) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.Value != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.Value))
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.AttributeId) > 0 {
+		i -= len(m.AttributeId)
+		copy(dAtA[i:], m.AttributeId)
+		i = encodeVarintStruct(dAtA, i, uint64(len(m.AttributeId)))
 		i--
 		dAtA[i] = 0xa
 	}
@@ -513,6 +1446,12 @@ func (m *Struct) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovStruct(uint64(l))
 	}
+	if m.Index != 0 {
+		n += 1 + sovStruct(uint64(m.Index))
+	}
+	if m.Type != 0 {
+		n += 1 + sovStruct(uint64(m.Type))
+	}
 	l = len(m.Creator)
 	if l > 0 {
 		n += 1 + l + sovStruct(uint64(l))
@@ -521,78 +1460,239 @@ func (m *Struct) Size() (n int) {
 	if l > 0 {
 		n += 1 + l + sovStruct(uint64(l))
 	}
-	l = len(m.Status)
+	l = len(m.LocationId)
 	if l > 0 {
 		n += 1 + l + sovStruct(uint64(l))
 	}
-	if m.MaxHealth != 0 {
-		n += 1 + sovStruct(uint64(m.MaxHealth))
+	if m.OperatingAmbit != 0 {
+		n += 1 + sovStruct(uint64(m.OperatingAmbit))
 	}
-	if m.Health != 0 {
-		n += 1 + sovStruct(uint64(m.Health))
+	if m.Slot != 0 {
+		n += 1 + sovStruct(uint64(m.Slot))
 	}
-	l = len(m.Category)
-	if l > 0 {
-		n += 1 + l + sovStruct(uint64(l))
+	return n
+}
+
+func (m *StructType) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	if m.Id != 0 {
+		n += 1 + sovStruct(uint64(m.Id))
 	}
 	l = len(m.Type)
 	if l > 0 {
 		n += 1 + l + sovStruct(uint64(l))
 	}
-	l = len(m.Ambit)
-	if l > 0 {
-		n += 1 + l + sovStruct(uint64(l))
+	if m.Category != 0 {
+		n += 1 + sovStruct(uint64(m.Category))
 	}
-	l = len(m.PlanetId)
-	if l > 0 {
-		n += 1 + l + sovStruct(uint64(l))
+	if m.BuildDifficulty != 0 {
+		n += 1 + sovStruct(uint64(m.BuildDifficulty))
 	}
-	if m.Slot != 0 {
-		n += 1 + sovStruct(uint64(m.Slot))
+	if m.BuildDraw != 0 {
+		n += 1 + sovStruct(uint64(m.BuildDraw))
 	}
-	if m.MiningSystem != 0 {
-		n += 1 + sovStruct(uint64(m.MiningSystem))
-	}
-	if m.RefiningSystem != 0 {
-		n += 1 + sovStruct(uint64(m.RefiningSystem))
-	}
-	if m.PowerSystem != 0 {
-		n += 1 + sovStruct(uint64(m.PowerSystem))
-	}
-	if m.BuildStartBlock != 0 {
-		n += 1 + sovStruct(uint64(m.BuildStartBlock))
+	if m.MaxHealth != 0 {
+		n += 1 + sovStruct(uint64(m.MaxHealth))
 	}
 	if m.PassiveDraw != 0 {
-		n += 2 + sovStruct(uint64(m.PassiveDraw))
+		n += 1 + sovStruct(uint64(m.PassiveDraw))
 	}
-	if m.ActiveMiningSystemDraw != 0 {
-		n += 2 + sovStruct(uint64(m.ActiveMiningSystemDraw))
+	if m.PossibleAmbit != 0 {
+		n += 1 + sovStruct(uint64(m.PossibleAmbit))
 	}
-	if m.ActiveMiningSystemBlock != 0 {
-		n += 2 + sovStruct(uint64(m.ActiveMiningSystemBlock))
+	if m.PrimaryWeapon != 0 {
+		n += 1 + sovStruct(uint64(m.PrimaryWeapon))
 	}
-	if m.ActiveRefiningSystemDraw != 0 {
-		n += 2 + sovStruct(uint64(m.ActiveRefiningSystemDraw))
+	if m.PrimaryWeaponControl != 0 {
+		n += 1 + sovStruct(uint64(m.PrimaryWeaponControl))
 	}
-	if m.ActiveRefiningSystemBlock != 0 {
-		n += 2 + sovStruct(uint64(m.ActiveRefiningSystemBlock))
+	if m.PrimaryWeaponCharge != 0 {
+		n += 1 + sovStruct(uint64(m.PrimaryWeaponCharge))
 	}
-	l = len(m.MiningSystemStatus)
+	if m.PrimaryWeaponTargets != 0 {
+		n += 1 + sovStruct(uint64(m.PrimaryWeaponTargets))
+	}
+	if m.PrimaryWeaponShots != 0 {
+		n += 1 + sovStruct(uint64(m.PrimaryWeaponShots))
+	}
+	if m.PrimaryWeaponDamage != 0 {
+		n += 1 + sovStruct(uint64(m.PrimaryWeaponDamage))
+	}
+	if m.PrimaryWeaponBlockable {
+		n += 2
+	}
+	if m.PrimaryWeaponCounterable {
+		n += 3
+	}
+	if m.PrimaryWeaponRecoilDamage != 0 {
+		n += 2 + sovStruct(uint64(m.PrimaryWeaponRecoilDamage))
+	}
+	if m.PrimaryWeaponShotSuccessRateNumerator != 0 {
+		n += 2 + sovStruct(uint64(m.PrimaryWeaponShotSuccessRateNumerator))
+	}
+	if m.PrimaryWeaponShotSuccessRateDenominator != 0 {
+		n += 2 + sovStruct(uint64(m.PrimaryWeaponShotSuccessRateDenominator))
+	}
+	if m.SecondaryWeapon != 0 {
+		n += 2 + sovStruct(uint64(m.SecondaryWeapon))
+	}
+	if m.SecondaryWeaponControl != 0 {
+		n += 2 + sovStruct(uint64(m.SecondaryWeaponControl))
+	}
+	if m.SecondaryWeaponCharge != 0 {
+		n += 2 + sovStruct(uint64(m.SecondaryWeaponCharge))
+	}
+	if m.SecondaryWeaponTargets != 0 {
+		n += 2 + sovStruct(uint64(m.SecondaryWeaponTargets))
+	}
+	if m.SecondaryWeaponShots != 0 {
+		n += 2 + sovStruct(uint64(m.SecondaryWeaponShots))
+	}
+	if m.SecondaryWeaponDamage != 0 {
+		n += 2 + sovStruct(uint64(m.SecondaryWeaponDamage))
+	}
+	if m.SecondaryWeaponBlockable {
+		n += 3
+	}
+	if m.SecondaryWeaponCounterable {
+		n += 3
+	}
+	if m.SecondaryWeaponRecoilDamage != 0 {
+		n += 2 + sovStruct(uint64(m.SecondaryWeaponRecoilDamage))
+	}
+	if m.SecondaryWeaponShotSuccessRateNumerator != 0 {
+		n += 2 + sovStruct(uint64(m.SecondaryWeaponShotSuccessRateNumerator))
+	}
+	if m.SecondaryWeaponShotSuccessRateDenominator != 0 {
+		n += 2 + sovStruct(uint64(m.SecondaryWeaponShotSuccessRateDenominator))
+	}
+	if m.PassiveWeaponry != 0 {
+		n += 2 + sovStruct(uint64(m.PassiveWeaponry))
+	}
+	if m.UnitDefenses != 0 {
+		n += 2 + sovStruct(uint64(m.UnitDefenses))
+	}
+	if m.OreReserveDefenses != 0 {
+		n += 2 + sovStruct(uint64(m.OreReserveDefenses))
+	}
+	if m.PlanetaryDefenses != 0 {
+		n += 2 + sovStruct(uint64(m.PlanetaryDefenses))
+	}
+	if m.PlanetaryMining != 0 {
+		n += 2 + sovStruct(uint64(m.PlanetaryMining))
+	}
+	if m.PlanetaryRefinery != 0 {
+		n += 2 + sovStruct(uint64(m.PlanetaryRefinery))
+	}
+	if m.PowerGeneration != 0 {
+		n += 2 + sovStruct(uint64(m.PowerGeneration))
+	}
+	if m.ActivateCharge != 0 {
+		n += 2 + sovStruct(uint64(m.ActivateCharge))
+	}
+	if m.BuildCharge != 0 {
+		n += 2 + sovStruct(uint64(m.BuildCharge))
+	}
+	if m.DefendChangeCharge != 0 {
+		n += 2 + sovStruct(uint64(m.DefendChangeCharge))
+	}
+	if m.MoveCharge != 0 {
+		n += 2 + sovStruct(uint64(m.MoveCharge))
+	}
+	if m.OreMiningActivateCharge != 0 {
+		n += 2 + sovStruct(uint64(m.OreMiningActivateCharge))
+	}
+	if m.OreRefiningActivateCharge != 0 {
+		n += 2 + sovStruct(uint64(m.OreRefiningActivateCharge))
+	}
+	if m.StealthActivateCharge != 0 {
+		n += 2 + sovStruct(uint64(m.StealthActivateCharge))
+	}
+	if m.AttackReduction != 0 {
+		n += 2 + sovStruct(uint64(m.AttackReduction))
+	}
+	if m.AttackCounterable {
+		n += 3
+	}
+	if m.StealthSystems {
+		n += 3
+	}
+	if m.CounterAttack != 0 {
+		n += 2 + sovStruct(uint64(m.CounterAttack))
+	}
+	if m.CounterAttackSameAmbit != 0 {
+		n += 2 + sovStruct(uint64(m.CounterAttackSameAmbit))
+	}
+	if m.PostDestructionDamage != 0 {
+		n += 2 + sovStruct(uint64(m.PostDestructionDamage))
+	}
+	if m.GeneratingRate != 0 {
+		n += 2 + sovStruct(uint64(m.GeneratingRate))
+	}
+	if m.PlanetaryShieldContribution != 0 {
+		n += 2 + sovStruct(uint64(m.PlanetaryShieldContribution))
+	}
+	if m.UnguidedDefensiveSuccessRateNumerator != 0 {
+		n += 2 + sovStruct(uint64(m.UnguidedDefensiveSuccessRateNumerator))
+	}
+	if m.UnguidedDefensiveSuccessRateDenominator != 0 {
+		n += 2 + sovStruct(uint64(m.UnguidedDefensiveSuccessRateDenominator))
+	}
+	if m.GuidedDefensiveSuccessRateNumerator != 0 {
+		n += 2 + sovStruct(uint64(m.GuidedDefensiveSuccessRateNumerator))
+	}
+	if m.GuidedDefensiveSuccessRateDenominator != 0 {
+		n += 2 + sovStruct(uint64(m.GuidedDefensiveSuccessRateDenominator))
+	}
+	return n
+}
+
+func (m *StructDefender) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.ProtectedStructId)
 	if l > 0 {
-		n += 2 + l + sovStruct(uint64(l))
+		n += 1 + l + sovStruct(uint64(l))
 	}
-	l = len(m.RefiningSystemStatus)
+	l = len(m.DefendingStructId)
 	if l > 0 {
-		n += 2 + l + sovStruct(uint64(l))
+		n += 1 + l + sovStruct(uint64(l))
 	}
-	if m.PowerSystemFuel != 0 {
-		n += 2 + sovStruct(uint64(m.PowerSystemFuel))
+	l = len(m.LocationId)
+	if l > 0 {
+		n += 1 + l + sovStruct(uint64(l))
 	}
-	if m.PowerSystemCapacity != 0 {
-		n += 2 + sovStruct(uint64(m.PowerSystemCapacity))
+	if m.OperatingAmbit != 0 {
+		n += 1 + sovStruct(uint64(m.OperatingAmbit))
 	}
-	if m.PowerSystemLoad != 0 {
-		n += 2 + sovStruct(uint64(m.PowerSystemLoad))
+	if m.CounterAttack != 0 {
+		n += 1 + sovStruct(uint64(m.CounterAttack))
+	}
+	if m.CounterAttackSameAmbit != 0 {
+		n += 1 + sovStruct(uint64(m.CounterAttackSameAmbit))
+	}
+	return n
+}
+
+func (m *StructAttributeRecord) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.AttributeId)
+	if l > 0 {
+		n += 1 + l + sovStruct(uint64(l))
+	}
+	if m.Value != 0 {
+		n += 1 + sovStruct(uint64(m.Value))
 	}
 	return n
 }
@@ -665,6 +1765,44 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 			m.Id = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
 		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Index", wireType)
+			}
+			m.Index = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Index |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 3:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
+			}
+			m.Type = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Type |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 4:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
 			}
@@ -696,7 +1834,7 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 			}
 			m.Creator = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 3:
+		case 5:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
 			}
@@ -728,79 +1866,9 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 			}
 			m.Owner = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 4:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowStruct
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthStruct
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthStruct
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Status = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 5:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MaxHealth", wireType)
-			}
-			m.MaxHealth = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowStruct
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.MaxHealth |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
 		case 6:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Health", wireType)
-			}
-			m.Health = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowStruct
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.Health |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 7:
 			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Category", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field LocationId", wireType)
 			}
 			var stringLen uint64
 			for shift := uint(0); ; shift += 7 {
@@ -828,9 +1896,116 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 			if postIndex > l {
 				return io.ErrUnexpectedEOF
 			}
-			m.Category = string(dAtA[iNdEx:postIndex])
+			m.LocationId = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field OperatingAmbit", wireType)
+			}
+			m.OperatingAmbit = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.OperatingAmbit |= Ambit(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
 		case 8:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Slot", wireType)
+			}
+			m.Slot = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Slot |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipStruct(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthStruct
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *StructType) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowStruct
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: StructType: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: StructType: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+			}
+			m.Id = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Id |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 2:
 			if wireType != 2 {
 				return fmt.Errorf("proto: wrong wireType = %d for field Type", wireType)
 			}
@@ -862,75 +2037,11 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 			}
 			m.Type = string(dAtA[iNdEx:postIndex])
 			iNdEx = postIndex
-		case 9:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Ambit", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowStruct
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthStruct
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthStruct
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.Ambit = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 10:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PlanetId", wireType)
-			}
-			var stringLen uint64
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowStruct
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthStruct
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthStruct
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.PlanetId = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
-		case 11:
+		case 3:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field Slot", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field Category", wireType)
 			}
-			m.Slot = 0
+			m.Category = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowStruct
@@ -940,16 +2051,16 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.Slot |= uint64(b&0x7F) << shift
+				m.Category |= ObjectType(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 12:
+		case 4:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MiningSystem", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field BuildDifficulty", wireType)
 			}
-			m.MiningSystem = 0
+			m.BuildDifficulty = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowStruct
@@ -959,16 +2070,16 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.MiningSystem |= uint64(b&0x7F) << shift
+				m.BuildDifficulty |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 13:
+		case 5:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RefiningSystem", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field BuildDraw", wireType)
 			}
-			m.RefiningSystem = 0
+			m.BuildDraw = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowStruct
@@ -978,16 +2089,16 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.RefiningSystem |= uint64(b&0x7F) << shift
+				m.BuildDraw |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 14:
+		case 6:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PowerSystem", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field MaxHealth", wireType)
 			}
-			m.PowerSystem = 0
+			m.MaxHealth = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowStruct
@@ -997,31 +2108,12 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.PowerSystem |= uint64(b&0x7F) << shift
+				m.MaxHealth |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-		case 15:
-			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field BuildStartBlock", wireType)
-			}
-			m.BuildStartBlock = 0
-			for shift := uint(0); ; shift += 7 {
-				if shift >= 64 {
-					return ErrIntOverflowStruct
-				}
-				if iNdEx >= l {
-					return io.ErrUnexpectedEOF
-				}
-				b := dAtA[iNdEx]
-				iNdEx++
-				m.BuildStartBlock |= uint64(b&0x7F) << shift
-				if b < 0x80 {
-					break
-				}
-			}
-		case 16:
+		case 7:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PassiveDraw", wireType)
 			}
@@ -1040,11 +2132,11 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 17:
+		case 8:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ActiveMiningSystemDraw", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field PossibleAmbit", wireType)
 			}
-			m.ActiveMiningSystemDraw = 0
+			m.PossibleAmbit = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowStruct
@@ -1054,16 +2146,189 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ActiveMiningSystemDraw |= uint64(b&0x7F) << shift
+				m.PossibleAmbit |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 9:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeapon", wireType)
+			}
+			m.PrimaryWeapon = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PrimaryWeapon |= TechActiveWeaponry(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 10:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponControl", wireType)
+			}
+			m.PrimaryWeaponControl = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PrimaryWeaponControl |= TechWeaponControl(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 11:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponCharge", wireType)
+			}
+			m.PrimaryWeaponCharge = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PrimaryWeaponCharge |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 12:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponTargets", wireType)
+			}
+			m.PrimaryWeaponTargets = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PrimaryWeaponTargets |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 13:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponShots", wireType)
+			}
+			m.PrimaryWeaponShots = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PrimaryWeaponShots |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 14:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponDamage", wireType)
+			}
+			m.PrimaryWeaponDamage = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PrimaryWeaponDamage |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 15:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponBlockable", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.PrimaryWeaponBlockable = bool(v != 0)
+		case 16:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponCounterable", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.PrimaryWeaponCounterable = bool(v != 0)
+		case 17:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponRecoilDamage", wireType)
+			}
+			m.PrimaryWeaponRecoilDamage = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PrimaryWeaponRecoilDamage |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 18:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ActiveMiningSystemBlock", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponShotSuccessRateNumerator", wireType)
 			}
-			m.ActiveMiningSystemBlock = 0
+			m.PrimaryWeaponShotSuccessRateNumerator = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowStruct
@@ -1073,16 +2338,16 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ActiveMiningSystemBlock |= uint64(b&0x7F) << shift
+				m.PrimaryWeaponShotSuccessRateNumerator |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 19:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ActiveRefiningSystemDraw", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponShotSuccessRateDenominator", wireType)
 			}
-			m.ActiveRefiningSystemDraw = 0
+			m.PrimaryWeaponShotSuccessRateDenominator = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowStruct
@@ -1092,16 +2357,16 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ActiveRefiningSystemDraw |= uint64(b&0x7F) << shift
+				m.PrimaryWeaponShotSuccessRateDenominator |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 20:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field ActiveRefiningSystemBlock", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeapon", wireType)
 			}
-			m.ActiveRefiningSystemBlock = 0
+			m.SecondaryWeapon = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowStruct
@@ -1111,16 +2376,16 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.ActiveRefiningSystemBlock |= uint64(b&0x7F) << shift
+				m.SecondaryWeapon |= TechActiveWeaponry(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 21:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field MiningSystemStatus", wireType)
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponControl", wireType)
 			}
-			var stringLen uint64
+			m.SecondaryWeaponControl = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowStruct
@@ -1130,29 +2395,16 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.SecondaryWeaponControl |= TechWeaponControl(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthStruct
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthStruct
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.MiningSystemStatus = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 22:
-			if wireType != 2 {
-				return fmt.Errorf("proto: wrong wireType = %d for field RefiningSystemStatus", wireType)
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponCharge", wireType)
 			}
-			var stringLen uint64
+			m.SecondaryWeaponCharge = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowStruct
@@ -1162,29 +2414,16 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				stringLen |= uint64(b&0x7F) << shift
+				m.SecondaryWeaponCharge |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
-			intStringLen := int(stringLen)
-			if intStringLen < 0 {
-				return ErrInvalidLengthStruct
-			}
-			postIndex := iNdEx + intStringLen
-			if postIndex < 0 {
-				return ErrInvalidLengthStruct
-			}
-			if postIndex > l {
-				return io.ErrUnexpectedEOF
-			}
-			m.RefiningSystemStatus = string(dAtA[iNdEx:postIndex])
-			iNdEx = postIndex
 		case 23:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PowerSystemFuel", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponTargets", wireType)
 			}
-			m.PowerSystemFuel = 0
+			m.SecondaryWeaponTargets = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowStruct
@@ -1194,16 +2433,16 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.PowerSystemFuel |= uint64(b&0x7F) << shift
+				m.SecondaryWeaponTargets |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 24:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PowerSystemCapacity", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponShots", wireType)
 			}
-			m.PowerSystemCapacity = 0
+			m.SecondaryWeaponShots = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowStruct
@@ -1213,16 +2452,16 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.PowerSystemCapacity |= uint64(b&0x7F) << shift
+				m.SecondaryWeaponShots |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}
 			}
 		case 25:
 			if wireType != 0 {
-				return fmt.Errorf("proto: wrong wireType = %d for field PowerSystemLoad", wireType)
+				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponDamage", wireType)
 			}
-			m.PowerSystemLoad = 0
+			m.SecondaryWeaponDamage = 0
 			for shift := uint(0); ; shift += 7 {
 				if shift >= 64 {
 					return ErrIntOverflowStruct
@@ -1232,7 +2471,904 @@ func (m *Struct) Unmarshal(dAtA []byte) error {
 				}
 				b := dAtA[iNdEx]
 				iNdEx++
-				m.PowerSystemLoad |= uint64(b&0x7F) << shift
+				m.SecondaryWeaponDamage |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 26:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponBlockable", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.SecondaryWeaponBlockable = bool(v != 0)
+		case 27:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponCounterable", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.SecondaryWeaponCounterable = bool(v != 0)
+		case 28:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponRecoilDamage", wireType)
+			}
+			m.SecondaryWeaponRecoilDamage = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SecondaryWeaponRecoilDamage |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 29:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponShotSuccessRateNumerator", wireType)
+			}
+			m.SecondaryWeaponShotSuccessRateNumerator = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SecondaryWeaponShotSuccessRateNumerator |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 30:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponShotSuccessRateDenominator", wireType)
+			}
+			m.SecondaryWeaponShotSuccessRateDenominator = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SecondaryWeaponShotSuccessRateDenominator |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 31:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PassiveWeaponry", wireType)
+			}
+			m.PassiveWeaponry = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PassiveWeaponry |= TechPassiveWeaponry(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 32:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UnitDefenses", wireType)
+			}
+			m.UnitDefenses = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.UnitDefenses |= TechUnitDefenses(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 33:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field OreReserveDefenses", wireType)
+			}
+			m.OreReserveDefenses = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.OreReserveDefenses |= TechOreReserveDefenses(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 34:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PlanetaryDefenses", wireType)
+			}
+			m.PlanetaryDefenses = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PlanetaryDefenses |= TechPlanetaryDefenses(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 35:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PlanetaryMining", wireType)
+			}
+			m.PlanetaryMining = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PlanetaryMining |= TechPlanetaryMining(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 36:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PlanetaryRefinery", wireType)
+			}
+			m.PlanetaryRefinery = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PlanetaryRefinery |= TechPlanetaryRefineries(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 37:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PowerGeneration", wireType)
+			}
+			m.PowerGeneration = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PowerGeneration |= TechPowerGeneration(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 38:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ActivateCharge", wireType)
+			}
+			m.ActivateCharge = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ActivateCharge |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 39:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BuildCharge", wireType)
+			}
+			m.BuildCharge = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BuildCharge |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 40:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DefendChangeCharge", wireType)
+			}
+			m.DefendChangeCharge = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.DefendChangeCharge |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 41:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field MoveCharge", wireType)
+			}
+			m.MoveCharge = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.MoveCharge |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 42:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field OreMiningActivateCharge", wireType)
+			}
+			m.OreMiningActivateCharge = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.OreMiningActivateCharge |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 43:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field OreRefiningActivateCharge", wireType)
+			}
+			m.OreRefiningActivateCharge = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.OreRefiningActivateCharge |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 44:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StealthActivateCharge", wireType)
+			}
+			m.StealthActivateCharge = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.StealthActivateCharge |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 45:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AttackReduction", wireType)
+			}
+			m.AttackReduction = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.AttackReduction |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 46:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AttackCounterable", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.AttackCounterable = bool(v != 0)
+		case 47:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StealthSystems", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.StealthSystems = bool(v != 0)
+		case 48:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CounterAttack", wireType)
+			}
+			m.CounterAttack = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.CounterAttack |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 49:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CounterAttackSameAmbit", wireType)
+			}
+			m.CounterAttackSameAmbit = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.CounterAttackSameAmbit |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 50:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PostDestructionDamage", wireType)
+			}
+			m.PostDestructionDamage = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PostDestructionDamage |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 51:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GeneratingRate", wireType)
+			}
+			m.GeneratingRate = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.GeneratingRate |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 52:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PlanetaryShieldContribution", wireType)
+			}
+			m.PlanetaryShieldContribution = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PlanetaryShieldContribution |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 53:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UnguidedDefensiveSuccessRateNumerator", wireType)
+			}
+			m.UnguidedDefensiveSuccessRateNumerator = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.UnguidedDefensiveSuccessRateNumerator |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 54:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field UnguidedDefensiveSuccessRateDenominator", wireType)
+			}
+			m.UnguidedDefensiveSuccessRateDenominator = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.UnguidedDefensiveSuccessRateDenominator |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 55:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GuidedDefensiveSuccessRateNumerator", wireType)
+			}
+			m.GuidedDefensiveSuccessRateNumerator = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.GuidedDefensiveSuccessRateNumerator |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 56:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field GuidedDefensiveSuccessRateDenominator", wireType)
+			}
+			m.GuidedDefensiveSuccessRateDenominator = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.GuidedDefensiveSuccessRateDenominator |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipStruct(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthStruct
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *StructDefender) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowStruct
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: StructDefender: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: StructDefender: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProtectedStructId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthStruct
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthStruct
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.ProtectedStructId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field DefendingStructId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthStruct
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthStruct
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.DefendingStructId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field LocationId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthStruct
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthStruct
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.LocationId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field OperatingAmbit", wireType)
+			}
+			m.OperatingAmbit = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.OperatingAmbit |= Ambit(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 5:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CounterAttack", wireType)
+			}
+			m.CounterAttack = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.CounterAttack |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field CounterAttackSameAmbit", wireType)
+			}
+			m.CounterAttackSameAmbit = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.CounterAttackSameAmbit |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipStruct(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthStruct
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *StructAttributeRecord) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowStruct
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: StructAttributeRecord: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: StructAttributeRecord: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field AttributeId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthStruct
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthStruct
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.AttributeId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Value", wireType)
+			}
+			m.Value = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Value |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}

@@ -208,12 +208,6 @@ var PlanetStatus_enum = map[string]PlanetStatus {
 }
 
 
-var StructCategory_enum = map[string]StructCategory {
-    "planetary":    StructCategory_planetary,
-    "fleet":        StructCategory_fleet,
-}
-
-
 var StructAttributeType_enum = map[string]StructAttributeType {
     "health":               StructAttributeType_health,
     "status":               StructAttributeType_status,

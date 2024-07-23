@@ -20857,77 +20857,33 @@ paths:
                 properties:
                   id:
                     type: string
-                  creator:
-                    type: string
-                  owner:
-                    type: string
-                  status:
-                    type: string
-                  maxHealth:
+                    title: What it is
+                  index:
                     type: string
                     format: uint64
-                  health:
-                    type: string
-                    format: uint64
-                  category:
-                    type: string
-                    title: Planet or Fleet
                   type:
                     type: string
-                    title: What it is
-                  ambit:
+                    format: uint64
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
                     type: string
                     title: Where it is
-                  planetId:
+                  operatingAmbit:
                     type: string
-                    title: No fleet stuff yet
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
                   slot:
                     type: string
                     format: uint64
-                  miningSystem:
-                    type: string
-                    format: uint64
-                    title: Struct Features
-                  refiningSystem:
-                    type: string
-                    format: uint64
-                  powerSystem:
-                    type: string
-                    format: uint64
-                  buildStartBlock:
-                    type: string
-                    format: uint64
-                  passiveDraw:
-                    type: string
-                    format: uint64
-                  activeMiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeMiningSystemBlock:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemBlock:
-                    type: string
-                    format: uint64
-                  miningSystemStatus:
-                    type: string
-                  refiningSystemStatus:
-                    type: string
-                  powerSystemFuel:
-                    type: string
-                    format: uint64
-                  powerSystemCapacity:
-                    type: string
-                    format: uint64
-                  powerSystemLoad:
-                    type: string
-                    format: uint64
-                title: |-
-                  This will all need to be reworked but let's
-                  do some super basic crap here to get testnet up
         default:
           description: An unexpected error response.
           schema:
@@ -20959,6 +20915,53 @@ paths:
                 type: string
       tags:
         - Msg
+  /structs.structs.Msg/StructAttack:
+    post:
+      operationId: StructsStructsMsg_StructAttack
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              operatingStructId:
+                type: string
+              targetStructId:
+                type: string
+              weaponSystem:
+                type: string
+                enum:
+                  - primaryWeapon
+                  - secondaryWeapon
+                default: primaryWeapon
+      tags:
+        - Msg
   /structs.structs.Msg/StructBuildComplete:
     post:
       operationId: StructsStructsMsg_StructBuildComplete
@@ -20973,77 +20976,33 @@ paths:
                 properties:
                   id:
                     type: string
-                  creator:
-                    type: string
-                  owner:
-                    type: string
-                  status:
-                    type: string
-                  maxHealth:
+                    title: What it is
+                  index:
                     type: string
                     format: uint64
-                  health:
-                    type: string
-                    format: uint64
-                  category:
-                    type: string
-                    title: Planet or Fleet
                   type:
                     type: string
-                    title: What it is
-                  ambit:
+                    format: uint64
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
                     type: string
                     title: Where it is
-                  planetId:
+                  operatingAmbit:
                     type: string
-                    title: No fleet stuff yet
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
                   slot:
                     type: string
                     format: uint64
-                  miningSystem:
-                    type: string
-                    format: uint64
-                    title: Struct Features
-                  refiningSystem:
-                    type: string
-                    format: uint64
-                  powerSystem:
-                    type: string
-                    format: uint64
-                  buildStartBlock:
-                    type: string
-                    format: uint64
-                  passiveDraw:
-                    type: string
-                    format: uint64
-                  activeMiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeMiningSystemBlock:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemBlock:
-                    type: string
-                    format: uint64
-                  miningSystemStatus:
-                    type: string
-                  refiningSystemStatus:
-                    type: string
-                  powerSystemFuel:
-                    type: string
-                    format: uint64
-                  powerSystemCapacity:
-                    type: string
-                    format: uint64
-                  powerSystemLoad:
-                    type: string
-                    format: uint64
-                title: |-
-                  This will all need to be reworked but let's
-                  do some super basic crap here to get testnet up
         default:
           description: An unexpected error response.
           schema:
@@ -21077,11 +21036,13 @@ paths:
                 type: string
               nonce:
                 type: string
+              activate:
+                type: boolean
       tags:
         - Msg
-  /structs.structs.Msg/StructBuildInitiate:
+  /structs.structs.Msg/StructBuildCompleteAndStash:
     post:
-      operationId: StructsStructsMsg_StructBuildInitiate
+      operationId: StructsStructsMsg_StructBuildCompleteAndStash
       responses:
         '200':
           description: A successful response.
@@ -21093,77 +21054,33 @@ paths:
                 properties:
                   id:
                     type: string
-                  creator:
-                    type: string
-                  owner:
-                    type: string
-                  status:
-                    type: string
-                  maxHealth:
+                    title: What it is
+                  index:
                     type: string
                     format: uint64
-                  health:
-                    type: string
-                    format: uint64
-                  category:
-                    type: string
-                    title: Planet or Fleet
                   type:
                     type: string
-                    title: What it is
-                  ambit:
+                    format: uint64
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
                     type: string
                     title: Where it is
-                  planetId:
+                  operatingAmbit:
                     type: string
-                    title: No fleet stuff yet
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
                   slot:
                     type: string
                     format: uint64
-                  miningSystem:
-                    type: string
-                    format: uint64
-                    title: Struct Features
-                  refiningSystem:
-                    type: string
-                    format: uint64
-                  powerSystem:
-                    type: string
-                    format: uint64
-                  buildStartBlock:
-                    type: string
-                    format: uint64
-                  passiveDraw:
-                    type: string
-                    format: uint64
-                  activeMiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeMiningSystemBlock:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemBlock:
-                    type: string
-                    format: uint64
-                  miningSystemStatus:
-                    type: string
-                  refiningSystemStatus:
-                    type: string
-                  powerSystemFuel:
-                    type: string
-                    format: uint64
-                  powerSystemCapacity:
-                    type: string
-                    format: uint64
-                  powerSystemLoad:
-                    type: string
-                    format: uint64
-                title: |-
-                  This will all need to be reworked but let's
-                  do some super basic crap here to get testnet up
         default:
           description: An unexpected error response.
           schema:
@@ -21191,18 +21108,336 @@ paths:
             properties:
               creator:
                 type: string
-              structType:
+              structId:
                 type: string
+              proof:
+                type: string
+              nonce:
+                type: string
+              storageDestinationId:
+                type: string
+              storageAmbit:
+                type: string
+                enum:
+                  - water
+                  - land
+                  - air
+                  - space
+                  - local
+                default: water
+              storageSlot:
+                type: string
+                format: uint64
+      tags:
+        - Msg
+  /structs.structs.Msg/StructBuildInitiate:
+    post:
+      operationId: StructsStructsMsg_StructBuildInitiate
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              struct:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    title: What it is
+                  index:
+                    type: string
+                    format: uint64
+                  type:
+                    type: string
+                    format: uint64
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
+                    type: string
+                    title: Where it is
+                  operatingAmbit:
+                    type: string
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
+                  slot:
+                    type: string
+                    format: uint64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              structTypeId:
+                type: string
+                format: uint64
               planetId:
                 type: string
+              operatingAmbit:
+                type: string
+                enum:
+                  - water
+                  - land
+                  - air
+                  - space
+                  - local
+                default: water
               slot:
                 type: string
                 format: uint64
       tags:
         - Msg
-  /structs.structs.Msg/StructInfuse:
+  /structs.structs.Msg/StructDeactivate:
     post:
-      operationId: StructsStructsMsg_StructInfuse
+      operationId: StructsStructsMsg_StructDeactivate
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              struct:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    title: What it is
+                  index:
+                    type: string
+                    format: uint64
+                  type:
+                    type: string
+                    format: uint64
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
+                    type: string
+                    title: Where it is
+                  operatingAmbit:
+                    type: string
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
+                  slot:
+                    type: string
+                    format: uint64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              structId:
+                type: string
+      tags:
+        - Msg
+  /structs.structs.Msg/StructDefenseClear:
+    post:
+      operationId: StructsStructsMsg_StructDefenseClear
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              struct:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    title: What it is
+                  index:
+                    type: string
+                    format: uint64
+                  type:
+                    type: string
+                    format: uint64
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
+                    type: string
+                    title: Where it is
+                  operatingAmbit:
+                    type: string
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
+                  slot:
+                    type: string
+                    format: uint64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              defenderStructId:
+                type: string
+      tags:
+        - Msg
+  /structs.structs.Msg/StructDefenseSet:
+    post:
+      operationId: StructsStructsMsg_StructDefenseSet
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              struct:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    title: What it is
+                  index:
+                    type: string
+                    format: uint64
+                  type:
+                    type: string
+                    format: uint64
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
+                    type: string
+                    title: Where it is
+                  operatingAmbit:
+                    type: string
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
+                  slot:
+                    type: string
+                    format: uint64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              defenderStructId:
+                type: string
+              protectedStructId:
+                type: string
+      tags:
+        - Msg
+  /structs.structs.Msg/StructGeneratorInfuse:
+    post:
+      operationId: StructsStructsMsg_StructGeneratorInfuse
       responses:
         '200':
           description: A successful response.
@@ -21241,9 +21476,9 @@ paths:
                 type: string
       tags:
         - Msg
-  /structs.structs.Msg/StructMine:
+  /structs.structs.Msg/StructMove:
     post:
-      operationId: StructsStructsMsg_StructMine
+      operationId: StructsStructsMsg_StructMove
       responses:
         '200':
           description: A successful response.
@@ -21255,77 +21490,191 @@ paths:
                 properties:
                   id:
                     type: string
-                  creator:
-                    type: string
-                  owner:
-                    type: string
-                  status:
-                    type: string
-                  maxHealth:
+                    title: What it is
+                  index:
                     type: string
                     format: uint64
-                  health:
-                    type: string
-                    format: uint64
-                  category:
-                    type: string
-                    title: Planet or Fleet
                   type:
                     type: string
-                    title: What it is
-                  ambit:
+                    format: uint64
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
                     type: string
                     title: Where it is
-                  planetId:
+                  operatingAmbit:
                     type: string
-                    title: No fleet stuff yet
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
                   slot:
                     type: string
                     format: uint64
-                  miningSystem:
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              structId:
+                type: string
+              locationId:
+                type: string
+              ambit:
+                type: string
+                enum:
+                  - water
+                  - land
+                  - air
+                  - space
+                  - local
+                default: water
+              slot:
+                type: string
+                format: uint64
+      tags:
+        - Msg
+  /structs.structs.Msg/StructOreMinerActivate:
+    post:
+      operationId: StructsStructsMsg_StructOreMinerActivate
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              struct:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    title: What it is
+                  index:
                     type: string
                     format: uint64
-                    title: Struct Features
-                  refiningSystem:
+                  type:
                     type: string
                     format: uint64
-                  powerSystem:
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
+                    type: string
+                    title: Where it is
+                  operatingAmbit:
+                    type: string
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
+                  slot:
                     type: string
                     format: uint64
-                  buildStartBlock:
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              structId:
+                type: string
+      tags:
+        - Msg
+  /structs.structs.Msg/StructOreMinerComplete:
+    post:
+      operationId: StructsStructsMsg_StructOreMinerComplete
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              struct:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    title: What it is
+                  index:
                     type: string
                     format: uint64
-                  passiveDraw:
+                  type:
                     type: string
                     format: uint64
-                  activeMiningSystemDraw:
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
+                    type: string
+                    title: Where it is
+                  operatingAmbit:
+                    type: string
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
+                  slot:
                     type: string
                     format: uint64
-                  activeMiningSystemBlock:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemBlock:
-                    type: string
-                    format: uint64
-                  miningSystemStatus:
-                    type: string
-                  refiningSystemStatus:
-                    type: string
-                  powerSystemFuel:
-                    type: string
-                    format: uint64
-                  powerSystemCapacity:
-                    type: string
-                    format: uint64
-                  powerSystemLoad:
-                    type: string
-                    format: uint64
-                title: |-
-                  This will all need to be reworked but let's
-                  do some super basic crap here to get testnet up
         default:
           description: An unexpected error response.
           schema:
@@ -21361,9 +21710,9 @@ paths:
                 type: string
       tags:
         - Msg
-  /structs.structs.Msg/StructMineActivate:
+  /structs.structs.Msg/StructOreMinerDeactivate:
     post:
-      operationId: StructsStructsMsg_StructMineActivate
+      operationId: StructsStructsMsg_StructOreMinerDeactivate
       responses:
         '200':
           description: A successful response.
@@ -21375,77 +21724,33 @@ paths:
                 properties:
                   id:
                     type: string
-                  creator:
-                    type: string
-                  owner:
-                    type: string
-                  status:
-                    type: string
-                  maxHealth:
+                    title: What it is
+                  index:
                     type: string
                     format: uint64
-                  health:
-                    type: string
-                    format: uint64
-                  category:
-                    type: string
-                    title: Planet or Fleet
                   type:
                     type: string
-                    title: What it is
-                  ambit:
+                    format: uint64
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
                     type: string
                     title: Where it is
-                  planetId:
+                  operatingAmbit:
                     type: string
-                    title: No fleet stuff yet
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
                   slot:
                     type: string
                     format: uint64
-                  miningSystem:
-                    type: string
-                    format: uint64
-                    title: Struct Features
-                  refiningSystem:
-                    type: string
-                    format: uint64
-                  powerSystem:
-                    type: string
-                    format: uint64
-                  buildStartBlock:
-                    type: string
-                    format: uint64
-                  passiveDraw:
-                    type: string
-                    format: uint64
-                  activeMiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeMiningSystemBlock:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemBlock:
-                    type: string
-                    format: uint64
-                  miningSystemStatus:
-                    type: string
-                  refiningSystemStatus:
-                    type: string
-                  powerSystemFuel:
-                    type: string
-                    format: uint64
-                  powerSystemCapacity:
-                    type: string
-                    format: uint64
-                  powerSystemLoad:
-                    type: string
-                    format: uint64
-                title: |-
-                  This will all need to be reworked but let's
-                  do some super basic crap here to get testnet up
         default:
           description: An unexpected error response.
           schema:
@@ -21477,9 +21782,9 @@ paths:
                 type: string
       tags:
         - Msg
-  /structs.structs.Msg/StructMineDeactivate:
+  /structs.structs.Msg/StructOreRefineryActivate:
     post:
-      operationId: StructsStructsMsg_StructMineDeactivate
+      operationId: StructsStructsMsg_StructOreRefineryActivate
       responses:
         '200':
           description: A successful response.
@@ -21491,77 +21796,33 @@ paths:
                 properties:
                   id:
                     type: string
-                  creator:
-                    type: string
-                  owner:
-                    type: string
-                  status:
-                    type: string
-                  maxHealth:
+                    title: What it is
+                  index:
                     type: string
                     format: uint64
-                  health:
-                    type: string
-                    format: uint64
-                  category:
-                    type: string
-                    title: Planet or Fleet
                   type:
                     type: string
-                    title: What it is
-                  ambit:
+                    format: uint64
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
                     type: string
                     title: Where it is
-                  planetId:
+                  operatingAmbit:
                     type: string
-                    title: No fleet stuff yet
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
                   slot:
                     type: string
                     format: uint64
-                  miningSystem:
-                    type: string
-                    format: uint64
-                    title: Struct Features
-                  refiningSystem:
-                    type: string
-                    format: uint64
-                  powerSystem:
-                    type: string
-                    format: uint64
-                  buildStartBlock:
-                    type: string
-                    format: uint64
-                  passiveDraw:
-                    type: string
-                    format: uint64
-                  activeMiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeMiningSystemBlock:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemBlock:
-                    type: string
-                    format: uint64
-                  miningSystemStatus:
-                    type: string
-                  refiningSystemStatus:
-                    type: string
-                  powerSystemFuel:
-                    type: string
-                    format: uint64
-                  powerSystemCapacity:
-                    type: string
-                    format: uint64
-                  powerSystemLoad:
-                    type: string
-                    format: uint64
-                title: |-
-                  This will all need to be reworked but let's
-                  do some super basic crap here to get testnet up
         default:
           description: An unexpected error response.
           schema:
@@ -21593,9 +21854,9 @@ paths:
                 type: string
       tags:
         - Msg
-  /structs.structs.Msg/StructRefine:
+  /structs.structs.Msg/StructOreRefineryComplete:
     post:
-      operationId: StructsStructsMsg_StructRefine
+      operationId: StructsStructsMsg_StructOreRefineryComplete
       responses:
         '200':
           description: A successful response.
@@ -21607,77 +21868,33 @@ paths:
                 properties:
                   id:
                     type: string
-                  creator:
-                    type: string
-                  owner:
-                    type: string
-                  status:
-                    type: string
-                  maxHealth:
+                    title: What it is
+                  index:
                     type: string
                     format: uint64
-                  health:
-                    type: string
-                    format: uint64
-                  category:
-                    type: string
-                    title: Planet or Fleet
                   type:
                     type: string
-                    title: What it is
-                  ambit:
+                    format: uint64
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
                     type: string
                     title: Where it is
-                  planetId:
+                  operatingAmbit:
                     type: string
-                    title: No fleet stuff yet
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
                   slot:
                     type: string
                     format: uint64
-                  miningSystem:
-                    type: string
-                    format: uint64
-                    title: Struct Features
-                  refiningSystem:
-                    type: string
-                    format: uint64
-                  powerSystem:
-                    type: string
-                    format: uint64
-                  buildStartBlock:
-                    type: string
-                    format: uint64
-                  passiveDraw:
-                    type: string
-                    format: uint64
-                  activeMiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeMiningSystemBlock:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemBlock:
-                    type: string
-                    format: uint64
-                  miningSystemStatus:
-                    type: string
-                  refiningSystemStatus:
-                    type: string
-                  powerSystemFuel:
-                    type: string
-                    format: uint64
-                  powerSystemCapacity:
-                    type: string
-                    format: uint64
-                  powerSystemLoad:
-                    type: string
-                    format: uint64
-                title: |-
-                  This will all need to be reworked but let's
-                  do some super basic crap here to get testnet up
         default:
           description: An unexpected error response.
           schema:
@@ -21713,9 +21930,9 @@ paths:
                 type: string
       tags:
         - Msg
-  /structs.structs.Msg/StructRefineActivate:
+  /structs.structs.Msg/StructOreRefineryDeactivate:
     post:
-      operationId: StructsStructsMsg_StructRefineActivate
+      operationId: StructsStructsMsg_StructOreRefineryDeactivate
       responses:
         '200':
           description: A successful response.
@@ -21727,77 +21944,33 @@ paths:
                 properties:
                   id:
                     type: string
-                  creator:
-                    type: string
-                  owner:
-                    type: string
-                  status:
-                    type: string
-                  maxHealth:
+                    title: What it is
+                  index:
                     type: string
                     format: uint64
-                  health:
-                    type: string
-                    format: uint64
-                  category:
-                    type: string
-                    title: Planet or Fleet
                   type:
                     type: string
-                    title: What it is
-                  ambit:
+                    format: uint64
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
                     type: string
                     title: Where it is
-                  planetId:
+                  operatingAmbit:
                     type: string
-                    title: No fleet stuff yet
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
                   slot:
                     type: string
                     format: uint64
-                  miningSystem:
-                    type: string
-                    format: uint64
-                    title: Struct Features
-                  refiningSystem:
-                    type: string
-                    format: uint64
-                  powerSystem:
-                    type: string
-                    format: uint64
-                  buildStartBlock:
-                    type: string
-                    format: uint64
-                  passiveDraw:
-                    type: string
-                    format: uint64
-                  activeMiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeMiningSystemBlock:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemBlock:
-                    type: string
-                    format: uint64
-                  miningSystemStatus:
-                    type: string
-                  refiningSystemStatus:
-                    type: string
-                  powerSystemFuel:
-                    type: string
-                    format: uint64
-                  powerSystemCapacity:
-                    type: string
-                    format: uint64
-                  powerSystemLoad:
-                    type: string
-                    format: uint64
-                title: |-
-                  This will all need to be reworked but let's
-                  do some super basic crap here to get testnet up
         default:
           description: An unexpected error response.
           schema:
@@ -21829,9 +22002,9 @@ paths:
                 type: string
       tags:
         - Msg
-  /structs.structs.Msg/StructRefineDeactivate:
+  /structs.structs.Msg/StructStealthActivate:
     post:
-      operationId: StructsStructsMsg_StructRefineDeactivate
+      operationId: StructsStructsMsg_StructStealthActivate
       responses:
         '200':
           description: A successful response.
@@ -21843,77 +22016,33 @@ paths:
                 properties:
                   id:
                     type: string
-                  creator:
-                    type: string
-                  owner:
-                    type: string
-                  status:
-                    type: string
-                  maxHealth:
+                    title: What it is
+                  index:
                     type: string
                     format: uint64
-                  health:
-                    type: string
-                    format: uint64
-                  category:
-                    type: string
-                    title: Planet or Fleet
                   type:
                     type: string
-                    title: What it is
-                  ambit:
+                    format: uint64
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
                     type: string
                     title: Where it is
-                  planetId:
+                  operatingAmbit:
                     type: string
-                    title: No fleet stuff yet
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
                   slot:
                     type: string
                     format: uint64
-                  miningSystem:
-                    type: string
-                    format: uint64
-                    title: Struct Features
-                  refiningSystem:
-                    type: string
-                    format: uint64
-                  powerSystem:
-                    type: string
-                    format: uint64
-                  buildStartBlock:
-                    type: string
-                    format: uint64
-                  passiveDraw:
-                    type: string
-                    format: uint64
-                  activeMiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeMiningSystemBlock:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemBlock:
-                    type: string
-                    format: uint64
-                  miningSystemStatus:
-                    type: string
-                  refiningSystemStatus:
-                    type: string
-                  powerSystemFuel:
-                    type: string
-                    format: uint64
-                  powerSystemCapacity:
-                    type: string
-                    format: uint64
-                  powerSystemLoad:
-                    type: string
-                    format: uint64
-                title: |-
-                  This will all need to be reworked but let's
-                  do some super basic crap here to get testnet up
         default:
           description: An unexpected error response.
           schema:
@@ -21943,6 +22072,252 @@ paths:
                 type: string
               structId:
                 type: string
+      tags:
+        - Msg
+  /structs.structs.Msg/StructStealthDeactivate:
+    post:
+      operationId: StructsStructsMsg_StructStealthDeactivate
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              struct:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    title: What it is
+                  index:
+                    type: string
+                    format: uint64
+                  type:
+                    type: string
+                    format: uint64
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
+                    type: string
+                    title: Where it is
+                  operatingAmbit:
+                    type: string
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
+                  slot:
+                    type: string
+                    format: uint64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              structId:
+                type: string
+      tags:
+        - Msg
+  /structs.structs.Msg/StructStorageRecall:
+    post:
+      operationId: StructsStructsMsg_StructStorageRecall
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              struct:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    title: What it is
+                  index:
+                    type: string
+                    format: uint64
+                  type:
+                    type: string
+                    format: uint64
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
+                    type: string
+                    title: Where it is
+                  operatingAmbit:
+                    type: string
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
+                  slot:
+                    type: string
+                    format: uint64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              structId:
+                type: string
+              locationId:
+                type: string
+              ambit:
+                type: string
+                enum:
+                  - water
+                  - land
+                  - air
+                  - space
+                  - local
+                default: water
+              slot:
+                type: string
+                format: uint64
+              activate:
+                type: boolean
+      tags:
+        - Msg
+  /structs.structs.Msg/StructStorageStash:
+    post:
+      operationId: StructsStructsMsg_StructStorageStash
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              struct:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    title: What it is
+                  index:
+                    type: string
+                    format: uint64
+                  type:
+                    type: string
+                    format: uint64
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
+                    type: string
+                    title: Where it is
+                  operatingAmbit:
+                    type: string
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
+                  slot:
+                    type: string
+                    format: uint64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              structId:
+                type: string
+              locationId:
+                type: string
+              ambit:
+                type: string
+                enum:
+                  - water
+                  - land
+                  - air
+                  - space
+                  - local
+                default: water
+              slot:
+                type: string
+                format: uint64
       tags:
         - Msg
   /structs.structs.Msg/SubstationAllocationConnect:
@@ -23479,6 +23854,7 @@ paths:
                         - allocation
                         - infusion
                         - address
+                        - fleet
                       default: guild
                     destinationId:
                       type: string
@@ -23634,6 +24010,7 @@ paths:
                       - allocation
                       - infusion
                       - address
+                      - fleet
                     default: guild
                   destinationId:
                     type: string
@@ -24991,77 +25368,33 @@ paths:
                   properties:
                     id:
                       type: string
-                    creator:
-                      type: string
-                    owner:
-                      type: string
-                    status:
-                      type: string
-                    maxHealth:
+                      title: What it is
+                    index:
                       type: string
                       format: uint64
-                    health:
-                      type: string
-                      format: uint64
-                    category:
-                      type: string
-                      title: Planet or Fleet
                     type:
                       type: string
-                      title: What it is
-                    ambit:
+                      format: uint64
+                    creator:
+                      type: string
+                      title: Who is it
+                    owner:
+                      type: string
+                    locationId:
                       type: string
                       title: Where it is
-                    planetId:
+                    operatingAmbit:
                       type: string
-                      title: No fleet stuff yet
+                      enum:
+                        - water
+                        - land
+                        - air
+                        - space
+                        - local
+                      default: water
                     slot:
                       type: string
                       format: uint64
-                    miningSystem:
-                      type: string
-                      format: uint64
-                      title: Struct Features
-                    refiningSystem:
-                      type: string
-                      format: uint64
-                    powerSystem:
-                      type: string
-                      format: uint64
-                    buildStartBlock:
-                      type: string
-                      format: uint64
-                    passiveDraw:
-                      type: string
-                      format: uint64
-                    activeMiningSystemDraw:
-                      type: string
-                      format: uint64
-                    activeMiningSystemBlock:
-                      type: string
-                      format: uint64
-                    activeRefiningSystemDraw:
-                      type: string
-                      format: uint64
-                    activeRefiningSystemBlock:
-                      type: string
-                      format: uint64
-                    miningSystemStatus:
-                      type: string
-                    refiningSystemStatus:
-                      type: string
-                    powerSystemFuel:
-                      type: string
-                      format: uint64
-                    powerSystemCapacity:
-                      type: string
-                      format: uint64
-                    powerSystemLoad:
-                      type: string
-                      format: uint64
-                  title: |-
-                    This will all need to be reworked but let's
-                    do some super basic crap here to get testnet up
               pagination:
                 type: object
                 properties:
@@ -25182,77 +25515,33 @@ paths:
                 properties:
                   id:
                     type: string
-                  creator:
-                    type: string
-                  owner:
-                    type: string
-                  status:
-                    type: string
-                  maxHealth:
+                    title: What it is
+                  index:
                     type: string
                     format: uint64
-                  health:
-                    type: string
-                    format: uint64
-                  category:
-                    type: string
-                    title: Planet or Fleet
                   type:
                     type: string
-                    title: What it is
-                  ambit:
+                    format: uint64
+                  creator:
+                    type: string
+                    title: Who is it
+                  owner:
+                    type: string
+                  locationId:
                     type: string
                     title: Where it is
-                  planetId:
+                  operatingAmbit:
                     type: string
-                    title: No fleet stuff yet
+                    enum:
+                      - water
+                      - land
+                      - air
+                      - space
+                      - local
+                    default: water
                   slot:
                     type: string
                     format: uint64
-                  miningSystem:
-                    type: string
-                    format: uint64
-                    title: Struct Features
-                  refiningSystem:
-                    type: string
-                    format: uint64
-                  powerSystem:
-                    type: string
-                    format: uint64
-                  buildStartBlock:
-                    type: string
-                    format: uint64
-                  passiveDraw:
-                    type: string
-                    format: uint64
-                  activeMiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeMiningSystemBlock:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemDraw:
-                    type: string
-                    format: uint64
-                  activeRefiningSystemBlock:
-                    type: string
-                    format: uint64
-                  miningSystemStatus:
-                    type: string
-                  refiningSystemStatus:
-                    type: string
-                  powerSystemFuel:
-                    type: string
-                    format: uint64
-                  powerSystemCapacity:
-                    type: string
-                    format: uint64
-                  powerSystemLoad:
-                    type: string
-                    format: uint64
-                title: |-
-                  This will all need to be reworked but let's
-                  do some super basic crap here to get testnet up
         default:
           description: An unexpected error response.
           schema:
@@ -33696,85 +33985,23 @@ definitions:
         type: string
       structId:
         type: string
-  structs.structs.MsgStructActivateResponse:
+  structs.structs.MsgStructAttack:
     type: object
     properties:
-      struct:
-        type: object
-        properties:
-          id:
-            type: string
-          creator:
-            type: string
-          owner:
-            type: string
-          status:
-            type: string
-          maxHealth:
-            type: string
-            format: uint64
-          health:
-            type: string
-            format: uint64
-          category:
-            type: string
-            title: Planet or Fleet
-          type:
-            type: string
-            title: What it is
-          ambit:
-            type: string
-            title: Where it is
-          planetId:
-            type: string
-            title: No fleet stuff yet
-          slot:
-            type: string
-            format: uint64
-          miningSystem:
-            type: string
-            format: uint64
-            title: Struct Features
-          refiningSystem:
-            type: string
-            format: uint64
-          powerSystem:
-            type: string
-            format: uint64
-          buildStartBlock:
-            type: string
-            format: uint64
-          passiveDraw:
-            type: string
-            format: uint64
-          activeMiningSystemDraw:
-            type: string
-            format: uint64
-          activeMiningSystemBlock:
-            type: string
-            format: uint64
-          activeRefiningSystemDraw:
-            type: string
-            format: uint64
-          activeRefiningSystemBlock:
-            type: string
-            format: uint64
-          miningSystemStatus:
-            type: string
-          refiningSystemStatus:
-            type: string
-          powerSystemFuel:
-            type: string
-            format: uint64
-          powerSystemCapacity:
-            type: string
-            format: uint64
-          powerSystemLoad:
-            type: string
-            format: uint64
-        title: |-
-          This will all need to be reworked but let's
-          do some super basic crap here to get testnet up
+      creator:
+        type: string
+      operatingStructId:
+        type: string
+      targetStructId:
+        type: string
+      weaponSystem:
+        type: string
+        enum:
+          - primaryWeapon
+          - secondaryWeapon
+        default: primaryWeapon
+  structs.structs.MsgStructAttackResponse:
+    type: object
   structs.structs.MsgStructBuildComplete:
     type: object
     properties:
@@ -33786,177 +34013,79 @@ definitions:
         type: string
       nonce:
         type: string
-  structs.structs.MsgStructBuildCompleteResponse:
+      activate:
+        type: boolean
+  structs.structs.MsgStructBuildCompleteAndStash:
     type: object
     properties:
-      struct:
-        type: object
-        properties:
-          id:
-            type: string
-          creator:
-            type: string
-          owner:
-            type: string
-          status:
-            type: string
-          maxHealth:
-            type: string
-            format: uint64
-          health:
-            type: string
-            format: uint64
-          category:
-            type: string
-            title: Planet or Fleet
-          type:
-            type: string
-            title: What it is
-          ambit:
-            type: string
-            title: Where it is
-          planetId:
-            type: string
-            title: No fleet stuff yet
-          slot:
-            type: string
-            format: uint64
-          miningSystem:
-            type: string
-            format: uint64
-            title: Struct Features
-          refiningSystem:
-            type: string
-            format: uint64
-          powerSystem:
-            type: string
-            format: uint64
-          buildStartBlock:
-            type: string
-            format: uint64
-          passiveDraw:
-            type: string
-            format: uint64
-          activeMiningSystemDraw:
-            type: string
-            format: uint64
-          activeMiningSystemBlock:
-            type: string
-            format: uint64
-          activeRefiningSystemDraw:
-            type: string
-            format: uint64
-          activeRefiningSystemBlock:
-            type: string
-            format: uint64
-          miningSystemStatus:
-            type: string
-          refiningSystemStatus:
-            type: string
-          powerSystemFuel:
-            type: string
-            format: uint64
-          powerSystemCapacity:
-            type: string
-            format: uint64
-          powerSystemLoad:
-            type: string
-            format: uint64
-        title: |-
-          This will all need to be reworked but let's
-          do some super basic crap here to get testnet up
+      creator:
+        type: string
+      structId:
+        type: string
+      proof:
+        type: string
+      nonce:
+        type: string
+      storageDestinationId:
+        type: string
+      storageAmbit:
+        type: string
+        enum:
+          - water
+          - land
+          - air
+          - space
+          - local
+        default: water
+      storageSlot:
+        type: string
+        format: uint64
   structs.structs.MsgStructBuildInitiate:
     type: object
     properties:
       creator:
         type: string
-      structType:
+      structTypeId:
         type: string
+        format: uint64
       planetId:
         type: string
+      operatingAmbit:
+        type: string
+        enum:
+          - water
+          - land
+          - air
+          - space
+          - local
+        default: water
       slot:
         type: string
         format: uint64
-  structs.structs.MsgStructBuildInitiateResponse:
+  structs.structs.MsgStructDeactivate:
     type: object
     properties:
-      struct:
-        type: object
-        properties:
-          id:
-            type: string
-          creator:
-            type: string
-          owner:
-            type: string
-          status:
-            type: string
-          maxHealth:
-            type: string
-            format: uint64
-          health:
-            type: string
-            format: uint64
-          category:
-            type: string
-            title: Planet or Fleet
-          type:
-            type: string
-            title: What it is
-          ambit:
-            type: string
-            title: Where it is
-          planetId:
-            type: string
-            title: No fleet stuff yet
-          slot:
-            type: string
-            format: uint64
-          miningSystem:
-            type: string
-            format: uint64
-            title: Struct Features
-          refiningSystem:
-            type: string
-            format: uint64
-          powerSystem:
-            type: string
-            format: uint64
-          buildStartBlock:
-            type: string
-            format: uint64
-          passiveDraw:
-            type: string
-            format: uint64
-          activeMiningSystemDraw:
-            type: string
-            format: uint64
-          activeMiningSystemBlock:
-            type: string
-            format: uint64
-          activeRefiningSystemDraw:
-            type: string
-            format: uint64
-          activeRefiningSystemBlock:
-            type: string
-            format: uint64
-          miningSystemStatus:
-            type: string
-          refiningSystemStatus:
-            type: string
-          powerSystemFuel:
-            type: string
-            format: uint64
-          powerSystemCapacity:
-            type: string
-            format: uint64
-          powerSystemLoad:
-            type: string
-            format: uint64
-        title: |-
-          This will all need to be reworked but let's
-          do some super basic crap here to get testnet up
-  structs.structs.MsgStructInfuse:
+      creator:
+        type: string
+      structId:
+        type: string
+  structs.structs.MsgStructDefenseClear:
+    type: object
+    properties:
+      creator:
+        type: string
+      defenderStructId:
+        type: string
+  structs.structs.MsgStructDefenseSet:
+    type: object
+    properties:
+      creator:
+        type: string
+      defenderStructId:
+        type: string
+      protectedStructId:
+        type: string
+  structs.structs.MsgStructGeneratorInfuse:
     type: object
     properties:
       creator:
@@ -33965,9 +34094,37 @@ definitions:
         type: string
       infuseAmount:
         type: string
-  structs.structs.MsgStructInfuseResponse:
+  structs.structs.MsgStructGeneratorStatusResponse:
     type: object
-  structs.structs.MsgStructMine:
+  structs.structs.MsgStructMove:
+    type: object
+    properties:
+      creator:
+        type: string
+      structId:
+        type: string
+      locationId:
+        type: string
+      ambit:
+        type: string
+        enum:
+          - water
+          - land
+          - air
+          - space
+          - local
+        default: water
+      slot:
+        type: string
+        format: uint64
+  structs.structs.MsgStructOreMinerActivate:
+    type: object
+    properties:
+      creator:
+        type: string
+      structId:
+        type: string
+  structs.structs.MsgStructOreMinerComplete:
     type: object
     properties:
       creator:
@@ -33978,14 +34135,14 @@ definitions:
         type: string
       nonce:
         type: string
-  structs.structs.MsgStructMineActivate:
+  structs.structs.MsgStructOreMinerDeactivate:
     type: object
     properties:
       creator:
         type: string
       structId:
         type: string
-  structs.structs.MsgStructMineActivateResponse:
+  structs.structs.MsgStructOreMinerStatusResponse:
     type: object
     properties:
       struct:
@@ -33993,243 +34150,41 @@ definitions:
         properties:
           id:
             type: string
-          creator:
-            type: string
-          owner:
-            type: string
-          status:
-            type: string
-          maxHealth:
+            title: What it is
+          index:
             type: string
             format: uint64
-          health:
-            type: string
-            format: uint64
-          category:
-            type: string
-            title: Planet or Fleet
           type:
             type: string
-            title: What it is
-          ambit:
+            format: uint64
+          creator:
+            type: string
+            title: Who is it
+          owner:
+            type: string
+          locationId:
             type: string
             title: Where it is
-          planetId:
+          operatingAmbit:
             type: string
-            title: No fleet stuff yet
+            enum:
+              - water
+              - land
+              - air
+              - space
+              - local
+            default: water
           slot:
             type: string
             format: uint64
-          miningSystem:
-            type: string
-            format: uint64
-            title: Struct Features
-          refiningSystem:
-            type: string
-            format: uint64
-          powerSystem:
-            type: string
-            format: uint64
-          buildStartBlock:
-            type: string
-            format: uint64
-          passiveDraw:
-            type: string
-            format: uint64
-          activeMiningSystemDraw:
-            type: string
-            format: uint64
-          activeMiningSystemBlock:
-            type: string
-            format: uint64
-          activeRefiningSystemDraw:
-            type: string
-            format: uint64
-          activeRefiningSystemBlock:
-            type: string
-            format: uint64
-          miningSystemStatus:
-            type: string
-          refiningSystemStatus:
-            type: string
-          powerSystemFuel:
-            type: string
-            format: uint64
-          powerSystemCapacity:
-            type: string
-            format: uint64
-          powerSystemLoad:
-            type: string
-            format: uint64
-        title: |-
-          This will all need to be reworked but let's
-          do some super basic crap here to get testnet up
-  structs.structs.MsgStructMineDeactivate:
+  structs.structs.MsgStructOreRefineryActivate:
     type: object
     properties:
       creator:
         type: string
       structId:
         type: string
-  structs.structs.MsgStructMineDeactivateResponse:
-    type: object
-    properties:
-      struct:
-        type: object
-        properties:
-          id:
-            type: string
-          creator:
-            type: string
-          owner:
-            type: string
-          status:
-            type: string
-          maxHealth:
-            type: string
-            format: uint64
-          health:
-            type: string
-            format: uint64
-          category:
-            type: string
-            title: Planet or Fleet
-          type:
-            type: string
-            title: What it is
-          ambit:
-            type: string
-            title: Where it is
-          planetId:
-            type: string
-            title: No fleet stuff yet
-          slot:
-            type: string
-            format: uint64
-          miningSystem:
-            type: string
-            format: uint64
-            title: Struct Features
-          refiningSystem:
-            type: string
-            format: uint64
-          powerSystem:
-            type: string
-            format: uint64
-          buildStartBlock:
-            type: string
-            format: uint64
-          passiveDraw:
-            type: string
-            format: uint64
-          activeMiningSystemDraw:
-            type: string
-            format: uint64
-          activeMiningSystemBlock:
-            type: string
-            format: uint64
-          activeRefiningSystemDraw:
-            type: string
-            format: uint64
-          activeRefiningSystemBlock:
-            type: string
-            format: uint64
-          miningSystemStatus:
-            type: string
-          refiningSystemStatus:
-            type: string
-          powerSystemFuel:
-            type: string
-            format: uint64
-          powerSystemCapacity:
-            type: string
-            format: uint64
-          powerSystemLoad:
-            type: string
-            format: uint64
-        title: |-
-          This will all need to be reworked but let's
-          do some super basic crap here to get testnet up
-  structs.structs.MsgStructMineResponse:
-    type: object
-    properties:
-      struct:
-        type: object
-        properties:
-          id:
-            type: string
-          creator:
-            type: string
-          owner:
-            type: string
-          status:
-            type: string
-          maxHealth:
-            type: string
-            format: uint64
-          health:
-            type: string
-            format: uint64
-          category:
-            type: string
-            title: Planet or Fleet
-          type:
-            type: string
-            title: What it is
-          ambit:
-            type: string
-            title: Where it is
-          planetId:
-            type: string
-            title: No fleet stuff yet
-          slot:
-            type: string
-            format: uint64
-          miningSystem:
-            type: string
-            format: uint64
-            title: Struct Features
-          refiningSystem:
-            type: string
-            format: uint64
-          powerSystem:
-            type: string
-            format: uint64
-          buildStartBlock:
-            type: string
-            format: uint64
-          passiveDraw:
-            type: string
-            format: uint64
-          activeMiningSystemDraw:
-            type: string
-            format: uint64
-          activeMiningSystemBlock:
-            type: string
-            format: uint64
-          activeRefiningSystemDraw:
-            type: string
-            format: uint64
-          activeRefiningSystemBlock:
-            type: string
-            format: uint64
-          miningSystemStatus:
-            type: string
-          refiningSystemStatus:
-            type: string
-          powerSystemFuel:
-            type: string
-            format: uint64
-          powerSystemCapacity:
-            type: string
-            format: uint64
-          powerSystemLoad:
-            type: string
-            format: uint64
-        title: |-
-          This will all need to be reworked but let's
-          do some super basic crap here to get testnet up
-  structs.structs.MsgStructRefine:
+  structs.structs.MsgStructOreRefineryComplete:
     type: object
     properties:
       creator:
@@ -34240,14 +34195,14 @@ definitions:
         type: string
       nonce:
         type: string
-  structs.structs.MsgStructRefineActivate:
+  structs.structs.MsgStructOreRefineryDeactivate:
     type: object
     properties:
       creator:
         type: string
       structId:
         type: string
-  structs.structs.MsgStructRefineActivateResponse:
+  structs.structs.MsgStructOreRefineryStatusResponse:
     type: object
     properties:
       struct:
@@ -34255,242 +34210,126 @@ definitions:
         properties:
           id:
             type: string
-          creator:
-            type: string
-          owner:
-            type: string
-          status:
-            type: string
-          maxHealth:
+            title: What it is
+          index:
             type: string
             format: uint64
-          health:
-            type: string
-            format: uint64
-          category:
-            type: string
-            title: Planet or Fleet
           type:
             type: string
-            title: What it is
-          ambit:
+            format: uint64
+          creator:
+            type: string
+            title: Who is it
+          owner:
+            type: string
+          locationId:
             type: string
             title: Where it is
-          planetId:
+          operatingAmbit:
             type: string
-            title: No fleet stuff yet
+            enum:
+              - water
+              - land
+              - air
+              - space
+              - local
+            default: water
           slot:
             type: string
             format: uint64
-          miningSystem:
+  structs.structs.MsgStructStatusResponse:
+    type: object
+    properties:
+      struct:
+        type: object
+        properties:
+          id:
+            type: string
+            title: What it is
+          index:
             type: string
             format: uint64
-            title: Struct Features
-          refiningSystem:
+          type:
             type: string
             format: uint64
-          powerSystem:
+          creator:
+            type: string
+            title: Who is it
+          owner:
+            type: string
+          locationId:
+            type: string
+            title: Where it is
+          operatingAmbit:
+            type: string
+            enum:
+              - water
+              - land
+              - air
+              - space
+              - local
+            default: water
+          slot:
             type: string
             format: uint64
-          buildStartBlock:
-            type: string
-            format: uint64
-          passiveDraw:
-            type: string
-            format: uint64
-          activeMiningSystemDraw:
-            type: string
-            format: uint64
-          activeMiningSystemBlock:
-            type: string
-            format: uint64
-          activeRefiningSystemDraw:
-            type: string
-            format: uint64
-          activeRefiningSystemBlock:
-            type: string
-            format: uint64
-          miningSystemStatus:
-            type: string
-          refiningSystemStatus:
-            type: string
-          powerSystemFuel:
-            type: string
-            format: uint64
-          powerSystemCapacity:
-            type: string
-            format: uint64
-          powerSystemLoad:
-            type: string
-            format: uint64
-        title: |-
-          This will all need to be reworked but let's
-          do some super basic crap here to get testnet up
-  structs.structs.MsgStructRefineDeactivate:
+  structs.structs.MsgStructStealthActivate:
     type: object
     properties:
       creator:
         type: string
       structId:
         type: string
-  structs.structs.MsgStructRefineDeactivateResponse:
+  structs.structs.MsgStructStealthDeactivate:
     type: object
     properties:
-      struct:
-        type: object
-        properties:
-          id:
-            type: string
-          creator:
-            type: string
-          owner:
-            type: string
-          status:
-            type: string
-          maxHealth:
-            type: string
-            format: uint64
-          health:
-            type: string
-            format: uint64
-          category:
-            type: string
-            title: Planet or Fleet
-          type:
-            type: string
-            title: What it is
-          ambit:
-            type: string
-            title: Where it is
-          planetId:
-            type: string
-            title: No fleet stuff yet
-          slot:
-            type: string
-            format: uint64
-          miningSystem:
-            type: string
-            format: uint64
-            title: Struct Features
-          refiningSystem:
-            type: string
-            format: uint64
-          powerSystem:
-            type: string
-            format: uint64
-          buildStartBlock:
-            type: string
-            format: uint64
-          passiveDraw:
-            type: string
-            format: uint64
-          activeMiningSystemDraw:
-            type: string
-            format: uint64
-          activeMiningSystemBlock:
-            type: string
-            format: uint64
-          activeRefiningSystemDraw:
-            type: string
-            format: uint64
-          activeRefiningSystemBlock:
-            type: string
-            format: uint64
-          miningSystemStatus:
-            type: string
-          refiningSystemStatus:
-            type: string
-          powerSystemFuel:
-            type: string
-            format: uint64
-          powerSystemCapacity:
-            type: string
-            format: uint64
-          powerSystemLoad:
-            type: string
-            format: uint64
-        title: |-
-          This will all need to be reworked but let's
-          do some super basic crap here to get testnet up
-  structs.structs.MsgStructRefineResponse:
+      creator:
+        type: string
+      structId:
+        type: string
+  structs.structs.MsgStructStorageRecall:
     type: object
     properties:
-      struct:
-        type: object
-        properties:
-          id:
-            type: string
-          creator:
-            type: string
-          owner:
-            type: string
-          status:
-            type: string
-          maxHealth:
-            type: string
-            format: uint64
-          health:
-            type: string
-            format: uint64
-          category:
-            type: string
-            title: Planet or Fleet
-          type:
-            type: string
-            title: What it is
-          ambit:
-            type: string
-            title: Where it is
-          planetId:
-            type: string
-            title: No fleet stuff yet
-          slot:
-            type: string
-            format: uint64
-          miningSystem:
-            type: string
-            format: uint64
-            title: Struct Features
-          refiningSystem:
-            type: string
-            format: uint64
-          powerSystem:
-            type: string
-            format: uint64
-          buildStartBlock:
-            type: string
-            format: uint64
-          passiveDraw:
-            type: string
-            format: uint64
-          activeMiningSystemDraw:
-            type: string
-            format: uint64
-          activeMiningSystemBlock:
-            type: string
-            format: uint64
-          activeRefiningSystemDraw:
-            type: string
-            format: uint64
-          activeRefiningSystemBlock:
-            type: string
-            format: uint64
-          miningSystemStatus:
-            type: string
-          refiningSystemStatus:
-            type: string
-          powerSystemFuel:
-            type: string
-            format: uint64
-          powerSystemCapacity:
-            type: string
-            format: uint64
-          powerSystemLoad:
-            type: string
-            format: uint64
-        title: |-
-          This will all need to be reworked but let's
-          do some super basic crap here to get testnet up
+      creator:
+        type: string
+      structId:
+        type: string
+      locationId:
+        type: string
+      ambit:
+        type: string
+        enum:
+          - water
+          - land
+          - air
+          - space
+          - local
+        default: water
+      slot:
+        type: string
+        format: uint64
+      activate:
+        type: boolean
+  structs.structs.MsgStructStorageStash:
+    type: object
+    properties:
+      creator:
+        type: string
+      structId:
+        type: string
+      locationId:
+        type: string
+      ambit:
+        type: string
+        enum:
+          - water
+          - land
+          - air
+          - space
+          - local
+        default: water
+      slot:
+        type: string
+        format: uint64
   structs.structs.MsgSubstationAllocationConnect:
     type: object
     properties:
@@ -34649,77 +34488,33 @@ definitions:
     properties:
       id:
         type: string
-      creator:
-        type: string
-      owner:
-        type: string
-      status:
-        type: string
-      maxHealth:
+        title: What it is
+      index:
         type: string
         format: uint64
-      health:
-        type: string
-        format: uint64
-      category:
-        type: string
-        title: Planet or Fleet
       type:
         type: string
-        title: What it is
-      ambit:
+        format: uint64
+      creator:
+        type: string
+        title: Who is it
+      owner:
+        type: string
+      locationId:
         type: string
         title: Where it is
-      planetId:
+      operatingAmbit:
         type: string
-        title: No fleet stuff yet
+        enum:
+          - water
+          - land
+          - air
+          - space
+          - local
+        default: water
       slot:
         type: string
         format: uint64
-      miningSystem:
-        type: string
-        format: uint64
-        title: Struct Features
-      refiningSystem:
-        type: string
-        format: uint64
-      powerSystem:
-        type: string
-        format: uint64
-      buildStartBlock:
-        type: string
-        format: uint64
-      passiveDraw:
-        type: string
-        format: uint64
-      activeMiningSystemDraw:
-        type: string
-        format: uint64
-      activeMiningSystemBlock:
-        type: string
-        format: uint64
-      activeRefiningSystemDraw:
-        type: string
-        format: uint64
-      activeRefiningSystemBlock:
-        type: string
-        format: uint64
-      miningSystemStatus:
-        type: string
-      refiningSystemStatus:
-        type: string
-      powerSystemFuel:
-        type: string
-        format: uint64
-      powerSystemCapacity:
-        type: string
-        format: uint64
-      powerSystemLoad:
-        type: string
-        format: uint64
-    title: |-
-      This will all need to be reworked but let's
-      do some super basic crap here to get testnet up
   structs.structs.allocationType:
     type: string
     enum:
@@ -34727,6 +34522,15 @@ definitions:
       - dynamic
       - automated
     default: static
+  structs.structs.ambit:
+    type: string
+    enum:
+      - water
+      - land
+      - air
+      - space
+      - local
+    default: water
   structs.structs.guildJoinBypassLevel:
     type: string
     enum:
@@ -34760,6 +34564,12 @@ definitions:
       - denied
       - revoked
     default: proposed
+  structs.structs.techWeaponSystem:
+    type: string
+    enum:
+      - primaryWeapon
+      - secondaryWeapon
+    default: primaryWeapon
   cosmos.base.query.v1beta1.PageRequest:
     type: object
     properties:
@@ -34934,6 +34744,7 @@ definitions:
           - allocation
           - infusion
           - address
+          - fleet
         default: guild
       destinationId:
         type: string
@@ -35314,6 +35125,7 @@ definitions:
                 - allocation
                 - infusion
                 - address
+                - fleet
               default: guild
             destinationId:
               type: string
@@ -35627,77 +35439,33 @@ definitions:
           properties:
             id:
               type: string
-            creator:
-              type: string
-            owner:
-              type: string
-            status:
-              type: string
-            maxHealth:
+              title: What it is
+            index:
               type: string
               format: uint64
-            health:
-              type: string
-              format: uint64
-            category:
-              type: string
-              title: Planet or Fleet
             type:
               type: string
-              title: What it is
-            ambit:
+              format: uint64
+            creator:
+              type: string
+              title: Who is it
+            owner:
+              type: string
+            locationId:
               type: string
               title: Where it is
-            planetId:
+            operatingAmbit:
               type: string
-              title: No fleet stuff yet
+              enum:
+                - water
+                - land
+                - air
+                - space
+                - local
+              default: water
             slot:
               type: string
               format: uint64
-            miningSystem:
-              type: string
-              format: uint64
-              title: Struct Features
-            refiningSystem:
-              type: string
-              format: uint64
-            powerSystem:
-              type: string
-              format: uint64
-            buildStartBlock:
-              type: string
-              format: uint64
-            passiveDraw:
-              type: string
-              format: uint64
-            activeMiningSystemDraw:
-              type: string
-              format: uint64
-            activeMiningSystemBlock:
-              type: string
-              format: uint64
-            activeRefiningSystemDraw:
-              type: string
-              format: uint64
-            activeRefiningSystemBlock:
-              type: string
-              format: uint64
-            miningSystemStatus:
-              type: string
-            refiningSystemStatus:
-              type: string
-            powerSystemFuel:
-              type: string
-              format: uint64
-            powerSystemCapacity:
-              type: string
-              format: uint64
-            powerSystemLoad:
-              type: string
-              format: uint64
-          title: |-
-            This will all need to be reworked but let's
-            do some super basic crap here to get testnet up
       pagination:
         type: object
         properties:
@@ -35923,6 +35691,7 @@ definitions:
               - allocation
               - infusion
               - address
+              - fleet
             default: guild
           destinationId:
             type: string
@@ -36092,77 +35861,33 @@ definitions:
         properties:
           id:
             type: string
-          creator:
-            type: string
-          owner:
-            type: string
-          status:
-            type: string
-          maxHealth:
+            title: What it is
+          index:
             type: string
             format: uint64
-          health:
-            type: string
-            format: uint64
-          category:
-            type: string
-            title: Planet or Fleet
           type:
             type: string
-            title: What it is
-          ambit:
+            format: uint64
+          creator:
+            type: string
+            title: Who is it
+          owner:
+            type: string
+          locationId:
             type: string
             title: Where it is
-          planetId:
+          operatingAmbit:
             type: string
-            title: No fleet stuff yet
+            enum:
+              - water
+              - land
+              - air
+              - space
+              - local
+            default: water
           slot:
             type: string
             format: uint64
-          miningSystem:
-            type: string
-            format: uint64
-            title: Struct Features
-          refiningSystem:
-            type: string
-            format: uint64
-          powerSystem:
-            type: string
-            format: uint64
-          buildStartBlock:
-            type: string
-            format: uint64
-          passiveDraw:
-            type: string
-            format: uint64
-          activeMiningSystemDraw:
-            type: string
-            format: uint64
-          activeMiningSystemBlock:
-            type: string
-            format: uint64
-          activeRefiningSystemDraw:
-            type: string
-            format: uint64
-          activeRefiningSystemBlock:
-            type: string
-            format: uint64
-          miningSystemStatus:
-            type: string
-          refiningSystemStatus:
-            type: string
-          powerSystemFuel:
-            type: string
-            format: uint64
-          powerSystemCapacity:
-            type: string
-            format: uint64
-          powerSystemLoad:
-            type: string
-            format: uint64
-        title: |-
-          This will all need to be reworked but let's
-          do some super basic crap here to get testnet up
   structs.structs.QueryGetSubstationResponse:
     type: object
     properties:
@@ -36250,4 +35975,5 @@ definitions:
       - allocation
       - infusion
       - address
+      - fleet
     default: guild

@@ -13,62 +13,28 @@ import (
 )
 
 var (
-	md_Struct                           protoreflect.MessageDescriptor
-	fd_Struct_id                        protoreflect.FieldDescriptor
-	fd_Struct_creator                   protoreflect.FieldDescriptor
-	fd_Struct_owner                     protoreflect.FieldDescriptor
-	fd_Struct_status                    protoreflect.FieldDescriptor
-	fd_Struct_maxHealth                 protoreflect.FieldDescriptor
-	fd_Struct_health                    protoreflect.FieldDescriptor
-	fd_Struct_category                  protoreflect.FieldDescriptor
-	fd_Struct_type                      protoreflect.FieldDescriptor
-	fd_Struct_ambit                     protoreflect.FieldDescriptor
-	fd_Struct_planetId                  protoreflect.FieldDescriptor
-	fd_Struct_slot                      protoreflect.FieldDescriptor
-	fd_Struct_miningSystem              protoreflect.FieldDescriptor
-	fd_Struct_refiningSystem            protoreflect.FieldDescriptor
-	fd_Struct_powerSystem               protoreflect.FieldDescriptor
-	fd_Struct_buildStartBlock           protoreflect.FieldDescriptor
-	fd_Struct_passiveDraw               protoreflect.FieldDescriptor
-	fd_Struct_activeMiningSystemDraw    protoreflect.FieldDescriptor
-	fd_Struct_activeMiningSystemBlock   protoreflect.FieldDescriptor
-	fd_Struct_activeRefiningSystemDraw  protoreflect.FieldDescriptor
-	fd_Struct_activeRefiningSystemBlock protoreflect.FieldDescriptor
-	fd_Struct_miningSystemStatus        protoreflect.FieldDescriptor
-	fd_Struct_refiningSystemStatus      protoreflect.FieldDescriptor
-	fd_Struct_powerSystemFuel           protoreflect.FieldDescriptor
-	fd_Struct_powerSystemCapacity       protoreflect.FieldDescriptor
-	fd_Struct_powerSystemLoad           protoreflect.FieldDescriptor
+	md_Struct                protoreflect.MessageDescriptor
+	fd_Struct_id             protoreflect.FieldDescriptor
+	fd_Struct_index          protoreflect.FieldDescriptor
+	fd_Struct_type           protoreflect.FieldDescriptor
+	fd_Struct_creator        protoreflect.FieldDescriptor
+	fd_Struct_owner          protoreflect.FieldDescriptor
+	fd_Struct_locationId     protoreflect.FieldDescriptor
+	fd_Struct_operatingAmbit protoreflect.FieldDescriptor
+	fd_Struct_slot           protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_structs_structs_struct_proto_init()
 	md_Struct = File_structs_structs_struct_proto.Messages().ByName("Struct")
 	fd_Struct_id = md_Struct.Fields().ByName("id")
+	fd_Struct_index = md_Struct.Fields().ByName("index")
+	fd_Struct_type = md_Struct.Fields().ByName("type")
 	fd_Struct_creator = md_Struct.Fields().ByName("creator")
 	fd_Struct_owner = md_Struct.Fields().ByName("owner")
-	fd_Struct_status = md_Struct.Fields().ByName("status")
-	fd_Struct_maxHealth = md_Struct.Fields().ByName("maxHealth")
-	fd_Struct_health = md_Struct.Fields().ByName("health")
-	fd_Struct_category = md_Struct.Fields().ByName("category")
-	fd_Struct_type = md_Struct.Fields().ByName("type")
-	fd_Struct_ambit = md_Struct.Fields().ByName("ambit")
-	fd_Struct_planetId = md_Struct.Fields().ByName("planetId")
+	fd_Struct_locationId = md_Struct.Fields().ByName("locationId")
+	fd_Struct_operatingAmbit = md_Struct.Fields().ByName("operatingAmbit")
 	fd_Struct_slot = md_Struct.Fields().ByName("slot")
-	fd_Struct_miningSystem = md_Struct.Fields().ByName("miningSystem")
-	fd_Struct_refiningSystem = md_Struct.Fields().ByName("refiningSystem")
-	fd_Struct_powerSystem = md_Struct.Fields().ByName("powerSystem")
-	fd_Struct_buildStartBlock = md_Struct.Fields().ByName("buildStartBlock")
-	fd_Struct_passiveDraw = md_Struct.Fields().ByName("passiveDraw")
-	fd_Struct_activeMiningSystemDraw = md_Struct.Fields().ByName("activeMiningSystemDraw")
-	fd_Struct_activeMiningSystemBlock = md_Struct.Fields().ByName("activeMiningSystemBlock")
-	fd_Struct_activeRefiningSystemDraw = md_Struct.Fields().ByName("activeRefiningSystemDraw")
-	fd_Struct_activeRefiningSystemBlock = md_Struct.Fields().ByName("activeRefiningSystemBlock")
-	fd_Struct_miningSystemStatus = md_Struct.Fields().ByName("miningSystemStatus")
-	fd_Struct_refiningSystemStatus = md_Struct.Fields().ByName("refiningSystemStatus")
-	fd_Struct_powerSystemFuel = md_Struct.Fields().ByName("powerSystemFuel")
-	fd_Struct_powerSystemCapacity = md_Struct.Fields().ByName("powerSystemCapacity")
-	fd_Struct_powerSystemLoad = md_Struct.Fields().ByName("powerSystemLoad")
 }
 
 var _ protoreflect.Message = (*fastReflection_Struct)(nil)
@@ -142,6 +108,18 @@ func (x *fastReflection_Struct) Range(f func(protoreflect.FieldDescriptor, proto
 			return
 		}
 	}
+	if x.Index != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Index)
+		if !f(fd_Struct_index, value) {
+			return
+		}
+	}
+	if x.Type_ != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Type_)
+		if !f(fd_Struct_type, value) {
+			return
+		}
+	}
 	if x.Creator != "" {
 		value := protoreflect.ValueOfString(x.Creator)
 		if !f(fd_Struct_creator, value) {
@@ -154,135 +132,21 @@ func (x *fastReflection_Struct) Range(f func(protoreflect.FieldDescriptor, proto
 			return
 		}
 	}
-	if x.Status != "" {
-		value := protoreflect.ValueOfString(x.Status)
-		if !f(fd_Struct_status, value) {
+	if x.LocationId != "" {
+		value := protoreflect.ValueOfString(x.LocationId)
+		if !f(fd_Struct_locationId, value) {
 			return
 		}
 	}
-	if x.MaxHealth != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.MaxHealth)
-		if !f(fd_Struct_maxHealth, value) {
-			return
-		}
-	}
-	if x.Health != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.Health)
-		if !f(fd_Struct_health, value) {
-			return
-		}
-	}
-	if x.Category != "" {
-		value := protoreflect.ValueOfString(x.Category)
-		if !f(fd_Struct_category, value) {
-			return
-		}
-	}
-	if x.Type_ != "" {
-		value := protoreflect.ValueOfString(x.Type_)
-		if !f(fd_Struct_type, value) {
-			return
-		}
-	}
-	if x.Ambit != "" {
-		value := protoreflect.ValueOfString(x.Ambit)
-		if !f(fd_Struct_ambit, value) {
-			return
-		}
-	}
-	if x.PlanetId != "" {
-		value := protoreflect.ValueOfString(x.PlanetId)
-		if !f(fd_Struct_planetId, value) {
+	if x.OperatingAmbit != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.OperatingAmbit))
+		if !f(fd_Struct_operatingAmbit, value) {
 			return
 		}
 	}
 	if x.Slot != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.Slot)
 		if !f(fd_Struct_slot, value) {
-			return
-		}
-	}
-	if x.MiningSystem != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.MiningSystem)
-		if !f(fd_Struct_miningSystem, value) {
-			return
-		}
-	}
-	if x.RefiningSystem != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.RefiningSystem)
-		if !f(fd_Struct_refiningSystem, value) {
-			return
-		}
-	}
-	if x.PowerSystem != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.PowerSystem)
-		if !f(fd_Struct_powerSystem, value) {
-			return
-		}
-	}
-	if x.BuildStartBlock != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.BuildStartBlock)
-		if !f(fd_Struct_buildStartBlock, value) {
-			return
-		}
-	}
-	if x.PassiveDraw != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.PassiveDraw)
-		if !f(fd_Struct_passiveDraw, value) {
-			return
-		}
-	}
-	if x.ActiveMiningSystemDraw != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.ActiveMiningSystemDraw)
-		if !f(fd_Struct_activeMiningSystemDraw, value) {
-			return
-		}
-	}
-	if x.ActiveMiningSystemBlock != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.ActiveMiningSystemBlock)
-		if !f(fd_Struct_activeMiningSystemBlock, value) {
-			return
-		}
-	}
-	if x.ActiveRefiningSystemDraw != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.ActiveRefiningSystemDraw)
-		if !f(fd_Struct_activeRefiningSystemDraw, value) {
-			return
-		}
-	}
-	if x.ActiveRefiningSystemBlock != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.ActiveRefiningSystemBlock)
-		if !f(fd_Struct_activeRefiningSystemBlock, value) {
-			return
-		}
-	}
-	if x.MiningSystemStatus != "" {
-		value := protoreflect.ValueOfString(x.MiningSystemStatus)
-		if !f(fd_Struct_miningSystemStatus, value) {
-			return
-		}
-	}
-	if x.RefiningSystemStatus != "" {
-		value := protoreflect.ValueOfString(x.RefiningSystemStatus)
-		if !f(fd_Struct_refiningSystemStatus, value) {
-			return
-		}
-	}
-	if x.PowerSystemFuel != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.PowerSystemFuel)
-		if !f(fd_Struct_powerSystemFuel, value) {
-			return
-		}
-	}
-	if x.PowerSystemCapacity != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.PowerSystemCapacity)
-		if !f(fd_Struct_powerSystemCapacity, value) {
-			return
-		}
-	}
-	if x.PowerSystemLoad != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.PowerSystemLoad)
-		if !f(fd_Struct_powerSystemLoad, value) {
 			return
 		}
 	}
@@ -303,54 +167,20 @@ func (x *fastReflection_Struct) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
 	case "structs.structs.Struct.id":
 		return x.Id != ""
+	case "structs.structs.Struct.index":
+		return x.Index != uint64(0)
+	case "structs.structs.Struct.type":
+		return x.Type_ != uint64(0)
 	case "structs.structs.Struct.creator":
 		return x.Creator != ""
 	case "structs.structs.Struct.owner":
 		return x.Owner != ""
-	case "structs.structs.Struct.status":
-		return x.Status != ""
-	case "structs.structs.Struct.maxHealth":
-		return x.MaxHealth != uint64(0)
-	case "structs.structs.Struct.health":
-		return x.Health != uint64(0)
-	case "structs.structs.Struct.category":
-		return x.Category != ""
-	case "structs.structs.Struct.type":
-		return x.Type_ != ""
-	case "structs.structs.Struct.ambit":
-		return x.Ambit != ""
-	case "structs.structs.Struct.planetId":
-		return x.PlanetId != ""
+	case "structs.structs.Struct.locationId":
+		return x.LocationId != ""
+	case "structs.structs.Struct.operatingAmbit":
+		return x.OperatingAmbit != 0
 	case "structs.structs.Struct.slot":
 		return x.Slot != uint64(0)
-	case "structs.structs.Struct.miningSystem":
-		return x.MiningSystem != uint64(0)
-	case "structs.structs.Struct.refiningSystem":
-		return x.RefiningSystem != uint64(0)
-	case "structs.structs.Struct.powerSystem":
-		return x.PowerSystem != uint64(0)
-	case "structs.structs.Struct.buildStartBlock":
-		return x.BuildStartBlock != uint64(0)
-	case "structs.structs.Struct.passiveDraw":
-		return x.PassiveDraw != uint64(0)
-	case "structs.structs.Struct.activeMiningSystemDraw":
-		return x.ActiveMiningSystemDraw != uint64(0)
-	case "structs.structs.Struct.activeMiningSystemBlock":
-		return x.ActiveMiningSystemBlock != uint64(0)
-	case "structs.structs.Struct.activeRefiningSystemDraw":
-		return x.ActiveRefiningSystemDraw != uint64(0)
-	case "structs.structs.Struct.activeRefiningSystemBlock":
-		return x.ActiveRefiningSystemBlock != uint64(0)
-	case "structs.structs.Struct.miningSystemStatus":
-		return x.MiningSystemStatus != ""
-	case "structs.structs.Struct.refiningSystemStatus":
-		return x.RefiningSystemStatus != ""
-	case "structs.structs.Struct.powerSystemFuel":
-		return x.PowerSystemFuel != uint64(0)
-	case "structs.structs.Struct.powerSystemCapacity":
-		return x.PowerSystemCapacity != uint64(0)
-	case "structs.structs.Struct.powerSystemLoad":
-		return x.PowerSystemLoad != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Struct"))
@@ -369,54 +199,20 @@ func (x *fastReflection_Struct) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
 	case "structs.structs.Struct.id":
 		x.Id = ""
+	case "structs.structs.Struct.index":
+		x.Index = uint64(0)
+	case "structs.structs.Struct.type":
+		x.Type_ = uint64(0)
 	case "structs.structs.Struct.creator":
 		x.Creator = ""
 	case "structs.structs.Struct.owner":
 		x.Owner = ""
-	case "structs.structs.Struct.status":
-		x.Status = ""
-	case "structs.structs.Struct.maxHealth":
-		x.MaxHealth = uint64(0)
-	case "structs.structs.Struct.health":
-		x.Health = uint64(0)
-	case "structs.structs.Struct.category":
-		x.Category = ""
-	case "structs.structs.Struct.type":
-		x.Type_ = ""
-	case "structs.structs.Struct.ambit":
-		x.Ambit = ""
-	case "structs.structs.Struct.planetId":
-		x.PlanetId = ""
+	case "structs.structs.Struct.locationId":
+		x.LocationId = ""
+	case "structs.structs.Struct.operatingAmbit":
+		x.OperatingAmbit = 0
 	case "structs.structs.Struct.slot":
 		x.Slot = uint64(0)
-	case "structs.structs.Struct.miningSystem":
-		x.MiningSystem = uint64(0)
-	case "structs.structs.Struct.refiningSystem":
-		x.RefiningSystem = uint64(0)
-	case "structs.structs.Struct.powerSystem":
-		x.PowerSystem = uint64(0)
-	case "structs.structs.Struct.buildStartBlock":
-		x.BuildStartBlock = uint64(0)
-	case "structs.structs.Struct.passiveDraw":
-		x.PassiveDraw = uint64(0)
-	case "structs.structs.Struct.activeMiningSystemDraw":
-		x.ActiveMiningSystemDraw = uint64(0)
-	case "structs.structs.Struct.activeMiningSystemBlock":
-		x.ActiveMiningSystemBlock = uint64(0)
-	case "structs.structs.Struct.activeRefiningSystemDraw":
-		x.ActiveRefiningSystemDraw = uint64(0)
-	case "structs.structs.Struct.activeRefiningSystemBlock":
-		x.ActiveRefiningSystemBlock = uint64(0)
-	case "structs.structs.Struct.miningSystemStatus":
-		x.MiningSystemStatus = ""
-	case "structs.structs.Struct.refiningSystemStatus":
-		x.RefiningSystemStatus = ""
-	case "structs.structs.Struct.powerSystemFuel":
-		x.PowerSystemFuel = uint64(0)
-	case "structs.structs.Struct.powerSystemCapacity":
-		x.PowerSystemCapacity = uint64(0)
-	case "structs.structs.Struct.powerSystemLoad":
-		x.PowerSystemLoad = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Struct"))
@@ -436,77 +232,26 @@ func (x *fastReflection_Struct) Get(descriptor protoreflect.FieldDescriptor) pro
 	case "structs.structs.Struct.id":
 		value := x.Id
 		return protoreflect.ValueOfString(value)
+	case "structs.structs.Struct.index":
+		value := x.Index
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.Struct.type":
+		value := x.Type_
+		return protoreflect.ValueOfUint64(value)
 	case "structs.structs.Struct.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
 	case "structs.structs.Struct.owner":
 		value := x.Owner
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.Struct.status":
-		value := x.Status
+	case "structs.structs.Struct.locationId":
+		value := x.LocationId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.Struct.maxHealth":
-		value := x.MaxHealth
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Struct.health":
-		value := x.Health
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Struct.category":
-		value := x.Category
-		return protoreflect.ValueOfString(value)
-	case "structs.structs.Struct.type":
-		value := x.Type_
-		return protoreflect.ValueOfString(value)
-	case "structs.structs.Struct.ambit":
-		value := x.Ambit
-		return protoreflect.ValueOfString(value)
-	case "structs.structs.Struct.planetId":
-		value := x.PlanetId
-		return protoreflect.ValueOfString(value)
+	case "structs.structs.Struct.operatingAmbit":
+		value := x.OperatingAmbit
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
 	case "structs.structs.Struct.slot":
 		value := x.Slot
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Struct.miningSystem":
-		value := x.MiningSystem
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Struct.refiningSystem":
-		value := x.RefiningSystem
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Struct.powerSystem":
-		value := x.PowerSystem
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Struct.buildStartBlock":
-		value := x.BuildStartBlock
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Struct.passiveDraw":
-		value := x.PassiveDraw
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Struct.activeMiningSystemDraw":
-		value := x.ActiveMiningSystemDraw
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Struct.activeMiningSystemBlock":
-		value := x.ActiveMiningSystemBlock
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Struct.activeRefiningSystemDraw":
-		value := x.ActiveRefiningSystemDraw
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Struct.activeRefiningSystemBlock":
-		value := x.ActiveRefiningSystemBlock
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Struct.miningSystemStatus":
-		value := x.MiningSystemStatus
-		return protoreflect.ValueOfString(value)
-	case "structs.structs.Struct.refiningSystemStatus":
-		value := x.RefiningSystemStatus
-		return protoreflect.ValueOfString(value)
-	case "structs.structs.Struct.powerSystemFuel":
-		value := x.PowerSystemFuel
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Struct.powerSystemCapacity":
-		value := x.PowerSystemCapacity
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Struct.powerSystemLoad":
-		value := x.PowerSystemLoad
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
@@ -530,54 +275,20 @@ func (x *fastReflection_Struct) Set(fd protoreflect.FieldDescriptor, value proto
 	switch fd.FullName() {
 	case "structs.structs.Struct.id":
 		x.Id = value.Interface().(string)
+	case "structs.structs.Struct.index":
+		x.Index = value.Uint()
+	case "structs.structs.Struct.type":
+		x.Type_ = value.Uint()
 	case "structs.structs.Struct.creator":
 		x.Creator = value.Interface().(string)
 	case "structs.structs.Struct.owner":
 		x.Owner = value.Interface().(string)
-	case "structs.structs.Struct.status":
-		x.Status = value.Interface().(string)
-	case "structs.structs.Struct.maxHealth":
-		x.MaxHealth = value.Uint()
-	case "structs.structs.Struct.health":
-		x.Health = value.Uint()
-	case "structs.structs.Struct.category":
-		x.Category = value.Interface().(string)
-	case "structs.structs.Struct.type":
-		x.Type_ = value.Interface().(string)
-	case "structs.structs.Struct.ambit":
-		x.Ambit = value.Interface().(string)
-	case "structs.structs.Struct.planetId":
-		x.PlanetId = value.Interface().(string)
+	case "structs.structs.Struct.locationId":
+		x.LocationId = value.Interface().(string)
+	case "structs.structs.Struct.operatingAmbit":
+		x.OperatingAmbit = (Ambit)(value.Enum())
 	case "structs.structs.Struct.slot":
 		x.Slot = value.Uint()
-	case "structs.structs.Struct.miningSystem":
-		x.MiningSystem = value.Uint()
-	case "structs.structs.Struct.refiningSystem":
-		x.RefiningSystem = value.Uint()
-	case "structs.structs.Struct.powerSystem":
-		x.PowerSystem = value.Uint()
-	case "structs.structs.Struct.buildStartBlock":
-		x.BuildStartBlock = value.Uint()
-	case "structs.structs.Struct.passiveDraw":
-		x.PassiveDraw = value.Uint()
-	case "structs.structs.Struct.activeMiningSystemDraw":
-		x.ActiveMiningSystemDraw = value.Uint()
-	case "structs.structs.Struct.activeMiningSystemBlock":
-		x.ActiveMiningSystemBlock = value.Uint()
-	case "structs.structs.Struct.activeRefiningSystemDraw":
-		x.ActiveRefiningSystemDraw = value.Uint()
-	case "structs.structs.Struct.activeRefiningSystemBlock":
-		x.ActiveRefiningSystemBlock = value.Uint()
-	case "structs.structs.Struct.miningSystemStatus":
-		x.MiningSystemStatus = value.Interface().(string)
-	case "structs.structs.Struct.refiningSystemStatus":
-		x.RefiningSystemStatus = value.Interface().(string)
-	case "structs.structs.Struct.powerSystemFuel":
-		x.PowerSystemFuel = value.Uint()
-	case "structs.structs.Struct.powerSystemCapacity":
-		x.PowerSystemCapacity = value.Uint()
-	case "structs.structs.Struct.powerSystemLoad":
-		x.PowerSystemLoad = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Struct"))
@@ -600,54 +311,20 @@ func (x *fastReflection_Struct) Mutable(fd protoreflect.FieldDescriptor) protore
 	switch fd.FullName() {
 	case "structs.structs.Struct.id":
 		panic(fmt.Errorf("field id of message structs.structs.Struct is not mutable"))
+	case "structs.structs.Struct.index":
+		panic(fmt.Errorf("field index of message structs.structs.Struct is not mutable"))
+	case "structs.structs.Struct.type":
+		panic(fmt.Errorf("field type of message structs.structs.Struct is not mutable"))
 	case "structs.structs.Struct.creator":
 		panic(fmt.Errorf("field creator of message structs.structs.Struct is not mutable"))
 	case "structs.structs.Struct.owner":
 		panic(fmt.Errorf("field owner of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.status":
-		panic(fmt.Errorf("field status of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.maxHealth":
-		panic(fmt.Errorf("field maxHealth of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.health":
-		panic(fmt.Errorf("field health of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.category":
-		panic(fmt.Errorf("field category of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.type":
-		panic(fmt.Errorf("field type of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.ambit":
-		panic(fmt.Errorf("field ambit of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.planetId":
-		panic(fmt.Errorf("field planetId of message structs.structs.Struct is not mutable"))
+	case "structs.structs.Struct.locationId":
+		panic(fmt.Errorf("field locationId of message structs.structs.Struct is not mutable"))
+	case "structs.structs.Struct.operatingAmbit":
+		panic(fmt.Errorf("field operatingAmbit of message structs.structs.Struct is not mutable"))
 	case "structs.structs.Struct.slot":
 		panic(fmt.Errorf("field slot of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.miningSystem":
-		panic(fmt.Errorf("field miningSystem of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.refiningSystem":
-		panic(fmt.Errorf("field refiningSystem of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.powerSystem":
-		panic(fmt.Errorf("field powerSystem of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.buildStartBlock":
-		panic(fmt.Errorf("field buildStartBlock of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.passiveDraw":
-		panic(fmt.Errorf("field passiveDraw of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.activeMiningSystemDraw":
-		panic(fmt.Errorf("field activeMiningSystemDraw of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.activeMiningSystemBlock":
-		panic(fmt.Errorf("field activeMiningSystemBlock of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.activeRefiningSystemDraw":
-		panic(fmt.Errorf("field activeRefiningSystemDraw of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.activeRefiningSystemBlock":
-		panic(fmt.Errorf("field activeRefiningSystemBlock of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.miningSystemStatus":
-		panic(fmt.Errorf("field miningSystemStatus of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.refiningSystemStatus":
-		panic(fmt.Errorf("field refiningSystemStatus of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.powerSystemFuel":
-		panic(fmt.Errorf("field powerSystemFuel of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.powerSystemCapacity":
-		panic(fmt.Errorf("field powerSystemCapacity of message structs.structs.Struct is not mutable"))
-	case "structs.structs.Struct.powerSystemLoad":
-		panic(fmt.Errorf("field powerSystemLoad of message structs.structs.Struct is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Struct"))
@@ -663,53 +340,19 @@ func (x *fastReflection_Struct) NewField(fd protoreflect.FieldDescriptor) protor
 	switch fd.FullName() {
 	case "structs.structs.Struct.id":
 		return protoreflect.ValueOfString("")
+	case "structs.structs.Struct.index":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.Struct.type":
+		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.Struct.creator":
 		return protoreflect.ValueOfString("")
 	case "structs.structs.Struct.owner":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.Struct.status":
+	case "structs.structs.Struct.locationId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.Struct.maxHealth":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Struct.health":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Struct.category":
-		return protoreflect.ValueOfString("")
-	case "structs.structs.Struct.type":
-		return protoreflect.ValueOfString("")
-	case "structs.structs.Struct.ambit":
-		return protoreflect.ValueOfString("")
-	case "structs.structs.Struct.planetId":
-		return protoreflect.ValueOfString("")
+	case "structs.structs.Struct.operatingAmbit":
+		return protoreflect.ValueOfEnum(0)
 	case "structs.structs.Struct.slot":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Struct.miningSystem":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Struct.refiningSystem":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Struct.powerSystem":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Struct.buildStartBlock":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Struct.passiveDraw":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Struct.activeMiningSystemDraw":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Struct.activeMiningSystemBlock":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Struct.activeRefiningSystemDraw":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Struct.activeRefiningSystemBlock":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Struct.miningSystemStatus":
-		return protoreflect.ValueOfString("")
-	case "structs.structs.Struct.refiningSystemStatus":
-		return protoreflect.ValueOfString("")
-	case "structs.structs.Struct.powerSystemFuel":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Struct.powerSystemCapacity":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Struct.powerSystemLoad":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
@@ -784,6 +427,12 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
+		if x.Index != 0 {
+			n += 1 + runtime.Sov(uint64(x.Index))
+		}
+		if x.Type_ != 0 {
+			n += 1 + runtime.Sov(uint64(x.Type_))
+		}
 		l = len(x.Creator)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
@@ -792,78 +441,15 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.Status)
+		l = len(x.LocationId)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if x.MaxHealth != 0 {
-			n += 1 + runtime.Sov(uint64(x.MaxHealth))
-		}
-		if x.Health != 0 {
-			n += 1 + runtime.Sov(uint64(x.Health))
-		}
-		l = len(x.Category)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		l = len(x.Type_)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		l = len(x.Ambit)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		l = len(x.PlanetId)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
+		if x.OperatingAmbit != 0 {
+			n += 1 + runtime.Sov(uint64(x.OperatingAmbit))
 		}
 		if x.Slot != 0 {
 			n += 1 + runtime.Sov(uint64(x.Slot))
-		}
-		if x.MiningSystem != 0 {
-			n += 1 + runtime.Sov(uint64(x.MiningSystem))
-		}
-		if x.RefiningSystem != 0 {
-			n += 1 + runtime.Sov(uint64(x.RefiningSystem))
-		}
-		if x.PowerSystem != 0 {
-			n += 1 + runtime.Sov(uint64(x.PowerSystem))
-		}
-		if x.BuildStartBlock != 0 {
-			n += 1 + runtime.Sov(uint64(x.BuildStartBlock))
-		}
-		if x.PassiveDraw != 0 {
-			n += 2 + runtime.Sov(uint64(x.PassiveDraw))
-		}
-		if x.ActiveMiningSystemDraw != 0 {
-			n += 2 + runtime.Sov(uint64(x.ActiveMiningSystemDraw))
-		}
-		if x.ActiveMiningSystemBlock != 0 {
-			n += 2 + runtime.Sov(uint64(x.ActiveMiningSystemBlock))
-		}
-		if x.ActiveRefiningSystemDraw != 0 {
-			n += 2 + runtime.Sov(uint64(x.ActiveRefiningSystemDraw))
-		}
-		if x.ActiveRefiningSystemBlock != 0 {
-			n += 2 + runtime.Sov(uint64(x.ActiveRefiningSystemBlock))
-		}
-		l = len(x.MiningSystemStatus)
-		if l > 0 {
-			n += 2 + l + runtime.Sov(uint64(l))
-		}
-		l = len(x.RefiningSystemStatus)
-		if l > 0 {
-			n += 2 + l + runtime.Sov(uint64(l))
-		}
-		if x.PowerSystemFuel != 0 {
-			n += 2 + runtime.Sov(uint64(x.PowerSystemFuel))
-		}
-		if x.PowerSystemCapacity != 0 {
-			n += 2 + runtime.Sov(uint64(x.PowerSystemCapacity))
-		}
-		if x.PowerSystemLoad != 0 {
-			n += 2 + runtime.Sov(uint64(x.PowerSystemLoad))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -894,163 +480,46 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.PowerSystemLoad != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.PowerSystemLoad))
-			i--
-			dAtA[i] = 0x1
-			i--
-			dAtA[i] = 0xc8
-		}
-		if x.PowerSystemCapacity != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.PowerSystemCapacity))
-			i--
-			dAtA[i] = 0x1
-			i--
-			dAtA[i] = 0xc0
-		}
-		if x.PowerSystemFuel != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.PowerSystemFuel))
-			i--
-			dAtA[i] = 0x1
-			i--
-			dAtA[i] = 0xb8
-		}
-		if len(x.RefiningSystemStatus) > 0 {
-			i -= len(x.RefiningSystemStatus)
-			copy(dAtA[i:], x.RefiningSystemStatus)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.RefiningSystemStatus)))
-			i--
-			dAtA[i] = 0x1
-			i--
-			dAtA[i] = 0xb2
-		}
-		if len(x.MiningSystemStatus) > 0 {
-			i -= len(x.MiningSystemStatus)
-			copy(dAtA[i:], x.MiningSystemStatus)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.MiningSystemStatus)))
-			i--
-			dAtA[i] = 0x1
-			i--
-			dAtA[i] = 0xaa
-		}
-		if x.ActiveRefiningSystemBlock != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.ActiveRefiningSystemBlock))
-			i--
-			dAtA[i] = 0x1
-			i--
-			dAtA[i] = 0xa0
-		}
-		if x.ActiveRefiningSystemDraw != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.ActiveRefiningSystemDraw))
-			i--
-			dAtA[i] = 0x1
-			i--
-			dAtA[i] = 0x98
-		}
-		if x.ActiveMiningSystemBlock != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.ActiveMiningSystemBlock))
-			i--
-			dAtA[i] = 0x1
-			i--
-			dAtA[i] = 0x90
-		}
-		if x.ActiveMiningSystemDraw != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.ActiveMiningSystemDraw))
-			i--
-			dAtA[i] = 0x1
-			i--
-			dAtA[i] = 0x88
-		}
-		if x.PassiveDraw != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.PassiveDraw))
-			i--
-			dAtA[i] = 0x1
-			i--
-			dAtA[i] = 0x80
-		}
-		if x.BuildStartBlock != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.BuildStartBlock))
-			i--
-			dAtA[i] = 0x78
-		}
-		if x.PowerSystem != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.PowerSystem))
-			i--
-			dAtA[i] = 0x70
-		}
-		if x.RefiningSystem != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.RefiningSystem))
-			i--
-			dAtA[i] = 0x68
-		}
-		if x.MiningSystem != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.MiningSystem))
-			i--
-			dAtA[i] = 0x60
-		}
 		if x.Slot != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.Slot))
 			i--
-			dAtA[i] = 0x58
+			dAtA[i] = 0x40
 		}
-		if len(x.PlanetId) > 0 {
-			i -= len(x.PlanetId)
-			copy(dAtA[i:], x.PlanetId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.PlanetId)))
+		if x.OperatingAmbit != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.OperatingAmbit))
 			i--
-			dAtA[i] = 0x52
+			dAtA[i] = 0x38
 		}
-		if len(x.Ambit) > 0 {
-			i -= len(x.Ambit)
-			copy(dAtA[i:], x.Ambit)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Ambit)))
+		if len(x.LocationId) > 0 {
+			i -= len(x.LocationId)
+			copy(dAtA[i:], x.LocationId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.LocationId)))
 			i--
-			dAtA[i] = 0x4a
-		}
-		if len(x.Type_) > 0 {
-			i -= len(x.Type_)
-			copy(dAtA[i:], x.Type_)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Type_)))
-			i--
-			dAtA[i] = 0x42
-		}
-		if len(x.Category) > 0 {
-			i -= len(x.Category)
-			copy(dAtA[i:], x.Category)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Category)))
-			i--
-			dAtA[i] = 0x3a
-		}
-		if x.Health != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.Health))
-			i--
-			dAtA[i] = 0x30
-		}
-		if x.MaxHealth != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.MaxHealth))
-			i--
-			dAtA[i] = 0x28
-		}
-		if len(x.Status) > 0 {
-			i -= len(x.Status)
-			copy(dAtA[i:], x.Status)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Status)))
-			i--
-			dAtA[i] = 0x22
+			dAtA[i] = 0x32
 		}
 		if len(x.Owner) > 0 {
 			i -= len(x.Owner)
 			copy(dAtA[i:], x.Owner)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Owner)))
 			i--
-			dAtA[i] = 0x1a
+			dAtA[i] = 0x2a
 		}
 		if len(x.Creator) > 0 {
 			i -= len(x.Creator)
 			copy(dAtA[i:], x.Creator)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Creator)))
 			i--
-			dAtA[i] = 0x12
+			dAtA[i] = 0x22
+		}
+		if x.Type_ != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Type_))
+			i--
+			dAtA[i] = 0x18
+		}
+		if x.Index != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Index))
+			i--
+			dAtA[i] = 0x10
 		}
 		if len(x.Id) > 0 {
 			i -= len(x.Id)
@@ -1141,6 +610,44 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 				x.Id = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Index", wireType)
+				}
+				x.Index = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Index |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Type_", wireType)
+				}
+				x.Type_ = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Type_ |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 4:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
 				}
@@ -1172,7 +679,7 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 				}
 				x.Creator = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
-			case 3:
+			case 5:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
 				}
@@ -1204,79 +711,9 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 				}
 				x.Owner = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
-			case 4:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Status = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 5:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MaxHealth", wireType)
-				}
-				x.MaxHealth = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.MaxHealth |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
 			case 6:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Health", wireType)
-				}
-				x.Health = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.Health |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 7:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Category", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field LocationId", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -1304,9 +741,2161 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Category = string(dAtA[iNdEx:postIndex])
+				x.LocationId = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
+			case 7:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OperatingAmbit", wireType)
+				}
+				x.OperatingAmbit = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.OperatingAmbit |= Ambit(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
 			case 8:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Slot", wireType)
+				}
+				x.Slot = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Slot |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_StructType                                           protoreflect.MessageDescriptor
+	fd_StructType_id                                        protoreflect.FieldDescriptor
+	fd_StructType_type                                      protoreflect.FieldDescriptor
+	fd_StructType_category                                  protoreflect.FieldDescriptor
+	fd_StructType_buildDifficulty                           protoreflect.FieldDescriptor
+	fd_StructType_buildDraw                                 protoreflect.FieldDescriptor
+	fd_StructType_maxHealth                                 protoreflect.FieldDescriptor
+	fd_StructType_passiveDraw                               protoreflect.FieldDescriptor
+	fd_StructType_possibleAmbit                             protoreflect.FieldDescriptor
+	fd_StructType_primaryWeapon                             protoreflect.FieldDescriptor
+	fd_StructType_primaryWeaponControl                      protoreflect.FieldDescriptor
+	fd_StructType_primaryWeaponCharge                       protoreflect.FieldDescriptor
+	fd_StructType_primaryWeaponTargets                      protoreflect.FieldDescriptor
+	fd_StructType_primaryWeaponShots                        protoreflect.FieldDescriptor
+	fd_StructType_primaryWeaponDamage                       protoreflect.FieldDescriptor
+	fd_StructType_primaryWeaponBlockable                    protoreflect.FieldDescriptor
+	fd_StructType_primaryWeaponCounterable                  protoreflect.FieldDescriptor
+	fd_StructType_primaryWeaponRecoilDamage                 protoreflect.FieldDescriptor
+	fd_StructType_primaryWeaponShotSuccessRateNumerator     protoreflect.FieldDescriptor
+	fd_StructType_primaryWeaponShotSuccessRateDenominator   protoreflect.FieldDescriptor
+	fd_StructType_secondaryWeapon                           protoreflect.FieldDescriptor
+	fd_StructType_secondaryWeaponControl                    protoreflect.FieldDescriptor
+	fd_StructType_secondaryWeaponCharge                     protoreflect.FieldDescriptor
+	fd_StructType_secondaryWeaponTargets                    protoreflect.FieldDescriptor
+	fd_StructType_secondaryWeaponShots                      protoreflect.FieldDescriptor
+	fd_StructType_secondaryWeaponDamage                     protoreflect.FieldDescriptor
+	fd_StructType_secondaryWeaponBlockable                  protoreflect.FieldDescriptor
+	fd_StructType_secondaryWeaponCounterable                protoreflect.FieldDescriptor
+	fd_StructType_secondaryWeaponRecoilDamage               protoreflect.FieldDescriptor
+	fd_StructType_secondaryWeaponShotSuccessRateNumerator   protoreflect.FieldDescriptor
+	fd_StructType_secondaryWeaponShotSuccessRateDenominator protoreflect.FieldDescriptor
+	fd_StructType_passiveWeaponry                           protoreflect.FieldDescriptor
+	fd_StructType_unitDefenses                              protoreflect.FieldDescriptor
+	fd_StructType_oreReserveDefenses                        protoreflect.FieldDescriptor
+	fd_StructType_planetaryDefenses                         protoreflect.FieldDescriptor
+	fd_StructType_planetaryMining                           protoreflect.FieldDescriptor
+	fd_StructType_planetaryRefinery                         protoreflect.FieldDescriptor
+	fd_StructType_powerGeneration                           protoreflect.FieldDescriptor
+	fd_StructType_activateCharge                            protoreflect.FieldDescriptor
+	fd_StructType_buildCharge                               protoreflect.FieldDescriptor
+	fd_StructType_defendChangeCharge                        protoreflect.FieldDescriptor
+	fd_StructType_moveCharge                                protoreflect.FieldDescriptor
+	fd_StructType_oreMiningActivateCharge                   protoreflect.FieldDescriptor
+	fd_StructType_oreRefiningActivateCharge                 protoreflect.FieldDescriptor
+	fd_StructType_stealthActivateCharge                     protoreflect.FieldDescriptor
+	fd_StructType_attackReduction                           protoreflect.FieldDescriptor
+	fd_StructType_attackCounterable                         protoreflect.FieldDescriptor
+	fd_StructType_stealthSystems                            protoreflect.FieldDescriptor
+	fd_StructType_counterAttack                             protoreflect.FieldDescriptor
+	fd_StructType_counterAttackSameAmbit                    protoreflect.FieldDescriptor
+	fd_StructType_postDestructionDamage                     protoreflect.FieldDescriptor
+	fd_StructType_generatingRate                            protoreflect.FieldDescriptor
+	fd_StructType_planetaryShieldContribution               protoreflect.FieldDescriptor
+	fd_StructType_unguidedDefensiveSuccessRateNumerator     protoreflect.FieldDescriptor
+	fd_StructType_unguidedDefensiveSuccessRateDenominator   protoreflect.FieldDescriptor
+	fd_StructType_guidedDefensiveSuccessRateNumerator       protoreflect.FieldDescriptor
+	fd_StructType_guidedDefensiveSuccessRateDenominator     protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_struct_proto_init()
+	md_StructType = File_structs_structs_struct_proto.Messages().ByName("StructType")
+	fd_StructType_id = md_StructType.Fields().ByName("id")
+	fd_StructType_type = md_StructType.Fields().ByName("type")
+	fd_StructType_category = md_StructType.Fields().ByName("category")
+	fd_StructType_buildDifficulty = md_StructType.Fields().ByName("buildDifficulty")
+	fd_StructType_buildDraw = md_StructType.Fields().ByName("buildDraw")
+	fd_StructType_maxHealth = md_StructType.Fields().ByName("maxHealth")
+	fd_StructType_passiveDraw = md_StructType.Fields().ByName("passiveDraw")
+	fd_StructType_possibleAmbit = md_StructType.Fields().ByName("possibleAmbit")
+	fd_StructType_primaryWeapon = md_StructType.Fields().ByName("primaryWeapon")
+	fd_StructType_primaryWeaponControl = md_StructType.Fields().ByName("primaryWeaponControl")
+	fd_StructType_primaryWeaponCharge = md_StructType.Fields().ByName("primaryWeaponCharge")
+	fd_StructType_primaryWeaponTargets = md_StructType.Fields().ByName("primaryWeaponTargets")
+	fd_StructType_primaryWeaponShots = md_StructType.Fields().ByName("primaryWeaponShots")
+	fd_StructType_primaryWeaponDamage = md_StructType.Fields().ByName("primaryWeaponDamage")
+	fd_StructType_primaryWeaponBlockable = md_StructType.Fields().ByName("primaryWeaponBlockable")
+	fd_StructType_primaryWeaponCounterable = md_StructType.Fields().ByName("primaryWeaponCounterable")
+	fd_StructType_primaryWeaponRecoilDamage = md_StructType.Fields().ByName("primaryWeaponRecoilDamage")
+	fd_StructType_primaryWeaponShotSuccessRateNumerator = md_StructType.Fields().ByName("primaryWeaponShotSuccessRateNumerator")
+	fd_StructType_primaryWeaponShotSuccessRateDenominator = md_StructType.Fields().ByName("primaryWeaponShotSuccessRateDenominator")
+	fd_StructType_secondaryWeapon = md_StructType.Fields().ByName("secondaryWeapon")
+	fd_StructType_secondaryWeaponControl = md_StructType.Fields().ByName("secondaryWeaponControl")
+	fd_StructType_secondaryWeaponCharge = md_StructType.Fields().ByName("secondaryWeaponCharge")
+	fd_StructType_secondaryWeaponTargets = md_StructType.Fields().ByName("secondaryWeaponTargets")
+	fd_StructType_secondaryWeaponShots = md_StructType.Fields().ByName("secondaryWeaponShots")
+	fd_StructType_secondaryWeaponDamage = md_StructType.Fields().ByName("secondaryWeaponDamage")
+	fd_StructType_secondaryWeaponBlockable = md_StructType.Fields().ByName("secondaryWeaponBlockable")
+	fd_StructType_secondaryWeaponCounterable = md_StructType.Fields().ByName("secondaryWeaponCounterable")
+	fd_StructType_secondaryWeaponRecoilDamage = md_StructType.Fields().ByName("secondaryWeaponRecoilDamage")
+	fd_StructType_secondaryWeaponShotSuccessRateNumerator = md_StructType.Fields().ByName("secondaryWeaponShotSuccessRateNumerator")
+	fd_StructType_secondaryWeaponShotSuccessRateDenominator = md_StructType.Fields().ByName("secondaryWeaponShotSuccessRateDenominator")
+	fd_StructType_passiveWeaponry = md_StructType.Fields().ByName("passiveWeaponry")
+	fd_StructType_unitDefenses = md_StructType.Fields().ByName("unitDefenses")
+	fd_StructType_oreReserveDefenses = md_StructType.Fields().ByName("oreReserveDefenses")
+	fd_StructType_planetaryDefenses = md_StructType.Fields().ByName("planetaryDefenses")
+	fd_StructType_planetaryMining = md_StructType.Fields().ByName("planetaryMining")
+	fd_StructType_planetaryRefinery = md_StructType.Fields().ByName("planetaryRefinery")
+	fd_StructType_powerGeneration = md_StructType.Fields().ByName("powerGeneration")
+	fd_StructType_activateCharge = md_StructType.Fields().ByName("activateCharge")
+	fd_StructType_buildCharge = md_StructType.Fields().ByName("buildCharge")
+	fd_StructType_defendChangeCharge = md_StructType.Fields().ByName("defendChangeCharge")
+	fd_StructType_moveCharge = md_StructType.Fields().ByName("moveCharge")
+	fd_StructType_oreMiningActivateCharge = md_StructType.Fields().ByName("oreMiningActivateCharge")
+	fd_StructType_oreRefiningActivateCharge = md_StructType.Fields().ByName("oreRefiningActivateCharge")
+	fd_StructType_stealthActivateCharge = md_StructType.Fields().ByName("stealthActivateCharge")
+	fd_StructType_attackReduction = md_StructType.Fields().ByName("attackReduction")
+	fd_StructType_attackCounterable = md_StructType.Fields().ByName("attackCounterable")
+	fd_StructType_stealthSystems = md_StructType.Fields().ByName("stealthSystems")
+	fd_StructType_counterAttack = md_StructType.Fields().ByName("counterAttack")
+	fd_StructType_counterAttackSameAmbit = md_StructType.Fields().ByName("counterAttackSameAmbit")
+	fd_StructType_postDestructionDamage = md_StructType.Fields().ByName("postDestructionDamage")
+	fd_StructType_generatingRate = md_StructType.Fields().ByName("generatingRate")
+	fd_StructType_planetaryShieldContribution = md_StructType.Fields().ByName("planetaryShieldContribution")
+	fd_StructType_unguidedDefensiveSuccessRateNumerator = md_StructType.Fields().ByName("unguidedDefensiveSuccessRateNumerator")
+	fd_StructType_unguidedDefensiveSuccessRateDenominator = md_StructType.Fields().ByName("unguidedDefensiveSuccessRateDenominator")
+	fd_StructType_guidedDefensiveSuccessRateNumerator = md_StructType.Fields().ByName("guidedDefensiveSuccessRateNumerator")
+	fd_StructType_guidedDefensiveSuccessRateDenominator = md_StructType.Fields().ByName("guidedDefensiveSuccessRateDenominator")
+}
+
+var _ protoreflect.Message = (*fastReflection_StructType)(nil)
+
+type fastReflection_StructType StructType
+
+func (x *StructType) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_StructType)(x)
+}
+
+func (x *StructType) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_struct_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_StructType_messageType fastReflection_StructType_messageType
+var _ protoreflect.MessageType = fastReflection_StructType_messageType{}
+
+type fastReflection_StructType_messageType struct{}
+
+func (x fastReflection_StructType_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_StructType)(nil)
+}
+func (x fastReflection_StructType_messageType) New() protoreflect.Message {
+	return new(fastReflection_StructType)
+}
+func (x fastReflection_StructType_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_StructType
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_StructType) Descriptor() protoreflect.MessageDescriptor {
+	return md_StructType
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_StructType) Type() protoreflect.MessageType {
+	return _fastReflection_StructType_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_StructType) New() protoreflect.Message {
+	return new(fastReflection_StructType)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_StructType) Interface() protoreflect.ProtoMessage {
+	return (*StructType)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_StructType) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Id != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Id)
+		if !f(fd_StructType_id, value) {
+			return
+		}
+	}
+	if x.Type_ != "" {
+		value := protoreflect.ValueOfString(x.Type_)
+		if !f(fd_StructType_type, value) {
+			return
+		}
+	}
+	if x.Category != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.Category))
+		if !f(fd_StructType_category, value) {
+			return
+		}
+	}
+	if x.BuildDifficulty != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.BuildDifficulty)
+		if !f(fd_StructType_buildDifficulty, value) {
+			return
+		}
+	}
+	if x.BuildDraw != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.BuildDraw)
+		if !f(fd_StructType_buildDraw, value) {
+			return
+		}
+	}
+	if x.MaxHealth != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.MaxHealth)
+		if !f(fd_StructType_maxHealth, value) {
+			return
+		}
+	}
+	if x.PassiveDraw != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.PassiveDraw)
+		if !f(fd_StructType_passiveDraw, value) {
+			return
+		}
+	}
+	if x.PossibleAmbit != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.PossibleAmbit)
+		if !f(fd_StructType_possibleAmbit, value) {
+			return
+		}
+	}
+	if x.PrimaryWeapon != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.PrimaryWeapon))
+		if !f(fd_StructType_primaryWeapon, value) {
+			return
+		}
+	}
+	if x.PrimaryWeaponControl != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.PrimaryWeaponControl))
+		if !f(fd_StructType_primaryWeaponControl, value) {
+			return
+		}
+	}
+	if x.PrimaryWeaponCharge != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.PrimaryWeaponCharge)
+		if !f(fd_StructType_primaryWeaponCharge, value) {
+			return
+		}
+	}
+	if x.PrimaryWeaponTargets != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.PrimaryWeaponTargets)
+		if !f(fd_StructType_primaryWeaponTargets, value) {
+			return
+		}
+	}
+	if x.PrimaryWeaponShots != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.PrimaryWeaponShots)
+		if !f(fd_StructType_primaryWeaponShots, value) {
+			return
+		}
+	}
+	if x.PrimaryWeaponDamage != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.PrimaryWeaponDamage)
+		if !f(fd_StructType_primaryWeaponDamage, value) {
+			return
+		}
+	}
+	if x.PrimaryWeaponBlockable != false {
+		value := protoreflect.ValueOfBool(x.PrimaryWeaponBlockable)
+		if !f(fd_StructType_primaryWeaponBlockable, value) {
+			return
+		}
+	}
+	if x.PrimaryWeaponCounterable != false {
+		value := protoreflect.ValueOfBool(x.PrimaryWeaponCounterable)
+		if !f(fd_StructType_primaryWeaponCounterable, value) {
+			return
+		}
+	}
+	if x.PrimaryWeaponRecoilDamage != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.PrimaryWeaponRecoilDamage)
+		if !f(fd_StructType_primaryWeaponRecoilDamage, value) {
+			return
+		}
+	}
+	if x.PrimaryWeaponShotSuccessRateNumerator != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.PrimaryWeaponShotSuccessRateNumerator)
+		if !f(fd_StructType_primaryWeaponShotSuccessRateNumerator, value) {
+			return
+		}
+	}
+	if x.PrimaryWeaponShotSuccessRateDenominator != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.PrimaryWeaponShotSuccessRateDenominator)
+		if !f(fd_StructType_primaryWeaponShotSuccessRateDenominator, value) {
+			return
+		}
+	}
+	if x.SecondaryWeapon != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.SecondaryWeapon))
+		if !f(fd_StructType_secondaryWeapon, value) {
+			return
+		}
+	}
+	if x.SecondaryWeaponControl != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.SecondaryWeaponControl))
+		if !f(fd_StructType_secondaryWeaponControl, value) {
+			return
+		}
+	}
+	if x.SecondaryWeaponCharge != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SecondaryWeaponCharge)
+		if !f(fd_StructType_secondaryWeaponCharge, value) {
+			return
+		}
+	}
+	if x.SecondaryWeaponTargets != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SecondaryWeaponTargets)
+		if !f(fd_StructType_secondaryWeaponTargets, value) {
+			return
+		}
+	}
+	if x.SecondaryWeaponShots != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SecondaryWeaponShots)
+		if !f(fd_StructType_secondaryWeaponShots, value) {
+			return
+		}
+	}
+	if x.SecondaryWeaponDamage != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SecondaryWeaponDamage)
+		if !f(fd_StructType_secondaryWeaponDamage, value) {
+			return
+		}
+	}
+	if x.SecondaryWeaponBlockable != false {
+		value := protoreflect.ValueOfBool(x.SecondaryWeaponBlockable)
+		if !f(fd_StructType_secondaryWeaponBlockable, value) {
+			return
+		}
+	}
+	if x.SecondaryWeaponCounterable != false {
+		value := protoreflect.ValueOfBool(x.SecondaryWeaponCounterable)
+		if !f(fd_StructType_secondaryWeaponCounterable, value) {
+			return
+		}
+	}
+	if x.SecondaryWeaponRecoilDamage != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SecondaryWeaponRecoilDamage)
+		if !f(fd_StructType_secondaryWeaponRecoilDamage, value) {
+			return
+		}
+	}
+	if x.SecondaryWeaponShotSuccessRateNumerator != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SecondaryWeaponShotSuccessRateNumerator)
+		if !f(fd_StructType_secondaryWeaponShotSuccessRateNumerator, value) {
+			return
+		}
+	}
+	if x.SecondaryWeaponShotSuccessRateDenominator != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SecondaryWeaponShotSuccessRateDenominator)
+		if !f(fd_StructType_secondaryWeaponShotSuccessRateDenominator, value) {
+			return
+		}
+	}
+	if x.PassiveWeaponry != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.PassiveWeaponry))
+		if !f(fd_StructType_passiveWeaponry, value) {
+			return
+		}
+	}
+	if x.UnitDefenses != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.UnitDefenses))
+		if !f(fd_StructType_unitDefenses, value) {
+			return
+		}
+	}
+	if x.OreReserveDefenses != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.OreReserveDefenses))
+		if !f(fd_StructType_oreReserveDefenses, value) {
+			return
+		}
+	}
+	if x.PlanetaryDefenses != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.PlanetaryDefenses))
+		if !f(fd_StructType_planetaryDefenses, value) {
+			return
+		}
+	}
+	if x.PlanetaryMining != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.PlanetaryMining))
+		if !f(fd_StructType_planetaryMining, value) {
+			return
+		}
+	}
+	if x.PlanetaryRefinery != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.PlanetaryRefinery))
+		if !f(fd_StructType_planetaryRefinery, value) {
+			return
+		}
+	}
+	if x.PowerGeneration != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.PowerGeneration))
+		if !f(fd_StructType_powerGeneration, value) {
+			return
+		}
+	}
+	if x.ActivateCharge != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.ActivateCharge)
+		if !f(fd_StructType_activateCharge, value) {
+			return
+		}
+	}
+	if x.BuildCharge != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.BuildCharge)
+		if !f(fd_StructType_buildCharge, value) {
+			return
+		}
+	}
+	if x.DefendChangeCharge != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.DefendChangeCharge)
+		if !f(fd_StructType_defendChangeCharge, value) {
+			return
+		}
+	}
+	if x.MoveCharge != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.MoveCharge)
+		if !f(fd_StructType_moveCharge, value) {
+			return
+		}
+	}
+	if x.OreMiningActivateCharge != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.OreMiningActivateCharge)
+		if !f(fd_StructType_oreMiningActivateCharge, value) {
+			return
+		}
+	}
+	if x.OreRefiningActivateCharge != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.OreRefiningActivateCharge)
+		if !f(fd_StructType_oreRefiningActivateCharge, value) {
+			return
+		}
+	}
+	if x.StealthActivateCharge != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.StealthActivateCharge)
+		if !f(fd_StructType_stealthActivateCharge, value) {
+			return
+		}
+	}
+	if x.AttackReduction != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.AttackReduction)
+		if !f(fd_StructType_attackReduction, value) {
+			return
+		}
+	}
+	if x.AttackCounterable != false {
+		value := protoreflect.ValueOfBool(x.AttackCounterable)
+		if !f(fd_StructType_attackCounterable, value) {
+			return
+		}
+	}
+	if x.StealthSystems != false {
+		value := protoreflect.ValueOfBool(x.StealthSystems)
+		if !f(fd_StructType_stealthSystems, value) {
+			return
+		}
+	}
+	if x.CounterAttack != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.CounterAttack)
+		if !f(fd_StructType_counterAttack, value) {
+			return
+		}
+	}
+	if x.CounterAttackSameAmbit != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.CounterAttackSameAmbit)
+		if !f(fd_StructType_counterAttackSameAmbit, value) {
+			return
+		}
+	}
+	if x.PostDestructionDamage != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.PostDestructionDamage)
+		if !f(fd_StructType_postDestructionDamage, value) {
+			return
+		}
+	}
+	if x.GeneratingRate != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.GeneratingRate)
+		if !f(fd_StructType_generatingRate, value) {
+			return
+		}
+	}
+	if x.PlanetaryShieldContribution != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.PlanetaryShieldContribution)
+		if !f(fd_StructType_planetaryShieldContribution, value) {
+			return
+		}
+	}
+	if x.UnguidedDefensiveSuccessRateNumerator != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.UnguidedDefensiveSuccessRateNumerator)
+		if !f(fd_StructType_unguidedDefensiveSuccessRateNumerator, value) {
+			return
+		}
+	}
+	if x.UnguidedDefensiveSuccessRateDenominator != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.UnguidedDefensiveSuccessRateDenominator)
+		if !f(fd_StructType_unguidedDefensiveSuccessRateDenominator, value) {
+			return
+		}
+	}
+	if x.GuidedDefensiveSuccessRateNumerator != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.GuidedDefensiveSuccessRateNumerator)
+		if !f(fd_StructType_guidedDefensiveSuccessRateNumerator, value) {
+			return
+		}
+	}
+	if x.GuidedDefensiveSuccessRateDenominator != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.GuidedDefensiveSuccessRateDenominator)
+		if !f(fd_StructType_guidedDefensiveSuccessRateDenominator, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_StructType) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.StructType.id":
+		return x.Id != uint64(0)
+	case "structs.structs.StructType.type":
+		return x.Type_ != ""
+	case "structs.structs.StructType.category":
+		return x.Category != 0
+	case "structs.structs.StructType.buildDifficulty":
+		return x.BuildDifficulty != uint64(0)
+	case "structs.structs.StructType.buildDraw":
+		return x.BuildDraw != uint64(0)
+	case "structs.structs.StructType.maxHealth":
+		return x.MaxHealth != uint64(0)
+	case "structs.structs.StructType.passiveDraw":
+		return x.PassiveDraw != uint64(0)
+	case "structs.structs.StructType.possibleAmbit":
+		return x.PossibleAmbit != uint64(0)
+	case "structs.structs.StructType.primaryWeapon":
+		return x.PrimaryWeapon != 0
+	case "structs.structs.StructType.primaryWeaponControl":
+		return x.PrimaryWeaponControl != 0
+	case "structs.structs.StructType.primaryWeaponCharge":
+		return x.PrimaryWeaponCharge != uint64(0)
+	case "structs.structs.StructType.primaryWeaponTargets":
+		return x.PrimaryWeaponTargets != uint64(0)
+	case "structs.structs.StructType.primaryWeaponShots":
+		return x.PrimaryWeaponShots != uint64(0)
+	case "structs.structs.StructType.primaryWeaponDamage":
+		return x.PrimaryWeaponDamage != uint64(0)
+	case "structs.structs.StructType.primaryWeaponBlockable":
+		return x.PrimaryWeaponBlockable != false
+	case "structs.structs.StructType.primaryWeaponCounterable":
+		return x.PrimaryWeaponCounterable != false
+	case "structs.structs.StructType.primaryWeaponRecoilDamage":
+		return x.PrimaryWeaponRecoilDamage != uint64(0)
+	case "structs.structs.StructType.primaryWeaponShotSuccessRateNumerator":
+		return x.PrimaryWeaponShotSuccessRateNumerator != uint64(0)
+	case "structs.structs.StructType.primaryWeaponShotSuccessRateDenominator":
+		return x.PrimaryWeaponShotSuccessRateDenominator != uint64(0)
+	case "structs.structs.StructType.secondaryWeapon":
+		return x.SecondaryWeapon != 0
+	case "structs.structs.StructType.secondaryWeaponControl":
+		return x.SecondaryWeaponControl != 0
+	case "structs.structs.StructType.secondaryWeaponCharge":
+		return x.SecondaryWeaponCharge != uint64(0)
+	case "structs.structs.StructType.secondaryWeaponTargets":
+		return x.SecondaryWeaponTargets != uint64(0)
+	case "structs.structs.StructType.secondaryWeaponShots":
+		return x.SecondaryWeaponShots != uint64(0)
+	case "structs.structs.StructType.secondaryWeaponDamage":
+		return x.SecondaryWeaponDamage != uint64(0)
+	case "structs.structs.StructType.secondaryWeaponBlockable":
+		return x.SecondaryWeaponBlockable != false
+	case "structs.structs.StructType.secondaryWeaponCounterable":
+		return x.SecondaryWeaponCounterable != false
+	case "structs.structs.StructType.secondaryWeaponRecoilDamage":
+		return x.SecondaryWeaponRecoilDamage != uint64(0)
+	case "structs.structs.StructType.secondaryWeaponShotSuccessRateNumerator":
+		return x.SecondaryWeaponShotSuccessRateNumerator != uint64(0)
+	case "structs.structs.StructType.secondaryWeaponShotSuccessRateDenominator":
+		return x.SecondaryWeaponShotSuccessRateDenominator != uint64(0)
+	case "structs.structs.StructType.passiveWeaponry":
+		return x.PassiveWeaponry != 0
+	case "structs.structs.StructType.unitDefenses":
+		return x.UnitDefenses != 0
+	case "structs.structs.StructType.oreReserveDefenses":
+		return x.OreReserveDefenses != 0
+	case "structs.structs.StructType.planetaryDefenses":
+		return x.PlanetaryDefenses != 0
+	case "structs.structs.StructType.planetaryMining":
+		return x.PlanetaryMining != 0
+	case "structs.structs.StructType.planetaryRefinery":
+		return x.PlanetaryRefinery != 0
+	case "structs.structs.StructType.powerGeneration":
+		return x.PowerGeneration != 0
+	case "structs.structs.StructType.activateCharge":
+		return x.ActivateCharge != uint64(0)
+	case "structs.structs.StructType.buildCharge":
+		return x.BuildCharge != uint64(0)
+	case "structs.structs.StructType.defendChangeCharge":
+		return x.DefendChangeCharge != uint64(0)
+	case "structs.structs.StructType.moveCharge":
+		return x.MoveCharge != uint64(0)
+	case "structs.structs.StructType.oreMiningActivateCharge":
+		return x.OreMiningActivateCharge != uint64(0)
+	case "structs.structs.StructType.oreRefiningActivateCharge":
+		return x.OreRefiningActivateCharge != uint64(0)
+	case "structs.structs.StructType.stealthActivateCharge":
+		return x.StealthActivateCharge != uint64(0)
+	case "structs.structs.StructType.attackReduction":
+		return x.AttackReduction != uint64(0)
+	case "structs.structs.StructType.attackCounterable":
+		return x.AttackCounterable != false
+	case "structs.structs.StructType.stealthSystems":
+		return x.StealthSystems != false
+	case "structs.structs.StructType.counterAttack":
+		return x.CounterAttack != uint64(0)
+	case "structs.structs.StructType.counterAttackSameAmbit":
+		return x.CounterAttackSameAmbit != uint64(0)
+	case "structs.structs.StructType.postDestructionDamage":
+		return x.PostDestructionDamage != uint64(0)
+	case "structs.structs.StructType.generatingRate":
+		return x.GeneratingRate != uint64(0)
+	case "structs.structs.StructType.planetaryShieldContribution":
+		return x.PlanetaryShieldContribution != uint64(0)
+	case "structs.structs.StructType.unguidedDefensiveSuccessRateNumerator":
+		return x.UnguidedDefensiveSuccessRateNumerator != uint64(0)
+	case "structs.structs.StructType.unguidedDefensiveSuccessRateDenominator":
+		return x.UnguidedDefensiveSuccessRateDenominator != uint64(0)
+	case "structs.structs.StructType.guidedDefensiveSuccessRateNumerator":
+		return x.GuidedDefensiveSuccessRateNumerator != uint64(0)
+	case "structs.structs.StructType.guidedDefensiveSuccessRateDenominator":
+		return x.GuidedDefensiveSuccessRateDenominator != uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructType"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructType does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructType) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.StructType.id":
+		x.Id = uint64(0)
+	case "structs.structs.StructType.type":
+		x.Type_ = ""
+	case "structs.structs.StructType.category":
+		x.Category = 0
+	case "structs.structs.StructType.buildDifficulty":
+		x.BuildDifficulty = uint64(0)
+	case "structs.structs.StructType.buildDraw":
+		x.BuildDraw = uint64(0)
+	case "structs.structs.StructType.maxHealth":
+		x.MaxHealth = uint64(0)
+	case "structs.structs.StructType.passiveDraw":
+		x.PassiveDraw = uint64(0)
+	case "structs.structs.StructType.possibleAmbit":
+		x.PossibleAmbit = uint64(0)
+	case "structs.structs.StructType.primaryWeapon":
+		x.PrimaryWeapon = 0
+	case "structs.structs.StructType.primaryWeaponControl":
+		x.PrimaryWeaponControl = 0
+	case "structs.structs.StructType.primaryWeaponCharge":
+		x.PrimaryWeaponCharge = uint64(0)
+	case "structs.structs.StructType.primaryWeaponTargets":
+		x.PrimaryWeaponTargets = uint64(0)
+	case "structs.structs.StructType.primaryWeaponShots":
+		x.PrimaryWeaponShots = uint64(0)
+	case "structs.structs.StructType.primaryWeaponDamage":
+		x.PrimaryWeaponDamage = uint64(0)
+	case "structs.structs.StructType.primaryWeaponBlockable":
+		x.PrimaryWeaponBlockable = false
+	case "structs.structs.StructType.primaryWeaponCounterable":
+		x.PrimaryWeaponCounterable = false
+	case "structs.structs.StructType.primaryWeaponRecoilDamage":
+		x.PrimaryWeaponRecoilDamage = uint64(0)
+	case "structs.structs.StructType.primaryWeaponShotSuccessRateNumerator":
+		x.PrimaryWeaponShotSuccessRateNumerator = uint64(0)
+	case "structs.structs.StructType.primaryWeaponShotSuccessRateDenominator":
+		x.PrimaryWeaponShotSuccessRateDenominator = uint64(0)
+	case "structs.structs.StructType.secondaryWeapon":
+		x.SecondaryWeapon = 0
+	case "structs.structs.StructType.secondaryWeaponControl":
+		x.SecondaryWeaponControl = 0
+	case "structs.structs.StructType.secondaryWeaponCharge":
+		x.SecondaryWeaponCharge = uint64(0)
+	case "structs.structs.StructType.secondaryWeaponTargets":
+		x.SecondaryWeaponTargets = uint64(0)
+	case "structs.structs.StructType.secondaryWeaponShots":
+		x.SecondaryWeaponShots = uint64(0)
+	case "structs.structs.StructType.secondaryWeaponDamage":
+		x.SecondaryWeaponDamage = uint64(0)
+	case "structs.structs.StructType.secondaryWeaponBlockable":
+		x.SecondaryWeaponBlockable = false
+	case "structs.structs.StructType.secondaryWeaponCounterable":
+		x.SecondaryWeaponCounterable = false
+	case "structs.structs.StructType.secondaryWeaponRecoilDamage":
+		x.SecondaryWeaponRecoilDamage = uint64(0)
+	case "structs.structs.StructType.secondaryWeaponShotSuccessRateNumerator":
+		x.SecondaryWeaponShotSuccessRateNumerator = uint64(0)
+	case "structs.structs.StructType.secondaryWeaponShotSuccessRateDenominator":
+		x.SecondaryWeaponShotSuccessRateDenominator = uint64(0)
+	case "structs.structs.StructType.passiveWeaponry":
+		x.PassiveWeaponry = 0
+	case "structs.structs.StructType.unitDefenses":
+		x.UnitDefenses = 0
+	case "structs.structs.StructType.oreReserveDefenses":
+		x.OreReserveDefenses = 0
+	case "structs.structs.StructType.planetaryDefenses":
+		x.PlanetaryDefenses = 0
+	case "structs.structs.StructType.planetaryMining":
+		x.PlanetaryMining = 0
+	case "structs.structs.StructType.planetaryRefinery":
+		x.PlanetaryRefinery = 0
+	case "structs.structs.StructType.powerGeneration":
+		x.PowerGeneration = 0
+	case "structs.structs.StructType.activateCharge":
+		x.ActivateCharge = uint64(0)
+	case "structs.structs.StructType.buildCharge":
+		x.BuildCharge = uint64(0)
+	case "structs.structs.StructType.defendChangeCharge":
+		x.DefendChangeCharge = uint64(0)
+	case "structs.structs.StructType.moveCharge":
+		x.MoveCharge = uint64(0)
+	case "structs.structs.StructType.oreMiningActivateCharge":
+		x.OreMiningActivateCharge = uint64(0)
+	case "structs.structs.StructType.oreRefiningActivateCharge":
+		x.OreRefiningActivateCharge = uint64(0)
+	case "structs.structs.StructType.stealthActivateCharge":
+		x.StealthActivateCharge = uint64(0)
+	case "structs.structs.StructType.attackReduction":
+		x.AttackReduction = uint64(0)
+	case "structs.structs.StructType.attackCounterable":
+		x.AttackCounterable = false
+	case "structs.structs.StructType.stealthSystems":
+		x.StealthSystems = false
+	case "structs.structs.StructType.counterAttack":
+		x.CounterAttack = uint64(0)
+	case "structs.structs.StructType.counterAttackSameAmbit":
+		x.CounterAttackSameAmbit = uint64(0)
+	case "structs.structs.StructType.postDestructionDamage":
+		x.PostDestructionDamage = uint64(0)
+	case "structs.structs.StructType.generatingRate":
+		x.GeneratingRate = uint64(0)
+	case "structs.structs.StructType.planetaryShieldContribution":
+		x.PlanetaryShieldContribution = uint64(0)
+	case "structs.structs.StructType.unguidedDefensiveSuccessRateNumerator":
+		x.UnguidedDefensiveSuccessRateNumerator = uint64(0)
+	case "structs.structs.StructType.unguidedDefensiveSuccessRateDenominator":
+		x.UnguidedDefensiveSuccessRateDenominator = uint64(0)
+	case "structs.structs.StructType.guidedDefensiveSuccessRateNumerator":
+		x.GuidedDefensiveSuccessRateNumerator = uint64(0)
+	case "structs.structs.StructType.guidedDefensiveSuccessRateDenominator":
+		x.GuidedDefensiveSuccessRateDenominator = uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructType"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructType does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_StructType) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.StructType.id":
+		value := x.Id
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.type":
+		value := x.Type_
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.StructType.category":
+		value := x.Category
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	case "structs.structs.StructType.buildDifficulty":
+		value := x.BuildDifficulty
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.buildDraw":
+		value := x.BuildDraw
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.maxHealth":
+		value := x.MaxHealth
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.passiveDraw":
+		value := x.PassiveDraw
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.possibleAmbit":
+		value := x.PossibleAmbit
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.primaryWeapon":
+		value := x.PrimaryWeapon
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	case "structs.structs.StructType.primaryWeaponControl":
+		value := x.PrimaryWeaponControl
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	case "structs.structs.StructType.primaryWeaponCharge":
+		value := x.PrimaryWeaponCharge
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.primaryWeaponTargets":
+		value := x.PrimaryWeaponTargets
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.primaryWeaponShots":
+		value := x.PrimaryWeaponShots
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.primaryWeaponDamage":
+		value := x.PrimaryWeaponDamage
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.primaryWeaponBlockable":
+		value := x.PrimaryWeaponBlockable
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.StructType.primaryWeaponCounterable":
+		value := x.PrimaryWeaponCounterable
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.StructType.primaryWeaponRecoilDamage":
+		value := x.PrimaryWeaponRecoilDamage
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.primaryWeaponShotSuccessRateNumerator":
+		value := x.PrimaryWeaponShotSuccessRateNumerator
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.primaryWeaponShotSuccessRateDenominator":
+		value := x.PrimaryWeaponShotSuccessRateDenominator
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.secondaryWeapon":
+		value := x.SecondaryWeapon
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	case "structs.structs.StructType.secondaryWeaponControl":
+		value := x.SecondaryWeaponControl
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	case "structs.structs.StructType.secondaryWeaponCharge":
+		value := x.SecondaryWeaponCharge
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.secondaryWeaponTargets":
+		value := x.SecondaryWeaponTargets
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.secondaryWeaponShots":
+		value := x.SecondaryWeaponShots
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.secondaryWeaponDamage":
+		value := x.SecondaryWeaponDamage
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.secondaryWeaponBlockable":
+		value := x.SecondaryWeaponBlockable
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.StructType.secondaryWeaponCounterable":
+		value := x.SecondaryWeaponCounterable
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.StructType.secondaryWeaponRecoilDamage":
+		value := x.SecondaryWeaponRecoilDamage
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.secondaryWeaponShotSuccessRateNumerator":
+		value := x.SecondaryWeaponShotSuccessRateNumerator
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.secondaryWeaponShotSuccessRateDenominator":
+		value := x.SecondaryWeaponShotSuccessRateDenominator
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.passiveWeaponry":
+		value := x.PassiveWeaponry
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	case "structs.structs.StructType.unitDefenses":
+		value := x.UnitDefenses
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	case "structs.structs.StructType.oreReserveDefenses":
+		value := x.OreReserveDefenses
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	case "structs.structs.StructType.planetaryDefenses":
+		value := x.PlanetaryDefenses
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	case "structs.structs.StructType.planetaryMining":
+		value := x.PlanetaryMining
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	case "structs.structs.StructType.planetaryRefinery":
+		value := x.PlanetaryRefinery
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	case "structs.structs.StructType.powerGeneration":
+		value := x.PowerGeneration
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	case "structs.structs.StructType.activateCharge":
+		value := x.ActivateCharge
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.buildCharge":
+		value := x.BuildCharge
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.defendChangeCharge":
+		value := x.DefendChangeCharge
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.moveCharge":
+		value := x.MoveCharge
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.oreMiningActivateCharge":
+		value := x.OreMiningActivateCharge
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.oreRefiningActivateCharge":
+		value := x.OreRefiningActivateCharge
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.stealthActivateCharge":
+		value := x.StealthActivateCharge
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.attackReduction":
+		value := x.AttackReduction
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.attackCounterable":
+		value := x.AttackCounterable
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.StructType.stealthSystems":
+		value := x.StealthSystems
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.StructType.counterAttack":
+		value := x.CounterAttack
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.counterAttackSameAmbit":
+		value := x.CounterAttackSameAmbit
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.postDestructionDamage":
+		value := x.PostDestructionDamage
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.generatingRate":
+		value := x.GeneratingRate
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.planetaryShieldContribution":
+		value := x.PlanetaryShieldContribution
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.unguidedDefensiveSuccessRateNumerator":
+		value := x.UnguidedDefensiveSuccessRateNumerator
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.unguidedDefensiveSuccessRateDenominator":
+		value := x.UnguidedDefensiveSuccessRateDenominator
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.guidedDefensiveSuccessRateNumerator":
+		value := x.GuidedDefensiveSuccessRateNumerator
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.guidedDefensiveSuccessRateDenominator":
+		value := x.GuidedDefensiveSuccessRateDenominator
+		return protoreflect.ValueOfUint64(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructType"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructType does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructType) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.StructType.id":
+		x.Id = value.Uint()
+	case "structs.structs.StructType.type":
+		x.Type_ = value.Interface().(string)
+	case "structs.structs.StructType.category":
+		x.Category = (ObjectType)(value.Enum())
+	case "structs.structs.StructType.buildDifficulty":
+		x.BuildDifficulty = value.Uint()
+	case "structs.structs.StructType.buildDraw":
+		x.BuildDraw = value.Uint()
+	case "structs.structs.StructType.maxHealth":
+		x.MaxHealth = value.Uint()
+	case "structs.structs.StructType.passiveDraw":
+		x.PassiveDraw = value.Uint()
+	case "structs.structs.StructType.possibleAmbit":
+		x.PossibleAmbit = value.Uint()
+	case "structs.structs.StructType.primaryWeapon":
+		x.PrimaryWeapon = (TechActiveWeaponry)(value.Enum())
+	case "structs.structs.StructType.primaryWeaponControl":
+		x.PrimaryWeaponControl = (TechWeaponControl)(value.Enum())
+	case "structs.structs.StructType.primaryWeaponCharge":
+		x.PrimaryWeaponCharge = value.Uint()
+	case "structs.structs.StructType.primaryWeaponTargets":
+		x.PrimaryWeaponTargets = value.Uint()
+	case "structs.structs.StructType.primaryWeaponShots":
+		x.PrimaryWeaponShots = value.Uint()
+	case "structs.structs.StructType.primaryWeaponDamage":
+		x.PrimaryWeaponDamage = value.Uint()
+	case "structs.structs.StructType.primaryWeaponBlockable":
+		x.PrimaryWeaponBlockable = value.Bool()
+	case "structs.structs.StructType.primaryWeaponCounterable":
+		x.PrimaryWeaponCounterable = value.Bool()
+	case "structs.structs.StructType.primaryWeaponRecoilDamage":
+		x.PrimaryWeaponRecoilDamage = value.Uint()
+	case "structs.structs.StructType.primaryWeaponShotSuccessRateNumerator":
+		x.PrimaryWeaponShotSuccessRateNumerator = value.Uint()
+	case "structs.structs.StructType.primaryWeaponShotSuccessRateDenominator":
+		x.PrimaryWeaponShotSuccessRateDenominator = value.Uint()
+	case "structs.structs.StructType.secondaryWeapon":
+		x.SecondaryWeapon = (TechActiveWeaponry)(value.Enum())
+	case "structs.structs.StructType.secondaryWeaponControl":
+		x.SecondaryWeaponControl = (TechWeaponControl)(value.Enum())
+	case "structs.structs.StructType.secondaryWeaponCharge":
+		x.SecondaryWeaponCharge = value.Uint()
+	case "structs.structs.StructType.secondaryWeaponTargets":
+		x.SecondaryWeaponTargets = value.Uint()
+	case "structs.structs.StructType.secondaryWeaponShots":
+		x.SecondaryWeaponShots = value.Uint()
+	case "structs.structs.StructType.secondaryWeaponDamage":
+		x.SecondaryWeaponDamage = value.Uint()
+	case "structs.structs.StructType.secondaryWeaponBlockable":
+		x.SecondaryWeaponBlockable = value.Bool()
+	case "structs.structs.StructType.secondaryWeaponCounterable":
+		x.SecondaryWeaponCounterable = value.Bool()
+	case "structs.structs.StructType.secondaryWeaponRecoilDamage":
+		x.SecondaryWeaponRecoilDamage = value.Uint()
+	case "structs.structs.StructType.secondaryWeaponShotSuccessRateNumerator":
+		x.SecondaryWeaponShotSuccessRateNumerator = value.Uint()
+	case "structs.structs.StructType.secondaryWeaponShotSuccessRateDenominator":
+		x.SecondaryWeaponShotSuccessRateDenominator = value.Uint()
+	case "structs.structs.StructType.passiveWeaponry":
+		x.PassiveWeaponry = (TechPassiveWeaponry)(value.Enum())
+	case "structs.structs.StructType.unitDefenses":
+		x.UnitDefenses = (TechUnitDefenses)(value.Enum())
+	case "structs.structs.StructType.oreReserveDefenses":
+		x.OreReserveDefenses = (TechOreReserveDefenses)(value.Enum())
+	case "structs.structs.StructType.planetaryDefenses":
+		x.PlanetaryDefenses = (TechPlanetaryDefenses)(value.Enum())
+	case "structs.structs.StructType.planetaryMining":
+		x.PlanetaryMining = (TechPlanetaryMining)(value.Enum())
+	case "structs.structs.StructType.planetaryRefinery":
+		x.PlanetaryRefinery = (TechPlanetaryRefineries)(value.Enum())
+	case "structs.structs.StructType.powerGeneration":
+		x.PowerGeneration = (TechPowerGeneration)(value.Enum())
+	case "structs.structs.StructType.activateCharge":
+		x.ActivateCharge = value.Uint()
+	case "structs.structs.StructType.buildCharge":
+		x.BuildCharge = value.Uint()
+	case "structs.structs.StructType.defendChangeCharge":
+		x.DefendChangeCharge = value.Uint()
+	case "structs.structs.StructType.moveCharge":
+		x.MoveCharge = value.Uint()
+	case "structs.structs.StructType.oreMiningActivateCharge":
+		x.OreMiningActivateCharge = value.Uint()
+	case "structs.structs.StructType.oreRefiningActivateCharge":
+		x.OreRefiningActivateCharge = value.Uint()
+	case "structs.structs.StructType.stealthActivateCharge":
+		x.StealthActivateCharge = value.Uint()
+	case "structs.structs.StructType.attackReduction":
+		x.AttackReduction = value.Uint()
+	case "structs.structs.StructType.attackCounterable":
+		x.AttackCounterable = value.Bool()
+	case "structs.structs.StructType.stealthSystems":
+		x.StealthSystems = value.Bool()
+	case "structs.structs.StructType.counterAttack":
+		x.CounterAttack = value.Uint()
+	case "structs.structs.StructType.counterAttackSameAmbit":
+		x.CounterAttackSameAmbit = value.Uint()
+	case "structs.structs.StructType.postDestructionDamage":
+		x.PostDestructionDamage = value.Uint()
+	case "structs.structs.StructType.generatingRate":
+		x.GeneratingRate = value.Uint()
+	case "structs.structs.StructType.planetaryShieldContribution":
+		x.PlanetaryShieldContribution = value.Uint()
+	case "structs.structs.StructType.unguidedDefensiveSuccessRateNumerator":
+		x.UnguidedDefensiveSuccessRateNumerator = value.Uint()
+	case "structs.structs.StructType.unguidedDefensiveSuccessRateDenominator":
+		x.UnguidedDefensiveSuccessRateDenominator = value.Uint()
+	case "structs.structs.StructType.guidedDefensiveSuccessRateNumerator":
+		x.GuidedDefensiveSuccessRateNumerator = value.Uint()
+	case "structs.structs.StructType.guidedDefensiveSuccessRateDenominator":
+		x.GuidedDefensiveSuccessRateDenominator = value.Uint()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructType"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructType does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructType) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.StructType.id":
+		panic(fmt.Errorf("field id of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.type":
+		panic(fmt.Errorf("field type of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.category":
+		panic(fmt.Errorf("field category of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.buildDifficulty":
+		panic(fmt.Errorf("field buildDifficulty of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.buildDraw":
+		panic(fmt.Errorf("field buildDraw of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.maxHealth":
+		panic(fmt.Errorf("field maxHealth of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.passiveDraw":
+		panic(fmt.Errorf("field passiveDraw of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.possibleAmbit":
+		panic(fmt.Errorf("field possibleAmbit of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.primaryWeapon":
+		panic(fmt.Errorf("field primaryWeapon of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.primaryWeaponControl":
+		panic(fmt.Errorf("field primaryWeaponControl of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.primaryWeaponCharge":
+		panic(fmt.Errorf("field primaryWeaponCharge of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.primaryWeaponTargets":
+		panic(fmt.Errorf("field primaryWeaponTargets of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.primaryWeaponShots":
+		panic(fmt.Errorf("field primaryWeaponShots of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.primaryWeaponDamage":
+		panic(fmt.Errorf("field primaryWeaponDamage of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.primaryWeaponBlockable":
+		panic(fmt.Errorf("field primaryWeaponBlockable of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.primaryWeaponCounterable":
+		panic(fmt.Errorf("field primaryWeaponCounterable of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.primaryWeaponRecoilDamage":
+		panic(fmt.Errorf("field primaryWeaponRecoilDamage of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.primaryWeaponShotSuccessRateNumerator":
+		panic(fmt.Errorf("field primaryWeaponShotSuccessRateNumerator of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.primaryWeaponShotSuccessRateDenominator":
+		panic(fmt.Errorf("field primaryWeaponShotSuccessRateDenominator of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.secondaryWeapon":
+		panic(fmt.Errorf("field secondaryWeapon of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.secondaryWeaponControl":
+		panic(fmt.Errorf("field secondaryWeaponControl of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.secondaryWeaponCharge":
+		panic(fmt.Errorf("field secondaryWeaponCharge of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.secondaryWeaponTargets":
+		panic(fmt.Errorf("field secondaryWeaponTargets of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.secondaryWeaponShots":
+		panic(fmt.Errorf("field secondaryWeaponShots of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.secondaryWeaponDamage":
+		panic(fmt.Errorf("field secondaryWeaponDamage of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.secondaryWeaponBlockable":
+		panic(fmt.Errorf("field secondaryWeaponBlockable of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.secondaryWeaponCounterable":
+		panic(fmt.Errorf("field secondaryWeaponCounterable of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.secondaryWeaponRecoilDamage":
+		panic(fmt.Errorf("field secondaryWeaponRecoilDamage of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.secondaryWeaponShotSuccessRateNumerator":
+		panic(fmt.Errorf("field secondaryWeaponShotSuccessRateNumerator of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.secondaryWeaponShotSuccessRateDenominator":
+		panic(fmt.Errorf("field secondaryWeaponShotSuccessRateDenominator of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.passiveWeaponry":
+		panic(fmt.Errorf("field passiveWeaponry of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.unitDefenses":
+		panic(fmt.Errorf("field unitDefenses of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.oreReserveDefenses":
+		panic(fmt.Errorf("field oreReserveDefenses of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.planetaryDefenses":
+		panic(fmt.Errorf("field planetaryDefenses of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.planetaryMining":
+		panic(fmt.Errorf("field planetaryMining of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.planetaryRefinery":
+		panic(fmt.Errorf("field planetaryRefinery of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.powerGeneration":
+		panic(fmt.Errorf("field powerGeneration of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.activateCharge":
+		panic(fmt.Errorf("field activateCharge of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.buildCharge":
+		panic(fmt.Errorf("field buildCharge of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.defendChangeCharge":
+		panic(fmt.Errorf("field defendChangeCharge of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.moveCharge":
+		panic(fmt.Errorf("field moveCharge of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.oreMiningActivateCharge":
+		panic(fmt.Errorf("field oreMiningActivateCharge of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.oreRefiningActivateCharge":
+		panic(fmt.Errorf("field oreRefiningActivateCharge of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.stealthActivateCharge":
+		panic(fmt.Errorf("field stealthActivateCharge of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.attackReduction":
+		panic(fmt.Errorf("field attackReduction of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.attackCounterable":
+		panic(fmt.Errorf("field attackCounterable of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.stealthSystems":
+		panic(fmt.Errorf("field stealthSystems of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.counterAttack":
+		panic(fmt.Errorf("field counterAttack of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.counterAttackSameAmbit":
+		panic(fmt.Errorf("field counterAttackSameAmbit of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.postDestructionDamage":
+		panic(fmt.Errorf("field postDestructionDamage of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.generatingRate":
+		panic(fmt.Errorf("field generatingRate of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.planetaryShieldContribution":
+		panic(fmt.Errorf("field planetaryShieldContribution of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.unguidedDefensiveSuccessRateNumerator":
+		panic(fmt.Errorf("field unguidedDefensiveSuccessRateNumerator of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.unguidedDefensiveSuccessRateDenominator":
+		panic(fmt.Errorf("field unguidedDefensiveSuccessRateDenominator of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.guidedDefensiveSuccessRateNumerator":
+		panic(fmt.Errorf("field guidedDefensiveSuccessRateNumerator of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.guidedDefensiveSuccessRateDenominator":
+		panic(fmt.Errorf("field guidedDefensiveSuccessRateDenominator of message structs.structs.StructType is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructType"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructType does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_StructType) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.StructType.id":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.type":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.StructType.category":
+		return protoreflect.ValueOfEnum(0)
+	case "structs.structs.StructType.buildDifficulty":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.buildDraw":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.maxHealth":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.passiveDraw":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.possibleAmbit":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.primaryWeapon":
+		return protoreflect.ValueOfEnum(0)
+	case "structs.structs.StructType.primaryWeaponControl":
+		return protoreflect.ValueOfEnum(0)
+	case "structs.structs.StructType.primaryWeaponCharge":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.primaryWeaponTargets":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.primaryWeaponShots":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.primaryWeaponDamage":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.primaryWeaponBlockable":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.StructType.primaryWeaponCounterable":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.StructType.primaryWeaponRecoilDamage":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.primaryWeaponShotSuccessRateNumerator":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.primaryWeaponShotSuccessRateDenominator":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.secondaryWeapon":
+		return protoreflect.ValueOfEnum(0)
+	case "structs.structs.StructType.secondaryWeaponControl":
+		return protoreflect.ValueOfEnum(0)
+	case "structs.structs.StructType.secondaryWeaponCharge":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.secondaryWeaponTargets":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.secondaryWeaponShots":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.secondaryWeaponDamage":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.secondaryWeaponBlockable":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.StructType.secondaryWeaponCounterable":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.StructType.secondaryWeaponRecoilDamage":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.secondaryWeaponShotSuccessRateNumerator":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.secondaryWeaponShotSuccessRateDenominator":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.passiveWeaponry":
+		return protoreflect.ValueOfEnum(0)
+	case "structs.structs.StructType.unitDefenses":
+		return protoreflect.ValueOfEnum(0)
+	case "structs.structs.StructType.oreReserveDefenses":
+		return protoreflect.ValueOfEnum(0)
+	case "structs.structs.StructType.planetaryDefenses":
+		return protoreflect.ValueOfEnum(0)
+	case "structs.structs.StructType.planetaryMining":
+		return protoreflect.ValueOfEnum(0)
+	case "structs.structs.StructType.planetaryRefinery":
+		return protoreflect.ValueOfEnum(0)
+	case "structs.structs.StructType.powerGeneration":
+		return protoreflect.ValueOfEnum(0)
+	case "structs.structs.StructType.activateCharge":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.buildCharge":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.defendChangeCharge":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.moveCharge":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.oreMiningActivateCharge":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.oreRefiningActivateCharge":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.stealthActivateCharge":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.attackReduction":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.attackCounterable":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.StructType.stealthSystems":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.StructType.counterAttack":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.counterAttackSameAmbit":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.postDestructionDamage":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.generatingRate":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.planetaryShieldContribution":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.unguidedDefensiveSuccessRateNumerator":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.unguidedDefensiveSuccessRateDenominator":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.guidedDefensiveSuccessRateNumerator":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.guidedDefensiveSuccessRateDenominator":
+		return protoreflect.ValueOfUint64(uint64(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructType"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructType does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_StructType) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.StructType", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_StructType) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructType) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_StructType) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*StructType)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Id != 0 {
+			n += 1 + runtime.Sov(uint64(x.Id))
+		}
+		l = len(x.Type_)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.Category != 0 {
+			n += 1 + runtime.Sov(uint64(x.Category))
+		}
+		if x.BuildDifficulty != 0 {
+			n += 1 + runtime.Sov(uint64(x.BuildDifficulty))
+		}
+		if x.BuildDraw != 0 {
+			n += 1 + runtime.Sov(uint64(x.BuildDraw))
+		}
+		if x.MaxHealth != 0 {
+			n += 1 + runtime.Sov(uint64(x.MaxHealth))
+		}
+		if x.PassiveDraw != 0 {
+			n += 1 + runtime.Sov(uint64(x.PassiveDraw))
+		}
+		if x.PossibleAmbit != 0 {
+			n += 1 + runtime.Sov(uint64(x.PossibleAmbit))
+		}
+		if x.PrimaryWeapon != 0 {
+			n += 1 + runtime.Sov(uint64(x.PrimaryWeapon))
+		}
+		if x.PrimaryWeaponControl != 0 {
+			n += 1 + runtime.Sov(uint64(x.PrimaryWeaponControl))
+		}
+		if x.PrimaryWeaponCharge != 0 {
+			n += 1 + runtime.Sov(uint64(x.PrimaryWeaponCharge))
+		}
+		if x.PrimaryWeaponTargets != 0 {
+			n += 1 + runtime.Sov(uint64(x.PrimaryWeaponTargets))
+		}
+		if x.PrimaryWeaponShots != 0 {
+			n += 1 + runtime.Sov(uint64(x.PrimaryWeaponShots))
+		}
+		if x.PrimaryWeaponDamage != 0 {
+			n += 1 + runtime.Sov(uint64(x.PrimaryWeaponDamage))
+		}
+		if x.PrimaryWeaponBlockable {
+			n += 2
+		}
+		if x.PrimaryWeaponCounterable {
+			n += 3
+		}
+		if x.PrimaryWeaponRecoilDamage != 0 {
+			n += 2 + runtime.Sov(uint64(x.PrimaryWeaponRecoilDamage))
+		}
+		if x.PrimaryWeaponShotSuccessRateNumerator != 0 {
+			n += 2 + runtime.Sov(uint64(x.PrimaryWeaponShotSuccessRateNumerator))
+		}
+		if x.PrimaryWeaponShotSuccessRateDenominator != 0 {
+			n += 2 + runtime.Sov(uint64(x.PrimaryWeaponShotSuccessRateDenominator))
+		}
+		if x.SecondaryWeapon != 0 {
+			n += 2 + runtime.Sov(uint64(x.SecondaryWeapon))
+		}
+		if x.SecondaryWeaponControl != 0 {
+			n += 2 + runtime.Sov(uint64(x.SecondaryWeaponControl))
+		}
+		if x.SecondaryWeaponCharge != 0 {
+			n += 2 + runtime.Sov(uint64(x.SecondaryWeaponCharge))
+		}
+		if x.SecondaryWeaponTargets != 0 {
+			n += 2 + runtime.Sov(uint64(x.SecondaryWeaponTargets))
+		}
+		if x.SecondaryWeaponShots != 0 {
+			n += 2 + runtime.Sov(uint64(x.SecondaryWeaponShots))
+		}
+		if x.SecondaryWeaponDamage != 0 {
+			n += 2 + runtime.Sov(uint64(x.SecondaryWeaponDamage))
+		}
+		if x.SecondaryWeaponBlockable {
+			n += 3
+		}
+		if x.SecondaryWeaponCounterable {
+			n += 3
+		}
+		if x.SecondaryWeaponRecoilDamage != 0 {
+			n += 2 + runtime.Sov(uint64(x.SecondaryWeaponRecoilDamage))
+		}
+		if x.SecondaryWeaponShotSuccessRateNumerator != 0 {
+			n += 2 + runtime.Sov(uint64(x.SecondaryWeaponShotSuccessRateNumerator))
+		}
+		if x.SecondaryWeaponShotSuccessRateDenominator != 0 {
+			n += 2 + runtime.Sov(uint64(x.SecondaryWeaponShotSuccessRateDenominator))
+		}
+		if x.PassiveWeaponry != 0 {
+			n += 2 + runtime.Sov(uint64(x.PassiveWeaponry))
+		}
+		if x.UnitDefenses != 0 {
+			n += 2 + runtime.Sov(uint64(x.UnitDefenses))
+		}
+		if x.OreReserveDefenses != 0 {
+			n += 2 + runtime.Sov(uint64(x.OreReserveDefenses))
+		}
+		if x.PlanetaryDefenses != 0 {
+			n += 2 + runtime.Sov(uint64(x.PlanetaryDefenses))
+		}
+		if x.PlanetaryMining != 0 {
+			n += 2 + runtime.Sov(uint64(x.PlanetaryMining))
+		}
+		if x.PlanetaryRefinery != 0 {
+			n += 2 + runtime.Sov(uint64(x.PlanetaryRefinery))
+		}
+		if x.PowerGeneration != 0 {
+			n += 2 + runtime.Sov(uint64(x.PowerGeneration))
+		}
+		if x.ActivateCharge != 0 {
+			n += 2 + runtime.Sov(uint64(x.ActivateCharge))
+		}
+		if x.BuildCharge != 0 {
+			n += 2 + runtime.Sov(uint64(x.BuildCharge))
+		}
+		if x.DefendChangeCharge != 0 {
+			n += 2 + runtime.Sov(uint64(x.DefendChangeCharge))
+		}
+		if x.MoveCharge != 0 {
+			n += 2 + runtime.Sov(uint64(x.MoveCharge))
+		}
+		if x.OreMiningActivateCharge != 0 {
+			n += 2 + runtime.Sov(uint64(x.OreMiningActivateCharge))
+		}
+		if x.OreRefiningActivateCharge != 0 {
+			n += 2 + runtime.Sov(uint64(x.OreRefiningActivateCharge))
+		}
+		if x.StealthActivateCharge != 0 {
+			n += 2 + runtime.Sov(uint64(x.StealthActivateCharge))
+		}
+		if x.AttackReduction != 0 {
+			n += 2 + runtime.Sov(uint64(x.AttackReduction))
+		}
+		if x.AttackCounterable {
+			n += 3
+		}
+		if x.StealthSystems {
+			n += 3
+		}
+		if x.CounterAttack != 0 {
+			n += 2 + runtime.Sov(uint64(x.CounterAttack))
+		}
+		if x.CounterAttackSameAmbit != 0 {
+			n += 2 + runtime.Sov(uint64(x.CounterAttackSameAmbit))
+		}
+		if x.PostDestructionDamage != 0 {
+			n += 2 + runtime.Sov(uint64(x.PostDestructionDamage))
+		}
+		if x.GeneratingRate != 0 {
+			n += 2 + runtime.Sov(uint64(x.GeneratingRate))
+		}
+		if x.PlanetaryShieldContribution != 0 {
+			n += 2 + runtime.Sov(uint64(x.PlanetaryShieldContribution))
+		}
+		if x.UnguidedDefensiveSuccessRateNumerator != 0 {
+			n += 2 + runtime.Sov(uint64(x.UnguidedDefensiveSuccessRateNumerator))
+		}
+		if x.UnguidedDefensiveSuccessRateDenominator != 0 {
+			n += 2 + runtime.Sov(uint64(x.UnguidedDefensiveSuccessRateDenominator))
+		}
+		if x.GuidedDefensiveSuccessRateNumerator != 0 {
+			n += 2 + runtime.Sov(uint64(x.GuidedDefensiveSuccessRateNumerator))
+		}
+		if x.GuidedDefensiveSuccessRateDenominator != 0 {
+			n += 2 + runtime.Sov(uint64(x.GuidedDefensiveSuccessRateDenominator))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*StructType)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.GuidedDefensiveSuccessRateDenominator != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.GuidedDefensiveSuccessRateDenominator))
+			i--
+			dAtA[i] = 0x3
+			i--
+			dAtA[i] = 0xc0
+		}
+		if x.GuidedDefensiveSuccessRateNumerator != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.GuidedDefensiveSuccessRateNumerator))
+			i--
+			dAtA[i] = 0x3
+			i--
+			dAtA[i] = 0xb8
+		}
+		if x.UnguidedDefensiveSuccessRateDenominator != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.UnguidedDefensiveSuccessRateDenominator))
+			i--
+			dAtA[i] = 0x3
+			i--
+			dAtA[i] = 0xb0
+		}
+		if x.UnguidedDefensiveSuccessRateNumerator != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.UnguidedDefensiveSuccessRateNumerator))
+			i--
+			dAtA[i] = 0x3
+			i--
+			dAtA[i] = 0xa8
+		}
+		if x.PlanetaryShieldContribution != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PlanetaryShieldContribution))
+			i--
+			dAtA[i] = 0x3
+			i--
+			dAtA[i] = 0xa0
+		}
+		if x.GeneratingRate != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.GeneratingRate))
+			i--
+			dAtA[i] = 0x3
+			i--
+			dAtA[i] = 0x98
+		}
+		if x.PostDestructionDamage != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PostDestructionDamage))
+			i--
+			dAtA[i] = 0x3
+			i--
+			dAtA[i] = 0x90
+		}
+		if x.CounterAttackSameAmbit != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.CounterAttackSameAmbit))
+			i--
+			dAtA[i] = 0x3
+			i--
+			dAtA[i] = 0x88
+		}
+		if x.CounterAttack != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.CounterAttack))
+			i--
+			dAtA[i] = 0x3
+			i--
+			dAtA[i] = 0x80
+		}
+		if x.StealthSystems {
+			i--
+			if x.StealthSystems {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0xf8
+		}
+		if x.AttackCounterable {
+			i--
+			if x.AttackCounterable {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0xf0
+		}
+		if x.AttackReduction != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.AttackReduction))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0xe8
+		}
+		if x.StealthActivateCharge != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.StealthActivateCharge))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0xe0
+		}
+		if x.OreRefiningActivateCharge != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.OreRefiningActivateCharge))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0xd8
+		}
+		if x.OreMiningActivateCharge != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.OreMiningActivateCharge))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0xd0
+		}
+		if x.MoveCharge != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.MoveCharge))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0xc8
+		}
+		if x.DefendChangeCharge != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.DefendChangeCharge))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0xc0
+		}
+		if x.BuildCharge != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BuildCharge))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0xb8
+		}
+		if x.ActivateCharge != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.ActivateCharge))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0xb0
+		}
+		if x.PowerGeneration != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PowerGeneration))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0xa8
+		}
+		if x.PlanetaryRefinery != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PlanetaryRefinery))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0xa0
+		}
+		if x.PlanetaryMining != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PlanetaryMining))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0x98
+		}
+		if x.PlanetaryDefenses != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PlanetaryDefenses))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0x90
+		}
+		if x.OreReserveDefenses != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.OreReserveDefenses))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0x88
+		}
+		if x.UnitDefenses != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.UnitDefenses))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0x80
+		}
+		if x.PassiveWeaponry != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PassiveWeaponry))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0xf8
+		}
+		if x.SecondaryWeaponShotSuccessRateDenominator != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeaponShotSuccessRateDenominator))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0xf0
+		}
+		if x.SecondaryWeaponShotSuccessRateNumerator != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeaponShotSuccessRateNumerator))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0xe8
+		}
+		if x.SecondaryWeaponRecoilDamage != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeaponRecoilDamage))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0xe0
+		}
+		if x.SecondaryWeaponCounterable {
+			i--
+			if x.SecondaryWeaponCounterable {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0xd8
+		}
+		if x.SecondaryWeaponBlockable {
+			i--
+			if x.SecondaryWeaponBlockable {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0xd0
+		}
+		if x.SecondaryWeaponDamage != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeaponDamage))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0xc8
+		}
+		if x.SecondaryWeaponShots != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeaponShots))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0xc0
+		}
+		if x.SecondaryWeaponTargets != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeaponTargets))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0xb8
+		}
+		if x.SecondaryWeaponCharge != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeaponCharge))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0xb0
+		}
+		if x.SecondaryWeaponControl != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeaponControl))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0xa8
+		}
+		if x.SecondaryWeapon != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeapon))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0xa0
+		}
+		if x.PrimaryWeaponShotSuccessRateDenominator != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PrimaryWeaponShotSuccessRateDenominator))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0x98
+		}
+		if x.PrimaryWeaponShotSuccessRateNumerator != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PrimaryWeaponShotSuccessRateNumerator))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0x90
+		}
+		if x.PrimaryWeaponRecoilDamage != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PrimaryWeaponRecoilDamage))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0x88
+		}
+		if x.PrimaryWeaponCounterable {
+			i--
+			if x.PrimaryWeaponCounterable {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0x80
+		}
+		if x.PrimaryWeaponBlockable {
+			i--
+			if x.PrimaryWeaponBlockable {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x78
+		}
+		if x.PrimaryWeaponDamage != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PrimaryWeaponDamage))
+			i--
+			dAtA[i] = 0x70
+		}
+		if x.PrimaryWeaponShots != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PrimaryWeaponShots))
+			i--
+			dAtA[i] = 0x68
+		}
+		if x.PrimaryWeaponTargets != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PrimaryWeaponTargets))
+			i--
+			dAtA[i] = 0x60
+		}
+		if x.PrimaryWeaponCharge != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PrimaryWeaponCharge))
+			i--
+			dAtA[i] = 0x58
+		}
+		if x.PrimaryWeaponControl != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PrimaryWeaponControl))
+			i--
+			dAtA[i] = 0x50
+		}
+		if x.PrimaryWeapon != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PrimaryWeapon))
+			i--
+			dAtA[i] = 0x48
+		}
+		if x.PossibleAmbit != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PossibleAmbit))
+			i--
+			dAtA[i] = 0x40
+		}
+		if x.PassiveDraw != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PassiveDraw))
+			i--
+			dAtA[i] = 0x38
+		}
+		if x.MaxHealth != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.MaxHealth))
+			i--
+			dAtA[i] = 0x30
+		}
+		if x.BuildDraw != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BuildDraw))
+			i--
+			dAtA[i] = 0x28
+		}
+		if x.BuildDifficulty != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BuildDifficulty))
+			i--
+			dAtA[i] = 0x20
+		}
+		if x.Category != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Category))
+			i--
+			dAtA[i] = 0x18
+		}
+		if len(x.Type_) > 0 {
+			i -= len(x.Type_)
+			copy(dAtA[i:], x.Type_)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Type_)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if x.Id != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Id))
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*StructType)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: StructType: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: StructType: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Id", wireType)
+				}
+				x.Id = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Id |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 2:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Type_", wireType)
 				}
@@ -1338,75 +2927,11 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 				}
 				x.Type_ = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
-			case 9:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Ambit", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.Ambit = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 10:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlanetId", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.PlanetId = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 11:
+			case 3:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Slot", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Category", wireType)
 				}
-				x.Slot = 0
+				x.Category = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1416,16 +2941,16 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.Slot |= uint64(b&0x7F) << shift
+					x.Category |= ObjectType(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-			case 12:
+			case 4:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MiningSystem", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BuildDifficulty", wireType)
 				}
-				x.MiningSystem = 0
+				x.BuildDifficulty = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1435,16 +2960,16 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.MiningSystem |= uint64(b&0x7F) << shift
+					x.BuildDifficulty |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-			case 13:
+			case 5:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RefiningSystem", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BuildDraw", wireType)
 				}
-				x.RefiningSystem = 0
+				x.BuildDraw = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1454,16 +2979,16 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.RefiningSystem |= uint64(b&0x7F) << shift
+					x.BuildDraw |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-			case 14:
+			case 6:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PowerSystem", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MaxHealth", wireType)
 				}
-				x.PowerSystem = 0
+				x.MaxHealth = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1473,31 +2998,12 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.PowerSystem |= uint64(b&0x7F) << shift
+					x.MaxHealth |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-			case 15:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BuildStartBlock", wireType)
-				}
-				x.BuildStartBlock = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.BuildStartBlock |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 16:
+			case 7:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PassiveDraw", wireType)
 				}
@@ -1516,11 +3022,11 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 17:
+			case 8:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ActiveMiningSystemDraw", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PossibleAmbit", wireType)
 				}
-				x.ActiveMiningSystemDraw = 0
+				x.PossibleAmbit = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1530,16 +3036,189 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.ActiveMiningSystemDraw |= uint64(b&0x7F) << shift
+					x.PossibleAmbit |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 9:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeapon", wireType)
+				}
+				x.PrimaryWeapon = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PrimaryWeapon |= TechActiveWeaponry(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 10:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponControl", wireType)
+				}
+				x.PrimaryWeaponControl = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PrimaryWeaponControl |= TechWeaponControl(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 11:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponCharge", wireType)
+				}
+				x.PrimaryWeaponCharge = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PrimaryWeaponCharge |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 12:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponTargets", wireType)
+				}
+				x.PrimaryWeaponTargets = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PrimaryWeaponTargets |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 13:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponShots", wireType)
+				}
+				x.PrimaryWeaponShots = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PrimaryWeaponShots |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 14:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponDamage", wireType)
+				}
+				x.PrimaryWeaponDamage = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PrimaryWeaponDamage |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 15:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponBlockable", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.PrimaryWeaponBlockable = bool(v != 0)
+			case 16:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponCounterable", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.PrimaryWeaponCounterable = bool(v != 0)
+			case 17:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponRecoilDamage", wireType)
+				}
+				x.PrimaryWeaponRecoilDamage = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PrimaryWeaponRecoilDamage |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
 			case 18:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ActiveMiningSystemBlock", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponShotSuccessRateNumerator", wireType)
 				}
-				x.ActiveMiningSystemBlock = 0
+				x.PrimaryWeaponShotSuccessRateNumerator = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1549,16 +3228,16 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.ActiveMiningSystemBlock |= uint64(b&0x7F) << shift
+					x.PrimaryWeaponShotSuccessRateNumerator |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
 			case 19:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ActiveRefiningSystemDraw", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponShotSuccessRateDenominator", wireType)
 				}
-				x.ActiveRefiningSystemDraw = 0
+				x.PrimaryWeaponShotSuccessRateDenominator = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1568,16 +3247,16 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.ActiveRefiningSystemDraw |= uint64(b&0x7F) << shift
+					x.PrimaryWeaponShotSuccessRateDenominator |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
 			case 20:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ActiveRefiningSystemBlock", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeapon", wireType)
 				}
-				x.ActiveRefiningSystemBlock = 0
+				x.SecondaryWeapon = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1587,16 +3266,16 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.ActiveRefiningSystemBlock |= uint64(b&0x7F) << shift
+					x.SecondaryWeapon |= TechActiveWeaponry(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
 			case 21:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MiningSystemStatus", wireType)
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponControl", wireType)
 				}
-				var stringLen uint64
+				x.SecondaryWeaponControl = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1606,29 +3285,16 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					x.SecondaryWeaponControl |= TechWeaponControl(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.MiningSystemStatus = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
 			case 22:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RefiningSystemStatus", wireType)
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponCharge", wireType)
 				}
-				var stringLen uint64
+				x.SecondaryWeaponCharge = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1638,29 +3304,16 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
+					x.SecondaryWeaponCharge |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.RefiningSystemStatus = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
 			case 23:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PowerSystemFuel", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponTargets", wireType)
 				}
-				x.PowerSystemFuel = 0
+				x.SecondaryWeaponTargets = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1670,16 +3323,16 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.PowerSystemFuel |= uint64(b&0x7F) << shift
+					x.SecondaryWeaponTargets |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
 			case 24:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PowerSystemCapacity", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponShots", wireType)
 				}
-				x.PowerSystemCapacity = 0
+				x.SecondaryWeaponShots = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1689,16 +3342,16 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.PowerSystemCapacity |= uint64(b&0x7F) << shift
+					x.SecondaryWeaponShots |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
 			case 25:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PowerSystemLoad", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponDamage", wireType)
 				}
-				x.PowerSystemLoad = 0
+				x.SecondaryWeaponDamage = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1708,7 +3361,1760 @@ func (x *fastReflection_Struct) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.PowerSystemLoad |= uint64(b&0x7F) << shift
+					x.SecondaryWeaponDamage |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 26:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponBlockable", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.SecondaryWeaponBlockable = bool(v != 0)
+			case 27:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponCounterable", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.SecondaryWeaponCounterable = bool(v != 0)
+			case 28:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponRecoilDamage", wireType)
+				}
+				x.SecondaryWeaponRecoilDamage = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.SecondaryWeaponRecoilDamage |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 29:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponShotSuccessRateNumerator", wireType)
+				}
+				x.SecondaryWeaponShotSuccessRateNumerator = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.SecondaryWeaponShotSuccessRateNumerator |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 30:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponShotSuccessRateDenominator", wireType)
+				}
+				x.SecondaryWeaponShotSuccessRateDenominator = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.SecondaryWeaponShotSuccessRateDenominator |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 31:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PassiveWeaponry", wireType)
+				}
+				x.PassiveWeaponry = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PassiveWeaponry |= TechPassiveWeaponry(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 32:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field UnitDefenses", wireType)
+				}
+				x.UnitDefenses = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.UnitDefenses |= TechUnitDefenses(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 33:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OreReserveDefenses", wireType)
+				}
+				x.OreReserveDefenses = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.OreReserveDefenses |= TechOreReserveDefenses(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 34:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlanetaryDefenses", wireType)
+				}
+				x.PlanetaryDefenses = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PlanetaryDefenses |= TechPlanetaryDefenses(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 35:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlanetaryMining", wireType)
+				}
+				x.PlanetaryMining = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PlanetaryMining |= TechPlanetaryMining(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 36:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlanetaryRefinery", wireType)
+				}
+				x.PlanetaryRefinery = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PlanetaryRefinery |= TechPlanetaryRefineries(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 37:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PowerGeneration", wireType)
+				}
+				x.PowerGeneration = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PowerGeneration |= TechPowerGeneration(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 38:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ActivateCharge", wireType)
+				}
+				x.ActivateCharge = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.ActivateCharge |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 39:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BuildCharge", wireType)
+				}
+				x.BuildCharge = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.BuildCharge |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 40:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DefendChangeCharge", wireType)
+				}
+				x.DefendChangeCharge = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.DefendChangeCharge |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 41:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MoveCharge", wireType)
+				}
+				x.MoveCharge = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.MoveCharge |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 42:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OreMiningActivateCharge", wireType)
+				}
+				x.OreMiningActivateCharge = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.OreMiningActivateCharge |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 43:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OreRefiningActivateCharge", wireType)
+				}
+				x.OreRefiningActivateCharge = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.OreRefiningActivateCharge |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 44:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field StealthActivateCharge", wireType)
+				}
+				x.StealthActivateCharge = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.StealthActivateCharge |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 45:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AttackReduction", wireType)
+				}
+				x.AttackReduction = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.AttackReduction |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 46:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AttackCounterable", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.AttackCounterable = bool(v != 0)
+			case 47:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field StealthSystems", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.StealthSystems = bool(v != 0)
+			case 48:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CounterAttack", wireType)
+				}
+				x.CounterAttack = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.CounterAttack |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 49:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CounterAttackSameAmbit", wireType)
+				}
+				x.CounterAttackSameAmbit = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.CounterAttackSameAmbit |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 50:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PostDestructionDamage", wireType)
+				}
+				x.PostDestructionDamage = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PostDestructionDamage |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 51:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GeneratingRate", wireType)
+				}
+				x.GeneratingRate = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.GeneratingRate |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 52:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlanetaryShieldContribution", wireType)
+				}
+				x.PlanetaryShieldContribution = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PlanetaryShieldContribution |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 53:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field UnguidedDefensiveSuccessRateNumerator", wireType)
+				}
+				x.UnguidedDefensiveSuccessRateNumerator = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.UnguidedDefensiveSuccessRateNumerator |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 54:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field UnguidedDefensiveSuccessRateDenominator", wireType)
+				}
+				x.UnguidedDefensiveSuccessRateDenominator = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.UnguidedDefensiveSuccessRateDenominator |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 55:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GuidedDefensiveSuccessRateNumerator", wireType)
+				}
+				x.GuidedDefensiveSuccessRateNumerator = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.GuidedDefensiveSuccessRateNumerator |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 56:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GuidedDefensiveSuccessRateDenominator", wireType)
+				}
+				x.GuidedDefensiveSuccessRateDenominator = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.GuidedDefensiveSuccessRateDenominator |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_StructDefender                        protoreflect.MessageDescriptor
+	fd_StructDefender_protectedStructId      protoreflect.FieldDescriptor
+	fd_StructDefender_defendingStructId      protoreflect.FieldDescriptor
+	fd_StructDefender_locationId             protoreflect.FieldDescriptor
+	fd_StructDefender_operatingAmbit         protoreflect.FieldDescriptor
+	fd_StructDefender_counterAttack          protoreflect.FieldDescriptor
+	fd_StructDefender_counterAttackSameAmbit protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_struct_proto_init()
+	md_StructDefender = File_structs_structs_struct_proto.Messages().ByName("StructDefender")
+	fd_StructDefender_protectedStructId = md_StructDefender.Fields().ByName("protectedStructId")
+	fd_StructDefender_defendingStructId = md_StructDefender.Fields().ByName("defendingStructId")
+	fd_StructDefender_locationId = md_StructDefender.Fields().ByName("locationId")
+	fd_StructDefender_operatingAmbit = md_StructDefender.Fields().ByName("operatingAmbit")
+	fd_StructDefender_counterAttack = md_StructDefender.Fields().ByName("counterAttack")
+	fd_StructDefender_counterAttackSameAmbit = md_StructDefender.Fields().ByName("counterAttackSameAmbit")
+}
+
+var _ protoreflect.Message = (*fastReflection_StructDefender)(nil)
+
+type fastReflection_StructDefender StructDefender
+
+func (x *StructDefender) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_StructDefender)(x)
+}
+
+func (x *StructDefender) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_struct_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_StructDefender_messageType fastReflection_StructDefender_messageType
+var _ protoreflect.MessageType = fastReflection_StructDefender_messageType{}
+
+type fastReflection_StructDefender_messageType struct{}
+
+func (x fastReflection_StructDefender_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_StructDefender)(nil)
+}
+func (x fastReflection_StructDefender_messageType) New() protoreflect.Message {
+	return new(fastReflection_StructDefender)
+}
+func (x fastReflection_StructDefender_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_StructDefender
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_StructDefender) Descriptor() protoreflect.MessageDescriptor {
+	return md_StructDefender
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_StructDefender) Type() protoreflect.MessageType {
+	return _fastReflection_StructDefender_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_StructDefender) New() protoreflect.Message {
+	return new(fastReflection_StructDefender)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_StructDefender) Interface() protoreflect.ProtoMessage {
+	return (*StructDefender)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_StructDefender) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.ProtectedStructId != "" {
+		value := protoreflect.ValueOfString(x.ProtectedStructId)
+		if !f(fd_StructDefender_protectedStructId, value) {
+			return
+		}
+	}
+	if x.DefendingStructId != "" {
+		value := protoreflect.ValueOfString(x.DefendingStructId)
+		if !f(fd_StructDefender_defendingStructId, value) {
+			return
+		}
+	}
+	if x.LocationId != "" {
+		value := protoreflect.ValueOfString(x.LocationId)
+		if !f(fd_StructDefender_locationId, value) {
+			return
+		}
+	}
+	if x.OperatingAmbit != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.OperatingAmbit))
+		if !f(fd_StructDefender_operatingAmbit, value) {
+			return
+		}
+	}
+	if x.CounterAttack != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.CounterAttack)
+		if !f(fd_StructDefender_counterAttack, value) {
+			return
+		}
+	}
+	if x.CounterAttackSameAmbit != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.CounterAttackSameAmbit)
+		if !f(fd_StructDefender_counterAttackSameAmbit, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_StructDefender) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.StructDefender.protectedStructId":
+		return x.ProtectedStructId != ""
+	case "structs.structs.StructDefender.defendingStructId":
+		return x.DefendingStructId != ""
+	case "structs.structs.StructDefender.locationId":
+		return x.LocationId != ""
+	case "structs.structs.StructDefender.operatingAmbit":
+		return x.OperatingAmbit != 0
+	case "structs.structs.StructDefender.counterAttack":
+		return x.CounterAttack != uint64(0)
+	case "structs.structs.StructDefender.counterAttackSameAmbit":
+		return x.CounterAttackSameAmbit != uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDefender"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructDefender does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructDefender) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.StructDefender.protectedStructId":
+		x.ProtectedStructId = ""
+	case "structs.structs.StructDefender.defendingStructId":
+		x.DefendingStructId = ""
+	case "structs.structs.StructDefender.locationId":
+		x.LocationId = ""
+	case "structs.structs.StructDefender.operatingAmbit":
+		x.OperatingAmbit = 0
+	case "structs.structs.StructDefender.counterAttack":
+		x.CounterAttack = uint64(0)
+	case "structs.structs.StructDefender.counterAttackSameAmbit":
+		x.CounterAttackSameAmbit = uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDefender"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructDefender does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_StructDefender) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.StructDefender.protectedStructId":
+		value := x.ProtectedStructId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.StructDefender.defendingStructId":
+		value := x.DefendingStructId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.StructDefender.locationId":
+		value := x.LocationId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.StructDefender.operatingAmbit":
+		value := x.OperatingAmbit
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	case "structs.structs.StructDefender.counterAttack":
+		value := x.CounterAttack
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructDefender.counterAttackSameAmbit":
+		value := x.CounterAttackSameAmbit
+		return protoreflect.ValueOfUint64(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDefender"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructDefender does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructDefender) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.StructDefender.protectedStructId":
+		x.ProtectedStructId = value.Interface().(string)
+	case "structs.structs.StructDefender.defendingStructId":
+		x.DefendingStructId = value.Interface().(string)
+	case "structs.structs.StructDefender.locationId":
+		x.LocationId = value.Interface().(string)
+	case "structs.structs.StructDefender.operatingAmbit":
+		x.OperatingAmbit = (Ambit)(value.Enum())
+	case "structs.structs.StructDefender.counterAttack":
+		x.CounterAttack = value.Uint()
+	case "structs.structs.StructDefender.counterAttackSameAmbit":
+		x.CounterAttackSameAmbit = value.Uint()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDefender"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructDefender does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructDefender) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.StructDefender.protectedStructId":
+		panic(fmt.Errorf("field protectedStructId of message structs.structs.StructDefender is not mutable"))
+	case "structs.structs.StructDefender.defendingStructId":
+		panic(fmt.Errorf("field defendingStructId of message structs.structs.StructDefender is not mutable"))
+	case "structs.structs.StructDefender.locationId":
+		panic(fmt.Errorf("field locationId of message structs.structs.StructDefender is not mutable"))
+	case "structs.structs.StructDefender.operatingAmbit":
+		panic(fmt.Errorf("field operatingAmbit of message structs.structs.StructDefender is not mutable"))
+	case "structs.structs.StructDefender.counterAttack":
+		panic(fmt.Errorf("field counterAttack of message structs.structs.StructDefender is not mutable"))
+	case "structs.structs.StructDefender.counterAttackSameAmbit":
+		panic(fmt.Errorf("field counterAttackSameAmbit of message structs.structs.StructDefender is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDefender"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructDefender does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_StructDefender) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.StructDefender.protectedStructId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.StructDefender.defendingStructId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.StructDefender.locationId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.StructDefender.operatingAmbit":
+		return protoreflect.ValueOfEnum(0)
+	case "structs.structs.StructDefender.counterAttack":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructDefender.counterAttackSameAmbit":
+		return protoreflect.ValueOfUint64(uint64(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDefender"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructDefender does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_StructDefender) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.StructDefender", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_StructDefender) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructDefender) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_StructDefender) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_StructDefender) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*StructDefender)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.ProtectedStructId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.DefendingStructId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.LocationId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.OperatingAmbit != 0 {
+			n += 1 + runtime.Sov(uint64(x.OperatingAmbit))
+		}
+		if x.CounterAttack != 0 {
+			n += 1 + runtime.Sov(uint64(x.CounterAttack))
+		}
+		if x.CounterAttackSameAmbit != 0 {
+			n += 1 + runtime.Sov(uint64(x.CounterAttackSameAmbit))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*StructDefender)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.CounterAttackSameAmbit != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.CounterAttackSameAmbit))
+			i--
+			dAtA[i] = 0x30
+		}
+		if x.CounterAttack != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.CounterAttack))
+			i--
+			dAtA[i] = 0x28
+		}
+		if x.OperatingAmbit != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.OperatingAmbit))
+			i--
+			dAtA[i] = 0x20
+		}
+		if len(x.LocationId) > 0 {
+			i -= len(x.LocationId)
+			copy(dAtA[i:], x.LocationId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.LocationId)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if len(x.DefendingStructId) > 0 {
+			i -= len(x.DefendingStructId)
+			copy(dAtA[i:], x.DefendingStructId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.DefendingStructId)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.ProtectedStructId) > 0 {
+			i -= len(x.ProtectedStructId)
+			copy(dAtA[i:], x.ProtectedStructId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ProtectedStructId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*StructDefender)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: StructDefender: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: StructDefender: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ProtectedStructId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.ProtectedStructId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DefendingStructId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.DefendingStructId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field LocationId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.LocationId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OperatingAmbit", wireType)
+				}
+				x.OperatingAmbit = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.OperatingAmbit |= Ambit(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 5:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CounterAttack", wireType)
+				}
+				x.CounterAttack = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.CounterAttack |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 6:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CounterAttackSameAmbit", wireType)
+				}
+				x.CounterAttackSameAmbit = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.CounterAttackSameAmbit |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_StructAttributeRecord             protoreflect.MessageDescriptor
+	fd_StructAttributeRecord_attributeId protoreflect.FieldDescriptor
+	fd_StructAttributeRecord_value       protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_struct_proto_init()
+	md_StructAttributeRecord = File_structs_structs_struct_proto.Messages().ByName("StructAttributeRecord")
+	fd_StructAttributeRecord_attributeId = md_StructAttributeRecord.Fields().ByName("attributeId")
+	fd_StructAttributeRecord_value = md_StructAttributeRecord.Fields().ByName("value")
+}
+
+var _ protoreflect.Message = (*fastReflection_StructAttributeRecord)(nil)
+
+type fastReflection_StructAttributeRecord StructAttributeRecord
+
+func (x *StructAttributeRecord) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_StructAttributeRecord)(x)
+}
+
+func (x *StructAttributeRecord) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_struct_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_StructAttributeRecord_messageType fastReflection_StructAttributeRecord_messageType
+var _ protoreflect.MessageType = fastReflection_StructAttributeRecord_messageType{}
+
+type fastReflection_StructAttributeRecord_messageType struct{}
+
+func (x fastReflection_StructAttributeRecord_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_StructAttributeRecord)(nil)
+}
+func (x fastReflection_StructAttributeRecord_messageType) New() protoreflect.Message {
+	return new(fastReflection_StructAttributeRecord)
+}
+func (x fastReflection_StructAttributeRecord_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_StructAttributeRecord
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_StructAttributeRecord) Descriptor() protoreflect.MessageDescriptor {
+	return md_StructAttributeRecord
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_StructAttributeRecord) Type() protoreflect.MessageType {
+	return _fastReflection_StructAttributeRecord_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_StructAttributeRecord) New() protoreflect.Message {
+	return new(fastReflection_StructAttributeRecord)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_StructAttributeRecord) Interface() protoreflect.ProtoMessage {
+	return (*StructAttributeRecord)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_StructAttributeRecord) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.AttributeId != "" {
+		value := protoreflect.ValueOfString(x.AttributeId)
+		if !f(fd_StructAttributeRecord_attributeId, value) {
+			return
+		}
+	}
+	if x.Value != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Value)
+		if !f(fd_StructAttributeRecord_value, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_StructAttributeRecord) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.StructAttributeRecord.attributeId":
+		return x.AttributeId != ""
+	case "structs.structs.StructAttributeRecord.value":
+		return x.Value != uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructAttributeRecord"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructAttributeRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructAttributeRecord) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.StructAttributeRecord.attributeId":
+		x.AttributeId = ""
+	case "structs.structs.StructAttributeRecord.value":
+		x.Value = uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructAttributeRecord"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructAttributeRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_StructAttributeRecord) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.StructAttributeRecord.attributeId":
+		value := x.AttributeId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.StructAttributeRecord.value":
+		value := x.Value
+		return protoreflect.ValueOfUint64(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructAttributeRecord"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructAttributeRecord does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructAttributeRecord) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.StructAttributeRecord.attributeId":
+		x.AttributeId = value.Interface().(string)
+	case "structs.structs.StructAttributeRecord.value":
+		x.Value = value.Uint()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructAttributeRecord"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructAttributeRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructAttributeRecord) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.StructAttributeRecord.attributeId":
+		panic(fmt.Errorf("field attributeId of message structs.structs.StructAttributeRecord is not mutable"))
+	case "structs.structs.StructAttributeRecord.value":
+		panic(fmt.Errorf("field value of message structs.structs.StructAttributeRecord is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructAttributeRecord"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructAttributeRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_StructAttributeRecord) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.StructAttributeRecord.attributeId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.StructAttributeRecord.value":
+		return protoreflect.ValueOfUint64(uint64(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructAttributeRecord"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructAttributeRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_StructAttributeRecord) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.StructAttributeRecord", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_StructAttributeRecord) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructAttributeRecord) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_StructAttributeRecord) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_StructAttributeRecord) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*StructAttributeRecord)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.AttributeId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.Value != 0 {
+			n += 1 + runtime.Sov(uint64(x.Value))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*StructAttributeRecord)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Value != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Value))
+			i--
+			dAtA[i] = 0x10
+		}
+		if len(x.AttributeId) > 0 {
+			i -= len(x.AttributeId)
+			copy(dAtA[i:], x.AttributeId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.AttributeId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*StructAttributeRecord)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: StructAttributeRecord: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: StructAttributeRecord: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AttributeId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.AttributeId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Value", wireType)
+				}
+				x.Value = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Value |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
@@ -1761,42 +5167,22 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// This will all need to be reworked but let's
-// do some super basic crap here to get testnet up
 type Struct struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id        string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Creator   string `protobuf:"bytes,2,opt,name=creator,proto3" json:"creator,omitempty"`
-	Owner     string `protobuf:"bytes,3,opt,name=owner,proto3" json:"owner,omitempty"`
-	Status    string `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"`
-	MaxHealth uint64 `protobuf:"varint,5,opt,name=maxHealth,proto3" json:"maxHealth,omitempty"`
-	Health    uint64 `protobuf:"varint,6,opt,name=health,proto3" json:"health,omitempty"`
-	// Planet or Fleet
-	Category string `protobuf:"bytes,7,opt,name=category,proto3" json:"category,omitempty"`
 	// What it is
-	Type_ string `protobuf:"bytes,8,opt,name=type,proto3" json:"type,omitempty"`
+	Id    string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Index uint64 `protobuf:"varint,2,opt,name=index,proto3" json:"index,omitempty"`
+	Type_ uint64 `protobuf:"varint,3,opt,name=type,proto3" json:"type,omitempty"`
+	// Who is it
+	Creator string `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
+	Owner   string `protobuf:"bytes,5,opt,name=owner,proto3" json:"owner,omitempty"`
 	// Where it is
-	Ambit    string `protobuf:"bytes,9,opt,name=ambit,proto3" json:"ambit,omitempty"`
-	PlanetId string `protobuf:"bytes,10,opt,name=planetId,proto3" json:"planetId,omitempty"` // No fleet stuff yet
-	Slot     uint64 `protobuf:"varint,11,opt,name=slot,proto3" json:"slot,omitempty"`
-	// Struct Features
-	MiningSystem              uint64 `protobuf:"varint,12,opt,name=miningSystem,proto3" json:"miningSystem,omitempty"`
-	RefiningSystem            uint64 `protobuf:"varint,13,opt,name=refiningSystem,proto3" json:"refiningSystem,omitempty"`
-	PowerSystem               uint64 `protobuf:"varint,14,opt,name=powerSystem,proto3" json:"powerSystem,omitempty"`
-	BuildStartBlock           uint64 `protobuf:"varint,15,opt,name=buildStartBlock,proto3" json:"buildStartBlock,omitempty"`
-	PassiveDraw               uint64 `protobuf:"varint,16,opt,name=passiveDraw,proto3" json:"passiveDraw,omitempty"`
-	ActiveMiningSystemDraw    uint64 `protobuf:"varint,17,opt,name=activeMiningSystemDraw,proto3" json:"activeMiningSystemDraw,omitempty"`
-	ActiveMiningSystemBlock   uint64 `protobuf:"varint,18,opt,name=activeMiningSystemBlock,proto3" json:"activeMiningSystemBlock,omitempty"`
-	ActiveRefiningSystemDraw  uint64 `protobuf:"varint,19,opt,name=activeRefiningSystemDraw,proto3" json:"activeRefiningSystemDraw,omitempty"`
-	ActiveRefiningSystemBlock uint64 `protobuf:"varint,20,opt,name=activeRefiningSystemBlock,proto3" json:"activeRefiningSystemBlock,omitempty"`
-	MiningSystemStatus        string `protobuf:"bytes,21,opt,name=miningSystemStatus,proto3" json:"miningSystemStatus,omitempty"`
-	RefiningSystemStatus      string `protobuf:"bytes,22,opt,name=refiningSystemStatus,proto3" json:"refiningSystemStatus,omitempty"`
-	PowerSystemFuel           uint64 `protobuf:"varint,23,opt,name=powerSystemFuel,proto3" json:"powerSystemFuel,omitempty"`
-	PowerSystemCapacity       uint64 `protobuf:"varint,24,opt,name=powerSystemCapacity,proto3" json:"powerSystemCapacity,omitempty"`
-	PowerSystemLoad           uint64 `protobuf:"varint,25,opt,name=powerSystemLoad,proto3" json:"powerSystemLoad,omitempty"`
+	LocationId     string `protobuf:"bytes,6,opt,name=locationId,proto3" json:"locationId,omitempty"`
+	OperatingAmbit Ambit  `protobuf:"varint,7,opt,name=operatingAmbit,proto3,enum=structs.structs.Ambit" json:"operatingAmbit,omitempty"`
+	Slot           uint64 `protobuf:"varint,8,opt,name=slot,proto3" json:"slot,omitempty"`
 }
 
 func (x *Struct) Reset() {
@@ -1826,6 +5212,20 @@ func (x *Struct) GetId() string {
 	return ""
 }
 
+func (x *Struct) GetIndex() uint64 {
+	if x != nil {
+		return x.Index
+	}
+	return 0
+}
+
+func (x *Struct) GetType_() uint64 {
+	if x != nil {
+		return x.Type_
+	}
+	return 0
+}
+
 func (x *Struct) GetCreator() string {
 	if x != nil {
 		return x.Creator
@@ -1840,53 +5240,18 @@ func (x *Struct) GetOwner() string {
 	return ""
 }
 
-func (x *Struct) GetStatus() string {
+func (x *Struct) GetLocationId() string {
 	if x != nil {
-		return x.Status
+		return x.LocationId
 	}
 	return ""
 }
 
-func (x *Struct) GetMaxHealth() uint64 {
+func (x *Struct) GetOperatingAmbit() Ambit {
 	if x != nil {
-		return x.MaxHealth
+		return x.OperatingAmbit
 	}
-	return 0
-}
-
-func (x *Struct) GetHealth() uint64 {
-	if x != nil {
-		return x.Health
-	}
-	return 0
-}
-
-func (x *Struct) GetCategory() string {
-	if x != nil {
-		return x.Category
-	}
-	return ""
-}
-
-func (x *Struct) GetType_() string {
-	if x != nil {
-		return x.Type_
-	}
-	return ""
-}
-
-func (x *Struct) GetAmbit() string {
-	if x != nil {
-		return x.Ambit
-	}
-	return ""
-}
-
-func (x *Struct) GetPlanetId() string {
-	if x != nil {
-		return x.PlanetId
-	}
-	return ""
+	return Ambit_water
 }
 
 func (x *Struct) GetSlot() uint64 {
@@ -1896,100 +5261,601 @@ func (x *Struct) GetSlot() uint64 {
 	return 0
 }
 
-func (x *Struct) GetMiningSystem() uint64 {
+type StructType struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Id    uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Type_ string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
+	// Fundamental attributes
+	Category        ObjectType `protobuf:"varint,3,opt,name=category,proto3,enum=structs.structs.ObjectType" json:"category,omitempty"` // Planet or Fleet
+	BuildDifficulty uint64     `protobuf:"varint,4,opt,name=buildDifficulty,proto3" json:"buildDifficulty,omitempty"`                   // How much compute is needed to build
+	BuildDraw       uint64     `protobuf:"varint,5,opt,name=buildDraw,proto3" json:"buildDraw,omitempty"`                               // How much energy the Struct consumes during building
+	MaxHealth       uint64     `protobuf:"varint,6,opt,name=maxHealth,proto3" json:"maxHealth,omitempty"`                               // How much damage can it take
+	PassiveDraw     uint64     `protobuf:"varint,7,opt,name=passiveDraw,proto3" json:"passiveDraw,omitempty"`                           // How much energy the Struct consumes when active
+	PossibleAmbit   uint64     `protobuf:"varint,8,opt,name=possibleAmbit,proto3" json:"possibleAmbit,omitempty"`                       // Where can it be built and moved to. Usually only a single ambit but some Structs have multiple possible (i.e. Command Ship)
+	// Primary Weapon Configuration
+	PrimaryWeapon                           TechActiveWeaponry `protobuf:"varint,9,opt,name=primaryWeapon,proto3,enum=structs.structs.TechActiveWeaponry" json:"primaryWeapon,omitempty"`
+	PrimaryWeaponControl                    TechWeaponControl  `protobuf:"varint,10,opt,name=primaryWeaponControl,proto3,enum=structs.structs.TechWeaponControl" json:"primaryWeaponControl,omitempty"`
+	PrimaryWeaponCharge                     uint64             `protobuf:"varint,11,opt,name=primaryWeaponCharge,proto3" json:"primaryWeaponCharge,omitempty"`
+	PrimaryWeaponTargets                    uint64             `protobuf:"varint,12,opt,name=primaryWeaponTargets,proto3" json:"primaryWeaponTargets,omitempty"`
+	PrimaryWeaponShots                      uint64             `protobuf:"varint,13,opt,name=primaryWeaponShots,proto3" json:"primaryWeaponShots,omitempty"`
+	PrimaryWeaponDamage                     uint64             `protobuf:"varint,14,opt,name=primaryWeaponDamage,proto3" json:"primaryWeaponDamage,omitempty"`
+	PrimaryWeaponBlockable                  bool               `protobuf:"varint,15,opt,name=primaryWeaponBlockable,proto3" json:"primaryWeaponBlockable,omitempty"`
+	PrimaryWeaponCounterable                bool               `protobuf:"varint,16,opt,name=primaryWeaponCounterable,proto3" json:"primaryWeaponCounterable,omitempty"`
+	PrimaryWeaponRecoilDamage               uint64             `protobuf:"varint,17,opt,name=primaryWeaponRecoilDamage,proto3" json:"primaryWeaponRecoilDamage,omitempty"`
+	PrimaryWeaponShotSuccessRateNumerator   uint64             `protobuf:"varint,18,opt,name=primaryWeaponShotSuccessRateNumerator,proto3" json:"primaryWeaponShotSuccessRateNumerator,omitempty"`
+	PrimaryWeaponShotSuccessRateDenominator uint64             `protobuf:"varint,19,opt,name=primaryWeaponShotSuccessRateDenominator,proto3" json:"primaryWeaponShotSuccessRateDenominator,omitempty"`
+	// Secondary Weapon Configuration
+	SecondaryWeapon                           TechActiveWeaponry `protobuf:"varint,20,opt,name=secondaryWeapon,proto3,enum=structs.structs.TechActiveWeaponry" json:"secondaryWeapon,omitempty"`
+	SecondaryWeaponControl                    TechWeaponControl  `protobuf:"varint,21,opt,name=secondaryWeaponControl,proto3,enum=structs.structs.TechWeaponControl" json:"secondaryWeaponControl,omitempty"`
+	SecondaryWeaponCharge                     uint64             `protobuf:"varint,22,opt,name=secondaryWeaponCharge,proto3" json:"secondaryWeaponCharge,omitempty"`
+	SecondaryWeaponTargets                    uint64             `protobuf:"varint,23,opt,name=secondaryWeaponTargets,proto3" json:"secondaryWeaponTargets,omitempty"`
+	SecondaryWeaponShots                      uint64             `protobuf:"varint,24,opt,name=secondaryWeaponShots,proto3" json:"secondaryWeaponShots,omitempty"`
+	SecondaryWeaponDamage                     uint64             `protobuf:"varint,25,opt,name=secondaryWeaponDamage,proto3" json:"secondaryWeaponDamage,omitempty"`
+	SecondaryWeaponBlockable                  bool               `protobuf:"varint,26,opt,name=secondaryWeaponBlockable,proto3" json:"secondaryWeaponBlockable,omitempty"`
+	SecondaryWeaponCounterable                bool               `protobuf:"varint,27,opt,name=secondaryWeaponCounterable,proto3" json:"secondaryWeaponCounterable,omitempty"`
+	SecondaryWeaponRecoilDamage               uint64             `protobuf:"varint,28,opt,name=secondaryWeaponRecoilDamage,proto3" json:"secondaryWeaponRecoilDamage,omitempty"`
+	SecondaryWeaponShotSuccessRateNumerator   uint64             `protobuf:"varint,29,opt,name=secondaryWeaponShotSuccessRateNumerator,proto3" json:"secondaryWeaponShotSuccessRateNumerator,omitempty"`
+	SecondaryWeaponShotSuccessRateDenominator uint64             `protobuf:"varint,30,opt,name=secondaryWeaponShotSuccessRateDenominator,proto3" json:"secondaryWeaponShotSuccessRateDenominator,omitempty"`
+	// Tech Tree Features
+	PassiveWeaponry    TechPassiveWeaponry     `protobuf:"varint,31,opt,name=passiveWeaponry,proto3,enum=structs.structs.TechPassiveWeaponry" json:"passiveWeaponry,omitempty"`
+	UnitDefenses       TechUnitDefenses        `protobuf:"varint,32,opt,name=unitDefenses,proto3,enum=structs.structs.TechUnitDefenses" json:"unitDefenses,omitempty"`
+	OreReserveDefenses TechOreReserveDefenses  `protobuf:"varint,33,opt,name=oreReserveDefenses,proto3,enum=structs.structs.TechOreReserveDefenses" json:"oreReserveDefenses,omitempty"`
+	PlanetaryDefenses  TechPlanetaryDefenses   `protobuf:"varint,34,opt,name=planetaryDefenses,proto3,enum=structs.structs.TechPlanetaryDefenses" json:"planetaryDefenses,omitempty"`
+	PlanetaryMining    TechPlanetaryMining     `protobuf:"varint,35,opt,name=planetaryMining,proto3,enum=structs.structs.TechPlanetaryMining" json:"planetaryMining,omitempty"`
+	PlanetaryRefinery  TechPlanetaryRefineries `protobuf:"varint,36,opt,name=planetaryRefinery,proto3,enum=structs.structs.TechPlanetaryRefineries" json:"planetaryRefinery,omitempty"`
+	PowerGeneration    TechPowerGeneration     `protobuf:"varint,37,opt,name=powerGeneration,proto3,enum=structs.structs.TechPowerGeneration" json:"powerGeneration,omitempty"`
+	// Charge uses
+	ActivateCharge            uint64 `protobuf:"varint,38,opt,name=activateCharge,proto3" json:"activateCharge,omitempty"`
+	BuildCharge               uint64 `protobuf:"varint,39,opt,name=buildCharge,proto3" json:"buildCharge,omitempty"`
+	DefendChangeCharge        uint64 `protobuf:"varint,40,opt,name=defendChangeCharge,proto3" json:"defendChangeCharge,omitempty"`
+	MoveCharge                uint64 `protobuf:"varint,41,opt,name=moveCharge,proto3" json:"moveCharge,omitempty"`
+	OreMiningActivateCharge   uint64 `protobuf:"varint,42,opt,name=oreMiningActivateCharge,proto3" json:"oreMiningActivateCharge,omitempty"`
+	OreRefiningActivateCharge uint64 `protobuf:"varint,43,opt,name=oreRefiningActivateCharge,proto3" json:"oreRefiningActivateCharge,omitempty"`
+	StealthActivateCharge     uint64 `protobuf:"varint,44,opt,name=stealthActivateCharge,proto3" json:"stealthActivateCharge,omitempty"`
+	// Tech Tree Attributes
+	AttackReduction                         uint64 `protobuf:"varint,45,opt,name=attackReduction,proto3" json:"attackReduction,omitempty"`               // For Defensive Cannon
+	AttackCounterable                       bool   `protobuf:"varint,46,opt,name=attackCounterable,proto3" json:"attackCounterable,omitempty"`           // For Indirect Combat Module
+	StealthSystems                          bool   `protobuf:"varint,47,opt,name=stealthSystems,proto3" json:"stealthSystems,omitempty"`                 // For Stealth Mode
+	CounterAttack                           uint64 `protobuf:"varint,48,opt,name=counterAttack,proto3" json:"counterAttack,omitempty"`                   // Counter
+	CounterAttackSameAmbit                  uint64 `protobuf:"varint,49,opt,name=counterAttackSameAmbit,proto3" json:"counterAttackSameAmbit,omitempty"` // Advanced Counter
+	PostDestructionDamage                   uint64 `protobuf:"varint,50,opt,name=postDestructionDamage,proto3" json:"postDestructionDamage,omitempty"`
+	GeneratingRate                          uint64 `protobuf:"varint,51,opt,name=generatingRate,proto3" json:"generatingRate,omitempty"`                           // Power Generation
+	PlanetaryShieldContribution             uint64 `protobuf:"varint,52,opt,name=planetaryShieldContribution,proto3" json:"planetaryShieldContribution,omitempty"` // The shield that is added to the Planet
+	UnguidedDefensiveSuccessRateNumerator   uint64 `protobuf:"varint,53,opt,name=unguidedDefensiveSuccessRateNumerator,proto3" json:"unguidedDefensiveSuccessRateNumerator,omitempty"`
+	UnguidedDefensiveSuccessRateDenominator uint64 `protobuf:"varint,54,opt,name=unguidedDefensiveSuccessRateDenominator,proto3" json:"unguidedDefensiveSuccessRateDenominator,omitempty"`
+	GuidedDefensiveSuccessRateNumerator     uint64 `protobuf:"varint,55,opt,name=guidedDefensiveSuccessRateNumerator,proto3" json:"guidedDefensiveSuccessRateNumerator,omitempty"`
+	GuidedDefensiveSuccessRateDenominator   uint64 `protobuf:"varint,56,opt,name=guidedDefensiveSuccessRateDenominator,proto3" json:"guidedDefensiveSuccessRateDenominator,omitempty"`
+}
+
+func (x *StructType) Reset() {
+	*x = StructType{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_struct_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StructType) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StructType) ProtoMessage() {}
+
+// Deprecated: Use StructType.ProtoReflect.Descriptor instead.
+func (*StructType) Descriptor() ([]byte, []int) {
+	return file_structs_structs_struct_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *StructType) GetId() uint64 {
 	if x != nil {
-		return x.MiningSystem
+		return x.Id
 	}
 	return 0
 }
 
-func (x *Struct) GetRefiningSystem() uint64 {
+func (x *StructType) GetType_() string {
 	if x != nil {
-		return x.RefiningSystem
+		return x.Type_
+	}
+	return ""
+}
+
+func (x *StructType) GetCategory() ObjectType {
+	if x != nil {
+		return x.Category
+	}
+	return ObjectType_guild
+}
+
+func (x *StructType) GetBuildDifficulty() uint64 {
+	if x != nil {
+		return x.BuildDifficulty
 	}
 	return 0
 }
 
-func (x *Struct) GetPowerSystem() uint64 {
+func (x *StructType) GetBuildDraw() uint64 {
 	if x != nil {
-		return x.PowerSystem
+		return x.BuildDraw
 	}
 	return 0
 }
 
-func (x *Struct) GetBuildStartBlock() uint64 {
+func (x *StructType) GetMaxHealth() uint64 {
 	if x != nil {
-		return x.BuildStartBlock
+		return x.MaxHealth
 	}
 	return 0
 }
 
-func (x *Struct) GetPassiveDraw() uint64 {
+func (x *StructType) GetPassiveDraw() uint64 {
 	if x != nil {
 		return x.PassiveDraw
 	}
 	return 0
 }
 
-func (x *Struct) GetActiveMiningSystemDraw() uint64 {
+func (x *StructType) GetPossibleAmbit() uint64 {
 	if x != nil {
-		return x.ActiveMiningSystemDraw
+		return x.PossibleAmbit
 	}
 	return 0
 }
 
-func (x *Struct) GetActiveMiningSystemBlock() uint64 {
+func (x *StructType) GetPrimaryWeapon() TechActiveWeaponry {
 	if x != nil {
-		return x.ActiveMiningSystemBlock
+		return x.PrimaryWeapon
+	}
+	return TechActiveWeaponry_noActiveWeaponry
+}
+
+func (x *StructType) GetPrimaryWeaponControl() TechWeaponControl {
+	if x != nil {
+		return x.PrimaryWeaponControl
+	}
+	return TechWeaponControl_noWeaponControl
+}
+
+func (x *StructType) GetPrimaryWeaponCharge() uint64 {
+	if x != nil {
+		return x.PrimaryWeaponCharge
 	}
 	return 0
 }
 
-func (x *Struct) GetActiveRefiningSystemDraw() uint64 {
+func (x *StructType) GetPrimaryWeaponTargets() uint64 {
 	if x != nil {
-		return x.ActiveRefiningSystemDraw
+		return x.PrimaryWeaponTargets
 	}
 	return 0
 }
 
-func (x *Struct) GetActiveRefiningSystemBlock() uint64 {
+func (x *StructType) GetPrimaryWeaponShots() uint64 {
 	if x != nil {
-		return x.ActiveRefiningSystemBlock
+		return x.PrimaryWeaponShots
 	}
 	return 0
 }
 
-func (x *Struct) GetMiningSystemStatus() string {
+func (x *StructType) GetPrimaryWeaponDamage() uint64 {
 	if x != nil {
-		return x.MiningSystemStatus
+		return x.PrimaryWeaponDamage
+	}
+	return 0
+}
+
+func (x *StructType) GetPrimaryWeaponBlockable() bool {
+	if x != nil {
+		return x.PrimaryWeaponBlockable
+	}
+	return false
+}
+
+func (x *StructType) GetPrimaryWeaponCounterable() bool {
+	if x != nil {
+		return x.PrimaryWeaponCounterable
+	}
+	return false
+}
+
+func (x *StructType) GetPrimaryWeaponRecoilDamage() uint64 {
+	if x != nil {
+		return x.PrimaryWeaponRecoilDamage
+	}
+	return 0
+}
+
+func (x *StructType) GetPrimaryWeaponShotSuccessRateNumerator() uint64 {
+	if x != nil {
+		return x.PrimaryWeaponShotSuccessRateNumerator
+	}
+	return 0
+}
+
+func (x *StructType) GetPrimaryWeaponShotSuccessRateDenominator() uint64 {
+	if x != nil {
+		return x.PrimaryWeaponShotSuccessRateDenominator
+	}
+	return 0
+}
+
+func (x *StructType) GetSecondaryWeapon() TechActiveWeaponry {
+	if x != nil {
+		return x.SecondaryWeapon
+	}
+	return TechActiveWeaponry_noActiveWeaponry
+}
+
+func (x *StructType) GetSecondaryWeaponControl() TechWeaponControl {
+	if x != nil {
+		return x.SecondaryWeaponControl
+	}
+	return TechWeaponControl_noWeaponControl
+}
+
+func (x *StructType) GetSecondaryWeaponCharge() uint64 {
+	if x != nil {
+		return x.SecondaryWeaponCharge
+	}
+	return 0
+}
+
+func (x *StructType) GetSecondaryWeaponTargets() uint64 {
+	if x != nil {
+		return x.SecondaryWeaponTargets
+	}
+	return 0
+}
+
+func (x *StructType) GetSecondaryWeaponShots() uint64 {
+	if x != nil {
+		return x.SecondaryWeaponShots
+	}
+	return 0
+}
+
+func (x *StructType) GetSecondaryWeaponDamage() uint64 {
+	if x != nil {
+		return x.SecondaryWeaponDamage
+	}
+	return 0
+}
+
+func (x *StructType) GetSecondaryWeaponBlockable() bool {
+	if x != nil {
+		return x.SecondaryWeaponBlockable
+	}
+	return false
+}
+
+func (x *StructType) GetSecondaryWeaponCounterable() bool {
+	if x != nil {
+		return x.SecondaryWeaponCounterable
+	}
+	return false
+}
+
+func (x *StructType) GetSecondaryWeaponRecoilDamage() uint64 {
+	if x != nil {
+		return x.SecondaryWeaponRecoilDamage
+	}
+	return 0
+}
+
+func (x *StructType) GetSecondaryWeaponShotSuccessRateNumerator() uint64 {
+	if x != nil {
+		return x.SecondaryWeaponShotSuccessRateNumerator
+	}
+	return 0
+}
+
+func (x *StructType) GetSecondaryWeaponShotSuccessRateDenominator() uint64 {
+	if x != nil {
+		return x.SecondaryWeaponShotSuccessRateDenominator
+	}
+	return 0
+}
+
+func (x *StructType) GetPassiveWeaponry() TechPassiveWeaponry {
+	if x != nil {
+		return x.PassiveWeaponry
+	}
+	return TechPassiveWeaponry_noPassiveWeaponry
+}
+
+func (x *StructType) GetUnitDefenses() TechUnitDefenses {
+	if x != nil {
+		return x.UnitDefenses
+	}
+	return TechUnitDefenses_noUnitDefenses
+}
+
+func (x *StructType) GetOreReserveDefenses() TechOreReserveDefenses {
+	if x != nil {
+		return x.OreReserveDefenses
+	}
+	return TechOreReserveDefenses_noOreReserveDefenses
+}
+
+func (x *StructType) GetPlanetaryDefenses() TechPlanetaryDefenses {
+	if x != nil {
+		return x.PlanetaryDefenses
+	}
+	return TechPlanetaryDefenses_noPlanetaryDefense
+}
+
+func (x *StructType) GetPlanetaryMining() TechPlanetaryMining {
+	if x != nil {
+		return x.PlanetaryMining
+	}
+	return TechPlanetaryMining_noPlanetaryMining
+}
+
+func (x *StructType) GetPlanetaryRefinery() TechPlanetaryRefineries {
+	if x != nil {
+		return x.PlanetaryRefinery
+	}
+	return TechPlanetaryRefineries_noPlanetaryRefinery
+}
+
+func (x *StructType) GetPowerGeneration() TechPowerGeneration {
+	if x != nil {
+		return x.PowerGeneration
+	}
+	return TechPowerGeneration_noPowerGeneration
+}
+
+func (x *StructType) GetActivateCharge() uint64 {
+	if x != nil {
+		return x.ActivateCharge
+	}
+	return 0
+}
+
+func (x *StructType) GetBuildCharge() uint64 {
+	if x != nil {
+		return x.BuildCharge
+	}
+	return 0
+}
+
+func (x *StructType) GetDefendChangeCharge() uint64 {
+	if x != nil {
+		return x.DefendChangeCharge
+	}
+	return 0
+}
+
+func (x *StructType) GetMoveCharge() uint64 {
+	if x != nil {
+		return x.MoveCharge
+	}
+	return 0
+}
+
+func (x *StructType) GetOreMiningActivateCharge() uint64 {
+	if x != nil {
+		return x.OreMiningActivateCharge
+	}
+	return 0
+}
+
+func (x *StructType) GetOreRefiningActivateCharge() uint64 {
+	if x != nil {
+		return x.OreRefiningActivateCharge
+	}
+	return 0
+}
+
+func (x *StructType) GetStealthActivateCharge() uint64 {
+	if x != nil {
+		return x.StealthActivateCharge
+	}
+	return 0
+}
+
+func (x *StructType) GetAttackReduction() uint64 {
+	if x != nil {
+		return x.AttackReduction
+	}
+	return 0
+}
+
+func (x *StructType) GetAttackCounterable() bool {
+	if x != nil {
+		return x.AttackCounterable
+	}
+	return false
+}
+
+func (x *StructType) GetStealthSystems() bool {
+	if x != nil {
+		return x.StealthSystems
+	}
+	return false
+}
+
+func (x *StructType) GetCounterAttack() uint64 {
+	if x != nil {
+		return x.CounterAttack
+	}
+	return 0
+}
+
+func (x *StructType) GetCounterAttackSameAmbit() uint64 {
+	if x != nil {
+		return x.CounterAttackSameAmbit
+	}
+	return 0
+}
+
+func (x *StructType) GetPostDestructionDamage() uint64 {
+	if x != nil {
+		return x.PostDestructionDamage
+	}
+	return 0
+}
+
+func (x *StructType) GetGeneratingRate() uint64 {
+	if x != nil {
+		return x.GeneratingRate
+	}
+	return 0
+}
+
+func (x *StructType) GetPlanetaryShieldContribution() uint64 {
+	if x != nil {
+		return x.PlanetaryShieldContribution
+	}
+	return 0
+}
+
+func (x *StructType) GetUnguidedDefensiveSuccessRateNumerator() uint64 {
+	if x != nil {
+		return x.UnguidedDefensiveSuccessRateNumerator
+	}
+	return 0
+}
+
+func (x *StructType) GetUnguidedDefensiveSuccessRateDenominator() uint64 {
+	if x != nil {
+		return x.UnguidedDefensiveSuccessRateDenominator
+	}
+	return 0
+}
+
+func (x *StructType) GetGuidedDefensiveSuccessRateNumerator() uint64 {
+	if x != nil {
+		return x.GuidedDefensiveSuccessRateNumerator
+	}
+	return 0
+}
+
+func (x *StructType) GetGuidedDefensiveSuccessRateDenominator() uint64 {
+	if x != nil {
+		return x.GuidedDefensiveSuccessRateDenominator
+	}
+	return 0
+}
+
+type StructDefender struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	ProtectedStructId      string `protobuf:"bytes,1,opt,name=protectedStructId,proto3" json:"protectedStructId,omitempty"`
+	DefendingStructId      string `protobuf:"bytes,2,opt,name=defendingStructId,proto3" json:"defendingStructId,omitempty"`
+	LocationId             string `protobuf:"bytes,3,opt,name=locationId,proto3" json:"locationId,omitempty"`
+	OperatingAmbit         Ambit  `protobuf:"varint,4,opt,name=operatingAmbit,proto3,enum=structs.structs.Ambit" json:"operatingAmbit,omitempty"`
+	CounterAttack          uint64 `protobuf:"varint,5,opt,name=counterAttack,proto3" json:"counterAttack,omitempty"`
+	CounterAttackSameAmbit uint64 `protobuf:"varint,6,opt,name=counterAttackSameAmbit,proto3" json:"counterAttackSameAmbit,omitempty"`
+}
+
+func (x *StructDefender) Reset() {
+	*x = StructDefender{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_struct_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StructDefender) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StructDefender) ProtoMessage() {}
+
+// Deprecated: Use StructDefender.ProtoReflect.Descriptor instead.
+func (*StructDefender) Descriptor() ([]byte, []int) {
+	return file_structs_structs_struct_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *StructDefender) GetProtectedStructId() string {
+	if x != nil {
+		return x.ProtectedStructId
 	}
 	return ""
 }
 
-func (x *Struct) GetRefiningSystemStatus() string {
+func (x *StructDefender) GetDefendingStructId() string {
 	if x != nil {
-		return x.RefiningSystemStatus
+		return x.DefendingStructId
 	}
 	return ""
 }
 
-func (x *Struct) GetPowerSystemFuel() uint64 {
+func (x *StructDefender) GetLocationId() string {
 	if x != nil {
-		return x.PowerSystemFuel
+		return x.LocationId
+	}
+	return ""
+}
+
+func (x *StructDefender) GetOperatingAmbit() Ambit {
+	if x != nil {
+		return x.OperatingAmbit
+	}
+	return Ambit_water
+}
+
+func (x *StructDefender) GetCounterAttack() uint64 {
+	if x != nil {
+		return x.CounterAttack
 	}
 	return 0
 }
 
-func (x *Struct) GetPowerSystemCapacity() uint64 {
+func (x *StructDefender) GetCounterAttackSameAmbit() uint64 {
 	if x != nil {
-		return x.PowerSystemCapacity
+		return x.CounterAttackSameAmbit
 	}
 	return 0
 }
 
-func (x *Struct) GetPowerSystemLoad() uint64 {
+type StructAttributeRecord struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	AttributeId string `protobuf:"bytes,1,opt,name=attributeId,proto3" json:"attributeId,omitempty"`
+	Value       uint64 `protobuf:"varint,2,opt,name=value,proto3" json:"value,omitempty"`
+}
+
+func (x *StructAttributeRecord) Reset() {
+	*x = StructAttributeRecord{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_struct_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StructAttributeRecord) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StructAttributeRecord) ProtoMessage() {}
+
+// Deprecated: Use StructAttributeRecord.ProtoReflect.Descriptor instead.
+func (*StructAttributeRecord) Descriptor() ([]byte, []int) {
+	return file_structs_structs_struct_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *StructAttributeRecord) GetAttributeId() string {
 	if x != nil {
-		return x.PowerSystemLoad
+		return x.AttributeId
+	}
+	return ""
+}
+
+func (x *StructAttributeRecord) GetValue() uint64 {
+	if x != nil {
+		return x.Value
 	}
 	return 0
 }
@@ -1999,65 +5865,259 @@ var File_structs_structs_struct_proto protoreflect.FileDescriptor
 var file_structs_structs_struct_proto_rawDesc = []byte{
 	0x0a, 0x1c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x12, 0x0f,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x22,
-	0x9c, 0x07, 0x0a, 0x06, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72,
-	0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65,
-	0x61, 0x74, 0x6f, 0x72, 0x12, 0x14, 0x0a, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x74,
-	0x61, 0x74, 0x75, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74,
-	0x75, 0x73, 0x12, 0x1c, 0x0a, 0x09, 0x6d, 0x61, 0x78, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x18,
-	0x05, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x6d, 0x61, 0x78, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68,
-	0x12, 0x16, 0x0a, 0x06, 0x68, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x18, 0x06, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x06, 0x68, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x12, 0x1a, 0x0a, 0x08, 0x63, 0x61, 0x74, 0x65,
-	0x67, 0x6f, 0x72, 0x79, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x63, 0x61, 0x74, 0x65,
-	0x67, 0x6f, 0x72, 0x79, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x08, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x61, 0x6d, 0x62, 0x69,
-	0x74, 0x18, 0x09, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x61, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x1a,
-	0x0a, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x73, 0x6c,
-	0x6f, 0x74, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x04, 0x52, 0x04, 0x73, 0x6c, 0x6f, 0x74, 0x12, 0x22,
-	0x0a, 0x0c, 0x6d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x18, 0x0c,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x0c, 0x6d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x53, 0x79, 0x73, 0x74,
-	0x65, 0x6d, 0x12, 0x26, 0x0a, 0x0e, 0x72, 0x65, 0x66, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x53, 0x79,
-	0x73, 0x74, 0x65, 0x6d, 0x18, 0x0d, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0e, 0x72, 0x65, 0x66, 0x69,
-	0x6e, 0x69, 0x6e, 0x67, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x12, 0x20, 0x0a, 0x0b, 0x70, 0x6f,
-	0x77, 0x65, 0x72, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x0b, 0x70, 0x6f, 0x77, 0x65, 0x72, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x12, 0x28, 0x0a, 0x0f,
-	0x62, 0x75, 0x69, 0x6c, 0x64, 0x53, 0x74, 0x61, 0x72, 0x74, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x18,
-	0x0f, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x53, 0x74, 0x61, 0x72,
-	0x74, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x12, 0x20, 0x0a, 0x0b, 0x70, 0x61, 0x73, 0x73, 0x69, 0x76,
-	0x65, 0x44, 0x72, 0x61, 0x77, 0x18, 0x10, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x70, 0x61, 0x73,
-	0x73, 0x69, 0x76, 0x65, 0x44, 0x72, 0x61, 0x77, 0x12, 0x36, 0x0a, 0x16, 0x61, 0x63, 0x74, 0x69,
-	0x76, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x44, 0x72,
-	0x61, 0x77, 0x18, 0x11, 0x20, 0x01, 0x28, 0x04, 0x52, 0x16, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65,
-	0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x44, 0x72, 0x61, 0x77,
-	0x12, 0x38, 0x0a, 0x17, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67,
-	0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x18, 0x12, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x17, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x53,
-	0x79, 0x73, 0x74, 0x65, 0x6d, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x12, 0x3a, 0x0a, 0x18, 0x61, 0x63,
-	0x74, 0x69, 0x76, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x53, 0x79, 0x73, 0x74,
-	0x65, 0x6d, 0x44, 0x72, 0x61, 0x77, 0x18, 0x13, 0x20, 0x01, 0x28, 0x04, 0x52, 0x18, 0x61, 0x63,
-	0x74, 0x69, 0x76, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x53, 0x79, 0x73, 0x74,
-	0x65, 0x6d, 0x44, 0x72, 0x61, 0x77, 0x12, 0x3c, 0x0a, 0x19, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65,
-	0x52, 0x65, 0x66, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x42, 0x6c,
-	0x6f, 0x63, 0x6b, 0x18, 0x14, 0x20, 0x01, 0x28, 0x04, 0x52, 0x19, 0x61, 0x63, 0x74, 0x69, 0x76,
-	0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x42,
-	0x6c, 0x6f, 0x63, 0x6b, 0x12, 0x2e, 0x0a, 0x12, 0x6d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x53, 0x79,
-	0x73, 0x74, 0x65, 0x6d, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x15, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x12, 0x6d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x53, 0x74,
-	0x61, 0x74, 0x75, 0x73, 0x12, 0x32, 0x0a, 0x14, 0x72, 0x65, 0x66, 0x69, 0x6e, 0x69, 0x6e, 0x67,
-	0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x16, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x14, 0x72, 0x65, 0x66, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x53, 0x79, 0x73, 0x74,
-	0x65, 0x6d, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x28, 0x0a, 0x0f, 0x70, 0x6f, 0x77, 0x65,
-	0x72, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x46, 0x75, 0x65, 0x6c, 0x18, 0x17, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x0f, 0x70, 0x6f, 0x77, 0x65, 0x72, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x46, 0x75,
-	0x65, 0x6c, 0x12, 0x30, 0x0a, 0x13, 0x70, 0x6f, 0x77, 0x65, 0x72, 0x53, 0x79, 0x73, 0x74, 0x65,
-	0x6d, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x18, 0x18, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x13, 0x70, 0x6f, 0x77, 0x65, 0x72, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x43, 0x61, 0x70, 0x61,
-	0x63, 0x69, 0x74, 0x79, 0x12, 0x28, 0x0a, 0x0f, 0x70, 0x6f, 0x77, 0x65, 0x72, 0x53, 0x79, 0x73,
-	0x74, 0x65, 0x6d, 0x4c, 0x6f, 0x61, 0x64, 0x18, 0x19, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x70,
-	0x6f, 0x77, 0x65, 0x72, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x4c, 0x6f, 0x61, 0x64, 0x42, 0xa1,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x1a,
+	0x1a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2f, 0x6b, 0x65, 0x79, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xe6, 0x01, 0x0a, 0x06,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x69, 0x6e, 0x64, 0x65, 0x78, 0x12, 0x12, 0x0a, 0x04,
+	0x74, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65,
+	0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x04, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x14, 0x0a, 0x05, 0x6f, 0x77,
+	0x6e, 0x65, 0x72, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72,
+	0x12, 0x1e, 0x0a, 0x0a, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x06,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64,
+	0x12, 0x3e, 0x0a, 0x0e, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62,
+	0x69, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69, 0x74,
+	0x52, 0x0e, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74,
+	0x12, 0x12, 0x0a, 0x04, 0x73, 0x6c, 0x6f, 0x74, 0x18, 0x08, 0x20, 0x01, 0x28, 0x04, 0x52, 0x04,
+	0x73, 0x6c, 0x6f, 0x74, 0x22, 0xb9, 0x1a, 0x0a, 0x0a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54,
+	0x79, 0x70, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x02, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x37, 0x0a, 0x08, 0x63, 0x61, 0x74, 0x65, 0x67,
+	0x6f, 0x72, 0x79, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65,
+	0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x08, 0x63, 0x61, 0x74, 0x65, 0x67, 0x6f, 0x72, 0x79,
+	0x12, 0x28, 0x0a, 0x0f, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x44, 0x69, 0x66, 0x66, 0x69, 0x63, 0x75,
+	0x6c, 0x74, 0x79, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x62, 0x75, 0x69, 0x6c, 0x64,
+	0x44, 0x69, 0x66, 0x66, 0x69, 0x63, 0x75, 0x6c, 0x74, 0x79, 0x12, 0x1c, 0x0a, 0x09, 0x62, 0x75,
+	0x69, 0x6c, 0x64, 0x44, 0x72, 0x61, 0x77, 0x18, 0x05, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x62,
+	0x75, 0x69, 0x6c, 0x64, 0x44, 0x72, 0x61, 0x77, 0x12, 0x1c, 0x0a, 0x09, 0x6d, 0x61, 0x78, 0x48,
+	0x65, 0x61, 0x6c, 0x74, 0x68, 0x18, 0x06, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x6d, 0x61, 0x78,
+	0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x12, 0x20, 0x0a, 0x0b, 0x70, 0x61, 0x73, 0x73, 0x69, 0x76,
+	0x65, 0x44, 0x72, 0x61, 0x77, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x70, 0x61, 0x73,
+	0x73, 0x69, 0x76, 0x65, 0x44, 0x72, 0x61, 0x77, 0x12, 0x24, 0x0a, 0x0d, 0x70, 0x6f, 0x73, 0x73,
+	0x69, 0x62, 0x6c, 0x65, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x08, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x0d, 0x70, 0x6f, 0x73, 0x73, 0x69, 0x62, 0x6c, 0x65, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x49,
+	0x0a, 0x0d, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x18,
+	0x09, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x41, 0x63, 0x74, 0x69,
+	0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x52, 0x0d, 0x70, 0x72, 0x69, 0x6d,
+	0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x12, 0x56, 0x0a, 0x14, 0x70, 0x72, 0x69,
+	0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f,
+	0x6c, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x57, 0x65,
+	0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x52, 0x14, 0x70, 0x72, 0x69,
+	0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f,
+	0x6c, 0x12, 0x30, 0x0a, 0x13, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70,
+	0x6f, 0x6e, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13,
+	0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x68, 0x61,
+	0x72, 0x67, 0x65, 0x12, 0x32, 0x0a, 0x14, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65,
+	0x61, 0x70, 0x6f, 0x6e, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x73, 0x18, 0x0c, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x14, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e,
+	0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x73, 0x12, 0x2e, 0x0a, 0x12, 0x70, 0x72, 0x69, 0x6d, 0x61,
+	0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x73, 0x18, 0x0d, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x12, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70,
+	0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x73, 0x12, 0x30, 0x0a, 0x13, 0x70, 0x72, 0x69, 0x6d, 0x61,
+	0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x0e,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61,
+	0x70, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x36, 0x0a, 0x16, 0x70, 0x72, 0x69,
+	0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x61,
+	0x62, 0x6c, 0x65, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x08, 0x52, 0x16, 0x70, 0x72, 0x69, 0x6d, 0x61,
+	0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x61, 0x62, 0x6c,
+	0x65, 0x12, 0x3a, 0x0a, 0x18, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70,
+	0x6f, 0x6e, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x61, 0x62, 0x6c, 0x65, 0x18, 0x10, 0x20,
+	0x01, 0x28, 0x08, 0x52, 0x18, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70,
+	0x6f, 0x6e, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x61, 0x62, 0x6c, 0x65, 0x12, 0x3c, 0x0a,
+	0x19, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x52, 0x65,
+	0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x11, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x19, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x52,
+	0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x54, 0x0a, 0x25, 0x70,
+	0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74,
+	0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72,
+	0x61, 0x74, 0x6f, 0x72, 0x18, 0x12, 0x20, 0x01, 0x28, 0x04, 0x52, 0x25, 0x70, 0x72, 0x69, 0x6d,
+	0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x53, 0x75, 0x63,
+	0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f,
+	0x72, 0x12, 0x58, 0x0a, 0x27, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70,
+	0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74,
+	0x65, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x69, 0x6e, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x13, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x27, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f,
+	0x6e, 0x53, 0x68, 0x6f, 0x74, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65,
+	0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x69, 0x6e, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x4d, 0x0a, 0x0f, 0x73,
+	0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x18, 0x14,
+	0x20, 0x01, 0x28, 0x0e, 0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x41, 0x63, 0x74, 0x69, 0x76,
+	0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x52, 0x0f, 0x73, 0x65, 0x63, 0x6f, 0x6e,
+	0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x12, 0x5a, 0x0a, 0x16, 0x73, 0x65,
+	0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e,
+	0x74, 0x72, 0x6f, 0x6c, 0x18, 0x15, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x22, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63,
+	0x68, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x52, 0x16,
+	0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43,
+	0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x12, 0x34, 0x0a, 0x15, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64,
+	0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18,
+	0x16, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79,
+	0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x36, 0x0a, 0x16,
+	0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x54,
+	0x61, 0x72, 0x67, 0x65, 0x74, 0x73, 0x18, 0x17, 0x20, 0x01, 0x28, 0x04, 0x52, 0x16, 0x73, 0x65,
+	0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x54, 0x61, 0x72,
+	0x67, 0x65, 0x74, 0x73, 0x12, 0x32, 0x0a, 0x14, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72,
+	0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x73, 0x18, 0x18, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x14, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61,
+	0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x73, 0x12, 0x34, 0x0a, 0x15, 0x73, 0x65, 0x63, 0x6f,
+	0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67,
+	0x65, 0x18, 0x19, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61,
+	0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x3a,
+	0x0a, 0x18, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f,
+	0x6e, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x61, 0x62, 0x6c, 0x65, 0x18, 0x1a, 0x20, 0x01, 0x28, 0x08,
+	0x52, 0x18, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f,
+	0x6e, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x61, 0x62, 0x6c, 0x65, 0x12, 0x3e, 0x0a, 0x1a, 0x73, 0x65,
+	0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x75,
+	0x6e, 0x74, 0x65, 0x72, 0x61, 0x62, 0x6c, 0x65, 0x18, 0x1b, 0x20, 0x01, 0x28, 0x08, 0x52, 0x1a,
+	0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43,
+	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x61, 0x62, 0x6c, 0x65, 0x12, 0x40, 0x0a, 0x1b, 0x73, 0x65,
+	0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x52, 0x65, 0x63,
+	0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x1c, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x1b, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e,
+	0x52, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x58, 0x0a, 0x27,
+	0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53,
+	0x68, 0x6f, 0x74, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e, 0x75,
+	0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x1d, 0x20, 0x01, 0x28, 0x04, 0x52, 0x27, 0x73,
+	0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68,
+	0x6f, 0x74, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e, 0x75, 0x6d,
+	0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x5c, 0x0a, 0x29, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64,
+	0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x53, 0x75, 0x63,
+	0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x69, 0x6e, 0x61,
+	0x74, 0x6f, 0x72, 0x18, 0x1e, 0x20, 0x01, 0x28, 0x04, 0x52, 0x29, 0x73, 0x65, 0x63, 0x6f, 0x6e,
+	0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x53, 0x75,
+	0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x69, 0x6e,
+	0x61, 0x74, 0x6f, 0x72, 0x12, 0x4e, 0x0a, 0x0f, 0x70, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65, 0x57,
+	0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x18, 0x1f, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x24, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x74, 0x65, 0x63, 0x68, 0x50, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f,
+	0x6e, 0x72, 0x79, 0x52, 0x0f, 0x70, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70,
+	0x6f, 0x6e, 0x72, 0x79, 0x12, 0x45, 0x0a, 0x0c, 0x75, 0x6e, 0x69, 0x74, 0x44, 0x65, 0x66, 0x65,
+	0x6e, 0x73, 0x65, 0x73, 0x18, 0x20, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63,
+	0x68, 0x55, 0x6e, 0x69, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x52, 0x0c, 0x75,
+	0x6e, 0x69, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x12, 0x57, 0x0a, 0x12, 0x6f,
+	0x72, 0x65, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65,
+	0x73, 0x18, 0x21, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x4f, 0x72,
+	0x65, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73,
+	0x52, 0x12, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x44, 0x65, 0x66, 0x65,
+	0x6e, 0x73, 0x65, 0x73, 0x12, 0x54, 0x0a, 0x11, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72,
+	0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x18, 0x22, 0x20, 0x01, 0x28, 0x0e, 0x32,
+	0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44,
+	0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x52, 0x11, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61,
+	0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x12, 0x4e, 0x0a, 0x0f, 0x70, 0x6c,
+	0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x18, 0x23, 0x20,
+	0x01, 0x28, 0x0e, 0x32, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74,
+	0x61, 0x72, 0x79, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x52, 0x0f, 0x70, 0x6c, 0x61, 0x6e, 0x65,
+	0x74, 0x61, 0x72, 0x79, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x12, 0x56, 0x0a, 0x11, 0x70, 0x6c,
+	0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x72, 0x79, 0x18,
+	0x24, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x6c, 0x61, 0x6e,
+	0x65, 0x74, 0x61, 0x72, 0x79, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x72, 0x69, 0x65, 0x73, 0x52,
+	0x11, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65,
+	0x72, 0x79, 0x12, 0x4e, 0x0a, 0x0f, 0x70, 0x6f, 0x77, 0x65, 0x72, 0x47, 0x65, 0x6e, 0x65, 0x72,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x25, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x24, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65,
+	0x63, 0x68, 0x50, 0x6f, 0x77, 0x65, 0x72, 0x47, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x52, 0x0f, 0x70, 0x6f, 0x77, 0x65, 0x72, 0x47, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x12, 0x26, 0x0a, 0x0e, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x43, 0x68,
+	0x61, 0x72, 0x67, 0x65, 0x18, 0x26, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0e, 0x61, 0x63, 0x74, 0x69,
+	0x76, 0x61, 0x74, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x20, 0x0a, 0x0b, 0x62, 0x75,
+	0x69, 0x6c, 0x64, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x27, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x0b, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x2e, 0x0a, 0x12,
+	0x64, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x43, 0x68, 0x61, 0x72,
+	0x67, 0x65, 0x18, 0x28, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12, 0x64, 0x65, 0x66, 0x65, 0x6e, 0x64,
+	0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x1e, 0x0a, 0x0a,
+	0x6d, 0x6f, 0x76, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x29, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x0a, 0x6d, 0x6f, 0x76, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x38, 0x0a, 0x17,
+	0x6f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74,
+	0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x2a, 0x20, 0x01, 0x28, 0x04, 0x52, 0x17, 0x6f,
+	0x72, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65,
+	0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x3c, 0x0a, 0x19, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x66,
+	0x69, 0x6e, 0x69, 0x6e, 0x67, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x43, 0x68, 0x61,
+	0x72, 0x67, 0x65, 0x18, 0x2b, 0x20, 0x01, 0x28, 0x04, 0x52, 0x19, 0x6f, 0x72, 0x65, 0x52, 0x65,
+	0x66, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x43, 0x68,
+	0x61, 0x72, 0x67, 0x65, 0x12, 0x34, 0x0a, 0x15, 0x73, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41,
+	0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x2c, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x15, 0x73, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x63, 0x74, 0x69,
+	0x76, 0x61, 0x74, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x28, 0x0a, 0x0f, 0x61, 0x74,
+	0x74, 0x61, 0x63, 0x6b, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x2d, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x0f, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x52, 0x65, 0x64, 0x75, 0x63,
+	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x2c, 0x0a, 0x11, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x43, 0x6f,
+	0x75, 0x6e, 0x74, 0x65, 0x72, 0x61, 0x62, 0x6c, 0x65, 0x18, 0x2e, 0x20, 0x01, 0x28, 0x08, 0x52,
+	0x11, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x61, 0x62,
+	0x6c, 0x65, 0x12, 0x26, 0x0a, 0x0e, 0x73, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x53, 0x79, 0x73,
+	0x74, 0x65, 0x6d, 0x73, 0x18, 0x2f, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0e, 0x73, 0x74, 0x65, 0x61,
+	0x6c, 0x74, 0x68, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x73, 0x12, 0x24, 0x0a, 0x0d, 0x63, 0x6f,
+	0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x18, 0x30, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x0d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b,
+	0x12, 0x36, 0x0a, 0x16, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63,
+	0x6b, 0x53, 0x61, 0x6d, 0x65, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x31, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x16, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53,
+	0x61, 0x6d, 0x65, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x34, 0x0a, 0x15, 0x70, 0x6f, 0x73, 0x74,
+	0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67,
+	0x65, 0x18, 0x32, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x26,
+	0x0a, 0x0e, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x52, 0x61, 0x74, 0x65,
+	0x18, 0x33, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0e, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x69,
+	0x6e, 0x67, 0x52, 0x61, 0x74, 0x65, 0x12, 0x40, 0x0a, 0x1b, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74,
+	0x61, 0x72, 0x79, 0x53, 0x68, 0x69, 0x65, 0x6c, 0x64, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x69, 0x62,
+	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x34, 0x20, 0x01, 0x28, 0x04, 0x52, 0x1b, 0x70, 0x6c, 0x61,
+	0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x53, 0x68, 0x69, 0x65, 0x6c, 0x64, 0x43, 0x6f, 0x6e, 0x74,
+	0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x54, 0x0a, 0x25, 0x75, 0x6e, 0x67, 0x75,
+	0x69, 0x64, 0x65, 0x64, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x69, 0x76, 0x65, 0x53, 0x75, 0x63,
+	0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f,
+	0x72, 0x18, 0x35, 0x20, 0x01, 0x28, 0x04, 0x52, 0x25, 0x75, 0x6e, 0x67, 0x75, 0x69, 0x64, 0x65,
+	0x64, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x69, 0x76, 0x65, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73,
+	0x73, 0x52, 0x61, 0x74, 0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x58,
+	0x0a, 0x27, 0x75, 0x6e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x64, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73,
+	0x69, 0x76, 0x65, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x44, 0x65,
+	0x6e, 0x6f, 0x6d, 0x69, 0x6e, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x36, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x27, 0x75, 0x6e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x64, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x69,
+	0x76, 0x65, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x44, 0x65, 0x6e,
+	0x6f, 0x6d, 0x69, 0x6e, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x50, 0x0a, 0x23, 0x67, 0x75, 0x69, 0x64,
+	0x65, 0x64, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x69, 0x76, 0x65, 0x53, 0x75, 0x63, 0x63, 0x65,
+	0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18,
+	0x37, 0x20, 0x01, 0x28, 0x04, 0x52, 0x23, 0x67, 0x75, 0x69, 0x64, 0x65, 0x64, 0x44, 0x65, 0x66,
+	0x65, 0x6e, 0x73, 0x69, 0x76, 0x65, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74,
+	0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x54, 0x0a, 0x25, 0x67, 0x75,
+	0x69, 0x64, 0x65, 0x64, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x69, 0x76, 0x65, 0x53, 0x75, 0x63,
+	0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x69, 0x6e, 0x61,
+	0x74, 0x6f, 0x72, 0x18, 0x38, 0x20, 0x01, 0x28, 0x04, 0x52, 0x25, 0x67, 0x75, 0x69, 0x64, 0x65,
+	0x64, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x69, 0x76, 0x65, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73,
+	0x73, 0x52, 0x61, 0x74, 0x65, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x69, 0x6e, 0x61, 0x74, 0x6f, 0x72,
+	0x22, 0xaa, 0x02, 0x0a, 0x0e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e,
+	0x64, 0x65, 0x72, 0x12, 0x2c, 0x0a, 0x11, 0x70, 0x72, 0x6f, 0x74, 0x65, 0x63, 0x74, 0x65, 0x64,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11,
+	0x70, 0x72, 0x6f, 0x74, 0x65, 0x63, 0x74, 0x65, 0x64, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49,
+	0x64, 0x12, 0x2c, 0x0a, 0x11, 0x64, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x64, 0x65,
+	0x66, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12,
+	0x1e, 0x0a, 0x0a, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x03, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x0a, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12,
+	0x3e, 0x0a, 0x0e, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69,
+	0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69, 0x74, 0x52,
+	0x0e, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12,
+	0x24, 0x0a, 0x0d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b,
+	0x18, 0x05, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41,
+	0x74, 0x74, 0x61, 0x63, 0x6b, 0x12, 0x36, 0x0a, 0x16, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72,
+	0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x61, 0x6d, 0x65, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18,
+	0x06, 0x20, 0x01, 0x28, 0x04, 0x52, 0x16, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x74,
+	0x74, 0x61, 0x63, 0x6b, 0x53, 0x61, 0x6d, 0x65, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x22, 0x4f, 0x0a,
+	0x15, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65,
+	0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62,
+	0x75, 0x74, 0x65, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x61, 0x74, 0x74,
+	0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x42, 0xa1,
 	0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x50, 0x72,
 	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b,
@@ -2083,16 +6143,44 @@ func file_structs_structs_struct_proto_rawDescGZIP() []byte {
 	return file_structs_structs_struct_proto_rawDescData
 }
 
-var file_structs_structs_struct_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_structs_structs_struct_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_structs_structs_struct_proto_goTypes = []interface{}{
-	(*Struct)(nil), // 0: structs.structs.Struct
+	(*Struct)(nil),                // 0: structs.structs.Struct
+	(*StructType)(nil),            // 1: structs.structs.StructType
+	(*StructDefender)(nil),        // 2: structs.structs.StructDefender
+	(*StructAttributeRecord)(nil), // 3: structs.structs.StructAttributeRecord
+	(Ambit)(0),                    // 4: structs.structs.ambit
+	(ObjectType)(0),               // 5: structs.structs.objectType
+	(TechActiveWeaponry)(0),       // 6: structs.structs.techActiveWeaponry
+	(TechWeaponControl)(0),        // 7: structs.structs.techWeaponControl
+	(TechPassiveWeaponry)(0),      // 8: structs.structs.techPassiveWeaponry
+	(TechUnitDefenses)(0),         // 9: structs.structs.techUnitDefenses
+	(TechOreReserveDefenses)(0),   // 10: structs.structs.techOreReserveDefenses
+	(TechPlanetaryDefenses)(0),    // 11: structs.structs.techPlanetaryDefenses
+	(TechPlanetaryMining)(0),      // 12: structs.structs.techPlanetaryMining
+	(TechPlanetaryRefineries)(0),  // 13: structs.structs.techPlanetaryRefineries
+	(TechPowerGeneration)(0),      // 14: structs.structs.techPowerGeneration
 }
 var file_structs_structs_struct_proto_depIdxs = []int32{
-	0, // [0:0] is the sub-list for method output_type
-	0, // [0:0] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	4,  // 0: structs.structs.Struct.operatingAmbit:type_name -> structs.structs.ambit
+	5,  // 1: structs.structs.StructType.category:type_name -> structs.structs.objectType
+	6,  // 2: structs.structs.StructType.primaryWeapon:type_name -> structs.structs.techActiveWeaponry
+	7,  // 3: structs.structs.StructType.primaryWeaponControl:type_name -> structs.structs.techWeaponControl
+	6,  // 4: structs.structs.StructType.secondaryWeapon:type_name -> structs.structs.techActiveWeaponry
+	7,  // 5: structs.structs.StructType.secondaryWeaponControl:type_name -> structs.structs.techWeaponControl
+	8,  // 6: structs.structs.StructType.passiveWeaponry:type_name -> structs.structs.techPassiveWeaponry
+	9,  // 7: structs.structs.StructType.unitDefenses:type_name -> structs.structs.techUnitDefenses
+	10, // 8: structs.structs.StructType.oreReserveDefenses:type_name -> structs.structs.techOreReserveDefenses
+	11, // 9: structs.structs.StructType.planetaryDefenses:type_name -> structs.structs.techPlanetaryDefenses
+	12, // 10: structs.structs.StructType.planetaryMining:type_name -> structs.structs.techPlanetaryMining
+	13, // 11: structs.structs.StructType.planetaryRefinery:type_name -> structs.structs.techPlanetaryRefineries
+	14, // 12: structs.structs.StructType.powerGeneration:type_name -> structs.structs.techPowerGeneration
+	4,  // 13: structs.structs.StructDefender.operatingAmbit:type_name -> structs.structs.ambit
+	14, // [14:14] is the sub-list for method output_type
+	14, // [14:14] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_structs_structs_struct_proto_init() }
@@ -2100,9 +6188,46 @@ func file_structs_structs_struct_proto_init() {
 	if File_structs_structs_struct_proto != nil {
 		return
 	}
+	file_structs_structs_keys_proto_init()
 	if !protoimpl.UnsafeEnabled {
 		file_structs_structs_struct_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Struct); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_struct_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StructType); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_struct_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StructDefender); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_struct_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StructAttributeRecord); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -2120,7 +6245,7 @@ func file_structs_structs_struct_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_structs_structs_struct_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
