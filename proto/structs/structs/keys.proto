@@ -87,7 +87,7 @@ enum structAttributeType {
     blockStartOreMine           = 3;
     blockStartOreRefine         = 4;
 
-    protectedStructIndex        = 7;
+    protectedStructIndex        = 5;
 
 }
 
