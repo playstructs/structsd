@@ -39,28 +39,34 @@ func (k Keeper) SetStructCount(ctx context.Context, count uint64) {
 	store.Set(byteKey, bz)
 }
 
+/*
+  string id         = 1;
+  uint64 index      = 2;
+  uint64 type       = 3;
+
+  // Who is it
+  string creator  = 4;
+  string owner    = 5;
+
+  // Where it is
+  string  locationId      = 6;
+  ambit   operatingAmbit  = 7;
+  uint64  slot            = 8;
+  */
+
 // AppendStruct appends a struct in the store with a new id and update the count
 func (k Keeper) AppendStruct(
 	ctx context.Context,
-	//struct types.Struct,
-	player types.Player,
-	structType string,
-	planet types.Planet,
-	slot uint64,
-) (structure types.Struct) {
+	structure types.Struct
+) (types.Struct) {
  	ctxSDK := sdk.UnwrapSDKContext(ctx)
-    structure = types.CreateBaseStruct(structType)
 
 	// Create the struct
 	count := k.GetStructCount(ctx)
 
 	// Set the ID of the appended value
 	structure.Id = GetObjectID(types.ObjectType_struct, count)
-	structure.Creator = player.Creator
-	structure.Owner   = player.Id
-	structure.SetPlanetId(planet.Id)
-	structure.SetSlot(slot)
-	structure.SetBuildStartBlock(uint64(ctxSDK.BlockHeight()))
+	structure.Index = count
 
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructKey))
 	appendedValue := k.cdc.MustMarshal(&structure)
@@ -68,6 +74,19 @@ func (k Keeper) AppendStruct(
 
 	// Update struct count
 	k.SetStructCount(ctx, count+1)
+
+    /*
+        health                      = 0;
+        status                      = 1;
+
+        blockStartBuild             = 2;
+        blockStartOreMine           = 3;
+        blockStartOreRefine         = 4;
+
+        protectedStructIndex        = 5;
+    */
+    // SetStructAttribute
+	//structure.SetBuildStartBlock(uint64(ctxSDK.BlockHeight()))
 
     permissionId := GetObjectPermissionIDBytes(structure.Id, structure.Owner)
     k.PermissionAdd(ctx, permissionId, types.PermissionAll)
