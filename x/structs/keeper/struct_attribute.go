@@ -18,7 +18,7 @@ import (
 
 // GetStructAttributeID returns the string representation of the ID
 func GetStructAttributeID(structAttributeType types.StructAttributeType, objectType types.ObjectType, objectId uint64) string {
-    id := fmt.Sprintf("%d-%d-%d", structAttributeType, objectType, objectId)
+    id := fmt.Sprintf("%d-%d-%d", structAttributeType, objectId)
 	return id
 }
 

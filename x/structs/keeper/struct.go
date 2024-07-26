@@ -57,7 +57,8 @@ func (k Keeper) SetStructCount(ctx context.Context, count uint64) {
 // AppendStruct appends a struct in the store with a new id and update the count
 func (k Keeper) AppendStruct(
 	ctx context.Context,
-	structure types.Struct
+	structure types.Struct,
+	structureType types.StructType,
 ) (types.Struct) {
  	ctxSDK := sdk.UnwrapSDKContext(ctx)
 
@@ -75,23 +76,24 @@ func (k Keeper) AppendStruct(
 	// Update struct count
 	k.SetStructCount(ctx, count+1)
 
-    /*
-        health                      = 0;
-        status                      = 1;
+	// Emit the creation of the Struct object
+	// Do this first, since the next commands will also emit related events.
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})
 
-        blockStartBuild             = 2;
-        blockStartOreMine           = 3;
-        blockStartOreRefine         = 4;
-
-        protectedStructIndex        = 5;
-    */
-    // SetStructAttribute
-	//structure.SetBuildStartBlock(uint64(ctxSDK.BlockHeight()))
-
+    // Set the Permissions
     permissionId := GetObjectPermissionIDBytes(structure.Id, structure.Owner)
     k.PermissionAdd(ctx, permissionId, types.PermissionAll)
 
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})
+    // Set the main Struct dynamic attributes
+    // Current Health
+    SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_health, structure.Id),             structureType.MaxHealth)
+    // Base Status (zero)
+    SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_status, structure.Id),             types.StructStateless)
+    // Block Start Build
+    SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structure.Id),    uint64(ctxSDK.BlockHeight()))
+
+    // Set the grid details
+    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, structure.Owner), structureType.BuildDraw)
 
 	return structure
 }
@@ -115,12 +117,6 @@ func (k Keeper) GetStruct(ctx context.Context, structId string) (val types.Struc
 	}
 	k.cdc.MustUnmarshal(b, &val)
 
-    if (val.PowerSystem == 1) {
-        val.PowerSystemFuel = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, val.Id))
-        val.PowerSystemCapacity = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
-        val.PowerSystemLoad = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
-    }
-
 	return val, true
 }
 
@@ -143,14 +139,6 @@ func (k Keeper) GetAllStruct(ctx context.Context) (list []types.Struct) {
 	for ; iterator.Valid(); iterator.Next() {
 		var val types.Struct
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
-
-        if (val.PowerSystem == 1) {
-            val.PowerSystemFuel = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, val.Id))
-            val.PowerSystemCapacity = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
-            val.PowerSystemLoad = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
-
-        }
-
 		list = append(list, val)
 	}
 

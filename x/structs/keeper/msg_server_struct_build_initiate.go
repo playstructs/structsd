@@ -7,12 +7,47 @@ import (
 	"structs/x/structs/types"
 )
 
+/* MsgStructBuildInitiate
+  string creator        = 1;
+  uint64 structTypeId   = 2;
+  string planetId       = 3;
+  ambit operatingAmbit  = 4;
+  uint64 slot           = 5;
+  */
+
 func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStructBuildInitiate) (*types.MsgStructBuildInitiateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
+
+
+    // Load Initiator Player from the Creator
+    // Load Planet from the PlanetId
+        // Check Planet exists
+        // Check permissions on Creator on Planet
+        // Check Ambit / Slot
+
+
+    // Load Player from Planet Owner
+        // Check Player
+        // If players differ
+            // Check message Initiator player permissions on Player
+
+
+    // Load Struct Type
+        // Check Struct Type
+
+    // Check player load for the buildDraw capacity
+
+
+    // Check to see if the Struct Type is a planet or fleet
+    // Both Fleet and Planetary Structs are built on the planet
+
+
+
+
 
     playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
     if (playerIndex == 0) {
