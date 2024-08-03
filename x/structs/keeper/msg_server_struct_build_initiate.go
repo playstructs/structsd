@@ -22,41 +22,29 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-
     // Load Initiator Player from the Creator
-    // Load Planet from the PlanetId
-        // Check Planet exists
-        // Check permissions on Creator on Planet
-        // Check Ambit / Slot
-
-
-    // Load Player from Planet Owner
-        // Check Player
-        // If players differ
-            // Check message Initiator player permissions on Player
-
-
-    // Load Struct Type
-        // Check Struct Type
-
-    // Check player load for the buildDraw capacity
-
-
-    // Check to see if the Struct Type is a planet or fleet
-    // Both Fleet and Planetary Structs are built on the planet
-
-
-
-
-
-    playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
-    if (playerIndex == 0) {
+    callingPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
+    if (callingPlayerIndex == 0) {
         return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build initialization requires Player account but none associated with %s", msg.Creator)
     }
-    player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
+    callingPlayer, _ := k.GetPlayerFromIndex(ctx, callingPlayerIndex, true)
 
-    if (!player.IsOnline()){
-        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The players substation (%s) is offline ",player.Id)
+
+    // Load Planet from the PlanetId
+    planet, planetFound := k.GetPlanet(ctx, msg.PlanetId)
+    if (!planetFound) {
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was ot found. Building a Struct in a void might be tough", msg.PlanetId)
+    }
+
+    sudoPlayerIndex := k.GetPlayerIndexFromAddress(ctx, planet.Owner)
+    if (sudoPlayerIndex == 0) {
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build initialization requires Player but somehow planet has none %s", planet.Owner)
+    }
+    sudoPlayer, _ := k.GetPlayerFromIndex(ctx, sudoPlayerIndex, true)
+
+    if (sudoPlayer.Id != callingPlayer.Id) {
+        // Check permissions on Creator on Planet
+
     }
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
@@ -66,27 +54,70 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     }
 
 
-    /*
-     * Until we let players give out Play permissions, this can't happened
-     */
-    if (player.PlanetId != msg.PlanetId) {
-        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo build structs for others, you should be building at %s", player.PlanetId)
+
+    // Check Ambit / Slot
+    switch msg.OperatingAmbit {
+        case types.Ambit_land:
+            planetSlots := planet.LandSlots
+            planetSlot  := planet.Land[msg.Slot]
+        case types.Ambit_water:
+            planetSlots := planet.WaterSlots
+            planetSlot  := planet.Water[msg.Slot]
+        case types.Ambit_air:
+            planetSlots := planet.AirSlots
+            planetSlot  := planet.Air[msg.Slot]
+        case types.Ambit_space:
+            planetSlots := planet.SpaceSlots
+            planetSlot  := planet.Space[msg.Slot]
+        default:
+            return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The Struct Build was initiated on a non-existant ambit")
     }
 
-    planet, planetFound := k.GetPlanet(ctx, msg.PlanetId)
-    if (!planetFound) {
-        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was ot found. Building a Struct in a void might be tough", msg.PlanetId)
-    }
-
-
-    /* More garbage clown code rushed to make the testnet more interesting */
-    if (msg.Slot >= planet.LandSlots) {
+    if (msg.Slot >= planetSlots) {
         return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet (%s) specified doesn't have that slot available to build on", msg.PlanetId)
     }
-
-    if (planet.Land[msg.Slot] != "") {
+    if (planetSlot != "") {
         return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet (%s) specified already has a struct on that slot", msg.PlanetId)
     }
+
+
+
+
+    // Load Struct Type
+    structType, structTypeFound := k.GetStructType(ctx, msg.StructTypeId)
+    if (!structTypeFound) {
+     return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct Type (%d) was not found. Building a Struct with schematics might be tough", msg.StructTypeId)
+    }
+    // Check ambit for struct type
+    // TODO
+    // Need some way to use the Ambit type as as flag
+    // Check ambit against as a flag structType.possibleAmbit
+    // msg.OperatingAmbit * 2
+
+
+    // Check Sudo Player Charge
+
+
+    // Check player Load for the buildDraw capacity
+
+
+
+    // Check to see if the Struct Type is a planet or fleet
+    // Both Fleet and Planetary Structs are built on the planet
+
+
+    // build Structure object
+    // Discharge Owner Player Charge  (set last block time)
+    // Append Struct
+
+
+
+
+
+
+
+
+
 
     structure := k.AppendStruct(ctx, player, msg.StructType, planet, msg.Slot)
     planet.SetLandSlot(structure)
