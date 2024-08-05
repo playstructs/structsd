@@ -12,55 +12,19 @@ import (
  */
 
 
+func CheckLocation(structType StructType, locationType Object, ambit Ambit) {
 
-
-func (structure *Struct) SetStatus(status string) error {
-	structure.Status = status
-	return nil
 }
 
-
-func (structure *Struct) SetMiningSystemStatus(status string) error {
-	structure.MiningSystemStatus = status
-	return nil
-}
+func (structure *Struct) SetLocation(locationId string, slot uint64) error {
 
 
-func (structure *Struct) SetRefiningSystemStatus(status string) error {
-	structure.RefiningSystemStatus = status
-	return nil
-}
-
-
-func (structure *Struct) SetSlot(slot uint64) error {
+	structure.LocationId = locationId
 	structure.Slot = slot
+
 	return nil
 }
 
-func (structure *Struct) SetPlanetId(planetId string) error {
-	structure.PlanetId = planetId
-	return nil
-}
-
-
-func (structure *Struct) SetBuildStartBlock(block uint64) error {
-
-    structure.BuildStartBlock = block
-
-    return nil
-}
-
-func (structure *Struct) SetMiningSystemActivationBlock(block uint64) error {
-    structure.ActiveMiningSystemBlock = block
-
-    return nil
-}
-
-func (structure *Struct) SetRefiningSystemActivationBlock(block uint64) error {
-    structure.ActiveRefiningSystemBlock = block
-
-    return nil
-}
 
 // Take an amount of fuel and return the energy it will generate
 //
@@ -70,91 +34,21 @@ func CalculateStructPower(fuel uint64) (energy uint64, ratio uint64) {
     return fuel * StructFuelToEnergyConversion, StructFuelToEnergyConversion
 }
 
-func CreateBaseStruct(structType string) Struct {
+func CreateBaseStruct(structType StructType) Struct {
 
-    var newCategory         string
-    var newType             string
-    var newAmbit            string
+    // TODO check structType
 
-    var newMiningSystem     uint64
-    var newRefiningSystem   uint64
-    var newPowerSystem      uint64
 
-    var newPassiveDraw              uint64
-    var newActiveMiningSystemDraw   uint64
-    var newActiveRefiningSystemDraw uint64
+    return Struct{
+        Creator:  "",
+        Owner: "",
 
-    switch structType {
-    	case "Mining Rig":
-	    	newCategory = "Planetary Struct"
-	    	newType     = structType
-            newAmbit    = "LAND"
+        Type: structType.Id,
 
-            newMiningSystem   = 1;
-            newRefiningSystem = 0;
-            newPowerSystem    = 0;
-
-            newPassiveDraw              = 10;
-            newActiveMiningSystemDraw   = 20;
-            newActiveRefiningSystemDraw = 0;
-
-	    case "Refinery":
-	        newCategory = "Planetary Struct"
-		    newType     = structType
-            newAmbit    = "LAND"
-
-            newMiningSystem   = 0;
-            newRefiningSystem = 1;
-            newPowerSystem    = 0;
-
-            newPassiveDraw              = 20;
-            newActiveMiningSystemDraw   = 0;
-            newActiveRefiningSystemDraw = 30;
-
-	    case "Small Generator":
-	        newCategory = "Planetary Struct"
-		    newType     = structType
-            newAmbit    = "LAND"
-
-            newMiningSystem   = 0;
-            newRefiningSystem = 0;
-            newPowerSystem    = 1;
-
-            newPassiveDraw              = 5;
-            newActiveMiningSystemDraw   = 0;
-            newActiveRefiningSystemDraw = 0;
-
-	    default:
+        LocationId: "",
+        OperatingAmbit: ,
+        Slot: ,
     }
-
-	return Struct{
-		Creator:  "",
-		Owner: "",
-		Status: "BUILDING",
-
-		MaxHealth: 3,
-		Health: 3,
-
-		Type: newType,
-        Category: newCategory,
-        Ambit: newAmbit,
-        Slot: 0,
-
-        MiningSystem: newMiningSystem,
-        RefiningSystem: newRefiningSystem,
-        PowerSystem: newPowerSystem,
-
-        PassiveDraw: newPassiveDraw,
-        ActiveMiningSystemDraw: newActiveMiningSystemDraw,
-        ActiveRefiningSystemDraw: newActiveRefiningSystemDraw,
-
-        MiningSystemStatus: "INACTIVE",
-        ActiveMiningSystemBlock: 0,
-
-        RefiningSystemStatus: "INACTIVE",
-        ActiveRefiningSystemBlock: 0,
-
-	}
 }
 
 

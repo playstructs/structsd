@@ -95,6 +95,7 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     // msg.OperatingAmbit * 2
 
 
+
     // Check Sudo Player Charge
 
 
