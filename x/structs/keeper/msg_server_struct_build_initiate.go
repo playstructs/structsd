@@ -91,24 +91,42 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to build, but player (%s) only had %d", msg.StructTypeId, structType.BuildCharge, sudoPlayer.Id, playerCharge)
     }
 
-
     // This process will check the location details to make sure they're acceptable based on the structType
     structure, err := types.CreateBaseStruct(structType, msg.Creator, sudoPlayer.Id, planet.Id, types.ObjectType_planet, msg.Ambit, msg.Slot)
     if (err != nil) {
         return &types.MsgStructBuildInitiateResponse{}, err
     }
 
-
     // Check player Load for the buildDraw capacity
-    structType.BuildDraw
+    sudoPlayerTotalLoad := sudoPlayer.Load + sudoPlayer.StructsLoad
+    sudoPlayerTotalCapacity := sudoPlayer.Capacity + sudoPlayer.CapacitySecondary
+    // Is load complete shot already?
+    if (sudoPlayerTotalLoad > sudoPlayerTotalCapacity) {
+        k.DischargePlayer(ctx, sudoPlayer)
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during build, but player (%s) has none available", msg.StructTypeId, structType.BuildDraw, sudoPlayer.Id)
 
-    // build Structure object
+    // Otherwise is the difference enough to support the buildDraw rate
+    } else if ((sudoPlayerTotalCapacity - sudoPlayerTotalLoad) < structType.BuildDraw) {
+        k.DischargePlayer(ctx, sudoPlayer)
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during build, but player (%s) has %d available", msg.StructTypeId, structType.BuildDraw, sudoPlayer.Id,(sudoPlayerTotalCapacity - sudoPlayerTotalLoad))
+    }
+
+    // Increase the Struct load of the sudoPlayer
+    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.BuildDraw)
+
     // Discharge Owner Player Charge  (set last block time)
     k.DischargePlayer(ctx, sudoPlayer)
 
     // Append Struct
     structure = k.AppendStruct(ctx, structure, structType)
-    planet.SetSlot(structure)
+
+    // Update the cross reference on the planet
+    err = planet.SetSlot(structure)
+    if (err != nil) {
+        // This is a pretty huge problem if we get here since all the other crap is done.
+        // Roll back transaction?
+        return &types.MsgStructBuildInitiateResponse{}, err
+    }
     k.SetPlanet(ctx, planet)
 
 	return &types.MsgStructBuildInitiateResponse{Struct: structure}, nil

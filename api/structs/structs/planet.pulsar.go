@@ -89,7 +89,7 @@ func (x *_Planet_8_list) Append(value protoreflect.Value) {
 }
 
 func (x *_Planet_8_list) AppendMutable() protoreflect.Value {
-	panic(fmt.Errorf("AppendMutable can not be called on message Planet at list field Sky as it is not of Message kind"))
+	panic(fmt.Errorf("AppendMutable can not be called on message Planet at list field Air as it is not of Message kind"))
 }
 
 func (x *_Planet_8_list) Truncate(n int) {
@@ -206,11 +206,11 @@ var (
 	fd_Planet_creator      protoreflect.FieldDescriptor
 	fd_Planet_owner        protoreflect.FieldDescriptor
 	fd_Planet_space        protoreflect.FieldDescriptor
-	fd_Planet_sky          protoreflect.FieldDescriptor
+	fd_Planet_air          protoreflect.FieldDescriptor
 	fd_Planet_land         protoreflect.FieldDescriptor
 	fd_Planet_water        protoreflect.FieldDescriptor
 	fd_Planet_spaceSlots   protoreflect.FieldDescriptor
-	fd_Planet_skySlots     protoreflect.FieldDescriptor
+	fd_Planet_airSlots     protoreflect.FieldDescriptor
 	fd_Planet_landSlots    protoreflect.FieldDescriptor
 	fd_Planet_waterSlots   protoreflect.FieldDescriptor
 	fd_Planet_status       protoreflect.FieldDescriptor
@@ -226,11 +226,11 @@ func init() {
 	fd_Planet_creator = md_Planet.Fields().ByName("creator")
 	fd_Planet_owner = md_Planet.Fields().ByName("owner")
 	fd_Planet_space = md_Planet.Fields().ByName("space")
-	fd_Planet_sky = md_Planet.Fields().ByName("sky")
+	fd_Planet_air = md_Planet.Fields().ByName("air")
 	fd_Planet_land = md_Planet.Fields().ByName("land")
 	fd_Planet_water = md_Planet.Fields().ByName("water")
 	fd_Planet_spaceSlots = md_Planet.Fields().ByName("spaceSlots")
-	fd_Planet_skySlots = md_Planet.Fields().ByName("skySlots")
+	fd_Planet_airSlots = md_Planet.Fields().ByName("airSlots")
 	fd_Planet_landSlots = md_Planet.Fields().ByName("landSlots")
 	fd_Planet_waterSlots = md_Planet.Fields().ByName("waterSlots")
 	fd_Planet_status = md_Planet.Fields().ByName("status")
@@ -343,9 +343,9 @@ func (x *fastReflection_Planet) Range(f func(protoreflect.FieldDescriptor, proto
 			return
 		}
 	}
-	if len(x.Sky) != 0 {
-		value := protoreflect.ValueOfList(&_Planet_8_list{list: &x.Sky})
-		if !f(fd_Planet_sky, value) {
+	if len(x.Air) != 0 {
+		value := protoreflect.ValueOfList(&_Planet_8_list{list: &x.Air})
+		if !f(fd_Planet_air, value) {
 			return
 		}
 	}
@@ -367,9 +367,9 @@ func (x *fastReflection_Planet) Range(f func(protoreflect.FieldDescriptor, proto
 			return
 		}
 	}
-	if x.SkySlots != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.SkySlots)
-		if !f(fd_Planet_skySlots, value) {
+	if x.AirSlots != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.AirSlots)
+		if !f(fd_Planet_airSlots, value) {
 			return
 		}
 	}
@@ -420,16 +420,16 @@ func (x *fastReflection_Planet) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.Owner != ""
 	case "structs.structs.Planet.space":
 		return len(x.Space) != 0
-	case "structs.structs.Planet.sky":
-		return len(x.Sky) != 0
+	case "structs.structs.Planet.air":
+		return len(x.Air) != 0
 	case "structs.structs.Planet.land":
 		return len(x.Land) != 0
 	case "structs.structs.Planet.water":
 		return len(x.Water) != 0
 	case "structs.structs.Planet.spaceSlots":
 		return x.SpaceSlots != uint64(0)
-	case "structs.structs.Planet.skySlots":
-		return x.SkySlots != uint64(0)
+	case "structs.structs.Planet.airSlots":
+		return x.AirSlots != uint64(0)
 	case "structs.structs.Planet.landSlots":
 		return x.LandSlots != uint64(0)
 	case "structs.structs.Planet.waterSlots":
@@ -466,16 +466,16 @@ func (x *fastReflection_Planet) Clear(fd protoreflect.FieldDescriptor) {
 		x.Owner = ""
 	case "structs.structs.Planet.space":
 		x.Space = nil
-	case "structs.structs.Planet.sky":
-		x.Sky = nil
+	case "structs.structs.Planet.air":
+		x.Air = nil
 	case "structs.structs.Planet.land":
 		x.Land = nil
 	case "structs.structs.Planet.water":
 		x.Water = nil
 	case "structs.structs.Planet.spaceSlots":
 		x.SpaceSlots = uint64(0)
-	case "structs.structs.Planet.skySlots":
-		x.SkySlots = uint64(0)
+	case "structs.structs.Planet.airSlots":
+		x.AirSlots = uint64(0)
 	case "structs.structs.Planet.landSlots":
 		x.LandSlots = uint64(0)
 	case "structs.structs.Planet.waterSlots":
@@ -522,11 +522,11 @@ func (x *fastReflection_Planet) Get(descriptor protoreflect.FieldDescriptor) pro
 		}
 		listValue := &_Planet_7_list{list: &x.Space}
 		return protoreflect.ValueOfList(listValue)
-	case "structs.structs.Planet.sky":
-		if len(x.Sky) == 0 {
+	case "structs.structs.Planet.air":
+		if len(x.Air) == 0 {
 			return protoreflect.ValueOfList(&_Planet_8_list{})
 		}
-		listValue := &_Planet_8_list{list: &x.Sky}
+		listValue := &_Planet_8_list{list: &x.Air}
 		return protoreflect.ValueOfList(listValue)
 	case "structs.structs.Planet.land":
 		if len(x.Land) == 0 {
@@ -543,8 +543,8 @@ func (x *fastReflection_Planet) Get(descriptor protoreflect.FieldDescriptor) pro
 	case "structs.structs.Planet.spaceSlots":
 		value := x.SpaceSlots
 		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Planet.skySlots":
-		value := x.SkySlots
+	case "structs.structs.Planet.airSlots":
+		value := x.AirSlots
 		return protoreflect.ValueOfUint64(value)
 	case "structs.structs.Planet.landSlots":
 		value := x.LandSlots
@@ -591,10 +591,10 @@ func (x *fastReflection_Planet) Set(fd protoreflect.FieldDescriptor, value proto
 		lv := value.List()
 		clv := lv.(*_Planet_7_list)
 		x.Space = *clv.list
-	case "structs.structs.Planet.sky":
+	case "structs.structs.Planet.air":
 		lv := value.List()
 		clv := lv.(*_Planet_8_list)
-		x.Sky = *clv.list
+		x.Air = *clv.list
 	case "structs.structs.Planet.land":
 		lv := value.List()
 		clv := lv.(*_Planet_9_list)
@@ -605,8 +605,8 @@ func (x *fastReflection_Planet) Set(fd protoreflect.FieldDescriptor, value proto
 		x.Water = *clv.list
 	case "structs.structs.Planet.spaceSlots":
 		x.SpaceSlots = value.Uint()
-	case "structs.structs.Planet.skySlots":
-		x.SkySlots = value.Uint()
+	case "structs.structs.Planet.airSlots":
+		x.AirSlots = value.Uint()
 	case "structs.structs.Planet.landSlots":
 		x.LandSlots = value.Uint()
 	case "structs.structs.Planet.waterSlots":
@@ -639,11 +639,11 @@ func (x *fastReflection_Planet) Mutable(fd protoreflect.FieldDescriptor) protore
 		}
 		value := &_Planet_7_list{list: &x.Space}
 		return protoreflect.ValueOfList(value)
-	case "structs.structs.Planet.sky":
-		if x.Sky == nil {
-			x.Sky = []string{}
+	case "structs.structs.Planet.air":
+		if x.Air == nil {
+			x.Air = []string{}
 		}
-		value := &_Planet_8_list{list: &x.Sky}
+		value := &_Planet_8_list{list: &x.Air}
 		return protoreflect.ValueOfList(value)
 	case "structs.structs.Planet.land":
 		if x.Land == nil {
@@ -671,8 +671,8 @@ func (x *fastReflection_Planet) Mutable(fd protoreflect.FieldDescriptor) protore
 		panic(fmt.Errorf("field owner of message structs.structs.Planet is not mutable"))
 	case "structs.structs.Planet.spaceSlots":
 		panic(fmt.Errorf("field spaceSlots of message structs.structs.Planet is not mutable"))
-	case "structs.structs.Planet.skySlots":
-		panic(fmt.Errorf("field skySlots of message structs.structs.Planet is not mutable"))
+	case "structs.structs.Planet.airSlots":
+		panic(fmt.Errorf("field airSlots of message structs.structs.Planet is not mutable"))
 	case "structs.structs.Planet.landSlots":
 		panic(fmt.Errorf("field landSlots of message structs.structs.Planet is not mutable"))
 	case "structs.structs.Planet.waterSlots":
@@ -707,7 +707,7 @@ func (x *fastReflection_Planet) NewField(fd protoreflect.FieldDescriptor) protor
 	case "structs.structs.Planet.space":
 		list := []string{}
 		return protoreflect.ValueOfList(&_Planet_7_list{list: &list})
-	case "structs.structs.Planet.sky":
+	case "structs.structs.Planet.air":
 		list := []string{}
 		return protoreflect.ValueOfList(&_Planet_8_list{list: &list})
 	case "structs.structs.Planet.land":
@@ -718,7 +718,7 @@ func (x *fastReflection_Planet) NewField(fd protoreflect.FieldDescriptor) protor
 		return protoreflect.ValueOfList(&_Planet_10_list{list: &list})
 	case "structs.structs.Planet.spaceSlots":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Planet.skySlots":
+	case "structs.structs.Planet.airSlots":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.Planet.landSlots":
 		return protoreflect.ValueOfUint64(uint64(0))
@@ -822,8 +822,8 @@ func (x *fastReflection_Planet) ProtoMethods() *protoiface.Methods {
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
 		}
-		if len(x.Sky) > 0 {
-			for _, s := range x.Sky {
+		if len(x.Air) > 0 {
+			for _, s := range x.Air {
 				l = len(s)
 				n += 1 + l + runtime.Sov(uint64(l))
 			}
@@ -843,8 +843,8 @@ func (x *fastReflection_Planet) ProtoMethods() *protoiface.Methods {
 		if x.SpaceSlots != 0 {
 			n += 1 + runtime.Sov(uint64(x.SpaceSlots))
 		}
-		if x.SkySlots != 0 {
-			n += 1 + runtime.Sov(uint64(x.SkySlots))
+		if x.AirSlots != 0 {
+			n += 1 + runtime.Sov(uint64(x.AirSlots))
 		}
 		if x.LandSlots != 0 {
 			n += 1 + runtime.Sov(uint64(x.LandSlots))
@@ -899,8 +899,8 @@ func (x *fastReflection_Planet) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x68
 		}
-		if x.SkySlots != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.SkySlots))
+		if x.AirSlots != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.AirSlots))
 			i--
 			dAtA[i] = 0x60
 		}
@@ -927,11 +927,11 @@ func (x *fastReflection_Planet) ProtoMethods() *protoiface.Methods {
 				dAtA[i] = 0x4a
 			}
 		}
-		if len(x.Sky) > 0 {
-			for iNdEx := len(x.Sky) - 1; iNdEx >= 0; iNdEx-- {
-				i -= len(x.Sky[iNdEx])
-				copy(dAtA[i:], x.Sky[iNdEx])
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Sky[iNdEx])))
+		if len(x.Air) > 0 {
+			for iNdEx := len(x.Air) - 1; iNdEx >= 0; iNdEx-- {
+				i -= len(x.Air[iNdEx])
+				copy(dAtA[i:], x.Air[iNdEx])
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Air[iNdEx])))
 				i--
 				dAtA[i] = 0x42
 			}
@@ -1217,7 +1217,7 @@ func (x *fastReflection_Planet) ProtoMethods() *protoiface.Methods {
 				iNdEx = postIndex
 			case 8:
 				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Sky", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Air", wireType)
 				}
 				var stringLen uint64
 				for shift := uint(0); ; shift += 7 {
@@ -1245,7 +1245,7 @@ func (x *fastReflection_Planet) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Sky = append(x.Sky, string(dAtA[iNdEx:postIndex]))
+				x.Air = append(x.Air, string(dAtA[iNdEx:postIndex]))
 				iNdEx = postIndex
 			case 9:
 				if wireType != 2 {
@@ -1332,9 +1332,9 @@ func (x *fastReflection_Planet) ProtoMethods() *protoiface.Methods {
 				}
 			case 12:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SkySlots", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AirSlots", wireType)
 				}
-				x.SkySlots = 0
+				x.AirSlots = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1344,7 +1344,7 @@ func (x *fastReflection_Planet) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.SkySlots |= uint64(b&0x7F) << shift
+					x.AirSlots |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
@@ -1934,11 +1934,11 @@ type Planet struct {
 	Creator      string       `protobuf:"bytes,5,opt,name=creator,proto3" json:"creator,omitempty"`
 	Owner        string       `protobuf:"bytes,6,opt,name=owner,proto3" json:"owner,omitempty"`
 	Space        []string     `protobuf:"bytes,7,rep,name=space,proto3" json:"space,omitempty"`
-	Sky          []string     `protobuf:"bytes,8,rep,name=sky,proto3" json:"sky,omitempty"`
+	Air          []string     `protobuf:"bytes,8,rep,name=air,proto3" json:"air,omitempty"`
 	Land         []string     `protobuf:"bytes,9,rep,name=land,proto3" json:"land,omitempty"`
 	Water        []string     `protobuf:"bytes,10,rep,name=water,proto3" json:"water,omitempty"`
 	SpaceSlots   uint64       `protobuf:"varint,11,opt,name=spaceSlots,proto3" json:"spaceSlots,omitempty"`
-	SkySlots     uint64       `protobuf:"varint,12,opt,name=skySlots,proto3" json:"skySlots,omitempty"`
+	AirSlots     uint64       `protobuf:"varint,12,opt,name=airSlots,proto3" json:"airSlots,omitempty"`
 	LandSlots    uint64       `protobuf:"varint,13,opt,name=landSlots,proto3" json:"landSlots,omitempty"`
 	WaterSlots   uint64       `protobuf:"varint,14,opt,name=waterSlots,proto3" json:"waterSlots,omitempty"`
 	Status       PlanetStatus `protobuf:"varint,15,opt,name=status,proto3,enum=structs.structs.PlanetStatus" json:"status,omitempty"`
@@ -2013,9 +2013,9 @@ func (x *Planet) GetSpace() []string {
 	return nil
 }
 
-func (x *Planet) GetSky() []string {
+func (x *Planet) GetAir() []string {
 	if x != nil {
-		return x.Sky
+		return x.Air
 	}
 	return nil
 }
@@ -2041,9 +2041,9 @@ func (x *Planet) GetSpaceSlots() uint64 {
 	return 0
 }
 
-func (x *Planet) GetSkySlots() uint64 {
+func (x *Planet) GetAirSlots() uint64 {
 	if x != nil {
-		return x.SkySlots
+		return x.AirSlots
 	}
 	return 0
 }
@@ -2132,14 +2132,14 @@ var file_structs_structs_planet_proto_rawDesc = []byte{
 	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x14, 0x0a,
 	0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x77,
 	0x6e, 0x65, 0x72, 0x12, 0x14, 0x0a, 0x05, 0x73, 0x70, 0x61, 0x63, 0x65, 0x18, 0x07, 0x20, 0x03,
-	0x28, 0x09, 0x52, 0x05, 0x73, 0x70, 0x61, 0x63, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x73, 0x6b, 0x79,
-	0x18, 0x08, 0x20, 0x03, 0x28, 0x09, 0x52, 0x03, 0x73, 0x6b, 0x79, 0x12, 0x12, 0x0a, 0x04, 0x6c,
+	0x28, 0x09, 0x52, 0x05, 0x73, 0x70, 0x61, 0x63, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x61, 0x69, 0x72,
+	0x18, 0x08, 0x20, 0x03, 0x28, 0x09, 0x52, 0x03, 0x61, 0x69, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x6c,
 	0x61, 0x6e, 0x64, 0x18, 0x09, 0x20, 0x03, 0x28, 0x09, 0x52, 0x04, 0x6c, 0x61, 0x6e, 0x64, 0x12,
 	0x14, 0x0a, 0x05, 0x77, 0x61, 0x74, 0x65, 0x72, 0x18, 0x0a, 0x20, 0x03, 0x28, 0x09, 0x52, 0x05,
 	0x77, 0x61, 0x74, 0x65, 0x72, 0x12, 0x1e, 0x0a, 0x0a, 0x73, 0x70, 0x61, 0x63, 0x65, 0x53, 0x6c,
 	0x6f, 0x74, 0x73, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x73, 0x70, 0x61, 0x63, 0x65,
-	0x53, 0x6c, 0x6f, 0x74, 0x73, 0x12, 0x1a, 0x0a, 0x08, 0x73, 0x6b, 0x79, 0x53, 0x6c, 0x6f, 0x74,
-	0x73, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x04, 0x52, 0x08, 0x73, 0x6b, 0x79, 0x53, 0x6c, 0x6f, 0x74,
+	0x53, 0x6c, 0x6f, 0x74, 0x73, 0x12, 0x1a, 0x0a, 0x08, 0x61, 0x69, 0x72, 0x53, 0x6c, 0x6f, 0x74,
+	0x73, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x04, 0x52, 0x08, 0x61, 0x69, 0x72, 0x53, 0x6c, 0x6f, 0x74,
 	0x73, 0x12, 0x1c, 0x0a, 0x09, 0x6c, 0x61, 0x6e, 0x64, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x18, 0x0d,
 	0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x6c, 0x61, 0x6e, 0x64, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x12,
 	0x1e, 0x0a, 0x0a, 0x77, 0x61, 0x74, 0x65, 0x72, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x18, 0x0e, 0x20,

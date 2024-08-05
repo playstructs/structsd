@@ -21118,7 +21118,7 @@ paths:
                       type: array
                       items:
                         type: string
-                    sky:
+                    air:
                       type: array
                       items:
                         type: string
@@ -21133,7 +21133,7 @@ paths:
                     spaceSlots:
                       type: string
                       format: uint64
-                    skySlots:
+                    airSlots:
                       type: string
                       format: uint64
                     landSlots:
@@ -21285,7 +21285,7 @@ paths:
                     type: array
                     items:
                       type: string
-                  sky:
+                  air:
                     type: array
                     items:
                       type: string
@@ -21300,7 +21300,7 @@ paths:
                   spaceSlots:
                     type: string
                     format: uint64
-                  skySlots:
+                  airSlots:
                     type: string
                     format: uint64
                   landSlots:
@@ -21373,7 +21373,7 @@ paths:
                       type: array
                       items:
                         type: string
-                    sky:
+                    air:
                       type: array
                       items:
                         type: string
@@ -21388,7 +21388,7 @@ paths:
                     spaceSlots:
                       type: string
                       format: uint64
-                    skySlots:
+                    airSlots:
                       type: string
                       format: uint64
                     landSlots:
@@ -23835,7 +23835,7 @@ paths:
                     type: array
                     items:
                       type: string
-                  sky:
+                  air:
                     type: array
                     items:
                       type: string
@@ -23850,7 +23850,7 @@ paths:
                   spaceSlots:
                     type: string
                     format: uint64
-                  skySlots:
+                  airSlots:
                     type: string
                     format: uint64
                   landSlots:
@@ -33550,7 +33550,7 @@ definitions:
         type: array
         items:
           type: string
-      sky:
+      air:
         type: array
         items:
           type: string
@@ -33565,7 +33565,7 @@ definitions:
       spaceSlots:
         type: string
         format: uint64
-      skySlots:
+      airSlots:
         type: string
         format: uint64
       landSlots:
@@ -34050,7 +34050,7 @@ definitions:
               type: array
               items:
                 type: string
-            sky:
+            air:
               type: array
               items:
                 type: string
@@ -34065,7 +34065,7 @@ definitions:
             spaceSlots:
               type: string
               format: uint64
-            skySlots:
+            airSlots:
               type: string
               format: uint64
             landSlots:
@@ -34557,7 +34557,7 @@ definitions:
             type: array
             items:
               type: string
-          sky:
+          air:
             type: array
             items:
               type: string
@@ -34572,7 +34572,7 @@ definitions:
           spaceSlots:
             type: string
             format: uint64
-          skySlots:
+          airSlots:
             type: string
             format: uint64
           landSlots:
@@ -35231,7 +35231,7 @@ definitions:
             type: array
             items:
               type: string
-          sky:
+          air:
             type: array
             items:
               type: string
@@ -35246,7 +35246,7 @@ definitions:
           spaceSlots:
             type: string
             format: uint64
-          skySlots:
+          airSlots:
             type: string
             format: uint64
           landSlots:
