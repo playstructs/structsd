@@ -44,11 +44,15 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
 
     if (sudoPlayer.Id != callingPlayer.Id) {
         // Check permissions on Creator on Planet
+        playerPermissionId := GetObjectPermissionIDBytes(sudoPlayer.Id, callingPlayer.Id),
+        if (!k.PermissionHasOneOf(ctx, playerPermissionId, types.PermissionPlay)) {
+            return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayer.Id, sudoPlayer.Id)
+        }
 
     }
 
-    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has Play permissions
+    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionPlay)) {
         return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
     }
