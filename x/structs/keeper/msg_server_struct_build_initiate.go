@@ -53,8 +53,6 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
     }
 
-
-
     // Check Ambit / Slot
     switch msg.OperatingAmbit {
         case types.Ambit_land:
@@ -80,7 +78,6 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet (%s) specified already has a struct on that slot", msg.PlanetId)
     }
 
-
     // Load Struct Type
     structType, structTypeFound := k.GetStructType(ctx, msg.StructTypeId)
     if (!structTypeFound) {
@@ -102,9 +99,8 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     }
 
 
-
     // Check player Load for the buildDraw capacity
-
+    structType.BuildDraw
 
     // build Structure object
     // Discharge Owner Player Charge  (set last block time)
