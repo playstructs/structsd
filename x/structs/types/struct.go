@@ -2,6 +2,7 @@ package types
 
 import (
 	//sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "cosmossdk.io/errors"
 )
 
 /*
@@ -12,7 +13,32 @@ import (
  */
 
 
-func CheckLocation(structType StructType, locationType Object, ambit Ambit) {
+func CheckLocation(structType StructType, locationType ObjectType, ambit Ambit) (habitable bool, err error ) {
+
+    // A little overly complicated at the moment but can
+    // easily be expanded to allow for Structs to be built
+    // on other objects
+    //
+    // Currently you can only build fleet and planet structs on planets
+    switch locationType {
+        case ObjectType_planet:
+            if (structType.Category == ObjectType_planet || structType.Category == ObjectType_fleet) {
+                habitable = true
+            }
+        default:
+            habitable = false
+            err = sdkerrors.Wrapf(ErrStructAction, "Struct cannot be exist in the defined location (%s) ", locationType)
+    }
+
+    // Check that the Struct can exist in the specified ambit
+    if Ambit_flag[ambit]&structType.PossibleAmbit != 0 {
+        habitable = true
+    } else {
+        habitable = false
+        err = sdkerrors.Wrapf(ErrStructAction, "Struct cannot be exist in the defined ambit (%s) based on structType (%d) ", ambit, structType.Id)
+    }
+
+    return
 
 }
 
@@ -34,21 +60,20 @@ func CalculateStructPower(fuel uint64) (energy uint64, ratio uint64) {
     return fuel * StructFuelToEnergyConversion, StructFuelToEnergyConversion
 }
 
-func CreateBaseStruct(structType StructType) Struct {
+func CreateBaseStruct(structType StructType, creator string, owner string, locationId string, locationType ObjectType, ambit Ambit, slot uint64) (Struct, error) {
 
-    // TODO check structType
-
+    _, err := CheckLocation(structType, locationType, ambit)
 
     return Struct{
-        Creator:  "",
-        Owner: "",
+        Creator: creator,
+        Owner: owner,
 
         Type: structType.Id,
 
-        LocationId: "",
-        OperatingAmbit: ,
-        Slot: ,
-    }
+        LocationId: locationId,
+        OperatingAmbit: ambit,
+        Slot: slot,
+    }, err
 }
 
 
@@ -58,7 +83,7 @@ type StructState uint64
 
 const (
     // 1
-	StructStateBuilt State = 1 << iota
+	StructStateBuilt StructState = 1 << iota
 	// 2
 	StructStateOnline
 	// 4

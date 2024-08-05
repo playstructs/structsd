@@ -37,6 +37,11 @@ const (
     DifficultySabotageRangeRefine = DifficultyActionAgeRange // 252000 // 7 days
     DifficultySabotageRangePower  = 252000 // 252000 // 7 days
 
+
+    // Current Aim is a 3 hour max
+    Charge_Volts = 100000000
+    Charge_Resistance = 100
+    Charge_Capacitance = 10
 )
 
 var (
@@ -194,11 +199,21 @@ var RegistrationStatus_enum = map[string]RegistrationStatus {
 
 
 var Ambit_enum = map[string]Ambit {
+    "none":  Ambit_none,
     "water": Ambit_water,
     "land":  Ambit_land,
     "air":   Ambit_air,
     "space": Ambit_space,
     "local": Ambit_local,
+}
+
+var Ambit_flag = map[Ambit]uint64 {
+    Ambit_none:  uint64(1) << (Ambit_none),
+    Ambit_water: uint64(1) << (Ambit_water),
+    Ambit_land:  uint64(1) << (Ambit_land),
+    Ambit_air:   uint64(1) << (Ambit_air),
+    Ambit_space: uint64(1) << (Ambit_space),
+    Ambit_local: uint64(1) << (Ambit_local),
 }
 
 

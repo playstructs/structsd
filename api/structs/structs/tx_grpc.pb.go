@@ -51,7 +51,6 @@ const (
 	Msg_StructDeactivate_FullMethodName                              = "/structs.structs.Msg/StructDeactivate"
 	Msg_StructBuildInitiate_FullMethodName                           = "/structs.structs.Msg/StructBuildInitiate"
 	Msg_StructBuildComplete_FullMethodName                           = "/structs.structs.Msg/StructBuildComplete"
-	Msg_StructBuildCompleteAndStash_FullMethodName                   = "/structs.structs.Msg/StructBuildCompleteAndStash"
 	Msg_StructDefenseSet_FullMethodName                              = "/structs.structs.Msg/StructDefenseSet"
 	Msg_StructDefenseClear_FullMethodName                            = "/structs.structs.Msg/StructDefenseClear"
 	Msg_StructMove_FullMethodName                                    = "/structs.structs.Msg/StructMove"
@@ -65,8 +64,6 @@ const (
 	Msg_StructOreRefineryActivate_FullMethodName                     = "/structs.structs.Msg/StructOreRefineryActivate"
 	Msg_StructOreRefineryDeactivate_FullMethodName                   = "/structs.structs.Msg/StructOreRefineryDeactivate"
 	Msg_StructOreRefineryComplete_FullMethodName                     = "/structs.structs.Msg/StructOreRefineryComplete"
-	Msg_StructStorageStash_FullMethodName                            = "/structs.structs.Msg/StructStorageStash"
-	Msg_StructStorageRecall_FullMethodName                           = "/structs.structs.Msg/StructStorageRecall"
 	Msg_SubstationCreate_FullMethodName                              = "/structs.structs.Msg/SubstationCreate"
 	Msg_SubstationDelete_FullMethodName                              = "/structs.structs.Msg/SubstationDelete"
 	Msg_SubstationAllocationConnect_FullMethodName                   = "/structs.structs.Msg/SubstationAllocationConnect"
@@ -115,7 +112,6 @@ type MsgClient interface {
 	StructDeactivate(ctx context.Context, in *MsgStructDeactivate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructBuildInitiate(ctx context.Context, in *MsgStructBuildInitiate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructBuildComplete(ctx context.Context, in *MsgStructBuildComplete, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
-	StructBuildCompleteAndStash(ctx context.Context, in *MsgStructBuildCompleteAndStash, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructDefenseSet(ctx context.Context, in *MsgStructDefenseSet, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructDefenseClear(ctx context.Context, in *MsgStructDefenseClear, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructMove(ctx context.Context, in *MsgStructMove, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
@@ -129,8 +125,6 @@ type MsgClient interface {
 	StructOreRefineryActivate(ctx context.Context, in *MsgStructOreRefineryActivate, opts ...grpc.CallOption) (*MsgStructOreRefineryStatusResponse, error)
 	StructOreRefineryDeactivate(ctx context.Context, in *MsgStructOreRefineryDeactivate, opts ...grpc.CallOption) (*MsgStructOreRefineryStatusResponse, error)
 	StructOreRefineryComplete(ctx context.Context, in *MsgStructOreRefineryComplete, opts ...grpc.CallOption) (*MsgStructOreRefineryStatusResponse, error)
-	StructStorageStash(ctx context.Context, in *MsgStructStorageStash, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
-	StructStorageRecall(ctx context.Context, in *MsgStructStorageRecall, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	SubstationCreate(ctx context.Context, in *MsgSubstationCreate, opts ...grpc.CallOption) (*MsgSubstationCreateResponse, error)
 	SubstationDelete(ctx context.Context, in *MsgSubstationDelete, opts ...grpc.CallOption) (*MsgSubstationDeleteResponse, error)
 	SubstationAllocationConnect(ctx context.Context, in *MsgSubstationAllocationConnect, opts ...grpc.CallOption) (*MsgSubstationAllocationConnectResponse, error)
@@ -438,15 +432,6 @@ func (c *msgClient) StructBuildComplete(ctx context.Context, in *MsgStructBuildC
 	return out, nil
 }
 
-func (c *msgClient) StructBuildCompleteAndStash(ctx context.Context, in *MsgStructBuildCompleteAndStash, opts ...grpc.CallOption) (*MsgStructStatusResponse, error) {
-	out := new(MsgStructStatusResponse)
-	err := c.cc.Invoke(ctx, Msg_StructBuildCompleteAndStash_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *msgClient) StructDefenseSet(ctx context.Context, in *MsgStructDefenseSet, opts ...grpc.CallOption) (*MsgStructStatusResponse, error) {
 	out := new(MsgStructStatusResponse)
 	err := c.cc.Invoke(ctx, Msg_StructDefenseSet_FullMethodName, in, out, opts...)
@@ -564,24 +549,6 @@ func (c *msgClient) StructOreRefineryComplete(ctx context.Context, in *MsgStruct
 	return out, nil
 }
 
-func (c *msgClient) StructStorageStash(ctx context.Context, in *MsgStructStorageStash, opts ...grpc.CallOption) (*MsgStructStatusResponse, error) {
-	out := new(MsgStructStatusResponse)
-	err := c.cc.Invoke(ctx, Msg_StructStorageStash_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) StructStorageRecall(ctx context.Context, in *MsgStructStorageRecall, opts ...grpc.CallOption) (*MsgStructStatusResponse, error) {
-	out := new(MsgStructStatusResponse)
-	err := c.cc.Invoke(ctx, Msg_StructStorageRecall_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *msgClient) SubstationCreate(ctx context.Context, in *MsgSubstationCreate, opts ...grpc.CallOption) (*MsgSubstationCreateResponse, error) {
 	out := new(MsgSubstationCreateResponse)
 	err := c.cc.Invoke(ctx, Msg_SubstationCreate_FullMethodName, in, out, opts...)
@@ -692,7 +659,6 @@ type MsgServer interface {
 	StructDeactivate(context.Context, *MsgStructDeactivate) (*MsgStructStatusResponse, error)
 	StructBuildInitiate(context.Context, *MsgStructBuildInitiate) (*MsgStructStatusResponse, error)
 	StructBuildComplete(context.Context, *MsgStructBuildComplete) (*MsgStructStatusResponse, error)
-	StructBuildCompleteAndStash(context.Context, *MsgStructBuildCompleteAndStash) (*MsgStructStatusResponse, error)
 	StructDefenseSet(context.Context, *MsgStructDefenseSet) (*MsgStructStatusResponse, error)
 	StructDefenseClear(context.Context, *MsgStructDefenseClear) (*MsgStructStatusResponse, error)
 	StructMove(context.Context, *MsgStructMove) (*MsgStructStatusResponse, error)
@@ -706,8 +672,6 @@ type MsgServer interface {
 	StructOreRefineryActivate(context.Context, *MsgStructOreRefineryActivate) (*MsgStructOreRefineryStatusResponse, error)
 	StructOreRefineryDeactivate(context.Context, *MsgStructOreRefineryDeactivate) (*MsgStructOreRefineryStatusResponse, error)
 	StructOreRefineryComplete(context.Context, *MsgStructOreRefineryComplete) (*MsgStructOreRefineryStatusResponse, error)
-	StructStorageStash(context.Context, *MsgStructStorageStash) (*MsgStructStatusResponse, error)
-	StructStorageRecall(context.Context, *MsgStructStorageRecall) (*MsgStructStatusResponse, error)
 	SubstationCreate(context.Context, *MsgSubstationCreate) (*MsgSubstationCreateResponse, error)
 	SubstationDelete(context.Context, *MsgSubstationDelete) (*MsgSubstationDeleteResponse, error)
 	SubstationAllocationConnect(context.Context, *MsgSubstationAllocationConnect) (*MsgSubstationAllocationConnectResponse, error)
@@ -820,9 +784,6 @@ func (UnimplementedMsgServer) StructBuildInitiate(context.Context, *MsgStructBui
 func (UnimplementedMsgServer) StructBuildComplete(context.Context, *MsgStructBuildComplete) (*MsgStructStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructBuildComplete not implemented")
 }
-func (UnimplementedMsgServer) StructBuildCompleteAndStash(context.Context, *MsgStructBuildCompleteAndStash) (*MsgStructStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StructBuildCompleteAndStash not implemented")
-}
 func (UnimplementedMsgServer) StructDefenseSet(context.Context, *MsgStructDefenseSet) (*MsgStructStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructDefenseSet not implemented")
 }
@@ -861,12 +822,6 @@ func (UnimplementedMsgServer) StructOreRefineryDeactivate(context.Context, *MsgS
 }
 func (UnimplementedMsgServer) StructOreRefineryComplete(context.Context, *MsgStructOreRefineryComplete) (*MsgStructOreRefineryStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructOreRefineryComplete not implemented")
-}
-func (UnimplementedMsgServer) StructStorageStash(context.Context, *MsgStructStorageStash) (*MsgStructStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StructStorageStash not implemented")
-}
-func (UnimplementedMsgServer) StructStorageRecall(context.Context, *MsgStructStorageRecall) (*MsgStructStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StructStorageRecall not implemented")
 }
 func (UnimplementedMsgServer) SubstationCreate(context.Context, *MsgSubstationCreate) (*MsgSubstationCreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubstationCreate not implemented")
@@ -1481,24 +1436,6 @@ func _Msg_StructBuildComplete_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_StructBuildCompleteAndStash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStructBuildCompleteAndStash)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).StructBuildCompleteAndStash(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_StructBuildCompleteAndStash_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StructBuildCompleteAndStash(ctx, req.(*MsgStructBuildCompleteAndStash))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Msg_StructDefenseSet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgStructDefenseSet)
 	if err := dec(in); err != nil {
@@ -1729,42 +1666,6 @@ func _Msg_StructOreRefineryComplete_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).StructOreRefineryComplete(ctx, req.(*MsgStructOreRefineryComplete))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_StructStorageStash_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStructStorageStash)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).StructStorageStash(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_StructStorageStash_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StructStorageStash(ctx, req.(*MsgStructStorageStash))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_StructStorageRecall_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStructStorageRecall)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).StructStorageRecall(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_StructStorageRecall_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StructStorageRecall(ctx, req.(*MsgStructStorageRecall))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2049,10 +1950,6 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_StructBuildComplete_Handler,
 		},
 		{
-			MethodName: "StructBuildCompleteAndStash",
-			Handler:    _Msg_StructBuildCompleteAndStash_Handler,
-		},
-		{
 			MethodName: "StructDefenseSet",
 			Handler:    _Msg_StructDefenseSet_Handler,
 		},
@@ -2103,14 +2000,6 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StructOreRefineryComplete",
 			Handler:    _Msg_StructOreRefineryComplete_Handler,
-		},
-		{
-			MethodName: "StructStorageStash",
-			Handler:    _Msg_StructStorageStash_Handler,
-		},
-		{
-			MethodName: "StructStorageRecall",
-			Handler:    _Msg_StructStorageRecall_Handler,
 		},
 		{
 			MethodName: "SubstationCreate",

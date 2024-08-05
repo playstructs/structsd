@@ -81,47 +81,38 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     }
 
 
-
-
     // Load Struct Type
     structType, structTypeFound := k.GetStructType(ctx, msg.StructTypeId)
     if (!structTypeFound) {
-     return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct Type (%d) was not found. Building a Struct with schematics might be tough", msg.StructTypeId)
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct Type (%d) was not found. Building a Struct with schematics might be tough", msg.StructTypeId)
     }
-    // Check ambit for struct type
-    // TODO
-    // Need some way to use the Ambit type as as flag
-    // Check ambit against as a flag structType.possibleAmbit
-    // msg.OperatingAmbit * 2
-
-
 
     // Check Sudo Player Charge
+    playerCharge := k.GetPlayerCharge(ctx, sudoPlayer)
+    if (playerCharge < structType.BuildCharge) {
+        k.DischargePlayer(ctx, sudoPlayer)
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to build, but player (%s) only had %d", msg.StructTypeId, structType.BuildCharge, sudoPlayer.Id, playerCharge)
+    }
+
+
+    // This process will check the location details to make sure they're acceptable based on the structType
+    structure, err := types.CreateBaseStruct(structType, msg.Creator, sudoPlayer.Id, planet.Id, types.ObjectType_planet, msg.Ambit, msg.Slot)
+    if (err != nil) {
+        return &types.MsgStructBuildInitiateResponse{}, err
+    }
+
 
 
     // Check player Load for the buildDraw capacity
 
 
-
-    // Check to see if the Struct Type is a planet or fleet
-    // Both Fleet and Planetary Structs are built on the planet
-
-
     // build Structure object
     // Discharge Owner Player Charge  (set last block time)
+    k.DischargePlayer(ctx, sudoPlayer)
+
     // Append Struct
-
-
-
-
-
-
-
-
-
-
-    structure := k.AppendStruct(ctx, player, msg.StructType, planet, msg.Slot)
-    planet.SetLandSlot(structure)
+    structure = k.AppendStruct(ctx, structure, structType)
+    planet.SetSlot(structure)
     k.SetPlanet(ctx, planet)
 
 	return &types.MsgStructBuildInitiateResponse{Struct: structure}, nil

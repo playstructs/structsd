@@ -66,11 +66,12 @@ enum registrationStatus {
 
 
 enum ambit {
-    water   = 0;
-    land    = 1;
-    air     = 2;
-    space   = 3;
-    local   = 4;
+    none    = 0;
+    water   = 1;
+    land    = 2;
+    air     = 3;
+    space   = 4;
+    local   = 5;
 }
 
 

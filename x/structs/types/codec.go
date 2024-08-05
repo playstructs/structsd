@@ -50,17 +50,34 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerUpdatePrimaryAddress{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructActivate{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructDeactivate{},)
+
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructBuildInitiate{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructBuildComplete{},)
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructMineActivate{},)
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructMineDeactivate{},)
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructMine{},)
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructRefineActivate{},)
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructRefineDeactivate{},)
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructRefine{},)
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructInfuse{},)
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationCreate{},)
+    // Not MVP
+    //registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructBuildCompleteAndStash{},)
 
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructDefenseSet{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructDefenseClear{},)
+
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructMove{},)
+
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructAttack{},)
+
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructStealthActivate{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructStealthDeactivate{},)
+
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructGeneratorInfuse{},)
+
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructOreMinerActivate{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructOreMinerDeactivate{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructOreMinerComplete{},)
+
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructOreRefineryActivate{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructOreRefineryDeactivate{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructOreRefineryComplete{},)
+
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationCreate{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationDelete{}, )
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationAllocationConnect{}, )
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationAllocationDisconnect{}, )

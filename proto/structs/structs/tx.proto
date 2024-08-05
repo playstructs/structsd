@@ -63,7 +63,8 @@ service Msg {
 
   rpc StructBuildInitiate            (MsgStructBuildInitiate           ) returns (MsgStructStatusResponse                  );
   rpc StructBuildComplete            (MsgStructBuildComplete           ) returns (MsgStructStatusResponse                  );
-  rpc StructBuildCompleteAndStash    (MsgStructBuildCompleteAndStash   ) returns (MsgStructStatusResponse                  );
+  // Not MVP
+  // rpc StructBuildCompleteAndStash    (MsgStructBuildCompleteAndStash   ) returns (MsgStructStatusResponse                  );
 
   rpc StructDefenseSet               (MsgStructDefenseSet              ) returns (MsgStructStatusResponse                  );
   rpc StructDefenseClear             (MsgStructDefenseClear            ) returns (MsgStructStatusResponse                  );
@@ -85,8 +86,9 @@ service Msg {
   rpc StructOreRefineryDeactivate    (MsgStructOreRefineryDeactivate   ) returns (MsgStructOreRefineryStatusResponse       );
   rpc StructOreRefineryComplete      (MsgStructOreRefineryComplete     ) returns (MsgStructOreRefineryStatusResponse       );
 
-  rpc StructStorageStash             (MsgStructStorageStash            ) returns (MsgStructStatusResponse                  );
-  rpc StructStorageRecall            (MsgStructStorageRecall           ) returns (MsgStructStatusResponse                  );
+  // Not MVP
+  //  rpc StructStorageStash             (MsgStructStorageStash            ) returns (MsgStructStatusResponse                  );
+  //  rpc StructStorageRecall            (MsgStructStorageRecall           ) returns (MsgStructStatusResponse                  );
 
 
   rpc SubstationCreate               (MsgSubstationCreate              ) returns (MsgSubstationCreateResponse              );

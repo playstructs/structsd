@@ -21984,12 +21984,13 @@ paths:
                     operatingAmbit:
                       type: string
                       enum:
+                        - none
                         - water
                         - land
                         - air
                         - space
                         - local
-                      default: water
+                      default: none
                     slot:
                       type: string
                       format: uint64
@@ -22131,12 +22132,13 @@ paths:
                   operatingAmbit:
                     type: string
                     enum:
+                      - none
                       - water
                       - land
                       - air
                       - space
                       - local
-                    default: water
+                    default: none
                   slot:
                     type: string
                     format: uint64
@@ -24007,12 +24009,13 @@ paths:
                   operatingAmbit:
                     type: string
                     enum:
+                      - none
                       - water
                       - land
                       - air
                       - space
                       - local
-                    default: water
+                    default: none
                   slot:
                     type: string
                     format: uint64
@@ -24096,6 +24099,9 @@ paths:
         - Msg
   /structs.structs.Msg/StructBuildComplete:
     post:
+      summary: |-
+        Not MVP
+         rpc StructBuildCompleteAndStash    (MsgStructBuildCompleteAndStash   ) returns (MsgStructStatusResponse                  );
       operationId: StructsStructsMsg_StructBuildComplete
       responses:
         '200':
@@ -24126,12 +24132,13 @@ paths:
                   operatingAmbit:
                     type: string
                     enum:
+                      - none
                       - water
                       - land
                       - air
                       - space
                       - local
-                    default: water
+                    default: none
                   slot:
                     type: string
                     format: uint64
@@ -24172,96 +24179,6 @@ paths:
                 type: boolean
       tags:
         - Msg
-  /structs.structs.Msg/StructBuildCompleteAndStash:
-    post:
-      operationId: StructsStructsMsg_StructBuildCompleteAndStash
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              struct:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    title: What it is
-                  index:
-                    type: string
-                    format: uint64
-                  type:
-                    type: string
-                    format: uint64
-                  creator:
-                    type: string
-                    title: Who is it
-                  owner:
-                    type: string
-                  locationId:
-                    type: string
-                    title: Where it is
-                  operatingAmbit:
-                    type: string
-                    enum:
-                      - water
-                      - land
-                      - air
-                      - space
-                      - local
-                    default: water
-                  slot:
-                    type: string
-                    format: uint64
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              creator:
-                type: string
-              structId:
-                type: string
-              proof:
-                type: string
-              nonce:
-                type: string
-              storageDestinationId:
-                type: string
-              storageAmbit:
-                type: string
-                enum:
-                  - water
-                  - land
-                  - air
-                  - space
-                  - local
-                default: water
-              storageSlot:
-                type: string
-                format: uint64
-      tags:
-        - Msg
   /structs.structs.Msg/StructBuildInitiate:
     post:
       operationId: StructsStructsMsg_StructBuildInitiate
@@ -24294,12 +24211,13 @@ paths:
                   operatingAmbit:
                     type: string
                     enum:
+                      - none
                       - water
                       - land
                       - air
                       - space
                       - local
-                    default: water
+                    default: none
                   slot:
                     type: string
                     format: uint64
@@ -24338,12 +24256,13 @@ paths:
               operatingAmbit:
                 type: string
                 enum:
+                  - none
                   - water
                   - land
                   - air
                   - space
                   - local
-                default: water
+                default: none
               slot:
                 type: string
                 format: uint64
@@ -24381,12 +24300,13 @@ paths:
                   operatingAmbit:
                     type: string
                     enum:
+                      - none
                       - water
                       - land
                       - air
                       - space
                       - local
-                    default: water
+                    default: none
                   slot:
                     type: string
                     format: uint64
@@ -24453,12 +24373,13 @@ paths:
                   operatingAmbit:
                     type: string
                     enum:
+                      - none
                       - water
                       - land
                       - air
                       - space
                       - local
-                    default: water
+                    default: none
                   slot:
                     type: string
                     format: uint64
@@ -24525,12 +24446,13 @@ paths:
                   operatingAmbit:
                     type: string
                     enum:
+                      - none
                       - water
                       - land
                       - air
                       - space
                       - local
-                    default: water
+                    default: none
                   slot:
                     type: string
                     format: uint64
@@ -24640,12 +24562,13 @@ paths:
                   operatingAmbit:
                     type: string
                     enum:
+                      - none
                       - water
                       - land
                       - air
                       - space
                       - local
-                    default: water
+                    default: none
                   slot:
                     type: string
                     format: uint64
@@ -24683,12 +24606,13 @@ paths:
               ambit:
                 type: string
                 enum:
+                  - none
                   - water
                   - land
                   - air
                   - space
                   - local
-                default: water
+                default: none
               slot:
                 type: string
                 format: uint64
@@ -24726,12 +24650,13 @@ paths:
                   operatingAmbit:
                     type: string
                     enum:
+                      - none
                       - water
                       - land
                       - air
                       - space
                       - local
-                    default: water
+                    default: none
                   slot:
                     type: string
                     format: uint64
@@ -24798,12 +24723,13 @@ paths:
                   operatingAmbit:
                     type: string
                     enum:
+                      - none
                       - water
                       - land
                       - air
                       - space
                       - local
-                    default: water
+                    default: none
                   slot:
                     type: string
                     format: uint64
@@ -24874,12 +24800,13 @@ paths:
                   operatingAmbit:
                     type: string
                     enum:
+                      - none
                       - water
                       - land
                       - air
                       - space
                       - local
-                    default: water
+                    default: none
                   slot:
                     type: string
                     format: uint64
@@ -24946,12 +24873,13 @@ paths:
                   operatingAmbit:
                     type: string
                     enum:
+                      - none
                       - water
                       - land
                       - air
                       - space
                       - local
-                    default: water
+                    default: none
                   slot:
                     type: string
                     format: uint64
@@ -25018,12 +24946,13 @@ paths:
                   operatingAmbit:
                     type: string
                     enum:
+                      - none
                       - water
                       - land
                       - air
                       - space
                       - local
-                    default: water
+                    default: none
                   slot:
                     type: string
                     format: uint64
@@ -25094,12 +25023,13 @@ paths:
                   operatingAmbit:
                     type: string
                     enum:
+                      - none
                       - water
                       - land
                       - air
                       - space
                       - local
-                    default: water
+                    default: none
                   slot:
                     type: string
                     format: uint64
@@ -25166,12 +25096,13 @@ paths:
                   operatingAmbit:
                     type: string
                     enum:
+                      - none
                       - water
                       - land
                       - air
                       - space
                       - local
-                    default: water
+                    default: none
                   slot:
                     type: string
                     format: uint64
@@ -25238,12 +25169,13 @@ paths:
                   operatingAmbit:
                     type: string
                     enum:
+                      - none
                       - water
                       - land
                       - air
                       - space
                       - local
-                    default: water
+                    default: none
                   slot:
                     type: string
                     format: uint64
@@ -25276,180 +25208,6 @@ paths:
                 type: string
               structId:
                 type: string
-      tags:
-        - Msg
-  /structs.structs.Msg/StructStorageRecall:
-    post:
-      operationId: StructsStructsMsg_StructStorageRecall
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              struct:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    title: What it is
-                  index:
-                    type: string
-                    format: uint64
-                  type:
-                    type: string
-                    format: uint64
-                  creator:
-                    type: string
-                    title: Who is it
-                  owner:
-                    type: string
-                  locationId:
-                    type: string
-                    title: Where it is
-                  operatingAmbit:
-                    type: string
-                    enum:
-                      - water
-                      - land
-                      - air
-                      - space
-                      - local
-                    default: water
-                  slot:
-                    type: string
-                    format: uint64
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              creator:
-                type: string
-              structId:
-                type: string
-              locationId:
-                type: string
-              ambit:
-                type: string
-                enum:
-                  - water
-                  - land
-                  - air
-                  - space
-                  - local
-                default: water
-              slot:
-                type: string
-                format: uint64
-              activate:
-                type: boolean
-      tags:
-        - Msg
-  /structs.structs.Msg/StructStorageStash:
-    post:
-      operationId: StructsStructsMsg_StructStorageStash
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              struct:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    title: What it is
-                  index:
-                    type: string
-                    format: uint64
-                  type:
-                    type: string
-                    format: uint64
-                  creator:
-                    type: string
-                    title: Who is it
-                  owner:
-                    type: string
-                  locationId:
-                    type: string
-                    title: Where it is
-                  operatingAmbit:
-                    type: string
-                    enum:
-                      - water
-                      - land
-                      - air
-                      - space
-                      - local
-                    default: water
-                  slot:
-                    type: string
-                    format: uint64
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              creator:
-                type: string
-              structId:
-                type: string
-              locationId:
-                type: string
-              ambit:
-                type: string
-                enum:
-                  - water
-                  - land
-                  - air
-                  - space
-                  - local
-                default: water
-              slot:
-                type: string
-                format: uint64
       tags:
         - Msg
   /structs.structs.Msg/SubstationAllocationConnect:
@@ -34506,12 +34264,13 @@ definitions:
             operatingAmbit:
               type: string
               enum:
+                - none
                 - water
                 - land
                 - air
                 - space
                 - local
-              default: water
+              default: none
             slot:
               type: string
               format: uint64
@@ -34928,12 +34687,13 @@ definitions:
           operatingAmbit:
             type: string
             enum:
+              - none
               - water
               - land
               - air
               - space
               - local
-            default: water
+            default: none
           slot:
             type: string
             format: uint64
@@ -35014,12 +34774,13 @@ definitions:
       operatingAmbit:
         type: string
         enum:
+          - none
           - water
           - land
           - air
           - space
           - local
-        default: water
+        default: none
       slot:
         type: string
         format: uint64
@@ -35054,12 +34815,13 @@ definitions:
   structs.structs.ambit:
     type: string
     enum:
+      - none
       - water
       - land
       - air
       - space
       - local
-    default: water
+    default: none
   structs.structs.guildJoinBypassLevel:
     type: string
     enum:
@@ -35558,31 +35320,6 @@ definitions:
         type: string
       activate:
         type: boolean
-  structs.structs.MsgStructBuildCompleteAndStash:
-    type: object
-    properties:
-      creator:
-        type: string
-      structId:
-        type: string
-      proof:
-        type: string
-      nonce:
-        type: string
-      storageDestinationId:
-        type: string
-      storageAmbit:
-        type: string
-        enum:
-          - water
-          - land
-          - air
-          - space
-          - local
-        default: water
-      storageSlot:
-        type: string
-        format: uint64
   structs.structs.MsgStructBuildInitiate:
     type: object
     properties:
@@ -35596,12 +35333,13 @@ definitions:
       operatingAmbit:
         type: string
         enum:
+          - none
           - water
           - land
           - air
           - space
           - local
-        default: water
+        default: none
       slot:
         type: string
         format: uint64
@@ -35651,12 +35389,13 @@ definitions:
       ambit:
         type: string
         enum:
+          - none
           - water
           - land
           - air
           - space
           - local
-        default: water
+        default: none
       slot:
         type: string
         format: uint64
@@ -35711,12 +35450,13 @@ definitions:
           operatingAmbit:
             type: string
             enum:
+              - none
               - water
               - land
               - air
               - space
               - local
-            default: water
+            default: none
           slot:
             type: string
             format: uint64
@@ -35771,12 +35511,13 @@ definitions:
           operatingAmbit:
             type: string
             enum:
+              - none
               - water
               - land
               - air
               - space
               - local
-            default: water
+            default: none
           slot:
             type: string
             format: uint64
@@ -35806,12 +35547,13 @@ definitions:
           operatingAmbit:
             type: string
             enum:
+              - none
               - water
               - land
               - air
               - space
               - local
-            default: water
+            default: none
           slot:
             type: string
             format: uint64
@@ -35829,50 +35571,6 @@ definitions:
         type: string
       structId:
         type: string
-  structs.structs.MsgStructStorageRecall:
-    type: object
-    properties:
-      creator:
-        type: string
-      structId:
-        type: string
-      locationId:
-        type: string
-      ambit:
-        type: string
-        enum:
-          - water
-          - land
-          - air
-          - space
-          - local
-        default: water
-      slot:
-        type: string
-        format: uint64
-      activate:
-        type: boolean
-  structs.structs.MsgStructStorageStash:
-    type: object
-    properties:
-      creator:
-        type: string
-      structId:
-        type: string
-      locationId:
-        type: string
-      ambit:
-        type: string
-        enum:
-          - water
-          - land
-          - air
-          - space
-          - local
-        default: water
-      slot:
-        type: string
-        format: uint64
   structs.structs.MsgSubstationAllocationConnect:
     type: object
     properties:

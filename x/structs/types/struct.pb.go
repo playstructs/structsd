@@ -115,7 +115,7 @@ func (m *Struct) GetOperatingAmbit() Ambit {
 	if m != nil {
 		return m.OperatingAmbit
 	}
-	return Ambit_water
+	return Ambit_none
 }
 
 func (m *Struct) GetSlot() uint64 {
@@ -682,7 +682,7 @@ func (m *StructDefender) GetOperatingAmbit() Ambit {
 	if m != nil {
 		return m.OperatingAmbit
 	}
-	return Ambit_water
+	return Ambit_none
 }
 
 func (m *StructDefender) GetCounterAttack() uint64 {

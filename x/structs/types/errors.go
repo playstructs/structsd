@@ -17,6 +17,7 @@ var (
 
 var (
     ErrGridMalfunction                      = sdkerrors.Register(ModuleName, 1800, "Grid malfunction")
+    ErrInsufficientCharge                   = sdkerrors.Register(ModuleName, 1801, "Insufficient Charge for Action")
 
     ErrObjectNotFound                       = sdkerrors.Register(ModuleName, 1900, "object not found")
 
@@ -64,6 +65,7 @@ var (
 
     ErrPlanetExploration                        = sdkerrors.Register(ModuleName,  1711, "planet exploration failed")
 
+
     ErrStructBuildInitiate                      = sdkerrors.Register(ModuleName,  1721, "Struct build initialization failed")
     ErrStructBuildComplete                      = sdkerrors.Register(ModuleName,  1722, "Struct build completion failed")
     ErrStructMineActivate                       = sdkerrors.Register(ModuleName,  1723, "Struct mining system activation failed")
@@ -75,6 +77,9 @@ var (
     ErrStructInfuse                             = sdkerrors.Register(ModuleName,  1729, "Struct infusion action failed")
     ErrStructAllocationCreate                   = sdkerrors.Register(ModuleName,  1730, "Allocation of power from struct failed")
     ErrStructActivate                           = sdkerrors.Register(ModuleName,  1731, "Struct activation failed")
+
+    ErrStructAction                             = sdkerrors.Register(ModuleName,  1700, "Struct action failed")
+
 
     ErrSabotage                                 = sdkerrors.Register(ModuleName,  3800, "Sabotage failed")
 
