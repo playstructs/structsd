@@ -23933,50 +23933,6 @@ paths:
                 type: string
       tags:
         - Msg
-  /structs.structs.Msg/Sabotage:
-    post:
-      summary: To Remove after battle mechanics added
-      operationId: StructsStructsMsg_Sabotage
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              creator:
-                type: string
-              structId:
-                type: string
-              proof:
-                type: string
-              nonce:
-                type: string
-      tags:
-        - Msg
   /structs.structs.Msg/StructActivate:
     post:
       operationId: StructsStructsMsg_StructActivate
@@ -35269,19 +35225,6 @@ definitions:
       primaryAddress:
         type: string
   structs.structs.MsgPlayerUpdatePrimaryAddressResponse:
-    type: object
-  structs.structs.MsgSabotage:
-    type: object
-    properties:
-      creator:
-        type: string
-      structId:
-        type: string
-      proof:
-        type: string
-      nonce:
-        type: string
-  structs.structs.MsgSabotageResponse:
     type: object
   structs.structs.MsgStructActivate:
     type: object

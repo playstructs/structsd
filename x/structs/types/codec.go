@@ -85,8 +85,6 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationPlayerDisconnect{}, )
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationPlayerMigrate{}, )
 
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSabotage{},)
-
 	msgservice.RegisterMsgServiceDesc(registry, &_Msg_serviceDesc)
 }
 

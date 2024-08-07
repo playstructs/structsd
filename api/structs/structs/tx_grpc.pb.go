@@ -71,7 +71,6 @@ const (
 	Msg_SubstationPlayerConnect_FullMethodName                       = "/structs.structs.Msg/SubstationPlayerConnect"
 	Msg_SubstationPlayerDisconnect_FullMethodName                    = "/structs.structs.Msg/SubstationPlayerDisconnect"
 	Msg_SubstationPlayerMigrate_FullMethodName                       = "/structs.structs.Msg/SubstationPlayerMigrate"
-	Msg_Sabotage_FullMethodName                                      = "/structs.structs.Msg/Sabotage"
 )
 
 // MsgClient is the client API for Msg service.
@@ -132,8 +131,6 @@ type MsgClient interface {
 	SubstationPlayerConnect(ctx context.Context, in *MsgSubstationPlayerConnect, opts ...grpc.CallOption) (*MsgSubstationPlayerConnectResponse, error)
 	SubstationPlayerDisconnect(ctx context.Context, in *MsgSubstationPlayerDisconnect, opts ...grpc.CallOption) (*MsgSubstationPlayerDisconnectResponse, error)
 	SubstationPlayerMigrate(ctx context.Context, in *MsgSubstationPlayerMigrate, opts ...grpc.CallOption) (*MsgSubstationPlayerMigrateResponse, error)
-	// To Remove after battle mechanics added
-	Sabotage(ctx context.Context, in *MsgSabotage, opts ...grpc.CallOption) (*MsgSabotageResponse, error)
 }
 
 type msgClient struct {
@@ -612,15 +609,6 @@ func (c *msgClient) SubstationPlayerMigrate(ctx context.Context, in *MsgSubstati
 	return out, nil
 }
 
-func (c *msgClient) Sabotage(ctx context.Context, in *MsgSabotage, opts ...grpc.CallOption) (*MsgSabotageResponse, error) {
-	out := new(MsgSabotageResponse)
-	err := c.cc.Invoke(ctx, Msg_Sabotage_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // MsgServer is the server API for Msg service.
 // All implementations must embed UnimplementedMsgServer
 // for forward compatibility
@@ -679,8 +667,6 @@ type MsgServer interface {
 	SubstationPlayerConnect(context.Context, *MsgSubstationPlayerConnect) (*MsgSubstationPlayerConnectResponse, error)
 	SubstationPlayerDisconnect(context.Context, *MsgSubstationPlayerDisconnect) (*MsgSubstationPlayerDisconnectResponse, error)
 	SubstationPlayerMigrate(context.Context, *MsgSubstationPlayerMigrate) (*MsgSubstationPlayerMigrateResponse, error)
-	// To Remove after battle mechanics added
-	Sabotage(context.Context, *MsgSabotage) (*MsgSabotageResponse, error)
 	mustEmbedUnimplementedMsgServer()
 }
 
@@ -843,9 +829,6 @@ func (UnimplementedMsgServer) SubstationPlayerDisconnect(context.Context, *MsgSu
 }
 func (UnimplementedMsgServer) SubstationPlayerMigrate(context.Context, *MsgSubstationPlayerMigrate) (*MsgSubstationPlayerMigrateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubstationPlayerMigrate not implemented")
-}
-func (UnimplementedMsgServer) Sabotage(context.Context, *MsgSabotage) (*MsgSabotageResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Sabotage not implemented")
 }
 func (UnimplementedMsgServer) mustEmbedUnimplementedMsgServer() {}
 
@@ -1796,24 +1779,6 @@ func _Msg_SubstationPlayerMigrate_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_Sabotage_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgSabotage)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).Sabotage(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_Sabotage_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).Sabotage(ctx, req.(*MsgSabotage))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // Msg_ServiceDesc is the grpc.ServiceDesc for Msg service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -2028,10 +1993,6 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SubstationPlayerMigrate",
 			Handler:    _Msg_SubstationPlayerMigrate_Handler,
-		},
-		{
-			MethodName: "Sabotage",
-			Handler:    _Msg_Sabotage_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

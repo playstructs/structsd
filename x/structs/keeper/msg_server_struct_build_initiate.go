@@ -28,7 +28,6 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build initialization requires Player account but none associated with %s", msg.Creator)
     }
     callingPlayerId := GetObjectID(types.ObjectType_player, callingPlayerIndex)
-    //callingPlayer, _ := k.GetPlayerFromIndex(ctx, callingPlayerIndex, true)
 
 
     // Load Planet from the PlanetId
@@ -37,6 +36,7 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was ot found. Building a Struct in a void might be tough", msg.PlanetId)
     }
 
+    // Load the target player account (Possibly different than calling player)
     sudoPlayerIndex := k.GetPlayerIndexFromAddress(ctx, planet.Owner)
     if (sudoPlayerIndex == 0) {
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build initialization requires Player but somehow planet has none %s", planet.Owner)
@@ -105,7 +105,7 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     // Check player Load for the buildDraw capacity
     sudoPlayerTotalLoad := sudoPlayer.Load + sudoPlayer.StructsLoad
     sudoPlayerTotalCapacity := sudoPlayer.Capacity + sudoPlayer.CapacitySecondary
-    // Is load complete shot already?
+    // Is load completely shot already?
     if (sudoPlayerTotalLoad > sudoPlayerTotalCapacity) {
         k.DischargePlayer(ctx, sudoPlayer.Id)
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during build, but player (%s) has none available", msg.StructTypeId, structType.BuildDraw, sudoPlayer.Id)

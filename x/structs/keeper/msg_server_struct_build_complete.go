@@ -19,7 +19,6 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     if (callingPlayerIndex == 0) {
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build actions requires Player account but none associated with %s", msg.Creator)
     }
-    //callingPlayer, _ := k.GetPlayerFromIndex(ctx, callingPlayerIndex, true)
     callingPlayerId := GetObjectID(types.ObjectType_player, callingPlayerIndex)
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
@@ -56,13 +55,18 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     }
 
     // Check player Load for the passiveDraw capacity
-
-    // TODO Fix this to remove the buildDraw before checking capacity
-    // TODO TODO TODO
-    // FIX FIX FIX
     sudoPlayerTotalLoad := sudoPlayer.Load + sudoPlayer.StructsLoad
     sudoPlayerTotalCapacity := sudoPlayer.Capacity + sudoPlayer.CapacitySecondary
-    // Is load complete shot already?
+
+    // Remove BuildDraw
+    if (sudoPlayerTotalLoad < structType.BuildDraw) {
+        // Could add some code here that detects the issue and rebuilds the players grid details.
+        // Not a great solutions but might not be awful for longevity of gamestate
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Player %s grid details wrong. Not enough load to remove buildDraw load... something wrong. Pls tell an adult", sudoPlayer.Id)
+    }
+    sudoPlayerTotalLoad = sudoPlayerTotalLoad - structType.BuildDraw
+
+    // Is load completely shot already?
     if (sudoPlayerTotalLoad > sudoPlayerTotalCapacity) {
         k.DischargePlayer(ctx, sudoPlayer.Id)
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during activation, but player (%s) has none available", msg.StructTypeId, structType.BuildDraw, sudoPlayer.Id)
@@ -73,32 +77,29 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during activation, but player (%s) has %d available", msg.StructTypeId, structType.BuildDraw, sudoPlayer.Id,(sudoPlayerTotalCapacity - sudoPlayerTotalLoad))
     }
 
-    /* More garbage clown code rushed to make the testnet more interesting */
     // Check the Proof
+    buildStartBlock                 := GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structure.Id))
     buildStartBlockString           := strconv.FormatUint(structure.BuildStartBlock , 10)
     hashInput                       := structure.Id + "BUILD" + buildStartBlockString + "NONCE" + msg.Nonce
 
     currentAge := uint64(ctx.BlockHeight()) - structure.BuildStartBlock
 
-
     if (!types.HashBuildAndCheckBuildDifficulty(hashInput, msg.Proof, currentAge)) {
+       k.DischargePlayer(ctx, sudoPlayer.Id)
        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrStructBuildComplete, "Work failure for input (%s) when trying to build Struct %s", hashInput, structure.Id)
     }
 
-    // Try to bring online if there is room in the energy cap
-    if (!player.CanSupportNewLoad(structure.PassiveDraw)) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrStructBuildComplete, "Could not bring Struct %s online, player %s does not have enough power",structure.Id, player.Id)
+    // Inefficient but less likely to mess up
+    if (structType.BuildDraw != structType.PassiveDraw) {
+        k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.BuildDraw)
+        k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.PassiveDraw)
     }
 
-    // TODO fix because buildDraw needs to be removed
-    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.PassiveDraw)
-
     // Set the struct status flag to include built
-    types.StructStateBuilt | types.StructStateOnline
-
+    k.SetStructAttributeFlagAdd(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_status, structure.Id), types.StructStateBuilt | types.StructStateOnline)
 
     // Shouldn't need to actually update this object
-    //k.SetStruct(ctx, structure)
+    // k.SetStruct(ctx, structure)
 
 
 	return &types.MsgStructStatusResponse{Struct: structure}, nil
