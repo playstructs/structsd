@@ -27,6 +27,14 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
     }
 
+    structStatusAttributeId := GetStructAttributeIDByObjectId(types.StructAttributeType_status, msg.StructId)
+
+    // Has the Struct already been built?
+    if (k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, types.StructStateBuilt)) {
+        k.DischargePlayer(ctx, callingPlayerId)
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already built", msg.StructId)
+    }
+
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) not found", msg.StructId)
@@ -96,7 +104,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     }
 
     // Set the struct status flag to include built
-    k.SetStructAttributeFlagAdd(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_status, structure.Id), types.StructStateBuilt | types.StructStateOnline)
+    k.SetStructAttributeFlagAdd(ctx, structStatusAttributeId, types.StructStateBuilt | types.StructStateOnline)
 
     // Shouldn't need to actually update this object
     // k.SetStruct(ctx, structure)
