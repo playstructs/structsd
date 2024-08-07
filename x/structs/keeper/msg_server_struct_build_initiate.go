@@ -89,7 +89,7 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     }
 
     // Check Sudo Player Charge
-    playerCharge := k.GetPlayerCharge(ctx, sudoPlayer)
+    playerCharge := k.GetPlayerCharge(ctx, sudoPlayer.Id)
     if (playerCharge < structType.BuildCharge) {
         k.DischargePlayer(ctx, sudoPlayer)
         return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to build, but player (%s) only had %d", msg.StructTypeId, structType.BuildCharge, sudoPlayer.Id, playerCharge)
@@ -106,12 +106,12 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     sudoPlayerTotalCapacity := sudoPlayer.Capacity + sudoPlayer.CapacitySecondary
     // Is load complete shot already?
     if (sudoPlayerTotalLoad > sudoPlayerTotalCapacity) {
-        k.DischargePlayer(ctx, sudoPlayer)
+        k.DischargePlayer(ctx, sudoPlayer.Id)
         return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during build, but player (%s) has none available", msg.StructTypeId, structType.BuildDraw, sudoPlayer.Id)
 
     // Otherwise is the difference enough to support the buildDraw rate
     } else if ((sudoPlayerTotalCapacity - sudoPlayerTotalLoad) < structType.BuildDraw) {
-        k.DischargePlayer(ctx, sudoPlayer)
+        k.DischargePlayer(ctx, sudoPlayer.Id)
         return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during build, but player (%s) has %d available", msg.StructTypeId, structType.BuildDraw, sudoPlayer.Id,(sudoPlayerTotalCapacity - sudoPlayerTotalLoad))
     }
 
@@ -119,7 +119,7 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.BuildDraw)
 
     // Discharge Owner Player Charge  (set last block time)
-    k.DischargePlayer(ctx, sudoPlayer)
+    k.DischargePlayer(ctx, sudoPlayer.Id)
 
     // Append Struct
     structure = k.AppendStruct(ctx, structure, structType)

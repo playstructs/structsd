@@ -207,14 +207,14 @@ func (k Keeper) UpsertPlayer(ctx context.Context, playerAddress string, full boo
 
 
 
-func (k Keeper) GetPlayerCharge(ctx context.Context, player types.Player) (charge uint64) {
+func (k Keeper) GetPlayerCharge(ctx context.Context, playerId string) (charge uint64) {
 
     // Volts*(1-power(exp(1),-(BlockSpan/(Resistance*Capacitance))))
     // Volts = 100000000
     // Resistance = 100
     // Capacitor (capacitance) = 10
 
-    lastActionBlock := GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, player.Id))
+    lastActionBlock := GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, playerId))
     blockSpan := uint64(ctx.BlockHeight()) - lastActionBlock
 
     result := types.Charge_Volts * (1 - math.Pow(math.Exp(1), -(blockSpan/(types.Charge_Resistance*types.Charge_Capacitance))))
@@ -224,7 +224,7 @@ func (k Keeper) GetPlayerCharge(ctx context.Context, player types.Player) (charg
 }
 
 
-func (k Keeper) DischargePlayer(ctx context.Context, player types.Player) {
-    SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, player.Id), uint64(ctx.BlockHeight()))
+func (k Keeper) DischargePlayer(ctx context.Context, playerId string) {
+    SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, playerId), uint64(ctx.BlockHeight()))
 }
 

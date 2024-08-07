@@ -15,15 +15,11 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
-    if (playerIndex == 0) {
+    callingPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
+    if (callingPlayerIndex == 0) {
         return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build actions requires Player account but none associated with %s", msg.Creator)
     }
-    player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
-
-    if (!player.IsOnline()){
-        return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",player.Id)
-    }
+    callingPlayer, _ := k.GetPlayerFromIndex(ctx, callingPlayerIndex, true)
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has Play permissions
@@ -36,14 +32,48 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) not found", msg.StructId)
     }
 
+    if (callingPlayer.Id != structure.Owner) {
+        // Check permissions on Creator on Planet
+        playerPermissionId := GetObjectPermissionIDBytes(structure.Owner, callingPlayer.Id),
+        if (!k.PermissionHasOneOf(ctx, playerPermissionId, types.PermissionPlay)) {
+            return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayer.Id, structure.Owner)
+        }
 
-    /*
-     * Until we let players give out Play permissions, this can't happened
-     */
-    if (player.Id != structure.Owner) {
-       return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlayerPlay, "For now you can't sudo build structs for others, no permission to complete (%s)", structure.Id)
+        sudoPlayer, _ := k.GetPlayer(ctx, structure.Owner, true)
+    } else {
+        sudoPlayer := callingPlayer
     }
 
+    // Load Struct Type
+    structType, structTypeFound := k.GetStructType(ctx, structure.Type)
+    if (!structTypeFound) {
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct Type (%d) was not found. Building a Struct with schematics might be tough", structure.Type)
+    }
+
+    // Check Sudo Player Charge
+    playerCharge := k.GetPlayerCharge(ctx, structure.Owner)
+    if (playerCharge < structType.ActivateCharge) {
+        k.DischargePlayer(ctx, structure.Owner)
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to activate, but player (%s) only had %d", msg.StructTypeId, structType.ActivateCharge, structure.Owner, playerCharge)
+    }
+
+    // Check player Load for the passiveDraw capacity
+
+    // TODO Fix this to remove the buildDraw before checking capacity
+    // TODO TODO TODO
+    // FIX FIX FIX
+    sudoPlayerTotalLoad := sudoPlayer.Load + sudoPlayer.StructsLoad
+    sudoPlayerTotalCapacity := sudoPlayer.Capacity + sudoPlayer.CapacitySecondary
+    // Is load complete shot already?
+    if (sudoPlayerTotalLoad > sudoPlayerTotalCapacity) {
+        k.DischargePlayer(ctx, sudoPlayer.Id)
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during activation, but player (%s) has none available", msg.StructTypeId, structType.BuildDraw, sudoPlayer.Id)
+
+    // Otherwise is the difference enough to support the buildDraw rate
+    } else if ((sudoPlayerTotalCapacity - sudoPlayerTotalLoad) < structType.PassiveDraw) {
+        k.DischargePlayer(ctx, sudoPlayer.Id)
+        return &types.MsgStructBuildInitiateResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during activation, but player (%s) has %d available", msg.StructTypeId, structType.BuildDraw, sudoPlayer.Id,(sudoPlayerTotalCapacity - sudoPlayerTotalLoad))
+    }
 
     /* More garbage clown code rushed to make the testnet more interesting */
     // Check the Proof
@@ -62,11 +92,15 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructBuildCompleteResponse{}, sdkerrors.Wrapf(types.ErrStructBuildComplete, "Could not bring Struct %s online, player %s does not have enough power",structure.Id, player.Id)
     }
 
-    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, player.Id), structure.PassiveDraw)
+    // TODO fix because buildDraw needs to be removed
+    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.PassiveDraw)
+
+    // Set the struct status flag to include built
+    types.StructStateBuilt | types.StructStateOnline
 
 
-    structure.SetStatus("ACTIVE")
-    k.SetStruct(ctx, structure)
+    // Shouldn't need to actually update this object
+    //k.SetStruct(ctx, structure)
 
 
 	return &types.MsgStructBuildCompleteResponse{Struct: structure}, nil
