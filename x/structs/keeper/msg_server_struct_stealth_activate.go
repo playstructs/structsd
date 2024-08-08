@@ -9,7 +9,7 @@ import (
 	//"fmt"
 )
 
-func (k msgServer) StructDeactivate(goCtx context.Context, msg *types.MsgStructDeactivate) (*types.MsgStructStatusResponse, error) {
+func (k msgServer) StructStealthActivate(goCtx context.Context, msg *types.MsgStructStealthActivate) (*types.MsgStructStatusResponse, error) {
     ctx := sdk.UnwrapSDKContext(goCtx)
 
     // Add an Active Address record to the
@@ -18,7 +18,7 @@ func (k msgServer) StructDeactivate(goCtx context.Context, msg *types.MsgStructD
 
     callingPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
     if (callingPlayerIndex == 0) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build actions requires Player account but none associated with %s", msg.Creator)
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct actions requires Player account but none associated with %s", msg.Creator)
     }
     callingPlayerId := GetObjectID(types.ObjectType_player, callingPlayerIndex)
 
@@ -30,16 +30,16 @@ func (k msgServer) StructDeactivate(goCtx context.Context, msg *types.MsgStructD
 
     structStatusAttributeId := GetStructAttributeIDByObjectId(types.StructAttributeType_status, msg.StructId)
 
-    // Has the Struct already been built?
-    if (!k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, types.StructStateBuilt)) {
-        k.DischargePlayer(ctx, callingPlayerId)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is not built", msg.StructId)
-    }
-
-    // Has the Struct already been activated?
+    // Is the Struct online?
     if (!k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, types.StructStateOnline)) {
         k.DischargePlayer(ctx, callingPlayerId)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already offline", msg.StructId)
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is not Online", msg.StructId)
+    }
+
+    // Is Struct Stealth Mode already activated?
+    if (k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, types.StructStateStealth)) {
+        k.DischargePlayer(ctx, callingPlayerId)
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already in stealth", msg.StructId)
     }
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
@@ -54,7 +54,6 @@ func (k msgServer) StructDeactivate(goCtx context.Context, msg *types.MsgStructD
             return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayerId, structure.Owner)
         }
     }
-    sudoPlayer, _ := k.GetPlayer(ctx, structure.Owner, true)
 
     // Load Struct Type
     structType, structTypeFound := k.GetStructType(ctx, structure.Type)
@@ -62,17 +61,20 @@ func (k msgServer) StructDeactivate(goCtx context.Context, msg *types.MsgStructD
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct Type (%d) was not found. No idea how this struct is missing its schematics. Pls tell an adult", structure.Type)
     }
 
+    if (!structType.StealthSystems) {
+        k.DischargePlayer(ctx, callingPlayerId)
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) has no stealth system", msg.StructId)
+    }
 
-    // Apply the passive energy requirements to the owners Struct Load
-    if (sudoPlayer.StructsLoad < structType.PassiveDraw) {
-        // This really shouldn't ever happen, but if it does, let's just clean up the mess and move along with our life
-        k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), 0)
-    } else {
-        k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.PassiveDraw)
+    // Check Sudo Player Charge
+    playerCharge := k.GetPlayerCharge(ctx, structure.Owner)
+    if (playerCharge < structType.StealthActivateCharge) {
+        k.DischargePlayer(ctx, structure.Owner)
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for stealth mode, but player (%s) only had %d", msg.StructTypeId, structType.ActivateCharge, structure.Owner, playerCharge)
     }
 
     // Set the struct status flag to include built
-    k.SetStructAttributeFlagRemove(ctx, structStatusAttributeId, types.StructStateOnline)
+    k.SetStructAttributeFlagAdd(ctx, structStatusAttributeId, types.StructStateStealth)
 
 	return &types.MsgStructStatusResponse{Struct: structure}, nil
 }

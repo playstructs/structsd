@@ -47,7 +47,7 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) not found", msg.StructId)
     }
 
-    if (callingPlayer.Id != structure.Owner) {
+    if (callingPlayerId != structure.Owner) {
         // Check permissions on Creator on Planet
         playerPermissionId := GetObjectPermissionIDBytes(structure.Owner, callingPlayerId)
         if (!k.PermissionHasOneOf(ctx, playerPermissionId, types.PermissionPlay)) {
