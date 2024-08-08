@@ -11,7 +11,7 @@ import (
 	"structs/x/structs/types"
 )
 
-func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (*types.MsgStructMineResponse, error) {
+func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (*types.MsgStructOreMinerStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
     // Add an Active Address record to the
@@ -88,5 +88,5 @@ func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (
     structure.SetMiningSystemActivationBlock(uint64(ctx.BlockHeight()))
     k.SetStruct(ctx, structure)
 
-	return &types.MsgStructMineResponse{Struct: structure}, nil
+	return &types.MsgStructOreMinerStatusResponse{Struct: structure}, nil
 }
