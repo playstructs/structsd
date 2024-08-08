@@ -36,12 +36,14 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was ot found. Building a Struct in a void might be tough", msg.PlanetId)
     }
 
-    // Load the target player account (Possibly different than calling player)
-    sudoPlayerIndex := k.GetPlayerIndexFromAddress(ctx, planet.Owner)
-    if (sudoPlayerIndex == 0) {
+    // Load the target player account
+    sudoPlayer, sudoPlayerFound := k.GetPlayer(ctx, planet.Owner, true)
+    if (!sudoPlayerFound) {
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build initialization requires Player but somehow planet has none %s", planet.Owner)
     }
-    sudoPlayer, _ := k.GetPlayerFromIndex(ctx, sudoPlayerIndex, true)
+    if (!sudoPlayer.IsOnline()){
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",player.Id)
+    }
 
     if (sudoPlayer.Id != callingPlayerId) {
         // Check permissions on Creator on Planet
@@ -49,7 +51,6 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
         if (!k.PermissionHasOneOf(ctx, playerPermissionId, types.PermissionPlay)) {
             return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayerId, sudoPlayer.Id)
         }
-
     }
 
     // Make sure the address calling this has Play permissions

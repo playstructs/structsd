@@ -11,7 +11,7 @@ import (
 	"structs/x/structs/types"
 )
 
-func (k msgServer) StructMine(goCtx context.Context, msg *types.MsgStructMine) (*types.MsgStructOreMinerStatusResponse, error) {
+func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgStructOreMinerComplete) (*types.MsgStructOreMinerStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
     // Add an Active Address record to the

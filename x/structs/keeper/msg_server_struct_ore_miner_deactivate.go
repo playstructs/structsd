@@ -46,6 +46,11 @@ func (k msgServer) StructOreMinerDeactivate(goCtx context.Context, msg *types.Ms
             return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayerId, structure.Owner)
         }
     }
+    sudoPlayer, _ := k.GetPlayerFromIndex(ctx, structure.Owner, true)
+    if (!sudoPlayer.IsOnline()){
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",player.Id)
+    }
+
 
     // Is Struct Ore Miner activated?
     if (k.GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structure.Id)) == 0) {

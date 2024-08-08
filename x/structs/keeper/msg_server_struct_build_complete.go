@@ -48,6 +48,9 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
         }
     }
     sudoPlayer, _ := k.GetPlayer(ctx, structure.Owner, true)
+    if (!sudoPlayer.IsOnline()){
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",player.Id)
+    }
 
     // Load Struct Type
     structType, structTypeFound := k.GetStructType(ctx, structure.Type)
