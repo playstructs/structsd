@@ -859,8 +859,8 @@ var (
 	fd_StructType_buildCharge                               protoreflect.FieldDescriptor
 	fd_StructType_defendChangeCharge                        protoreflect.FieldDescriptor
 	fd_StructType_moveCharge                                protoreflect.FieldDescriptor
-	fd_StructType_oreMiningActivateCharge                   protoreflect.FieldDescriptor
-	fd_StructType_oreRefiningActivateCharge                 protoreflect.FieldDescriptor
+	fd_StructType_oreMiningCharge                           protoreflect.FieldDescriptor
+	fd_StructType_oreRefiningCharge                         protoreflect.FieldDescriptor
 	fd_StructType_stealthActivateCharge                     protoreflect.FieldDescriptor
 	fd_StructType_attackReduction                           protoreflect.FieldDescriptor
 	fd_StructType_attackCounterable                         protoreflect.FieldDescriptor
@@ -920,8 +920,8 @@ func init() {
 	fd_StructType_buildCharge = md_StructType.Fields().ByName("buildCharge")
 	fd_StructType_defendChangeCharge = md_StructType.Fields().ByName("defendChangeCharge")
 	fd_StructType_moveCharge = md_StructType.Fields().ByName("moveCharge")
-	fd_StructType_oreMiningActivateCharge = md_StructType.Fields().ByName("oreMiningActivateCharge")
-	fd_StructType_oreRefiningActivateCharge = md_StructType.Fields().ByName("oreRefiningActivateCharge")
+	fd_StructType_oreMiningCharge = md_StructType.Fields().ByName("oreMiningCharge")
+	fd_StructType_oreRefiningCharge = md_StructType.Fields().ByName("oreRefiningCharge")
 	fd_StructType_stealthActivateCharge = md_StructType.Fields().ByName("stealthActivateCharge")
 	fd_StructType_attackReduction = md_StructType.Fields().ByName("attackReduction")
 	fd_StructType_attackCounterable = md_StructType.Fields().ByName("attackCounterable")
@@ -1248,15 +1248,15 @@ func (x *fastReflection_StructType) Range(f func(protoreflect.FieldDescriptor, p
 			return
 		}
 	}
-	if x.OreMiningActivateCharge != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.OreMiningActivateCharge)
-		if !f(fd_StructType_oreMiningActivateCharge, value) {
+	if x.OreMiningCharge != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.OreMiningCharge)
+		if !f(fd_StructType_oreMiningCharge, value) {
 			return
 		}
 	}
-	if x.OreRefiningActivateCharge != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.OreRefiningActivateCharge)
-		if !f(fd_StructType_oreRefiningActivateCharge, value) {
+	if x.OreRefiningCharge != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.OreRefiningCharge)
+		if !f(fd_StructType_oreRefiningCharge, value) {
 			return
 		}
 	}
@@ -1435,10 +1435,10 @@ func (x *fastReflection_StructType) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.DefendChangeCharge != uint64(0)
 	case "structs.structs.StructType.moveCharge":
 		return x.MoveCharge != uint64(0)
-	case "structs.structs.StructType.oreMiningActivateCharge":
-		return x.OreMiningActivateCharge != uint64(0)
-	case "structs.structs.StructType.oreRefiningActivateCharge":
-		return x.OreRefiningActivateCharge != uint64(0)
+	case "structs.structs.StructType.oreMiningCharge":
+		return x.OreMiningCharge != uint64(0)
+	case "structs.structs.StructType.oreRefiningCharge":
+		return x.OreRefiningCharge != uint64(0)
 	case "structs.structs.StructType.stealthActivateCharge":
 		return x.StealthActivateCharge != uint64(0)
 	case "structs.structs.StructType.attackReduction":
@@ -1563,10 +1563,10 @@ func (x *fastReflection_StructType) Clear(fd protoreflect.FieldDescriptor) {
 		x.DefendChangeCharge = uint64(0)
 	case "structs.structs.StructType.moveCharge":
 		x.MoveCharge = uint64(0)
-	case "structs.structs.StructType.oreMiningActivateCharge":
-		x.OreMiningActivateCharge = uint64(0)
-	case "structs.structs.StructType.oreRefiningActivateCharge":
-		x.OreRefiningActivateCharge = uint64(0)
+	case "structs.structs.StructType.oreMiningCharge":
+		x.OreMiningCharge = uint64(0)
+	case "structs.structs.StructType.oreRefiningCharge":
+		x.OreRefiningCharge = uint64(0)
 	case "structs.structs.StructType.stealthActivateCharge":
 		x.StealthActivateCharge = uint64(0)
 	case "structs.structs.StructType.attackReduction":
@@ -1732,11 +1732,11 @@ func (x *fastReflection_StructType) Get(descriptor protoreflect.FieldDescriptor)
 	case "structs.structs.StructType.moveCharge":
 		value := x.MoveCharge
 		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.StructType.oreMiningActivateCharge":
-		value := x.OreMiningActivateCharge
+	case "structs.structs.StructType.oreMiningCharge":
+		value := x.OreMiningCharge
 		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.StructType.oreRefiningActivateCharge":
-		value := x.OreRefiningActivateCharge
+	case "structs.structs.StructType.oreRefiningCharge":
+		value := x.OreRefiningCharge
 		return protoreflect.ValueOfUint64(value)
 	case "structs.structs.StructType.stealthActivateCharge":
 		value := x.StealthActivateCharge
@@ -1879,10 +1879,10 @@ func (x *fastReflection_StructType) Set(fd protoreflect.FieldDescriptor, value p
 		x.DefendChangeCharge = value.Uint()
 	case "structs.structs.StructType.moveCharge":
 		x.MoveCharge = value.Uint()
-	case "structs.structs.StructType.oreMiningActivateCharge":
-		x.OreMiningActivateCharge = value.Uint()
-	case "structs.structs.StructType.oreRefiningActivateCharge":
-		x.OreRefiningActivateCharge = value.Uint()
+	case "structs.structs.StructType.oreMiningCharge":
+		x.OreMiningCharge = value.Uint()
+	case "structs.structs.StructType.oreRefiningCharge":
+		x.OreRefiningCharge = value.Uint()
 	case "structs.structs.StructType.stealthActivateCharge":
 		x.StealthActivateCharge = value.Uint()
 	case "structs.structs.StructType.attackReduction":
@@ -2011,10 +2011,10 @@ func (x *fastReflection_StructType) Mutable(fd protoreflect.FieldDescriptor) pro
 		panic(fmt.Errorf("field defendChangeCharge of message structs.structs.StructType is not mutable"))
 	case "structs.structs.StructType.moveCharge":
 		panic(fmt.Errorf("field moveCharge of message structs.structs.StructType is not mutable"))
-	case "structs.structs.StructType.oreMiningActivateCharge":
-		panic(fmt.Errorf("field oreMiningActivateCharge of message structs.structs.StructType is not mutable"))
-	case "structs.structs.StructType.oreRefiningActivateCharge":
-		panic(fmt.Errorf("field oreRefiningActivateCharge of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.oreMiningCharge":
+		panic(fmt.Errorf("field oreMiningCharge of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.oreRefiningCharge":
+		panic(fmt.Errorf("field oreRefiningCharge of message structs.structs.StructType is not mutable"))
 	case "structs.structs.StructType.stealthActivateCharge":
 		panic(fmt.Errorf("field stealthActivateCharge of message structs.structs.StructType is not mutable"))
 	case "structs.structs.StructType.attackReduction":
@@ -2136,9 +2136,9 @@ func (x *fastReflection_StructType) NewField(fd protoreflect.FieldDescriptor) pr
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.StructType.moveCharge":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.StructType.oreMiningActivateCharge":
+	case "structs.structs.StructType.oreMiningCharge":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.StructType.oreRefiningActivateCharge":
+	case "structs.structs.StructType.oreRefiningCharge":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.StructType.stealthActivateCharge":
 		return protoreflect.ValueOfUint64(uint64(0))
@@ -2359,11 +2359,11 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 		if x.MoveCharge != 0 {
 			n += 2 + runtime.Sov(uint64(x.MoveCharge))
 		}
-		if x.OreMiningActivateCharge != 0 {
-			n += 2 + runtime.Sov(uint64(x.OreMiningActivateCharge))
+		if x.OreMiningCharge != 0 {
+			n += 2 + runtime.Sov(uint64(x.OreMiningCharge))
 		}
-		if x.OreRefiningActivateCharge != 0 {
-			n += 2 + runtime.Sov(uint64(x.OreRefiningActivateCharge))
+		if x.OreRefiningCharge != 0 {
+			n += 2 + runtime.Sov(uint64(x.OreRefiningCharge))
 		}
 		if x.StealthActivateCharge != 0 {
 			n += 2 + runtime.Sov(uint64(x.StealthActivateCharge))
@@ -2534,15 +2534,15 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0xe0
 		}
-		if x.OreRefiningActivateCharge != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.OreRefiningActivateCharge))
+		if x.OreRefiningCharge != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.OreRefiningCharge))
 			i--
 			dAtA[i] = 0x2
 			i--
 			dAtA[i] = 0xd8
 		}
-		if x.OreMiningActivateCharge != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.OreMiningActivateCharge))
+		if x.OreMiningCharge != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.OreMiningCharge))
 			i--
 			dAtA[i] = 0x2
 			i--
@@ -3674,9 +3674,9 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 				}
 			case 42:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OreMiningActivateCharge", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OreMiningCharge", wireType)
 				}
-				x.OreMiningActivateCharge = 0
+				x.OreMiningCharge = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -3686,16 +3686,16 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.OreMiningActivateCharge |= uint64(b&0x7F) << shift
+					x.OreMiningCharge |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
 			case 43:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OreRefiningActivateCharge", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OreRefiningCharge", wireType)
 				}
-				x.OreRefiningActivateCharge = 0
+				x.OreRefiningCharge = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -3705,7 +3705,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.OreRefiningActivateCharge |= uint64(b&0x7F) << shift
+					x.OreRefiningCharge |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
@@ -5308,13 +5308,13 @@ type StructType struct {
 	PlanetaryRefinery  TechPlanetaryRefineries `protobuf:"varint,36,opt,name=planetaryRefinery,proto3,enum=structs.structs.TechPlanetaryRefineries" json:"planetaryRefinery,omitempty"`
 	PowerGeneration    TechPowerGeneration     `protobuf:"varint,37,opt,name=powerGeneration,proto3,enum=structs.structs.TechPowerGeneration" json:"powerGeneration,omitempty"`
 	// Charge uses
-	ActivateCharge            uint64 `protobuf:"varint,38,opt,name=activateCharge,proto3" json:"activateCharge,omitempty"`
-	BuildCharge               uint64 `protobuf:"varint,39,opt,name=buildCharge,proto3" json:"buildCharge,omitempty"`
-	DefendChangeCharge        uint64 `protobuf:"varint,40,opt,name=defendChangeCharge,proto3" json:"defendChangeCharge,omitempty"`
-	MoveCharge                uint64 `protobuf:"varint,41,opt,name=moveCharge,proto3" json:"moveCharge,omitempty"`
-	OreMiningActivateCharge   uint64 `protobuf:"varint,42,opt,name=oreMiningActivateCharge,proto3" json:"oreMiningActivateCharge,omitempty"`
-	OreRefiningActivateCharge uint64 `protobuf:"varint,43,opt,name=oreRefiningActivateCharge,proto3" json:"oreRefiningActivateCharge,omitempty"`
-	StealthActivateCharge     uint64 `protobuf:"varint,44,opt,name=stealthActivateCharge,proto3" json:"stealthActivateCharge,omitempty"`
+	ActivateCharge        uint64 `protobuf:"varint,38,opt,name=activateCharge,proto3" json:"activateCharge,omitempty"`
+	BuildCharge           uint64 `protobuf:"varint,39,opt,name=buildCharge,proto3" json:"buildCharge,omitempty"`
+	DefendChangeCharge    uint64 `protobuf:"varint,40,opt,name=defendChangeCharge,proto3" json:"defendChangeCharge,omitempty"`
+	MoveCharge            uint64 `protobuf:"varint,41,opt,name=moveCharge,proto3" json:"moveCharge,omitempty"`
+	OreMiningCharge       uint64 `protobuf:"varint,42,opt,name=oreMiningCharge,proto3" json:"oreMiningCharge,omitempty"`
+	OreRefiningCharge     uint64 `protobuf:"varint,43,opt,name=oreRefiningCharge,proto3" json:"oreRefiningCharge,omitempty"`
+	StealthActivateCharge uint64 `protobuf:"varint,44,opt,name=stealthActivateCharge,proto3" json:"stealthActivateCharge,omitempty"`
 	// Tech Tree Attributes
 	AttackReduction                         uint64 `protobuf:"varint,45,opt,name=attackReduction,proto3" json:"attackReduction,omitempty"`               // For Defensive Cannon
 	AttackCounterable                       bool   `protobuf:"varint,46,opt,name=attackCounterable,proto3" json:"attackCounterable,omitempty"`           // For Indirect Combat Module
@@ -5637,16 +5637,16 @@ func (x *StructType) GetMoveCharge() uint64 {
 	return 0
 }
 
-func (x *StructType) GetOreMiningActivateCharge() uint64 {
+func (x *StructType) GetOreMiningCharge() uint64 {
 	if x != nil {
-		return x.OreMiningActivateCharge
+		return x.OreMiningCharge
 	}
 	return 0
 }
 
-func (x *StructType) GetOreRefiningActivateCharge() uint64 {
+func (x *StructType) GetOreRefiningCharge() uint64 {
 	if x != nil {
-		return x.OreRefiningActivateCharge
+		return x.OreRefiningCharge
 	}
 	return 0
 }
@@ -5882,7 +5882,7 @@ var file_structs_structs_struct_proto_rawDesc = []byte{
 	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69, 0x74,
 	0x52, 0x0e, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74,
 	0x12, 0x12, 0x0a, 0x04, 0x73, 0x6c, 0x6f, 0x74, 0x18, 0x08, 0x20, 0x01, 0x28, 0x04, 0x52, 0x04,
-	0x73, 0x6c, 0x6f, 0x74, 0x22, 0xb9, 0x1a, 0x0a, 0x0a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54,
+	0x73, 0x6c, 0x6f, 0x74, 0x22, 0x99, 0x1a, 0x0a, 0x0a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54,
 	0x79, 0x70, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52,
 	0x02, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x37, 0x0a, 0x08, 0x63, 0x61, 0x74, 0x65, 0x67,
@@ -6037,14 +6037,12 @@ var file_structs_structs_struct_proto_rawDesc = []byte{
 	0x67, 0x65, 0x18, 0x28, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12, 0x64, 0x65, 0x66, 0x65, 0x6e, 0x64,
 	0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x1e, 0x0a, 0x0a,
 	0x6d, 0x6f, 0x76, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x29, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x0a, 0x6d, 0x6f, 0x76, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x38, 0x0a, 0x17,
-	0x6f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74,
-	0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x2a, 0x20, 0x01, 0x28, 0x04, 0x52, 0x17, 0x6f,
-	0x72, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65,
-	0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x3c, 0x0a, 0x19, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x66,
-	0x69, 0x6e, 0x69, 0x6e, 0x67, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x43, 0x68, 0x61,
-	0x72, 0x67, 0x65, 0x18, 0x2b, 0x20, 0x01, 0x28, 0x04, 0x52, 0x19, 0x6f, 0x72, 0x65, 0x52, 0x65,
-	0x66, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x43, 0x68,
+	0x52, 0x0a, 0x6d, 0x6f, 0x76, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x28, 0x0a, 0x0f,
+	0x6f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18,
+	0x2a, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x6f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67,
+	0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x2c, 0x0a, 0x11, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x66,
+	0x69, 0x6e, 0x69, 0x6e, 0x67, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x2b, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x11, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x43, 0x68,
 	0x61, 0x72, 0x67, 0x65, 0x12, 0x34, 0x0a, 0x15, 0x73, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41,
 	0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x2c, 0x20,
 	0x01, 0x28, 0x04, 0x52, 0x15, 0x73, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x63, 0x74, 0x69,

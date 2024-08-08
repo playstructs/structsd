@@ -58,11 +58,7 @@ const (
 	Msg_StructStealthActivate_FullMethodName                         = "/structs.structs.Msg/StructStealthActivate"
 	Msg_StructStealthDeactivate_FullMethodName                       = "/structs.structs.Msg/StructStealthDeactivate"
 	Msg_StructGeneratorInfuse_FullMethodName                         = "/structs.structs.Msg/StructGeneratorInfuse"
-	Msg_StructOreMinerActivate_FullMethodName                        = "/structs.structs.Msg/StructOreMinerActivate"
-	Msg_StructOreMinerDeactivate_FullMethodName                      = "/structs.structs.Msg/StructOreMinerDeactivate"
 	Msg_StructOreMinerComplete_FullMethodName                        = "/structs.structs.Msg/StructOreMinerComplete"
-	Msg_StructOreRefineryActivate_FullMethodName                     = "/structs.structs.Msg/StructOreRefineryActivate"
-	Msg_StructOreRefineryDeactivate_FullMethodName                   = "/structs.structs.Msg/StructOreRefineryDeactivate"
 	Msg_StructOreRefineryComplete_FullMethodName                     = "/structs.structs.Msg/StructOreRefineryComplete"
 	Msg_SubstationCreate_FullMethodName                              = "/structs.structs.Msg/SubstationCreate"
 	Msg_SubstationDelete_FullMethodName                              = "/structs.structs.Msg/SubstationDelete"
@@ -118,11 +114,7 @@ type MsgClient interface {
 	StructStealthActivate(ctx context.Context, in *MsgStructStealthActivate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructStealthDeactivate(ctx context.Context, in *MsgStructStealthDeactivate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructGeneratorInfuse(ctx context.Context, in *MsgStructGeneratorInfuse, opts ...grpc.CallOption) (*MsgStructGeneratorStatusResponse, error)
-	StructOreMinerActivate(ctx context.Context, in *MsgStructOreMinerActivate, opts ...grpc.CallOption) (*MsgStructOreMinerStatusResponse, error)
-	StructOreMinerDeactivate(ctx context.Context, in *MsgStructOreMinerDeactivate, opts ...grpc.CallOption) (*MsgStructOreMinerStatusResponse, error)
 	StructOreMinerComplete(ctx context.Context, in *MsgStructOreMinerComplete, opts ...grpc.CallOption) (*MsgStructOreMinerStatusResponse, error)
-	StructOreRefineryActivate(ctx context.Context, in *MsgStructOreRefineryActivate, opts ...grpc.CallOption) (*MsgStructOreRefineryStatusResponse, error)
-	StructOreRefineryDeactivate(ctx context.Context, in *MsgStructOreRefineryDeactivate, opts ...grpc.CallOption) (*MsgStructOreRefineryStatusResponse, error)
 	StructOreRefineryComplete(ctx context.Context, in *MsgStructOreRefineryComplete, opts ...grpc.CallOption) (*MsgStructOreRefineryStatusResponse, error)
 	SubstationCreate(ctx context.Context, in *MsgSubstationCreate, opts ...grpc.CallOption) (*MsgSubstationCreateResponse, error)
 	SubstationDelete(ctx context.Context, in *MsgSubstationDelete, opts ...grpc.CallOption) (*MsgSubstationDeleteResponse, error)
@@ -492,45 +484,9 @@ func (c *msgClient) StructGeneratorInfuse(ctx context.Context, in *MsgStructGene
 	return out, nil
 }
 
-func (c *msgClient) StructOreMinerActivate(ctx context.Context, in *MsgStructOreMinerActivate, opts ...grpc.CallOption) (*MsgStructOreMinerStatusResponse, error) {
-	out := new(MsgStructOreMinerStatusResponse)
-	err := c.cc.Invoke(ctx, Msg_StructOreMinerActivate_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) StructOreMinerDeactivate(ctx context.Context, in *MsgStructOreMinerDeactivate, opts ...grpc.CallOption) (*MsgStructOreMinerStatusResponse, error) {
-	out := new(MsgStructOreMinerStatusResponse)
-	err := c.cc.Invoke(ctx, Msg_StructOreMinerDeactivate_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *msgClient) StructOreMinerComplete(ctx context.Context, in *MsgStructOreMinerComplete, opts ...grpc.CallOption) (*MsgStructOreMinerStatusResponse, error) {
 	out := new(MsgStructOreMinerStatusResponse)
 	err := c.cc.Invoke(ctx, Msg_StructOreMinerComplete_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) StructOreRefineryActivate(ctx context.Context, in *MsgStructOreRefineryActivate, opts ...grpc.CallOption) (*MsgStructOreRefineryStatusResponse, error) {
-	out := new(MsgStructOreRefineryStatusResponse)
-	err := c.cc.Invoke(ctx, Msg_StructOreRefineryActivate_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) StructOreRefineryDeactivate(ctx context.Context, in *MsgStructOreRefineryDeactivate, opts ...grpc.CallOption) (*MsgStructOreRefineryStatusResponse, error) {
-	out := new(MsgStructOreRefineryStatusResponse)
-	err := c.cc.Invoke(ctx, Msg_StructOreRefineryDeactivate_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -654,11 +610,7 @@ type MsgServer interface {
 	StructStealthActivate(context.Context, *MsgStructStealthActivate) (*MsgStructStatusResponse, error)
 	StructStealthDeactivate(context.Context, *MsgStructStealthDeactivate) (*MsgStructStatusResponse, error)
 	StructGeneratorInfuse(context.Context, *MsgStructGeneratorInfuse) (*MsgStructGeneratorStatusResponse, error)
-	StructOreMinerActivate(context.Context, *MsgStructOreMinerActivate) (*MsgStructOreMinerStatusResponse, error)
-	StructOreMinerDeactivate(context.Context, *MsgStructOreMinerDeactivate) (*MsgStructOreMinerStatusResponse, error)
 	StructOreMinerComplete(context.Context, *MsgStructOreMinerComplete) (*MsgStructOreMinerStatusResponse, error)
-	StructOreRefineryActivate(context.Context, *MsgStructOreRefineryActivate) (*MsgStructOreRefineryStatusResponse, error)
-	StructOreRefineryDeactivate(context.Context, *MsgStructOreRefineryDeactivate) (*MsgStructOreRefineryStatusResponse, error)
 	StructOreRefineryComplete(context.Context, *MsgStructOreRefineryComplete) (*MsgStructOreRefineryStatusResponse, error)
 	SubstationCreate(context.Context, *MsgSubstationCreate) (*MsgSubstationCreateResponse, error)
 	SubstationDelete(context.Context, *MsgSubstationDelete) (*MsgSubstationDeleteResponse, error)
@@ -791,20 +743,8 @@ func (UnimplementedMsgServer) StructStealthDeactivate(context.Context, *MsgStruc
 func (UnimplementedMsgServer) StructGeneratorInfuse(context.Context, *MsgStructGeneratorInfuse) (*MsgStructGeneratorStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructGeneratorInfuse not implemented")
 }
-func (UnimplementedMsgServer) StructOreMinerActivate(context.Context, *MsgStructOreMinerActivate) (*MsgStructOreMinerStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StructOreMinerActivate not implemented")
-}
-func (UnimplementedMsgServer) StructOreMinerDeactivate(context.Context, *MsgStructOreMinerDeactivate) (*MsgStructOreMinerStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StructOreMinerDeactivate not implemented")
-}
 func (UnimplementedMsgServer) StructOreMinerComplete(context.Context, *MsgStructOreMinerComplete) (*MsgStructOreMinerStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructOreMinerComplete not implemented")
-}
-func (UnimplementedMsgServer) StructOreRefineryActivate(context.Context, *MsgStructOreRefineryActivate) (*MsgStructOreRefineryStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StructOreRefineryActivate not implemented")
-}
-func (UnimplementedMsgServer) StructOreRefineryDeactivate(context.Context, *MsgStructOreRefineryDeactivate) (*MsgStructOreRefineryStatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StructOreRefineryDeactivate not implemented")
 }
 func (UnimplementedMsgServer) StructOreRefineryComplete(context.Context, *MsgStructOreRefineryComplete) (*MsgStructOreRefineryStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructOreRefineryComplete not implemented")
@@ -1545,42 +1485,6 @@ func _Msg_StructGeneratorInfuse_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_StructOreMinerActivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStructOreMinerActivate)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).StructOreMinerActivate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_StructOreMinerActivate_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StructOreMinerActivate(ctx, req.(*MsgStructOreMinerActivate))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_StructOreMinerDeactivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStructOreMinerDeactivate)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).StructOreMinerDeactivate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_StructOreMinerDeactivate_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StructOreMinerDeactivate(ctx, req.(*MsgStructOreMinerDeactivate))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Msg_StructOreMinerComplete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgStructOreMinerComplete)
 	if err := dec(in); err != nil {
@@ -1595,42 +1499,6 @@ func _Msg_StructOreMinerComplete_Handler(srv interface{}, ctx context.Context, d
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).StructOreMinerComplete(ctx, req.(*MsgStructOreMinerComplete))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_StructOreRefineryActivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStructOreRefineryActivate)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).StructOreRefineryActivate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_StructOreRefineryActivate_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StructOreRefineryActivate(ctx, req.(*MsgStructOreRefineryActivate))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_StructOreRefineryDeactivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgStructOreRefineryDeactivate)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).StructOreRefineryDeactivate(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_StructOreRefineryDeactivate_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).StructOreRefineryDeactivate(ctx, req.(*MsgStructOreRefineryDeactivate))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1943,24 +1811,8 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_StructGeneratorInfuse_Handler,
 		},
 		{
-			MethodName: "StructOreMinerActivate",
-			Handler:    _Msg_StructOreMinerActivate_Handler,
-		},
-		{
-			MethodName: "StructOreMinerDeactivate",
-			Handler:    _Msg_StructOreMinerDeactivate_Handler,
-		},
-		{
 			MethodName: "StructOreMinerComplete",
 			Handler:    _Msg_StructOreMinerComplete_Handler,
-		},
-		{
-			MethodName: "StructOreRefineryActivate",
-			Handler:    _Msg_StructOreRefineryActivate_Handler,
-		},
-		{
-			MethodName: "StructOreRefineryDeactivate",
-			Handler:    _Msg_StructOreRefineryDeactivate_Handler,
 		},
 		{
 			MethodName: "StructOreRefineryComplete",

@@ -69,12 +69,8 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructGeneratorInfuse{},)
 
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructOreMinerActivate{},)
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructOreMinerDeactivate{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructOreMinerComplete{},)
 
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructOreRefineryActivate{},)
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructOreRefineryDeactivate{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructOreRefineryComplete{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgSubstationCreate{},)

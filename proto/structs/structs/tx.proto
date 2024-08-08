@@ -78,12 +78,8 @@ service Msg {
 
   rpc StructGeneratorInfuse          (MsgStructGeneratorInfuse         ) returns (MsgStructGeneratorStatusResponse          );
 
-  rpc StructOreMinerActivate         (MsgStructOreMinerActivate        ) returns (MsgStructOreMinerStatusResponse          );
-  rpc StructOreMinerDeactivate       (MsgStructOreMinerDeactivate      ) returns (MsgStructOreMinerStatusResponse          );
   rpc StructOreMinerComplete         (MsgStructOreMinerComplete        ) returns (MsgStructOreMinerStatusResponse          );
 
-  rpc StructOreRefineryActivate      (MsgStructOreRefineryActivate     ) returns (MsgStructOreRefineryStatusResponse       );
-  rpc StructOreRefineryDeactivate    (MsgStructOreRefineryDeactivate   ) returns (MsgStructOreRefineryStatusResponse       );
   rpc StructOreRefineryComplete      (MsgStructOreRefineryComplete     ) returns (MsgStructOreRefineryStatusResponse       );
 
   // Not MVP
@@ -496,19 +492,6 @@ message MsgStructGeneratorInfuse{
 message MsgStructGeneratorStatusResponse {}
 
 
-message MsgStructOreMinerActivate {
-  option (cosmos.msg.v1.signer) = "creator";
-
-  string creator      = 1;
-  string structId     = 2;
-}
-
-message MsgStructOreMinerDeactivate {
-  option (cosmos.msg.v1.signer) = "creator";
-
-  string creator      = 1;
-  string structId     = 2;
-}
 message MsgStructOreMinerComplete {
   option (cosmos.msg.v1.signer) = "creator";
 
@@ -522,20 +505,6 @@ message MsgStructOreMinerStatusResponse {
   Struct struct = 1 [(gogoproto.nullable) = false];
 }
 
-
-message MsgStructOreRefineryActivate {
-  option (cosmos.msg.v1.signer) = "creator";
-
-  string creator      = 1;
-  string structId     = 2;
-}
-
-message MsgStructOreRefineryDeactivate {
-  option (cosmos.msg.v1.signer) = "creator";
-
-  string creator      = 1;
-  string structId     = 2;
-}
 
 message MsgStructOreRefineryComplete {
   option (cosmos.msg.v1.signer) = "creator";

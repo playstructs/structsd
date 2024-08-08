@@ -30,7 +30,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     structStatusAttributeId := GetStructAttributeIDByObjectId(types.StructAttributeType_status, msg.StructId)
 
     // Has the Struct already been built?
-    if (k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, types.StructStateBuilt)) {
+    if (k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateBuilt))) {
         k.DischargePlayer(ctx, callingPlayerId)
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already built", msg.StructId)
     }
@@ -40,7 +40,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) not found", msg.StructId)
     }
 
-    if (callingPlayer.Id != structure.Owner) {
+    if (callingPlayerId != structure.Owner) {
         // Check permissions on Creator on Planet
         playerPermissionId := GetObjectPermissionIDBytes(structure.Owner, callingPlayerId)
         if (!k.PermissionHasOneOf(ctx, playerPermissionId, types.PermissionPlay)) {
@@ -49,7 +49,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     }
     sudoPlayer, _ := k.GetPlayer(ctx, structure.Owner, true)
     if (!sudoPlayer.IsOnline()){
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",player.Id)
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",sudoPlayer.Id)
     }
 
     // Load Struct Type
@@ -62,7 +62,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     playerCharge := k.GetPlayerCharge(ctx, structure.Owner)
     if (playerCharge < structType.ActivateCharge) {
         k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to activate, but player (%s) only had %d", msg.StructTypeId, structType.ActivateCharge, structure.Owner, playerCharge)
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to activate, but player (%s) only had %d", structure.Type, structType.ActivateCharge, structure.Owner, playerCharge)
     }
 
     // Check player Load for the passiveDraw capacity
@@ -80,20 +80,20 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     // Is load completely shot already?
     if (sudoPlayerTotalLoad > sudoPlayerTotalCapacity) {
         k.DischargePlayer(ctx, sudoPlayer.Id)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during activation, but player (%s) has none available", msg.StructTypeId, structType.BuildDraw, sudoPlayer.Id)
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during activation, but player (%s) has none available", structure.Type, structType.BuildDraw, sudoPlayer.Id)
 
     // Otherwise is the difference enough to support the buildDraw rate
     } else if ((sudoPlayerTotalCapacity - sudoPlayerTotalLoad) < structType.PassiveDraw) {
         k.DischargePlayer(ctx, sudoPlayer.Id)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during activation, but player (%s) has %d available", msg.StructTypeId, structType.BuildDraw, sudoPlayer.Id,(sudoPlayerTotalCapacity - sudoPlayerTotalLoad))
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during activation, but player (%s) has %d available", structure.Type, structType.BuildDraw, sudoPlayer.Id,(sudoPlayerTotalCapacity - sudoPlayerTotalLoad))
     }
 
     // Check the Proof
-    buildStartBlock                 := GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structure.Id))
-    buildStartBlockString           := strconv.FormatUint(structure.BuildStartBlock , 10)
+    buildStartBlock                 := k.GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structure.Id))
+    buildStartBlockString           := strconv.FormatUint(buildStartBlock , 10)
     hashInput                       := structure.Id + "BUILD" + buildStartBlockString + "NONCE" + msg.Nonce
 
-    currentAge := uint64(ctx.BlockHeight()) - structure.BuildStartBlock
+    currentAge := uint64(ctx.BlockHeight()) - buildStartBlock
 
     if (!types.HashBuildAndCheckBuildDifficulty(hashInput, msg.Proof, currentAge)) {
        k.DischargePlayer(ctx, sudoPlayer.Id)
@@ -106,12 +106,18 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
         k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.PassiveDraw)
     }
 
+    // Turn on the mining systems
+    if (structType.PlanetaryMining != types.TechPlanetaryMining_noPlanetaryMining) {
+        k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structure.Id), uint64(ctx.BlockHeight()))
+    }
+
+    // Turn on the refinery
+    if (structType.PlanetaryRefinery != types.TechPlanetaryRefineries_noPlanetaryRefinery) {
+        k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structure.Id), uint64(ctx.BlockHeight()))
+    }
+
     // Set the struct status flag to include built
-    k.SetStructAttributeFlagAdd(ctx, structStatusAttributeId, types.StructStateBuilt | types.StructStateOnline)
-
-    // Shouldn't need to actually update this object
-    // k.SetStruct(ctx, structure)
-
+    k.SetStructAttributeFlagAdd(ctx, structStatusAttributeId, uint64(types.StructStateBuilt | types.StructStateOnline))
 
 	return &types.MsgStructStatusResponse{Struct: structure}, nil
 }

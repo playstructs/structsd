@@ -31,13 +31,13 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
     structStatusAttributeId := GetStructAttributeIDByObjectId(types.StructAttributeType_status, msg.StructId)
 
     // Has the Struct already been built?
-    if (!k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, types.StructStateBuilt)) {
+    if (!k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateBuilt))) {
         k.DischargePlayer(ctx, callingPlayerId)
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is not built", msg.StructId)
     }
 
     // Has the Struct already been activated?
-    if (k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, types.StructStateOnline)) {
+    if (k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateOnline))) {
         k.DischargePlayer(ctx, callingPlayerId)
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already online", msg.StructId)
     }
@@ -56,7 +56,7 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
     }
     sudoPlayer, _ := k.GetPlayer(ctx, structure.Owner, true)
     if (!sudoPlayer.IsOnline()){
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",player.Id)
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",sudoPlayer.Id)
     }
 
     // Load Struct Type
@@ -69,7 +69,7 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
     playerCharge := k.GetPlayerCharge(ctx, structure.Owner)
     if (playerCharge < structType.ActivateCharge) {
         k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to activate, but player (%s) only had %d", msg.StructTypeId, structType.ActivateCharge, structure.Owner, playerCharge)
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to activate, but player (%s) only had %d", structure.Type, structType.ActivateCharge, structure.Owner, playerCharge)
     }
 
     // Check player Load for the passiveDraw capacity
@@ -79,19 +79,30 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
     // Is load completely shot already?
     if (sudoPlayerTotalLoad > sudoPlayerTotalCapacity) {
         k.DischargePlayer(ctx, sudoPlayer.Id)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during activation, but player (%s) has none available", msg.StructTypeId, structType.BuildDraw, sudoPlayer.Id)
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during activation, but player (%s) has none available", structure.Type, structType.BuildDraw, sudoPlayer.Id)
 
     // Otherwise is the difference enough to support the buildDraw rate
     } else if ((sudoPlayerTotalCapacity - sudoPlayerTotalLoad) < structType.PassiveDraw) {
         k.DischargePlayer(ctx, sudoPlayer.Id)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during activation, but player (%s) has %d available", msg.StructTypeId, structType.BuildDraw, sudoPlayer.Id,(sudoPlayerTotalCapacity - sudoPlayerTotalLoad))
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during activation, but player (%s) has %d available", structure.Type, structType.BuildDraw, sudoPlayer.Id,(sudoPlayerTotalCapacity - sudoPlayerTotalLoad))
     }
 
     // Add to the players struct load
     k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.PassiveDraw)
 
+    // Turn on the mining systems
+    if (structType.PlanetaryMining != types.TechPlanetaryMining_noPlanetaryMining) {
+        k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structure.Id), uint64(ctx.BlockHeight()))
+    }
+
+    // Turn on the refinery
+    if (structType.PlanetaryRefinery != types.TechPlanetaryRefineries_noPlanetaryRefinery) {
+        k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structure.Id), uint64(ctx.BlockHeight()))
+    }
+
     // Set the struct status flag to include built
-    k.SetStructAttributeFlagAdd(ctx, structStatusAttributeId, types.StructStateOnline)
+    k.SetStructAttributeFlagAdd(ctx, structStatusAttributeId, uint64(types.StructStateOnline))
+
 
 	return &types.MsgStructStatusResponse{Struct: structure}, nil
 }

@@ -52,14 +52,6 @@ func (structure *Struct) SetLocation(locationId string, slot uint64) error {
 }
 
 
-// Take an amount of fuel and return the energy it will generate
-//
-// This will need some work later on to be more dynamic in
-// relation to other system state, but for now it is static.
-func CalculateStructPower(fuel uint64) (energy uint64, ratio uint64) {
-    return fuel * StructFuelToEnergyConversion, StructFuelToEnergyConversion
-}
-
 func CreateBaseStruct(structType StructType, creator string, owner string, locationId string, locationType ObjectType, ambit Ambit, slot uint64) (Struct, error) {
 
     _, err := CheckLocation(structType, locationType, ambit)

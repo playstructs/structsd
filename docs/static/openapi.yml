@@ -24574,79 +24574,6 @@ paths:
                 format: uint64
       tags:
         - Msg
-  /structs.structs.Msg/StructOreMinerActivate:
-    post:
-      operationId: StructsStructsMsg_StructOreMinerActivate
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              struct:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    title: What it is
-                  index:
-                    type: string
-                    format: uint64
-                  type:
-                    type: string
-                    format: uint64
-                  creator:
-                    type: string
-                    title: Who is it
-                  owner:
-                    type: string
-                  locationId:
-                    type: string
-                    title: Where it is
-                  operatingAmbit:
-                    type: string
-                    enum:
-                      - none
-                      - water
-                      - land
-                      - air
-                      - space
-                      - local
-                    default: none
-                  slot:
-                    type: string
-                    format: uint64
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              creator:
-                type: string
-              structId:
-                type: string
-      tags:
-        - Msg
   /structs.structs.Msg/StructOreMinerComplete:
     post:
       operationId: StructsStructsMsg_StructOreMinerComplete
@@ -24724,152 +24651,6 @@ paths:
                 type: string
       tags:
         - Msg
-  /structs.structs.Msg/StructOreMinerDeactivate:
-    post:
-      operationId: StructsStructsMsg_StructOreMinerDeactivate
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              struct:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    title: What it is
-                  index:
-                    type: string
-                    format: uint64
-                  type:
-                    type: string
-                    format: uint64
-                  creator:
-                    type: string
-                    title: Who is it
-                  owner:
-                    type: string
-                  locationId:
-                    type: string
-                    title: Where it is
-                  operatingAmbit:
-                    type: string
-                    enum:
-                      - none
-                      - water
-                      - land
-                      - air
-                      - space
-                      - local
-                    default: none
-                  slot:
-                    type: string
-                    format: uint64
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              creator:
-                type: string
-              structId:
-                type: string
-      tags:
-        - Msg
-  /structs.structs.Msg/StructOreRefineryActivate:
-    post:
-      operationId: StructsStructsMsg_StructOreRefineryActivate
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              struct:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    title: What it is
-                  index:
-                    type: string
-                    format: uint64
-                  type:
-                    type: string
-                    format: uint64
-                  creator:
-                    type: string
-                    title: Who is it
-                  owner:
-                    type: string
-                  locationId:
-                    type: string
-                    title: Where it is
-                  operatingAmbit:
-                    type: string
-                    enum:
-                      - none
-                      - water
-                      - land
-                      - air
-                      - space
-                      - local
-                    default: none
-                  slot:
-                    type: string
-                    format: uint64
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              creator:
-                type: string
-              structId:
-                type: string
-      tags:
-        - Msg
   /structs.structs.Msg/StructOreRefineryComplete:
     post:
       operationId: StructsStructsMsg_StructOreRefineryComplete
@@ -24944,79 +24725,6 @@ paths:
               proof:
                 type: string
               nonce:
-                type: string
-      tags:
-        - Msg
-  /structs.structs.Msg/StructOreRefineryDeactivate:
-    post:
-      operationId: StructsStructsMsg_StructOreRefineryDeactivate
-      responses:
-        '200':
-          description: A successful response.
-          schema:
-            type: object
-            properties:
-              struct:
-                type: object
-                properties:
-                  id:
-                    type: string
-                    title: What it is
-                  index:
-                    type: string
-                    format: uint64
-                  type:
-                    type: string
-                    format: uint64
-                  creator:
-                    type: string
-                    title: Who is it
-                  owner:
-                    type: string
-                  locationId:
-                    type: string
-                    title: Where it is
-                  operatingAmbit:
-                    type: string
-                    enum:
-                      - none
-                      - water
-                      - land
-                      - air
-                      - space
-                      - local
-                    default: none
-                  slot:
-                    type: string
-                    format: uint64
-        default:
-          description: An unexpected error response.
-          schema:
-            type: object
-            properties:
-              code:
-                type: integer
-                format: int32
-              message:
-                type: string
-              details:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    '@type':
-                      type: string
-                  additionalProperties: {}
-      parameters:
-        - name: body
-          in: body
-          required: true
-          schema:
-            type: object
-            properties:
-              creator:
-                type: string
-              structId:
                 type: string
       tags:
         - Msg
@@ -35342,13 +35050,6 @@ definitions:
       slot:
         type: string
         format: uint64
-  structs.structs.MsgStructOreMinerActivate:
-    type: object
-    properties:
-      creator:
-        type: string
-      structId:
-        type: string
   structs.structs.MsgStructOreMinerComplete:
     type: object
     properties:
@@ -35359,13 +35060,6 @@ definitions:
       proof:
         type: string
       nonce:
-        type: string
-  structs.structs.MsgStructOreMinerDeactivate:
-    type: object
-    properties:
-      creator:
-        type: string
-      structId:
         type: string
   structs.structs.MsgStructOreMinerStatusResponse:
     type: object
@@ -35403,13 +35097,6 @@ definitions:
           slot:
             type: string
             format: uint64
-  structs.structs.MsgStructOreRefineryActivate:
-    type: object
-    properties:
-      creator:
-        type: string
-      structId:
-        type: string
   structs.structs.MsgStructOreRefineryComplete:
     type: object
     properties:
@@ -35420,13 +35107,6 @@ definitions:
       proof:
         type: string
       nonce:
-        type: string
-  structs.structs.MsgStructOreRefineryDeactivate:
-    type: object
-    properties:
-      creator:
-        type: string
-      structId:
         type: string
   structs.structs.MsgStructOreRefineryStatusResponse:
     type: object

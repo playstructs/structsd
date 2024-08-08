@@ -73,14 +73,14 @@ func (k Keeper) GetInfusionByID(ctx context.Context, infusionId string) (val typ
 }
 
 
-func (k Keeper) UpsertInfusion(ctx context.Context, destinationType types.ObjectType, destinationId string, address string, player types.Player, fuel uint64, commission math.LegacyDec) (infusion types.Infusion, newInfusionFuel uint64, oldInfusionFuel uint64, newInfusionPower uint64, oldInfusionPower uint64, newCommissionPower uint64, oldCommissionPower uint64, newPlayerPower uint64, oldPlayerPower uint64, err error) {
+func (k Keeper) UpsertInfusion(ctx context.Context, destinationType types.ObjectType, destinationId string, address string, player types.Player, fuel uint64, commission math.LegacyDec, ratio uint64) (infusion types.Infusion, newInfusionFuel uint64, oldInfusionFuel uint64, newInfusionPower uint64, oldInfusionPower uint64, newCommissionPower uint64, oldCommissionPower uint64, newPlayerPower uint64, oldPlayerPower uint64, err error) {
 
     infusion, infusionFound := k.GetInfusion(ctx, destinationId, address)
     if (infusionFound) {
          newInfusionFuel, oldInfusionFuel, newInfusionPower, oldInfusionPower, newCommissionPower, oldCommissionPower, newPlayerPower, oldPlayerPower, _, _, err = infusion.SetFuelAndCommission(fuel, commission)
     } else {
 
-        infusion = types.CreateNewInfusion(destinationType, destinationId, address, player.Id, fuel, commission)
+        infusion = types.CreateNewInfusion(destinationType, destinationId, address, player.Id, fuel, commission, ratio)
 
         // Should already be the value, but let's be safe
         oldInfusionFuel = 0

@@ -15,17 +15,3 @@ func CreateEmptyReactor() Reactor {
         GuildId: "",
 	}
 }
-
-
-
-
-
-
-// Take an amount of fuel and return the energy it will generate
-//
-// This will need some work later on to be more dynamic in
-// relation to other system state, but for now it is static.
-func CalculateReactorPower(fuel uint64) (energy uint64, ratio uint64) {
-    return fuel * ReactorFuelToEnergyConversion, ReactorFuelToEnergyConversion
-}
-

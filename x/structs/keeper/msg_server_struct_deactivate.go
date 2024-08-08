@@ -31,13 +31,13 @@ func (k msgServer) StructDeactivate(goCtx context.Context, msg *types.MsgStructD
     structStatusAttributeId := GetStructAttributeIDByObjectId(types.StructAttributeType_status, msg.StructId)
 
     // Has the Struct already been built?
-    if (!k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, types.StructStateBuilt)) {
+    if (!k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateBuilt))) {
         k.DischargePlayer(ctx, callingPlayerId)
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is not built", msg.StructId)
     }
 
     // Has the Struct already been activated?
-    if (!k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, types.StructStateOnline)) {
+    if (!k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateOnline))) {
         k.DischargePlayer(ctx, callingPlayerId)
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already offline", msg.StructId)
     }
@@ -56,7 +56,7 @@ func (k msgServer) StructDeactivate(goCtx context.Context, msg *types.MsgStructD
     }
     sudoPlayer, _ := k.GetPlayer(ctx, structure.Owner, true)
     if (!sudoPlayer.IsOnline()){
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",player.Id)
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",sudoPlayer.Id)
     }
 
     // Load Struct Type
@@ -75,7 +75,17 @@ func (k msgServer) StructDeactivate(goCtx context.Context, msg *types.MsgStructD
     }
 
     // Set the struct status flag to include built
-    k.SetStructAttributeFlagRemove(ctx, structStatusAttributeId, types.StructStateOnline)
+    k.SetStructAttributeFlagRemove(ctx, structStatusAttributeId, uint64(types.StructStateOnline))
+
+    // Turn off the mining systems
+    if (structType.PlanetaryMining != types.TechPlanetaryMining_noPlanetaryMining) {
+        k.ClearStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structure.Id))
+    }
+
+    // Turn off the refinery
+    if (structType.PlanetaryRefinery != types.TechPlanetaryRefineries_noPlanetaryRefinery) {
+        k.ClearStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structure.Id))
+    }
 
 	return &types.MsgStructStatusResponse{Struct: structure}, nil
 }

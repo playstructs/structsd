@@ -21,7 +21,8 @@ func (a *Infusion) SetCommission(newCommission math.LegacyDec) (
     oldPlayerPower         = a.Power - oldCommissionPower
 
 
-    newInfusionPower, newRatio  = CalculateInfusionPower(a.DestinationType, a.Fuel)
+    newRatio                    = a.Ratio
+    newInfusionPower            = CalculateInfusionPower(newRatio, a.Fuel)
     newCommissionPower          = newCommission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(newInfusionPower))).RoundInt().Uint64()
     newPlayerPower              = newInfusionPower - newCommissionPower
 
@@ -55,7 +56,8 @@ func (a *Infusion) SetFuel(newFuel uint64) (
     oldPlayerPower         = a.Power - oldCommissionPower
 
     newInfusionFuel             = newFuel
-    newInfusionPower, newRatio  = CalculateInfusionPower(a.DestinationType, newInfusionFuel)
+    newRatio                    = a.Ratio
+    newInfusionPower            = CalculateInfusionPower(newRatio, newInfusionFuel)
     newCommissionPower          = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(newInfusionPower))).RoundInt().Uint64()
     newPlayerPower              = newInfusionPower - newCommissionPower
 
@@ -87,7 +89,8 @@ func (a *Infusion) SetFuelAndCommission(newFuel uint64, newCommission math.Legac
     oldPlayerPower         = a.Power - oldCommissionPower
 
     newInfusionFuel             = newFuel
-    newInfusionPower, newRatio  = CalculateInfusionPower(a.DestinationType, newInfusionFuel)
+    newRatio                    = a.Ratio
+    newInfusionPower            = CalculateInfusionPower(newRatio, newInfusionFuel)
     newCommissionPower          = newCommission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(newInfusionPower))).RoundInt().Uint64()
     newPlayerPower              = newInfusionPower - newCommissionPower
 
@@ -110,20 +113,13 @@ func (a *Infusion) GetPowerDistribution() (infusionPower uint64, commissionPower
         return
 }
 
-func CalculateInfusionPower(destinationType ObjectType, fuel uint64) (energy uint64, ratio uint64) {
-    switch destinationType {
-        case ObjectType_reactor:
-            energy, ratio = CalculateReactorPower(fuel)
-        case ObjectType_struct:
-            energy, ratio = CalculateStructPower(fuel)
-    }
-
-    return
+func CalculateInfusionPower(ratio uint64, fuel uint64) (uint64) {
+    return ratio * fuel
 }
 
-func CreateNewInfusion(destinationType ObjectType, destinationId string, playerAddress string, playerId string, fuel uint64, commission math.LegacyDec) Infusion {
+func CreateNewInfusion(destinationType ObjectType, destinationId string, playerAddress string, playerId string, fuel uint64, commission math.LegacyDec, ratio uint64) Infusion {
 
-	power, ratio := CalculateInfusionPower(destinationType, fuel)
+	power := CalculateInfusionPower(ratio, fuel)
 
 	return Infusion{
 		DestinationType: destinationType,
