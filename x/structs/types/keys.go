@@ -40,8 +40,8 @@ const (
 
     // Current Aim is a 3 hour max
     Charge_Volts = 100000000
-    Charge_Resistance = 100
-    Charge_Capacitance = 10
+    Charge_Resistance = 100.0
+    Charge_Capacitance = 10.0
 )
 
 var (
