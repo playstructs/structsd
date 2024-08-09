@@ -35,7 +35,7 @@ message StructType {
 
   uint64  possibleAmbit   = 8;  // Where can it be built and moved to. Usually only a single ambit but some Structs have multiple possible (i.e. Command Ship)
   bool    movable         = 9;  // Can the Struct move between ambits?
-  bool    slotted         = 10; // Does the Struct occupy a slot
+  bool    slotted         = 10; // Does the Struct occupy a slot.
 
   // Primary Weapon Configuration
   techActiveWeaponry  primaryWeapon                 = 11;
