@@ -32,7 +32,9 @@ message StructType {
   uint64          maxHealth       = 6; // How much damage can it take
   uint64          passiveDraw     = 7; // How much energy the Struct consumes when active
 
-
+  // Details about location and movement
+  // TODO move category to here and make it flag based too
+  // Replicate what was done for ambits flags
   uint64  possibleAmbit   = 8;  // Where can it be built and moved to. Usually only a single ambit but some Structs have multiple possible (i.e. Command Ship)
   bool    movable         = 9;  // Can the Struct move between ambits?
   bool    slotted         = 10; // Does the Struct occupy a slot.
