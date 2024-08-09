@@ -15,7 +15,7 @@ import (
 )
 
 
-func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttack) (*types.MsgStructAttackResponse, error) {
+func (k msgServer) StructDefenseClear(goCtx context.Context, msg *types.MsgStructDefenseClear) (*types.MsgStructStatusResponse, error) {
 /*	ctx := sdk.UnwrapSDKContext(goCtx)
 
     // Add an Active Address record to the
@@ -76,5 +76,5 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
     k.DischargePlayer(ctx, structure.Owner)
 */
-	return &types.MsgStructAttackResponse{}, nil
+	return &types.MsgStructStatusResponse{}, nil
 }

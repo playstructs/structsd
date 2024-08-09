@@ -11,7 +11,7 @@ import (
 	"structs/x/structs/types"
 )
 
-func (k msgServer) StructRefine(goCtx context.Context, msg *types.MsgStructOreRefineryComplete) (*types.MsgStructOreRefineryStatusResponse, error) {
+func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.MsgStructOreRefineryComplete) (*types.MsgStructOreRefineryStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 
     // Add an Active Address record to the

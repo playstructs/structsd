@@ -14,6 +14,11 @@ import (
 	"structs/x/structs/types"
 
 )
+func GetStructTypeIDBytes(id uint64) []byte {
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, id)
+	return bz
+}
 
 // GetStructTypeCount get the total number of struct types
 func (k Keeper) GetStructTypeCount(ctx context.Context) uint64 {
@@ -54,7 +59,7 @@ func (k Keeper) AppendStructType(
 
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructTypeKey))
 	appendedValue := k.cdc.MustMarshal(&structType)
-	store.Set(structType.Id, appendedValue)
+	store.Set(GetStructTypeIDBytes(structType.Id), appendedValue)
 
 	// Update struct count
 	k.SetStructTypeCount(ctx, count+1)
@@ -68,7 +73,7 @@ func (k Keeper) AppendStructType(
 func (k Keeper) SetStructType(ctx context.Context, structType types.StructType) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructTypeKey))
 	b := k.cdc.MustMarshal(&structType)
-	store.Set(structType.Id, b)
+	store.Set(GetStructTypeIDBytes(structType.Id), b)
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStructType{StructType: &structType})
@@ -77,7 +82,7 @@ func (k Keeper) SetStructType(ctx context.Context, structType types.StructType) 
 // GetStructType returns a struct type from its id
 func (k Keeper) GetStructType(ctx context.Context, structTypeId uint64) (val types.StructType, found bool) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructTypeKey))
-	b := store.Get(structTypeId)
+	b := store.Get(GetStructTypeIDBytes(structTypeId))
 	if b == nil {
 		return val, false
 	}

@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"encoding/binary"
+	//"encoding/binary"
 
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"cosmossdk.io/store/prefix"
@@ -36,7 +36,7 @@ func (k Keeper) SetStructDefender(
     }
 
  	// Get the Counter Attributes from the Type
- 	defenderStructType := k.GetStructType(ctx, defendingStruct.StructTypeId)
+ 	defenderStructType, _ := k.GetStructType(ctx, defendingStruct.Type)
 
     structDefender = types.StructDefender{
           ProtectedStructId: protectedStruct.Id,
@@ -65,7 +65,7 @@ func (k Keeper) SetStructDefender(
 // GetStructDefender returns a struct defensive posture from its combo of IDs
 // This function shouldn't really get used often but keeping it here for debugging
 func (k Keeper) GetStructDefender(ctx context.Context, protectedStructId string, structDefenderId string) (val types.StructDefender, found bool) {
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), DefenderKeyPrefix(protectedStruct.Id))
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), DefenderKeyPrefix(protectedStructId))
 	b := store.Get([]byte(structDefenderId))
 	if b == nil {
 		return val, false
