@@ -16,7 +16,7 @@ import (
 
 
 func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (*types.MsgStructStatusResponse, error) {
-/*	ctx := sdk.UnwrapSDKContext(goCtx)
+	ctx := sdk.UnwrapSDKContext(goCtx)
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -75,6 +75,6 @@ func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (
     }
 
     k.DischargePlayer(ctx, structure.Owner)
-*/
+
 	return &types.MsgStructStatusResponse{}, nil
 }

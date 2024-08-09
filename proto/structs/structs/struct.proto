@@ -31,69 +31,73 @@ message StructType {
   uint64          buildDraw       = 5; // How much energy the Struct consumes during building
   uint64          maxHealth       = 6; // How much damage can it take
   uint64          passiveDraw     = 7; // How much energy the Struct consumes when active
-  uint64          possibleAmbit   = 8; // Where can it be built and moved to. Usually only a single ambit but some Structs have multiple possible (i.e. Command Ship)
+
+
+  uint64  possibleAmbit   = 8;  // Where can it be built and moved to. Usually only a single ambit but some Structs have multiple possible (i.e. Command Ship)
+  bool    movable         = 9;  // Can the Struct move between ambits?
+  bool    slotted         = 10; // Does the Struct occupy a slot
 
   // Primary Weapon Configuration
-  techActiveWeaponry  primaryWeapon                 = 9;
-  techWeaponControl   primaryWeaponControl          = 10;
-  uint64              primaryWeaponCharge           = 11;
-  uint64              primaryWeaponTargets          = 12;
-  uint64              primaryWeaponShots            = 13;
-  uint64              primaryWeaponDamage           = 14;
-  bool                primaryWeaponBlockable        = 15;
-  bool                primaryWeaponCounterable      = 16;
-  uint64              primaryWeaponRecoilDamage     = 17;
-  uint64              primaryWeaponShotSuccessRateNumerator   = 18;
-  uint64              primaryWeaponShotSuccessRateDenominator = 19;
+  techActiveWeaponry  primaryWeapon                 = 11;
+  techWeaponControl   primaryWeaponControl          = 12;
+  uint64              primaryWeaponCharge           = 13;
+  uint64              primaryWeaponTargets          = 14;
+  uint64              primaryWeaponShots            = 15;
+  uint64              primaryWeaponDamage           = 16;
+  bool                primaryWeaponBlockable        = 17;
+  bool                primaryWeaponCounterable      = 18;
+  uint64              primaryWeaponRecoilDamage     = 19;
+  uint64              primaryWeaponShotSuccessRateNumerator   = 20;
+  uint64              primaryWeaponShotSuccessRateDenominator = 21;
 
   // Secondary Weapon Configuration
-  techActiveWeaponry  secondaryWeapon                 = 20;
-  techWeaponControl   secondaryWeaponControl          = 21;
-  uint64              secondaryWeaponCharge           = 22;
-  uint64              secondaryWeaponTargets          = 23;
-  uint64              secondaryWeaponShots            = 24;
-  uint64              secondaryWeaponDamage           = 25;
-  bool                secondaryWeaponBlockable        = 26;
-  bool                secondaryWeaponCounterable      = 27;
-  uint64              secondaryWeaponRecoilDamage     = 28;
-  uint64              secondaryWeaponShotSuccessRateNumerator   = 29;
-  uint64              secondaryWeaponShotSuccessRateDenominator = 30;
+  techActiveWeaponry  secondaryWeapon                 = 22;
+  techWeaponControl   secondaryWeaponControl          = 23;
+  uint64              secondaryWeaponCharge           = 24;
+  uint64              secondaryWeaponTargets          = 25;
+  uint64              secondaryWeaponShots            = 26;
+  uint64              secondaryWeaponDamage           = 27;
+  bool                secondaryWeaponBlockable        = 28;
+  bool                secondaryWeaponCounterable      = 29;
+  uint64              secondaryWeaponRecoilDamage     = 30;
+  uint64              secondaryWeaponShotSuccessRateNumerator   = 31;
+  uint64              secondaryWeaponShotSuccessRateDenominator = 32;
 
   // Tech Tree Features
-  techPassiveWeaponry               passiveWeaponry             = 31;
+  techPassiveWeaponry               passiveWeaponry             = 33;
 
-  techUnitDefenses                  unitDefenses                = 32;
-  techOreReserveDefenses            oreReserveDefenses          = 33;
-  techPlanetaryDefenses             planetaryDefenses           = 34;
+  techUnitDefenses                  unitDefenses                = 34;
+  techOreReserveDefenses            oreReserveDefenses          = 35;
+  techPlanetaryDefenses             planetaryDefenses           = 36;
 
-  techPlanetaryMining               planetaryMining             = 35;
-  techPlanetaryRefineries           planetaryRefinery           = 36;
+  techPlanetaryMining               planetaryMining             = 37;
+  techPlanetaryRefineries           planetaryRefinery           = 38;
 
-  techPowerGeneration               powerGeneration             = 37;
+  techPowerGeneration               powerGeneration             = 39;
 
   // Charge uses
-  uint64 activateCharge         = 38;
-  uint64 buildCharge            = 39;
-  uint64 defendChangeCharge     = 40;
-  uint64 moveCharge             = 41;
-  uint64 oreMiningCharge        = 42;
-  uint64 oreRefiningCharge      = 43;
-  uint64 stealthActivateCharge  = 44;
+  uint64 activateCharge         = 40;
+  uint64 buildCharge            = 41;
+  uint64 defendChangeCharge     = 42;
+  uint64 moveCharge             = 43;
+  uint64 oreMiningCharge        = 44;
+  uint64 oreRefiningCharge      = 45;
+  uint64 stealthActivateCharge  = 46;
 
 
   // Tech Tree Attributes
-  uint64 attackReduction              = 45; // For Defensive Cannon
-  bool   attackCounterable            = 46; // For Indirect Combat Module
-  bool   stealthSystems               = 47; // For Stealth Mode
+  uint64 attackReduction              = 47; // For Defensive Cannon
+  bool   attackCounterable            = 48; // For Indirect Combat Module
+  bool   stealthSystems               = 49; // For Stealth Mode
 
-  uint64 counterAttack                = 48; // Counter
-  uint64 counterAttackSameAmbit       = 49; // Advanced Counter
+  uint64 counterAttack                = 50; // Counter
+  uint64 counterAttackSameAmbit       = 51; // Advanced Counter
 
-  uint64 postDestructionDamage        = 50;
+  uint64 postDestructionDamage        = 52;
 
-  uint64 generatingRate               = 51; // Power Generation
+  uint64 generatingRate               = 53; // Power Generation
 
-  uint64 planetaryShieldContribution  = 52; // The shield that is added to the Planet
+  uint64 planetaryShieldContribution  = 54; // The shield that is added to the Planet
 
   /*  Storage Not in MVP
 
@@ -106,11 +110,11 @@ message StructType {
   uint64 storageWater                 = x;
   */
 
-  uint64 unguidedDefensiveSuccessRateNumerator    = 53;
-  uint64 unguidedDefensiveSuccessRateDenominator  = 54;
+  uint64 unguidedDefensiveSuccessRateNumerator    = 55;
+  uint64 unguidedDefensiveSuccessRateDenominator  = 56;
 
-  uint64 guidedDefensiveSuccessRateNumerator      = 55;
-  uint64 guidedDefensiveSuccessRateDenominator    = 56;
+  uint64 guidedDefensiveSuccessRateNumerator      = 57;
+  uint64 guidedDefensiveSuccessRateDenominator    = 58;
 }
 
 message StructDefender {
