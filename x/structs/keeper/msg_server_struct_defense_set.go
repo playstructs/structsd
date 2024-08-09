@@ -81,15 +81,11 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for defensive changes, but player (%s) only had %d", structure.Type, structType.ActivateCharge, structure.Owner, playerCharge)
     }
 
-
     //load target
     protectedStructure, protectedStructureFound := k.GetStruct(ctx,  msg.ProtectedStructId)
     if (!protectedStructureFound) {
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) not found", msg.ProtectedStructId)
     }
-
-
-
 
     // Are they within defensive range
         // Are they at the same location - great
@@ -116,7 +112,6 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
         k.DischargePlayer(ctx, structure.Owner)
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is not within ranger to defend Struct (%s) ", structure.Id, msg.ProtectedStructId)
     }
-
 
     k.SetStructDefender(ctx, protectedStructure, structure)
 

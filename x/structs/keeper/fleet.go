@@ -24,7 +24,6 @@ func (k Keeper) AppendFleet(
 	fleet.Id = GetObjectID(types.ObjectType_fleet, player.Index)
 	fleet.Owner = player.Id
 
-
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.FleetKey))
 	appendedValue := k.cdc.MustMarshal(&fleet)
 	store.Set([]byte(fleet.Id), appendedValue)
