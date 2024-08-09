@@ -343,13 +343,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "primaryAddress"}},
                  },
                  {
-                     RpcMethod:      "Sabotage",
-                     Use:            "sabotage [struct id] [proof] [nonce]",
-                     Short:          "Sabotage a struct!",
-                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"},{ProtoField: "proof"},{ProtoField: "nonce"}},
-                 },
-
-                 {
                      RpcMethod:      "StructActivate",
                      Use:            "struct-activate [struct id]",
                      Short:          "Bring a Struct online",
@@ -362,52 +355,22 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"},{ProtoField: "proof"},{ProtoField: "nonce"}},
                  },
                  {
-                     RpcMethod:      "StructBuildInitiate",
-                     Use:            "struct-build-initiate [struct type] [planet id] [slot]",
-                     Short:          "Initiate the construction of a new Struct",
-                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structType"},{ProtoField: "planetId"},{ProtoField: "slot"}},
-                 },
-                 {
-                     RpcMethod:      "StructInfuse",
-                     Use:            "struct-infuse [struct id] [infusion amount]",
+                     RpcMethod:      "StructGeneratorInfuse",
+                     Use:            "struct-generator-infuse [struct id] [infusion amount]",
                      Short:          "Infuse Alpha into a generating Struct (cannot be undone!)",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"},{ProtoField: "infuseAmount"}},
                  },
                  {
-                     RpcMethod:      "StructMine",
-                     Use:            "struct-mine [struct id] [proof] [nonce]",
+                     RpcMethod:      "StructOreMinerComplete",
+                     Use:            "struct-ore-mine-complete [struct id] [proof] [nonce]",
                      Short:          "Complete a Struct mining action",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"},{ProtoField: "proof"},{ProtoField: "nonce"}},
                  },
                  {
-                     RpcMethod:      "StructMineActivate",
-                     Use:            "struct-mine-activate [struct id]",
-                     Short:          "Bring a Struct mining system online",
-                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"}},
-                 },
-                 {
-                     RpcMethod:      "StructMineDeactivate",
-                     Use:            "struct-mine-deactivate [struct id]",
-                     Short:          "Bring a Struct mining system offline",
-                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"}},
-                 },
-                 {
-                     RpcMethod:      "StructRefine",
-                     Use:            "struct-refine [struct id] [proof] [nonce]",
+                     RpcMethod:      "StructOreRefineryComplete",
+                     Use:            "struct-ore-refine-complete [struct id] [proof] [nonce]",
                      Short:          "Complete a Struct refining action",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"},{ProtoField: "proof"},{ProtoField: "nonce"}},
-                 },
-                 {
-                     RpcMethod:      "StructRefineActivate",
-                     Use:            "struct-refine-activate [struct id]",
-                     Short:          "Bring a Struct refinery system online",
-                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"}},
-                 },
-                 {
-                     RpcMethod:      "StructRefineDeactivate",
-                     Use:            "struct-refine-deactivate [struct id]",
-                     Short:          "Bring a Struct refinery system offline",
-                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"}},
                  },
 
                  {

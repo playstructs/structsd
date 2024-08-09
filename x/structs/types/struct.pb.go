@@ -134,60 +134,65 @@ type StructType struct {
 	BuildDraw       uint64     `protobuf:"varint,5,opt,name=buildDraw,proto3" json:"buildDraw,omitempty"`
 	MaxHealth       uint64     `protobuf:"varint,6,opt,name=maxHealth,proto3" json:"maxHealth,omitempty"`
 	PassiveDraw     uint64     `protobuf:"varint,7,opt,name=passiveDraw,proto3" json:"passiveDraw,omitempty"`
-	PossibleAmbit   uint64     `protobuf:"varint,8,opt,name=possibleAmbit,proto3" json:"possibleAmbit,omitempty"`
+	// Details about location and movement
+	// TODO move category to here and make it flag based too
+	// Replicate what was done for ambits flags
+	PossibleAmbit uint64 `protobuf:"varint,8,opt,name=possibleAmbit,proto3" json:"possibleAmbit,omitempty"`
+	Movable       bool   `protobuf:"varint,9,opt,name=movable,proto3" json:"movable,omitempty"`
+	Slotted       bool   `protobuf:"varint,10,opt,name=slotted,proto3" json:"slotted,omitempty"`
 	// Primary Weapon Configuration
-	PrimaryWeapon                           TechActiveWeaponry `protobuf:"varint,9,opt,name=primaryWeapon,proto3,enum=structs.structs.TechActiveWeaponry" json:"primaryWeapon,omitempty"`
-	PrimaryWeaponControl                    TechWeaponControl  `protobuf:"varint,10,opt,name=primaryWeaponControl,proto3,enum=structs.structs.TechWeaponControl" json:"primaryWeaponControl,omitempty"`
-	PrimaryWeaponCharge                     uint64             `protobuf:"varint,11,opt,name=primaryWeaponCharge,proto3" json:"primaryWeaponCharge,omitempty"`
-	PrimaryWeaponTargets                    uint64             `protobuf:"varint,12,opt,name=primaryWeaponTargets,proto3" json:"primaryWeaponTargets,omitempty"`
-	PrimaryWeaponShots                      uint64             `protobuf:"varint,13,opt,name=primaryWeaponShots,proto3" json:"primaryWeaponShots,omitempty"`
-	PrimaryWeaponDamage                     uint64             `protobuf:"varint,14,opt,name=primaryWeaponDamage,proto3" json:"primaryWeaponDamage,omitempty"`
-	PrimaryWeaponBlockable                  bool               `protobuf:"varint,15,opt,name=primaryWeaponBlockable,proto3" json:"primaryWeaponBlockable,omitempty"`
-	PrimaryWeaponCounterable                bool               `protobuf:"varint,16,opt,name=primaryWeaponCounterable,proto3" json:"primaryWeaponCounterable,omitempty"`
-	PrimaryWeaponRecoilDamage               uint64             `protobuf:"varint,17,opt,name=primaryWeaponRecoilDamage,proto3" json:"primaryWeaponRecoilDamage,omitempty"`
-	PrimaryWeaponShotSuccessRateNumerator   uint64             `protobuf:"varint,18,opt,name=primaryWeaponShotSuccessRateNumerator,proto3" json:"primaryWeaponShotSuccessRateNumerator,omitempty"`
-	PrimaryWeaponShotSuccessRateDenominator uint64             `protobuf:"varint,19,opt,name=primaryWeaponShotSuccessRateDenominator,proto3" json:"primaryWeaponShotSuccessRateDenominator,omitempty"`
+	PrimaryWeapon                           TechActiveWeaponry `protobuf:"varint,11,opt,name=primaryWeapon,proto3,enum=structs.structs.TechActiveWeaponry" json:"primaryWeapon,omitempty"`
+	PrimaryWeaponControl                    TechWeaponControl  `protobuf:"varint,12,opt,name=primaryWeaponControl,proto3,enum=structs.structs.TechWeaponControl" json:"primaryWeaponControl,omitempty"`
+	PrimaryWeaponCharge                     uint64             `protobuf:"varint,13,opt,name=primaryWeaponCharge,proto3" json:"primaryWeaponCharge,omitempty"`
+	PrimaryWeaponTargets                    uint64             `protobuf:"varint,14,opt,name=primaryWeaponTargets,proto3" json:"primaryWeaponTargets,omitempty"`
+	PrimaryWeaponShots                      uint64             `protobuf:"varint,15,opt,name=primaryWeaponShots,proto3" json:"primaryWeaponShots,omitempty"`
+	PrimaryWeaponDamage                     uint64             `protobuf:"varint,16,opt,name=primaryWeaponDamage,proto3" json:"primaryWeaponDamage,omitempty"`
+	PrimaryWeaponBlockable                  bool               `protobuf:"varint,17,opt,name=primaryWeaponBlockable,proto3" json:"primaryWeaponBlockable,omitempty"`
+	PrimaryWeaponCounterable                bool               `protobuf:"varint,18,opt,name=primaryWeaponCounterable,proto3" json:"primaryWeaponCounterable,omitempty"`
+	PrimaryWeaponRecoilDamage               uint64             `protobuf:"varint,19,opt,name=primaryWeaponRecoilDamage,proto3" json:"primaryWeaponRecoilDamage,omitempty"`
+	PrimaryWeaponShotSuccessRateNumerator   uint64             `protobuf:"varint,20,opt,name=primaryWeaponShotSuccessRateNumerator,proto3" json:"primaryWeaponShotSuccessRateNumerator,omitempty"`
+	PrimaryWeaponShotSuccessRateDenominator uint64             `protobuf:"varint,21,opt,name=primaryWeaponShotSuccessRateDenominator,proto3" json:"primaryWeaponShotSuccessRateDenominator,omitempty"`
 	// Secondary Weapon Configuration
-	SecondaryWeapon                           TechActiveWeaponry `protobuf:"varint,20,opt,name=secondaryWeapon,proto3,enum=structs.structs.TechActiveWeaponry" json:"secondaryWeapon,omitempty"`
-	SecondaryWeaponControl                    TechWeaponControl  `protobuf:"varint,21,opt,name=secondaryWeaponControl,proto3,enum=structs.structs.TechWeaponControl" json:"secondaryWeaponControl,omitempty"`
-	SecondaryWeaponCharge                     uint64             `protobuf:"varint,22,opt,name=secondaryWeaponCharge,proto3" json:"secondaryWeaponCharge,omitempty"`
-	SecondaryWeaponTargets                    uint64             `protobuf:"varint,23,opt,name=secondaryWeaponTargets,proto3" json:"secondaryWeaponTargets,omitempty"`
-	SecondaryWeaponShots                      uint64             `protobuf:"varint,24,opt,name=secondaryWeaponShots,proto3" json:"secondaryWeaponShots,omitempty"`
-	SecondaryWeaponDamage                     uint64             `protobuf:"varint,25,opt,name=secondaryWeaponDamage,proto3" json:"secondaryWeaponDamage,omitempty"`
-	SecondaryWeaponBlockable                  bool               `protobuf:"varint,26,opt,name=secondaryWeaponBlockable,proto3" json:"secondaryWeaponBlockable,omitempty"`
-	SecondaryWeaponCounterable                bool               `protobuf:"varint,27,opt,name=secondaryWeaponCounterable,proto3" json:"secondaryWeaponCounterable,omitempty"`
-	SecondaryWeaponRecoilDamage               uint64             `protobuf:"varint,28,opt,name=secondaryWeaponRecoilDamage,proto3" json:"secondaryWeaponRecoilDamage,omitempty"`
-	SecondaryWeaponShotSuccessRateNumerator   uint64             `protobuf:"varint,29,opt,name=secondaryWeaponShotSuccessRateNumerator,proto3" json:"secondaryWeaponShotSuccessRateNumerator,omitempty"`
-	SecondaryWeaponShotSuccessRateDenominator uint64             `protobuf:"varint,30,opt,name=secondaryWeaponShotSuccessRateDenominator,proto3" json:"secondaryWeaponShotSuccessRateDenominator,omitempty"`
+	SecondaryWeapon                           TechActiveWeaponry `protobuf:"varint,22,opt,name=secondaryWeapon,proto3,enum=structs.structs.TechActiveWeaponry" json:"secondaryWeapon,omitempty"`
+	SecondaryWeaponControl                    TechWeaponControl  `protobuf:"varint,23,opt,name=secondaryWeaponControl,proto3,enum=structs.structs.TechWeaponControl" json:"secondaryWeaponControl,omitempty"`
+	SecondaryWeaponCharge                     uint64             `protobuf:"varint,24,opt,name=secondaryWeaponCharge,proto3" json:"secondaryWeaponCharge,omitempty"`
+	SecondaryWeaponTargets                    uint64             `protobuf:"varint,25,opt,name=secondaryWeaponTargets,proto3" json:"secondaryWeaponTargets,omitempty"`
+	SecondaryWeaponShots                      uint64             `protobuf:"varint,26,opt,name=secondaryWeaponShots,proto3" json:"secondaryWeaponShots,omitempty"`
+	SecondaryWeaponDamage                     uint64             `protobuf:"varint,27,opt,name=secondaryWeaponDamage,proto3" json:"secondaryWeaponDamage,omitempty"`
+	SecondaryWeaponBlockable                  bool               `protobuf:"varint,28,opt,name=secondaryWeaponBlockable,proto3" json:"secondaryWeaponBlockable,omitempty"`
+	SecondaryWeaponCounterable                bool               `protobuf:"varint,29,opt,name=secondaryWeaponCounterable,proto3" json:"secondaryWeaponCounterable,omitempty"`
+	SecondaryWeaponRecoilDamage               uint64             `protobuf:"varint,30,opt,name=secondaryWeaponRecoilDamage,proto3" json:"secondaryWeaponRecoilDamage,omitempty"`
+	SecondaryWeaponShotSuccessRateNumerator   uint64             `protobuf:"varint,31,opt,name=secondaryWeaponShotSuccessRateNumerator,proto3" json:"secondaryWeaponShotSuccessRateNumerator,omitempty"`
+	SecondaryWeaponShotSuccessRateDenominator uint64             `protobuf:"varint,32,opt,name=secondaryWeaponShotSuccessRateDenominator,proto3" json:"secondaryWeaponShotSuccessRateDenominator,omitempty"`
 	// Tech Tree Features
-	PassiveWeaponry    TechPassiveWeaponry     `protobuf:"varint,31,opt,name=passiveWeaponry,proto3,enum=structs.structs.TechPassiveWeaponry" json:"passiveWeaponry,omitempty"`
-	UnitDefenses       TechUnitDefenses        `protobuf:"varint,32,opt,name=unitDefenses,proto3,enum=structs.structs.TechUnitDefenses" json:"unitDefenses,omitempty"`
-	OreReserveDefenses TechOreReserveDefenses  `protobuf:"varint,33,opt,name=oreReserveDefenses,proto3,enum=structs.structs.TechOreReserveDefenses" json:"oreReserveDefenses,omitempty"`
-	PlanetaryDefenses  TechPlanetaryDefenses   `protobuf:"varint,34,opt,name=planetaryDefenses,proto3,enum=structs.structs.TechPlanetaryDefenses" json:"planetaryDefenses,omitempty"`
-	PlanetaryMining    TechPlanetaryMining     `protobuf:"varint,35,opt,name=planetaryMining,proto3,enum=structs.structs.TechPlanetaryMining" json:"planetaryMining,omitempty"`
-	PlanetaryRefinery  TechPlanetaryRefineries `protobuf:"varint,36,opt,name=planetaryRefinery,proto3,enum=structs.structs.TechPlanetaryRefineries" json:"planetaryRefinery,omitempty"`
-	PowerGeneration    TechPowerGeneration     `protobuf:"varint,37,opt,name=powerGeneration,proto3,enum=structs.structs.TechPowerGeneration" json:"powerGeneration,omitempty"`
+	PassiveWeaponry    TechPassiveWeaponry     `protobuf:"varint,33,opt,name=passiveWeaponry,proto3,enum=structs.structs.TechPassiveWeaponry" json:"passiveWeaponry,omitempty"`
+	UnitDefenses       TechUnitDefenses        `protobuf:"varint,34,opt,name=unitDefenses,proto3,enum=structs.structs.TechUnitDefenses" json:"unitDefenses,omitempty"`
+	OreReserveDefenses TechOreReserveDefenses  `protobuf:"varint,35,opt,name=oreReserveDefenses,proto3,enum=structs.structs.TechOreReserveDefenses" json:"oreReserveDefenses,omitempty"`
+	PlanetaryDefenses  TechPlanetaryDefenses   `protobuf:"varint,36,opt,name=planetaryDefenses,proto3,enum=structs.structs.TechPlanetaryDefenses" json:"planetaryDefenses,omitempty"`
+	PlanetaryMining    TechPlanetaryMining     `protobuf:"varint,37,opt,name=planetaryMining,proto3,enum=structs.structs.TechPlanetaryMining" json:"planetaryMining,omitempty"`
+	PlanetaryRefinery  TechPlanetaryRefineries `protobuf:"varint,38,opt,name=planetaryRefinery,proto3,enum=structs.structs.TechPlanetaryRefineries" json:"planetaryRefinery,omitempty"`
+	PowerGeneration    TechPowerGeneration     `protobuf:"varint,39,opt,name=powerGeneration,proto3,enum=structs.structs.TechPowerGeneration" json:"powerGeneration,omitempty"`
 	// Charge uses
-	ActivateCharge        uint64 `protobuf:"varint,38,opt,name=activateCharge,proto3" json:"activateCharge,omitempty"`
-	BuildCharge           uint64 `protobuf:"varint,39,opt,name=buildCharge,proto3" json:"buildCharge,omitempty"`
-	DefendChangeCharge    uint64 `protobuf:"varint,40,opt,name=defendChangeCharge,proto3" json:"defendChangeCharge,omitempty"`
-	MoveCharge            uint64 `protobuf:"varint,41,opt,name=moveCharge,proto3" json:"moveCharge,omitempty"`
-	OreMiningCharge       uint64 `protobuf:"varint,42,opt,name=oreMiningCharge,proto3" json:"oreMiningCharge,omitempty"`
-	OreRefiningCharge     uint64 `protobuf:"varint,43,opt,name=oreRefiningCharge,proto3" json:"oreRefiningCharge,omitempty"`
-	StealthActivateCharge uint64 `protobuf:"varint,44,opt,name=stealthActivateCharge,proto3" json:"stealthActivateCharge,omitempty"`
+	ActivateCharge        uint64 `protobuf:"varint,40,opt,name=activateCharge,proto3" json:"activateCharge,omitempty"`
+	BuildCharge           uint64 `protobuf:"varint,41,opt,name=buildCharge,proto3" json:"buildCharge,omitempty"`
+	DefendChangeCharge    uint64 `protobuf:"varint,42,opt,name=defendChangeCharge,proto3" json:"defendChangeCharge,omitempty"`
+	MoveCharge            uint64 `protobuf:"varint,43,opt,name=moveCharge,proto3" json:"moveCharge,omitempty"`
+	OreMiningCharge       uint64 `protobuf:"varint,44,opt,name=oreMiningCharge,proto3" json:"oreMiningCharge,omitempty"`
+	OreRefiningCharge     uint64 `protobuf:"varint,45,opt,name=oreRefiningCharge,proto3" json:"oreRefiningCharge,omitempty"`
+	StealthActivateCharge uint64 `protobuf:"varint,46,opt,name=stealthActivateCharge,proto3" json:"stealthActivateCharge,omitempty"`
 	// Tech Tree Attributes
-	AttackReduction                         uint64 `protobuf:"varint,45,opt,name=attackReduction,proto3" json:"attackReduction,omitempty"`
-	AttackCounterable                       bool   `protobuf:"varint,46,opt,name=attackCounterable,proto3" json:"attackCounterable,omitempty"`
-	StealthSystems                          bool   `protobuf:"varint,47,opt,name=stealthSystems,proto3" json:"stealthSystems,omitempty"`
-	CounterAttack                           uint64 `protobuf:"varint,48,opt,name=counterAttack,proto3" json:"counterAttack,omitempty"`
-	CounterAttackSameAmbit                  uint64 `protobuf:"varint,49,opt,name=counterAttackSameAmbit,proto3" json:"counterAttackSameAmbit,omitempty"`
-	PostDestructionDamage                   uint64 `protobuf:"varint,50,opt,name=postDestructionDamage,proto3" json:"postDestructionDamage,omitempty"`
-	GeneratingRate                          uint64 `protobuf:"varint,51,opt,name=generatingRate,proto3" json:"generatingRate,omitempty"`
-	PlanetaryShieldContribution             uint64 `protobuf:"varint,52,opt,name=planetaryShieldContribution,proto3" json:"planetaryShieldContribution,omitempty"`
-	UnguidedDefensiveSuccessRateNumerator   uint64 `protobuf:"varint,53,opt,name=unguidedDefensiveSuccessRateNumerator,proto3" json:"unguidedDefensiveSuccessRateNumerator,omitempty"`
-	UnguidedDefensiveSuccessRateDenominator uint64 `protobuf:"varint,54,opt,name=unguidedDefensiveSuccessRateDenominator,proto3" json:"unguidedDefensiveSuccessRateDenominator,omitempty"`
-	GuidedDefensiveSuccessRateNumerator     uint64 `protobuf:"varint,55,opt,name=guidedDefensiveSuccessRateNumerator,proto3" json:"guidedDefensiveSuccessRateNumerator,omitempty"`
-	GuidedDefensiveSuccessRateDenominator   uint64 `protobuf:"varint,56,opt,name=guidedDefensiveSuccessRateDenominator,proto3" json:"guidedDefensiveSuccessRateDenominator,omitempty"`
+	AttackReduction                         uint64 `protobuf:"varint,47,opt,name=attackReduction,proto3" json:"attackReduction,omitempty"`
+	AttackCounterable                       bool   `protobuf:"varint,48,opt,name=attackCounterable,proto3" json:"attackCounterable,omitempty"`
+	StealthSystems                          bool   `protobuf:"varint,49,opt,name=stealthSystems,proto3" json:"stealthSystems,omitempty"`
+	CounterAttack                           uint64 `protobuf:"varint,50,opt,name=counterAttack,proto3" json:"counterAttack,omitempty"`
+	CounterAttackSameAmbit                  uint64 `protobuf:"varint,51,opt,name=counterAttackSameAmbit,proto3" json:"counterAttackSameAmbit,omitempty"`
+	PostDestructionDamage                   uint64 `protobuf:"varint,52,opt,name=postDestructionDamage,proto3" json:"postDestructionDamage,omitempty"`
+	GeneratingRate                          uint64 `protobuf:"varint,53,opt,name=generatingRate,proto3" json:"generatingRate,omitempty"`
+	PlanetaryShieldContribution             uint64 `protobuf:"varint,54,opt,name=planetaryShieldContribution,proto3" json:"planetaryShieldContribution,omitempty"`
+	UnguidedDefensiveSuccessRateNumerator   uint64 `protobuf:"varint,55,opt,name=unguidedDefensiveSuccessRateNumerator,proto3" json:"unguidedDefensiveSuccessRateNumerator,omitempty"`
+	UnguidedDefensiveSuccessRateDenominator uint64 `protobuf:"varint,56,opt,name=unguidedDefensiveSuccessRateDenominator,proto3" json:"unguidedDefensiveSuccessRateDenominator,omitempty"`
+	GuidedDefensiveSuccessRateNumerator     uint64 `protobuf:"varint,57,opt,name=guidedDefensiveSuccessRateNumerator,proto3" json:"guidedDefensiveSuccessRateNumerator,omitempty"`
+	GuidedDefensiveSuccessRateDenominator   uint64 `protobuf:"varint,58,opt,name=guidedDefensiveSuccessRateDenominator,proto3" json:"guidedDefensiveSuccessRateDenominator,omitempty"`
 }
 
 func (m *StructType) Reset()         { *m = StructType{} }
@@ -277,6 +282,20 @@ func (m *StructType) GetPossibleAmbit() uint64 {
 		return m.PossibleAmbit
 	}
 	return 0
+}
+
+func (m *StructType) GetMovable() bool {
+	if m != nil {
+		return m.Movable
+	}
+	return false
+}
+
+func (m *StructType) GetSlotted() bool {
+	if m != nil {
+		return m.Slotted
+	}
+	return false
 }
 
 func (m *StructType) GetPrimaryWeapon() TechActiveWeaponry {
@@ -761,86 +780,87 @@ func init() {
 func init() { proto.RegisterFile("structs/structs/struct.proto", fileDescriptor_c62b965c884df764) }
 
 var fileDescriptor_c62b965c884df764 = []byte{
-	// 1251 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x57, 0xcd, 0x6e, 0xdb, 0x46,
-	0x10, 0x8e, 0x1c, 0xc5, 0x3f, 0x9b, 0x58, 0xae, 0x37, 0xb6, 0xb3, 0xb1, 0x5d, 0x55, 0x91, 0x1d,
-	0x5b, 0x69, 0x53, 0x25, 0x71, 0xd2, 0xa4, 0x08, 0x8a, 0xa0, 0x4e, 0x5d, 0xb4, 0x3e, 0xe4, 0x07,
-	0x94, 0x9b, 0x14, 0x41, 0x2f, 0x2b, 0x72, 0x2c, 0x6f, 0x4d, 0x71, 0x05, 0x72, 0x29, 0x5b, 0x6f,
-	0xd1, 0x6b, 0x5f, 0xa1, 0x4f, 0xd2, 0x63, 0x8e, 0x3d, 0x16, 0x36, 0xd0, 0xe7, 0x28, 0x76, 0x96,
-	0x94, 0xc4, 0x1f, 0x09, 0xcc, 0xc9, 0xe2, 0xf7, 0x7d, 0x33, 0x9e, 0x19, 0x7c, 0x1c, 0xee, 0x92,
-	0xcd, 0x40, 0xf9, 0xa1, 0xad, 0x82, 0x07, 0xc9, 0xbf, 0xcd, 0x9e, 0x2f, 0x95, 0xa4, 0x4b, 0x11,
-	0xda, 0x8c, 0xfe, 0xae, 0xaf, 0xa7, 0xe5, 0xa7, 0x30, 0x08, 0x8c, 0xb8, 0xfe, 0x5f, 0x89, 0xcc,
-	0xb6, 0x10, 0xa6, 0x15, 0x32, 0x23, 0x1c, 0x56, 0xaa, 0x95, 0x1a, 0x0b, 0xd6, 0x8c, 0x70, 0xe8,
-	0x0a, 0xb9, 0x26, 0x3c, 0x07, 0xce, 0xd9, 0x4c, 0xad, 0xd4, 0x28, 0x5b, 0xe6, 0x81, 0x52, 0x52,
-	0x56, 0x83, 0x1e, 0xb0, 0xab, 0x08, 0xe2, 0x6f, 0xca, 0xc8, 0x9c, 0xed, 0x03, 0x57, 0xd2, 0x67,
-	0x65, 0x0c, 0x8f, 0x1f, 0x75, 0x0e, 0x79, 0xe6, 0x81, 0xcf, 0xae, 0x21, 0x6e, 0x1e, 0x68, 0x95,
-	0x10, 0x57, 0xda, 0x5c, 0x09, 0xe9, 0x1d, 0x3a, 0x6c, 0x16, 0xa9, 0x31, 0x84, 0xbe, 0x20, 0x15,
-	0xd9, 0x03, 0x9f, 0x2b, 0xe1, 0x75, 0xf6, 0xbb, 0x6d, 0xa1, 0xd8, 0x5c, 0xad, 0xd4, 0xa8, 0xec,
-	0xad, 0x35, 0x53, 0xad, 0x35, 0xb9, 0x66, 0xad, 0x94, 0x5a, 0xd7, 0x18, 0xb8, 0x52, 0xb1, 0x79,
-	0x53, 0xa3, 0xfe, 0x5d, 0xff, 0x73, 0x9d, 0x10, 0xd3, 0xe8, 0x91, 0x2e, 0x79, 0xd4, 0x6c, 0x19,
-	0x9b, 0x8d, 0xdb, 0x9a, 0xc1, 0x62, 0x4c, 0x5b, 0xcf, 0xc8, 0xbc, 0xcd, 0x15, 0x74, 0xa4, 0x3f,
-	0xc0, 0x76, 0x2b, 0x7b, 0x1b, 0x99, 0x02, 0x64, 0xfb, 0x77, 0x30, 0x29, 0xad, 0xa1, 0x98, 0x36,
-	0xc8, 0x52, 0x3b, 0x14, 0xae, 0x73, 0x20, 0x8e, 0x8f, 0x85, 0x1d, 0xba, 0x6a, 0x80, 0x73, 0x29,
-	0x5b, 0x69, 0x98, 0x6e, 0x92, 0x05, 0x03, 0xf9, 0xfc, 0x0c, 0x67, 0x54, 0xb6, 0x46, 0x80, 0x66,
-	0xbb, 0xfc, 0xfc, 0x67, 0xe0, 0xae, 0x3a, 0xc1, 0x31, 0x95, 0xad, 0x11, 0x40, 0x6b, 0xe4, 0x7a,
-	0x8f, 0x07, 0x81, 0xe8, 0x03, 0x46, 0xcf, 0x21, 0x3f, 0x0e, 0xd1, 0x6d, 0xb2, 0xd8, 0x93, 0x41,
-	0x20, 0xda, 0x2e, 0x98, 0x31, 0x9a, 0x81, 0x24, 0x41, 0x7a, 0x48, 0x16, 0x7b, 0xbe, 0xe8, 0x72,
-	0x7f, 0xf0, 0x1e, 0x78, 0x4f, 0x7a, 0x6c, 0x01, 0x7b, 0xdd, 0xca, 0xf4, 0xaa, 0xc0, 0x3e, 0xd9,
-	0xb7, 0x95, 0xe8, 0x83, 0x11, 0xfa, 0x03, 0x2b, 0x19, 0x49, 0xdf, 0x91, 0x95, 0x04, 0xf0, 0x83,
-	0xf4, 0x94, 0x2f, 0x5d, 0x46, 0x30, 0x63, 0x3d, 0x37, 0x63, 0x42, 0x69, 0xe5, 0xc6, 0xd3, 0x87,
-	0xe4, 0x66, 0x12, 0x3f, 0xe1, 0x7e, 0x07, 0xd8, 0x75, 0x6c, 0x27, 0x8f, 0xa2, 0x7b, 0xa9, 0x4a,
-	0x8e, 0x34, 0xaa, 0x02, 0x76, 0x03, 0x43, 0x72, 0x39, 0xda, 0x24, 0x34, 0x81, 0xb7, 0x4e, 0xa4,
-	0x0a, 0xd8, 0x22, 0x46, 0xe4, 0x30, 0x99, 0xaa, 0x0e, 0x78, 0x97, 0x77, 0x80, 0x55, 0x72, 0xaa,
-	0x32, 0x14, 0x7d, 0x4a, 0xd6, 0x12, 0xf0, 0x4b, 0x57, 0xda, 0xa7, 0xbc, 0xed, 0x02, 0x5b, 0xaa,
-	0x95, 0x1a, 0xf3, 0xd6, 0x04, 0x96, 0x3e, 0x27, 0x2c, 0x35, 0x97, 0xd0, 0x53, 0xe0, 0x63, 0xe4,
-	0x67, 0x18, 0x39, 0x91, 0xa7, 0xdf, 0x91, 0xdb, 0x09, 0xce, 0x02, 0x5b, 0x0a, 0x37, 0xaa, 0x75,
-	0x19, 0x6b, 0x9d, 0x2c, 0xa0, 0x47, 0xe4, 0x6e, 0xa6, 0xf3, 0x56, 0x68, 0xdb, 0x10, 0x04, 0x16,
-	0x57, 0xf0, 0x3a, 0xec, 0xea, 0x37, 0x4f, 0xfa, 0x8c, 0x62, 0xa6, 0x62, 0x62, 0xfa, 0x2b, 0xd9,
-	0x9d, 0x26, 0x3c, 0x00, 0x4f, 0x76, 0x85, 0x87, 0x79, 0x6f, 0x62, 0xde, 0xa2, 0x72, 0xfa, 0x8a,
-	0x2c, 0x05, 0x60, 0x4b, 0xcf, 0x19, 0xd9, 0x79, 0xa5, 0xb8, 0x9d, 0xd3, 0xb1, 0xf4, 0x03, 0x59,
-	0x4b, 0x41, 0xb1, 0xa5, 0x57, 0x0b, 0x5b, 0x7a, 0x42, 0x06, 0xfa, 0x84, 0xac, 0xa6, 0x19, 0x63,
-	0xeb, 0x35, 0x6c, 0x39, 0x9f, 0xd4, 0x16, 0x4a, 0x11, 0xb1, 0xb5, 0x6f, 0x61, 0xd8, 0x04, 0x56,
-	0xbf, 0x10, 0x29, 0xc6, 0xd8, 0x9b, 0x99, 0x17, 0x22, 0x8f, 0xcb, 0xa9, 0x30, 0xb2, 0xcd, 0xed,
-	0xdc, 0x0a, 0x23, 0xcb, 0x3c, 0x27, 0x2c, 0x45, 0x8c, 0x6c, 0xbe, 0x6e, 0xcc, 0x3a, 0x89, 0xa7,
-	0x2f, 0xc8, 0x7a, 0x66, 0x5a, 0x23, 0xab, 0x6f, 0x60, 0xf4, 0x14, 0x05, 0xfd, 0x9e, 0x6c, 0xa4,
-	0xd8, 0x84, 0xdd, 0x37, 0xb1, 0xee, 0x69, 0x12, 0x6d, 0xcd, 0x9c, 0x59, 0xe4, 0x5a, 0xfe, 0x73,
-	0x63, 0xcd, 0x82, 0x72, 0xfa, 0x1b, 0xb9, 0x37, 0x5d, 0x3a, 0x6e, 0xfb, 0x2a, 0xe6, 0x2e, 0x1e,
-	0x40, 0x5f, 0x93, 0xa5, 0x68, 0xf5, 0xc7, 0x6e, 0x66, 0x5f, 0xa0, 0x45, 0xb7, 0x73, 0x2d, 0xfa,
-	0x36, 0xa9, 0xb5, 0xd2, 0xc1, 0xf4, 0x47, 0x72, 0x23, 0xf4, 0x84, 0x3a, 0x80, 0x63, 0xf0, 0x02,
-	0x08, 0x58, 0x0d, 0x93, 0xdd, 0xc9, 0x4d, 0xf6, 0xcb, 0x98, 0xd0, 0x4a, 0x84, 0xd1, 0xf7, 0x84,
-	0x4a, 0x1f, 0x2c, 0x08, 0xc0, 0xef, 0xc3, 0x30, 0xd9, 0x1d, 0x4c, 0xb6, 0x9b, 0x9b, 0xec, 0x4d,
-	0x46, 0x6e, 0xe5, 0xa4, 0xa0, 0x47, 0x64, 0xb9, 0xe7, 0x72, 0x0f, 0x14, 0xf7, 0x07, 0xc3, 0xbc,
-	0x75, 0xcc, 0xbb, 0x93, 0xdf, 0x71, 0x5a, 0x6d, 0x65, 0x13, 0xe0, 0x14, 0x63, 0xf0, 0x95, 0xf0,
-	0x84, 0xd7, 0x61, 0x5b, 0xd3, 0xa6, 0x98, 0xd4, 0x5a, 0xe9, 0x60, 0xfa, 0x6e, 0xac, 0x4a, 0x0b,
-	0x8e, 0x85, 0x07, 0xfe, 0x80, 0x6d, 0x63, 0xc6, 0xc6, 0xf4, 0x8c, 0x91, 0x5a, 0x24, 0xea, 0x8c,
-	0x53, 0x60, 0x9d, 0xf2, 0x0c, 0xfc, 0x9f, 0xc0, 0xc3, 0x93, 0x8f, 0xf4, 0xd8, 0xdd, 0x69, 0x75,
-	0x26, 0xb5, 0x56, 0x3a, 0x98, 0xee, 0x90, 0x0a, 0xd7, 0xab, 0x90, 0x2b, 0x88, 0x96, 0xd0, 0x0e,
-	0x1a, 0x30, 0x85, 0xea, 0x33, 0x07, 0x1e, 0x4f, 0x22, 0xd1, 0xae, 0x39, 0x73, 0x8c, 0x41, 0xfa,
-	0x23, 0xea, 0xe8, 0x69, 0xea, 0x67, 0xaf, 0x13, 0x67, 0x6b, 0x98, 0x8f, 0x68, 0x96, 0xd1, 0x67,
-	0xc1, 0xae, 0xec, 0xc7, 0xba, 0x7b, 0xa8, 0x1b, 0x43, 0xf4, 0x59, 0x4a, 0xfa, 0x60, 0xc6, 0x19,
-	0x89, 0xbe, 0x34, 0x67, 0xa9, 0x14, 0x4c, 0xef, 0x93, 0x65, 0xf4, 0xc9, 0xf1, 0xb8, 0xf6, 0x2b,
-	0xd4, 0x66, 0x09, 0xdc, 0x6d, 0x0a, 0x0f, 0x52, 0xfb, 0xc9, 0xc6, 0xef, 0x47, 0xbb, 0x2d, 0x8f,
-	0xd4, 0xd5, 0x70, 0xa5, 0xb8, 0x7d, 0x6a, 0x81, 0x13, 0xda, 0x38, 0xf7, 0xaf, 0x4d, 0x35, 0x29,
-	0x58, 0x57, 0x63, 0xa0, 0xf1, 0x05, 0xd6, 0xc4, 0x05, 0x96, 0x25, 0xf4, 0xfc, 0xa3, 0x7f, 0xd8,
-	0x1a, 0x04, 0x0a, 0xba, 0x01, 0x7b, 0x80, 0xd2, 0x14, 0xaa, 0x4f, 0x74, 0xb6, 0x09, 0xdb, 0xc7,
-	0x1c, 0xec, 0xa1, 0x39, 0xd1, 0x25, 0x40, 0xfd, 0x8d, 0x48, 0x00, 0x2d, 0xde, 0x8d, 0x0e, 0x80,
-	0x8f, 0xcc, 0x37, 0x22, 0x9f, 0xd5, 0x33, 0xe9, 0xc9, 0x40, 0x1d, 0x80, 0xf1, 0x8e, 0x18, 0xee,
-	0xfb, 0x3d, 0x33, 0x93, 0x5c, 0x52, 0xd7, 0xde, 0x89, 0x9c, 0xe4, 0x75, 0xf4, 0x5a, 0x62, 0x8f,
-	0x8d, 0x77, 0x92, 0xa8, 0xde, 0xcd, 0x43, 0x23, 0xb7, 0x4e, 0x04, 0xb8, 0x0e, 0x7e, 0x09, 0x45,
-	0x3b, 0xc4, 0x39, 0x3e, 0x31, 0xbb, 0x79, 0x8a, 0x44, 0x1f, 0x46, 0x42, 0xaf, 0x13, 0x0a, 0x07,
-	0x1c, 0xf3, 0xc6, 0x8a, 0x3e, 0xe4, 0x6e, 0xe6, 0x6f, 0xcc, 0x61, 0xa4, 0x90, 0x58, 0x6f, 0xfc,
-	0x69, 0xc2, 0xf1, 0xad, 0xfc, 0xd4, 0x6c, 0xfc, 0x82, 0x72, 0xfa, 0x96, 0x6c, 0x15, 0xa9, 0xf6,
-	0x19, 0x66, 0x2d, 0x22, 0xd5, 0x13, 0x28, 0x56, 0xe9, 0xb7, 0x66, 0x02, 0x85, 0xc4, 0xf5, 0xbf,
-	0x66, 0x48, 0xc5, 0xdc, 0x8d, 0x50, 0xe9, 0x80, 0xaf, 0xed, 0xab, 0x2f, 0x88, 0x60, 0x2b, 0x70,
-	0x0c, 0x75, 0x18, 0xdf, 0x0d, 0xb3, 0x84, 0x56, 0x9b, 0x57, 0x5b, 0x78, 0x9d, 0xa1, 0xda, 0x5c,
-	0xa5, 0xb2, 0x44, 0xea, 0xfa, 0x77, 0xb5, 0xc0, 0xf5, 0xaf, 0xfc, 0x49, 0xd7, 0xbf, 0xcc, 0x4b,
-	0x72, 0xed, 0xd3, 0x5e, 0x92, 0xd9, 0x69, 0x2f, 0x49, 0xfd, 0x0d, 0x59, 0x35, 0x9d, 0xec, 0x2b,
-	0xe3, 0x4c, 0xd0, 0xe7, 0x07, 0xdf, 0xd1, 0xbb, 0x91, 0xc7, 0xd0, 0x70, 0x58, 0xe3, 0x90, 0xbe,
-	0x0d, 0xf7, 0xb9, 0x1b, 0x42, 0x7c, 0xa3, 0xc6, 0x87, 0x97, 0x8f, 0xfe, 0xbe, 0xa8, 0x96, 0x3e,
-	0x5e, 0x54, 0x4b, 0xff, 0x5e, 0x54, 0x4b, 0x7f, 0x5c, 0x56, 0xaf, 0x7c, 0xbc, 0xac, 0x5e, 0xf9,
-	0xe7, 0xb2, 0x7a, 0xe5, 0xc3, 0xad, 0xf8, 0xc2, 0x7e, 0x3e, 0xbc, 0xba, 0xeb, 0x8b, 0x69, 0xd0,
-	0x9e, 0xc5, 0xcb, 0xfb, 0xe3, 0xff, 0x03, 0x00, 0x00, 0xff, 0xff, 0xe3, 0xca, 0x0a, 0x71, 0x09,
-	0x10, 0x00, 0x00,
+	// 1275 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x57, 0xdf, 0x52, 0xdb, 0xc6,
+	0x17, 0x8e, 0x89, 0x43, 0x60, 0x13, 0xcc, 0x8f, 0x0d, 0x90, 0x0d, 0xf0, 0x73, 0x1d, 0x43, 0xc0,
+	0x69, 0x53, 0x27, 0x21, 0x69, 0xd2, 0x32, 0x9d, 0x4c, 0x49, 0xe9, 0xb4, 0x5c, 0xe4, 0xcf, 0xc8,
+	0x34, 0xe9, 0x64, 0x7a, 0xb3, 0x96, 0x0e, 0x66, 0x8b, 0xac, 0xf5, 0x48, 0x2b, 0x83, 0xdf, 0xa2,
+	0xcf, 0xd1, 0x27, 0xe9, 0x4d, 0x67, 0x72, 0xd9, 0xcb, 0x0e, 0xcc, 0xf4, 0x39, 0x3a, 0x7b, 0x56,
+	0xb2, 0xad, 0x3f, 0xf6, 0x28, 0x57, 0x58, 0xdf, 0xf7, 0x9d, 0xc3, 0xd9, 0xa3, 0x6f, 0x8f, 0x76,
+	0xc9, 0x46, 0xa0, 0xfc, 0xd0, 0x56, 0xc1, 0xc3, 0xe4, 0xdf, 0x66, 0xcf, 0x97, 0x4a, 0xd2, 0xc5,
+	0x08, 0x6d, 0x46, 0x7f, 0xd7, 0xd6, 0xd2, 0xf2, 0x53, 0x18, 0x04, 0x46, 0x5c, 0xff, 0xb7, 0x44,
+	0x66, 0x5b, 0x08, 0xd3, 0x0a, 0x99, 0x11, 0x0e, 0x2b, 0xd5, 0x4a, 0x8d, 0x79, 0x6b, 0x46, 0x38,
+	0x74, 0x99, 0x5c, 0x13, 0x9e, 0x03, 0xe7, 0x6c, 0xa6, 0x56, 0x6a, 0x94, 0x2d, 0xf3, 0x40, 0x29,
+	0x29, 0xab, 0x41, 0x0f, 0xd8, 0x55, 0x04, 0xf1, 0x37, 0x65, 0xe4, 0xba, 0xed, 0x03, 0x57, 0xd2,
+	0x67, 0x65, 0x0c, 0x8f, 0x1f, 0x75, 0x0e, 0x79, 0xe6, 0x81, 0xcf, 0xae, 0x21, 0x6e, 0x1e, 0x68,
+	0x95, 0x10, 0x57, 0xda, 0x5c, 0x09, 0xe9, 0x1d, 0x3a, 0x6c, 0x16, 0xa9, 0x31, 0x84, 0xbe, 0x20,
+	0x15, 0xd9, 0x03, 0x9f, 0x2b, 0xe1, 0x75, 0xf6, 0xbb, 0x6d, 0xa1, 0xd8, 0xf5, 0x5a, 0xa9, 0x51,
+	0xd9, 0x5d, 0x6d, 0xa6, 0x96, 0xd6, 0xe4, 0x9a, 0xb5, 0x52, 0x6a, 0x5d, 0x63, 0xe0, 0x4a, 0xc5,
+	0xe6, 0x4c, 0x8d, 0xfa, 0x77, 0xfd, 0xaf, 0x35, 0x42, 0xcc, 0x42, 0x8f, 0x74, 0xc9, 0xa3, 0xc5,
+	0x96, 0x71, 0xb1, 0xf1, 0xb2, 0x66, 0xb0, 0x18, 0xb3, 0xac, 0xe7, 0x64, 0xce, 0xe6, 0x0a, 0x3a,
+	0xd2, 0x1f, 0xe0, 0x72, 0x2b, 0xbb, 0xeb, 0x99, 0x02, 0x64, 0xfb, 0x37, 0x30, 0x29, 0xad, 0xa1,
+	0x98, 0x36, 0xc8, 0x62, 0x3b, 0x14, 0xae, 0x73, 0x20, 0x8e, 0x8f, 0x85, 0x1d, 0xba, 0x6a, 0x80,
+	0x7d, 0x29, 0x5b, 0x69, 0x98, 0x6e, 0x90, 0x79, 0x03, 0xf9, 0xfc, 0x0c, 0x7b, 0x54, 0xb6, 0x46,
+	0x80, 0x66, 0xbb, 0xfc, 0xfc, 0x27, 0xe0, 0xae, 0x3a, 0xc1, 0x36, 0x95, 0xad, 0x11, 0x40, 0x6b,
+	0xe4, 0x46, 0x8f, 0x07, 0x81, 0xe8, 0x03, 0x46, 0x5f, 0x47, 0x7e, 0x1c, 0xa2, 0x5b, 0x64, 0xa1,
+	0x27, 0x83, 0x40, 0xb4, 0x5d, 0x30, 0x6d, 0x34, 0x0d, 0x49, 0x82, 0xfa, 0xed, 0x75, 0x65, 0x9f,
+	0xb7, 0x5d, 0x60, 0xf3, 0xb5, 0x52, 0x63, 0xce, 0x8a, 0x1f, 0x35, 0xa3, 0x7b, 0xa7, 0xc0, 0x61,
+	0xc4, 0x30, 0xd1, 0x23, 0x3d, 0x24, 0x0b, 0x3d, 0x5f, 0x74, 0xb9, 0x3f, 0x78, 0x0f, 0xbc, 0x27,
+	0x3d, 0x76, 0x03, 0xfb, 0xb3, 0x99, 0xe9, 0x8f, 0x02, 0xfb, 0x64, 0xdf, 0x56, 0xa2, 0x0f, 0x46,
+	0xe8, 0x0f, 0xac, 0x64, 0x24, 0x7d, 0x47, 0x96, 0x13, 0xc0, 0xf7, 0xd2, 0x53, 0xbe, 0x74, 0xd9,
+	0x4d, 0xcc, 0x58, 0xcf, 0xcd, 0x98, 0x50, 0x5a, 0xb9, 0xf1, 0xf4, 0x11, 0xb9, 0x95, 0xc4, 0x4f,
+	0xb8, 0xdf, 0x01, 0xb6, 0x80, 0x2d, 0xc8, 0xa3, 0xe8, 0x6e, 0xaa, 0x92, 0x23, 0x8d, 0xaa, 0x80,
+	0x55, 0x30, 0x24, 0x97, 0xa3, 0x4d, 0x42, 0x13, 0x78, 0xeb, 0x44, 0xaa, 0x80, 0x2d, 0x62, 0x44,
+	0x0e, 0x93, 0xa9, 0xea, 0x80, 0x77, 0x79, 0x07, 0xd8, 0xff, 0x72, 0xaa, 0x32, 0x14, 0x7d, 0x46,
+	0x56, 0x13, 0xf0, 0x4b, 0x57, 0xda, 0xa7, 0xf8, 0xb6, 0x96, 0xf0, 0x9d, 0x4c, 0x60, 0xe9, 0x1e,
+	0x61, 0xa9, 0xbe, 0x84, 0x9e, 0x02, 0x1f, 0x23, 0x29, 0x46, 0x4e, 0xe4, 0xe9, 0xb7, 0xe4, 0x4e,
+	0x82, 0xb3, 0xc0, 0x96, 0xc2, 0x8d, 0x6a, 0xbd, 0x85, 0xb5, 0x4e, 0x16, 0xd0, 0x23, 0x72, 0x2f,
+	0xb3, 0xf2, 0x56, 0x68, 0xdb, 0x10, 0x04, 0x16, 0x57, 0xf0, 0x3a, 0xec, 0xea, 0xdd, 0x2a, 0x7d,
+	0xb6, 0x8c, 0x99, 0x8a, 0x89, 0xe9, 0x2f, 0x64, 0x67, 0x9a, 0xf0, 0x00, 0x3c, 0xd9, 0x15, 0x1e,
+	0xe6, 0x5d, 0xc1, 0xbc, 0x45, 0xe5, 0xf4, 0x15, 0x59, 0x0c, 0xc0, 0x96, 0x9e, 0x33, 0xb2, 0xf3,
+	0x6a, 0x71, 0x3b, 0xa7, 0x63, 0xe9, 0x07, 0xb2, 0x9a, 0x82, 0x62, 0x4b, 0xdf, 0x2e, 0x6c, 0xe9,
+	0x09, 0x19, 0xe8, 0x53, 0xb2, 0x92, 0x66, 0x8c, 0xad, 0x19, 0x2e, 0x39, 0x9f, 0xd4, 0x16, 0x4a,
+	0x11, 0xb1, 0xb5, 0xef, 0x60, 0xd8, 0x04, 0x56, 0x6f, 0x88, 0x14, 0x63, 0xec, 0xbd, 0x66, 0x36,
+	0x44, 0x1e, 0x97, 0x53, 0x61, 0x64, 0x9b, 0xf5, 0xdc, 0x0a, 0x23, 0xcb, 0xec, 0x11, 0x96, 0x22,
+	0x46, 0x36, 0xdf, 0x30, 0x66, 0x9d, 0xc4, 0xd3, 0x17, 0x64, 0x2d, 0xd3, 0xad, 0x91, 0xd5, 0xff,
+	0x8f, 0xd1, 0x53, 0x14, 0xf4, 0x3b, 0xb2, 0x9e, 0x62, 0x13, 0x76, 0xaf, 0x62, 0xdd, 0xd3, 0x24,
+	0xda, 0x9a, 0x39, 0xbd, 0xc8, 0xb5, 0xfc, 0x67, 0xc6, 0x9a, 0x05, 0xe5, 0xf4, 0x57, 0x72, 0x7f,
+	0xba, 0x74, 0xdc, 0xf6, 0x35, 0xcc, 0x5d, 0x3c, 0x80, 0xbe, 0x26, 0x8b, 0xd1, 0xe7, 0x22, 0x76,
+	0x33, 0xbb, 0x8b, 0x16, 0xdd, 0xca, 0xb5, 0xe8, 0xdb, 0xa4, 0xd6, 0x4a, 0x07, 0xd3, 0x1f, 0xc8,
+	0xcd, 0xd0, 0x13, 0xea, 0x00, 0x8e, 0xc1, 0x0b, 0x20, 0x60, 0x75, 0x4c, 0x76, 0x37, 0x37, 0xd9,
+	0xcf, 0x63, 0x42, 0x2b, 0x11, 0x46, 0xdf, 0x13, 0x2a, 0x7d, 0xb0, 0x20, 0x00, 0xbf, 0x0f, 0xc3,
+	0x64, 0x9b, 0x98, 0x6c, 0x27, 0x37, 0xd9, 0x9b, 0x8c, 0xdc, 0xca, 0x49, 0x41, 0x8f, 0xc8, 0x52,
+	0xcf, 0xe5, 0x1e, 0x28, 0xee, 0x0f, 0x86, 0x79, 0xb7, 0x30, 0xef, 0x76, 0xfe, 0x8a, 0xd3, 0x6a,
+	0x2b, 0x9b, 0x00, 0xbb, 0x18, 0x83, 0xaf, 0x84, 0x27, 0xbc, 0x0e, 0xbb, 0x37, 0xad, 0x8b, 0x49,
+	0xad, 0x95, 0x0e, 0xa6, 0xef, 0xc6, 0xaa, 0xb4, 0xe0, 0x58, 0x78, 0xe0, 0x0f, 0xd8, 0x36, 0x66,
+	0x6c, 0x4c, 0xcf, 0x18, 0xa9, 0x45, 0xa2, 0xce, 0x38, 0x05, 0xd6, 0x29, 0xcf, 0xc0, 0xff, 0x11,
+	0x3c, 0x3c, 0x2d, 0x49, 0x8f, 0xed, 0x4c, 0xab, 0x33, 0xa9, 0xb5, 0xd2, 0xc1, 0x74, 0x9b, 0x54,
+	0xb8, 0x1e, 0x85, 0x5c, 0x41, 0x34, 0x84, 0x1a, 0x68, 0xc0, 0x14, 0xaa, 0xcf, 0x29, 0x78, 0xa4,
+	0x89, 0x44, 0xf7, 0xcd, 0x39, 0x65, 0x0c, 0xd2, 0x1f, 0x51, 0x47, 0x77, 0x53, 0x3f, 0x7b, 0x9d,
+	0x38, 0xdb, 0xe7, 0xe6, 0x23, 0x9a, 0x65, 0xf4, 0xf9, 0xb1, 0x2b, 0xfb, 0xb1, 0xee, 0x0b, 0xd4,
+	0x8d, 0x21, 0xfa, 0xfc, 0x25, 0x7d, 0x30, 0xed, 0x8c, 0x44, 0x0f, 0xcc, 0xf9, 0x2b, 0x05, 0xd3,
+	0x07, 0x64, 0x09, 0x7d, 0x72, 0x3c, 0xae, 0xfd, 0x12, 0xb5, 0x59, 0x02, 0x67, 0x9b, 0xc2, 0xc3,
+	0xd7, 0x7e, 0x72, 0xe1, 0xcd, 0x68, 0xb6, 0xe5, 0x91, 0xba, 0x1a, 0xae, 0x14, 0xb7, 0x4f, 0x2d,
+	0x70, 0x42, 0x1b, 0xfb, 0xfe, 0xd0, 0x54, 0x93, 0x82, 0x75, 0x35, 0x06, 0x1a, 0x1f, 0x60, 0x8f,
+	0x70, 0x80, 0x65, 0x09, 0xdd, 0xff, 0xe8, 0x1f, 0xb6, 0x06, 0x81, 0x82, 0x6e, 0xc0, 0x1e, 0xa3,
+	0x34, 0x85, 0xea, 0x53, 0xa0, 0x6d, 0xc2, 0xf6, 0x31, 0x07, 0xdb, 0x35, 0xa7, 0xc0, 0x04, 0xa8,
+	0xbf, 0x11, 0x09, 0xa0, 0xc5, 0xbb, 0xd1, 0xa1, 0xf1, 0x89, 0xf9, 0x46, 0xe4, 0xb3, 0xba, 0x27,
+	0x3d, 0x19, 0xa8, 0x03, 0x30, 0xde, 0x11, 0xc3, 0x79, 0xff, 0xd4, 0xf4, 0x24, 0x97, 0xd4, 0xb5,
+	0x77, 0x22, 0x27, 0x79, 0x1d, 0x3d, 0x96, 0xd8, 0x57, 0xc6, 0x3b, 0x49, 0x54, 0xcf, 0xe6, 0xa1,
+	0x91, 0x5b, 0x27, 0x02, 0x5c, 0x07, 0xbf, 0x84, 0xa2, 0x1d, 0x62, 0x1f, 0x9f, 0x99, 0xd9, 0x3c,
+	0x45, 0xa2, 0x0f, 0x23, 0xa1, 0xd7, 0x09, 0x85, 0x03, 0x8e, 0xd9, 0xb1, 0xa2, 0x0f, 0xb9, 0x93,
+	0xf9, 0xb9, 0x39, 0x8c, 0x14, 0x12, 0xeb, 0x89, 0x3f, 0x4d, 0x38, 0x3e, 0x95, 0xbf, 0x36, 0x13,
+	0xbf, 0xa0, 0x9c, 0xbe, 0x25, 0x9b, 0x45, 0xaa, 0xfd, 0x06, 0xb3, 0x16, 0x91, 0xea, 0x0e, 0x14,
+	0xab, 0x74, 0xcf, 0x74, 0xa0, 0x90, 0xb8, 0xfe, 0xc7, 0x0c, 0xa9, 0x98, 0xfb, 0x14, 0x2a, 0x1d,
+	0xf0, 0xb5, 0x7d, 0xf5, 0xa5, 0x12, 0x6c, 0x05, 0x8e, 0xa1, 0x0e, 0xe3, 0xfb, 0x64, 0x96, 0xd0,
+	0x6a, 0xb3, 0xb5, 0x85, 0xd7, 0x19, 0xaa, 0xcd, 0xf5, 0x2b, 0x4b, 0xa4, 0xae, 0x8c, 0x57, 0x0b,
+	0x5c, 0x19, 0xcb, 0x9f, 0x74, 0x65, 0xcc, 0x6c, 0x92, 0x6b, 0x9f, 0xb6, 0x49, 0x66, 0xa7, 0x6d,
+	0x92, 0xfa, 0x1b, 0xb2, 0x62, 0x56, 0xb2, 0xaf, 0x8c, 0x33, 0x41, 0x9f, 0x1f, 0x7c, 0x47, 0xcf,
+	0x46, 0x1e, 0x43, 0xc3, 0x66, 0x8d, 0x43, 0xfa, 0x06, 0xdd, 0xe7, 0x6e, 0x08, 0xf1, 0x2d, 0x1c,
+	0x1f, 0x5e, 0x3e, 0xfe, 0xf3, 0xa2, 0x5a, 0xfa, 0x78, 0x51, 0x2d, 0xfd, 0x73, 0x51, 0x2d, 0xfd,
+	0x7e, 0x59, 0xbd, 0xf2, 0xf1, 0xb2, 0x7a, 0xe5, 0xef, 0xcb, 0xea, 0x95, 0x0f, 0xb7, 0xe3, 0x4b,
+	0xfe, 0xf9, 0xf0, 0xba, 0xaf, 0x2f, 0xb3, 0x41, 0x7b, 0x16, 0x2f, 0xfc, 0x4f, 0xfe, 0x0b, 0x00,
+	0x00, 0xff, 0xff, 0xa2, 0x92, 0x5f, 0x16, 0x3d, 0x10, 0x00, 0x00,
 }
 
 func (m *Struct) Marshal() (dAtA []byte, err error) {
@@ -939,63 +959,63 @@ func (m *StructType) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xc0
+		dAtA[i] = 0xd0
 	}
 	if m.GuidedDefensiveSuccessRateNumerator != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.GuidedDefensiveSuccessRateNumerator))
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xb8
+		dAtA[i] = 0xc8
 	}
 	if m.UnguidedDefensiveSuccessRateDenominator != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.UnguidedDefensiveSuccessRateDenominator))
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xb0
+		dAtA[i] = 0xc0
 	}
 	if m.UnguidedDefensiveSuccessRateNumerator != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.UnguidedDefensiveSuccessRateNumerator))
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xa8
+		dAtA[i] = 0xb8
 	}
 	if m.PlanetaryShieldContribution != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PlanetaryShieldContribution))
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xa0
+		dAtA[i] = 0xb0
 	}
 	if m.GeneratingRate != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.GeneratingRate))
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0x98
+		dAtA[i] = 0xa8
 	}
 	if m.PostDestructionDamage != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PostDestructionDamage))
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0x90
+		dAtA[i] = 0xa0
 	}
 	if m.CounterAttackSameAmbit != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.CounterAttackSameAmbit))
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0x88
+		dAtA[i] = 0x98
 	}
 	if m.CounterAttack != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.CounterAttack))
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0x80
+		dAtA[i] = 0x90
 	}
 	if m.StealthSystems {
 		i--
@@ -1005,9 +1025,9 @@ func (m *StructType) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0
 		}
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xf8
+		dAtA[i] = 0x88
 	}
 	if m.AttackCounterable {
 		i--
@@ -1017,135 +1037,135 @@ func (m *StructType) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0
 		}
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xf0
+		dAtA[i] = 0x80
 	}
 	if m.AttackReduction != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.AttackReduction))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xe8
+		dAtA[i] = 0xf8
 	}
 	if m.StealthActivateCharge != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.StealthActivateCharge))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xe0
+		dAtA[i] = 0xf0
 	}
 	if m.OreRefiningCharge != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.OreRefiningCharge))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xd8
+		dAtA[i] = 0xe8
 	}
 	if m.OreMiningCharge != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.OreMiningCharge))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xd0
+		dAtA[i] = 0xe0
 	}
 	if m.MoveCharge != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.MoveCharge))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xc8
+		dAtA[i] = 0xd8
 	}
 	if m.DefendChangeCharge != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.DefendChangeCharge))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xc0
+		dAtA[i] = 0xd0
 	}
 	if m.BuildCharge != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.BuildCharge))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xb8
+		dAtA[i] = 0xc8
 	}
 	if m.ActivateCharge != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.ActivateCharge))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xb0
+		dAtA[i] = 0xc0
 	}
 	if m.PowerGeneration != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PowerGeneration))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xa8
+		dAtA[i] = 0xb8
 	}
 	if m.PlanetaryRefinery != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PlanetaryRefinery))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xa0
+		dAtA[i] = 0xb0
 	}
 	if m.PlanetaryMining != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PlanetaryMining))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0x98
+		dAtA[i] = 0xa8
 	}
 	if m.PlanetaryDefenses != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PlanetaryDefenses))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0x90
+		dAtA[i] = 0xa0
 	}
 	if m.OreReserveDefenses != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.OreReserveDefenses))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0x88
+		dAtA[i] = 0x98
 	}
 	if m.UnitDefenses != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.UnitDefenses))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0x80
+		dAtA[i] = 0x90
 	}
 	if m.PassiveWeaponry != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PassiveWeaponry))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xf8
+		dAtA[i] = 0x88
 	}
 	if m.SecondaryWeaponShotSuccessRateDenominator != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponShotSuccessRateDenominator))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xf0
+		dAtA[i] = 0x80
 	}
 	if m.SecondaryWeaponShotSuccessRateNumerator != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponShotSuccessRateNumerator))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xe8
+		dAtA[i] = 0xf8
 	}
 	if m.SecondaryWeaponRecoilDamage != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponRecoilDamage))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xe0
+		dAtA[i] = 0xf0
 	}
 	if m.SecondaryWeaponCounterable {
 		i--
@@ -1157,7 +1177,7 @@ func (m *StructType) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xd8
+		dAtA[i] = 0xe8
 	}
 	if m.SecondaryWeaponBlockable {
 		i--
@@ -1169,70 +1189,70 @@ func (m *StructType) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xd0
+		dAtA[i] = 0xe0
 	}
 	if m.SecondaryWeaponDamage != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponDamage))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xc8
+		dAtA[i] = 0xd8
 	}
 	if m.SecondaryWeaponShots != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponShots))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xc0
+		dAtA[i] = 0xd0
 	}
 	if m.SecondaryWeaponTargets != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponTargets))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xb8
+		dAtA[i] = 0xc8
 	}
 	if m.SecondaryWeaponCharge != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponCharge))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xb0
+		dAtA[i] = 0xc0
 	}
 	if m.SecondaryWeaponControl != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponControl))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xa8
+		dAtA[i] = 0xb8
 	}
 	if m.SecondaryWeapon != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeapon))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xa0
+		dAtA[i] = 0xb0
 	}
 	if m.PrimaryWeaponShotSuccessRateDenominator != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponShotSuccessRateDenominator))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0x98
+		dAtA[i] = 0xa8
 	}
 	if m.PrimaryWeaponShotSuccessRateNumerator != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponShotSuccessRateNumerator))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0x90
+		dAtA[i] = 0xa0
 	}
 	if m.PrimaryWeaponRecoilDamage != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponRecoilDamage))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0x88
+		dAtA[i] = 0x98
 	}
 	if m.PrimaryWeaponCounterable {
 		i--
@@ -1244,7 +1264,7 @@ func (m *StructType) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0x80
+		dAtA[i] = 0x90
 	}
 	if m.PrimaryWeaponBlockable {
 		i--
@@ -1254,35 +1274,59 @@ func (m *StructType) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 			dAtA[i] = 0
 		}
 		i--
-		dAtA[i] = 0x78
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x88
 	}
 	if m.PrimaryWeaponDamage != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponDamage))
 		i--
-		dAtA[i] = 0x70
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x80
 	}
 	if m.PrimaryWeaponShots != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponShots))
 		i--
-		dAtA[i] = 0x68
+		dAtA[i] = 0x78
 	}
 	if m.PrimaryWeaponTargets != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponTargets))
 		i--
-		dAtA[i] = 0x60
+		dAtA[i] = 0x70
 	}
 	if m.PrimaryWeaponCharge != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponCharge))
 		i--
-		dAtA[i] = 0x58
+		dAtA[i] = 0x68
 	}
 	if m.PrimaryWeaponControl != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponControl))
 		i--
-		dAtA[i] = 0x50
+		dAtA[i] = 0x60
 	}
 	if m.PrimaryWeapon != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeapon))
+		i--
+		dAtA[i] = 0x58
+	}
+	if m.Slotted {
+		i--
+		if m.Slotted {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x50
+	}
+	if m.Movable {
+		i--
+		if m.Movable {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
 		i--
 		dAtA[i] = 0x48
 	}
@@ -1504,6 +1548,12 @@ func (m *StructType) Size() (n int) {
 	if m.PossibleAmbit != 0 {
 		n += 1 + sovStruct(uint64(m.PossibleAmbit))
 	}
+	if m.Movable {
+		n += 2
+	}
+	if m.Slotted {
+		n += 2
+	}
 	if m.PrimaryWeapon != 0 {
 		n += 1 + sovStruct(uint64(m.PrimaryWeapon))
 	}
@@ -1520,10 +1570,10 @@ func (m *StructType) Size() (n int) {
 		n += 1 + sovStruct(uint64(m.PrimaryWeaponShots))
 	}
 	if m.PrimaryWeaponDamage != 0 {
-		n += 1 + sovStruct(uint64(m.PrimaryWeaponDamage))
+		n += 2 + sovStruct(uint64(m.PrimaryWeaponDamage))
 	}
 	if m.PrimaryWeaponBlockable {
-		n += 2
+		n += 3
 	}
 	if m.PrimaryWeaponCounterable {
 		n += 3
@@ -2153,6 +2203,46 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 			}
 		case 9:
 			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Movable", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Movable = bool(v != 0)
+		case 10:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Slotted", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.Slotted = bool(v != 0)
+		case 11:
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeapon", wireType)
 			}
 			m.PrimaryWeapon = 0
@@ -2170,7 +2260,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 10:
+		case 12:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponControl", wireType)
 			}
@@ -2189,7 +2279,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 11:
+		case 13:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponCharge", wireType)
 			}
@@ -2208,7 +2298,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 12:
+		case 14:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponTargets", wireType)
 			}
@@ -2227,7 +2317,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 13:
+		case 15:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponShots", wireType)
 			}
@@ -2246,7 +2336,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 14:
+		case 16:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponDamage", wireType)
 			}
@@ -2265,7 +2355,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 15:
+		case 17:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponBlockable", wireType)
 			}
@@ -2285,7 +2375,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.PrimaryWeaponBlockable = bool(v != 0)
-		case 16:
+		case 18:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponCounterable", wireType)
 			}
@@ -2305,7 +2395,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.PrimaryWeaponCounterable = bool(v != 0)
-		case 17:
+		case 19:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponRecoilDamage", wireType)
 			}
@@ -2324,7 +2414,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 18:
+		case 20:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponShotSuccessRateNumerator", wireType)
 			}
@@ -2343,7 +2433,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 19:
+		case 21:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponShotSuccessRateDenominator", wireType)
 			}
@@ -2362,7 +2452,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 20:
+		case 22:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeapon", wireType)
 			}
@@ -2381,7 +2471,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 21:
+		case 23:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponControl", wireType)
 			}
@@ -2400,7 +2490,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 22:
+		case 24:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponCharge", wireType)
 			}
@@ -2419,7 +2509,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 23:
+		case 25:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponTargets", wireType)
 			}
@@ -2438,7 +2528,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 24:
+		case 26:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponShots", wireType)
 			}
@@ -2457,7 +2547,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 25:
+		case 27:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponDamage", wireType)
 			}
@@ -2476,7 +2566,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 26:
+		case 28:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponBlockable", wireType)
 			}
@@ -2496,7 +2586,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.SecondaryWeaponBlockable = bool(v != 0)
-		case 27:
+		case 29:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponCounterable", wireType)
 			}
@@ -2516,7 +2606,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.SecondaryWeaponCounterable = bool(v != 0)
-		case 28:
+		case 30:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponRecoilDamage", wireType)
 			}
@@ -2535,7 +2625,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 29:
+		case 31:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponShotSuccessRateNumerator", wireType)
 			}
@@ -2554,7 +2644,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 30:
+		case 32:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponShotSuccessRateDenominator", wireType)
 			}
@@ -2573,7 +2663,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 31:
+		case 33:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PassiveWeaponry", wireType)
 			}
@@ -2592,7 +2682,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 32:
+		case 34:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UnitDefenses", wireType)
 			}
@@ -2611,7 +2701,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 33:
+		case 35:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OreReserveDefenses", wireType)
 			}
@@ -2630,7 +2720,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 34:
+		case 36:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PlanetaryDefenses", wireType)
 			}
@@ -2649,7 +2739,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 35:
+		case 37:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PlanetaryMining", wireType)
 			}
@@ -2668,7 +2758,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 36:
+		case 38:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PlanetaryRefinery", wireType)
 			}
@@ -2687,7 +2777,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 37:
+		case 39:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PowerGeneration", wireType)
 			}
@@ -2706,7 +2796,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 38:
+		case 40:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ActivateCharge", wireType)
 			}
@@ -2725,7 +2815,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 39:
+		case 41:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field BuildCharge", wireType)
 			}
@@ -2744,7 +2834,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 40:
+		case 42:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DefendChangeCharge", wireType)
 			}
@@ -2763,7 +2853,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 41:
+		case 43:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MoveCharge", wireType)
 			}
@@ -2782,7 +2872,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 42:
+		case 44:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OreMiningCharge", wireType)
 			}
@@ -2801,7 +2891,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 43:
+		case 45:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OreRefiningCharge", wireType)
 			}
@@ -2820,7 +2910,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 44:
+		case 46:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StealthActivateCharge", wireType)
 			}
@@ -2839,7 +2929,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 45:
+		case 47:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AttackReduction", wireType)
 			}
@@ -2858,7 +2948,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 46:
+		case 48:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AttackCounterable", wireType)
 			}
@@ -2878,7 +2968,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.AttackCounterable = bool(v != 0)
-		case 47:
+		case 49:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StealthSystems", wireType)
 			}
@@ -2898,7 +2988,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.StealthSystems = bool(v != 0)
-		case 48:
+		case 50:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CounterAttack", wireType)
 			}
@@ -2917,7 +3007,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 49:
+		case 51:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CounterAttackSameAmbit", wireType)
 			}
@@ -2936,7 +3026,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 50:
+		case 52:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PostDestructionDamage", wireType)
 			}
@@ -2955,7 +3045,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 51:
+		case 53:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GeneratingRate", wireType)
 			}
@@ -2974,7 +3064,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 52:
+		case 54:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PlanetaryShieldContribution", wireType)
 			}
@@ -2993,7 +3083,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 53:
+		case 55:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UnguidedDefensiveSuccessRateNumerator", wireType)
 			}
@@ -3012,7 +3102,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 54:
+		case 56:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UnguidedDefensiveSuccessRateDenominator", wireType)
 			}
@@ -3031,7 +3121,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 55:
+		case 57:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GuidedDefensiveSuccessRateNumerator", wireType)
 			}
@@ -3050,7 +3140,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 56:
+		case 58:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GuidedDefensiveSuccessRateDenominator", wireType)
 			}
