@@ -217,6 +217,8 @@ func (k Keeper) GetPlayerCharge(ctx context.Context, playerId string) (charge ui
     lastActionBlock := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, playerId))
     blockSpan := uint64(ctxSDK.BlockHeight()) - lastActionBlock
 
+    // TODO / FIX
+    // NGL, these floats freak me out a bit. Not sure if they'll be a source of consensus failures down the road
     result := types.Charge_Volts * (1 - math.Pow(math.Exp(1), -(float64(blockSpan)/(types.Charge_Resistance*types.Charge_Capacitance))))
     charge = uint64(result)
 
