@@ -9,6 +9,7 @@ import "gogoproto/gogo.proto";
 import "structs/structs/params.proto";
 
 import "structs/structs/keys.proto";
+import "structs/structs/fleet.proto";
 import "structs/structs/guild.proto";
 import "structs/structs/planet.proto";
 import "structs/structs/struct.proto";

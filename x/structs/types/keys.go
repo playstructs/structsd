@@ -92,6 +92,10 @@ const (
 )
 
 const (
+	FleetKey      = "Fleet/value/"
+)
+
+const (
 	GuildKey      = "Guild/value/"
 	GuildCountKey = "Guild/count/"
 	GuildMembershipApplicationKey = "Guild/membershipApplication/"

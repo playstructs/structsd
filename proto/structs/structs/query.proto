@@ -10,6 +10,7 @@ import "structs/structs/params.proto";
 
 import "structs/structs/address.proto";
 import "structs/structs/allocation.proto";
+import "structs/structs/fleet.proto";
 import "structs/structs/grid.proto";
 import "structs/structs/guild.proto";
 import "structs/structs/infusion.proto";
@@ -54,6 +55,19 @@ service Query {
 
   rpc AllocationAll (QueryAllAllocationRequest) returns (QueryAllAllocationResponse) {
     option (google.api.http).get = "/structs/allocation";
+  }
+
+  // Queries a list of Fleet items.
+  rpc Fleet (QueryGetFleetRequest) returns (QueryGetFleetResponse) {
+    option (google.api.http).get = "/structs/fleet/{id}";
+  }
+
+  rpc FleetByIndex (QueryGetFleetByIndexRequest) returns (QueryGetFleetResponse) {
+    option (google.api.http).get = "/structs/fleet_by_index/{index}";
+  }
+
+  rpc FleetAll (QueryAllFleetRequest) returns (QueryAllFleetResponse) {
+    option (google.api.http).get = "/structs/fleet";
   }
 
   // Queries a specific Grid details
@@ -223,10 +237,34 @@ message QueryAllAllocationRequest {
 }
 
 message QueryAllAllocationResponse {
-  repeated Allocation                             Allocation = 1 [(gogoproto.nullable) = false];
+  repeated Allocation Allocation = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
-  repeated uint64                                 status     = 3;
+  repeated uint64  status     = 3;
 }
+
+
+message QueryGetFleetRequest {
+  string id = 1;
+}
+
+message QueryGetFleetResponse {
+  Fleet Fleet = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryGetFleetByIndexRequest {
+  uint64 index = 1;
+}
+
+message QueryAllFleetRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllFleetResponse {
+  repeated Fleet Fleet = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+
 
 message QueryGetGridRequest {
   string attributeId = 1;

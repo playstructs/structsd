@@ -1,0 +1,34 @@
+syntax = "proto3";
+
+package structs.structs;
+
+import "structs/structs/keys.proto";
+import "amino/amino.proto";
+
+option go_package = "structs/x/structs/types";
+
+
+message Fleet {
+  string id             = 1;
+  string owner          = 2;
+
+  objectType  locationType    = 3;
+  string      locationId      = 4;
+  uint64      slot            = 5;
+
+  repeated string space = 6;
+  repeated string air   = 7;
+  repeated string land  = 8;
+  repeated string water = 9;
+
+  uint64 spaceSlots     = 10;
+  uint64 airSlots       = 11;
+  uint64 landSlots      = 12;
+  uint64 waterSlots     = 13;
+
+}
+
+message FleetAttributeRecord {
+  string attributeId = 1;
+  uint64 value = 2;
+}

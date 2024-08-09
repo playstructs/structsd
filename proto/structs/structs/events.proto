@@ -9,6 +9,7 @@ import "structs/structs/params.proto";
 
 import "structs/structs/address.proto";
 import "structs/structs/allocation.proto";
+import "structs/structs/fleet.proto";
 import "structs/structs/grid.proto";
 import "structs/structs/guild.proto";
 import "structs/structs/infusion.proto";
@@ -35,6 +36,7 @@ option go_package = "structs/x/structs/types";
  */
 
 message EventAllocation       { Allocation allocation = 1; }
+message EventFleet            { Fleet fleet = 1; }
 message EventGuild            { Guild guild = 1; }
 message EventInfusion         { Infusion infusion = 1; }
 message EventPlanet           { Planet planet = 1; }

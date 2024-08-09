@@ -42,6 +42,7 @@ func (k Keeper) SetStructDefender(
           ProtectedStructId: protectedStruct.Id,
           DefendingStructId: defendingStruct.Id,
 
+          LocationType: defendingStruct.LocationType,
           LocationId: defendingStruct.LocationId,
           OperatingAmbit: defendingStruct.OperatingAmbit,
 

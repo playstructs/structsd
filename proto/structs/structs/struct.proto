@@ -16,9 +16,10 @@ message Struct {
   string owner    = 5;
 
   // Where it is
-  string  locationId      = 6;
-  ambit   operatingAmbit  = 7;
-  uint64  slot            = 8;
+  objectType  locationType    = 6;
+  string      locationId      = 7;
+  ambit       operatingAmbit  = 8;
+  uint64      slot            = 9;
 }
 
 message StructType {
@@ -36,8 +37,8 @@ message StructType {
   // TODO move category to here and make it flag based too
   // Replicate what was done for ambits flags
   uint64  possibleAmbit   = 8;  // Where can it be built and moved to. Usually only a single ambit but some Structs have multiple possible (i.e. Command Ship)
-  bool    movable         = 9;  // Can the Struct move between ambits?
-  bool    slotted         = 10; // Does the Struct occupy a slot.
+  bool    movable         = 9;  // Can the Struct change ambit?
+  bool    slotBound       = 10; // Does the Struct occupy a slot. Trying to find something to help set Command Ships apart
 
   // Primary Weapon Configuration
   techActiveWeaponry  primaryWeapon                 = 11;
@@ -123,11 +124,12 @@ message StructDefender {
   string  protectedStructId      = 1;
   string  defendingStructId      = 2;
 
-  string  locationId             = 3;
-  ambit   operatingAmbit         = 4;
+  objectType  locationType       = 3;
+  string      locationId         = 4;
+  ambit       operatingAmbit     = 5;
 
-  uint64  counterAttack          = 5;
-  uint64  counterAttackSameAmbit = 6;
+  uint64  counterAttack          = 6;
+  uint64  counterAttackSameAmbit = 7;
 }
 
 message StructAttributeRecord {
