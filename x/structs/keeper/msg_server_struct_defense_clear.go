@@ -2,14 +2,12 @@ package keeper
 
 import (
 	"context"
-    /*
-    "strconv"
 
     //"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
-	*/
+
 
 	"structs/x/structs/types"
 )
@@ -67,15 +65,20 @@ func (k msgServer) StructDefenseClear(goCtx context.Context, msg *types.MsgStruc
     }
 
     // Check Sudo Player Charge
-    // Maaaayybe we let the calling player use its charge but idk
-    // Then people could have a stack of accounts to increase action throughput
     playerCharge := k.GetPlayerCharge(ctx, structure.Owner)
     if (playerCharge < structType.DefendChangeCharge) {
         k.DischargePlayer(ctx, structure.Owner)
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for defensive changes, but player (%s) only had %d", structure.Type, structType.ActivateCharge, structure.Owner, playerCharge)
     }
 
-    k.ClearStructDefender(ctx, msg.ProtectedStructId string, msg.DefenderStructId)
+    protectedStructIndex := k.GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, msg.DefenderStructId))
+    if (protectedStructIndex == 0) {
+        k.DischargePlayer(ctx, structure.Owner)
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct %s not defending anything", msg.DefenderStructId)
+    }
+    protectedStructId := GetObjectID(types.ObjectType_struct, protectedStructIndex)
+
+    k.ClearStructDefender(ctx, protectedStructId, msg.DefenderStructId)
     k.DischargePlayer(ctx, structure.Owner)
 
 	return &types.MsgStructStatusResponse{}, nil
