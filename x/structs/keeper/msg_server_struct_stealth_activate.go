@@ -31,13 +31,13 @@ func (k msgServer) StructStealthActivate(goCtx context.Context, msg *types.MsgSt
     structStatusAttributeId := GetStructAttributeIDByObjectId(types.StructAttributeType_status, msg.StructId)
 
     // Is the Struct online?
-    if (!k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, types.StructStateOnline)) {
+    if (!k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateOnline))) {
         k.DischargePlayer(ctx, callingPlayerId)
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is not Online", msg.StructId)
     }
 
     // Is Struct Stealth Mode already activated?
-    if (k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, types.StructStateStealth)) {
+    if (k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateStealth))) {
         k.DischargePlayer(ctx, callingPlayerId)
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already in stealth", msg.StructId)
     }
@@ -70,11 +70,11 @@ func (k msgServer) StructStealthActivate(goCtx context.Context, msg *types.MsgSt
     playerCharge := k.GetPlayerCharge(ctx, structure.Owner)
     if (playerCharge < structType.StealthActivateCharge) {
         k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for stealth mode, but player (%s) only had %d", msg.StructTypeId, structType.ActivateCharge, structure.Owner, playerCharge)
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for stealth mode, but player (%s) only had %d", structure.Type, structType.ActivateCharge, structure.Owner, playerCharge)
     }
 
     // Set the struct status flag to include built
-    k.SetStructAttributeFlagAdd(ctx, structStatusAttributeId, types.StructStateStealth)
+    k.SetStructAttributeFlagAdd(ctx, structStatusAttributeId, uint64(types.StructStateStealth))
 
 	return &types.MsgStructStatusResponse{Struct: structure}, nil
 }

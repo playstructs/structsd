@@ -47,6 +47,7 @@ const (
 	Query_ReactorAll_FullMethodName                    = "/structs.structs.Query/ReactorAll"
 	Query_Struct_FullMethodName                        = "/structs.structs.Query/Struct"
 	Query_StructAll_FullMethodName                     = "/structs.structs.Query/StructAll"
+	Query_StructAttribute_FullMethodName               = "/structs.structs.Query/StructAttribute"
 	Query_Substation_FullMethodName                    = "/structs.structs.Query/Substation"
 	Query_SubstationAll_FullMethodName                 = "/structs.structs.Query/SubstationAll"
 )
@@ -98,6 +99,7 @@ type QueryClient interface {
 	// Queries a list of Structs items.
 	Struct(ctx context.Context, in *QueryGetStructRequest, opts ...grpc.CallOption) (*QueryGetStructResponse, error)
 	StructAll(ctx context.Context, in *QueryAllStructRequest, opts ...grpc.CallOption) (*QueryAllStructResponse, error)
+	StructAttribute(ctx context.Context, in *QueryGetStructAttributeRequest, opts ...grpc.CallOption) (*QueryGetStructAttributeResponse, error)
 	// Queries a list of Substation items.
 	Substation(ctx context.Context, in *QueryGetSubstationRequest, opts ...grpc.CallOption) (*QueryGetSubstationResponse, error)
 	SubstationAll(ctx context.Context, in *QueryAllSubstationRequest, opts ...grpc.CallOption) (*QueryAllSubstationResponse, error)
@@ -363,6 +365,15 @@ func (c *queryClient) StructAll(ctx context.Context, in *QueryAllStructRequest, 
 	return out, nil
 }
 
+func (c *queryClient) StructAttribute(ctx context.Context, in *QueryGetStructAttributeRequest, opts ...grpc.CallOption) (*QueryGetStructAttributeResponse, error) {
+	out := new(QueryGetStructAttributeResponse)
+	err := c.cc.Invoke(ctx, Query_StructAttribute_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) Substation(ctx context.Context, in *QueryGetSubstationRequest, opts ...grpc.CallOption) (*QueryGetSubstationResponse, error) {
 	out := new(QueryGetSubstationResponse)
 	err := c.cc.Invoke(ctx, Query_Substation_FullMethodName, in, out, opts...)
@@ -428,6 +439,7 @@ type QueryServer interface {
 	// Queries a list of Structs items.
 	Struct(context.Context, *QueryGetStructRequest) (*QueryGetStructResponse, error)
 	StructAll(context.Context, *QueryAllStructRequest) (*QueryAllStructResponse, error)
+	StructAttribute(context.Context, *QueryGetStructAttributeRequest) (*QueryGetStructAttributeResponse, error)
 	// Queries a list of Substation items.
 	Substation(context.Context, *QueryGetSubstationRequest) (*QueryGetSubstationResponse, error)
 	SubstationAll(context.Context, *QueryAllSubstationRequest) (*QueryAllSubstationResponse, error)
@@ -521,6 +533,9 @@ func (UnimplementedQueryServer) Struct(context.Context, *QueryGetStructRequest) 
 }
 func (UnimplementedQueryServer) StructAll(context.Context, *QueryAllStructRequest) (*QueryAllStructResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructAll not implemented")
+}
+func (UnimplementedQueryServer) StructAttribute(context.Context, *QueryGetStructAttributeRequest) (*QueryGetStructAttributeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StructAttribute not implemented")
 }
 func (UnimplementedQueryServer) Substation(context.Context, *QueryGetSubstationRequest) (*QueryGetSubstationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Substation not implemented")
@@ -1045,6 +1060,24 @@ func _Query_StructAll_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_StructAttribute_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetStructAttributeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).StructAttribute(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_StructAttribute_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).StructAttribute(ctx, req.(*QueryGetStructAttributeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_Substation_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryGetSubstationRequest)
 	if err := dec(in); err != nil {
@@ -1199,6 +1232,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StructAll",
 			Handler:    _Query_StructAll_Handler,
+		},
+		{
+			MethodName: "StructAttribute",
+			Handler:    _Query_StructAttribute_Handler,
 		},
 		{
 			MethodName: "Substation",

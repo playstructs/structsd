@@ -11,8 +11,8 @@ import (
 	"structs/x/structs/types"
 )
 
-func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgStructOreMinerComplete) (*types.MsgStructOreMinerStatusResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttack) (*types.MsgStructAttackResponse, error) {
+/*	ctx := sdk.UnwrapSDKContext(goCtx)
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -20,7 +20,7 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 
     callingPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
     if (callingPlayerIndex == 0) {
-        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build actions requires Player account but none associated with %s", msg.Creator)
+        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct actions requires Player account but none associated with %s", msg.Creator)
     }
     callingPlayerId := GetObjectID(types.ObjectType_player, callingPlayerIndex)
 
@@ -70,49 +70,7 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
         return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for mining, but player (%s) only had %d", structure.Type, structType.ActivateCharge, structure.Owner, playerCharge)
     }
 
-    if (structType.PlanetaryMining == types.TechPlanetaryMining_noPlanetaryMining) {
-        k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) has no mining system", msg.StructId)
-    }
-
-    activeOreMiningSystemBlock := k.GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structure.Id))
-    // Is Struct Ore Miner running?
-    if (activeOreMiningSystemBlock == 0) {
-        k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) not mining", msg.StructId)
-    }
-
-    planet, planetFound := k.GetPlanet(ctx, structure.LocationId)
-    if (!planetFound) {
-        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was not found, which is actually a pretty big problem. Please tell an adult", structure.LocationId)
-    }
-
-    if (planet.Status == types.PlanetStatus_complete) {
-        k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Planet (%s) is already complete. Move on bud, no work to be done here", structure.LocationId)
-    }
-
-    if (planet.OreRemaining == 0) {
-        k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Planet (%s) is empty, nothing to mine", structure.LocationId)
-    }
-
-    activeOreMiningSystemBlockString    := strconv.FormatUint(activeOreMiningSystemBlock , 10)
-    hashInput                           := structure.Id + "MINE" + activeOreMiningSystemBlockString + "NONCE" + msg.Nonce
-
-    currentAge := uint64(ctx.BlockHeight()) - activeOreMiningSystemBlock
-    if (!types.HashBuildAndCheckActionDifficulty(hashInput, msg.Proof, currentAge)) {
-       return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Work failure for input (%s) when trying to mine on Struct %s", hashInput, structure.Id)
-    }
-
-    // Got this far, let's reward the player with some Ore
-    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, structure.LocationId), 1)
-    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, structure.Owner), 1)
-
-    // Reset difficulty block
-    k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structure.Id), uint64(ctx.BlockHeight()))
-
     k.DischargePlayer(ctx, structure.Owner)
-
-	return &types.MsgStructOreMinerStatusResponse{Struct: structure}, nil
+*/
+	return &types.MsgStructAttackResponse{}, nil
 }

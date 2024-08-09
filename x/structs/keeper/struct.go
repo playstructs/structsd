@@ -86,14 +86,14 @@ func (k Keeper) AppendStruct(
 
     // Set the main Struct dynamic attributes
     // Current Health
-    SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_health, structure.Id),             structureType.MaxHealth)
+    k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_health, structure.Id),           structureType.MaxHealth)
     // Base Status (zero)
-    SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_status, structure.Id),             types.StructStateless)
+    k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_status, structure.Id),           uint64(types.StructStateless))
     // Block Start Build
-    SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structure.Id),    uint64(ctxSDK.BlockHeight()))
+    k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structure.Id),  uint64(ctxSDK.BlockHeight()))
 
     // Set the grid details
-    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, structure.Owner), structureType.BuildDraw)
+    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, structure.Owner),structureType.BuildDraw)
 
 	return structure
 }
@@ -150,6 +150,7 @@ func (k Keeper) GetAllStruct(ctx context.Context) (list []types.Struct) {
 
 
 func (k Keeper) StructDeactivate(ctx context.Context, structId string) {
+   /*
     structure, structureFound := k.GetStruct(ctx, structId)
     if (structureFound) {
 
@@ -175,13 +176,14 @@ func (k Keeper) StructDeactivate(ctx context.Context, structId string) {
             }
         }
     }
+    */
 }
 
 
 
 
 func (k Keeper) StructDestroy(ctx context.Context, structure types.Struct) {
-
+    /*
     planet, planetFound := k.GetPlanet(ctx, structure.PlanetId)
     if (planetFound) {
         switch structure.Ambit {
@@ -217,5 +219,6 @@ func (k Keeper) StructDestroy(ctx context.Context, structure types.Struct) {
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})
 
     k.RemoveStruct(ctx, structure.Id)
+    */
 
 }

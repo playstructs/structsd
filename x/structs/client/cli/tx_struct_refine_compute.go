@@ -61,20 +61,29 @@ func CmdStructRefineCompute() *cobra.Command {
 
             fmt.Printf("Loaded Struct (%s) for mining process \n", performingStructure.Id)
 
-            if (performingStructure.RefiningSystemStatus != "ACTIVE") {
+            struct_attribute_block_start_params := &types.QueryGetStructAttributeRequest{
+                StructId: argStructId,
+                AttributeType: "blockStartOreRefine",
+            }
+
+            refineStartBlock_res, _ := queryClient.StructAttribute(context.Background(), struct_attribute_block_start_params)
+            refineStartBlock := refineStartBlock_res.Attribute
+
+
+            if (refineStartBlock == 0) {
                 fmt.Printf("Struct (%s) has no Active refining system \n", performingStructure.Id)
                 return nil
             }
 
             currentBlockResponse, _ := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
             currentBlock := currentBlockResponse.BlockHeight
-            fmt.Printf("Refining process activated on %d, current block is %d \n", performingStructure.ActiveRefiningSystemBlock, currentBlock)
-            currentAge := currentBlock - performingStructure.ActiveRefiningSystemBlock
+            fmt.Printf("Refining process activated on %d, current block is %d \n", refineStartBlock, currentBlock)
+            currentAge := currentBlock - refineStartBlock
             currentDifficulty := types.CalculateActionDifficulty(float64(currentAge))
             fmt.Printf("Refining difficulty is %d \n", currentDifficulty)
 
 
-            activeRefiningSystemBlockString := strconv.FormatUint(performingStructure.ActiveRefiningSystemBlock , 10)
+            activeRefiningSystemBlockString := strconv.FormatUint(refineStartBlock, 10)
             fmt.Println("Starting Refining...")
 
             var newDifficulty int
@@ -91,7 +100,7 @@ COMPUTE:
                     fmt.Print("\b")
                     currentBlockResponse, _ = queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
                     currentBlock = currentBlockResponse.BlockHeight
-                    currentAge = currentBlock - performingStructure.ActiveRefiningSystemBlock
+                    currentAge = currentBlock - refineStartBlock
                     newDifficulty = types.CalculateActionDifficulty(float64(currentAge))
 
                     if currentDifficulty != newDifficulty {
@@ -124,7 +133,7 @@ COMPUTE:
 			}
 
 
-			msg := &types.MsgStructRefine{
+			msg := &types.MsgStructOreRefineryComplete{
                 Creator:  clientCtx.GetFromAddress().String(),
                 StructId: argStructId,
                 Proof: argProof,

@@ -31,13 +31,13 @@ func (k msgServer) StructStealthDeactivate(goCtx context.Context, msg *types.Msg
     structStatusAttributeId := GetStructAttributeIDByObjectId(types.StructAttributeType_status, msg.StructId)
 
     // Is the Struct online?
-    if (!k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, types.StructStateOnline)) {
+    if (!k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateOnline))) {
         k.DischargePlayer(ctx, callingPlayerId)
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is not Online", msg.StructId)
     }
 
     // Is Struct Stealth Mode not currently activated?
-    if (!k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, types.StructStateStealth)) {
+    if (!k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateStealth))) {
         k.DischargePlayer(ctx, callingPlayerId)
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) not in stealth mode", msg.StructId)
     }
@@ -56,7 +56,7 @@ func (k msgServer) StructStealthDeactivate(goCtx context.Context, msg *types.Msg
     }
 
     // Set the struct status flag to include built
-    k.SetStructAttributeFlagRemove(ctx, structStatusAttributeId, types.StructStateStealth)
+    k.SetStructAttributeFlagRemove(ctx, structStatusAttributeId, uint64(types.StructStateStealth))
 
 	return &types.MsgStructStatusResponse{Struct: structure}, nil
 }

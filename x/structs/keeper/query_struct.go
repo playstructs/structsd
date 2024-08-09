@@ -30,12 +30,14 @@ func (k Keeper) StructAll(goCtx context.Context, req *types.QueryAllStructReques
 			return err
 		}
 
+        /*
         if (structure.PowerSystem == 1) {
             structure.PowerSystemFuel = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, structure.Id))
             structure.PowerSystemCapacity = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, structure.Id))
             structure.PowerSystemLoad = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, structure.Id))
 
         }
+        */
 
 		structures = append(structures, structure)
 		return nil
@@ -60,4 +62,15 @@ func (k Keeper) Struct(goCtx context.Context, req *types.QueryGetStructRequest) 
 	}
 
 	return &types.QueryGetStructResponse{Struct: structure}, nil
+}
+
+func (k Keeper) StructAttribute(goCtx context.Context, req *types.QueryGetStructAttributeRequest) (*types.QueryGetStructAttributeResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	structureAttribute := k.GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_enum[req.AttributeType], req.StructId))
+
+	return &types.QueryGetStructAttributeResponse{Attribute: structureAttribute}, nil
 }

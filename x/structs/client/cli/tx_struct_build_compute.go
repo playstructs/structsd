@@ -61,21 +61,36 @@ func CmdStructBuildCompute() *cobra.Command {
 
             fmt.Printf("Loaded Struct (%s) for building process \n", performingStructure.Id)
 
-            if (performingStructure.Status != "BUILDING") {
+            struct_attribute_status_params := &types.QueryGetStructAttributeRequest{
+                StructId: argStructId,
+                AttributeType: "status",
+            }
+
+            status_res, _ := queryClient.StructAttribute(context.Background(), struct_attribute_status_params)
+            status := status_res.Attribute
+
+            if (status&uint64(types.StructStateBuilt) != 0) {
                 fmt.Printf("Struct (%s) is already built \n", performingStructure.Id)
                 return nil
             }
 
+            struct_attribute_block_start_params := &types.QueryGetStructAttributeRequest{
+                StructId: argStructId,
+                AttributeType: "blockStartBuild",
+            }
+
+            buildStartBlock_res, _ := queryClient.StructAttribute(context.Background(), struct_attribute_block_start_params)
+            buildStartBlock := buildStartBlock_res.Attribute
 
             currentBlockResponse, _ := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
             currentBlock := currentBlockResponse.BlockHeight
-            fmt.Printf("Build process activated on %d, current block is %d \n", performingStructure.BuildStartBlock, currentBlock)
-            currentAge := currentBlock - performingStructure.BuildStartBlock
+            fmt.Printf("Build process activated on %d, current block is %d \n", buildStartBlock, currentBlock)
+            currentAge := currentBlock - buildStartBlock
             currentDifficulty := types.CalculateActionDifficulty(float64(currentAge))
             fmt.Printf("Building difficulty is %d \n", currentDifficulty)
 
 
-            buildStartBlockString           := strconv.FormatUint(performingStructure.BuildStartBlock , 10)
+            buildStartBlockString           := strconv.FormatUint(buildStartBlock , 10)
             fmt.Println("Starting Building...")
 
             var newDifficulty int
@@ -91,7 +106,7 @@ COMPUTE:
                 if (i % 20000) == 0 {
                     currentBlockResponse, _ = queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
                     currentBlock = currentBlockResponse.BlockHeight
-                    currentAge = currentBlock - performingStructure.BuildStartBlock
+                    currentAge = currentBlock - buildStartBlock
                     newDifficulty = types.CalculateActionDifficulty(float64(currentAge))
 
                     if currentDifficulty != newDifficulty {

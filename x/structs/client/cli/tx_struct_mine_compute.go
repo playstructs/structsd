@@ -61,20 +61,30 @@ func CmdStructMineCompute() *cobra.Command {
 
             fmt.Printf("Loaded Struct (%s) for mining process \n", performingStructure.Id)
 
-            if (performingStructure.MiningSystemStatus != "ACTIVE") {
+
+            struct_attribute_block_start_params := &types.QueryGetStructAttributeRequest{
+                StructId: argStructId,
+                AttributeType: "blockStartOreMine",
+            }
+
+            mineStartBlock_res, _ := queryClient.StructAttribute(context.Background(), struct_attribute_block_start_params)
+            mineStartBlock := mineStartBlock_res.Attribute
+
+
+            if (mineStartBlock == 0) {
                 fmt.Printf("Struct (%s) has no Active mining system \n", performingStructure.Id)
                 return nil
             }
 
             currentBlockResponse, _ := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
             currentBlock := currentBlockResponse.BlockHeight
-            fmt.Printf("Mining process activated on %d, current block is %d \n", performingStructure.ActiveMiningSystemBlock, currentBlock)
-            currentAge := currentBlock - performingStructure.ActiveMiningSystemBlock
+            fmt.Printf("Mining process activated on %d, current block is %d \n", mineStartBlock, currentBlock)
+            currentAge := currentBlock - mineStartBlock
             currentDifficulty := types.CalculateActionDifficulty(float64(currentAge))
             fmt.Printf("Mining difficulty is %d \n", currentDifficulty)
 
 
-            activeMiningSystemBlockString   := strconv.FormatUint(performingStructure.ActiveMiningSystemBlock , 10)
+            activeMiningSystemBlockString   := strconv.FormatUint(mineStartBlock , 10)
             fmt.Println("Starting Mining...")
 
             var newDifficulty int
@@ -90,7 +100,7 @@ COMPUTE:
                 if (i % 20000) == 0 {
                     currentBlockResponse, _ = queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
                     currentBlock = currentBlockResponse.BlockHeight
-                    currentAge = currentBlock - performingStructure.ActiveMiningSystemBlock
+                    currentAge = currentBlock - mineStartBlock
                     newDifficulty = types.CalculateActionDifficulty(float64(currentAge))
 
                     if currentDifficulty != newDifficulty {
@@ -125,7 +135,7 @@ COMPUTE:
 
 
 
-			msg := &types.MsgStructMine{
+			msg := &types.MsgStructOreMinerComplete{
                 Creator:  clientCtx.GetFromAddress().String(),
                 StructId: argStructId,
                 Proof: argProof,

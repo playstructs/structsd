@@ -153,6 +153,10 @@ service Query {
     option (google.api.http).get = "/structs/struct";
   }
 
+  rpc StructAttribute    (QueryGetStructAttributeRequest) returns (QueryGetStructAttributeResponse) {
+    option (google.api.http).get = "/structs/struct_attribute/{structId}/{attributeType}";
+  }
+
   // Queries a list of Substation items.
   rpc Substation    (QueryGetSubstationRequest) returns (QueryGetSubstationResponse) {
     option (google.api.http).get = "/structs/substation/{id}";
@@ -404,6 +408,14 @@ message QueryAllStructResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+message QueryGetStructAttributeRequest {
+  string structId = 1;
+  string attributeType = 2;
+}
+
+message QueryGetStructAttributeResponse {
+  uint64 attribute = 1;
+}
 
 message QueryGetSubstationRequest {
   string id = 1;

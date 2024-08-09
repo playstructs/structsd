@@ -61,7 +61,7 @@ func (k Keeper) ReactorInitialize(ctx context.Context, validatorAddress sdk.ValA
             validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
             delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
 
-            k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, identity.String(), player, delegationShare.Uint64(), reactor.DefaultCommission)
+            k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, identity.String(), player, delegationShare.Uint64(), reactor.DefaultCommission, types.ReactorFuelToEnergyConversion)
         }
 
     }
