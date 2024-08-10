@@ -28,7 +28,7 @@ message StructType {
 
   // Fundamental attributes
   objectType      category        = 3; // Planet or Fleet
-  uint64          buildDifficulty = 4; // How much compute is needed to build
+  uint64           buildDifficulty = 4; // How much compute is needed to build
   uint64          buildDraw       = 5; // How much energy the Struct consumes during building
   uint64          maxHealth       = 6; // How much damage can it take
   uint64          passiveDraw     = 7; // How much energy the Struct consumes when active
@@ -102,6 +102,9 @@ message StructType {
 
   uint64 planetaryShieldContribution  = 54; // The shield that is added to the Planet
 
+  uint64 oreMiningDifficulty          = 55;
+  uint64 oreRefiningDifficulty        = 56;
+
   /*  Storage Not in MVP
 
   techStorageFacilities storageFacility  = x;
@@ -113,11 +116,11 @@ message StructType {
   uint64 storageWater                 = x;
   */
 
-  uint64 unguidedDefensiveSuccessRateNumerator    = 55;
-  uint64 unguidedDefensiveSuccessRateDenominator  = 56;
+  uint64 unguidedDefensiveSuccessRateNumerator    = 57;
+  uint64 unguidedDefensiveSuccessRateDenominator  = 58;
 
-  uint64 guidedDefensiveSuccessRateNumerator      = 57;
-  uint64 guidedDefensiveSuccessRateDenominator    = 58;
+  uint64 guidedDefensiveSuccessRateNumerator      = 59;
+  uint64 guidedDefensiveSuccessRateDenominator    = 60;
 }
 
 message StructDefender {

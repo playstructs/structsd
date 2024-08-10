@@ -95,7 +95,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 
     currentAge := uint64(ctx.BlockHeight()) - buildStartBlock
 
-    if (!types.HashBuildAndCheckBuildDifficulty(hashInput, msg.Proof, currentAge)) {
+    if (!types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structType.BuildDifficulty)) {
        k.DischargePlayer(ctx, sudoPlayer.Id)
        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrStructBuildComplete, "Work failure for input (%s) when trying to build Struct %s", hashInput, structure.Id)
     }

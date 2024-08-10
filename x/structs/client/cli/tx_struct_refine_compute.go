@@ -75,11 +75,18 @@ func CmdStructRefineCompute() *cobra.Command {
                 return nil
             }
 
+            struct_type_params := &types.QueryGetStructTypeRequest{
+                Id: performingStructure.Type,
+            }
+
+            structType_res, _ := queryClient.StructType(context.Background(), struct_type_params)
+            structType := structType_res.StructType
+
             currentBlockResponse, _ := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
             currentBlock := currentBlockResponse.BlockHeight
             fmt.Printf("Refining process activated on %d, current block is %d \n", refineStartBlock, currentBlock)
             currentAge := currentBlock - refineStartBlock
-            currentDifficulty := types.CalculateActionDifficulty(float64(currentAge))
+            currentDifficulty := types.CalculateDifficulty(float64(currentAge), structType.BuildDifficulty)
             fmt.Printf("Refining difficulty is %d \n", currentDifficulty)
 
 
@@ -101,7 +108,7 @@ COMPUTE:
                     currentBlockResponse, _ = queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
                     currentBlock = currentBlockResponse.BlockHeight
                     currentAge = currentBlock - refineStartBlock
-                    newDifficulty = types.CalculateActionDifficulty(float64(currentAge))
+                    newDifficulty = types.CalculateDifficulty(float64(currentAge), structType.BuildDifficulty)
 
                     if currentDifficulty != newDifficulty {
                         currentDifficulty = newDifficulty
@@ -122,7 +129,7 @@ COMPUTE:
 				newHash.Write([]byte(newInput))
 				newHashOutput := hex.EncodeToString(newHash.Sum(nil))
 
-				if (!types.HashBuildAndCheckActionDifficulty(newInput, newHashOutput, currentAge)) { goto COMPUTE }
+				if (!types.HashBuildAndCheckDifficulty(newInput, newHashOutput, currentAge, structType.BuildDifficulty)) { goto COMPUTE }
 
 				fmt.Println("")
 				fmt.Println("Refining Complete!")

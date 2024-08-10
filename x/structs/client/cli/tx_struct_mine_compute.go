@@ -70,17 +70,25 @@ func CmdStructMineCompute() *cobra.Command {
             mineStartBlock_res, _ := queryClient.StructAttribute(context.Background(), struct_attribute_block_start_params)
             mineStartBlock := mineStartBlock_res.Attribute
 
-
             if (mineStartBlock == 0) {
                 fmt.Printf("Struct (%s) has no Active mining system \n", performingStructure.Id)
                 return nil
             }
 
+
+            struct_type_params := &types.QueryGetStructTypeRequest{
+                Id: performingStructure.Type,
+            }
+
+            structType_res, _ := queryClient.StructType(context.Background(), struct_type_params)
+            structType := structType_res.StructType
+
+
             currentBlockResponse, _ := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
             currentBlock := currentBlockResponse.BlockHeight
             fmt.Printf("Mining process activated on %d, current block is %d \n", mineStartBlock, currentBlock)
             currentAge := currentBlock - mineStartBlock
-            currentDifficulty := types.CalculateActionDifficulty(float64(currentAge))
+            currentDifficulty := types.CalculateDifficulty(float64(currentAge), structType.BuildDifficulty)
             fmt.Printf("Mining difficulty is %d \n", currentDifficulty)
 
 
@@ -101,7 +109,7 @@ COMPUTE:
                     currentBlockResponse, _ = queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
                     currentBlock = currentBlockResponse.BlockHeight
                     currentAge = currentBlock - mineStartBlock
-                    newDifficulty = types.CalculateActionDifficulty(float64(currentAge))
+                    newDifficulty = types.CalculateDifficulty(float64(currentAge), structType.BuildDifficulty)
 
                     if currentDifficulty != newDifficulty {
                         currentDifficulty = newDifficulty
@@ -123,7 +131,7 @@ COMPUTE:
 				newHash.Write([]byte(newInput))
 				newHashOutput := hex.EncodeToString(newHash.Sum(nil))
 
-				if (!types.HashBuildAndCheckActionDifficulty(newInput, newHashOutput, currentAge)) { goto COMPUTE }
+				if (!types.HashBuildAndCheckDifficulty(newInput, newHashOutput, currentAge, structType.BuildDifficulty)) { goto COMPUTE }
 
 				fmt.Println("")
 				fmt.Println("Mining Complete!")

@@ -101,7 +101,7 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
     hashInput := structure.Id + "REFINE" + activeOreRefiningSystemBlockString + "NONCE" + msg.Nonce
 
     currentAge := uint64(ctx.BlockHeight()) - activeOreRefiningSystemBlock
-    if (!types.HashBuildAndCheckActionDifficulty(hashInput, msg.Proof, currentAge)) {
+    if (!types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structType.OreRefiningDifficulty)) {
        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Work failure for input (%s) when trying to refine on Struct %s", hashInput, structure.Id)
     }
 

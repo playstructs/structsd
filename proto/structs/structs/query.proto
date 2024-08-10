@@ -171,6 +171,15 @@ service Query {
     option (google.api.http).get = "/structs/struct_attribute/{structId}/{attributeType}";
   }
 
+  // Queries a list of Struct Types items.
+  rpc StructType    (QueryGetStructTypeRequest) returns (QueryGetStructTypeResponse) {
+    option (google.api.http).get = "/structs/struct_type/{id}";
+  }
+
+  rpc StructTypeAll (QueryAllStructTypeRequest) returns (QueryAllStructTypeResponse) {
+    option (google.api.http).get = "/structs/struct_type";
+  }
+
   // Queries a list of Substation items.
   rpc Substation    (QueryGetSubstationRequest) returns (QueryGetSubstationResponse) {
     option (google.api.http).get = "/structs/substation/{id}";
@@ -453,6 +462,23 @@ message QueryGetStructAttributeRequest {
 
 message QueryGetStructAttributeResponse {
   uint64 attribute = 1;
+}
+
+message QueryGetStructTypeRequest {
+  uint64 id = 1;
+}
+
+message QueryGetStructTypeResponse {
+  StructType StructType = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllStructTypeRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllStructTypeResponse {
+  repeated StructType                                  StructType      = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
 message QueryGetSubstationRequest {

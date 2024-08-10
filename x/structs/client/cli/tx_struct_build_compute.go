@@ -82,11 +82,18 @@ func CmdStructBuildCompute() *cobra.Command {
             buildStartBlock_res, _ := queryClient.StructAttribute(context.Background(), struct_attribute_block_start_params)
             buildStartBlock := buildStartBlock_res.Attribute
 
+            struct_type_params := &types.QueryGetStructTypeRequest{
+                Id: performingStructure.Type,
+            }
+
+            structType_res, _ := queryClient.StructType(context.Background(), struct_type_params)
+            structType := structType_res.StructType
+
             currentBlockResponse, _ := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
             currentBlock := currentBlockResponse.BlockHeight
             fmt.Printf("Build process activated on %d, current block is %d \n", buildStartBlock, currentBlock)
             currentAge := currentBlock - buildStartBlock
-            currentDifficulty := types.CalculateActionDifficulty(float64(currentAge))
+            currentDifficulty := types.CalculateDifficulty(float64(currentAge), structType.BuildDifficulty)
             fmt.Printf("Building difficulty is %d \n", currentDifficulty)
 
 
@@ -107,7 +114,7 @@ COMPUTE:
                     currentBlockResponse, _ = queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
                     currentBlock = currentBlockResponse.BlockHeight
                     currentAge = currentBlock - buildStartBlock
-                    newDifficulty = types.CalculateActionDifficulty(float64(currentAge))
+                    newDifficulty = types.CalculateDifficulty(float64(currentAge), structType.BuildDifficulty)
 
                     if currentDifficulty != newDifficulty {
                         currentDifficulty = newDifficulty
@@ -128,7 +135,7 @@ COMPUTE:
 				newHash.Write([]byte(newInput))
 				newHashOutput := hex.EncodeToString(newHash.Sum(nil))
 
-				if (!types.HashBuildAndCheckBuildDifficulty(newInput, newHashOutput, currentAge)) { goto COMPUTE }
+				if (!types.HashBuildAndCheckDifficulty(newInput, newHashOutput, currentAge, structType.BuildDifficulty)) { goto COMPUTE }
 
 				fmt.Println("")
 				fmt.Println("Building Complete!")
