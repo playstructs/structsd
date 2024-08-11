@@ -77,6 +77,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     var fractionErr error
 
     switch msg.WeaponSystem {
+
         case types.TechWeaponSystem_primaryWeapon:
           weapon                = structType.PrimaryWeapon
           weaponControl         = structType.PrimaryWeaponControl

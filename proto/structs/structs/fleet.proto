@@ -14,7 +14,7 @@ message Fleet {
 
   objectType  locationType    = 3;
   string      locationId      = 4;
-  uint64      slot            = 5;
+  uint64      locationSlot    = 5;
 
   repeated string space = 6;
   repeated string air   = 7;
