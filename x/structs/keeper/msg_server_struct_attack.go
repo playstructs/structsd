@@ -82,6 +82,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
           weapon                = structType.PrimaryWeapon
           weaponControl         = structType.PrimaryWeaponControl
           weaponCharge          = structType.PrimaryWeaponCharge
+          weaponAmbits          = structType.PrimaryWeaponAmbits
           weaponTargets         = structType.PrimaryWeaponTargets
           weaponShots           = structType.PrimaryWeaponShots
           weaponDamage          = structType.PrimaryWeaponDamage
@@ -94,6 +95,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
           weapon                = structType.SecondaryWeapon
           weaponControl         = structType.SecondaryWeaponControl
           weaponCharge          = structType.SecondaryWeaponCharge
+          weaponAmbits          = structType.SecondaryWeaponAmbits
           weaponTargets         = structType.SecondaryWeaponTargets
           weaponShots           = structType.SecondaryWeaponShots
           weaponDamage          = structType.SecondaryWeaponDamage
@@ -114,6 +116,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     _ = weapon
     _ = weaponControl
     _ = weaponCharge
+    _ = weaponAmbits
     _ = weaponTargets
     _ = weaponShots
     _ = weaponDamage
@@ -129,6 +132,54 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
         k.DischargePlayer(ctx, structure.Owner)
         return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for this attack, but player (%s) only had %d", structure.Type, weaponCharge, structure.Owner, playerCharge)
     }
+
+
+    // Load Defender?
+    // Load Defender Location?
+        // Load Planet?
+        // Load Fleet
+
+    // Load attacker location?
+
+
+
+    // Is the defending struct within range of the attack type?
+    // Struct and Defender are within the same battle range (fleet comparisons, planets, etc)
+
+    /* Struct Range
+        The ability of a Struct to target an enemy Struct depends on a number of factors.
+
+        - Attacker location type (Planet or Fleet)
+            - Where the attacker fleet location is
+                - planet and position in the list
+        - Defender location type (Planet or Fleet)
+            - Where the defender fleet location is
+                - planet and position in the list
+
+
+        If the attacker is on a planet
+            they can only fight a struct on a fleet
+                and that fleet must be at the planet
+                    and the fleet must be first in line of attack
+
+
+        If the attacker is on a fleet
+           the attacker can attack the planet or its fleet if they are
+            1) next in line in the queue
+            2) beside the fleet they're attacking
+
+    */
+
+    switch structure.LocationType {
+        case types.ObjectType_fleet:
+
+        case types.ObjectType_planet:
+        default:
+            err = sdkerrors.Wrapf(types.ErrStructAction, "Struct (%s) cannot attack from this location (%s) ", structure.Id, structure.LocationType)
+    }
+
+    // Attack in Range of Ambit
+
 
 
     attackBlocked = false

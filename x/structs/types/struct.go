@@ -13,7 +13,7 @@ import (
  */
 
 
-func CheckLocation(structType StructType, locationType ObjectType, ambit Ambit) (habitable bool, err error ) {
+func CheckBuildLocation(structType StructType, locationType ObjectType, ambit Ambit) (habitable bool, err error ) {
 
     // A little overly complicated at the moment but can
     // easily be expanded to allow for Structs to be built
@@ -54,7 +54,7 @@ func (structure *Struct) SetLocation(locationId string, slot uint64) error {
 
 func CreateBaseStruct(structType StructType, creator string, owner string, locationId string, locationType ObjectType, ambit Ambit, slot uint64) (Struct, error) {
 
-    _, err := CheckLocation(structType, locationType, ambit)
+    _, err := CheckBuildLocation(structType, locationType, ambit)
 
     return Struct{
         Creator: creator,

@@ -30,6 +30,10 @@ message Planet {
   uint64 waterSlots     = 14;
 
   planetStatus status   = 15 [(amino.dont_omitempty) = true];
+
+  string locationListStart  = 16; // First in line to battle planet
+  string locationListLast   = 17; // End of the line
+
 }
 
 message PlanetAttributeRecord {

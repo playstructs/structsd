@@ -44,66 +44,68 @@ message StructType {
   techActiveWeaponry  primaryWeapon                 = 11;
   techWeaponControl   primaryWeaponControl          = 12;
   uint64              primaryWeaponCharge           = 13;
-  uint64              primaryWeaponTargets          = 14;
-  uint64              primaryWeaponShots            = 15;
-  uint64              primaryWeaponDamage           = 16;
-  bool                primaryWeaponBlockable        = 17;
-  bool                primaryWeaponCounterable      = 18;
-  uint64              primaryWeaponRecoilDamage     = 19;
-  uint64              primaryWeaponShotSuccessRateNumerator   = 20;
-  uint64              primaryWeaponShotSuccessRateDenominator = 21;
+  uint64              primaryWeaponAmbits           = 14;
+  uint64              primaryWeaponTargets          = 15;
+  uint64              primaryWeaponShots            = 16;
+  uint64              primaryWeaponDamage           = 17;
+  bool                primaryWeaponBlockable        = 18;
+  bool                primaryWeaponCounterable      = 19;
+  uint64              primaryWeaponRecoilDamage     = 20;
+  uint64              primaryWeaponShotSuccessRateNumerator   = 21;
+  uint64              primaryWeaponShotSuccessRateDenominator = 22;
 
   // Secondary Weapon Configuration
-  techActiveWeaponry  secondaryWeapon                 = 22;
-  techWeaponControl   secondaryWeaponControl          = 23;
-  uint64              secondaryWeaponCharge           = 24;
-  uint64              secondaryWeaponTargets          = 25;
-  uint64              secondaryWeaponShots            = 26;
-  uint64              secondaryWeaponDamage           = 27;
-  bool                secondaryWeaponBlockable        = 28;
-  bool                secondaryWeaponCounterable      = 29;
-  uint64              secondaryWeaponRecoilDamage     = 30;
-  uint64              secondaryWeaponShotSuccessRateNumerator   = 31;
-  uint64              secondaryWeaponShotSuccessRateDenominator = 32;
+  techActiveWeaponry  secondaryWeapon                 = 23;
+  techWeaponControl   secondaryWeaponControl          = 24;
+  uint64              secondaryWeaponCharge           = 25;
+  uint64              secondaryWeaponAmbits           = 26;
+  uint64              secondaryWeaponTargets          = 27;
+  uint64              secondaryWeaponShots            = 28;
+  uint64              secondaryWeaponDamage           = 29;
+  bool                secondaryWeaponBlockable        = 30;
+  bool                secondaryWeaponCounterable      = 31;
+  uint64              secondaryWeaponRecoilDamage     = 32;
+  uint64              secondaryWeaponShotSuccessRateNumerator   = 33;
+  uint64              secondaryWeaponShotSuccessRateDenominator = 34;
 
   // Tech Tree Features
-  techPassiveWeaponry               passiveWeaponry             = 33;
+  techPassiveWeaponry               passiveWeaponry             = 35;
 
-  techUnitDefenses                  unitDefenses                = 34;
-  techOreReserveDefenses            oreReserveDefenses          = 35;
-  techPlanetaryDefenses             planetaryDefenses           = 36;
+  techUnitDefenses                  unitDefenses                = 36;
+  techOreReserveDefenses            oreReserveDefenses          = 37;
+  techPlanetaryDefenses             planetaryDefenses           = 38;
 
-  techPlanetaryMining               planetaryMining             = 37;
-  techPlanetaryRefineries           planetaryRefinery           = 38;
+  techPlanetaryMining               planetaryMining             = 39;
+  techPlanetaryRefineries           planetaryRefinery           = 40;
 
-  techPowerGeneration               powerGeneration             = 39;
+  techPowerGeneration               powerGeneration             = 41;
 
   // Charge uses
-  uint64 activateCharge         = 40;
-  uint64 buildCharge            = 41;
-  uint64 defendChangeCharge     = 42;
-  uint64 moveCharge             = 43;
-  uint64 oreMiningCharge        = 44;
-  uint64 oreRefiningCharge      = 45;
-  uint64 stealthActivateCharge  = 46;
+  uint64 activateCharge         = 42;
+  uint64 buildCharge            = 43;
+  uint64 defendChangeCharge     = 44;
+  uint64 moveCharge             = 45;
+  uint64 oreMiningCharge        = 46;
+  uint64 oreRefiningCharge      = 47;
+  uint64 stealthActivateCharge  = 48;
 
 
   // Tech Tree Attributes
-  uint64 attackReduction              = 47; // For Defensive Cannon
-  bool   attackCounterable            = 48; // For Indirect Combat Module
-  bool   stealthSystems               = 49; // For Stealth Mode
+  uint64 attackReduction              = 49; // For Defensive Cannon
+  bool   attackCounterable            = 50; // For Indirect Combat Module
+  bool   stealthSystems               = 51; // For Stealth Mode
 
-  uint64 counterAttack                = 50; // Counter
-  uint64 counterAttackSameAmbit       = 51; // Advanced Counter
+  uint64 counterAttack                = 52; // Counter
+  uint64 counterAttackSameAmbit       = 53; // Advanced Counter
 
-  uint64 postDestructionDamage        = 52;
+  uint64 postDestructionDamage        = 54;
 
-  uint64 generatingRate               = 53; // Power Generation
+  uint64 generatingRate               = 55; // Power Generation
 
-  uint64 planetaryShieldContribution  = 54; // The shield that is added to the Planet
+  uint64 planetaryShieldContribution  = 56; // The shield that is added to the Planet
 
-  uint64 oreMiningDifficulty          = 55;
-  uint64 oreRefiningDifficulty        = 56;
+  uint64 oreMiningDifficulty          = 57;
+  uint64 oreRefiningDifficulty        = 58;
 
   /*  Storage Not in MVP
 
@@ -116,11 +118,11 @@ message StructType {
   uint64 storageWater                 = x;
   */
 
-  uint64 unguidedDefensiveSuccessRateNumerator    = 57;
-  uint64 unguidedDefensiveSuccessRateDenominator  = 58;
+  uint64 unguidedDefensiveSuccessRateNumerator    = 59;
+  uint64 unguidedDefensiveSuccessRateDenominator  = 60;
 
-  uint64 guidedDefensiveSuccessRateNumerator      = 59;
-  uint64 guidedDefensiveSuccessRateDenominator    = 60;
+  uint64 guidedDefensiveSuccessRateNumerator      = 61;
+  uint64 guidedDefensiveSuccessRateDenominator    = 62;
 }
 
 message StructDefender {
