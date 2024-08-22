@@ -141,3 +141,37 @@ message StructAttributeRecord {
   string attributeId = 1;
   uint64 value = 2;
 }
+
+
+
+message CacheStruct {
+  string structId         = 1;
+
+  bool  structureLoaded   = 2;
+  Struct structure        = 3;
+
+  bool structTypeLoaded   = 4;
+  StructType structType   = 5;
+
+  bool healthLoaded       = 6;
+  uint64 health           = 7;
+
+  string  statusAttributeId  = 8;
+  bool    statusLoaded       = 9;
+  uint64  status             = 10;
+
+  bool    blockStartBuildLoaded = 11;
+  uint64  blockStartBuild       = 12;
+
+  bool    blockStartOreMineLoaded = 13;
+  uint64  blockStarOreMine        = 14;
+
+  bool    blockStartOreRefineLoaded = 15;
+  uint64  blockStartOreRefine       = 16;
+
+  bool    protectedStructIndexLoaded  = 17;
+  uint64  protectedStructIndex        = 18;
+
+}
+
+

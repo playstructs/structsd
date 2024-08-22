@@ -20731,6 +20731,12 @@ paths:
                       - active
                       - complete
                     default: active
+                  locationListStart:
+                    type: string
+                    title: First in line to battle planet
+                  locationListLast:
+                    type: string
+                    title: End of the line
         default:
           description: An unexpected error response.
           schema:
@@ -22820,9 +22826,12 @@ paths:
                       default: guild
                     locationId:
                       type: string
-                    slot:
+                    locationListForward:
                       type: string
-                      format: uint64
+                      title: Towards Planet
+                    locationListBackward:
+                      type: string
+                      title: Towards End of List
                     space:
                       type: array
                       items:
@@ -22989,9 +22998,12 @@ paths:
                     default: guild
                   locationId:
                     type: string
-                  slot:
+                  locationListForward:
                     type: string
-                    format: uint64
+                    title: Towards Planet
+                  locationListBackward:
+                    type: string
+                    title: Towards End of List
                   space:
                     type: array
                     items:
@@ -23077,9 +23089,12 @@ paths:
                     default: guild
                   locationId:
                     type: string
-                  slot:
+                  locationListForward:
                     type: string
-                    format: uint64
+                    title: Towards Planet
+                  locationListBackward:
+                    type: string
+                    title: Towards End of List
                   space:
                     type: array
                     items:
@@ -24472,6 +24487,12 @@ paths:
                         - active
                         - complete
                       default: active
+                    locationListStart:
+                      type: string
+                      title: First in line to battle planet
+                    locationListLast:
+                      type: string
+                      title: End of the line
               pagination:
                 type: object
                 properties:
@@ -24639,6 +24660,12 @@ paths:
                       - active
                       - complete
                     default: active
+                  locationListStart:
+                    type: string
+                    title: First in line to battle planet
+                  locationListLast:
+                    type: string
+                    title: End of the line
         default:
           description: An unexpected error response.
           schema:
@@ -24727,6 +24754,12 @@ paths:
                         - active
                         - complete
                       default: active
+                    locationListStart:
+                      type: string
+                      title: First in line to battle planet
+                    locationListLast:
+                      type: string
+                      title: End of the line
               pagination:
                 type: object
                 properties:
@@ -25650,6 +25683,9 @@ paths:
                     primaryWeaponCharge:
                       type: string
                       format: uint64
+                    primaryWeaponAmbits:
+                      type: string
+                      format: uint64
                     primaryWeaponTargets:
                       type: string
                       format: uint64
@@ -25690,6 +25726,9 @@ paths:
                         - unguided
                       default: noWeaponControl
                     secondaryWeaponCharge:
+                      type: string
+                      format: uint64
+                    secondaryWeaponAmbits:
                       type: string
                       format: uint64
                     secondaryWeaponTargets:
@@ -26048,6 +26087,9 @@ paths:
                   primaryWeaponCharge:
                     type: string
                     format: uint64
+                  primaryWeaponAmbits:
+                    type: string
+                    format: uint64
                   primaryWeaponTargets:
                     type: string
                     format: uint64
@@ -26088,6 +26130,9 @@ paths:
                       - unguided
                     default: noWeaponControl
                   secondaryWeaponCharge:
+                    type: string
+                    format: uint64
+                  secondaryWeaponAmbits:
                     type: string
                     format: uint64
                   secondaryWeaponTargets:
@@ -34667,6 +34712,12 @@ definitions:
               - active
               - complete
             default: active
+          locationListStart:
+            type: string
+            title: First in line to battle planet
+          locationListLast:
+            type: string
+            title: End of the line
   structs.structs.MsgPlayerUpdatePrimaryAddress:
     type: object
     properties:
@@ -35131,6 +35182,12 @@ definitions:
           - active
           - complete
         default: active
+      locationListStart:
+        type: string
+        title: First in line to battle planet
+      locationListLast:
+        type: string
+        title: End of the line
   structs.structs.Struct:
     type: object
     properties:
@@ -35379,9 +35436,12 @@ definitions:
         default: guild
       locationId:
         type: string
-      slot:
+      locationListForward:
         type: string
-        format: uint64
+        title: Towards Planet
+      locationListBackward:
+        type: string
+        title: Towards End of List
       space:
         type: array
         items:
@@ -35693,9 +35753,12 @@ definitions:
               default: guild
             locationId:
               type: string
-            slot:
+            locationListForward:
               type: string
-              format: uint64
+              title: Towards Planet
+            locationListBackward:
+              type: string
+              title: Towards End of List
             space:
               type: array
               items:
@@ -36090,6 +36153,12 @@ definitions:
                 - active
                 - complete
               default: active
+            locationListStart:
+              type: string
+              title: First in line to battle planet
+            locationListLast:
+              type: string
+              title: End of the line
       pagination:
         type: object
         properties:
@@ -36407,6 +36476,9 @@ definitions:
             primaryWeaponCharge:
               type: string
               format: uint64
+            primaryWeaponAmbits:
+              type: string
+              format: uint64
             primaryWeaponTargets:
               type: string
               format: uint64
@@ -36447,6 +36519,9 @@ definitions:
                 - unguided
               default: noWeaponControl
             secondaryWeaponCharge:
+              type: string
+              format: uint64
+            secondaryWeaponAmbits:
               type: string
               format: uint64
             secondaryWeaponTargets:
@@ -36755,9 +36830,12 @@ definitions:
             default: guild
           locationId:
             type: string
-          slot:
+          locationListForward:
             type: string
-            format: uint64
+            title: Towards Planet
+          locationListBackward:
+            type: string
+            title: Towards End of List
           space:
             type: array
             items:
@@ -36981,6 +37059,12 @@ definitions:
               - active
               - complete
             default: active
+          locationListStart:
+            type: string
+            title: First in line to battle planet
+          locationListLast:
+            type: string
+            title: End of the line
   structs.structs.QueryGetPlayerResponse:
     type: object
     properties:
@@ -37192,6 +37276,9 @@ definitions:
           primaryWeaponCharge:
             type: string
             format: uint64
+          primaryWeaponAmbits:
+            type: string
+            format: uint64
           primaryWeaponTargets:
             type: string
             format: uint64
@@ -37232,6 +37319,9 @@ definitions:
               - unguided
             default: noWeaponControl
           secondaryWeaponCharge:
+            type: string
+            format: uint64
+          secondaryWeaponAmbits:
             type: string
             format: uint64
           secondaryWeaponTargets:
@@ -37528,6 +37618,9 @@ definitions:
       primaryWeaponCharge:
         type: string
         format: uint64
+      primaryWeaponAmbits:
+        type: string
+        format: uint64
       primaryWeaponTargets:
         type: string
         format: uint64
@@ -37568,6 +37661,9 @@ definitions:
           - unguided
         default: noWeaponControl
       secondaryWeaponCharge:
+        type: string
+        format: uint64
+      secondaryWeaponAmbits:
         type: string
         format: uint64
       secondaryWeaponTargets:

@@ -152,57 +152,59 @@ type StructType struct {
 	PrimaryWeapon                           TechActiveWeaponry `protobuf:"varint,11,opt,name=primaryWeapon,proto3,enum=structs.structs.TechActiveWeaponry" json:"primaryWeapon,omitempty"`
 	PrimaryWeaponControl                    TechWeaponControl  `protobuf:"varint,12,opt,name=primaryWeaponControl,proto3,enum=structs.structs.TechWeaponControl" json:"primaryWeaponControl,omitempty"`
 	PrimaryWeaponCharge                     uint64             `protobuf:"varint,13,opt,name=primaryWeaponCharge,proto3" json:"primaryWeaponCharge,omitempty"`
-	PrimaryWeaponTargets                    uint64             `protobuf:"varint,14,opt,name=primaryWeaponTargets,proto3" json:"primaryWeaponTargets,omitempty"`
-	PrimaryWeaponShots                      uint64             `protobuf:"varint,15,opt,name=primaryWeaponShots,proto3" json:"primaryWeaponShots,omitempty"`
-	PrimaryWeaponDamage                     uint64             `protobuf:"varint,16,opt,name=primaryWeaponDamage,proto3" json:"primaryWeaponDamage,omitempty"`
-	PrimaryWeaponBlockable                  bool               `protobuf:"varint,17,opt,name=primaryWeaponBlockable,proto3" json:"primaryWeaponBlockable,omitempty"`
-	PrimaryWeaponCounterable                bool               `protobuf:"varint,18,opt,name=primaryWeaponCounterable,proto3" json:"primaryWeaponCounterable,omitempty"`
-	PrimaryWeaponRecoilDamage               uint64             `protobuf:"varint,19,opt,name=primaryWeaponRecoilDamage,proto3" json:"primaryWeaponRecoilDamage,omitempty"`
-	PrimaryWeaponShotSuccessRateNumerator   uint64             `protobuf:"varint,20,opt,name=primaryWeaponShotSuccessRateNumerator,proto3" json:"primaryWeaponShotSuccessRateNumerator,omitempty"`
-	PrimaryWeaponShotSuccessRateDenominator uint64             `protobuf:"varint,21,opt,name=primaryWeaponShotSuccessRateDenominator,proto3" json:"primaryWeaponShotSuccessRateDenominator,omitempty"`
+	PrimaryWeaponAmbits                     uint64             `protobuf:"varint,14,opt,name=primaryWeaponAmbits,proto3" json:"primaryWeaponAmbits,omitempty"`
+	PrimaryWeaponTargets                    uint64             `protobuf:"varint,15,opt,name=primaryWeaponTargets,proto3" json:"primaryWeaponTargets,omitempty"`
+	PrimaryWeaponShots                      uint64             `protobuf:"varint,16,opt,name=primaryWeaponShots,proto3" json:"primaryWeaponShots,omitempty"`
+	PrimaryWeaponDamage                     uint64             `protobuf:"varint,17,opt,name=primaryWeaponDamage,proto3" json:"primaryWeaponDamage,omitempty"`
+	PrimaryWeaponBlockable                  bool               `protobuf:"varint,18,opt,name=primaryWeaponBlockable,proto3" json:"primaryWeaponBlockable,omitempty"`
+	PrimaryWeaponCounterable                bool               `protobuf:"varint,19,opt,name=primaryWeaponCounterable,proto3" json:"primaryWeaponCounterable,omitempty"`
+	PrimaryWeaponRecoilDamage               uint64             `protobuf:"varint,20,opt,name=primaryWeaponRecoilDamage,proto3" json:"primaryWeaponRecoilDamage,omitempty"`
+	PrimaryWeaponShotSuccessRateNumerator   uint64             `protobuf:"varint,21,opt,name=primaryWeaponShotSuccessRateNumerator,proto3" json:"primaryWeaponShotSuccessRateNumerator,omitempty"`
+	PrimaryWeaponShotSuccessRateDenominator uint64             `protobuf:"varint,22,opt,name=primaryWeaponShotSuccessRateDenominator,proto3" json:"primaryWeaponShotSuccessRateDenominator,omitempty"`
 	// Secondary Weapon Configuration
-	SecondaryWeapon                           TechActiveWeaponry `protobuf:"varint,22,opt,name=secondaryWeapon,proto3,enum=structs.structs.TechActiveWeaponry" json:"secondaryWeapon,omitempty"`
-	SecondaryWeaponControl                    TechWeaponControl  `protobuf:"varint,23,opt,name=secondaryWeaponControl,proto3,enum=structs.structs.TechWeaponControl" json:"secondaryWeaponControl,omitempty"`
-	SecondaryWeaponCharge                     uint64             `protobuf:"varint,24,opt,name=secondaryWeaponCharge,proto3" json:"secondaryWeaponCharge,omitempty"`
-	SecondaryWeaponTargets                    uint64             `protobuf:"varint,25,opt,name=secondaryWeaponTargets,proto3" json:"secondaryWeaponTargets,omitempty"`
-	SecondaryWeaponShots                      uint64             `protobuf:"varint,26,opt,name=secondaryWeaponShots,proto3" json:"secondaryWeaponShots,omitempty"`
-	SecondaryWeaponDamage                     uint64             `protobuf:"varint,27,opt,name=secondaryWeaponDamage,proto3" json:"secondaryWeaponDamage,omitempty"`
-	SecondaryWeaponBlockable                  bool               `protobuf:"varint,28,opt,name=secondaryWeaponBlockable,proto3" json:"secondaryWeaponBlockable,omitempty"`
-	SecondaryWeaponCounterable                bool               `protobuf:"varint,29,opt,name=secondaryWeaponCounterable,proto3" json:"secondaryWeaponCounterable,omitempty"`
-	SecondaryWeaponRecoilDamage               uint64             `protobuf:"varint,30,opt,name=secondaryWeaponRecoilDamage,proto3" json:"secondaryWeaponRecoilDamage,omitempty"`
-	SecondaryWeaponShotSuccessRateNumerator   uint64             `protobuf:"varint,31,opt,name=secondaryWeaponShotSuccessRateNumerator,proto3" json:"secondaryWeaponShotSuccessRateNumerator,omitempty"`
-	SecondaryWeaponShotSuccessRateDenominator uint64             `protobuf:"varint,32,opt,name=secondaryWeaponShotSuccessRateDenominator,proto3" json:"secondaryWeaponShotSuccessRateDenominator,omitempty"`
+	SecondaryWeapon                           TechActiveWeaponry `protobuf:"varint,23,opt,name=secondaryWeapon,proto3,enum=structs.structs.TechActiveWeaponry" json:"secondaryWeapon,omitempty"`
+	SecondaryWeaponControl                    TechWeaponControl  `protobuf:"varint,24,opt,name=secondaryWeaponControl,proto3,enum=structs.structs.TechWeaponControl" json:"secondaryWeaponControl,omitempty"`
+	SecondaryWeaponCharge                     uint64             `protobuf:"varint,25,opt,name=secondaryWeaponCharge,proto3" json:"secondaryWeaponCharge,omitempty"`
+	SecondaryWeaponAmbits                     uint64             `protobuf:"varint,26,opt,name=secondaryWeaponAmbits,proto3" json:"secondaryWeaponAmbits,omitempty"`
+	SecondaryWeaponTargets                    uint64             `protobuf:"varint,27,opt,name=secondaryWeaponTargets,proto3" json:"secondaryWeaponTargets,omitempty"`
+	SecondaryWeaponShots                      uint64             `protobuf:"varint,28,opt,name=secondaryWeaponShots,proto3" json:"secondaryWeaponShots,omitempty"`
+	SecondaryWeaponDamage                     uint64             `protobuf:"varint,29,opt,name=secondaryWeaponDamage,proto3" json:"secondaryWeaponDamage,omitempty"`
+	SecondaryWeaponBlockable                  bool               `protobuf:"varint,30,opt,name=secondaryWeaponBlockable,proto3" json:"secondaryWeaponBlockable,omitempty"`
+	SecondaryWeaponCounterable                bool               `protobuf:"varint,31,opt,name=secondaryWeaponCounterable,proto3" json:"secondaryWeaponCounterable,omitempty"`
+	SecondaryWeaponRecoilDamage               uint64             `protobuf:"varint,32,opt,name=secondaryWeaponRecoilDamage,proto3" json:"secondaryWeaponRecoilDamage,omitempty"`
+	SecondaryWeaponShotSuccessRateNumerator   uint64             `protobuf:"varint,33,opt,name=secondaryWeaponShotSuccessRateNumerator,proto3" json:"secondaryWeaponShotSuccessRateNumerator,omitempty"`
+	SecondaryWeaponShotSuccessRateDenominator uint64             `protobuf:"varint,34,opt,name=secondaryWeaponShotSuccessRateDenominator,proto3" json:"secondaryWeaponShotSuccessRateDenominator,omitempty"`
 	// Tech Tree Features
-	PassiveWeaponry    TechPassiveWeaponry     `protobuf:"varint,33,opt,name=passiveWeaponry,proto3,enum=structs.structs.TechPassiveWeaponry" json:"passiveWeaponry,omitempty"`
-	UnitDefenses       TechUnitDefenses        `protobuf:"varint,34,opt,name=unitDefenses,proto3,enum=structs.structs.TechUnitDefenses" json:"unitDefenses,omitempty"`
-	OreReserveDefenses TechOreReserveDefenses  `protobuf:"varint,35,opt,name=oreReserveDefenses,proto3,enum=structs.structs.TechOreReserveDefenses" json:"oreReserveDefenses,omitempty"`
-	PlanetaryDefenses  TechPlanetaryDefenses   `protobuf:"varint,36,opt,name=planetaryDefenses,proto3,enum=structs.structs.TechPlanetaryDefenses" json:"planetaryDefenses,omitempty"`
-	PlanetaryMining    TechPlanetaryMining     `protobuf:"varint,37,opt,name=planetaryMining,proto3,enum=structs.structs.TechPlanetaryMining" json:"planetaryMining,omitempty"`
-	PlanetaryRefinery  TechPlanetaryRefineries `protobuf:"varint,38,opt,name=planetaryRefinery,proto3,enum=structs.structs.TechPlanetaryRefineries" json:"planetaryRefinery,omitempty"`
-	PowerGeneration    TechPowerGeneration     `protobuf:"varint,39,opt,name=powerGeneration,proto3,enum=structs.structs.TechPowerGeneration" json:"powerGeneration,omitempty"`
+	PassiveWeaponry    TechPassiveWeaponry     `protobuf:"varint,35,opt,name=passiveWeaponry,proto3,enum=structs.structs.TechPassiveWeaponry" json:"passiveWeaponry,omitempty"`
+	UnitDefenses       TechUnitDefenses        `protobuf:"varint,36,opt,name=unitDefenses,proto3,enum=structs.structs.TechUnitDefenses" json:"unitDefenses,omitempty"`
+	OreReserveDefenses TechOreReserveDefenses  `protobuf:"varint,37,opt,name=oreReserveDefenses,proto3,enum=structs.structs.TechOreReserveDefenses" json:"oreReserveDefenses,omitempty"`
+	PlanetaryDefenses  TechPlanetaryDefenses   `protobuf:"varint,38,opt,name=planetaryDefenses,proto3,enum=structs.structs.TechPlanetaryDefenses" json:"planetaryDefenses,omitempty"`
+	PlanetaryMining    TechPlanetaryMining     `protobuf:"varint,39,opt,name=planetaryMining,proto3,enum=structs.structs.TechPlanetaryMining" json:"planetaryMining,omitempty"`
+	PlanetaryRefinery  TechPlanetaryRefineries `protobuf:"varint,40,opt,name=planetaryRefinery,proto3,enum=structs.structs.TechPlanetaryRefineries" json:"planetaryRefinery,omitempty"`
+	PowerGeneration    TechPowerGeneration     `protobuf:"varint,41,opt,name=powerGeneration,proto3,enum=structs.structs.TechPowerGeneration" json:"powerGeneration,omitempty"`
 	// Charge uses
-	ActivateCharge        uint64 `protobuf:"varint,40,opt,name=activateCharge,proto3" json:"activateCharge,omitempty"`
-	BuildCharge           uint64 `protobuf:"varint,41,opt,name=buildCharge,proto3" json:"buildCharge,omitempty"`
-	DefendChangeCharge    uint64 `protobuf:"varint,42,opt,name=defendChangeCharge,proto3" json:"defendChangeCharge,omitempty"`
-	MoveCharge            uint64 `protobuf:"varint,43,opt,name=moveCharge,proto3" json:"moveCharge,omitempty"`
-	OreMiningCharge       uint64 `protobuf:"varint,44,opt,name=oreMiningCharge,proto3" json:"oreMiningCharge,omitempty"`
-	OreRefiningCharge     uint64 `protobuf:"varint,45,opt,name=oreRefiningCharge,proto3" json:"oreRefiningCharge,omitempty"`
-	StealthActivateCharge uint64 `protobuf:"varint,46,opt,name=stealthActivateCharge,proto3" json:"stealthActivateCharge,omitempty"`
+	ActivateCharge        uint64 `protobuf:"varint,42,opt,name=activateCharge,proto3" json:"activateCharge,omitempty"`
+	BuildCharge           uint64 `protobuf:"varint,43,opt,name=buildCharge,proto3" json:"buildCharge,omitempty"`
+	DefendChangeCharge    uint64 `protobuf:"varint,44,opt,name=defendChangeCharge,proto3" json:"defendChangeCharge,omitempty"`
+	MoveCharge            uint64 `protobuf:"varint,45,opt,name=moveCharge,proto3" json:"moveCharge,omitempty"`
+	OreMiningCharge       uint64 `protobuf:"varint,46,opt,name=oreMiningCharge,proto3" json:"oreMiningCharge,omitempty"`
+	OreRefiningCharge     uint64 `protobuf:"varint,47,opt,name=oreRefiningCharge,proto3" json:"oreRefiningCharge,omitempty"`
+	StealthActivateCharge uint64 `protobuf:"varint,48,opt,name=stealthActivateCharge,proto3" json:"stealthActivateCharge,omitempty"`
 	// Tech Tree Attributes
-	AttackReduction                         uint64 `protobuf:"varint,47,opt,name=attackReduction,proto3" json:"attackReduction,omitempty"`
-	AttackCounterable                       bool   `protobuf:"varint,48,opt,name=attackCounterable,proto3" json:"attackCounterable,omitempty"`
-	StealthSystems                          bool   `protobuf:"varint,49,opt,name=stealthSystems,proto3" json:"stealthSystems,omitempty"`
-	CounterAttack                           uint64 `protobuf:"varint,50,opt,name=counterAttack,proto3" json:"counterAttack,omitempty"`
-	CounterAttackSameAmbit                  uint64 `protobuf:"varint,51,opt,name=counterAttackSameAmbit,proto3" json:"counterAttackSameAmbit,omitempty"`
-	PostDestructionDamage                   uint64 `protobuf:"varint,52,opt,name=postDestructionDamage,proto3" json:"postDestructionDamage,omitempty"`
-	GeneratingRate                          uint64 `protobuf:"varint,53,opt,name=generatingRate,proto3" json:"generatingRate,omitempty"`
-	PlanetaryShieldContribution             uint64 `protobuf:"varint,54,opt,name=planetaryShieldContribution,proto3" json:"planetaryShieldContribution,omitempty"`
-	OreMiningDifficulty                     uint64 `protobuf:"varint,55,opt,name=oreMiningDifficulty,proto3" json:"oreMiningDifficulty,omitempty"`
-	OreRefiningDifficulty                   uint64 `protobuf:"varint,56,opt,name=oreRefiningDifficulty,proto3" json:"oreRefiningDifficulty,omitempty"`
-	UnguidedDefensiveSuccessRateNumerator   uint64 `protobuf:"varint,57,opt,name=unguidedDefensiveSuccessRateNumerator,proto3" json:"unguidedDefensiveSuccessRateNumerator,omitempty"`
-	UnguidedDefensiveSuccessRateDenominator uint64 `protobuf:"varint,58,opt,name=unguidedDefensiveSuccessRateDenominator,proto3" json:"unguidedDefensiveSuccessRateDenominator,omitempty"`
-	GuidedDefensiveSuccessRateNumerator     uint64 `protobuf:"varint,59,opt,name=guidedDefensiveSuccessRateNumerator,proto3" json:"guidedDefensiveSuccessRateNumerator,omitempty"`
-	GuidedDefensiveSuccessRateDenominator   uint64 `protobuf:"varint,60,opt,name=guidedDefensiveSuccessRateDenominator,proto3" json:"guidedDefensiveSuccessRateDenominator,omitempty"`
+	AttackReduction                         uint64 `protobuf:"varint,49,opt,name=attackReduction,proto3" json:"attackReduction,omitempty"`
+	AttackCounterable                       bool   `protobuf:"varint,50,opt,name=attackCounterable,proto3" json:"attackCounterable,omitempty"`
+	StealthSystems                          bool   `protobuf:"varint,51,opt,name=stealthSystems,proto3" json:"stealthSystems,omitempty"`
+	CounterAttack                           uint64 `protobuf:"varint,52,opt,name=counterAttack,proto3" json:"counterAttack,omitempty"`
+	CounterAttackSameAmbit                  uint64 `protobuf:"varint,53,opt,name=counterAttackSameAmbit,proto3" json:"counterAttackSameAmbit,omitempty"`
+	PostDestructionDamage                   uint64 `protobuf:"varint,54,opt,name=postDestructionDamage,proto3" json:"postDestructionDamage,omitempty"`
+	GeneratingRate                          uint64 `protobuf:"varint,55,opt,name=generatingRate,proto3" json:"generatingRate,omitempty"`
+	PlanetaryShieldContribution             uint64 `protobuf:"varint,56,opt,name=planetaryShieldContribution,proto3" json:"planetaryShieldContribution,omitempty"`
+	OreMiningDifficulty                     uint64 `protobuf:"varint,57,opt,name=oreMiningDifficulty,proto3" json:"oreMiningDifficulty,omitempty"`
+	OreRefiningDifficulty                   uint64 `protobuf:"varint,58,opt,name=oreRefiningDifficulty,proto3" json:"oreRefiningDifficulty,omitempty"`
+	UnguidedDefensiveSuccessRateNumerator   uint64 `protobuf:"varint,59,opt,name=unguidedDefensiveSuccessRateNumerator,proto3" json:"unguidedDefensiveSuccessRateNumerator,omitempty"`
+	UnguidedDefensiveSuccessRateDenominator uint64 `protobuf:"varint,60,opt,name=unguidedDefensiveSuccessRateDenominator,proto3" json:"unguidedDefensiveSuccessRateDenominator,omitempty"`
+	GuidedDefensiveSuccessRateNumerator     uint64 `protobuf:"varint,61,opt,name=guidedDefensiveSuccessRateNumerator,proto3" json:"guidedDefensiveSuccessRateNumerator,omitempty"`
+	GuidedDefensiveSuccessRateDenominator   uint64 `protobuf:"varint,62,opt,name=guidedDefensiveSuccessRateDenominator,proto3" json:"guidedDefensiveSuccessRateDenominator,omitempty"`
 }
 
 func (m *StructType) Reset()         { *m = StructType{} }
@@ -329,6 +331,13 @@ func (m *StructType) GetPrimaryWeaponCharge() uint64 {
 	return 0
 }
 
+func (m *StructType) GetPrimaryWeaponAmbits() uint64 {
+	if m != nil {
+		return m.PrimaryWeaponAmbits
+	}
+	return 0
+}
+
 func (m *StructType) GetPrimaryWeaponTargets() uint64 {
 	if m != nil {
 		return m.PrimaryWeaponTargets
@@ -402,6 +411,13 @@ func (m *StructType) GetSecondaryWeaponControl() TechWeaponControl {
 func (m *StructType) GetSecondaryWeaponCharge() uint64 {
 	if m != nil {
 		return m.SecondaryWeaponCharge
+	}
+	return 0
+}
+
+func (m *StructType) GetSecondaryWeaponAmbits() uint64 {
+	if m != nil {
+		return m.SecondaryWeaponAmbits
 	}
 	return 0
 }
@@ -802,100 +818,297 @@ func (m *StructAttributeRecord) GetValue() uint64 {
 	return 0
 }
 
+type CacheStruct struct {
+	StructId                   string      `protobuf:"bytes,1,opt,name=structId,proto3" json:"structId,omitempty"`
+	StructureLoaded            bool        `protobuf:"varint,2,opt,name=structureLoaded,proto3" json:"structureLoaded,omitempty"`
+	Structure                  *Struct     `protobuf:"bytes,3,opt,name=structure,proto3" json:"structure,omitempty"`
+	StructTypeLoaded           bool        `protobuf:"varint,4,opt,name=structTypeLoaded,proto3" json:"structTypeLoaded,omitempty"`
+	StructType                 *StructType `protobuf:"bytes,5,opt,name=structType,proto3" json:"structType,omitempty"`
+	HealthLoaded               bool        `protobuf:"varint,6,opt,name=healthLoaded,proto3" json:"healthLoaded,omitempty"`
+	Health                     uint64      `protobuf:"varint,7,opt,name=health,proto3" json:"health,omitempty"`
+	StatusAttributeId          string      `protobuf:"bytes,8,opt,name=statusAttributeId,proto3" json:"statusAttributeId,omitempty"`
+	StatusLoaded               bool        `protobuf:"varint,9,opt,name=statusLoaded,proto3" json:"statusLoaded,omitempty"`
+	Status                     uint64      `protobuf:"varint,10,opt,name=status,proto3" json:"status,omitempty"`
+	BlockStartBuildLoaded      bool        `protobuf:"varint,11,opt,name=blockStartBuildLoaded,proto3" json:"blockStartBuildLoaded,omitempty"`
+	BlockStartBuild            uint64      `protobuf:"varint,12,opt,name=blockStartBuild,proto3" json:"blockStartBuild,omitempty"`
+	BlockStartOreMineLoaded    bool        `protobuf:"varint,13,opt,name=blockStartOreMineLoaded,proto3" json:"blockStartOreMineLoaded,omitempty"`
+	BlockStarOreMine           uint64      `protobuf:"varint,14,opt,name=blockStarOreMine,proto3" json:"blockStarOreMine,omitempty"`
+	BlockStartOreRefineLoaded  bool        `protobuf:"varint,15,opt,name=blockStartOreRefineLoaded,proto3" json:"blockStartOreRefineLoaded,omitempty"`
+	BlockStartOreRefine        uint64      `protobuf:"varint,16,opt,name=blockStartOreRefine,proto3" json:"blockStartOreRefine,omitempty"`
+	ProtectedStructIndexLoaded bool        `protobuf:"varint,17,opt,name=protectedStructIndexLoaded,proto3" json:"protectedStructIndexLoaded,omitempty"`
+	ProtectedStructIndex       uint64      `protobuf:"varint,18,opt,name=protectedStructIndex,proto3" json:"protectedStructIndex,omitempty"`
+}
+
+func (m *CacheStruct) Reset()         { *m = CacheStruct{} }
+func (m *CacheStruct) String() string { return proto.CompactTextString(m) }
+func (*CacheStruct) ProtoMessage()    {}
+func (*CacheStruct) Descriptor() ([]byte, []int) {
+	return fileDescriptor_c62b965c884df764, []int{4}
+}
+func (m *CacheStruct) XXX_Unmarshal(b []byte) error {
+	return m.Unmarshal(b)
+}
+func (m *CacheStruct) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	if deterministic {
+		return xxx_messageInfo_CacheStruct.Marshal(b, m, deterministic)
+	} else {
+		b = b[:cap(b)]
+		n, err := m.MarshalToSizedBuffer(b)
+		if err != nil {
+			return nil, err
+		}
+		return b[:n], nil
+	}
+}
+func (m *CacheStruct) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CacheStruct.Merge(m, src)
+}
+func (m *CacheStruct) XXX_Size() int {
+	return m.Size()
+}
+func (m *CacheStruct) XXX_DiscardUnknown() {
+	xxx_messageInfo_CacheStruct.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CacheStruct proto.InternalMessageInfo
+
+func (m *CacheStruct) GetStructId() string {
+	if m != nil {
+		return m.StructId
+	}
+	return ""
+}
+
+func (m *CacheStruct) GetStructureLoaded() bool {
+	if m != nil {
+		return m.StructureLoaded
+	}
+	return false
+}
+
+func (m *CacheStruct) GetStructure() *Struct {
+	if m != nil {
+		return m.Structure
+	}
+	return nil
+}
+
+func (m *CacheStruct) GetStructTypeLoaded() bool {
+	if m != nil {
+		return m.StructTypeLoaded
+	}
+	return false
+}
+
+func (m *CacheStruct) GetStructType() *StructType {
+	if m != nil {
+		return m.StructType
+	}
+	return nil
+}
+
+func (m *CacheStruct) GetHealthLoaded() bool {
+	if m != nil {
+		return m.HealthLoaded
+	}
+	return false
+}
+
+func (m *CacheStruct) GetHealth() uint64 {
+	if m != nil {
+		return m.Health
+	}
+	return 0
+}
+
+func (m *CacheStruct) GetStatusAttributeId() string {
+	if m != nil {
+		return m.StatusAttributeId
+	}
+	return ""
+}
+
+func (m *CacheStruct) GetStatusLoaded() bool {
+	if m != nil {
+		return m.StatusLoaded
+	}
+	return false
+}
+
+func (m *CacheStruct) GetStatus() uint64 {
+	if m != nil {
+		return m.Status
+	}
+	return 0
+}
+
+func (m *CacheStruct) GetBlockStartBuildLoaded() bool {
+	if m != nil {
+		return m.BlockStartBuildLoaded
+	}
+	return false
+}
+
+func (m *CacheStruct) GetBlockStartBuild() uint64 {
+	if m != nil {
+		return m.BlockStartBuild
+	}
+	return 0
+}
+
+func (m *CacheStruct) GetBlockStartOreMineLoaded() bool {
+	if m != nil {
+		return m.BlockStartOreMineLoaded
+	}
+	return false
+}
+
+func (m *CacheStruct) GetBlockStarOreMine() uint64 {
+	if m != nil {
+		return m.BlockStarOreMine
+	}
+	return 0
+}
+
+func (m *CacheStruct) GetBlockStartOreRefineLoaded() bool {
+	if m != nil {
+		return m.BlockStartOreRefineLoaded
+	}
+	return false
+}
+
+func (m *CacheStruct) GetBlockStartOreRefine() uint64 {
+	if m != nil {
+		return m.BlockStartOreRefine
+	}
+	return 0
+}
+
+func (m *CacheStruct) GetProtectedStructIndexLoaded() bool {
+	if m != nil {
+		return m.ProtectedStructIndexLoaded
+	}
+	return false
+}
+
+func (m *CacheStruct) GetProtectedStructIndex() uint64 {
+	if m != nil {
+		return m.ProtectedStructIndex
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*Struct)(nil), "structs.structs.Struct")
 	proto.RegisterType((*StructType)(nil), "structs.structs.StructType")
 	proto.RegisterType((*StructDefender)(nil), "structs.structs.StructDefender")
 	proto.RegisterType((*StructAttributeRecord)(nil), "structs.structs.StructAttributeRecord")
+	proto.RegisterType((*CacheStruct)(nil), "structs.structs.CacheStruct")
 }
 
 func init() { proto.RegisterFile("structs/structs/struct.proto", fileDescriptor_c62b965c884df764) }
 
 var fileDescriptor_c62b965c884df764 = []byte{
-	// 1322 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x58, 0xdd, 0x72, 0xd3, 0x46,
-	0x14, 0xc6, 0xc6, 0x49, 0x60, 0x01, 0xa7, 0x2c, 0x21, 0x2c, 0x09, 0x75, 0x83, 0xf9, 0x33, 0x2d,
-	0x35, 0x10, 0x28, 0xb4, 0x29, 0x43, 0x9b, 0x34, 0x9d, 0x36, 0x17, 0xfc, 0x8c, 0x9c, 0x42, 0x87,
-	0xe9, 0xcd, 0x5a, 0x3a, 0x71, 0xb6, 0x91, 0xb5, 0x1e, 0x69, 0xe5, 0xc4, 0x6f, 0xd1, 0xb7, 0xe8,
-	0x33, 0xf4, 0x0d, 0x7a, 0xc9, 0x65, 0x2f, 0x3b, 0xc9, 0x65, 0x5f, 0xa2, 0xb3, 0x67, 0x25, 0x5b,
-	0x7f, 0x76, 0xc5, 0xf4, 0xca, 0xde, 0xf3, 0x7d, 0xe7, 0xe8, 0xec, 0xa7, 0xb3, 0xbb, 0x67, 0x45,
-	0xae, 0x05, 0xca, 0x0f, 0x6d, 0x15, 0xdc, 0x4f, 0xff, 0xb6, 0x07, 0xbe, 0x54, 0x92, 0x2e, 0x46,
-	0xd6, 0x76, 0xf4, 0xbb, 0xb2, 0x92, 0xa5, 0x1f, 0xc0, 0x28, 0x30, 0xe4, 0xe6, 0xef, 0x55, 0x32,
-	0xdf, 0x41, 0x33, 0xad, 0x93, 0xaa, 0x70, 0x58, 0x65, 0xad, 0xd2, 0x3a, 0x6b, 0x55, 0x85, 0x43,
-	0x97, 0xc8, 0x9c, 0xf0, 0x1c, 0x38, 0x62, 0xd5, 0xb5, 0x4a, 0xab, 0x66, 0x99, 0x01, 0xa5, 0xa4,
-	0xa6, 0x46, 0x03, 0x60, 0xa7, 0xd1, 0x88, 0xff, 0x29, 0x23, 0x0b, 0xb6, 0x0f, 0x5c, 0x49, 0x9f,
-	0xd5, 0xd0, 0x3d, 0x1e, 0xea, 0x18, 0xf2, 0xd0, 0x03, 0x9f, 0xcd, 0xa1, 0xdd, 0x0c, 0xe8, 0x37,
-	0xe4, 0xbc, 0x2b, 0x6d, 0xae, 0x84, 0xf4, 0x76, 0x75, 0xac, 0xf9, 0xb5, 0x4a, 0xab, 0xbe, 0xbe,
-	0xda, 0xce, 0x24, 0xde, 0x96, 0xdd, 0x5f, 0xc1, 0x56, 0x9a, 0x62, 0xa5, 0x1c, 0x68, 0x83, 0x90,
-	0x78, 0xbc, 0xe3, 0xb0, 0x05, 0x8c, 0x9d, 0xb0, 0xd0, 0xe7, 0xa4, 0x2e, 0x07, 0xe0, 0x73, 0x25,
-	0xbc, 0xde, 0x66, 0xbf, 0x2b, 0x14, 0x3b, 0x83, 0x8f, 0x58, 0xce, 0x3d, 0x82, 0x6b, 0xd4, 0xca,
-	0xb0, 0xf5, 0x24, 0x03, 0x57, 0x2a, 0x76, 0xd6, 0x4c, 0x52, 0xff, 0x6f, 0xfe, 0xb1, 0x4a, 0x88,
-	0x51, 0x0a, 0x53, 0x98, 0xa8, 0x55, 0x43, 0xb5, 0x62, 0x5d, 0xaa, 0x98, 0x8c, 0xd1, 0xe5, 0x29,
-	0x39, 0x63, 0x73, 0x05, 0x3d, 0xe9, 0x8f, 0x50, 0xaf, 0xff, 0x98, 0xe3, 0x98, 0x4c, 0x5b, 0x64,
-	0xb1, 0x1b, 0x0a, 0xd7, 0xd9, 0x16, 0x7b, 0x7b, 0xc2, 0x0e, 0x5d, 0x35, 0x42, 0x61, 0x6b, 0x56,
-	0xd6, 0x4c, 0xaf, 0x91, 0xb3, 0xc6, 0xe4, 0xf3, 0x43, 0x14, 0xb9, 0x66, 0x4d, 0x0c, 0x1a, 0xed,
-	0xf3, 0xa3, 0x1f, 0x81, 0xbb, 0x6a, 0x1f, 0x55, 0xae, 0x59, 0x13, 0x03, 0x5d, 0x23, 0xe7, 0x06,
-	0x3c, 0x08, 0xc4, 0x10, 0xd0, 0x7b, 0x01, 0xf1, 0xa4, 0x89, 0xde, 0x24, 0x17, 0x06, 0x32, 0x08,
-	0x44, 0xd7, 0x85, 0x89, 0x8c, 0x35, 0x2b, 0x6d, 0xd4, 0xaf, 0xbf, 0x2f, 0x87, 0xbc, 0xeb, 0x02,
-	0x0a, 0x76, 0xc6, 0x8a, 0x87, 0xfa, 0xf9, 0x5a, 0xbb, 0x2d, 0x19, 0x7a, 0x0e, 0x23, 0x88, 0x4d,
-	0x0c, 0x74, 0x87, 0x5c, 0x18, 0xf8, 0xa2, 0xcf, 0xfd, 0xd1, 0x5b, 0xe0, 0x03, 0xe9, 0xb1, 0x73,
-	0xa8, 0xd1, 0x8d, 0x9c, 0x46, 0x0a, 0xec, 0xfd, 0x4d, 0x5b, 0x89, 0x21, 0x18, 0xa2, 0x3f, 0xb2,
-	0xd2, 0x9e, 0xf4, 0x0d, 0x59, 0x4a, 0x19, 0xbe, 0x93, 0x9e, 0xf2, 0xa5, 0xcb, 0xce, 0x63, 0xc4,
-	0x66, 0x61, 0xc4, 0x14, 0xd3, 0x2a, 0xf4, 0xa7, 0x0f, 0xc8, 0xa5, 0xb4, 0x7d, 0x9f, 0xfb, 0x3d,
-	0x60, 0x17, 0x50, 0x86, 0x22, 0x88, 0xae, 0x67, 0x32, 0xd9, 0xd5, 0x56, 0x15, 0xb0, 0x3a, 0xba,
-	0x14, 0x62, 0xb4, 0x4d, 0x68, 0xca, 0xde, 0xd9, 0x97, 0x2a, 0x60, 0x8b, 0xe8, 0x51, 0x80, 0xe4,
-	0xb2, 0xda, 0xe6, 0x7d, 0xde, 0x03, 0xf6, 0x51, 0x41, 0x56, 0x06, 0xa2, 0x4f, 0xc8, 0x72, 0xca,
-	0xbc, 0xe5, 0x4a, 0xfb, 0x00, 0xdf, 0xd8, 0x45, 0x7c, 0x2b, 0x53, 0x50, 0xba, 0x41, 0x58, 0x46,
-	0x97, 0xd0, 0x53, 0xe0, 0xa3, 0x27, 0x45, 0xcf, 0xa9, 0x38, 0x7d, 0x46, 0xae, 0xa6, 0x30, 0x0b,
-	0x6c, 0x29, 0xdc, 0x28, 0xd7, 0x4b, 0x98, 0xeb, 0x74, 0x02, 0xdd, 0x25, 0xb7, 0x72, 0x33, 0xef,
-	0x84, 0xb6, 0x0d, 0x41, 0x60, 0x71, 0x05, 0x2f, 0xc3, 0xbe, 0x5e, 0xb1, 0xd2, 0x67, 0x4b, 0x18,
-	0xa9, 0x1c, 0x99, 0xfe, 0x4c, 0xee, 0xcc, 0x22, 0x6e, 0x83, 0x27, 0xfb, 0xc2, 0xc3, 0xb8, 0x97,
-	0x31, 0x6e, 0x59, 0x3a, 0x7d, 0x41, 0x16, 0x03, 0xb0, 0xa5, 0xe7, 0x4c, 0xca, 0x79, 0xb9, 0x7c,
-	0x39, 0x67, 0x7d, 0xe9, 0x3b, 0xb2, 0x9c, 0x31, 0xc5, 0x25, 0x7d, 0xa5, 0x74, 0x49, 0x4f, 0x89,
-	0x40, 0x1f, 0x93, 0xcb, 0x59, 0xc4, 0x94, 0x35, 0xc3, 0x29, 0x17, 0x83, 0xba, 0x84, 0x32, 0x40,
-	0x5c, 0xda, 0x57, 0xd1, 0x6d, 0x0a, 0xaa, 0x17, 0x44, 0x06, 0x31, 0xe5, 0xbd, 0x62, 0x16, 0x44,
-	0x11, 0x56, 0x90, 0x61, 0x54, 0x36, 0xab, 0x85, 0x19, 0x46, 0x25, 0xb3, 0x41, 0x58, 0x06, 0x98,
-	0x94, 0xf9, 0x35, 0x53, 0xac, 0xd3, 0x70, 0xfa, 0x9c, 0xac, 0xe4, 0xd4, 0x9a, 0x94, 0xfa, 0xc7,
-	0xe8, 0x3d, 0x83, 0x41, 0xbf, 0x25, 0xab, 0x19, 0x34, 0x55, 0xee, 0x0d, 0xcc, 0x7b, 0x16, 0x45,
-	0x97, 0x66, 0x81, 0x16, 0x85, 0x25, 0xff, 0x89, 0x29, 0xcd, 0x92, 0x74, 0xfa, 0x0b, 0xb9, 0x3b,
-	0x9b, 0x9a, 0x2c, 0xfb, 0x35, 0x8c, 0x5d, 0xde, 0x81, 0xbe, 0x24, 0x8b, 0xd1, 0x91, 0x11, 0x57,
-	0x33, 0xbb, 0x8e, 0x25, 0x7a, 0xb3, 0xb0, 0x44, 0x5f, 0xa7, 0xb9, 0x56, 0xd6, 0x99, 0x7e, 0x4f,
-	0xce, 0x87, 0x9e, 0x50, 0xdb, 0xb0, 0x07, 0x5e, 0x00, 0x01, 0x6b, 0x62, 0xb0, 0xeb, 0x85, 0xc1,
-	0x7e, 0x4a, 0x10, 0xad, 0x94, 0x1b, 0x7d, 0x4b, 0xa8, 0xf4, 0xc1, 0x82, 0x00, 0xfc, 0x21, 0x8c,
-	0x83, 0xdd, 0xc0, 0x60, 0x77, 0x0a, 0x83, 0xbd, 0xca, 0xd1, 0xad, 0x82, 0x10, 0x74, 0x97, 0x5c,
-	0x1c, 0xb8, 0xdc, 0x03, 0xc5, 0xfd, 0xd1, 0x38, 0xee, 0x4d, 0x8c, 0x7b, 0xbb, 0x78, 0xc6, 0x59,
-	0xb6, 0x95, 0x0f, 0x80, 0x2a, 0xc6, 0xc6, 0x17, 0xc2, 0x13, 0x5e, 0x8f, 0xdd, 0x9a, 0xa5, 0x62,
-	0x9a, 0x6b, 0x65, 0x9d, 0xe9, 0x9b, 0x44, 0x96, 0x16, 0xec, 0x09, 0x0f, 0xfc, 0x11, 0xbb, 0x8d,
-	0x11, 0x5b, 0xb3, 0x23, 0x46, 0x6c, 0x91, 0xca, 0x33, 0x0e, 0x81, 0x79, 0xca, 0x43, 0xf0, 0x7f,
-	0x00, 0x0f, 0x3b, 0x26, 0xe9, 0xb1, 0x3b, 0xb3, 0xf2, 0x4c, 0x73, 0xad, 0xac, 0x33, 0xbd, 0x4d,
-	0xea, 0x5c, 0x6f, 0x85, 0x5c, 0x41, 0xb4, 0x09, 0xb5, 0xb0, 0x00, 0x33, 0x56, 0xdd, 0xab, 0x60,
-	0x5b, 0x13, 0x91, 0xee, 0x9a, 0x5e, 0x25, 0x61, 0xd2, 0x87, 0xa8, 0xa3, 0xd5, 0xd4, 0x63, 0xaf,
-	0x17, 0x47, 0xfb, 0xd4, 0x1c, 0xa2, 0x79, 0x44, 0xf7, 0x90, 0x7d, 0x39, 0x8c, 0x79, 0x9f, 0x21,
-	0x2f, 0x61, 0xd1, 0x3d, 0x98, 0xf4, 0xc1, 0xc8, 0x19, 0x91, 0xee, 0x99, 0x1e, 0x2c, 0x63, 0xa6,
-	0xf7, 0xc8, 0x45, 0xac, 0x93, 0xbd, 0x24, 0xf7, 0x73, 0xe4, 0xe6, 0x01, 0xdc, 0xdb, 0x14, 0x36,
-	0x60, 0x9b, 0xe9, 0x89, 0xb7, 0xa3, 0xbd, 0xad, 0x08, 0xd4, 0xd9, 0x70, 0xa5, 0xb8, 0x7d, 0x60,
-	0x81, 0x13, 0xda, 0xa8, 0xfb, 0x7d, 0x93, 0x4d, 0xc6, 0xac, 0xb3, 0x31, 0xa6, 0xe4, 0x06, 0xf6,
-	0x00, 0x37, 0xb0, 0x3c, 0xa0, 0xf5, 0x8f, 0x1e, 0xd8, 0x19, 0x05, 0x0a, 0xfa, 0x01, 0x7b, 0x88,
-	0xd4, 0x8c, 0x55, 0x77, 0x82, 0xb6, 0x71, 0xdb, 0xc4, 0x18, 0x6c, 0xdd, 0x74, 0x82, 0x29, 0xa3,
-	0x3e, 0x23, 0x52, 0x86, 0x0e, 0xef, 0x47, 0x8d, 0xe3, 0x23, 0x73, 0x46, 0x14, 0xa3, 0x5a, 0x93,
-	0x81, 0x0c, 0xd4, 0x36, 0x98, 0xda, 0x11, 0xe3, 0xfd, 0xfe, 0xb1, 0xd1, 0xa4, 0x10, 0xd4, 0xb9,
-	0xf7, 0xa2, 0x4a, 0xf2, 0x7a, 0x7a, 0x5b, 0x62, 0x5f, 0x98, 0xda, 0x49, 0x5b, 0xf5, 0xde, 0x3c,
-	0x2e, 0xe4, 0xce, 0xbe, 0x00, 0xd7, 0xc1, 0x93, 0x50, 0x74, 0x43, 0xd4, 0xf1, 0x89, 0xd9, 0x9b,
-	0x67, 0x50, 0x74, 0xc3, 0x35, 0x7e, 0xe9, 0x89, 0x9e, 0xfc, 0xa9, 0x69, 0xb8, 0x0a, 0x20, 0x3d,
-	0xa3, 0xc4, 0xab, 0x4f, 0xf8, 0x7c, 0x69, 0x66, 0x54, 0x08, 0xea, 0xa6, 0x27, 0xf4, 0x7a, 0xa1,
-	0x70, 0xc0, 0x31, 0x3b, 0x83, 0x18, 0x42, 0xe1, 0x09, 0xf0, 0x95, 0x69, 0x7a, 0x4a, 0x91, 0xf5,
-	0xc9, 0x32, 0x8b, 0x98, 0xdc, 0xfd, 0x37, 0xcc, 0xc9, 0x52, 0x92, 0x4e, 0x5f, 0x93, 0x1b, 0x65,
-	0xb2, 0xfd, 0x1a, 0xa3, 0x96, 0xa1, 0x6a, 0x05, 0xca, 0x65, 0xfa, 0xcc, 0x28, 0x50, 0x8a, 0xdc,
-	0xfc, 0xa7, 0x4a, 0xea, 0xe6, 0xee, 0x86, 0x4c, 0x07, 0x7c, 0xbd, 0x4c, 0xf4, 0x0d, 0x18, 0x6c,
-	0x05, 0x8e, 0x81, 0x76, 0xe2, 0xcb, 0x6f, 0x1e, 0xd0, 0x6c, 0xb3, 0x85, 0x08, 0xaf, 0x37, 0x66,
-	0x9b, 0xab, 0x5e, 0x1e, 0xc8, 0xdd, 0x6f, 0x4f, 0xff, 0xbf, 0xfb, 0x6d, 0xad, 0xc4, 0xfd, 0x76,
-	0xee, 0x83, 0xee, 0xb7, 0xb9, 0xd5, 0x3c, 0xff, 0x61, 0xab, 0x79, 0x61, 0xd6, 0x6a, 0x6e, 0xbe,
-	0x22, 0x97, 0x8d, 0x14, 0x9b, 0xca, 0x2c, 0x21, 0xd0, 0x8d, 0x8e, 0xef, 0xe8, 0x4d, 0x9c, 0xc7,
-	0xa6, 0xb1, 0xda, 0x49, 0x13, 0x5d, 0x22, 0x73, 0x43, 0xee, 0x86, 0x10, 0x7f, 0x73, 0xc0, 0xc1,
-	0xd6, 0xc3, 0x3f, 0x8f, 0x1b, 0x95, 0xf7, 0xc7, 0x8d, 0xca, 0xdf, 0xc7, 0x8d, 0xca, 0x6f, 0x27,
-	0x8d, 0x53, 0xef, 0x4f, 0x1a, 0xa7, 0xfe, 0x3a, 0x69, 0x9c, 0x7a, 0x77, 0x25, 0xfe, 0xa4, 0x71,
-	0x34, 0xfe, 0xb8, 0xa1, 0x6f, 0xde, 0x41, 0x77, 0x1e, 0x3f, 0x6f, 0x3c, 0xfa, 0x37, 0x00, 0x00,
-	0xff, 0xff, 0xe4, 0x17, 0xc1, 0xbb, 0x2b, 0x11, 0x00, 0x00,
+	// 1582 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xa4, 0x58, 0x4b, 0x73, 0x13, 0xc7,
+	0x16, 0x46, 0x46, 0x96, 0xed, 0xf6, 0x0b, 0x37, 0xc6, 0x6e, 0x8c, 0xaf, 0xae, 0x11, 0x2f, 0xc3,
+	0xe5, 0x1a, 0x30, 0xcf, 0x0b, 0x5c, 0x12, 0x1b, 0xa7, 0x12, 0xaa, 0xc2, 0xa3, 0x46, 0x0e, 0xa4,
+	0xa8, 0x6c, 0x5a, 0x33, 0xc7, 0xd2, 0x04, 0x69, 0x5a, 0x35, 0xd3, 0x23, 0xac, 0x7f, 0x91, 0xbf,
+	0x90, 0x55, 0x7e, 0x48, 0x36, 0x59, 0xb2, 0xcc, 0x32, 0x05, 0xcb, 0xfc, 0x89, 0x54, 0x9f, 0xee,
+	0x91, 0xe6, 0xd1, 0x52, 0x44, 0x65, 0x25, 0xf5, 0xf7, 0x7d, 0xe7, 0xf4, 0x99, 0xd3, 0x7d, 0xfa,
+	0x45, 0x36, 0x23, 0x19, 0xc6, 0xae, 0x8c, 0x6e, 0x64, 0x7f, 0x77, 0xba, 0xa1, 0x90, 0x82, 0x2e,
+	0x1b, 0x74, 0xc7, 0xfc, 0x6e, 0x6c, 0xe4, 0xe5, 0xef, 0xa0, 0x1f, 0x69, 0x71, 0xed, 0x97, 0x29,
+	0x52, 0xa9, 0x23, 0x4c, 0x97, 0xc8, 0x94, 0xef, 0xb1, 0xd2, 0x56, 0x69, 0x7b, 0xce, 0x99, 0xf2,
+	0x3d, 0xba, 0x4a, 0xa6, 0xfd, 0xc0, 0x83, 0x63, 0x36, 0xb5, 0x55, 0xda, 0x2e, 0x3b, 0xba, 0x41,
+	0x29, 0x29, 0xcb, 0x7e, 0x17, 0xd8, 0x49, 0x04, 0xf1, 0x3f, 0x65, 0x64, 0xc6, 0x0d, 0x81, 0x4b,
+	0x11, 0xb2, 0x32, 0x9a, 0x27, 0x4d, 0xe5, 0x43, 0xbc, 0x0f, 0x20, 0x64, 0xd3, 0x88, 0xeb, 0x06,
+	0xfd, 0x82, 0x2c, 0xb4, 0x85, 0xcb, 0xa5, 0x2f, 0x82, 0x43, 0xe5, 0xab, 0xb2, 0x55, 0xda, 0x5e,
+	0xda, 0x3d, 0xb7, 0x93, 0x0b, 0x7c, 0x47, 0x34, 0x7e, 0x04, 0x57, 0x2a, 0x89, 0x93, 0x31, 0xa0,
+	0x55, 0x42, 0x92, 0xf6, 0x33, 0x8f, 0xcd, 0xa0, 0xef, 0x14, 0x42, 0x9f, 0x90, 0x25, 0xd1, 0x85,
+	0x90, 0x4b, 0x3f, 0x68, 0xee, 0x75, 0x1a, 0xbe, 0x64, 0xb3, 0xd8, 0xc5, 0x5a, 0xa1, 0x0b, 0xae,
+	0x58, 0x27, 0xa7, 0x56, 0x1f, 0x19, 0xb5, 0x85, 0x64, 0x73, 0xfa, 0x23, 0xd5, 0xff, 0xda, 0xcf,
+	0x9b, 0x84, 0xe8, 0x4c, 0x61, 0x08, 0xc3, 0x6c, 0x95, 0x31, 0x5b, 0x49, 0x5e, 0xa6, 0x30, 0x18,
+	0x9d, 0x97, 0xfb, 0x64, 0xd6, 0xe5, 0x12, 0x9a, 0x22, 0xec, 0x63, 0xbe, 0xfe, 0xe6, 0x1b, 0x07,
+	0x62, 0xba, 0x4d, 0x96, 0x1b, 0xb1, 0xdf, 0xf6, 0x0e, 0xfc, 0xa3, 0x23, 0xdf, 0x8d, 0xdb, 0xb2,
+	0x8f, 0x89, 0x2d, 0x3b, 0x79, 0x98, 0x6e, 0x92, 0x39, 0x0d, 0x85, 0xfc, 0x3d, 0x26, 0xb9, 0xec,
+	0x0c, 0x01, 0xc5, 0x76, 0xf8, 0xf1, 0x37, 0xc0, 0xdb, 0xb2, 0x85, 0x59, 0x2e, 0x3b, 0x43, 0x80,
+	0x6e, 0x91, 0xf9, 0x2e, 0x8f, 0x22, 0xbf, 0x07, 0x68, 0x3d, 0x83, 0x7c, 0x1a, 0xa2, 0x17, 0xc9,
+	0x62, 0x57, 0x44, 0x91, 0xdf, 0x68, 0xc3, 0x30, 0x8d, 0x65, 0x27, 0x0b, 0xaa, 0xe1, 0xef, 0x88,
+	0x1e, 0x6f, 0xb4, 0x01, 0x13, 0x36, 0xeb, 0x24, 0x4d, 0xd5, 0xbf, 0xca, 0xdd, 0xbe, 0x88, 0x03,
+	0x8f, 0x11, 0xe4, 0x86, 0x00, 0x7d, 0x46, 0x16, 0xbb, 0xa1, 0xdf, 0xe1, 0x61, 0xff, 0x0d, 0xf0,
+	0xae, 0x08, 0xd8, 0x3c, 0xe6, 0xe8, 0x42, 0x21, 0x47, 0x12, 0xdc, 0xd6, 0x9e, 0x2b, 0xfd, 0x1e,
+	0x68, 0x61, 0xd8, 0x77, 0xb2, 0x96, 0xf4, 0x35, 0x59, 0xcd, 0x00, 0x4f, 0x45, 0x20, 0x43, 0xd1,
+	0x66, 0x0b, 0xe8, 0xb1, 0x66, 0xf5, 0x98, 0x51, 0x3a, 0x56, 0x7b, 0x7a, 0x93, 0x9c, 0xce, 0xe2,
+	0x2d, 0x1e, 0x36, 0x81, 0x2d, 0x62, 0x1a, 0x6c, 0x54, 0xc1, 0x02, 0x53, 0x14, 0xb1, 0x25, 0x8b,
+	0x85, 0xa6, 0xe8, 0x6e, 0x2e, 0xf6, 0x43, 0xe5, 0x47, 0x46, 0x6c, 0x19, 0x4d, 0xac, 0x1c, 0xdd,
+	0x21, 0x34, 0x83, 0xd7, 0x5b, 0x42, 0x46, 0xec, 0x14, 0x5a, 0x58, 0x98, 0x42, 0x54, 0x07, 0xbc,
+	0xc3, 0x9b, 0xc0, 0x56, 0x2c, 0x51, 0x69, 0x8a, 0xde, 0x23, 0x6b, 0x19, 0x78, 0xbf, 0x2d, 0xdc,
+	0x77, 0x38, 0xc6, 0x14, 0xc7, 0x71, 0x04, 0x4b, 0x1f, 0x12, 0x96, 0xcb, 0x64, 0x1c, 0x48, 0x08,
+	0xd1, 0xf2, 0x34, 0x5a, 0x8e, 0xe4, 0xe9, 0x63, 0x72, 0x36, 0xc3, 0x39, 0xe0, 0x0a, 0xbf, 0x6d,
+	0x62, 0x5d, 0xc5, 0x58, 0x47, 0x0b, 0xe8, 0x21, 0xb9, 0x54, 0xf8, 0xf2, 0x7a, 0xec, 0xba, 0x10,
+	0x45, 0x0e, 0x97, 0xf0, 0x22, 0xee, 0xa8, 0x1a, 0x17, 0x21, 0x3b, 0x83, 0x9e, 0x26, 0x13, 0xd3,
+	0xef, 0xc9, 0x95, 0x71, 0xc2, 0x03, 0x08, 0x44, 0xc7, 0x0f, 0xd0, 0xef, 0x1a, 0xfa, 0x9d, 0x54,
+	0x4e, 0x9f, 0x93, 0xe5, 0x08, 0x5c, 0x11, 0x78, 0xc3, 0x02, 0x58, 0x9f, 0xbc, 0x00, 0xf2, 0xb6,
+	0xf4, 0x2d, 0x59, 0xcb, 0x41, 0x49, 0x11, 0xb0, 0x89, 0x8b, 0x60, 0x84, 0x07, 0x7a, 0x87, 0x9c,
+	0xc9, 0x33, 0xba, 0x10, 0xce, 0xe2, 0x27, 0xdb, 0x49, 0x8b, 0x95, 0x29, 0x86, 0x0d, 0xab, 0x95,
+	0x29, 0x87, 0x7b, 0x85, 0xef, 0x48, 0x0a, 0xe2, 0x1c, 0x9a, 0x8d, 0x60, 0x55, 0x19, 0xe5, 0x18,
+	0x5d, 0x14, 0x9b, 0xba, 0x8c, 0x6c, 0x9c, 0x25, 0x42, 0x33, 0xd9, 0xfe, 0x65, 0x8d, 0xd0, 0x4c,
+	0xb4, 0x87, 0x84, 0xe5, 0x88, 0x61, 0x71, 0x54, 0xf5, 0x14, 0x1f, 0xc5, 0xd3, 0x27, 0x64, 0xa3,
+	0x90, 0xe3, 0x61, 0x81, 0xfc, 0x1b, 0xad, 0xc7, 0x28, 0xe8, 0x97, 0xe4, 0x5c, 0x8e, 0xcd, 0x14,
+	0xc9, 0x16, 0xc6, 0x3d, 0x4e, 0xa2, 0x26, 0xb4, 0x25, 0x17, 0xd6, 0x42, 0x39, 0xaf, 0x27, 0xf4,
+	0x84, 0x72, 0xfa, 0x03, 0xb9, 0x3a, 0x5e, 0x9a, 0x2e, 0x96, 0x1a, 0xfa, 0x9e, 0xdc, 0x80, 0xbe,
+	0x20, 0xcb, 0x66, 0x6b, 0x4a, 0x6a, 0x80, 0x5d, 0xc0, 0x89, 0x7d, 0xd1, 0x3a, 0xb1, 0x5f, 0x65,
+	0xb5, 0x4e, 0xde, 0x98, 0x7e, 0x45, 0x16, 0xe2, 0xc0, 0x97, 0x07, 0x70, 0x04, 0x41, 0x04, 0x11,
+	0xbb, 0x88, 0xce, 0xce, 0x5b, 0x9d, 0x7d, 0x97, 0x12, 0x3a, 0x19, 0x33, 0xfa, 0x86, 0x50, 0x11,
+	0x82, 0x03, 0x11, 0x84, 0x3d, 0x18, 0x38, 0xbb, 0x84, 0xce, 0xae, 0x58, 0x9d, 0xbd, 0x2c, 0xc8,
+	0x1d, 0x8b, 0x0b, 0x7a, 0x48, 0x56, 0xba, 0x6d, 0x1e, 0x80, 0xe4, 0x61, 0x7f, 0xe0, 0xf7, 0x32,
+	0xfa, 0xbd, 0x6c, 0xff, 0xe2, 0xbc, 0xda, 0x29, 0x3a, 0xc0, 0x2c, 0x26, 0xe0, 0x73, 0x3f, 0xf0,
+	0x83, 0x26, 0xbb, 0x32, 0x2e, 0x8b, 0x59, 0xad, 0x93, 0x37, 0xa6, 0xaf, 0x53, 0x51, 0x3a, 0x70,
+	0xe4, 0x07, 0x10, 0xf6, 0xd9, 0x36, 0x7a, 0xdc, 0x1e, 0xef, 0xd1, 0xa8, 0xfd, 0x4c, 0x9c, 0x89,
+	0x0b, 0x8c, 0x53, 0xbc, 0x87, 0xf0, 0x6b, 0x08, 0xf0, 0x64, 0x26, 0x02, 0x76, 0x75, 0x5c, 0x9c,
+	0x59, 0xad, 0x93, 0x37, 0xa6, 0x97, 0xc9, 0x12, 0x57, 0x0b, 0x28, 0x97, 0x60, 0x96, 0xae, 0x6b,
+	0x38, 0x01, 0x73, 0xa8, 0x3a, 0x13, 0xe1, 0xf1, 0xc9, 0x88, 0xfe, 0xa3, 0xcf, 0x44, 0x29, 0x48,
+	0x6d, 0xbd, 0x9e, 0xca, 0xa6, 0x6a, 0x07, 0xcd, 0xc4, 0xdb, 0x75, 0xbd, 0xf5, 0x16, 0x19, 0x75,
+	0x56, 0xed, 0x88, 0x5e, 0xa2, 0xfb, 0x2f, 0xea, 0x52, 0x88, 0x3a, 0xeb, 0x89, 0x10, 0x74, 0x3a,
+	0x8d, 0x68, 0x47, 0x9f, 0xf5, 0x72, 0x30, 0xbd, 0x4e, 0x56, 0x70, 0x9e, 0x1c, 0xa5, 0xb5, 0x37,
+	0x50, 0x5b, 0x24, 0x70, 0x6d, 0x93, 0x78, 0xd0, 0xdb, 0xcb, 0x7e, 0xf8, 0x4d, 0xb3, 0xb6, 0xd9,
+	0x48, 0x15, 0x0d, 0x97, 0x92, 0xbb, 0xef, 0x1c, 0xf0, 0x62, 0x17, 0xf3, 0x7e, 0x4b, 0x47, 0x93,
+	0x83, 0x55, 0x34, 0x1a, 0x4a, 0x2f, 0x60, 0xbb, 0xb8, 0x80, 0x15, 0x09, 0x95, 0x7f, 0xd3, 0x61,
+	0xbd, 0x1f, 0x49, 0xe8, 0x44, 0xec, 0x36, 0x4a, 0x73, 0xa8, 0x3a, 0x71, 0xba, 0xda, 0x6c, 0x0f,
+	0x7d, 0xb0, 0x3b, 0xfa, 0xc4, 0x99, 0x01, 0xd5, 0x1e, 0x91, 0x01, 0xea, 0xbc, 0x63, 0x0e, 0xa8,
+	0x77, 0xf5, 0x1e, 0x61, 0x67, 0x55, 0x4e, 0xba, 0x22, 0x92, 0x07, 0xa0, 0xe7, 0x8e, 0x3f, 0x58,
+	0xef, 0xef, 0xe9, 0x9c, 0x58, 0x49, 0x15, 0x7b, 0xd3, 0xcc, 0xa4, 0xa0, 0xa9, 0x96, 0x25, 0x76,
+	0x5f, 0xcf, 0x9d, 0x2c, 0xaa, 0xd6, 0xe6, 0xc1, 0x44, 0xae, 0xb7, 0x7c, 0x68, 0x7b, 0xb8, 0x7f,
+	0xfa, 0x8d, 0x18, 0xf3, 0xf8, 0x40, 0xaf, 0xcd, 0x63, 0x24, 0xea, 0x98, 0x36, 0x18, 0xf4, 0xd4,
+	0xd9, 0xff, 0x7f, 0xfa, 0x98, 0x66, 0xa1, 0xd4, 0x17, 0xa5, 0x86, 0x3e, 0x65, 0xf3, 0x50, 0x7f,
+	0x91, 0x95, 0x54, 0x47, 0xa5, 0x38, 0x68, 0xc6, 0xbe, 0x07, 0x9e, 0x5e, 0x19, 0xfc, 0x1e, 0x58,
+	0x77, 0x80, 0x47, 0xfa, 0xa8, 0x34, 0x91, 0x58, 0xed, 0x2c, 0xe3, 0x84, 0xe9, 0xd5, 0xff, 0xb1,
+	0xde, 0x59, 0x26, 0x94, 0xd3, 0x57, 0xe4, 0xc2, 0x24, 0xd1, 0xfe, 0x1f, 0xbd, 0x4e, 0x22, 0x55,
+	0x19, 0x98, 0x2c, 0xd2, 0x27, 0x3a, 0x03, 0x13, 0x89, 0x6b, 0x7f, 0x4e, 0x91, 0x25, 0x7d, 0x47,
+	0x44, 0xa5, 0x07, 0xa1, 0x2a, 0x13, 0x75, 0xd3, 0x06, 0x57, 0x82, 0xa7, 0xa9, 0x67, 0xc9, 0x25,
+	0xbb, 0x48, 0x28, 0xb5, 0x5e, 0x42, 0xfc, 0xa0, 0x39, 0x50, 0xeb, 0x2b, 0x65, 0x91, 0x28, 0xdc,
+	0xa3, 0x4f, 0xfe, 0xb3, 0x7b, 0x74, 0x79, 0x82, 0x7b, 0xf4, 0xf4, 0x67, 0xdd, 0xa3, 0x0b, 0xd5,
+	0x5c, 0xf9, 0xbc, 0x6a, 0x9e, 0x19, 0x57, 0xcd, 0xb5, 0x97, 0xe4, 0x8c, 0x4e, 0xc5, 0x9e, 0xd4,
+	0x25, 0x04, 0xea, 0xa0, 0x13, 0x7a, 0x6a, 0x11, 0xe7, 0x09, 0x34, 0xc8, 0x76, 0x1a, 0xa2, 0xab,
+	0x64, 0xba, 0xc7, 0xdb, 0x31, 0x24, 0x6f, 0x1b, 0xd8, 0xa8, 0xfd, 0x5a, 0x21, 0xf3, 0x4f, 0xb9,
+	0xdb, 0x02, 0xf3, 0x22, 0xb2, 0x41, 0x66, 0xa3, 0xec, 0x90, 0x0d, 0xda, 0x6a, 0xa1, 0xd4, 0xff,
+	0xe3, 0x10, 0xbe, 0x15, 0xdc, 0x03, 0x3d, 0x4e, 0xb3, 0x4e, 0x1e, 0xa6, 0x77, 0xc9, 0xdc, 0x00,
+	0xc2, 0x21, 0x9a, 0xdf, 0x5d, 0x2f, 0xe4, 0x4f, 0xf7, 0xe8, 0x0c, 0x95, 0xf4, 0x1a, 0x39, 0x15,
+	0x0d, 0x9e, 0x1b, 0x4c, 0x0f, 0x65, 0xec, 0xa1, 0x80, 0xd3, 0x47, 0x84, 0x0c, 0x31, 0x1c, 0xa3,
+	0x79, 0xcb, 0x34, 0x18, 0xbe, 0x5e, 0x38, 0x29, 0x39, 0xad, 0x91, 0x85, 0x16, 0xae, 0xc1, 0xa6,
+	0x93, 0x0a, 0x76, 0x92, 0xc1, 0xe8, 0x1a, 0xa9, 0xe8, 0xb6, 0x19, 0x12, 0xd3, 0x52, 0xf3, 0x35,
+	0x92, 0x5c, 0xc6, 0xd1, 0x5e, 0x2a, 0xdf, 0xb3, 0x7a, 0xbe, 0x16, 0x08, 0xd5, 0x93, 0x06, 0x4d,
+	0x4f, 0xfa, 0xb5, 0x20, 0x83, 0xa9, 0x9e, 0x74, 0x1b, 0xdf, 0x0b, 0xca, 0x8e, 0x69, 0xa9, 0x85,
+	0xae, 0xa1, 0x4e, 0xd1, 0x75, 0xc9, 0x43, 0xb9, 0xaf, 0xf6, 0x63, 0xe3, 0x64, 0x1e, 0x9d, 0xd8,
+	0x49, 0x7c, 0x48, 0xc9, 0x12, 0xf8, 0x24, 0x50, 0x76, 0xf2, 0x30, 0x7d, 0x40, 0xd6, 0x87, 0xd0,
+	0x4b, 0x5c, 0x69, 0x93, 0xac, 0x2f, 0x62, 0x0f, 0xa3, 0x68, 0x35, 0x50, 0x03, 0xca, 0x30, 0xe6,
+	0xba, 0x5f, 0xc0, 0xd5, 0x0d, 0x37, 0xe3, 0x46, 0x9f, 0x77, 0x4c, 0x3f, 0xcb, 0xd8, 0xcf, 0x68,
+	0x81, 0xda, 0x1e, 0x2c, 0xa4, 0xb9, 0xf6, 0xdb, 0x28, 0x75, 0xdd, 0xc8, 0x2f, 0x32, 0x81, 0x07,
+	0xc7, 0xa6, 0xc3, 0x15, 0x7d, 0xdd, 0x18, 0xad, 0xd0, 0x6f, 0x13, 0x45, 0x16, 0xdf, 0x00, 0xf0,
+	0x6d, 0xa2, 0xc8, 0xed, 0xdf, 0xfa, 0xed, 0x63, 0xb5, 0xf4, 0xe1, 0x63, 0xb5, 0xf4, 0xc7, 0xc7,
+	0x6a, 0xe9, 0xa7, 0x4f, 0xd5, 0x13, 0x1f, 0x3e, 0x55, 0x4f, 0xfc, 0xfe, 0xa9, 0x7a, 0xe2, 0xed,
+	0x7a, 0xf2, 0x00, 0x79, 0x3c, 0x78, 0x8a, 0x94, 0xfd, 0x2e, 0x44, 0x8d, 0x0a, 0x3e, 0x46, 0xde,
+	0xfe, 0x2b, 0x00, 0x00, 0xff, 0xff, 0x51, 0x9f, 0x7a, 0x36, 0xd9, 0x14, 0x00, 0x00,
 }
 
 func (m *Struct) Marshal() (dAtA []byte, err error) {
@@ -999,77 +1212,77 @@ func (m *StructType) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xe0
+		dAtA[i] = 0xf0
 	}
 	if m.GuidedDefensiveSuccessRateNumerator != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.GuidedDefensiveSuccessRateNumerator))
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xd8
+		dAtA[i] = 0xe8
 	}
 	if m.UnguidedDefensiveSuccessRateDenominator != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.UnguidedDefensiveSuccessRateDenominator))
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xd0
+		dAtA[i] = 0xe0
 	}
 	if m.UnguidedDefensiveSuccessRateNumerator != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.UnguidedDefensiveSuccessRateNumerator))
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xc8
+		dAtA[i] = 0xd8
 	}
 	if m.OreRefiningDifficulty != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.OreRefiningDifficulty))
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xc0
+		dAtA[i] = 0xd0
 	}
 	if m.OreMiningDifficulty != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.OreMiningDifficulty))
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xb8
+		dAtA[i] = 0xc8
 	}
 	if m.PlanetaryShieldContribution != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PlanetaryShieldContribution))
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xb0
+		dAtA[i] = 0xc0
 	}
 	if m.GeneratingRate != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.GeneratingRate))
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xa8
+		dAtA[i] = 0xb8
 	}
 	if m.PostDestructionDamage != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PostDestructionDamage))
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xa0
+		dAtA[i] = 0xb0
 	}
 	if m.CounterAttackSameAmbit != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.CounterAttackSameAmbit))
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0x98
+		dAtA[i] = 0xa8
 	}
 	if m.CounterAttack != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.CounterAttack))
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0x90
+		dAtA[i] = 0xa0
 	}
 	if m.StealthSystems {
 		i--
@@ -1081,7 +1294,7 @@ func (m *StructType) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0x88
+		dAtA[i] = 0x98
 	}
 	if m.AttackCounterable {
 		i--
@@ -1093,133 +1306,133 @@ func (m *StructType) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0x80
+		dAtA[i] = 0x90
 	}
 	if m.AttackReduction != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.AttackReduction))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xf8
+		dAtA[i] = 0x88
 	}
 	if m.StealthActivateCharge != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.StealthActivateCharge))
 		i--
-		dAtA[i] = 0x2
+		dAtA[i] = 0x3
 		i--
-		dAtA[i] = 0xf0
+		dAtA[i] = 0x80
 	}
 	if m.OreRefiningCharge != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.OreRefiningCharge))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xe8
+		dAtA[i] = 0xf8
 	}
 	if m.OreMiningCharge != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.OreMiningCharge))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xe0
+		dAtA[i] = 0xf0
 	}
 	if m.MoveCharge != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.MoveCharge))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xd8
+		dAtA[i] = 0xe8
 	}
 	if m.DefendChangeCharge != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.DefendChangeCharge))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xd0
+		dAtA[i] = 0xe0
 	}
 	if m.BuildCharge != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.BuildCharge))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xc8
+		dAtA[i] = 0xd8
 	}
 	if m.ActivateCharge != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.ActivateCharge))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xc0
+		dAtA[i] = 0xd0
 	}
 	if m.PowerGeneration != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PowerGeneration))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xb8
+		dAtA[i] = 0xc8
 	}
 	if m.PlanetaryRefinery != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PlanetaryRefinery))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xb0
+		dAtA[i] = 0xc0
 	}
 	if m.PlanetaryMining != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PlanetaryMining))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xa8
+		dAtA[i] = 0xb8
 	}
 	if m.PlanetaryDefenses != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PlanetaryDefenses))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xa0
+		dAtA[i] = 0xb0
 	}
 	if m.OreReserveDefenses != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.OreReserveDefenses))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0x98
+		dAtA[i] = 0xa8
 	}
 	if m.UnitDefenses != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.UnitDefenses))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0x90
+		dAtA[i] = 0xa0
 	}
 	if m.PassiveWeaponry != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PassiveWeaponry))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0x88
+		dAtA[i] = 0x98
 	}
 	if m.SecondaryWeaponShotSuccessRateDenominator != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponShotSuccessRateDenominator))
 		i--
 		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0x80
+		dAtA[i] = 0x90
 	}
 	if m.SecondaryWeaponShotSuccessRateNumerator != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponShotSuccessRateNumerator))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xf8
+		dAtA[i] = 0x88
 	}
 	if m.SecondaryWeaponRecoilDamage != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponRecoilDamage))
 		i--
-		dAtA[i] = 0x1
+		dAtA[i] = 0x2
 		i--
-		dAtA[i] = 0xf0
+		dAtA[i] = 0x80
 	}
 	if m.SecondaryWeaponCounterable {
 		i--
@@ -1231,7 +1444,7 @@ func (m *StructType) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xe8
+		dAtA[i] = 0xf8
 	}
 	if m.SecondaryWeaponBlockable {
 		i--
@@ -1243,70 +1456,77 @@ func (m *StructType) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xe0
+		dAtA[i] = 0xf0
 	}
 	if m.SecondaryWeaponDamage != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponDamage))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xd8
+		dAtA[i] = 0xe8
 	}
 	if m.SecondaryWeaponShots != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponShots))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xd0
+		dAtA[i] = 0xe0
 	}
 	if m.SecondaryWeaponTargets != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponTargets))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xc8
+		dAtA[i] = 0xd8
+	}
+	if m.SecondaryWeaponAmbits != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponAmbits))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0xd0
 	}
 	if m.SecondaryWeaponCharge != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponCharge))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xc0
+		dAtA[i] = 0xc8
 	}
 	if m.SecondaryWeaponControl != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeaponControl))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xb8
+		dAtA[i] = 0xc0
 	}
 	if m.SecondaryWeapon != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.SecondaryWeapon))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xb0
+		dAtA[i] = 0xb8
 	}
 	if m.PrimaryWeaponShotSuccessRateDenominator != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponShotSuccessRateDenominator))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xa8
+		dAtA[i] = 0xb0
 	}
 	if m.PrimaryWeaponShotSuccessRateNumerator != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponShotSuccessRateNumerator))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0xa0
+		dAtA[i] = 0xa8
 	}
 	if m.PrimaryWeaponRecoilDamage != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponRecoilDamage))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0x98
+		dAtA[i] = 0xa0
 	}
 	if m.PrimaryWeaponCounterable {
 		i--
@@ -1318,7 +1538,7 @@ func (m *StructType) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0x90
+		dAtA[i] = 0x98
 	}
 	if m.PrimaryWeaponBlockable {
 		i--
@@ -1330,22 +1550,29 @@ func (m *StructType) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0x88
+		dAtA[i] = 0x90
 	}
 	if m.PrimaryWeaponDamage != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponDamage))
 		i--
 		dAtA[i] = 0x1
 		i--
-		dAtA[i] = 0x80
+		dAtA[i] = 0x88
 	}
 	if m.PrimaryWeaponShots != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponShots))
 		i--
-		dAtA[i] = 0x78
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x80
 	}
 	if m.PrimaryWeaponTargets != 0 {
 		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponTargets))
+		i--
+		dAtA[i] = 0x78
+	}
+	if m.PrimaryWeaponAmbits != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.PrimaryWeaponAmbits))
 		i--
 		dAtA[i] = 0x70
 	}
@@ -1528,6 +1755,183 @@ func (m *StructAttributeRecord) MarshalToSizedBuffer(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
+func (m *CacheStruct) Marshal() (dAtA []byte, err error) {
+	size := m.Size()
+	dAtA = make([]byte, size)
+	n, err := m.MarshalToSizedBuffer(dAtA[:size])
+	if err != nil {
+		return nil, err
+	}
+	return dAtA[:n], nil
+}
+
+func (m *CacheStruct) MarshalTo(dAtA []byte) (int, error) {
+	size := m.Size()
+	return m.MarshalToSizedBuffer(dAtA[:size])
+}
+
+func (m *CacheStruct) MarshalToSizedBuffer(dAtA []byte) (int, error) {
+	i := len(dAtA)
+	_ = i
+	var l int
+	_ = l
+	if m.ProtectedStructIndex != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.ProtectedStructIndex))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x90
+	}
+	if m.ProtectedStructIndexLoaded {
+		i--
+		if m.ProtectedStructIndexLoaded {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x88
+	}
+	if m.BlockStartOreRefine != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.BlockStartOreRefine))
+		i--
+		dAtA[i] = 0x1
+		i--
+		dAtA[i] = 0x80
+	}
+	if m.BlockStartOreRefineLoaded {
+		i--
+		if m.BlockStartOreRefineLoaded {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x78
+	}
+	if m.BlockStarOreMine != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.BlockStarOreMine))
+		i--
+		dAtA[i] = 0x70
+	}
+	if m.BlockStartOreMineLoaded {
+		i--
+		if m.BlockStartOreMineLoaded {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x68
+	}
+	if m.BlockStartBuild != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.BlockStartBuild))
+		i--
+		dAtA[i] = 0x60
+	}
+	if m.BlockStartBuildLoaded {
+		i--
+		if m.BlockStartBuildLoaded {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x58
+	}
+	if m.Status != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.Status))
+		i--
+		dAtA[i] = 0x50
+	}
+	if m.StatusLoaded {
+		i--
+		if m.StatusLoaded {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x48
+	}
+	if len(m.StatusAttributeId) > 0 {
+		i -= len(m.StatusAttributeId)
+		copy(dAtA[i:], m.StatusAttributeId)
+		i = encodeVarintStruct(dAtA, i, uint64(len(m.StatusAttributeId)))
+		i--
+		dAtA[i] = 0x42
+	}
+	if m.Health != 0 {
+		i = encodeVarintStruct(dAtA, i, uint64(m.Health))
+		i--
+		dAtA[i] = 0x38
+	}
+	if m.HealthLoaded {
+		i--
+		if m.HealthLoaded {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x30
+	}
+	if m.StructType != nil {
+		{
+			size, err := m.StructType.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintStruct(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x2a
+	}
+	if m.StructTypeLoaded {
+		i--
+		if m.StructTypeLoaded {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x20
+	}
+	if m.Structure != nil {
+		{
+			size, err := m.Structure.MarshalToSizedBuffer(dAtA[:i])
+			if err != nil {
+				return 0, err
+			}
+			i -= size
+			i = encodeVarintStruct(dAtA, i, uint64(size))
+		}
+		i--
+		dAtA[i] = 0x1a
+	}
+	if m.StructureLoaded {
+		i--
+		if m.StructureLoaded {
+			dAtA[i] = 1
+		} else {
+			dAtA[i] = 0
+		}
+		i--
+		dAtA[i] = 0x10
+	}
+	if len(m.StructId) > 0 {
+		i -= len(m.StructId)
+		copy(dAtA[i:], m.StructId)
+		i = encodeVarintStruct(dAtA, i, uint64(len(m.StructId)))
+		i--
+		dAtA[i] = 0xa
+	}
+	return len(dAtA) - i, nil
+}
+
 func encodeVarintStruct(dAtA []byte, offset int, v uint64) int {
 	offset -= sovStruct(v)
 	base := offset
@@ -1625,11 +2029,14 @@ func (m *StructType) Size() (n int) {
 	if m.PrimaryWeaponCharge != 0 {
 		n += 1 + sovStruct(uint64(m.PrimaryWeaponCharge))
 	}
+	if m.PrimaryWeaponAmbits != 0 {
+		n += 1 + sovStruct(uint64(m.PrimaryWeaponAmbits))
+	}
 	if m.PrimaryWeaponTargets != 0 {
 		n += 1 + sovStruct(uint64(m.PrimaryWeaponTargets))
 	}
 	if m.PrimaryWeaponShots != 0 {
-		n += 1 + sovStruct(uint64(m.PrimaryWeaponShots))
+		n += 2 + sovStruct(uint64(m.PrimaryWeaponShots))
 	}
 	if m.PrimaryWeaponDamage != 0 {
 		n += 2 + sovStruct(uint64(m.PrimaryWeaponDamage))
@@ -1657,6 +2064,9 @@ func (m *StructType) Size() (n int) {
 	}
 	if m.SecondaryWeaponCharge != 0 {
 		n += 2 + sovStruct(uint64(m.SecondaryWeaponCharge))
+	}
+	if m.SecondaryWeaponAmbits != 0 {
+		n += 2 + sovStruct(uint64(m.SecondaryWeaponAmbits))
 	}
 	if m.SecondaryWeaponTargets != 0 {
 		n += 2 + sovStruct(uint64(m.SecondaryWeaponTargets))
@@ -1814,6 +2224,73 @@ func (m *StructAttributeRecord) Size() (n int) {
 	}
 	if m.Value != 0 {
 		n += 1 + sovStruct(uint64(m.Value))
+	}
+	return n
+}
+
+func (m *CacheStruct) Size() (n int) {
+	if m == nil {
+		return 0
+	}
+	var l int
+	_ = l
+	l = len(m.StructId)
+	if l > 0 {
+		n += 1 + l + sovStruct(uint64(l))
+	}
+	if m.StructureLoaded {
+		n += 2
+	}
+	if m.Structure != nil {
+		l = m.Structure.Size()
+		n += 1 + l + sovStruct(uint64(l))
+	}
+	if m.StructTypeLoaded {
+		n += 2
+	}
+	if m.StructType != nil {
+		l = m.StructType.Size()
+		n += 1 + l + sovStruct(uint64(l))
+	}
+	if m.HealthLoaded {
+		n += 2
+	}
+	if m.Health != 0 {
+		n += 1 + sovStruct(uint64(m.Health))
+	}
+	l = len(m.StatusAttributeId)
+	if l > 0 {
+		n += 1 + l + sovStruct(uint64(l))
+	}
+	if m.StatusLoaded {
+		n += 2
+	}
+	if m.Status != 0 {
+		n += 1 + sovStruct(uint64(m.Status))
+	}
+	if m.BlockStartBuildLoaded {
+		n += 2
+	}
+	if m.BlockStartBuild != 0 {
+		n += 1 + sovStruct(uint64(m.BlockStartBuild))
+	}
+	if m.BlockStartOreMineLoaded {
+		n += 2
+	}
+	if m.BlockStarOreMine != 0 {
+		n += 1 + sovStruct(uint64(m.BlockStarOreMine))
+	}
+	if m.BlockStartOreRefineLoaded {
+		n += 2
+	}
+	if m.BlockStartOreRefine != 0 {
+		n += 2 + sovStruct(uint64(m.BlockStartOreRefine))
+	}
+	if m.ProtectedStructIndexLoaded {
+		n += 3
+	}
+	if m.ProtectedStructIndex != 0 {
+		n += 2 + sovStruct(uint64(m.ProtectedStructIndex))
 	}
 	return n
 }
@@ -2390,6 +2867,25 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 			}
 		case 14:
 			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponAmbits", wireType)
+			}
+			m.PrimaryWeaponAmbits = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.PrimaryWeaponAmbits |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 15:
+			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponTargets", wireType)
 			}
 			m.PrimaryWeaponTargets = 0
@@ -2407,7 +2903,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 15:
+		case 16:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponShots", wireType)
 			}
@@ -2426,7 +2922,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 16:
+		case 17:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponDamage", wireType)
 			}
@@ -2445,7 +2941,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 17:
+		case 18:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponBlockable", wireType)
 			}
@@ -2465,7 +2961,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.PrimaryWeaponBlockable = bool(v != 0)
-		case 18:
+		case 19:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponCounterable", wireType)
 			}
@@ -2485,7 +2981,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.PrimaryWeaponCounterable = bool(v != 0)
-		case 19:
+		case 20:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponRecoilDamage", wireType)
 			}
@@ -2504,7 +3000,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 20:
+		case 21:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponShotSuccessRateNumerator", wireType)
 			}
@@ -2523,7 +3019,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 21:
+		case 22:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponShotSuccessRateDenominator", wireType)
 			}
@@ -2542,7 +3038,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 22:
+		case 23:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeapon", wireType)
 			}
@@ -2561,7 +3057,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 23:
+		case 24:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponControl", wireType)
 			}
@@ -2580,7 +3076,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 24:
+		case 25:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponCharge", wireType)
 			}
@@ -2599,7 +3095,26 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 25:
+		case 26:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponAmbits", wireType)
+			}
+			m.SecondaryWeaponAmbits = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.SecondaryWeaponAmbits |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 27:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponTargets", wireType)
 			}
@@ -2618,7 +3133,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 26:
+		case 28:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponShots", wireType)
 			}
@@ -2637,7 +3152,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 27:
+		case 29:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponDamage", wireType)
 			}
@@ -2656,7 +3171,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 28:
+		case 30:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponBlockable", wireType)
 			}
@@ -2676,7 +3191,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.SecondaryWeaponBlockable = bool(v != 0)
-		case 29:
+		case 31:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponCounterable", wireType)
 			}
@@ -2696,7 +3211,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.SecondaryWeaponCounterable = bool(v != 0)
-		case 30:
+		case 32:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponRecoilDamage", wireType)
 			}
@@ -2715,7 +3230,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 31:
+		case 33:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponShotSuccessRateNumerator", wireType)
 			}
@@ -2734,7 +3249,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 32:
+		case 34:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponShotSuccessRateDenominator", wireType)
 			}
@@ -2753,7 +3268,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 33:
+		case 35:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PassiveWeaponry", wireType)
 			}
@@ -2772,7 +3287,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 34:
+		case 36:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UnitDefenses", wireType)
 			}
@@ -2791,7 +3306,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 35:
+		case 37:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OreReserveDefenses", wireType)
 			}
@@ -2810,7 +3325,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 36:
+		case 38:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PlanetaryDefenses", wireType)
 			}
@@ -2829,7 +3344,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 37:
+		case 39:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PlanetaryMining", wireType)
 			}
@@ -2848,7 +3363,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 38:
+		case 40:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PlanetaryRefinery", wireType)
 			}
@@ -2867,7 +3382,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 39:
+		case 41:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PowerGeneration", wireType)
 			}
@@ -2886,7 +3401,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 40:
+		case 42:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field ActivateCharge", wireType)
 			}
@@ -2905,7 +3420,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 41:
+		case 43:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field BuildCharge", wireType)
 			}
@@ -2924,7 +3439,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 42:
+		case 44:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field DefendChangeCharge", wireType)
 			}
@@ -2943,7 +3458,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 43:
+		case 45:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field MoveCharge", wireType)
 			}
@@ -2962,7 +3477,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 44:
+		case 46:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OreMiningCharge", wireType)
 			}
@@ -2981,7 +3496,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 45:
+		case 47:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OreRefiningCharge", wireType)
 			}
@@ -3000,7 +3515,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 46:
+		case 48:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StealthActivateCharge", wireType)
 			}
@@ -3019,7 +3534,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 47:
+		case 49:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AttackReduction", wireType)
 			}
@@ -3038,7 +3553,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 48:
+		case 50:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field AttackCounterable", wireType)
 			}
@@ -3058,7 +3573,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.AttackCounterable = bool(v != 0)
-		case 49:
+		case 51:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field StealthSystems", wireType)
 			}
@@ -3078,7 +3593,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 				}
 			}
 			m.StealthSystems = bool(v != 0)
-		case 50:
+		case 52:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CounterAttack", wireType)
 			}
@@ -3097,7 +3612,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 51:
+		case 53:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field CounterAttackSameAmbit", wireType)
 			}
@@ -3116,7 +3631,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 52:
+		case 54:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PostDestructionDamage", wireType)
 			}
@@ -3135,7 +3650,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 53:
+		case 55:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GeneratingRate", wireType)
 			}
@@ -3154,7 +3669,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 54:
+		case 56:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field PlanetaryShieldContribution", wireType)
 			}
@@ -3173,7 +3688,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 55:
+		case 57:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OreMiningDifficulty", wireType)
 			}
@@ -3192,7 +3707,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 56:
+		case 58:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field OreRefiningDifficulty", wireType)
 			}
@@ -3211,7 +3726,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 57:
+		case 59:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UnguidedDefensiveSuccessRateNumerator", wireType)
 			}
@@ -3230,7 +3745,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 58:
+		case 60:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field UnguidedDefensiveSuccessRateDenominator", wireType)
 			}
@@ -3249,7 +3764,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 59:
+		case 61:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GuidedDefensiveSuccessRateNumerator", wireType)
 			}
@@ -3268,7 +3783,7 @@ func (m *StructType) Unmarshal(dAtA []byte) error {
 					break
 				}
 			}
-		case 60:
+		case 62:
 			if wireType != 0 {
 				return fmt.Errorf("proto: wrong wireType = %d for field GuidedDefensiveSuccessRateDenominator", wireType)
 			}
@@ -3606,6 +4121,466 @@ func (m *StructAttributeRecord) Unmarshal(dAtA []byte) error {
 				b := dAtA[iNdEx]
 				iNdEx++
 				m.Value |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		default:
+			iNdEx = preIndex
+			skippy, err := skipStruct(dAtA[iNdEx:])
+			if err != nil {
+				return err
+			}
+			if (skippy < 0) || (iNdEx+skippy) < 0 {
+				return ErrInvalidLengthStruct
+			}
+			if (iNdEx + skippy) > l {
+				return io.ErrUnexpectedEOF
+			}
+			iNdEx += skippy
+		}
+	}
+
+	if iNdEx > l {
+		return io.ErrUnexpectedEOF
+	}
+	return nil
+}
+func (m *CacheStruct) Unmarshal(dAtA []byte) error {
+	l := len(dAtA)
+	iNdEx := 0
+	for iNdEx < l {
+		preIndex := iNdEx
+		var wire uint64
+		for shift := uint(0); ; shift += 7 {
+			if shift >= 64 {
+				return ErrIntOverflowStruct
+			}
+			if iNdEx >= l {
+				return io.ErrUnexpectedEOF
+			}
+			b := dAtA[iNdEx]
+			iNdEx++
+			wire |= uint64(b&0x7F) << shift
+			if b < 0x80 {
+				break
+			}
+		}
+		fieldNum := int32(wire >> 3)
+		wireType := int(wire & 0x7)
+		if wireType == 4 {
+			return fmt.Errorf("proto: CacheStruct: wiretype end group for non-group")
+		}
+		if fieldNum <= 0 {
+			return fmt.Errorf("proto: CacheStruct: illegal tag %d (wire type %d)", fieldNum, wire)
+		}
+		switch fieldNum {
+		case 1:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StructId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthStruct
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthStruct
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.StructId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 2:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StructureLoaded", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.StructureLoaded = bool(v != 0)
+		case 3:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Structure", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthStruct
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthStruct
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.Structure == nil {
+				m.Structure = &Struct{}
+			}
+			if err := m.Structure.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 4:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StructTypeLoaded", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.StructTypeLoaded = bool(v != 0)
+		case 5:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StructType", wireType)
+			}
+			var msglen int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				msglen |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			if msglen < 0 {
+				return ErrInvalidLengthStruct
+			}
+			postIndex := iNdEx + msglen
+			if postIndex < 0 {
+				return ErrInvalidLengthStruct
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			if m.StructType == nil {
+				m.StructType = &StructType{}
+			}
+			if err := m.StructType.Unmarshal(dAtA[iNdEx:postIndex]); err != nil {
+				return err
+			}
+			iNdEx = postIndex
+		case 6:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field HealthLoaded", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.HealthLoaded = bool(v != 0)
+		case 7:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Health", wireType)
+			}
+			m.Health = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Health |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 8:
+			if wireType != 2 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StatusAttributeId", wireType)
+			}
+			var stringLen uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				stringLen |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			intStringLen := int(stringLen)
+			if intStringLen < 0 {
+				return ErrInvalidLengthStruct
+			}
+			postIndex := iNdEx + intStringLen
+			if postIndex < 0 {
+				return ErrInvalidLengthStruct
+			}
+			if postIndex > l {
+				return io.ErrUnexpectedEOF
+			}
+			m.StatusAttributeId = string(dAtA[iNdEx:postIndex])
+			iNdEx = postIndex
+		case 9:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field StatusLoaded", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.StatusLoaded = bool(v != 0)
+		case 10:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
+			}
+			m.Status = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.Status |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 11:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BlockStartBuildLoaded", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.BlockStartBuildLoaded = bool(v != 0)
+		case 12:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BlockStartBuild", wireType)
+			}
+			m.BlockStartBuild = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BlockStartBuild |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 13:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BlockStartOreMineLoaded", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.BlockStartOreMineLoaded = bool(v != 0)
+		case 14:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BlockStarOreMine", wireType)
+			}
+			m.BlockStarOreMine = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BlockStarOreMine |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 15:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BlockStartOreRefineLoaded", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.BlockStartOreRefineLoaded = bool(v != 0)
+		case 16:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field BlockStartOreRefine", wireType)
+			}
+			m.BlockStartOreRefine = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.BlockStartOreRefine |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+		case 17:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProtectedStructIndexLoaded", wireType)
+			}
+			var v int
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				v |= int(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			m.ProtectedStructIndexLoaded = bool(v != 0)
+		case 18:
+			if wireType != 0 {
+				return fmt.Errorf("proto: wrong wireType = %d for field ProtectedStructIndex", wireType)
+			}
+			m.ProtectedStructIndex = 0
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return ErrIntOverflowStruct
+				}
+				if iNdEx >= l {
+					return io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				m.ProtectedStructIndex |= uint64(b&0x7F) << shift
 				if b < 0x80 {
 					break
 				}

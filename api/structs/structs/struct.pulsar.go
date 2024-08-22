@@ -879,6 +879,7 @@ var (
 	fd_StructType_primaryWeapon                             protoreflect.FieldDescriptor
 	fd_StructType_primaryWeaponControl                      protoreflect.FieldDescriptor
 	fd_StructType_primaryWeaponCharge                       protoreflect.FieldDescriptor
+	fd_StructType_primaryWeaponAmbits                       protoreflect.FieldDescriptor
 	fd_StructType_primaryWeaponTargets                      protoreflect.FieldDescriptor
 	fd_StructType_primaryWeaponShots                        protoreflect.FieldDescriptor
 	fd_StructType_primaryWeaponDamage                       protoreflect.FieldDescriptor
@@ -890,6 +891,7 @@ var (
 	fd_StructType_secondaryWeapon                           protoreflect.FieldDescriptor
 	fd_StructType_secondaryWeaponControl                    protoreflect.FieldDescriptor
 	fd_StructType_secondaryWeaponCharge                     protoreflect.FieldDescriptor
+	fd_StructType_secondaryWeaponAmbits                     protoreflect.FieldDescriptor
 	fd_StructType_secondaryWeaponTargets                    protoreflect.FieldDescriptor
 	fd_StructType_secondaryWeaponShots                      protoreflect.FieldDescriptor
 	fd_StructType_secondaryWeaponDamage                     protoreflect.FieldDescriptor
@@ -944,6 +946,7 @@ func init() {
 	fd_StructType_primaryWeapon = md_StructType.Fields().ByName("primaryWeapon")
 	fd_StructType_primaryWeaponControl = md_StructType.Fields().ByName("primaryWeaponControl")
 	fd_StructType_primaryWeaponCharge = md_StructType.Fields().ByName("primaryWeaponCharge")
+	fd_StructType_primaryWeaponAmbits = md_StructType.Fields().ByName("primaryWeaponAmbits")
 	fd_StructType_primaryWeaponTargets = md_StructType.Fields().ByName("primaryWeaponTargets")
 	fd_StructType_primaryWeaponShots = md_StructType.Fields().ByName("primaryWeaponShots")
 	fd_StructType_primaryWeaponDamage = md_StructType.Fields().ByName("primaryWeaponDamage")
@@ -955,6 +958,7 @@ func init() {
 	fd_StructType_secondaryWeapon = md_StructType.Fields().ByName("secondaryWeapon")
 	fd_StructType_secondaryWeaponControl = md_StructType.Fields().ByName("secondaryWeaponControl")
 	fd_StructType_secondaryWeaponCharge = md_StructType.Fields().ByName("secondaryWeaponCharge")
+	fd_StructType_secondaryWeaponAmbits = md_StructType.Fields().ByName("secondaryWeaponAmbits")
 	fd_StructType_secondaryWeaponTargets = md_StructType.Fields().ByName("secondaryWeaponTargets")
 	fd_StructType_secondaryWeaponShots = md_StructType.Fields().ByName("secondaryWeaponShots")
 	fd_StructType_secondaryWeaponDamage = md_StructType.Fields().ByName("secondaryWeaponDamage")
@@ -1136,6 +1140,12 @@ func (x *fastReflection_StructType) Range(f func(protoreflect.FieldDescriptor, p
 			return
 		}
 	}
+	if x.PrimaryWeaponAmbits != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.PrimaryWeaponAmbits)
+		if !f(fd_StructType_primaryWeaponAmbits, value) {
+			return
+		}
+	}
 	if x.PrimaryWeaponTargets != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.PrimaryWeaponTargets)
 		if !f(fd_StructType_primaryWeaponTargets, value) {
@@ -1199,6 +1209,12 @@ func (x *fastReflection_StructType) Range(f func(protoreflect.FieldDescriptor, p
 	if x.SecondaryWeaponCharge != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.SecondaryWeaponCharge)
 		if !f(fd_StructType_secondaryWeaponCharge, value) {
+			return
+		}
+	}
+	if x.SecondaryWeaponAmbits != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SecondaryWeaponAmbits)
+		if !f(fd_StructType_secondaryWeaponAmbits, value) {
 			return
 		}
 	}
@@ -1459,6 +1475,8 @@ func (x *fastReflection_StructType) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.PrimaryWeaponControl != 0
 	case "structs.structs.StructType.primaryWeaponCharge":
 		return x.PrimaryWeaponCharge != uint64(0)
+	case "structs.structs.StructType.primaryWeaponAmbits":
+		return x.PrimaryWeaponAmbits != uint64(0)
 	case "structs.structs.StructType.primaryWeaponTargets":
 		return x.PrimaryWeaponTargets != uint64(0)
 	case "structs.structs.StructType.primaryWeaponShots":
@@ -1481,6 +1499,8 @@ func (x *fastReflection_StructType) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.SecondaryWeaponControl != 0
 	case "structs.structs.StructType.secondaryWeaponCharge":
 		return x.SecondaryWeaponCharge != uint64(0)
+	case "structs.structs.StructType.secondaryWeaponAmbits":
+		return x.SecondaryWeaponAmbits != uint64(0)
 	case "structs.structs.StructType.secondaryWeaponTargets":
 		return x.SecondaryWeaponTargets != uint64(0)
 	case "structs.structs.StructType.secondaryWeaponShots":
@@ -1595,6 +1615,8 @@ func (x *fastReflection_StructType) Clear(fd protoreflect.FieldDescriptor) {
 		x.PrimaryWeaponControl = 0
 	case "structs.structs.StructType.primaryWeaponCharge":
 		x.PrimaryWeaponCharge = uint64(0)
+	case "structs.structs.StructType.primaryWeaponAmbits":
+		x.PrimaryWeaponAmbits = uint64(0)
 	case "structs.structs.StructType.primaryWeaponTargets":
 		x.PrimaryWeaponTargets = uint64(0)
 	case "structs.structs.StructType.primaryWeaponShots":
@@ -1617,6 +1639,8 @@ func (x *fastReflection_StructType) Clear(fd protoreflect.FieldDescriptor) {
 		x.SecondaryWeaponControl = 0
 	case "structs.structs.StructType.secondaryWeaponCharge":
 		x.SecondaryWeaponCharge = uint64(0)
+	case "structs.structs.StructType.secondaryWeaponAmbits":
+		x.SecondaryWeaponAmbits = uint64(0)
 	case "structs.structs.StructType.secondaryWeaponTargets":
 		x.SecondaryWeaponTargets = uint64(0)
 	case "structs.structs.StructType.secondaryWeaponShots":
@@ -1744,6 +1768,9 @@ func (x *fastReflection_StructType) Get(descriptor protoreflect.FieldDescriptor)
 	case "structs.structs.StructType.primaryWeaponCharge":
 		value := x.PrimaryWeaponCharge
 		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.primaryWeaponAmbits":
+		value := x.PrimaryWeaponAmbits
+		return protoreflect.ValueOfUint64(value)
 	case "structs.structs.StructType.primaryWeaponTargets":
 		value := x.PrimaryWeaponTargets
 		return protoreflect.ValueOfUint64(value)
@@ -1776,6 +1803,9 @@ func (x *fastReflection_StructType) Get(descriptor protoreflect.FieldDescriptor)
 		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
 	case "structs.structs.StructType.secondaryWeaponCharge":
 		value := x.SecondaryWeaponCharge
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructType.secondaryWeaponAmbits":
+		value := x.SecondaryWeaponAmbits
 		return protoreflect.ValueOfUint64(value)
 	case "structs.structs.StructType.secondaryWeaponTargets":
 		value := x.SecondaryWeaponTargets
@@ -1931,6 +1961,8 @@ func (x *fastReflection_StructType) Set(fd protoreflect.FieldDescriptor, value p
 		x.PrimaryWeaponControl = (TechWeaponControl)(value.Enum())
 	case "structs.structs.StructType.primaryWeaponCharge":
 		x.PrimaryWeaponCharge = value.Uint()
+	case "structs.structs.StructType.primaryWeaponAmbits":
+		x.PrimaryWeaponAmbits = value.Uint()
 	case "structs.structs.StructType.primaryWeaponTargets":
 		x.PrimaryWeaponTargets = value.Uint()
 	case "structs.structs.StructType.primaryWeaponShots":
@@ -1953,6 +1985,8 @@ func (x *fastReflection_StructType) Set(fd protoreflect.FieldDescriptor, value p
 		x.SecondaryWeaponControl = (TechWeaponControl)(value.Enum())
 	case "structs.structs.StructType.secondaryWeaponCharge":
 		x.SecondaryWeaponCharge = value.Uint()
+	case "structs.structs.StructType.secondaryWeaponAmbits":
+		x.SecondaryWeaponAmbits = value.Uint()
 	case "structs.structs.StructType.secondaryWeaponTargets":
 		x.SecondaryWeaponTargets = value.Uint()
 	case "structs.structs.StructType.secondaryWeaponShots":
@@ -2071,6 +2105,8 @@ func (x *fastReflection_StructType) Mutable(fd protoreflect.FieldDescriptor) pro
 		panic(fmt.Errorf("field primaryWeaponControl of message structs.structs.StructType is not mutable"))
 	case "structs.structs.StructType.primaryWeaponCharge":
 		panic(fmt.Errorf("field primaryWeaponCharge of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.primaryWeaponAmbits":
+		panic(fmt.Errorf("field primaryWeaponAmbits of message structs.structs.StructType is not mutable"))
 	case "structs.structs.StructType.primaryWeaponTargets":
 		panic(fmt.Errorf("field primaryWeaponTargets of message structs.structs.StructType is not mutable"))
 	case "structs.structs.StructType.primaryWeaponShots":
@@ -2093,6 +2129,8 @@ func (x *fastReflection_StructType) Mutable(fd protoreflect.FieldDescriptor) pro
 		panic(fmt.Errorf("field secondaryWeaponControl of message structs.structs.StructType is not mutable"))
 	case "structs.structs.StructType.secondaryWeaponCharge":
 		panic(fmt.Errorf("field secondaryWeaponCharge of message structs.structs.StructType is not mutable"))
+	case "structs.structs.StructType.secondaryWeaponAmbits":
+		panic(fmt.Errorf("field secondaryWeaponAmbits of message structs.structs.StructType is not mutable"))
 	case "structs.structs.StructType.secondaryWeaponTargets":
 		panic(fmt.Errorf("field secondaryWeaponTargets of message structs.structs.StructType is not mutable"))
 	case "structs.structs.StructType.secondaryWeaponShots":
@@ -2204,6 +2242,8 @@ func (x *fastReflection_StructType) NewField(fd protoreflect.FieldDescriptor) pr
 		return protoreflect.ValueOfEnum(0)
 	case "structs.structs.StructType.primaryWeaponCharge":
 		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.primaryWeaponAmbits":
+		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.StructType.primaryWeaponTargets":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.StructType.primaryWeaponShots":
@@ -2225,6 +2265,8 @@ func (x *fastReflection_StructType) NewField(fd protoreflect.FieldDescriptor) pr
 	case "structs.structs.StructType.secondaryWeaponControl":
 		return protoreflect.ValueOfEnum(0)
 	case "structs.structs.StructType.secondaryWeaponCharge":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructType.secondaryWeaponAmbits":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.StructType.secondaryWeaponTargets":
 		return protoreflect.ValueOfUint64(uint64(0))
@@ -2407,11 +2449,14 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 		if x.PrimaryWeaponCharge != 0 {
 			n += 1 + runtime.Sov(uint64(x.PrimaryWeaponCharge))
 		}
+		if x.PrimaryWeaponAmbits != 0 {
+			n += 1 + runtime.Sov(uint64(x.PrimaryWeaponAmbits))
+		}
 		if x.PrimaryWeaponTargets != 0 {
 			n += 1 + runtime.Sov(uint64(x.PrimaryWeaponTargets))
 		}
 		if x.PrimaryWeaponShots != 0 {
-			n += 1 + runtime.Sov(uint64(x.PrimaryWeaponShots))
+			n += 2 + runtime.Sov(uint64(x.PrimaryWeaponShots))
 		}
 		if x.PrimaryWeaponDamage != 0 {
 			n += 2 + runtime.Sov(uint64(x.PrimaryWeaponDamage))
@@ -2439,6 +2484,9 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 		}
 		if x.SecondaryWeaponCharge != 0 {
 			n += 2 + runtime.Sov(uint64(x.SecondaryWeaponCharge))
+		}
+		if x.SecondaryWeaponAmbits != 0 {
+			n += 2 + runtime.Sov(uint64(x.SecondaryWeaponAmbits))
 		}
 		if x.SecondaryWeaponTargets != 0 {
 			n += 2 + runtime.Sov(uint64(x.SecondaryWeaponTargets))
@@ -2582,77 +2630,77 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x3
 			i--
-			dAtA[i] = 0xe0
+			dAtA[i] = 0xf0
 		}
 		if x.GuidedDefensiveSuccessRateNumerator != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.GuidedDefensiveSuccessRateNumerator))
 			i--
 			dAtA[i] = 0x3
 			i--
-			dAtA[i] = 0xd8
+			dAtA[i] = 0xe8
 		}
 		if x.UnguidedDefensiveSuccessRateDenominator != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.UnguidedDefensiveSuccessRateDenominator))
 			i--
 			dAtA[i] = 0x3
 			i--
-			dAtA[i] = 0xd0
+			dAtA[i] = 0xe0
 		}
 		if x.UnguidedDefensiveSuccessRateNumerator != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.UnguidedDefensiveSuccessRateNumerator))
 			i--
 			dAtA[i] = 0x3
 			i--
-			dAtA[i] = 0xc8
+			dAtA[i] = 0xd8
 		}
 		if x.OreRefiningDifficulty != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.OreRefiningDifficulty))
 			i--
 			dAtA[i] = 0x3
 			i--
-			dAtA[i] = 0xc0
+			dAtA[i] = 0xd0
 		}
 		if x.OreMiningDifficulty != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.OreMiningDifficulty))
 			i--
 			dAtA[i] = 0x3
 			i--
-			dAtA[i] = 0xb8
+			dAtA[i] = 0xc8
 		}
 		if x.PlanetaryShieldContribution != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.PlanetaryShieldContribution))
 			i--
 			dAtA[i] = 0x3
 			i--
-			dAtA[i] = 0xb0
+			dAtA[i] = 0xc0
 		}
 		if x.GeneratingRate != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.GeneratingRate))
 			i--
 			dAtA[i] = 0x3
 			i--
-			dAtA[i] = 0xa8
+			dAtA[i] = 0xb8
 		}
 		if x.PostDestructionDamage != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.PostDestructionDamage))
 			i--
 			dAtA[i] = 0x3
 			i--
-			dAtA[i] = 0xa0
+			dAtA[i] = 0xb0
 		}
 		if x.CounterAttackSameAmbit != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.CounterAttackSameAmbit))
 			i--
 			dAtA[i] = 0x3
 			i--
-			dAtA[i] = 0x98
+			dAtA[i] = 0xa8
 		}
 		if x.CounterAttack != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.CounterAttack))
 			i--
 			dAtA[i] = 0x3
 			i--
-			dAtA[i] = 0x90
+			dAtA[i] = 0xa0
 		}
 		if x.StealthSystems {
 			i--
@@ -2664,7 +2712,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x3
 			i--
-			dAtA[i] = 0x88
+			dAtA[i] = 0x98
 		}
 		if x.AttackCounterable {
 			i--
@@ -2676,133 +2724,133 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x3
 			i--
-			dAtA[i] = 0x80
+			dAtA[i] = 0x90
 		}
 		if x.AttackReduction != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.AttackReduction))
 			i--
-			dAtA[i] = 0x2
+			dAtA[i] = 0x3
 			i--
-			dAtA[i] = 0xf8
+			dAtA[i] = 0x88
 		}
 		if x.StealthActivateCharge != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.StealthActivateCharge))
 			i--
-			dAtA[i] = 0x2
+			dAtA[i] = 0x3
 			i--
-			dAtA[i] = 0xf0
+			dAtA[i] = 0x80
 		}
 		if x.OreRefiningCharge != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.OreRefiningCharge))
 			i--
 			dAtA[i] = 0x2
 			i--
-			dAtA[i] = 0xe8
+			dAtA[i] = 0xf8
 		}
 		if x.OreMiningCharge != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.OreMiningCharge))
 			i--
 			dAtA[i] = 0x2
 			i--
-			dAtA[i] = 0xe0
+			dAtA[i] = 0xf0
 		}
 		if x.MoveCharge != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.MoveCharge))
 			i--
 			dAtA[i] = 0x2
 			i--
-			dAtA[i] = 0xd8
+			dAtA[i] = 0xe8
 		}
 		if x.DefendChangeCharge != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.DefendChangeCharge))
 			i--
 			dAtA[i] = 0x2
 			i--
-			dAtA[i] = 0xd0
+			dAtA[i] = 0xe0
 		}
 		if x.BuildCharge != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.BuildCharge))
 			i--
 			dAtA[i] = 0x2
 			i--
-			dAtA[i] = 0xc8
+			dAtA[i] = 0xd8
 		}
 		if x.ActivateCharge != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.ActivateCharge))
 			i--
 			dAtA[i] = 0x2
 			i--
-			dAtA[i] = 0xc0
+			dAtA[i] = 0xd0
 		}
 		if x.PowerGeneration != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.PowerGeneration))
 			i--
 			dAtA[i] = 0x2
 			i--
-			dAtA[i] = 0xb8
+			dAtA[i] = 0xc8
 		}
 		if x.PlanetaryRefinery != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.PlanetaryRefinery))
 			i--
 			dAtA[i] = 0x2
 			i--
-			dAtA[i] = 0xb0
+			dAtA[i] = 0xc0
 		}
 		if x.PlanetaryMining != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.PlanetaryMining))
 			i--
 			dAtA[i] = 0x2
 			i--
-			dAtA[i] = 0xa8
+			dAtA[i] = 0xb8
 		}
 		if x.PlanetaryDefenses != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.PlanetaryDefenses))
 			i--
 			dAtA[i] = 0x2
 			i--
-			dAtA[i] = 0xa0
+			dAtA[i] = 0xb0
 		}
 		if x.OreReserveDefenses != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.OreReserveDefenses))
 			i--
 			dAtA[i] = 0x2
 			i--
-			dAtA[i] = 0x98
+			dAtA[i] = 0xa8
 		}
 		if x.UnitDefenses != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.UnitDefenses))
 			i--
 			dAtA[i] = 0x2
 			i--
-			dAtA[i] = 0x90
+			dAtA[i] = 0xa0
 		}
 		if x.PassiveWeaponry != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.PassiveWeaponry))
 			i--
 			dAtA[i] = 0x2
 			i--
-			dAtA[i] = 0x88
+			dAtA[i] = 0x98
 		}
 		if x.SecondaryWeaponShotSuccessRateDenominator != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeaponShotSuccessRateDenominator))
 			i--
 			dAtA[i] = 0x2
 			i--
-			dAtA[i] = 0x80
+			dAtA[i] = 0x90
 		}
 		if x.SecondaryWeaponShotSuccessRateNumerator != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeaponShotSuccessRateNumerator))
 			i--
-			dAtA[i] = 0x1
+			dAtA[i] = 0x2
 			i--
-			dAtA[i] = 0xf8
+			dAtA[i] = 0x88
 		}
 		if x.SecondaryWeaponRecoilDamage != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeaponRecoilDamage))
 			i--
-			dAtA[i] = 0x1
+			dAtA[i] = 0x2
 			i--
-			dAtA[i] = 0xf0
+			dAtA[i] = 0x80
 		}
 		if x.SecondaryWeaponCounterable {
 			i--
@@ -2814,7 +2862,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x1
 			i--
-			dAtA[i] = 0xe8
+			dAtA[i] = 0xf8
 		}
 		if x.SecondaryWeaponBlockable {
 			i--
@@ -2826,70 +2874,77 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x1
 			i--
-			dAtA[i] = 0xe0
+			dAtA[i] = 0xf0
 		}
 		if x.SecondaryWeaponDamage != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeaponDamage))
 			i--
 			dAtA[i] = 0x1
 			i--
-			dAtA[i] = 0xd8
+			dAtA[i] = 0xe8
 		}
 		if x.SecondaryWeaponShots != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeaponShots))
 			i--
 			dAtA[i] = 0x1
 			i--
-			dAtA[i] = 0xd0
+			dAtA[i] = 0xe0
 		}
 		if x.SecondaryWeaponTargets != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeaponTargets))
 			i--
 			dAtA[i] = 0x1
 			i--
-			dAtA[i] = 0xc8
+			dAtA[i] = 0xd8
+		}
+		if x.SecondaryWeaponAmbits != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeaponAmbits))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0xd0
 		}
 		if x.SecondaryWeaponCharge != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeaponCharge))
 			i--
 			dAtA[i] = 0x1
 			i--
-			dAtA[i] = 0xc0
+			dAtA[i] = 0xc8
 		}
 		if x.SecondaryWeaponControl != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeaponControl))
 			i--
 			dAtA[i] = 0x1
 			i--
-			dAtA[i] = 0xb8
+			dAtA[i] = 0xc0
 		}
 		if x.SecondaryWeapon != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.SecondaryWeapon))
 			i--
 			dAtA[i] = 0x1
 			i--
-			dAtA[i] = 0xb0
+			dAtA[i] = 0xb8
 		}
 		if x.PrimaryWeaponShotSuccessRateDenominator != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.PrimaryWeaponShotSuccessRateDenominator))
 			i--
 			dAtA[i] = 0x1
 			i--
-			dAtA[i] = 0xa8
+			dAtA[i] = 0xb0
 		}
 		if x.PrimaryWeaponShotSuccessRateNumerator != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.PrimaryWeaponShotSuccessRateNumerator))
 			i--
 			dAtA[i] = 0x1
 			i--
-			dAtA[i] = 0xa0
+			dAtA[i] = 0xa8
 		}
 		if x.PrimaryWeaponRecoilDamage != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.PrimaryWeaponRecoilDamage))
 			i--
 			dAtA[i] = 0x1
 			i--
-			dAtA[i] = 0x98
+			dAtA[i] = 0xa0
 		}
 		if x.PrimaryWeaponCounterable {
 			i--
@@ -2901,7 +2956,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x1
 			i--
-			dAtA[i] = 0x90
+			dAtA[i] = 0x98
 		}
 		if x.PrimaryWeaponBlockable {
 			i--
@@ -2913,22 +2968,29 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x1
 			i--
-			dAtA[i] = 0x88
+			dAtA[i] = 0x90
 		}
 		if x.PrimaryWeaponDamage != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.PrimaryWeaponDamage))
 			i--
 			dAtA[i] = 0x1
 			i--
-			dAtA[i] = 0x80
+			dAtA[i] = 0x88
 		}
 		if x.PrimaryWeaponShots != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.PrimaryWeaponShots))
 			i--
-			dAtA[i] = 0x78
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0x80
 		}
 		if x.PrimaryWeaponTargets != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.PrimaryWeaponTargets))
+			i--
+			dAtA[i] = 0x78
+		}
+		if x.PrimaryWeaponAmbits != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PrimaryWeaponAmbits))
 			i--
 			dAtA[i] = 0x70
 		}
@@ -3322,6 +3384,25 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 				}
 			case 14:
 				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponAmbits", wireType)
+				}
+				x.PrimaryWeaponAmbits = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PrimaryWeaponAmbits |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 15:
+				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponTargets", wireType)
 				}
 				x.PrimaryWeaponTargets = 0
@@ -3339,7 +3420,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 15:
+			case 16:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponShots", wireType)
 				}
@@ -3358,7 +3439,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 16:
+			case 17:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponDamage", wireType)
 				}
@@ -3377,7 +3458,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 17:
+			case 18:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponBlockable", wireType)
 				}
@@ -3397,7 +3478,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 					}
 				}
 				x.PrimaryWeaponBlockable = bool(v != 0)
-			case 18:
+			case 19:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponCounterable", wireType)
 				}
@@ -3417,7 +3498,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 					}
 				}
 				x.PrimaryWeaponCounterable = bool(v != 0)
-			case 19:
+			case 20:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponRecoilDamage", wireType)
 				}
@@ -3436,7 +3517,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 20:
+			case 21:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponShotSuccessRateNumerator", wireType)
 				}
@@ -3455,7 +3536,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 21:
+			case 22:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PrimaryWeaponShotSuccessRateDenominator", wireType)
 				}
@@ -3474,7 +3555,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 22:
+			case 23:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeapon", wireType)
 				}
@@ -3493,7 +3574,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 23:
+			case 24:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponControl", wireType)
 				}
@@ -3512,7 +3593,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 24:
+			case 25:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponCharge", wireType)
 				}
@@ -3531,7 +3612,26 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 25:
+			case 26:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponAmbits", wireType)
+				}
+				x.SecondaryWeaponAmbits = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.SecondaryWeaponAmbits |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 27:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponTargets", wireType)
 				}
@@ -3550,7 +3650,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 26:
+			case 28:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponShots", wireType)
 				}
@@ -3569,7 +3669,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 27:
+			case 29:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponDamage", wireType)
 				}
@@ -3588,7 +3688,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 28:
+			case 30:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponBlockable", wireType)
 				}
@@ -3608,7 +3708,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 					}
 				}
 				x.SecondaryWeaponBlockable = bool(v != 0)
-			case 29:
+			case 31:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponCounterable", wireType)
 				}
@@ -3628,7 +3728,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 					}
 				}
 				x.SecondaryWeaponCounterable = bool(v != 0)
-			case 30:
+			case 32:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponRecoilDamage", wireType)
 				}
@@ -3647,7 +3747,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 31:
+			case 33:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponShotSuccessRateNumerator", wireType)
 				}
@@ -3666,7 +3766,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 32:
+			case 34:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SecondaryWeaponShotSuccessRateDenominator", wireType)
 				}
@@ -3685,7 +3785,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 33:
+			case 35:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PassiveWeaponry", wireType)
 				}
@@ -3704,7 +3804,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 34:
+			case 36:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field UnitDefenses", wireType)
 				}
@@ -3723,7 +3823,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 35:
+			case 37:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OreReserveDefenses", wireType)
 				}
@@ -3742,7 +3842,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 36:
+			case 38:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlanetaryDefenses", wireType)
 				}
@@ -3761,7 +3861,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 37:
+			case 39:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlanetaryMining", wireType)
 				}
@@ -3780,7 +3880,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 38:
+			case 40:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlanetaryRefinery", wireType)
 				}
@@ -3799,7 +3899,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 39:
+			case 41:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PowerGeneration", wireType)
 				}
@@ -3818,7 +3918,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 40:
+			case 42:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ActivateCharge", wireType)
 				}
@@ -3837,7 +3937,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 41:
+			case 43:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BuildCharge", wireType)
 				}
@@ -3856,7 +3956,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 42:
+			case 44:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DefendChangeCharge", wireType)
 				}
@@ -3875,7 +3975,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 43:
+			case 45:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MoveCharge", wireType)
 				}
@@ -3894,7 +3994,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 44:
+			case 46:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OreMiningCharge", wireType)
 				}
@@ -3913,7 +4013,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 45:
+			case 47:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OreRefiningCharge", wireType)
 				}
@@ -3932,7 +4032,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 46:
+			case 48:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field StealthActivateCharge", wireType)
 				}
@@ -3951,7 +4051,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 47:
+			case 49:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AttackReduction", wireType)
 				}
@@ -3970,7 +4070,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 48:
+			case 50:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AttackCounterable", wireType)
 				}
@@ -3990,7 +4090,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 					}
 				}
 				x.AttackCounterable = bool(v != 0)
-			case 49:
+			case 51:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field StealthSystems", wireType)
 				}
@@ -4010,7 +4110,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 					}
 				}
 				x.StealthSystems = bool(v != 0)
-			case 50:
+			case 52:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CounterAttack", wireType)
 				}
@@ -4029,7 +4129,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 51:
+			case 53:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CounterAttackSameAmbit", wireType)
 				}
@@ -4048,7 +4148,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 52:
+			case 54:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PostDestructionDamage", wireType)
 				}
@@ -4067,7 +4167,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 53:
+			case 55:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GeneratingRate", wireType)
 				}
@@ -4086,7 +4186,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 54:
+			case 56:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlanetaryShieldContribution", wireType)
 				}
@@ -4105,7 +4205,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 55:
+			case 57:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OreMiningDifficulty", wireType)
 				}
@@ -4124,7 +4224,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 56:
+			case 58:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OreRefiningDifficulty", wireType)
 				}
@@ -4143,7 +4243,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 57:
+			case 59:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field UnguidedDefensiveSuccessRateNumerator", wireType)
 				}
@@ -4162,7 +4262,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 58:
+			case 60:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field UnguidedDefensiveSuccessRateDenominator", wireType)
 				}
@@ -4181,7 +4281,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 59:
+			case 61:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GuidedDefensiveSuccessRateNumerator", wireType)
 				}
@@ -4200,7 +4300,7 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 60:
+			case 62:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GuidedDefensiveSuccessRateDenominator", wireType)
 				}
@@ -5462,6 +5562,1374 @@ func (x *fastReflection_StructAttributeRecord) ProtoMethods() *protoiface.Method
 	}
 }
 
+var (
+	md_CacheStruct                            protoreflect.MessageDescriptor
+	fd_CacheStruct_structId                   protoreflect.FieldDescriptor
+	fd_CacheStruct_structureLoaded            protoreflect.FieldDescriptor
+	fd_CacheStruct_structure                  protoreflect.FieldDescriptor
+	fd_CacheStruct_structTypeLoaded           protoreflect.FieldDescriptor
+	fd_CacheStruct_structType                 protoreflect.FieldDescriptor
+	fd_CacheStruct_healthLoaded               protoreflect.FieldDescriptor
+	fd_CacheStruct_health                     protoreflect.FieldDescriptor
+	fd_CacheStruct_statusAttributeId          protoreflect.FieldDescriptor
+	fd_CacheStruct_statusLoaded               protoreflect.FieldDescriptor
+	fd_CacheStruct_status                     protoreflect.FieldDescriptor
+	fd_CacheStruct_blockStartBuildLoaded      protoreflect.FieldDescriptor
+	fd_CacheStruct_blockStartBuild            protoreflect.FieldDescriptor
+	fd_CacheStruct_blockStartOreMineLoaded    protoreflect.FieldDescriptor
+	fd_CacheStruct_blockStarOreMine           protoreflect.FieldDescriptor
+	fd_CacheStruct_blockStartOreRefineLoaded  protoreflect.FieldDescriptor
+	fd_CacheStruct_blockStartOreRefine        protoreflect.FieldDescriptor
+	fd_CacheStruct_protectedStructIndexLoaded protoreflect.FieldDescriptor
+	fd_CacheStruct_protectedStructIndex       protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_struct_proto_init()
+	md_CacheStruct = File_structs_structs_struct_proto.Messages().ByName("CacheStruct")
+	fd_CacheStruct_structId = md_CacheStruct.Fields().ByName("structId")
+	fd_CacheStruct_structureLoaded = md_CacheStruct.Fields().ByName("structureLoaded")
+	fd_CacheStruct_structure = md_CacheStruct.Fields().ByName("structure")
+	fd_CacheStruct_structTypeLoaded = md_CacheStruct.Fields().ByName("structTypeLoaded")
+	fd_CacheStruct_structType = md_CacheStruct.Fields().ByName("structType")
+	fd_CacheStruct_healthLoaded = md_CacheStruct.Fields().ByName("healthLoaded")
+	fd_CacheStruct_health = md_CacheStruct.Fields().ByName("health")
+	fd_CacheStruct_statusAttributeId = md_CacheStruct.Fields().ByName("statusAttributeId")
+	fd_CacheStruct_statusLoaded = md_CacheStruct.Fields().ByName("statusLoaded")
+	fd_CacheStruct_status = md_CacheStruct.Fields().ByName("status")
+	fd_CacheStruct_blockStartBuildLoaded = md_CacheStruct.Fields().ByName("blockStartBuildLoaded")
+	fd_CacheStruct_blockStartBuild = md_CacheStruct.Fields().ByName("blockStartBuild")
+	fd_CacheStruct_blockStartOreMineLoaded = md_CacheStruct.Fields().ByName("blockStartOreMineLoaded")
+	fd_CacheStruct_blockStarOreMine = md_CacheStruct.Fields().ByName("blockStarOreMine")
+	fd_CacheStruct_blockStartOreRefineLoaded = md_CacheStruct.Fields().ByName("blockStartOreRefineLoaded")
+	fd_CacheStruct_blockStartOreRefine = md_CacheStruct.Fields().ByName("blockStartOreRefine")
+	fd_CacheStruct_protectedStructIndexLoaded = md_CacheStruct.Fields().ByName("protectedStructIndexLoaded")
+	fd_CacheStruct_protectedStructIndex = md_CacheStruct.Fields().ByName("protectedStructIndex")
+}
+
+var _ protoreflect.Message = (*fastReflection_CacheStruct)(nil)
+
+type fastReflection_CacheStruct CacheStruct
+
+func (x *CacheStruct) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_CacheStruct)(x)
+}
+
+func (x *CacheStruct) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_struct_proto_msgTypes[4]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_CacheStruct_messageType fastReflection_CacheStruct_messageType
+var _ protoreflect.MessageType = fastReflection_CacheStruct_messageType{}
+
+type fastReflection_CacheStruct_messageType struct{}
+
+func (x fastReflection_CacheStruct_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_CacheStruct)(nil)
+}
+func (x fastReflection_CacheStruct_messageType) New() protoreflect.Message {
+	return new(fastReflection_CacheStruct)
+}
+func (x fastReflection_CacheStruct_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_CacheStruct
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_CacheStruct) Descriptor() protoreflect.MessageDescriptor {
+	return md_CacheStruct
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_CacheStruct) Type() protoreflect.MessageType {
+	return _fastReflection_CacheStruct_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_CacheStruct) New() protoreflect.Message {
+	return new(fastReflection_CacheStruct)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_CacheStruct) Interface() protoreflect.ProtoMessage {
+	return (*CacheStruct)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_CacheStruct) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.StructId != "" {
+		value := protoreflect.ValueOfString(x.StructId)
+		if !f(fd_CacheStruct_structId, value) {
+			return
+		}
+	}
+	if x.StructureLoaded != false {
+		value := protoreflect.ValueOfBool(x.StructureLoaded)
+		if !f(fd_CacheStruct_structureLoaded, value) {
+			return
+		}
+	}
+	if x.Structure != nil {
+		value := protoreflect.ValueOfMessage(x.Structure.ProtoReflect())
+		if !f(fd_CacheStruct_structure, value) {
+			return
+		}
+	}
+	if x.StructTypeLoaded != false {
+		value := protoreflect.ValueOfBool(x.StructTypeLoaded)
+		if !f(fd_CacheStruct_structTypeLoaded, value) {
+			return
+		}
+	}
+	if x.StructType != nil {
+		value := protoreflect.ValueOfMessage(x.StructType.ProtoReflect())
+		if !f(fd_CacheStruct_structType, value) {
+			return
+		}
+	}
+	if x.HealthLoaded != false {
+		value := protoreflect.ValueOfBool(x.HealthLoaded)
+		if !f(fd_CacheStruct_healthLoaded, value) {
+			return
+		}
+	}
+	if x.Health != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Health)
+		if !f(fd_CacheStruct_health, value) {
+			return
+		}
+	}
+	if x.StatusAttributeId != "" {
+		value := protoreflect.ValueOfString(x.StatusAttributeId)
+		if !f(fd_CacheStruct_statusAttributeId, value) {
+			return
+		}
+	}
+	if x.StatusLoaded != false {
+		value := protoreflect.ValueOfBool(x.StatusLoaded)
+		if !f(fd_CacheStruct_statusLoaded, value) {
+			return
+		}
+	}
+	if x.Status != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Status)
+		if !f(fd_CacheStruct_status, value) {
+			return
+		}
+	}
+	if x.BlockStartBuildLoaded != false {
+		value := protoreflect.ValueOfBool(x.BlockStartBuildLoaded)
+		if !f(fd_CacheStruct_blockStartBuildLoaded, value) {
+			return
+		}
+	}
+	if x.BlockStartBuild != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.BlockStartBuild)
+		if !f(fd_CacheStruct_blockStartBuild, value) {
+			return
+		}
+	}
+	if x.BlockStartOreMineLoaded != false {
+		value := protoreflect.ValueOfBool(x.BlockStartOreMineLoaded)
+		if !f(fd_CacheStruct_blockStartOreMineLoaded, value) {
+			return
+		}
+	}
+	if x.BlockStarOreMine != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.BlockStarOreMine)
+		if !f(fd_CacheStruct_blockStarOreMine, value) {
+			return
+		}
+	}
+	if x.BlockStartOreRefineLoaded != false {
+		value := protoreflect.ValueOfBool(x.BlockStartOreRefineLoaded)
+		if !f(fd_CacheStruct_blockStartOreRefineLoaded, value) {
+			return
+		}
+	}
+	if x.BlockStartOreRefine != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.BlockStartOreRefine)
+		if !f(fd_CacheStruct_blockStartOreRefine, value) {
+			return
+		}
+	}
+	if x.ProtectedStructIndexLoaded != false {
+		value := protoreflect.ValueOfBool(x.ProtectedStructIndexLoaded)
+		if !f(fd_CacheStruct_protectedStructIndexLoaded, value) {
+			return
+		}
+	}
+	if x.ProtectedStructIndex != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.ProtectedStructIndex)
+		if !f(fd_CacheStruct_protectedStructIndex, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_CacheStruct) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.CacheStruct.structId":
+		return x.StructId != ""
+	case "structs.structs.CacheStruct.structureLoaded":
+		return x.StructureLoaded != false
+	case "structs.structs.CacheStruct.structure":
+		return x.Structure != nil
+	case "structs.structs.CacheStruct.structTypeLoaded":
+		return x.StructTypeLoaded != false
+	case "structs.structs.CacheStruct.structType":
+		return x.StructType != nil
+	case "structs.structs.CacheStruct.healthLoaded":
+		return x.HealthLoaded != false
+	case "structs.structs.CacheStruct.health":
+		return x.Health != uint64(0)
+	case "structs.structs.CacheStruct.statusAttributeId":
+		return x.StatusAttributeId != ""
+	case "structs.structs.CacheStruct.statusLoaded":
+		return x.StatusLoaded != false
+	case "structs.structs.CacheStruct.status":
+		return x.Status != uint64(0)
+	case "structs.structs.CacheStruct.blockStartBuildLoaded":
+		return x.BlockStartBuildLoaded != false
+	case "structs.structs.CacheStruct.blockStartBuild":
+		return x.BlockStartBuild != uint64(0)
+	case "structs.structs.CacheStruct.blockStartOreMineLoaded":
+		return x.BlockStartOreMineLoaded != false
+	case "structs.structs.CacheStruct.blockStarOreMine":
+		return x.BlockStarOreMine != uint64(0)
+	case "structs.structs.CacheStruct.blockStartOreRefineLoaded":
+		return x.BlockStartOreRefineLoaded != false
+	case "structs.structs.CacheStruct.blockStartOreRefine":
+		return x.BlockStartOreRefine != uint64(0)
+	case "structs.structs.CacheStruct.protectedStructIndexLoaded":
+		return x.ProtectedStructIndexLoaded != false
+	case "structs.structs.CacheStruct.protectedStructIndex":
+		return x.ProtectedStructIndex != uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.CacheStruct"))
+		}
+		panic(fmt.Errorf("message structs.structs.CacheStruct does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_CacheStruct) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.CacheStruct.structId":
+		x.StructId = ""
+	case "structs.structs.CacheStruct.structureLoaded":
+		x.StructureLoaded = false
+	case "structs.structs.CacheStruct.structure":
+		x.Structure = nil
+	case "structs.structs.CacheStruct.structTypeLoaded":
+		x.StructTypeLoaded = false
+	case "structs.structs.CacheStruct.structType":
+		x.StructType = nil
+	case "structs.structs.CacheStruct.healthLoaded":
+		x.HealthLoaded = false
+	case "structs.structs.CacheStruct.health":
+		x.Health = uint64(0)
+	case "structs.structs.CacheStruct.statusAttributeId":
+		x.StatusAttributeId = ""
+	case "structs.structs.CacheStruct.statusLoaded":
+		x.StatusLoaded = false
+	case "structs.structs.CacheStruct.status":
+		x.Status = uint64(0)
+	case "structs.structs.CacheStruct.blockStartBuildLoaded":
+		x.BlockStartBuildLoaded = false
+	case "structs.structs.CacheStruct.blockStartBuild":
+		x.BlockStartBuild = uint64(0)
+	case "structs.structs.CacheStruct.blockStartOreMineLoaded":
+		x.BlockStartOreMineLoaded = false
+	case "structs.structs.CacheStruct.blockStarOreMine":
+		x.BlockStarOreMine = uint64(0)
+	case "structs.structs.CacheStruct.blockStartOreRefineLoaded":
+		x.BlockStartOreRefineLoaded = false
+	case "structs.structs.CacheStruct.blockStartOreRefine":
+		x.BlockStartOreRefine = uint64(0)
+	case "structs.structs.CacheStruct.protectedStructIndexLoaded":
+		x.ProtectedStructIndexLoaded = false
+	case "structs.structs.CacheStruct.protectedStructIndex":
+		x.ProtectedStructIndex = uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.CacheStruct"))
+		}
+		panic(fmt.Errorf("message structs.structs.CacheStruct does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_CacheStruct) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.CacheStruct.structId":
+		value := x.StructId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.CacheStruct.structureLoaded":
+		value := x.StructureLoaded
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.CacheStruct.structure":
+		value := x.Structure
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "structs.structs.CacheStruct.structTypeLoaded":
+		value := x.StructTypeLoaded
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.CacheStruct.structType":
+		value := x.StructType
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	case "structs.structs.CacheStruct.healthLoaded":
+		value := x.HealthLoaded
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.CacheStruct.health":
+		value := x.Health
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.CacheStruct.statusAttributeId":
+		value := x.StatusAttributeId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.CacheStruct.statusLoaded":
+		value := x.StatusLoaded
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.CacheStruct.status":
+		value := x.Status
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.CacheStruct.blockStartBuildLoaded":
+		value := x.BlockStartBuildLoaded
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.CacheStruct.blockStartBuild":
+		value := x.BlockStartBuild
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.CacheStruct.blockStartOreMineLoaded":
+		value := x.BlockStartOreMineLoaded
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.CacheStruct.blockStarOreMine":
+		value := x.BlockStarOreMine
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.CacheStruct.blockStartOreRefineLoaded":
+		value := x.BlockStartOreRefineLoaded
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.CacheStruct.blockStartOreRefine":
+		value := x.BlockStartOreRefine
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.CacheStruct.protectedStructIndexLoaded":
+		value := x.ProtectedStructIndexLoaded
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.CacheStruct.protectedStructIndex":
+		value := x.ProtectedStructIndex
+		return protoreflect.ValueOfUint64(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.CacheStruct"))
+		}
+		panic(fmt.Errorf("message structs.structs.CacheStruct does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_CacheStruct) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.CacheStruct.structId":
+		x.StructId = value.Interface().(string)
+	case "structs.structs.CacheStruct.structureLoaded":
+		x.StructureLoaded = value.Bool()
+	case "structs.structs.CacheStruct.structure":
+		x.Structure = value.Message().Interface().(*Struct)
+	case "structs.structs.CacheStruct.structTypeLoaded":
+		x.StructTypeLoaded = value.Bool()
+	case "structs.structs.CacheStruct.structType":
+		x.StructType = value.Message().Interface().(*StructType)
+	case "structs.structs.CacheStruct.healthLoaded":
+		x.HealthLoaded = value.Bool()
+	case "structs.structs.CacheStruct.health":
+		x.Health = value.Uint()
+	case "structs.structs.CacheStruct.statusAttributeId":
+		x.StatusAttributeId = value.Interface().(string)
+	case "structs.structs.CacheStruct.statusLoaded":
+		x.StatusLoaded = value.Bool()
+	case "structs.structs.CacheStruct.status":
+		x.Status = value.Uint()
+	case "structs.structs.CacheStruct.blockStartBuildLoaded":
+		x.BlockStartBuildLoaded = value.Bool()
+	case "structs.structs.CacheStruct.blockStartBuild":
+		x.BlockStartBuild = value.Uint()
+	case "structs.structs.CacheStruct.blockStartOreMineLoaded":
+		x.BlockStartOreMineLoaded = value.Bool()
+	case "structs.structs.CacheStruct.blockStarOreMine":
+		x.BlockStarOreMine = value.Uint()
+	case "structs.structs.CacheStruct.blockStartOreRefineLoaded":
+		x.BlockStartOreRefineLoaded = value.Bool()
+	case "structs.structs.CacheStruct.blockStartOreRefine":
+		x.BlockStartOreRefine = value.Uint()
+	case "structs.structs.CacheStruct.protectedStructIndexLoaded":
+		x.ProtectedStructIndexLoaded = value.Bool()
+	case "structs.structs.CacheStruct.protectedStructIndex":
+		x.ProtectedStructIndex = value.Uint()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.CacheStruct"))
+		}
+		panic(fmt.Errorf("message structs.structs.CacheStruct does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_CacheStruct) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.CacheStruct.structure":
+		if x.Structure == nil {
+			x.Structure = new(Struct)
+		}
+		return protoreflect.ValueOfMessage(x.Structure.ProtoReflect())
+	case "structs.structs.CacheStruct.structType":
+		if x.StructType == nil {
+			x.StructType = new(StructType)
+		}
+		return protoreflect.ValueOfMessage(x.StructType.ProtoReflect())
+	case "structs.structs.CacheStruct.structId":
+		panic(fmt.Errorf("field structId of message structs.structs.CacheStruct is not mutable"))
+	case "structs.structs.CacheStruct.structureLoaded":
+		panic(fmt.Errorf("field structureLoaded of message structs.structs.CacheStruct is not mutable"))
+	case "structs.structs.CacheStruct.structTypeLoaded":
+		panic(fmt.Errorf("field structTypeLoaded of message structs.structs.CacheStruct is not mutable"))
+	case "structs.structs.CacheStruct.healthLoaded":
+		panic(fmt.Errorf("field healthLoaded of message structs.structs.CacheStruct is not mutable"))
+	case "structs.structs.CacheStruct.health":
+		panic(fmt.Errorf("field health of message structs.structs.CacheStruct is not mutable"))
+	case "structs.structs.CacheStruct.statusAttributeId":
+		panic(fmt.Errorf("field statusAttributeId of message structs.structs.CacheStruct is not mutable"))
+	case "structs.structs.CacheStruct.statusLoaded":
+		panic(fmt.Errorf("field statusLoaded of message structs.structs.CacheStruct is not mutable"))
+	case "structs.structs.CacheStruct.status":
+		panic(fmt.Errorf("field status of message structs.structs.CacheStruct is not mutable"))
+	case "structs.structs.CacheStruct.blockStartBuildLoaded":
+		panic(fmt.Errorf("field blockStartBuildLoaded of message structs.structs.CacheStruct is not mutable"))
+	case "structs.structs.CacheStruct.blockStartBuild":
+		panic(fmt.Errorf("field blockStartBuild of message structs.structs.CacheStruct is not mutable"))
+	case "structs.structs.CacheStruct.blockStartOreMineLoaded":
+		panic(fmt.Errorf("field blockStartOreMineLoaded of message structs.structs.CacheStruct is not mutable"))
+	case "structs.structs.CacheStruct.blockStarOreMine":
+		panic(fmt.Errorf("field blockStarOreMine of message structs.structs.CacheStruct is not mutable"))
+	case "structs.structs.CacheStruct.blockStartOreRefineLoaded":
+		panic(fmt.Errorf("field blockStartOreRefineLoaded of message structs.structs.CacheStruct is not mutable"))
+	case "structs.structs.CacheStruct.blockStartOreRefine":
+		panic(fmt.Errorf("field blockStartOreRefine of message structs.structs.CacheStruct is not mutable"))
+	case "structs.structs.CacheStruct.protectedStructIndexLoaded":
+		panic(fmt.Errorf("field protectedStructIndexLoaded of message structs.structs.CacheStruct is not mutable"))
+	case "structs.structs.CacheStruct.protectedStructIndex":
+		panic(fmt.Errorf("field protectedStructIndex of message structs.structs.CacheStruct is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.CacheStruct"))
+		}
+		panic(fmt.Errorf("message structs.structs.CacheStruct does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_CacheStruct) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.CacheStruct.structId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.CacheStruct.structureLoaded":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.CacheStruct.structure":
+		m := new(Struct)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "structs.structs.CacheStruct.structTypeLoaded":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.CacheStruct.structType":
+		m := new(StructType)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	case "structs.structs.CacheStruct.healthLoaded":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.CacheStruct.health":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.CacheStruct.statusAttributeId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.CacheStruct.statusLoaded":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.CacheStruct.status":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.CacheStruct.blockStartBuildLoaded":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.CacheStruct.blockStartBuild":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.CacheStruct.blockStartOreMineLoaded":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.CacheStruct.blockStarOreMine":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.CacheStruct.blockStartOreRefineLoaded":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.CacheStruct.blockStartOreRefine":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.CacheStruct.protectedStructIndexLoaded":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.CacheStruct.protectedStructIndex":
+		return protoreflect.ValueOfUint64(uint64(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.CacheStruct"))
+		}
+		panic(fmt.Errorf("message structs.structs.CacheStruct does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_CacheStruct) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.CacheStruct", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_CacheStruct) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_CacheStruct) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_CacheStruct) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_CacheStruct) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*CacheStruct)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.StructId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.StructureLoaded {
+			n += 2
+		}
+		if x.Structure != nil {
+			l = options.Size(x.Structure)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.StructTypeLoaded {
+			n += 2
+		}
+		if x.StructType != nil {
+			l = options.Size(x.StructType)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.HealthLoaded {
+			n += 2
+		}
+		if x.Health != 0 {
+			n += 1 + runtime.Sov(uint64(x.Health))
+		}
+		l = len(x.StatusAttributeId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.StatusLoaded {
+			n += 2
+		}
+		if x.Status != 0 {
+			n += 1 + runtime.Sov(uint64(x.Status))
+		}
+		if x.BlockStartBuildLoaded {
+			n += 2
+		}
+		if x.BlockStartBuild != 0 {
+			n += 1 + runtime.Sov(uint64(x.BlockStartBuild))
+		}
+		if x.BlockStartOreMineLoaded {
+			n += 2
+		}
+		if x.BlockStarOreMine != 0 {
+			n += 1 + runtime.Sov(uint64(x.BlockStarOreMine))
+		}
+		if x.BlockStartOreRefineLoaded {
+			n += 2
+		}
+		if x.BlockStartOreRefine != 0 {
+			n += 2 + runtime.Sov(uint64(x.BlockStartOreRefine))
+		}
+		if x.ProtectedStructIndexLoaded {
+			n += 3
+		}
+		if x.ProtectedStructIndex != 0 {
+			n += 2 + runtime.Sov(uint64(x.ProtectedStructIndex))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*CacheStruct)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.ProtectedStructIndex != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.ProtectedStructIndex))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0x90
+		}
+		if x.ProtectedStructIndexLoaded {
+			i--
+			if x.ProtectedStructIndexLoaded {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0x88
+		}
+		if x.BlockStartOreRefine != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BlockStartOreRefine))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0x80
+		}
+		if x.BlockStartOreRefineLoaded {
+			i--
+			if x.BlockStartOreRefineLoaded {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x78
+		}
+		if x.BlockStarOreMine != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BlockStarOreMine))
+			i--
+			dAtA[i] = 0x70
+		}
+		if x.BlockStartOreMineLoaded {
+			i--
+			if x.BlockStartOreMineLoaded {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x68
+		}
+		if x.BlockStartBuild != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BlockStartBuild))
+			i--
+			dAtA[i] = 0x60
+		}
+		if x.BlockStartBuildLoaded {
+			i--
+			if x.BlockStartBuildLoaded {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x58
+		}
+		if x.Status != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Status))
+			i--
+			dAtA[i] = 0x50
+		}
+		if x.StatusLoaded {
+			i--
+			if x.StatusLoaded {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x48
+		}
+		if len(x.StatusAttributeId) > 0 {
+			i -= len(x.StatusAttributeId)
+			copy(dAtA[i:], x.StatusAttributeId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.StatusAttributeId)))
+			i--
+			dAtA[i] = 0x42
+		}
+		if x.Health != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Health))
+			i--
+			dAtA[i] = 0x38
+		}
+		if x.HealthLoaded {
+			i--
+			if x.HealthLoaded {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x30
+		}
+		if x.StructType != nil {
+			encoded, err := options.Marshal(x.StructType)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x2a
+		}
+		if x.StructTypeLoaded {
+			i--
+			if x.StructTypeLoaded {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x20
+		}
+		if x.Structure != nil {
+			encoded, err := options.Marshal(x.Structure)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if x.StructureLoaded {
+			i--
+			if x.StructureLoaded {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x10
+		}
+		if len(x.StructId) > 0 {
+			i -= len(x.StructId)
+			copy(dAtA[i:], x.StructId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.StructId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*CacheStruct)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: CacheStruct: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: CacheStruct: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field StructId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.StructId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field StructureLoaded", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.StructureLoaded = bool(v != 0)
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Structure", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Structure == nil {
+					x.Structure = &Struct{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Structure); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 4:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field StructTypeLoaded", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.StructTypeLoaded = bool(v != 0)
+			case 5:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field StructType", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.StructType == nil {
+					x.StructType = &StructType{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.StructType); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			case 6:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field HealthLoaded", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.HealthLoaded = bool(v != 0)
+			case 7:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Health", wireType)
+				}
+				x.Health = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Health |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 8:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field StatusAttributeId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.StatusAttributeId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 9:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field StatusLoaded", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.StatusLoaded = bool(v != 0)
+			case 10:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
+				}
+				x.Status = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Status |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 11:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BlockStartBuildLoaded", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.BlockStartBuildLoaded = bool(v != 0)
+			case 12:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BlockStartBuild", wireType)
+				}
+				x.BlockStartBuild = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.BlockStartBuild |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 13:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BlockStartOreMineLoaded", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.BlockStartOreMineLoaded = bool(v != 0)
+			case 14:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BlockStarOreMine", wireType)
+				}
+				x.BlockStarOreMine = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.BlockStarOreMine |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 15:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BlockStartOreRefineLoaded", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.BlockStartOreRefineLoaded = bool(v != 0)
+			case 16:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BlockStartOreRefine", wireType)
+				}
+				x.BlockStartOreRefine = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.BlockStartOreRefine |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 17:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ProtectedStructIndexLoaded", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.ProtectedStructIndexLoaded = bool(v != 0)
+			case 18:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ProtectedStructIndex", wireType)
+				}
+				x.ProtectedStructIndex = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.ProtectedStructIndex |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 // Code generated by protoc-gen-go. DO NOT EDIT.
 // versions:
 // 	protoc-gen-go v1.27.0
@@ -5600,57 +7068,59 @@ type StructType struct {
 	PrimaryWeapon                           TechActiveWeaponry `protobuf:"varint,11,opt,name=primaryWeapon,proto3,enum=structs.structs.TechActiveWeaponry" json:"primaryWeapon,omitempty"`
 	PrimaryWeaponControl                    TechWeaponControl  `protobuf:"varint,12,opt,name=primaryWeaponControl,proto3,enum=structs.structs.TechWeaponControl" json:"primaryWeaponControl,omitempty"`
 	PrimaryWeaponCharge                     uint64             `protobuf:"varint,13,opt,name=primaryWeaponCharge,proto3" json:"primaryWeaponCharge,omitempty"`
-	PrimaryWeaponTargets                    uint64             `protobuf:"varint,14,opt,name=primaryWeaponTargets,proto3" json:"primaryWeaponTargets,omitempty"`
-	PrimaryWeaponShots                      uint64             `protobuf:"varint,15,opt,name=primaryWeaponShots,proto3" json:"primaryWeaponShots,omitempty"`
-	PrimaryWeaponDamage                     uint64             `protobuf:"varint,16,opt,name=primaryWeaponDamage,proto3" json:"primaryWeaponDamage,omitempty"`
-	PrimaryWeaponBlockable                  bool               `protobuf:"varint,17,opt,name=primaryWeaponBlockable,proto3" json:"primaryWeaponBlockable,omitempty"`
-	PrimaryWeaponCounterable                bool               `protobuf:"varint,18,opt,name=primaryWeaponCounterable,proto3" json:"primaryWeaponCounterable,omitempty"`
-	PrimaryWeaponRecoilDamage               uint64             `protobuf:"varint,19,opt,name=primaryWeaponRecoilDamage,proto3" json:"primaryWeaponRecoilDamage,omitempty"`
-	PrimaryWeaponShotSuccessRateNumerator   uint64             `protobuf:"varint,20,opt,name=primaryWeaponShotSuccessRateNumerator,proto3" json:"primaryWeaponShotSuccessRateNumerator,omitempty"`
-	PrimaryWeaponShotSuccessRateDenominator uint64             `protobuf:"varint,21,opt,name=primaryWeaponShotSuccessRateDenominator,proto3" json:"primaryWeaponShotSuccessRateDenominator,omitempty"`
+	PrimaryWeaponAmbits                     uint64             `protobuf:"varint,14,opt,name=primaryWeaponAmbits,proto3" json:"primaryWeaponAmbits,omitempty"`
+	PrimaryWeaponTargets                    uint64             `protobuf:"varint,15,opt,name=primaryWeaponTargets,proto3" json:"primaryWeaponTargets,omitempty"`
+	PrimaryWeaponShots                      uint64             `protobuf:"varint,16,opt,name=primaryWeaponShots,proto3" json:"primaryWeaponShots,omitempty"`
+	PrimaryWeaponDamage                     uint64             `protobuf:"varint,17,opt,name=primaryWeaponDamage,proto3" json:"primaryWeaponDamage,omitempty"`
+	PrimaryWeaponBlockable                  bool               `protobuf:"varint,18,opt,name=primaryWeaponBlockable,proto3" json:"primaryWeaponBlockable,omitempty"`
+	PrimaryWeaponCounterable                bool               `protobuf:"varint,19,opt,name=primaryWeaponCounterable,proto3" json:"primaryWeaponCounterable,omitempty"`
+	PrimaryWeaponRecoilDamage               uint64             `protobuf:"varint,20,opt,name=primaryWeaponRecoilDamage,proto3" json:"primaryWeaponRecoilDamage,omitempty"`
+	PrimaryWeaponShotSuccessRateNumerator   uint64             `protobuf:"varint,21,opt,name=primaryWeaponShotSuccessRateNumerator,proto3" json:"primaryWeaponShotSuccessRateNumerator,omitempty"`
+	PrimaryWeaponShotSuccessRateDenominator uint64             `protobuf:"varint,22,opt,name=primaryWeaponShotSuccessRateDenominator,proto3" json:"primaryWeaponShotSuccessRateDenominator,omitempty"`
 	// Secondary Weapon Configuration
-	SecondaryWeapon                           TechActiveWeaponry `protobuf:"varint,22,opt,name=secondaryWeapon,proto3,enum=structs.structs.TechActiveWeaponry" json:"secondaryWeapon,omitempty"`
-	SecondaryWeaponControl                    TechWeaponControl  `protobuf:"varint,23,opt,name=secondaryWeaponControl,proto3,enum=structs.structs.TechWeaponControl" json:"secondaryWeaponControl,omitempty"`
-	SecondaryWeaponCharge                     uint64             `protobuf:"varint,24,opt,name=secondaryWeaponCharge,proto3" json:"secondaryWeaponCharge,omitempty"`
-	SecondaryWeaponTargets                    uint64             `protobuf:"varint,25,opt,name=secondaryWeaponTargets,proto3" json:"secondaryWeaponTargets,omitempty"`
-	SecondaryWeaponShots                      uint64             `protobuf:"varint,26,opt,name=secondaryWeaponShots,proto3" json:"secondaryWeaponShots,omitempty"`
-	SecondaryWeaponDamage                     uint64             `protobuf:"varint,27,opt,name=secondaryWeaponDamage,proto3" json:"secondaryWeaponDamage,omitempty"`
-	SecondaryWeaponBlockable                  bool               `protobuf:"varint,28,opt,name=secondaryWeaponBlockable,proto3" json:"secondaryWeaponBlockable,omitempty"`
-	SecondaryWeaponCounterable                bool               `protobuf:"varint,29,opt,name=secondaryWeaponCounterable,proto3" json:"secondaryWeaponCounterable,omitempty"`
-	SecondaryWeaponRecoilDamage               uint64             `protobuf:"varint,30,opt,name=secondaryWeaponRecoilDamage,proto3" json:"secondaryWeaponRecoilDamage,omitempty"`
-	SecondaryWeaponShotSuccessRateNumerator   uint64             `protobuf:"varint,31,opt,name=secondaryWeaponShotSuccessRateNumerator,proto3" json:"secondaryWeaponShotSuccessRateNumerator,omitempty"`
-	SecondaryWeaponShotSuccessRateDenominator uint64             `protobuf:"varint,32,opt,name=secondaryWeaponShotSuccessRateDenominator,proto3" json:"secondaryWeaponShotSuccessRateDenominator,omitempty"`
+	SecondaryWeapon                           TechActiveWeaponry `protobuf:"varint,23,opt,name=secondaryWeapon,proto3,enum=structs.structs.TechActiveWeaponry" json:"secondaryWeapon,omitempty"`
+	SecondaryWeaponControl                    TechWeaponControl  `protobuf:"varint,24,opt,name=secondaryWeaponControl,proto3,enum=structs.structs.TechWeaponControl" json:"secondaryWeaponControl,omitempty"`
+	SecondaryWeaponCharge                     uint64             `protobuf:"varint,25,opt,name=secondaryWeaponCharge,proto3" json:"secondaryWeaponCharge,omitempty"`
+	SecondaryWeaponAmbits                     uint64             `protobuf:"varint,26,opt,name=secondaryWeaponAmbits,proto3" json:"secondaryWeaponAmbits,omitempty"`
+	SecondaryWeaponTargets                    uint64             `protobuf:"varint,27,opt,name=secondaryWeaponTargets,proto3" json:"secondaryWeaponTargets,omitempty"`
+	SecondaryWeaponShots                      uint64             `protobuf:"varint,28,opt,name=secondaryWeaponShots,proto3" json:"secondaryWeaponShots,omitempty"`
+	SecondaryWeaponDamage                     uint64             `protobuf:"varint,29,opt,name=secondaryWeaponDamage,proto3" json:"secondaryWeaponDamage,omitempty"`
+	SecondaryWeaponBlockable                  bool               `protobuf:"varint,30,opt,name=secondaryWeaponBlockable,proto3" json:"secondaryWeaponBlockable,omitempty"`
+	SecondaryWeaponCounterable                bool               `protobuf:"varint,31,opt,name=secondaryWeaponCounterable,proto3" json:"secondaryWeaponCounterable,omitempty"`
+	SecondaryWeaponRecoilDamage               uint64             `protobuf:"varint,32,opt,name=secondaryWeaponRecoilDamage,proto3" json:"secondaryWeaponRecoilDamage,omitempty"`
+	SecondaryWeaponShotSuccessRateNumerator   uint64             `protobuf:"varint,33,opt,name=secondaryWeaponShotSuccessRateNumerator,proto3" json:"secondaryWeaponShotSuccessRateNumerator,omitempty"`
+	SecondaryWeaponShotSuccessRateDenominator uint64             `protobuf:"varint,34,opt,name=secondaryWeaponShotSuccessRateDenominator,proto3" json:"secondaryWeaponShotSuccessRateDenominator,omitempty"`
 	// Tech Tree Features
-	PassiveWeaponry    TechPassiveWeaponry     `protobuf:"varint,33,opt,name=passiveWeaponry,proto3,enum=structs.structs.TechPassiveWeaponry" json:"passiveWeaponry,omitempty"`
-	UnitDefenses       TechUnitDefenses        `protobuf:"varint,34,opt,name=unitDefenses,proto3,enum=structs.structs.TechUnitDefenses" json:"unitDefenses,omitempty"`
-	OreReserveDefenses TechOreReserveDefenses  `protobuf:"varint,35,opt,name=oreReserveDefenses,proto3,enum=structs.structs.TechOreReserveDefenses" json:"oreReserveDefenses,omitempty"`
-	PlanetaryDefenses  TechPlanetaryDefenses   `protobuf:"varint,36,opt,name=planetaryDefenses,proto3,enum=structs.structs.TechPlanetaryDefenses" json:"planetaryDefenses,omitempty"`
-	PlanetaryMining    TechPlanetaryMining     `protobuf:"varint,37,opt,name=planetaryMining,proto3,enum=structs.structs.TechPlanetaryMining" json:"planetaryMining,omitempty"`
-	PlanetaryRefinery  TechPlanetaryRefineries `protobuf:"varint,38,opt,name=planetaryRefinery,proto3,enum=structs.structs.TechPlanetaryRefineries" json:"planetaryRefinery,omitempty"`
-	PowerGeneration    TechPowerGeneration     `protobuf:"varint,39,opt,name=powerGeneration,proto3,enum=structs.structs.TechPowerGeneration" json:"powerGeneration,omitempty"`
+	PassiveWeaponry    TechPassiveWeaponry     `protobuf:"varint,35,opt,name=passiveWeaponry,proto3,enum=structs.structs.TechPassiveWeaponry" json:"passiveWeaponry,omitempty"`
+	UnitDefenses       TechUnitDefenses        `protobuf:"varint,36,opt,name=unitDefenses,proto3,enum=structs.structs.TechUnitDefenses" json:"unitDefenses,omitempty"`
+	OreReserveDefenses TechOreReserveDefenses  `protobuf:"varint,37,opt,name=oreReserveDefenses,proto3,enum=structs.structs.TechOreReserveDefenses" json:"oreReserveDefenses,omitempty"`
+	PlanetaryDefenses  TechPlanetaryDefenses   `protobuf:"varint,38,opt,name=planetaryDefenses,proto3,enum=structs.structs.TechPlanetaryDefenses" json:"planetaryDefenses,omitempty"`
+	PlanetaryMining    TechPlanetaryMining     `protobuf:"varint,39,opt,name=planetaryMining,proto3,enum=structs.structs.TechPlanetaryMining" json:"planetaryMining,omitempty"`
+	PlanetaryRefinery  TechPlanetaryRefineries `protobuf:"varint,40,opt,name=planetaryRefinery,proto3,enum=structs.structs.TechPlanetaryRefineries" json:"planetaryRefinery,omitempty"`
+	PowerGeneration    TechPowerGeneration     `protobuf:"varint,41,opt,name=powerGeneration,proto3,enum=structs.structs.TechPowerGeneration" json:"powerGeneration,omitempty"`
 	// Charge uses
-	ActivateCharge        uint64 `protobuf:"varint,40,opt,name=activateCharge,proto3" json:"activateCharge,omitempty"`
-	BuildCharge           uint64 `protobuf:"varint,41,opt,name=buildCharge,proto3" json:"buildCharge,omitempty"`
-	DefendChangeCharge    uint64 `protobuf:"varint,42,opt,name=defendChangeCharge,proto3" json:"defendChangeCharge,omitempty"`
-	MoveCharge            uint64 `protobuf:"varint,43,opt,name=moveCharge,proto3" json:"moveCharge,omitempty"`
-	OreMiningCharge       uint64 `protobuf:"varint,44,opt,name=oreMiningCharge,proto3" json:"oreMiningCharge,omitempty"`
-	OreRefiningCharge     uint64 `protobuf:"varint,45,opt,name=oreRefiningCharge,proto3" json:"oreRefiningCharge,omitempty"`
-	StealthActivateCharge uint64 `protobuf:"varint,46,opt,name=stealthActivateCharge,proto3" json:"stealthActivateCharge,omitempty"`
+	ActivateCharge        uint64 `protobuf:"varint,42,opt,name=activateCharge,proto3" json:"activateCharge,omitempty"`
+	BuildCharge           uint64 `protobuf:"varint,43,opt,name=buildCharge,proto3" json:"buildCharge,omitempty"`
+	DefendChangeCharge    uint64 `protobuf:"varint,44,opt,name=defendChangeCharge,proto3" json:"defendChangeCharge,omitempty"`
+	MoveCharge            uint64 `protobuf:"varint,45,opt,name=moveCharge,proto3" json:"moveCharge,omitempty"`
+	OreMiningCharge       uint64 `protobuf:"varint,46,opt,name=oreMiningCharge,proto3" json:"oreMiningCharge,omitempty"`
+	OreRefiningCharge     uint64 `protobuf:"varint,47,opt,name=oreRefiningCharge,proto3" json:"oreRefiningCharge,omitempty"`
+	StealthActivateCharge uint64 `protobuf:"varint,48,opt,name=stealthActivateCharge,proto3" json:"stealthActivateCharge,omitempty"`
 	// Tech Tree Attributes
-	AttackReduction                         uint64 `protobuf:"varint,47,opt,name=attackReduction,proto3" json:"attackReduction,omitempty"`               // For Defensive Cannon
-	AttackCounterable                       bool   `protobuf:"varint,48,opt,name=attackCounterable,proto3" json:"attackCounterable,omitempty"`           // For Indirect Combat Module
-	StealthSystems                          bool   `protobuf:"varint,49,opt,name=stealthSystems,proto3" json:"stealthSystems,omitempty"`                 // For Stealth Mode
-	CounterAttack                           uint64 `protobuf:"varint,50,opt,name=counterAttack,proto3" json:"counterAttack,omitempty"`                   // Counter
-	CounterAttackSameAmbit                  uint64 `protobuf:"varint,51,opt,name=counterAttackSameAmbit,proto3" json:"counterAttackSameAmbit,omitempty"` // Advanced Counter
-	PostDestructionDamage                   uint64 `protobuf:"varint,52,opt,name=postDestructionDamage,proto3" json:"postDestructionDamage,omitempty"`
-	GeneratingRate                          uint64 `protobuf:"varint,53,opt,name=generatingRate,proto3" json:"generatingRate,omitempty"`                           // Power Generation
-	PlanetaryShieldContribution             uint64 `protobuf:"varint,54,opt,name=planetaryShieldContribution,proto3" json:"planetaryShieldContribution,omitempty"` // The shield that is added to the Planet
-	OreMiningDifficulty                     uint64 `protobuf:"varint,55,opt,name=oreMiningDifficulty,proto3" json:"oreMiningDifficulty,omitempty"`
-	OreRefiningDifficulty                   uint64 `protobuf:"varint,56,opt,name=oreRefiningDifficulty,proto3" json:"oreRefiningDifficulty,omitempty"`
-	UnguidedDefensiveSuccessRateNumerator   uint64 `protobuf:"varint,57,opt,name=unguidedDefensiveSuccessRateNumerator,proto3" json:"unguidedDefensiveSuccessRateNumerator,omitempty"`
-	UnguidedDefensiveSuccessRateDenominator uint64 `protobuf:"varint,58,opt,name=unguidedDefensiveSuccessRateDenominator,proto3" json:"unguidedDefensiveSuccessRateDenominator,omitempty"`
-	GuidedDefensiveSuccessRateNumerator     uint64 `protobuf:"varint,59,opt,name=guidedDefensiveSuccessRateNumerator,proto3" json:"guidedDefensiveSuccessRateNumerator,omitempty"`
-	GuidedDefensiveSuccessRateDenominator   uint64 `protobuf:"varint,60,opt,name=guidedDefensiveSuccessRateDenominator,proto3" json:"guidedDefensiveSuccessRateDenominator,omitempty"`
+	AttackReduction                         uint64 `protobuf:"varint,49,opt,name=attackReduction,proto3" json:"attackReduction,omitempty"`               // For Defensive Cannon
+	AttackCounterable                       bool   `protobuf:"varint,50,opt,name=attackCounterable,proto3" json:"attackCounterable,omitempty"`           // For Indirect Combat Module
+	StealthSystems                          bool   `protobuf:"varint,51,opt,name=stealthSystems,proto3" json:"stealthSystems,omitempty"`                 // For Stealth Mode
+	CounterAttack                           uint64 `protobuf:"varint,52,opt,name=counterAttack,proto3" json:"counterAttack,omitempty"`                   // Counter
+	CounterAttackSameAmbit                  uint64 `protobuf:"varint,53,opt,name=counterAttackSameAmbit,proto3" json:"counterAttackSameAmbit,omitempty"` // Advanced Counter
+	PostDestructionDamage                   uint64 `protobuf:"varint,54,opt,name=postDestructionDamage,proto3" json:"postDestructionDamage,omitempty"`
+	GeneratingRate                          uint64 `protobuf:"varint,55,opt,name=generatingRate,proto3" json:"generatingRate,omitempty"`                           // Power Generation
+	PlanetaryShieldContribution             uint64 `protobuf:"varint,56,opt,name=planetaryShieldContribution,proto3" json:"planetaryShieldContribution,omitempty"` // The shield that is added to the Planet
+	OreMiningDifficulty                     uint64 `protobuf:"varint,57,opt,name=oreMiningDifficulty,proto3" json:"oreMiningDifficulty,omitempty"`
+	OreRefiningDifficulty                   uint64 `protobuf:"varint,58,opt,name=oreRefiningDifficulty,proto3" json:"oreRefiningDifficulty,omitempty"`
+	UnguidedDefensiveSuccessRateNumerator   uint64 `protobuf:"varint,59,opt,name=unguidedDefensiveSuccessRateNumerator,proto3" json:"unguidedDefensiveSuccessRateNumerator,omitempty"`
+	UnguidedDefensiveSuccessRateDenominator uint64 `protobuf:"varint,60,opt,name=unguidedDefensiveSuccessRateDenominator,proto3" json:"unguidedDefensiveSuccessRateDenominator,omitempty"`
+	GuidedDefensiveSuccessRateNumerator     uint64 `protobuf:"varint,61,opt,name=guidedDefensiveSuccessRateNumerator,proto3" json:"guidedDefensiveSuccessRateNumerator,omitempty"`
+	GuidedDefensiveSuccessRateDenominator   uint64 `protobuf:"varint,62,opt,name=guidedDefensiveSuccessRateDenominator,proto3" json:"guidedDefensiveSuccessRateDenominator,omitempty"`
 }
 
 func (x *StructType) Reset() {
@@ -5764,6 +7234,13 @@ func (x *StructType) GetPrimaryWeaponCharge() uint64 {
 	return 0
 }
 
+func (x *StructType) GetPrimaryWeaponAmbits() uint64 {
+	if x != nil {
+		return x.PrimaryWeaponAmbits
+	}
+	return 0
+}
+
 func (x *StructType) GetPrimaryWeaponTargets() uint64 {
 	if x != nil {
 		return x.PrimaryWeaponTargets
@@ -5837,6 +7314,13 @@ func (x *StructType) GetSecondaryWeaponControl() TechWeaponControl {
 func (x *StructType) GetSecondaryWeaponCharge() uint64 {
 	if x != nil {
 		return x.SecondaryWeaponCharge
+	}
+	return 0
+}
+
+func (x *StructType) GetSecondaryWeaponAmbits() uint64 {
+	if x != nil {
+		return x.SecondaryWeaponAmbits
 	}
 	return 0
 }
@@ -6219,6 +7703,177 @@ func (x *StructAttributeRecord) GetValue() uint64 {
 	return 0
 }
 
+type CacheStruct struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	StructId                   string      `protobuf:"bytes,1,opt,name=structId,proto3" json:"structId,omitempty"`
+	StructureLoaded            bool        `protobuf:"varint,2,opt,name=structureLoaded,proto3" json:"structureLoaded,omitempty"`
+	Structure                  *Struct     `protobuf:"bytes,3,opt,name=structure,proto3" json:"structure,omitempty"`
+	StructTypeLoaded           bool        `protobuf:"varint,4,opt,name=structTypeLoaded,proto3" json:"structTypeLoaded,omitempty"`
+	StructType                 *StructType `protobuf:"bytes,5,opt,name=structType,proto3" json:"structType,omitempty"`
+	HealthLoaded               bool        `protobuf:"varint,6,opt,name=healthLoaded,proto3" json:"healthLoaded,omitempty"`
+	Health                     uint64      `protobuf:"varint,7,opt,name=health,proto3" json:"health,omitempty"`
+	StatusAttributeId          string      `protobuf:"bytes,8,opt,name=statusAttributeId,proto3" json:"statusAttributeId,omitempty"`
+	StatusLoaded               bool        `protobuf:"varint,9,opt,name=statusLoaded,proto3" json:"statusLoaded,omitempty"`
+	Status                     uint64      `protobuf:"varint,10,opt,name=status,proto3" json:"status,omitempty"`
+	BlockStartBuildLoaded      bool        `protobuf:"varint,11,opt,name=blockStartBuildLoaded,proto3" json:"blockStartBuildLoaded,omitempty"`
+	BlockStartBuild            uint64      `protobuf:"varint,12,opt,name=blockStartBuild,proto3" json:"blockStartBuild,omitempty"`
+	BlockStartOreMineLoaded    bool        `protobuf:"varint,13,opt,name=blockStartOreMineLoaded,proto3" json:"blockStartOreMineLoaded,omitempty"`
+	BlockStarOreMine           uint64      `protobuf:"varint,14,opt,name=blockStarOreMine,proto3" json:"blockStarOreMine,omitempty"`
+	BlockStartOreRefineLoaded  bool        `protobuf:"varint,15,opt,name=blockStartOreRefineLoaded,proto3" json:"blockStartOreRefineLoaded,omitempty"`
+	BlockStartOreRefine        uint64      `protobuf:"varint,16,opt,name=blockStartOreRefine,proto3" json:"blockStartOreRefine,omitempty"`
+	ProtectedStructIndexLoaded bool        `protobuf:"varint,17,opt,name=protectedStructIndexLoaded,proto3" json:"protectedStructIndexLoaded,omitempty"`
+	ProtectedStructIndex       uint64      `protobuf:"varint,18,opt,name=protectedStructIndex,proto3" json:"protectedStructIndex,omitempty"`
+}
+
+func (x *CacheStruct) Reset() {
+	*x = CacheStruct{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_struct_proto_msgTypes[4]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CacheStruct) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CacheStruct) ProtoMessage() {}
+
+// Deprecated: Use CacheStruct.ProtoReflect.Descriptor instead.
+func (*CacheStruct) Descriptor() ([]byte, []int) {
+	return file_structs_structs_struct_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *CacheStruct) GetStructId() string {
+	if x != nil {
+		return x.StructId
+	}
+	return ""
+}
+
+func (x *CacheStruct) GetStructureLoaded() bool {
+	if x != nil {
+		return x.StructureLoaded
+	}
+	return false
+}
+
+func (x *CacheStruct) GetStructure() *Struct {
+	if x != nil {
+		return x.Structure
+	}
+	return nil
+}
+
+func (x *CacheStruct) GetStructTypeLoaded() bool {
+	if x != nil {
+		return x.StructTypeLoaded
+	}
+	return false
+}
+
+func (x *CacheStruct) GetStructType() *StructType {
+	if x != nil {
+		return x.StructType
+	}
+	return nil
+}
+
+func (x *CacheStruct) GetHealthLoaded() bool {
+	if x != nil {
+		return x.HealthLoaded
+	}
+	return false
+}
+
+func (x *CacheStruct) GetHealth() uint64 {
+	if x != nil {
+		return x.Health
+	}
+	return 0
+}
+
+func (x *CacheStruct) GetStatusAttributeId() string {
+	if x != nil {
+		return x.StatusAttributeId
+	}
+	return ""
+}
+
+func (x *CacheStruct) GetStatusLoaded() bool {
+	if x != nil {
+		return x.StatusLoaded
+	}
+	return false
+}
+
+func (x *CacheStruct) GetStatus() uint64 {
+	if x != nil {
+		return x.Status
+	}
+	return 0
+}
+
+func (x *CacheStruct) GetBlockStartBuildLoaded() bool {
+	if x != nil {
+		return x.BlockStartBuildLoaded
+	}
+	return false
+}
+
+func (x *CacheStruct) GetBlockStartBuild() uint64 {
+	if x != nil {
+		return x.BlockStartBuild
+	}
+	return 0
+}
+
+func (x *CacheStruct) GetBlockStartOreMineLoaded() bool {
+	if x != nil {
+		return x.BlockStartOreMineLoaded
+	}
+	return false
+}
+
+func (x *CacheStruct) GetBlockStarOreMine() uint64 {
+	if x != nil {
+		return x.BlockStarOreMine
+	}
+	return 0
+}
+
+func (x *CacheStruct) GetBlockStartOreRefineLoaded() bool {
+	if x != nil {
+		return x.BlockStartOreRefineLoaded
+	}
+	return false
+}
+
+func (x *CacheStruct) GetBlockStartOreRefine() uint64 {
+	if x != nil {
+		return x.BlockStartOreRefine
+	}
+	return 0
+}
+
+func (x *CacheStruct) GetProtectedStructIndexLoaded() bool {
+	if x != nil {
+		return x.ProtectedStructIndexLoaded
+	}
+	return false
+}
+
+func (x *CacheStruct) GetProtectedStructIndex() uint64 {
+	if x != nil {
+		return x.ProtectedStructIndex
+	}
+	return 0
+}
+
 var File_structs_structs_struct_proto protoreflect.FileDescriptor
 
 var file_structs_structs_struct_proto_rawDesc = []byte{
@@ -6245,7 +7900,7 @@ var file_structs_structs_struct_proto_rawDesc = []byte{
 	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69,
 	0x74, 0x52, 0x0e, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69,
 	0x74, 0x12, 0x12, 0x0a, 0x04, 0x73, 0x6c, 0x6f, 0x74, 0x18, 0x09, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x04, 0x73, 0x6c, 0x6f, 0x74, 0x22, 0xb9, 0x1b, 0x0a, 0x0a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x04, 0x73, 0x6c, 0x6f, 0x74, 0x22, 0xa1, 0x1c, 0x0a, 0x0a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x54, 0x79, 0x70, 0x65, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04,
 	0x52, 0x02, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01,
 	0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x37, 0x0a, 0x08, 0x63, 0x61, 0x74, 0x65,
@@ -6279,231 +7934,290 @@ var file_structs_structs_struct_proto_rawDesc = []byte{
 	0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x12, 0x30, 0x0a, 0x13, 0x70, 0x72,
 	0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x68, 0x61, 0x72, 0x67,
 	0x65, 0x18, 0x0d, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79,
-	0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x32, 0x0a, 0x14,
-	0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x54, 0x61, 0x72,
-	0x67, 0x65, 0x74, 0x73, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x04, 0x52, 0x14, 0x70, 0x72, 0x69, 0x6d,
-	0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x73,
-	0x12, 0x2e, 0x0a, 0x12, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f,
-	0x6e, 0x53, 0x68, 0x6f, 0x74, 0x73, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12, 0x70, 0x72,
-	0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x73,
-	0x12, 0x30, 0x0a, 0x13, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f,
-	0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x10, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x70,
-	0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61,
-	0x67, 0x65, 0x12, 0x36, 0x0a, 0x16, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61,
-	0x70, 0x6f, 0x6e, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x61, 0x62, 0x6c, 0x65, 0x18, 0x11, 0x20, 0x01,
-	0x28, 0x08, 0x52, 0x16, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f,
-	0x6e, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x61, 0x62, 0x6c, 0x65, 0x12, 0x3a, 0x0a, 0x18, 0x70, 0x72,
-	0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x75, 0x6e, 0x74,
-	0x65, 0x72, 0x61, 0x62, 0x6c, 0x65, 0x18, 0x12, 0x20, 0x01, 0x28, 0x08, 0x52, 0x18, 0x70, 0x72,
-	0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x75, 0x6e, 0x74,
-	0x65, 0x72, 0x61, 0x62, 0x6c, 0x65, 0x12, 0x3c, 0x0a, 0x19, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72,
-	0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d,
-	0x61, 0x67, 0x65, 0x18, 0x13, 0x20, 0x01, 0x28, 0x04, 0x52, 0x19, 0x70, 0x72, 0x69, 0x6d, 0x61,
-	0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61,
-	0x6d, 0x61, 0x67, 0x65, 0x12, 0x54, 0x0a, 0x25, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57,
-	0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73,
-	0x52, 0x61, 0x74, 0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x14, 0x20,
-	0x01, 0x28, 0x04, 0x52, 0x25, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70,
-	0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74,
-	0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x58, 0x0a, 0x27, 0x70, 0x72,
-	0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x53,
-	0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x69,
-	0x6e, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x15, 0x20, 0x01, 0x28, 0x04, 0x52, 0x27, 0x70, 0x72, 0x69,
-	0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x53, 0x75,
-	0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x69, 0x6e,
-	0x61, 0x74, 0x6f, 0x72, 0x12, 0x4d, 0x0a, 0x0f, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72,
-	0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x18, 0x16, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x23, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x74, 0x65, 0x63, 0x68, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e,
-	0x72, 0x79, 0x52, 0x0f, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61,
-	0x70, 0x6f, 0x6e, 0x12, 0x5a, 0x0a, 0x16, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79,
-	0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x18, 0x17, 0x20,
-	0x01, 0x28, 0x0e, 0x32, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e,
-	0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x52, 0x16, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61,
-	0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x12,
-	0x34, 0x0a, 0x15, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70,
-	0x6f, 0x6e, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x18, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15,
-	0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43,
-	0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x36, 0x0a, 0x16, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61,
-	0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x73, 0x18,
-	0x19, 0x20, 0x01, 0x28, 0x04, 0x52, 0x16, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79,
-	0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x73, 0x12, 0x32, 0x0a,
-	0x14, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e,
-	0x53, 0x68, 0x6f, 0x74, 0x73, 0x18, 0x1a, 0x20, 0x01, 0x28, 0x04, 0x52, 0x14, 0x73, 0x65, 0x63,
-	0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74,
-	0x73, 0x12, 0x34, 0x0a, 0x15, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65,
-	0x61, 0x70, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x1b, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x15, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f,
-	0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x3a, 0x0a, 0x18, 0x73, 0x65, 0x63, 0x6f, 0x6e,
-	0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x61,
-	0x62, 0x6c, 0x65, 0x18, 0x1c, 0x20, 0x01, 0x28, 0x08, 0x52, 0x18, 0x73, 0x65, 0x63, 0x6f, 0x6e,
-	0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x61,
-	0x62, 0x6c, 0x65, 0x12, 0x3e, 0x0a, 0x1a, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79,
-	0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x61, 0x62, 0x6c,
-	0x65, 0x18, 0x1d, 0x20, 0x01, 0x28, 0x08, 0x52, 0x1a, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61,
-	0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x61,
-	0x62, 0x6c, 0x65, 0x12, 0x40, 0x0a, 0x1b, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79,
-	0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61,
-	0x67, 0x65, 0x18, 0x1e, 0x20, 0x01, 0x28, 0x04, 0x52, 0x1b, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64,
+	0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x30, 0x0a, 0x13,
+	0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x41, 0x6d, 0x62,
+	0x69, 0x74, 0x73, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x70, 0x72, 0x69, 0x6d, 0x61,
+	0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x73, 0x12, 0x32,
+	0x0a, 0x14, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x54,
+	0x61, 0x72, 0x67, 0x65, 0x74, 0x73, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x04, 0x52, 0x14, 0x70, 0x72,
+	0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x54, 0x61, 0x72, 0x67, 0x65,
+	0x74, 0x73, 0x12, 0x2e, 0x0a, 0x12, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61,
+	0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x73, 0x18, 0x10, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12,
+	0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f,
+	0x74, 0x73, 0x12, 0x30, 0x0a, 0x13, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61,
+	0x70, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x11, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x13, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x44, 0x61,
+	0x6d, 0x61, 0x67, 0x65, 0x12, 0x36, 0x0a, 0x16, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57,
+	0x65, 0x61, 0x70, 0x6f, 0x6e, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x61, 0x62, 0x6c, 0x65, 0x18, 0x12,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x16, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61,
+	0x70, 0x6f, 0x6e, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x61, 0x62, 0x6c, 0x65, 0x12, 0x3a, 0x0a, 0x18,
+	0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x75,
+	0x6e, 0x74, 0x65, 0x72, 0x61, 0x62, 0x6c, 0x65, 0x18, 0x13, 0x20, 0x01, 0x28, 0x08, 0x52, 0x18,
+	0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x75,
+	0x6e, 0x74, 0x65, 0x72, 0x61, 0x62, 0x6c, 0x65, 0x12, 0x3c, 0x0a, 0x19, 0x70, 0x72, 0x69, 0x6d,
 	0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44,
-	0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x58, 0x0a, 0x27, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61,
-	0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x53, 0x75, 0x63, 0x63,
-	0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72,
-	0x18, 0x1f, 0x20, 0x01, 0x28, 0x04, 0x52, 0x27, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72,
+	0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x14, 0x20, 0x01, 0x28, 0x04, 0x52, 0x19, 0x70, 0x72, 0x69,
+	0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x52, 0x65, 0x63, 0x6f, 0x69, 0x6c,
+	0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x54, 0x0a, 0x25, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72,
 	0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x53, 0x75, 0x63, 0x63, 0x65,
-	0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12,
-	0x5c, 0x0a, 0x29, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70,
-	0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74,
-	0x65, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x69, 0x6e, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x20, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x29, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61,
-	0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61,
-	0x74, 0x65, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x69, 0x6e, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x4e, 0x0a,
-	0x0f, 0x70, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79,
-	0x18, 0x21, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x61, 0x73,
-	0x73, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x52, 0x0f, 0x70, 0x61,
-	0x73, 0x73, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x12, 0x45, 0x0a,
-	0x0c, 0x75, 0x6e, 0x69, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x18, 0x22, 0x20,
-	0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x55, 0x6e, 0x69, 0x74, 0x44, 0x65,
-	0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x52, 0x0c, 0x75, 0x6e, 0x69, 0x74, 0x44, 0x65, 0x66, 0x65,
-	0x6e, 0x73, 0x65, 0x73, 0x12, 0x57, 0x0a, 0x12, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x73, 0x65, 0x72,
-	0x76, 0x65, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x18, 0x23, 0x20, 0x01, 0x28, 0x0e,
-	0x32, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76,
-	0x65, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x52, 0x12, 0x6f, 0x72, 0x65, 0x52, 0x65,
-	0x73, 0x65, 0x72, 0x76, 0x65, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x12, 0x54, 0x0a,
-	0x11, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73,
-	0x65, 0x73, 0x18, 0x24, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x50,
-	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73,
-	0x52, 0x11, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e,
-	0x73, 0x65, 0x73, 0x12, 0x4e, 0x0a, 0x0f, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79,
-	0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x18, 0x25, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x24, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74,
-	0x65, 0x63, 0x68, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x4d, 0x69, 0x6e, 0x69,
-	0x6e, 0x67, 0x52, 0x0f, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x4d, 0x69, 0x6e,
-	0x69, 0x6e, 0x67, 0x12, 0x56, 0x0a, 0x11, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79,
-	0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x72, 0x79, 0x18, 0x26, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x28,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x52, 0x65,
-	0x66, 0x69, 0x6e, 0x65, 0x72, 0x69, 0x65, 0x73, 0x52, 0x11, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74,
-	0x61, 0x72, 0x79, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x72, 0x79, 0x12, 0x4e, 0x0a, 0x0f, 0x70,
-	0x6f, 0x77, 0x65, 0x72, 0x47, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x27,
-	0x20, 0x01, 0x28, 0x0e, 0x32, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x6f, 0x77, 0x65, 0x72,
-	0x47, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x0f, 0x70, 0x6f, 0x77, 0x65,
-	0x72, 0x47, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x26, 0x0a, 0x0e, 0x61,
-	0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x28, 0x20,
-	0x01, 0x28, 0x04, 0x52, 0x0e, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x43, 0x68, 0x61,
-	0x72, 0x67, 0x65, 0x12, 0x20, 0x0a, 0x0b, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x68, 0x61, 0x72,
-	0x67, 0x65, 0x18, 0x29, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x43,
-	0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x2e, 0x0a, 0x12, 0x64, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x43,
-	0x68, 0x61, 0x6e, 0x67, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x2a, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x12, 0x64, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x43,
-	0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x1e, 0x0a, 0x0a, 0x6d, 0x6f, 0x76, 0x65, 0x43, 0x68, 0x61,
-	0x72, 0x67, 0x65, 0x18, 0x2b, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x6d, 0x6f, 0x76, 0x65, 0x43,
-	0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x28, 0x0a, 0x0f, 0x6f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x69,
-	0x6e, 0x67, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x2c, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f,
-	0x6f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12,
-	0x2c, 0x0a, 0x11, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x43, 0x68,
-	0x61, 0x72, 0x67, 0x65, 0x18, 0x2d, 0x20, 0x01, 0x28, 0x04, 0x52, 0x11, 0x6f, 0x72, 0x65, 0x52,
-	0x65, 0x66, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x34, 0x0a,
-	0x15, 0x73, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65,
-	0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x2e, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x73, 0x74,
-	0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x43, 0x68, 0x61,
-	0x72, 0x67, 0x65, 0x12, 0x28, 0x0a, 0x0f, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x52, 0x65, 0x64,
-	0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x2f, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x61, 0x74,
-	0x74, 0x61, 0x63, 0x6b, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x2c, 0x0a,
-	0x11, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x61, 0x62,
-	0x6c, 0x65, 0x18, 0x30, 0x20, 0x01, 0x28, 0x08, 0x52, 0x11, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b,
-	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x61, 0x62, 0x6c, 0x65, 0x12, 0x26, 0x0a, 0x0e, 0x73,
-	0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x73, 0x18, 0x31, 0x20,
-	0x01, 0x28, 0x08, 0x52, 0x0e, 0x73, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x53, 0x79, 0x73, 0x74,
-	0x65, 0x6d, 0x73, 0x12, 0x24, 0x0a, 0x0d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x74,
-	0x74, 0x61, 0x63, 0x6b, 0x18, 0x32, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x63, 0x6f, 0x75, 0x6e,
-	0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x12, 0x36, 0x0a, 0x16, 0x63, 0x6f, 0x75,
-	0x6e, 0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x61, 0x6d, 0x65, 0x41, 0x6d,
-	0x62, 0x69, 0x74, 0x18, 0x33, 0x20, 0x01, 0x28, 0x04, 0x52, 0x16, 0x63, 0x6f, 0x75, 0x6e, 0x74,
-	0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x61, 0x6d, 0x65, 0x41, 0x6d, 0x62, 0x69,
-	0x74, 0x12, 0x34, 0x0a, 0x15, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x34, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x15, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f,
-	0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x26, 0x0a, 0x0e, 0x67, 0x65, 0x6e, 0x65, 0x72,
-	0x61, 0x74, 0x69, 0x6e, 0x67, 0x52, 0x61, 0x74, 0x65, 0x18, 0x35, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x0e, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x52, 0x61, 0x74, 0x65, 0x12,
-	0x40, 0x0a, 0x1b, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x53, 0x68, 0x69, 0x65,
-	0x6c, 0x64, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x36,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x1b, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x53,
-	0x68, 0x69, 0x65, 0x6c, 0x64, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f,
-	0x6e, 0x12, 0x30, 0x0a, 0x13, 0x6f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x44, 0x69,
-	0x66, 0x66, 0x69, 0x63, 0x75, 0x6c, 0x74, 0x79, 0x18, 0x37, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13,
-	0x6f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x44, 0x69, 0x66, 0x66, 0x69, 0x63, 0x75,
-	0x6c, 0x74, 0x79, 0x12, 0x34, 0x0a, 0x15, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x69,
-	0x6e, 0x67, 0x44, 0x69, 0x66, 0x66, 0x69, 0x63, 0x75, 0x6c, 0x74, 0x79, 0x18, 0x38, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x15, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x44,
-	0x69, 0x66, 0x66, 0x69, 0x63, 0x75, 0x6c, 0x74, 0x79, 0x12, 0x54, 0x0a, 0x25, 0x75, 0x6e, 0x67,
-	0x75, 0x69, 0x64, 0x65, 0x64, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x69, 0x76, 0x65, 0x53, 0x75,
-	0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74,
-	0x6f, 0x72, 0x18, 0x39, 0x20, 0x01, 0x28, 0x04, 0x52, 0x25, 0x75, 0x6e, 0x67, 0x75, 0x69, 0x64,
-	0x65, 0x64, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x69, 0x76, 0x65, 0x53, 0x75, 0x63, 0x63, 0x65,
-	0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12,
-	0x58, 0x0a, 0x27, 0x75, 0x6e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x64, 0x44, 0x65, 0x66, 0x65, 0x6e,
-	0x73, 0x69, 0x76, 0x65, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x44,
-	0x65, 0x6e, 0x6f, 0x6d, 0x69, 0x6e, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x3a, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x27, 0x75, 0x6e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x64, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73,
-	0x69, 0x76, 0x65, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x44, 0x65,
-	0x6e, 0x6f, 0x6d, 0x69, 0x6e, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x50, 0x0a, 0x23, 0x67, 0x75, 0x69,
-	0x64, 0x65, 0x64, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x69, 0x76, 0x65, 0x53, 0x75, 0x63, 0x63,
-	0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72,
-	0x18, 0x3b, 0x20, 0x01, 0x28, 0x04, 0x52, 0x23, 0x67, 0x75, 0x69, 0x64, 0x65, 0x64, 0x44, 0x65,
-	0x66, 0x65, 0x6e, 0x73, 0x69, 0x76, 0x65, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61,
-	0x74, 0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x54, 0x0a, 0x25, 0x67,
-	0x75, 0x69, 0x64, 0x65, 0x64, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x69, 0x76, 0x65, 0x53, 0x75,
+	0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18,
+	0x15, 0x20, 0x01, 0x28, 0x04, 0x52, 0x25, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65,
+	0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52,
+	0x61, 0x74, 0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x58, 0x0a, 0x27,
+	0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f,
+	0x74, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x44, 0x65, 0x6e, 0x6f,
+	0x6d, 0x69, 0x6e, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x16, 0x20, 0x01, 0x28, 0x04, 0x52, 0x27, 0x70,
+	0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74,
+	0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x44, 0x65, 0x6e, 0x6f, 0x6d,
+	0x69, 0x6e, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x4d, 0x0a, 0x0f, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64,
+	0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x18, 0x17, 0x20, 0x01, 0x28, 0x0e, 0x32,
+	0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70,
+	0x6f, 0x6e, 0x72, 0x79, 0x52, 0x0f, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57,
+	0x65, 0x61, 0x70, 0x6f, 0x6e, 0x12, 0x5a, 0x0a, 0x16, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61,
+	0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x18,
+	0x18, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x57, 0x65, 0x61, 0x70,
+	0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x52, 0x16, 0x73, 0x65, 0x63, 0x6f, 0x6e,
+	0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f,
+	0x6c, 0x12, 0x34, 0x0a, 0x15, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65,
+	0x61, 0x70, 0x6f, 0x6e, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x19, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x15, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f,
+	0x6e, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x34, 0x0a, 0x15, 0x73, 0x65, 0x63, 0x6f, 0x6e,
+	0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x73,
+	0x18, 0x1a, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72,
+	0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x73, 0x12, 0x36, 0x0a,
+	0x16, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e,
+	0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x73, 0x18, 0x1b, 0x20, 0x01, 0x28, 0x04, 0x52, 0x16, 0x73,
+	0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x54, 0x61,
+	0x72, 0x67, 0x65, 0x74, 0x73, 0x12, 0x32, 0x0a, 0x14, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61,
+	0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x73, 0x18, 0x1c, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x14, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65,
+	0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x73, 0x12, 0x34, 0x0a, 0x15, 0x73, 0x65, 0x63,
+	0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61,
+	0x67, 0x65, 0x18, 0x1d, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64,
+	0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12,
+	0x3a, 0x0a, 0x18, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70,
+	0x6f, 0x6e, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x61, 0x62, 0x6c, 0x65, 0x18, 0x1e, 0x20, 0x01, 0x28,
+	0x08, 0x52, 0x18, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70,
+	0x6f, 0x6e, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x61, 0x62, 0x6c, 0x65, 0x12, 0x3e, 0x0a, 0x1a, 0x73,
+	0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f,
+	0x75, 0x6e, 0x74, 0x65, 0x72, 0x61, 0x62, 0x6c, 0x65, 0x18, 0x1f, 0x20, 0x01, 0x28, 0x08, 0x52,
+	0x1a, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e,
+	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x61, 0x62, 0x6c, 0x65, 0x12, 0x40, 0x0a, 0x1b, 0x73,
+	0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x52, 0x65,
+	0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x20, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x1b, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f,
+	0x6e, 0x52, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x58, 0x0a,
+	0x27, 0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e,
+	0x53, 0x68, 0x6f, 0x74, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e,
+	0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x21, 0x20, 0x01, 0x28, 0x04, 0x52, 0x27,
+	0x73, 0x65, 0x63, 0x6f, 0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53,
+	0x68, 0x6f, 0x74, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e, 0x75,
+	0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x5c, 0x0a, 0x29, 0x73, 0x65, 0x63, 0x6f, 0x6e,
+	0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x53, 0x75,
 	0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x69, 0x6e,
-	0x61, 0x74, 0x6f, 0x72, 0x18, 0x3c, 0x20, 0x01, 0x28, 0x04, 0x52, 0x25, 0x67, 0x75, 0x69, 0x64,
+	0x61, 0x74, 0x6f, 0x72, 0x18, 0x22, 0x20, 0x01, 0x28, 0x04, 0x52, 0x29, 0x73, 0x65, 0x63, 0x6f,
+	0x6e, 0x64, 0x61, 0x72, 0x79, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x68, 0x6f, 0x74, 0x53,
+	0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x69,
+	0x6e, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x4e, 0x0a, 0x0f, 0x70, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65,
+	0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x18, 0x23, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x24,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70,
+	0x6f, 0x6e, 0x72, 0x79, 0x52, 0x0f, 0x70, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61,
+	0x70, 0x6f, 0x6e, 0x72, 0x79, 0x12, 0x45, 0x0a, 0x0c, 0x75, 0x6e, 0x69, 0x74, 0x44, 0x65, 0x66,
+	0x65, 0x6e, 0x73, 0x65, 0x73, 0x18, 0x24, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65,
+	0x63, 0x68, 0x55, 0x6e, 0x69, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x52, 0x0c,
+	0x75, 0x6e, 0x69, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x12, 0x57, 0x0a, 0x12,
+	0x6f, 0x72, 0x65, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73,
+	0x65, 0x73, 0x18, 0x25, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x4f,
+	0x72, 0x65, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65,
+	0x73, 0x52, 0x12, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x73, 0x65, 0x72, 0x76, 0x65, 0x44, 0x65, 0x66,
+	0x65, 0x6e, 0x73, 0x65, 0x73, 0x12, 0x54, 0x0a, 0x11, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61,
+	0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x18, 0x26, 0x20, 0x01, 0x28, 0x0e,
+	0x32, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79,
+	0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x52, 0x11, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74,
+	0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x12, 0x4e, 0x0a, 0x0f, 0x70,
+	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x18, 0x27,
+	0x20, 0x01, 0x28, 0x0e, 0x32, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x6c, 0x61, 0x6e, 0x65,
+	0x74, 0x61, 0x72, 0x79, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x52, 0x0f, 0x70, 0x6c, 0x61, 0x6e,
+	0x65, 0x74, 0x61, 0x72, 0x79, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x12, 0x56, 0x0a, 0x11, 0x70,
+	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x72, 0x79,
+	0x18, 0x28, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x6c, 0x61,
+	0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x72, 0x69, 0x65, 0x73,
+	0x52, 0x11, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x52, 0x65, 0x66, 0x69, 0x6e,
+	0x65, 0x72, 0x79, 0x12, 0x4e, 0x0a, 0x0f, 0x70, 0x6f, 0x77, 0x65, 0x72, 0x47, 0x65, 0x6e, 0x65,
+	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x29, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x24, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74,
+	0x65, 0x63, 0x68, 0x50, 0x6f, 0x77, 0x65, 0x72, 0x47, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x52, 0x0f, 0x70, 0x6f, 0x77, 0x65, 0x72, 0x47, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x12, 0x26, 0x0a, 0x0e, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x43,
+	0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x2a, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0e, 0x61, 0x63, 0x74,
+	0x69, 0x76, 0x61, 0x74, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x20, 0x0a, 0x0b, 0x62,
+	0x75, 0x69, 0x6c, 0x64, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x2b, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x0b, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x2e, 0x0a,
+	0x12, 0x64, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x43, 0x68, 0x61,
+	0x72, 0x67, 0x65, 0x18, 0x2c, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12, 0x64, 0x65, 0x66, 0x65, 0x6e,
+	0x64, 0x43, 0x68, 0x61, 0x6e, 0x67, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x1e, 0x0a,
+	0x0a, 0x6d, 0x6f, 0x76, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x2d, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x0a, 0x6d, 0x6f, 0x76, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x28, 0x0a,
+	0x0f, 0x6f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65,
+	0x18, 0x2e, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x6f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6e,
+	0x67, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x2c, 0x0a, 0x11, 0x6f, 0x72, 0x65, 0x52, 0x65,
+	0x66, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x2f, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x11, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x43,
+	0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x34, 0x0a, 0x15, 0x73, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68,
+	0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x18, 0x30,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x73, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x63, 0x74,
+	0x69, 0x76, 0x61, 0x74, 0x65, 0x43, 0x68, 0x61, 0x72, 0x67, 0x65, 0x12, 0x28, 0x0a, 0x0f, 0x61,
+	0x74, 0x74, 0x61, 0x63, 0x6b, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x31,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x52, 0x65, 0x64, 0x75,
+	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x2c, 0x0a, 0x11, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x43,
+	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x61, 0x62, 0x6c, 0x65, 0x18, 0x32, 0x20, 0x01, 0x28, 0x08,
+	0x52, 0x11, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x61,
+	0x62, 0x6c, 0x65, 0x12, 0x26, 0x0a, 0x0e, 0x73, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x53, 0x79,
+	0x73, 0x74, 0x65, 0x6d, 0x73, 0x18, 0x33, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0e, 0x73, 0x74, 0x65,
+	0x61, 0x6c, 0x74, 0x68, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x73, 0x12, 0x24, 0x0a, 0x0d, 0x63,
+	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x18, 0x34, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x0d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63,
+	0x6b, 0x12, 0x36, 0x0a, 0x16, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61,
+	0x63, 0x6b, 0x53, 0x61, 0x6d, 0x65, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x35, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x16, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b,
+	0x53, 0x61, 0x6d, 0x65, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x34, 0x0a, 0x15, 0x70, 0x6f, 0x73,
+	0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61,
+	0x67, 0x65, 0x18, 0x36, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12,
+	0x26, 0x0a, 0x0e, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x52, 0x61, 0x74,
+	0x65, 0x18, 0x37, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0e, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74,
+	0x69, 0x6e, 0x67, 0x52, 0x61, 0x74, 0x65, 0x12, 0x40, 0x0a, 0x1b, 0x70, 0x6c, 0x61, 0x6e, 0x65,
+	0x74, 0x61, 0x72, 0x79, 0x53, 0x68, 0x69, 0x65, 0x6c, 0x64, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x69,
+	0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x38, 0x20, 0x01, 0x28, 0x04, 0x52, 0x1b, 0x70, 0x6c,
+	0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x53, 0x68, 0x69, 0x65, 0x6c, 0x64, 0x43, 0x6f, 0x6e,
+	0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x30, 0x0a, 0x13, 0x6f, 0x72, 0x65,
+	0x4d, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x44, 0x69, 0x66, 0x66, 0x69, 0x63, 0x75, 0x6c, 0x74, 0x79,
+	0x18, 0x39, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x6f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6e,
+	0x67, 0x44, 0x69, 0x66, 0x66, 0x69, 0x63, 0x75, 0x6c, 0x74, 0x79, 0x12, 0x34, 0x0a, 0x15, 0x6f,
+	0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x44, 0x69, 0x66, 0x66, 0x69, 0x63,
+	0x75, 0x6c, 0x74, 0x79, 0x18, 0x3a, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x6f, 0x72, 0x65, 0x52,
+	0x65, 0x66, 0x69, 0x6e, 0x69, 0x6e, 0x67, 0x44, 0x69, 0x66, 0x66, 0x69, 0x63, 0x75, 0x6c, 0x74,
+	0x79, 0x12, 0x54, 0x0a, 0x25, 0x75, 0x6e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x64, 0x44, 0x65, 0x66,
+	0x65, 0x6e, 0x73, 0x69, 0x76, 0x65, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74,
+	0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x3b, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x25, 0x75, 0x6e, 0x67, 0x75, 0x69, 0x64, 0x65, 0x64, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73,
+	0x69, 0x76, 0x65, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e, 0x75,
+	0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x58, 0x0a, 0x27, 0x75, 0x6e, 0x67, 0x75, 0x69,
+	0x64, 0x65, 0x64, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x69, 0x76, 0x65, 0x53, 0x75, 0x63, 0x63,
+	0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x69, 0x6e, 0x61, 0x74,
+	0x6f, 0x72, 0x18, 0x3c, 0x20, 0x01, 0x28, 0x04, 0x52, 0x27, 0x75, 0x6e, 0x67, 0x75, 0x69, 0x64,
 	0x65, 0x64, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x69, 0x76, 0x65, 0x53, 0x75, 0x63, 0x63, 0x65,
 	0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x69, 0x6e, 0x61, 0x74, 0x6f,
-	0x72, 0x22, 0xeb, 0x02, 0x0a, 0x0e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65,
-	0x6e, 0x64, 0x65, 0x72, 0x12, 0x2c, 0x0a, 0x11, 0x70, 0x72, 0x6f, 0x74, 0x65, 0x63, 0x74, 0x65,
-	0x64, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x11, 0x70, 0x72, 0x6f, 0x74, 0x65, 0x63, 0x74, 0x65, 0x64, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x49, 0x64, 0x12, 0x2c, 0x0a, 0x11, 0x64, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x64,
-	0x65, 0x66, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64,
-	0x12, 0x3f, 0x0a, 0x0c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54,
-	0x79, 0x70, 0x65, 0x52, 0x0c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70,
-	0x65, 0x12, 0x1e, 0x0a, 0x0a, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18,
-	0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49,
-	0x64, 0x12, 0x3e, 0x0a, 0x0e, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d,
-	0x62, 0x69, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69,
-	0x74, 0x52, 0x0e, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69,
-	0x74, 0x12, 0x24, 0x0a, 0x0d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61,
-	0x63, 0x6b, 0x18, 0x06, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65,
-	0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x12, 0x36, 0x0a, 0x16, 0x63, 0x6f, 0x75, 0x6e, 0x74,
-	0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x61, 0x6d, 0x65, 0x41, 0x6d, 0x62, 0x69,
-	0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x16, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72,
-	0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x61, 0x6d, 0x65, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x22,
-	0x4f, 0x0a, 0x15, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75,
-	0x74, 0x65, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x74, 0x74, 0x72,
-	0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x61,
-	0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61,
-	0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65,
-	0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73,
-	0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa,
-	0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74,
-	0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x72, 0x12, 0x50, 0x0a, 0x23, 0x67, 0x75, 0x69, 0x64, 0x65, 0x64, 0x44, 0x65, 0x66, 0x65, 0x6e,
+	0x73, 0x69, 0x76, 0x65, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e,
+	0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x3d, 0x20, 0x01, 0x28, 0x04, 0x52, 0x23,
+	0x67, 0x75, 0x69, 0x64, 0x65, 0x64, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x69, 0x76, 0x65, 0x53,
+	0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61,
+	0x74, 0x6f, 0x72, 0x12, 0x54, 0x0a, 0x25, 0x67, 0x75, 0x69, 0x64, 0x65, 0x64, 0x44, 0x65, 0x66,
+	0x65, 0x6e, 0x73, 0x69, 0x76, 0x65, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74,
+	0x65, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x69, 0x6e, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x3e, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x25, 0x67, 0x75, 0x69, 0x64, 0x65, 0x64, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73,
+	0x69, 0x76, 0x65, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x44, 0x65,
+	0x6e, 0x6f, 0x6d, 0x69, 0x6e, 0x61, 0x74, 0x6f, 0x72, 0x22, 0xeb, 0x02, 0x0a, 0x0e, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x12, 0x2c, 0x0a, 0x11,
+	0x70, 0x72, 0x6f, 0x74, 0x65, 0x63, 0x74, 0x65, 0x64, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49,
+	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x70, 0x72, 0x6f, 0x74, 0x65, 0x63, 0x74,
+	0x65, 0x64, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x2c, 0x0a, 0x11, 0x64, 0x65,
+	0x66, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x64, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x3f, 0x0a, 0x0c, 0x6c, 0x6f, 0x63, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0c, 0x6c, 0x6f, 0x63,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1e, 0x0a, 0x0a, 0x6c, 0x6f, 0x63,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x6c,
+	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x3e, 0x0a, 0x0e, 0x6f, 0x70, 0x65,
+	0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28,
+	0x0e, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69, 0x74, 0x52, 0x0e, 0x6f, 0x70, 0x65, 0x72, 0x61,
+	0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x24, 0x0a, 0x0d, 0x63, 0x6f, 0x75,
+	0x6e, 0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x18, 0x06, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x0d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x12,
+	0x36, 0x0a, 0x16, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b,
+	0x53, 0x61, 0x6d, 0x65, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x16, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x61,
+	0x6d, 0x65, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x22, 0x4f, 0x0a, 0x15, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64,
+	0x12, 0x20, 0x0a, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65,
+	0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0xc3, 0x06, 0x0a, 0x0b, 0x43, 0x61, 0x63,
+	0x68, 0x65, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x49, 0x64, 0x12, 0x28, 0x0a, 0x0f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x75, 0x72,
+	0x65, 0x4c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0f, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x75, 0x72, 0x65, 0x4c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x12, 0x35,
+	0x0a, 0x09, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x75, 0x72, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x52, 0x09, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x75, 0x72, 0x65, 0x12, 0x2a, 0x0a, 0x10, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54,
+	0x79, 0x70, 0x65, 0x4c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x08, 0x52,
+	0x10, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x4c, 0x6f, 0x61, 0x64, 0x65,
+	0x64, 0x12, 0x3b, 0x0a, 0x0a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18,
+	0x05, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79,
+	0x70, 0x65, 0x52, 0x0a, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x22,
+	0x0a, 0x0c, 0x68, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x4c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x18, 0x06,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x0c, 0x68, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x4c, 0x6f, 0x61, 0x64,
+	0x65, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x68, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x18, 0x07, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x06, 0x68, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x12, 0x2c, 0x0a, 0x11, 0x73, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x18,
+	0x08, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x41, 0x74, 0x74,
+	0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x12, 0x22, 0x0a, 0x0c, 0x73, 0x74, 0x61, 0x74,
+	0x75, 0x73, 0x4c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x18, 0x09, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0c,
+	0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x4c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x12, 0x16, 0x0a, 0x06,
+	0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x73, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x12, 0x34, 0x0a, 0x15, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61,
+	0x72, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x4c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x18, 0x0b, 0x20,
+	0x01, 0x28, 0x08, 0x52, 0x15, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74, 0x42,
+	0x75, 0x69, 0x6c, 0x64, 0x4c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x12, 0x28, 0x0a, 0x0f, 0x62, 0x6c,
+	0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x18, 0x0c, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x0f, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74, 0x42,
+	0x75, 0x69, 0x6c, 0x64, 0x12, 0x38, 0x0a, 0x17, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61,
+	0x72, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x4c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x18,
+	0x0d, 0x20, 0x01, 0x28, 0x08, 0x52, 0x17, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72,
+	0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x4c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x12, 0x2a,
+	0x0a, 0x10, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x4f, 0x72, 0x65, 0x4d, 0x69,
+	0x6e, 0x65, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x04, 0x52, 0x10, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53,
+	0x74, 0x61, 0x72, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x12, 0x3c, 0x0a, 0x19, 0x62, 0x6c,
+	0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e,
+	0x65, 0x4c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x08, 0x52, 0x19, 0x62,
+	0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69,
+	0x6e, 0x65, 0x4c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x12, 0x30, 0x0a, 0x13, 0x62, 0x6c, 0x6f, 0x63,
+	0x6b, 0x53, 0x74, 0x61, 0x72, 0x74, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x18,
+	0x10, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72,
+	0x74, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x12, 0x3e, 0x0a, 0x1a, 0x70, 0x72,
+	0x6f, 0x74, 0x65, 0x63, 0x74, 0x65, 0x64, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x6e, 0x64,
+	0x65, 0x78, 0x4c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x18, 0x11, 0x20, 0x01, 0x28, 0x08, 0x52, 0x1a,
+	0x70, 0x72, 0x6f, 0x74, 0x65, 0x63, 0x74, 0x65, 0x64, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49,
+	0x6e, 0x64, 0x65, 0x78, 0x4c, 0x6f, 0x61, 0x64, 0x65, 0x64, 0x12, 0x32, 0x0a, 0x14, 0x70, 0x72,
+	0x6f, 0x74, 0x65, 0x63, 0x74, 0x65, 0x64, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x6e, 0x64,
+	0x65, 0x78, 0x18, 0x12, 0x20, 0x01, 0x28, 0x04, 0x52, 0x14, 0x70, 0x72, 0x6f, 0x74, 0x65, 0x63,
+	0x74, 0x65, 0x64, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x42, 0xa1,
+	0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x50, 0x72,
+	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b,
+	0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca,
+	0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea,
+	0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -6518,46 +8232,49 @@ func file_structs_structs_struct_proto_rawDescGZIP() []byte {
 	return file_structs_structs_struct_proto_rawDescData
 }
 
-var file_structs_structs_struct_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_structs_structs_struct_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_structs_structs_struct_proto_goTypes = []interface{}{
 	(*Struct)(nil),                // 0: structs.structs.Struct
 	(*StructType)(nil),            // 1: structs.structs.StructType
 	(*StructDefender)(nil),        // 2: structs.structs.StructDefender
 	(*StructAttributeRecord)(nil), // 3: structs.structs.StructAttributeRecord
-	(ObjectType)(0),               // 4: structs.structs.objectType
-	(Ambit)(0),                    // 5: structs.structs.ambit
-	(TechActiveWeaponry)(0),       // 6: structs.structs.techActiveWeaponry
-	(TechWeaponControl)(0),        // 7: structs.structs.techWeaponControl
-	(TechPassiveWeaponry)(0),      // 8: structs.structs.techPassiveWeaponry
-	(TechUnitDefenses)(0),         // 9: structs.structs.techUnitDefenses
-	(TechOreReserveDefenses)(0),   // 10: structs.structs.techOreReserveDefenses
-	(TechPlanetaryDefenses)(0),    // 11: structs.structs.techPlanetaryDefenses
-	(TechPlanetaryMining)(0),      // 12: structs.structs.techPlanetaryMining
-	(TechPlanetaryRefineries)(0),  // 13: structs.structs.techPlanetaryRefineries
-	(TechPowerGeneration)(0),      // 14: structs.structs.techPowerGeneration
+	(*CacheStruct)(nil),           // 4: structs.structs.CacheStruct
+	(ObjectType)(0),               // 5: structs.structs.objectType
+	(Ambit)(0),                    // 6: structs.structs.ambit
+	(TechActiveWeaponry)(0),       // 7: structs.structs.techActiveWeaponry
+	(TechWeaponControl)(0),        // 8: structs.structs.techWeaponControl
+	(TechPassiveWeaponry)(0),      // 9: structs.structs.techPassiveWeaponry
+	(TechUnitDefenses)(0),         // 10: structs.structs.techUnitDefenses
+	(TechOreReserveDefenses)(0),   // 11: structs.structs.techOreReserveDefenses
+	(TechPlanetaryDefenses)(0),    // 12: structs.structs.techPlanetaryDefenses
+	(TechPlanetaryMining)(0),      // 13: structs.structs.techPlanetaryMining
+	(TechPlanetaryRefineries)(0),  // 14: structs.structs.techPlanetaryRefineries
+	(TechPowerGeneration)(0),      // 15: structs.structs.techPowerGeneration
 }
 var file_structs_structs_struct_proto_depIdxs = []int32{
-	4,  // 0: structs.structs.Struct.locationType:type_name -> structs.structs.objectType
-	5,  // 1: structs.structs.Struct.operatingAmbit:type_name -> structs.structs.ambit
-	4,  // 2: structs.structs.StructType.category:type_name -> structs.structs.objectType
-	6,  // 3: structs.structs.StructType.primaryWeapon:type_name -> structs.structs.techActiveWeaponry
-	7,  // 4: structs.structs.StructType.primaryWeaponControl:type_name -> structs.structs.techWeaponControl
-	6,  // 5: structs.structs.StructType.secondaryWeapon:type_name -> structs.structs.techActiveWeaponry
-	7,  // 6: structs.structs.StructType.secondaryWeaponControl:type_name -> structs.structs.techWeaponControl
-	8,  // 7: structs.structs.StructType.passiveWeaponry:type_name -> structs.structs.techPassiveWeaponry
-	9,  // 8: structs.structs.StructType.unitDefenses:type_name -> structs.structs.techUnitDefenses
-	10, // 9: structs.structs.StructType.oreReserveDefenses:type_name -> structs.structs.techOreReserveDefenses
-	11, // 10: structs.structs.StructType.planetaryDefenses:type_name -> structs.structs.techPlanetaryDefenses
-	12, // 11: structs.structs.StructType.planetaryMining:type_name -> structs.structs.techPlanetaryMining
-	13, // 12: structs.structs.StructType.planetaryRefinery:type_name -> structs.structs.techPlanetaryRefineries
-	14, // 13: structs.structs.StructType.powerGeneration:type_name -> structs.structs.techPowerGeneration
-	4,  // 14: structs.structs.StructDefender.locationType:type_name -> structs.structs.objectType
-	5,  // 15: structs.structs.StructDefender.operatingAmbit:type_name -> structs.structs.ambit
-	16, // [16:16] is the sub-list for method output_type
-	16, // [16:16] is the sub-list for method input_type
-	16, // [16:16] is the sub-list for extension type_name
-	16, // [16:16] is the sub-list for extension extendee
-	0,  // [0:16] is the sub-list for field type_name
+	5,  // 0: structs.structs.Struct.locationType:type_name -> structs.structs.objectType
+	6,  // 1: structs.structs.Struct.operatingAmbit:type_name -> structs.structs.ambit
+	5,  // 2: structs.structs.StructType.category:type_name -> structs.structs.objectType
+	7,  // 3: structs.structs.StructType.primaryWeapon:type_name -> structs.structs.techActiveWeaponry
+	8,  // 4: structs.structs.StructType.primaryWeaponControl:type_name -> structs.structs.techWeaponControl
+	7,  // 5: structs.structs.StructType.secondaryWeapon:type_name -> structs.structs.techActiveWeaponry
+	8,  // 6: structs.structs.StructType.secondaryWeaponControl:type_name -> structs.structs.techWeaponControl
+	9,  // 7: structs.structs.StructType.passiveWeaponry:type_name -> structs.structs.techPassiveWeaponry
+	10, // 8: structs.structs.StructType.unitDefenses:type_name -> structs.structs.techUnitDefenses
+	11, // 9: structs.structs.StructType.oreReserveDefenses:type_name -> structs.structs.techOreReserveDefenses
+	12, // 10: structs.structs.StructType.planetaryDefenses:type_name -> structs.structs.techPlanetaryDefenses
+	13, // 11: structs.structs.StructType.planetaryMining:type_name -> structs.structs.techPlanetaryMining
+	14, // 12: structs.structs.StructType.planetaryRefinery:type_name -> structs.structs.techPlanetaryRefineries
+	15, // 13: structs.structs.StructType.powerGeneration:type_name -> structs.structs.techPowerGeneration
+	5,  // 14: structs.structs.StructDefender.locationType:type_name -> structs.structs.objectType
+	6,  // 15: structs.structs.StructDefender.operatingAmbit:type_name -> structs.structs.ambit
+	0,  // 16: structs.structs.CacheStruct.structure:type_name -> structs.structs.Struct
+	1,  // 17: structs.structs.CacheStruct.structType:type_name -> structs.structs.StructType
+	18, // [18:18] is the sub-list for method output_type
+	18, // [18:18] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_structs_structs_struct_proto_init() }
@@ -6615,6 +8332,18 @@ func file_structs_structs_struct_proto_init() {
 				return nil
 			}
 		}
+		file_structs_structs_struct_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CacheStruct); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -6622,7 +8351,7 @@ func file_structs_structs_struct_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_structs_structs_struct_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

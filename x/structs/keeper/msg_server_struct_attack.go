@@ -142,6 +142,19 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     // Load attacker location?
 
 
+    /* Can the attacker attack? */
+        /*
+            - Is the Attacker Online? (Done ✅)
+            - Is the Defender Destroyed?
+            - Is the Defender within Range of the Attackers Position
+            - Is the Defender within Range of the Attackers Weapon?
+                - Including Stealth
+            - Is the Defender has a Defensive Block (None MVP ✅)
+            - Does the Planet have a Defensive Block (None MVP ✅)
+
+        */
+
+
 
     // Is the defending struct within range of the attack type?
     // Struct and Defender are within the same battle range (fleet comparisons, planets, etc)
@@ -181,12 +194,14 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     // Attack in Range of Ambit
 
 
+    /*
 
     attackBlocked = false
     // Check the Defenders
     defenders = k.GetStructDefenders(ctx, msg.TargetStructId)
     for defenders as defender
 
+    */
 
 
 

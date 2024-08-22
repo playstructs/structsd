@@ -105,3 +105,4 @@ var StructState_enum = map[string]StructState {
     "locked":       StructStateLocked,
 	"all":          StructStateAll,
 }
+
