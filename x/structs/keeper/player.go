@@ -271,7 +271,7 @@ type PlayerCache struct {
 
 
 func (k *Keeper) GetPlayerCache(playerId string, ctx context.Context) (PlayerCache, error) {
-    return StructCache{
+    return PlayerCache{
         PlayerId: playerId,
         K: k,
         Ctx: ctx,
