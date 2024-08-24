@@ -222,3 +222,105 @@ func (k Keeper) StructDestroy(ctx context.Context, structure types.Struct) {
     */
 
 }
+
+
+
+
+type StructCache struct {
+    StructId string
+    K *Keeper
+    Ctx context.Context
+
+    StructureLoaded  bool
+    StructureChanged bool
+    Structure  types.Struct
+
+    StructTypeLoaded  bool
+    StructType types.StructType
+
+    HealthAttributeId string
+    HealthLoaded  bool
+    HealthChanged bool
+    Health  uint64
+
+    StatusAttributeId string
+    StatusLoaded  bool
+    StatusChanged bool
+    Status uint64
+
+    BlockStartBuildAttributeId string
+    BlockStartBuildLoaded bool
+    BlockStartBuildChanged bool
+    BlockStartBuild  uint64
+
+    BlockStartOreMineAttributeId string
+    BlockStartOreMineLoaded bool
+    BlockStartOreMineChanged bool
+    BlockStarOreMine uint64
+
+    BlockStartOreRefineAttributeId string
+    BlockStartOreRefineLoaded bool
+    BlockStartOreRefineChanged bool
+    BlockStartOreRefine   uint64
+
+    ProtectedStructIndexAttributeId string
+    ProtectedStructIndexLoaded bool
+    ProtectedStructIndexChanged bool
+    ProtectedStructIndex   uint64
+}
+
+func (k *Keeper) GetStructCache(structId string, ctx context.Context) (StructCache, error) {
+    return StructCache{
+        StructId: structId,
+        K: k,
+        Ctx: ctx,
+
+        HealthAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_health, structId),
+        StatusAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_status, structId),
+
+        BlockStartBuildAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structId),
+        BlockStartOreMineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structId),
+        BlockStartOreRefineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structId),
+
+        ProtectedStructIndexAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, structId),
+    }, nil
+}
+
+func (cache *StructCache) Commit() () {
+
+    if (cache.StructureChanged) { cache.K.SetStruct(cache.Ctx, cache.Structure) }
+
+    if (cache.HealthChanged) { cache.K.SetStructAttribute(cache.Ctx, cache.HealthAttributeId, cache.Health) }
+    if (cache.StatusChanged) { cache.K.SetStructAttribute(cache.Ctx, cache.StatusAttributeId, cache.Status) }
+
+    if (cache.BlockStartBuildChanged) { cache.K.SetStructAttribute(cache.Ctx, cache.BlockStartBuildAttributeId, cache.BlockStartBuild) }
+    if (cache.BlockStartOreMineChanged) { cache.K.SetStructAttribute(cache.Ctx, cache.BlockStartOreMineAttributeId, cache.BlockStarOreMine) }
+    if (cache.BlockStartOreRefineChanged) { cache.K.SetStructAttribute(cache.Ctx, cache.BlockStartOreRefineAttributeId, cache.BlockStartOreRefine) }
+
+    if (cache.ProtectedStructIndexChanged) { cache.K.SetStructAttribute(cache.Ctx, cache.ProtectedStructIndexAttributeId, cache.ProtectedStructIndex) }
+
+}
+
+func (cache *StructCache) LoadStruct() (found bool) {
+    cache.Structure, found = cache.K.GetStruct(cache.Ctx, cache.StructId)
+    return found
+}
+
+func (cache *StructCache) GetStruct() (types.Struct, error) {
+    if (!cache.StructureLoaded) {
+        cache.LoadStruct()
+    }
+
+    return cache.Structure, nil
+}
+
+
+
+func (cache *StructCache) IsBuilt() bool {
+    return false
+}
+
+func (cache *StructCache) IsOnline() bool {
+
+	return false
+}

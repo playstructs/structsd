@@ -143,8 +143,12 @@ message StructAttributeRecord {
 }
 
 
+/*
 
-message CacheStruct {
+Defined Directly in Go instead of as a proto.
+Never written to or recalled from a keeper, so this shouldn't be an issue.
+
+message StructCache {
   string structId         = 1;
 
   bool  structureLoaded   = 2;
@@ -173,5 +177,7 @@ message CacheStruct {
   uint64  protectedStructIndex        = 18;
 
 }
+
+*/
 
 

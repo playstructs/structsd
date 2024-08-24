@@ -67,6 +67,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     var weapon              types.TechActiveWeaponry
     var weaponControl       types.TechWeaponControl
     var weaponCharge        uint64
+    var weaponAmbits        uint64
     var weaponTargets       uint64
     var weaponShots         uint64
     var weaponDamage        uint64
@@ -182,7 +183,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
             2) beside the fleet they're attacking
 
     */
-
+    /*
     switch structure.LocationType {
         case types.ObjectType_fleet:
 
@@ -194,7 +195,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     // Attack in Range of Ambit
 
 
-    /*
+
 
     attackBlocked = false
     // Check the Defenders
