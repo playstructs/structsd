@@ -10,6 +10,7 @@ import (
 
 	"context"
     "math"
+    "fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	//sdkerrors "cosmossdk.io/errors"
@@ -231,3 +232,103 @@ func (k Keeper) DischargePlayer(ctx context.Context, playerId string) {
     k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, playerId), uint64(ctxSDK.BlockHeight()))
 }
 
+
+
+
+type PlayerCache struct {
+    PlayerId string
+    K *Keeper
+    Ctx context.Context
+
+    PlayerLoaded  bool
+    PlayerChanged bool
+    Player        types.Player
+
+    StorageLoaded bool
+    Storage       sdk.Coins
+
+    LoadAttributeId string
+    LoadLoaded      bool
+    LoadChanged     bool
+    Load            uint64
+
+    CapacityAttributeId string
+    CapacityLoaded      bool
+    CapacityChanged     bool
+    Capacity            uint64
+
+    StructsLoadAttributeId string
+    StructsLoadLoaded      bool
+    StructsLoadChanged     bool
+    StructsLoad            uint64
+
+    CapacitySecondaryAttributeId string
+    CapacitySecondaryLoaded      bool
+    CapacitySecondaryChanged     bool
+    CapacitySecondary            uint64
+
+}
+
+
+func (k *Keeper) GetPlayerCache(playerId string, ctx context.Context) (PlayerCache, error) {
+    return StructCache{
+        PlayerId: playerId,
+        K: k,
+        Ctx: ctx,
+
+        LoadAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_load, playerId),
+        CapacityAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, playerId),
+
+        StructsLoadAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, playerId),
+
+
+    }, nil
+}
+
+func (cache *PlayerCache) Commit() () {
+    if (cache.PlayerChanged) { cache.K.SetPlayer(cache.Ctx, cache.Player) }
+}
+
+
+func (cache *PlayerCache) LoadPlayer() (found bool) {
+    cache.Player, found = cache.K.GetPlayer(cache.Ctx, cache.PlayerId, true)
+
+    if (found) {
+        cache.PlayerLoaded = true
+    }
+
+    return found
+}
+
+func (cache *PlayerCache) GetPlayer() (types.Player, error) {
+    if (!cache.PlayerLoaded) {
+        cache.LoadPlayer()
+    }
+
+    return cache.Player, nil
+}
+
+/*
+ * Some testing code to see if this idea actually works
+ */
+func (cache *PlayerCache) DoNonsense() () {
+    fmt.PrintLn("Checking ")
+    if (!cache.PlayerLoaded) {
+        fmt.PrintLn("Things are loaded")
+        cache.LoadPlayer()
+    }
+    cache.Player.PlanetId = "THIS IS A TEST"
+    fmt.PrintLn("writing ")
+    cache.K.SetPlayer(cache.Ctx, cache.Player)
+}
+
+func (cache *PlayerCache) LoadStorage() (error){
+    if (!cache.PlayerLoaded) {
+        return nil // TODO update to be an error
+    }
+    playerAcc, _ := sdk.AccAddressFromBech32(cache.Player.PrimaryAddress)
+    cache.Storage = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
+}
+
+
+//    cache.CapacitySecondaryAttributeId = GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, cache.Player.SubstationId),
