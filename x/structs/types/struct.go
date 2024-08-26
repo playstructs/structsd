@@ -76,27 +76,30 @@ type StructState uint64
 
 const (
     // 1
-	StructStateBuilt StructState = 1 << iota
+	StructStateMaterialized StructState = 1 << iota
 	// 2
-	StructStateOnline
+	StructStateBuilt
 	// 4
-	StructStateStored
+	StructStateOnline
 	// 8
-	StructStateStealth
+	StructStateStored
 	// 16
+	StructStateStealth
+	// 32
     StructStateDestroyed
-    // 32
+    // 64
     StructStateLocked // Unsure if needed
 )
 
 const (
     StructStateless StructState = 0 << iota
-	StructStateAll = StructStateBuilt | StructStateOnline | StructStateStored | StructStateStealth | StructStateLocked
+	StructStateAll = StructStateMaterialized | StructStateBuilt | StructStateOnline | StructStateStored | StructStateStealth | StructStateLocked
 )
 
 
 var StructState_enum = map[string]StructState {
 	"stateless":    StructStateless,
+	"materialized": StructStateMaterialized,
     "built":        StructStateBuilt,
     "online":       StructStateOnline,
     "stored":       StructStateStored,

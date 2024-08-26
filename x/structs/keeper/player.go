@@ -291,7 +291,7 @@ func (k *Keeper) GetPlayerCacheFromAddress(ctx context.Context, address string) 
     index := k.GetPlayerIndexFromAddress(ctx, address)
 
     if (index > 0) {
-        return PlayerCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not associate an address when already has an account")
+        return PlayerCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player Account Not Found")
     }
 
     return k.GetPlayerCacheFromId(ctx, GetObjectID(types.ObjectType_player, index))
