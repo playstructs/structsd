@@ -146,3 +146,11 @@ func (structType *StructType) GetWeaponShotSuccessRate(weaponSystem TechWeaponSy
 }
 
 
+func (structType *StructType) CanTargetAmbit(weaponSystem TechWeaponSystem, ambit Ambit) (bool) {
+    return structType.GetWeaponAmbits(weaponSystem)&ambit != 0
+}
+
+func (structType *StructType) CanBlockTargeting() (bool) {
+    return false
+}
+

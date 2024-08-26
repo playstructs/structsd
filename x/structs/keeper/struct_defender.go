@@ -90,14 +90,14 @@ func (k Keeper) RemoveStructDefender(ctx context.Context, protectedStructId stri
 }
 
 // GetAllStructDefender returns all struct defenders for a specific struct
-func (k Keeper) GetAllStructDefender(ctx context.Context, protectedStructId string) (list []types.Struct) {
+func (k Keeper) GetAllStructDefender(ctx context.Context, protectedStructId string) (list []types.StructDefender) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), DefenderKeyPrefix(protectedStructId))
 	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-		var val types.Struct
+		var val types.StructDefender
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 		list = append(list, val)
 	}

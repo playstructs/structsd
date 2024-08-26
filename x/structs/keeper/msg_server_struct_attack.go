@@ -8,8 +8,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
 
-
-
 	"structs/x/structs/types"
 )
 
@@ -40,12 +38,15 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     }
 
 
-
     playerCharge := k.GetPlayerCharge(ctx, structure.GetOwnerId())
     if (playerCharge < structure.GetStructType().GetWeaponCharge(msg.WeaponSystem)) {
         k.DischargePlayer(ctx, structure.GetOwnerId())
         return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for this attack, but player (%s) only had %d", structure.GetTypeId() , structure.GetStructType().GetWeaponCharge(msg.WeaponSystem), structure.GetOwnerId(), playerCharge)
     }
+
+
+    targetStructure := k.GetStructCacheFromId(ctx, msg.TargetStructId)
+    _ = targetStructure
 
 
 

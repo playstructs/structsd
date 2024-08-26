@@ -25,6 +25,9 @@ type StructCache struct {
     OwnerLoaded bool
     Owner *PlayerCache
 
+    DefendersLoaded bool
+    Defenders []types.StructDefender
+
     HealthAttributeId string
     HealthLoaded  bool
     HealthChanged bool
@@ -113,6 +116,12 @@ func (cache *StructCache) LoadOwner() (bool) {
     return cache.OwnerLoaded
 }
 
+// Load the Defenders data
+func (cache *StructCache) LoadDefenders() (bool) {
+    cache.Defenders = cache.K.GetAllStructDefender(cache.Ctx, cache.GetOwnerId())
+    cache.DefendersLoaded = true
+    return cache.DefendersLoaded
+}
 
 // Load the Health record
 func (cache *StructCache) LoadHealth() {
@@ -172,6 +181,16 @@ func (cache *StructCache) GetOwner() (*PlayerCache) {
     return cache.Owner
 }
 
+// Get the Defenders data
+func (cache *StructCache) GetDefenders() ([]types.StructDefender) {
+    if (!cache.DefendersLoaded) { cache.LoadDefenders() }
+    return cache.Defenders
+}
+
+func (cache *StructCache) GetOperatingAmbit() (types.Ambit) {
+    if (!cache.StructureLoaded) { cache.LoadStruct() }
+    return cache.Structure.OperatingAmbit
+}
 
 func (cache *StructCache) GetStatus() (types.StructState) {
     if (!cache.StatusLoaded) { cache.LoadStatus() }
@@ -272,6 +291,28 @@ func (cache *StructCache) CanBePlayedBy(address string) (err error) {
 
 /* Game Functions */
 
+func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem types.TechWeaponSystem) (err error) {
+
+     if (targetStruct.IsDestroyed()) {
+        err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is already destroyed", targetStruct.StructId)
+     } else {
+        if (!cache.GetStructType().CanTargetAmbit(weaponSystem, targetStruct.GetOperatingAmbit())) {
+            err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) cannot be hit from Attacker Struct (%s)", targetStruct.StructId, cache.StructId)
+        } else {
+            // Not MVP CanBlockTargeting always returns false
+            if ((!cache.GetStructType().GetWeaponBlockable(weaponSystem)) && (targetStruct.GetStructType().CanBlockTargeting())) {
+                err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) currently blocking Attacker Struct (%s)", targetStruct.StructId, cache.StructId)
+            }
+        }
+     }
+
+     // Now that the inexpensive checks are done, lets go deeper
+     if (err == nil) {
+        // TODO right here
+        // Add in Location check
+     }
+    return
+}
 
 func (cache *StructCache) TakeDamage(damage uint64, attackingStruct *StructCache, weaponSystem types.TechWeaponSystem) {
 
