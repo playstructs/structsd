@@ -10,7 +10,7 @@ import (
 
 	"context"
     "math"
-    "fmt"
+    //"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
@@ -335,4 +335,64 @@ func (cache *PlayerCache) LoadStorage() (error){
 }
 
 
-//    cache.CapacitySecondaryAttributeId = GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, cache.Player.SubstationId),
+
+
+func (cache *PlayerCache) GetSubstationId() (string) {
+    if (!cache.PlayerLoaded) { cache.LoadPlayer() }
+    return cache.Player.SubstationId
+}
+
+func (cache *PlayerCache) LoadLoad() {
+    cache.Load = cache.K.GetGridAttribute(cache.Ctx, cache.LoadAttributeId)
+    cache.LoadLoaded = true
+}
+
+func (cache *PlayerCache) GetLoad() (uint64) {
+    if (!cache.LoadLoaded) { cache.LoadLoad() }
+    return cache.Load
+}
+
+func (cache *PlayerCache) LoadStructsLoad() {
+    cache.StructsLoad = cache.K.GetGridAttribute(cache.Ctx, cache.StructsLoadAttributeId)
+    cache.StructsLoadLoaded = true
+}
+
+func (cache *PlayerCache) GetStructsLoad() (uint64) {
+    if (!cache.StructsLoadLoaded) { cache.LoadStructsLoad() }
+    return cache.StructsLoad
+}
+
+func (cache *PlayerCache) LoadCapacity() {
+    cache.Capacity = cache.K.GetGridAttribute(cache.Ctx, cache.CapacityAttributeId)
+    cache.CapacityLoaded = true
+}
+
+func (cache *PlayerCache) GetCapacity() (uint64) {
+    if (!cache.CapacityLoaded) { cache.LoadCapacity() }
+    return cache.Capacity
+}
+
+func (cache *PlayerCache) LoadCapacitySecondary() {
+    cache.CapacitySecondaryAttributeId = GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, cache.GetSubstationId())
+
+    cache.CapacitySecondary = cache.K.GetGridAttribute(cache.Ctx, cache.CapacitySecondaryAttributeId)
+    cache.CapacitySecondaryLoaded = true
+}
+
+func (cache *PlayerCache) GetCapacitySecondary() (uint64) {
+    if (!cache.CapacitySecondaryLoaded) { cache.LoadCapacitySecondary() }
+    return cache.CapacitySecondary
+}
+
+func (cache *PlayerCache) IsOnline() (online bool){
+    if ((cache.GetLoad() + cache.GetStructsLoad()) <= (cache.GetCapacity() + cache.GetCapacitySecondary())) {
+        online = true
+    } else {
+        online = false
+    }
+    return
+}
+
+func (cache *PlayerCache) IsOffline() (bool){
+    return !cache.IsOnline()
+}

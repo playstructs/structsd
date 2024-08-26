@@ -21,11 +21,10 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
-    if (callingPlayerIndex == 0) {
-        return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct actions requires Player account but none associated with %s", msg.Creator)
+    callingPlayer, err := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    if (err != nil) {
+        return &types.MsgStructAttackResponse{}, err
     }
-    callingPlayerId := GetObjectID(types.ObjectType_player, callingPlayerIndex)
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has Play permissions
@@ -33,35 +32,33 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
         return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
     }
 
-    structStatusAttributeId := GetStructAttributeIDByObjectId(types.StructAttributeType_status, msg.OperatingStructId)
 
-    structure, structureFound := k.GetStruct(ctx, msg.OperatingStructId)
-    if (!structureFound) {
-        return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) not found", msg.OperatingStructId)
-    }
+    structure := k.GetStructCacheFromId(ctx, msg.OperatingStructId)
+
 
     // Is the Struct online?
-    if (k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateOnline))) {
-        k.DischargePlayer(ctx, structure.Owner)
+    if (!structure.IsOffline()) {
+        k.DischargePlayer(ctx, structure.GetOwner())
         return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is offline. Activate it", msg.OperatingStructId)
     }
 
-    if (callingPlayerId != structure.Owner) {
+
+    if (callingPlayer.PlayerId != structure.GetOwner()) {
         // Check permissions on Creator on Planet
-        playerPermissionId := GetObjectPermissionIDBytes(structure.Owner, callingPlayerId)
+        playerPermissionId := GetObjectPermissionIDBytes(structure.GetOwner(), callingPlayer.PlayerId)
         if (!k.PermissionHasOneOf(ctx, playerPermissionId, types.PermissionPlay)) {
-            return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayerId, structure.Owner)
+            return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayer.PlayerId, structure.GetOwner())
         }
     }
-    sudoPlayer, _ := k.GetPlayer(ctx, structure.Owner, true)
-    if (!sudoPlayer.IsOnline()){
-        return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",sudoPlayer.Id)
+    sudoPlayer, _ := k.GetPlayerCacheFromId(ctx, structure.GetOwner())
+    if (sudoPlayer.IsOffline()){
+        return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",sudoPlayer.PlayerId)
     }
 
     // Load Struct Type
-    structType, structTypeFound := k.GetStructType(ctx, structure.Type)
+    structTypeFound := structure.LoadType()
     if (!structTypeFound) {
-        return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct Type (%d) was not found. Building a Struct with schematics might be tough", structure.Type)
+        return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct Type (%d) was not found. Building a Struct with schematics might be tough", structure.GetTypeId())
     }
 
     var weapon              types.TechActiveWeaponry
@@ -80,37 +77,37 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     switch msg.WeaponSystem {
 
         case types.TechWeaponSystem_primaryWeapon:
-          weapon                = structType.PrimaryWeapon
-          weaponControl         = structType.PrimaryWeaponControl
-          weaponCharge          = structType.PrimaryWeaponCharge
-          weaponAmbits          = structType.PrimaryWeaponAmbits
-          weaponTargets         = structType.PrimaryWeaponTargets
-          weaponShots           = structType.PrimaryWeaponShots
-          weaponDamage          = structType.PrimaryWeaponDamage
-          weaponBlockable       = structType.PrimaryWeaponBlockable
-          weaponCounterable     = structType.PrimaryWeaponCounterable
-          weaponRecoilDamage    = structType.PrimaryWeaponRecoilDamage
-          weaponShotSuccessRate, fractionErr = fraction.New(structType.PrimaryWeaponShotSuccessRateNumerator, structType.PrimaryWeaponShotSuccessRateDenominator)
+          weapon                = structure.StructType.PrimaryWeapon
+          weaponControl         = structure.StructType.PrimaryWeaponControl
+          weaponCharge          = structure.StructType.PrimaryWeaponCharge
+          weaponAmbits          = structure.StructType.PrimaryWeaponAmbits
+          weaponTargets         = structure.StructType.PrimaryWeaponTargets
+          weaponShots           = structure.StructType.PrimaryWeaponShots
+          weaponDamage          = structure.StructType.PrimaryWeaponDamage
+          weaponBlockable       = structure.StructType.PrimaryWeaponBlockable
+          weaponCounterable     = structure.StructType.PrimaryWeaponCounterable
+          weaponRecoilDamage    = structure.StructType.PrimaryWeaponRecoilDamage
+          weaponShotSuccessRate, fractionErr = fraction.New(structure.StructType.PrimaryWeaponShotSuccessRateNumerator, structure.StructType.PrimaryWeaponShotSuccessRateDenominator)
 
         case types.TechWeaponSystem_secondaryWeapon:
-          weapon                = structType.SecondaryWeapon
-          weaponControl         = structType.SecondaryWeaponControl
-          weaponCharge          = structType.SecondaryWeaponCharge
-          weaponAmbits          = structType.SecondaryWeaponAmbits
-          weaponTargets         = structType.SecondaryWeaponTargets
-          weaponShots           = structType.SecondaryWeaponShots
-          weaponDamage          = structType.SecondaryWeaponDamage
-          weaponBlockable       = structType.SecondaryWeaponBlockable
-          weaponCounterable     = structType.SecondaryWeaponCounterable
-          weaponRecoilDamage    = structType.SecondaryWeaponRecoilDamage
-          weaponShotSuccessRate, fractionErr = fraction.New(structType.SecondaryWeaponShotSuccessRateNumerator, structType.SecondaryWeaponShotSuccessRateDenominator)
+          weapon                = structure.StructType.SecondaryWeapon
+          weaponControl         = structure.StructType.SecondaryWeaponControl
+          weaponCharge          = structure.StructType.SecondaryWeaponCharge
+          weaponAmbits          = structure.StructType.SecondaryWeaponAmbits
+          weaponTargets         = structure.StructType.SecondaryWeaponTargets
+          weaponShots           = structure.StructType.SecondaryWeaponShots
+          weaponDamage          = structure.StructType.SecondaryWeaponDamage
+          weaponBlockable       = structure.StructType.SecondaryWeaponBlockable
+          weaponCounterable     = structure.StructType.SecondaryWeaponCounterable
+          weaponRecoilDamage    = structure.StructType.SecondaryWeaponRecoilDamage
+          weaponShotSuccessRate, fractionErr = fraction.New(structure.StructType.SecondaryWeaponShotSuccessRateNumerator, structure.StructType.SecondaryWeaponShotSuccessRateDenominator)
 
         default:
             return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "No valid weapon system provided")
     }
 
     if (fractionErr != nil) {
-        return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "We've got a success rate issue in the Struct Type (%d). Pls tell an adult.", structType.Id)
+        return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "We've got a success rate issue in the Struct Type (%d). Pls tell an adult.", structure.StructType.Id)
     }
 
     // Pacify the compiler
@@ -128,10 +125,10 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
 
     // Check Sudo Player Charge
-    playerCharge := k.GetPlayerCharge(ctx, structure.Owner)
+    playerCharge := k.GetPlayerCharge(ctx, structure.GetOwner())
     if (playerCharge < weaponCharge) {
-        k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for this attack, but player (%s) only had %d", structure.Type, weaponCharge, structure.Owner, playerCharge)
+        k.DischargePlayer(ctx, structure.GetOwner())
+        return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for this attack, but player (%s) only had %d", structure.GetTypeId() , weaponCharge, structure.GetOwner(), playerCharge)
     }
 
 
@@ -206,7 +203,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
 
 
-    k.DischargePlayer(ctx, structure.Owner)
+    k.DischargePlayer(ctx, structure.GetOwner())
 
 	return &types.MsgStructAttackResponse{}, nil
 }

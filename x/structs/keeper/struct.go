@@ -246,7 +246,7 @@ type StructCache struct {
     StatusAttributeId string
     StatusLoaded  bool
     StatusChanged bool
-    Status uint64
+    Status types.StructState
 
     BlockStartBuildAttributeId string
     BlockStartBuildLoaded bool
@@ -269,7 +269,7 @@ type StructCache struct {
     ProtectedStructIndex   uint64
 }
 
-func (k *Keeper) GetStructCache(structId string, ctx context.Context) (StructCache, error) {
+func (k *Keeper) GetStructCacheFromId(ctx context.Context, structId string) (StructCache, error) {
     return StructCache{
         StructId: structId,
         K: k,
@@ -291,36 +291,65 @@ func (cache *StructCache) Commit() () {
     if (cache.StructureChanged) { cache.K.SetStruct(cache.Ctx, cache.Structure) }
 
     if (cache.HealthChanged) { cache.K.SetStructAttribute(cache.Ctx, cache.HealthAttributeId, cache.Health) }
-    if (cache.StatusChanged) { cache.K.SetStructAttribute(cache.Ctx, cache.StatusAttributeId, cache.Status) }
+    if (cache.StatusChanged) { cache.K.SetStructAttribute(cache.Ctx, cache.StatusAttributeId, uint64(cache.Status)) }
 
     if (cache.BlockStartBuildChanged) { cache.K.SetStructAttribute(cache.Ctx, cache.BlockStartBuildAttributeId, cache.BlockStartBuild) }
     if (cache.BlockStartOreMineChanged) { cache.K.SetStructAttribute(cache.Ctx, cache.BlockStartOreMineAttributeId, cache.BlockStarOreMine) }
     if (cache.BlockStartOreRefineChanged) { cache.K.SetStructAttribute(cache.Ctx, cache.BlockStartOreRefineAttributeId, cache.BlockStartOreRefine) }
 
     if (cache.ProtectedStructIndexChanged) { cache.K.SetStructAttribute(cache.Ctx, cache.ProtectedStructIndexAttributeId, cache.ProtectedStructIndex) }
-
 }
 
-func (cache *StructCache) LoadStruct() (found bool) {
-    cache.Structure, found = cache.K.GetStruct(cache.Ctx, cache.StructId)
-    return found
+
+func (cache *StructCache) LoadStatus() {
+    cache.Status = types.StructState(cache.K.GetStructAttribute(cache.Ctx, cache.StatusAttributeId))
+    cache.StatusLoaded = true
 }
 
-func (cache *StructCache) GetStruct() (types.Struct, error) {
-    if (!cache.StructureLoaded) {
-        cache.LoadStruct()
-    }
-
-    return cache.Structure, nil
+func (cache *StructCache) LoadStruct() (bool) {
+    cache.Structure, cache.StructureLoaded = cache.K.GetStruct(cache.Ctx, cache.StructId)
+    return cache.StructureLoaded
 }
+
+func (cache *StructCache) LoadType() (bool) {
+    cache.StructType, cache.StructTypeLoaded = cache.K.GetStructType(cache.Ctx, cache.GetTypeId())
+    return cache.StructTypeLoaded
+}
+
+
+
+func (cache *StructCache) GetOwner() (string) {
+    if (!cache.StructureLoaded) { cache.LoadStruct() }
+    return cache.Structure.Owner
+}
+
+func (cache *StructCache) GetStatus() (types.StructState) {
+    if (!cache.StatusLoaded) { cache.LoadStatus() }
+    return cache.Status
+}
+
+func (cache *StructCache) GetStruct() (types.Struct) {
+    if (!cache.StructureLoaded) { cache.LoadStruct() }
+    return cache.Structure
+}
+
+func (cache *StructCache) GetTypeId() (uint64) {
+    if (!cache.StructureLoaded) { cache.LoadStruct() }
+    return cache.Structure.Type
+}
+
+
 
 
 
 func (cache *StructCache) IsBuilt() bool {
-    return false
+   return cache.GetStatus()&types.StructStateBuilt != 0
 }
 
 func (cache *StructCache) IsOnline() bool {
+   return cache.GetStatus()&types.StructStateOnline != 0
+}
 
-	return false
+func (cache *StructCache) IsOffline() bool {
+    return !cache.IsOnline()
 }
