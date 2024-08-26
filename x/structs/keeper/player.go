@@ -13,7 +13,7 @@ import (
     "fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	//sdkerrors "cosmossdk.io/errors"
+	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 
 )
@@ -270,7 +270,7 @@ type PlayerCache struct {
 }
 
 
-func (k *Keeper) GetPlayerCache(playerId string, ctx context.Context) (PlayerCache, error) {
+func (k *Keeper) GetPlayerCacheFromId(ctx context.Context, playerId string) (PlayerCache, error) {
     return PlayerCache{
         PlayerId: playerId,
         K: k,
@@ -280,9 +280,21 @@ func (k *Keeper) GetPlayerCache(playerId string, ctx context.Context) (PlayerCac
         CapacityAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, playerId),
 
         StructsLoadAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, playerId),
-
-
     }, nil
+}
+
+func (k *Keeper) GetPlayerCacheFromIndex(ctx context.Context, index uint64) (PlayerCache, error) {
+    return k.GetPlayerCacheFromId(ctx, GetObjectID(types.ObjectType_player, index))
+}
+
+func (k *Keeper) GetPlayerCacheFromAddress(ctx context.Context, address string) (PlayerCache, error) {
+    index := k.GetPlayerIndexFromAddress(ctx, address)
+
+    if (index > 0) {
+        return PlayerCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not associate an address when already has an account")
+    }
+
+    return k.GetPlayerCacheFromId(ctx, GetObjectID(types.ObjectType_player, index))
 }
 
 func (cache *PlayerCache) Commit() () {
@@ -302,32 +314,24 @@ func (cache *PlayerCache) LoadPlayer() (found bool) {
 
 func (cache *PlayerCache) GetPlayer() (types.Player, error) {
     if (!cache.PlayerLoaded) {
-        cache.LoadPlayer()
+        found := cache.LoadPlayer()
+        if (!found) {
+           return types.Player{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not load Player object for %s", cache.PlayerId )
+        }
     }
 
     return cache.Player, nil
 }
 
-/*
- * Some testing code to see if this idea actually works
- */
-func (cache *PlayerCache) DoNonsense() () {
-    fmt.PrintLn("Checking ")
-    if (!cache.PlayerLoaded) {
-        fmt.PrintLn("Things are loaded")
-        cache.LoadPlayer()
-    }
-    cache.Player.PlanetId = "THIS IS A TEST"
-    fmt.PrintLn("writing ")
-    cache.K.SetPlayer(cache.Ctx, cache.Player)
-}
 
 func (cache *PlayerCache) LoadStorage() (error){
     if (!cache.PlayerLoaded) {
         return nil // TODO update to be an error
     }
     playerAcc, _ := sdk.AccAddressFromBech32(cache.Player.PrimaryAddress)
-    cache.Storage = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
+    cache.Storage = cache.K.bankKeeper.SpendableCoins(cache.Ctx, playerAcc)
+
+    return nil
 }
 
 

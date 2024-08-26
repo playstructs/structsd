@@ -63,8 +63,8 @@ func (k Keeper) ReactorInitialize(ctx context.Context, validatorAddress sdk.ValA
 
             k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, identity.String(), player, delegationShare.Uint64(), reactor.DefaultCommission, types.ReactorFuelToEnergyConversion)
         }
-
     }
+
 
 }
 
@@ -109,8 +109,9 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx context.Context, playerAddress
            )
         */
         k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String(), player, delegationShare.Uint64(), reactor.DefaultCommission, types.ReactorFuelToEnergyConversion)
-
     }
+
+
 }
 
 
