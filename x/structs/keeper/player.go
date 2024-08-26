@@ -302,6 +302,19 @@ func (cache *PlayerCache) Commit() () {
 }
 
 
+
+func (cache *PlayerCache) LoadCapacity() {
+    cache.Capacity = cache.K.GetGridAttribute(cache.Ctx, cache.CapacityAttributeId)
+    cache.CapacityLoaded = true
+}
+
+
+func (cache *PlayerCache) LoadLoad() {
+    cache.Load = cache.K.GetGridAttribute(cache.Ctx, cache.LoadAttributeId)
+    cache.LoadLoaded = true
+}
+
+
 func (cache *PlayerCache) LoadPlayer() (found bool) {
     cache.Player, found = cache.K.GetPlayer(cache.Ctx, cache.PlayerId, true)
 
@@ -310,17 +323,6 @@ func (cache *PlayerCache) LoadPlayer() (found bool) {
     }
 
     return found
-}
-
-func (cache *PlayerCache) GetPlayer() (types.Player, error) {
-    if (!cache.PlayerLoaded) {
-        found := cache.LoadPlayer()
-        if (!found) {
-           return types.Player{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not load Player object for %s", cache.PlayerId )
-        }
-    }
-
-    return cache.Player, nil
 }
 
 
@@ -334,6 +336,25 @@ func (cache *PlayerCache) LoadStorage() (error){
     return nil
 }
 
+func (cache *PlayerCache) LoadStructsLoad() {
+    cache.StructsLoad = cache.K.GetGridAttribute(cache.Ctx, cache.StructsLoadAttributeId)
+    cache.StructsLoadLoaded = true
+}
+
+
+
+func (cache *PlayerCache) GetPlayer() (types.Player, error) {
+    if (!cache.PlayerLoaded) {
+        found := cache.LoadPlayer()
+        if (!found) {
+           return types.Player{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not load Player object for %s", cache.PlayerId )
+        }
+    }
+
+    return cache.Player, nil
+}
+
+
 
 
 
@@ -342,29 +363,16 @@ func (cache *PlayerCache) GetSubstationId() (string) {
     return cache.Player.SubstationId
 }
 
-func (cache *PlayerCache) LoadLoad() {
-    cache.Load = cache.K.GetGridAttribute(cache.Ctx, cache.LoadAttributeId)
-    cache.LoadLoaded = true
-}
 
 func (cache *PlayerCache) GetLoad() (uint64) {
     if (!cache.LoadLoaded) { cache.LoadLoad() }
     return cache.Load
 }
 
-func (cache *PlayerCache) LoadStructsLoad() {
-    cache.StructsLoad = cache.K.GetGridAttribute(cache.Ctx, cache.StructsLoadAttributeId)
-    cache.StructsLoadLoaded = true
-}
 
 func (cache *PlayerCache) GetStructsLoad() (uint64) {
     if (!cache.StructsLoadLoaded) { cache.LoadStructsLoad() }
     return cache.StructsLoad
-}
-
-func (cache *PlayerCache) LoadCapacity() {
-    cache.Capacity = cache.K.GetGridAttribute(cache.Ctx, cache.CapacityAttributeId)
-    cache.CapacityLoaded = true
 }
 
 func (cache *PlayerCache) GetCapacity() (uint64) {
