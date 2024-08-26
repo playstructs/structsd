@@ -269,7 +269,7 @@ type StructCache struct {
     ProtectedStructIndex   uint64
 }
 
-func (k *Keeper) GetStructCacheFromId(ctx context.Context, structId string) (StructCache, error) {
+func (k *Keeper) GetStructCacheFromId(ctx context.Context, structId string) (StructCache) {
     return StructCache{
         StructId: structId,
         K: k,
@@ -283,7 +283,7 @@ func (k *Keeper) GetStructCacheFromId(ctx context.Context, structId string) (Str
         BlockStartOreRefineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structId),
 
         ProtectedStructIndexAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, structId),
-    }, nil
+    }
 }
 
 func (cache *StructCache) Commit() () {
