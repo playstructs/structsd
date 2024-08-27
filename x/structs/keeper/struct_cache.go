@@ -25,6 +25,9 @@ type StructCache struct {
     OwnerLoaded bool
     Owner *PlayerCache
 
+    FleetLoaded bool
+    Fleet *types.Fleet
+
     DefendersLoaded bool
     Defenders []types.StructDefender
 
@@ -116,6 +119,14 @@ func (cache *StructCache) LoadOwner() (bool) {
     return cache.OwnerLoaded
 }
 
+// Load the Fleet data
+func (cache *StructCache) LoadFleet() (bool) {
+    newFleet, newFleetFound := cache.K.GetFleet(cache.Ctx, cache.GetLocationId())
+    cache.Fleet = &newFleet
+    cache.FleetLoaded = newFleetFound
+    return cache.FleetLoaded
+}
+
 // Load the Defenders data
 func (cache *StructCache) LoadDefenders() (bool) {
     cache.Defenders = cache.K.GetAllStructDefender(cache.Ctx, cache.GetOwnerId())
@@ -185,6 +196,18 @@ func (cache *StructCache) GetOwner() (*PlayerCache) {
 func (cache *StructCache) GetDefenders() ([]types.StructDefender) {
     if (!cache.DefendersLoaded) { cache.LoadDefenders() }
     return cache.Defenders
+}
+
+// Get the Location ID data
+func (cache *StructCache) GetLocationId() (string) {
+    if (!cache.StructureLoaded) { cache.LoadStruct() }
+    return cache.Structure.LocationId
+}
+
+// Get the Location Type data
+func (cache *StructCache) GetLocationType() (types.ObjectType) {
+    if (!cache.StructureLoaded) { cache.LoadStruct() }
+    return cache.Structure.LocationType
 }
 
 func (cache *StructCache) GetOperatingAmbit() (types.Ambit) {
@@ -309,7 +332,17 @@ func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem type
      // Now that the inexpensive checks are done, lets go deeper
      if (err == nil) {
         // TODO right here
-        Add in Location check
+        //Add in Location check
+        // if cache.getlocationtype is planet
+            // if the target isn't on a fleet
+                // error
+            // else
+                // is the fleet at the planet?
+                // is the fleet beside it?
+        // if cache.getlocationtype is fleet
+            // if the target isn't on a fleet or planet
+            // else
+               // if the target is beside cache
      }
     return
 }
