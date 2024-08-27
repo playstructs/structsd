@@ -47,12 +47,13 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     // Jump out of Stealth Mode for the attack
     structure.RemoveHidden()
 
+    // Begin taking shots. Most weapons only use a single shot but some perform multiple.
     for shot := uint64(0); shot < (structure.GetStructType().GetWeaponTargets(msg.WeaponSystem)); shot++ {
+
         // Load the Target Struct cache object
         targetStructure := k.GetStructCacheFromId(ctx, msg.TargetStructId[shot])
 
         /* Can the attacker attack? */
-
         // Check that the Structs are within attacking range of each other
         // This includes both a weapon<->ambit check, and a fleet<->planet
         targetingError := structure.CanAttack(&targetStructure, msg.WeaponSystem)
@@ -64,6 +65,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
         // TODO Event - Targeted
 
         if (targetStructure.CanEvade(&structure, msg.WeaponSystem)) {
+            // TODO Event - Evade
             continue
         }
 
