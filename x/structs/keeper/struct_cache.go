@@ -309,7 +309,7 @@ func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem type
      // Now that the inexpensive checks are done, lets go deeper
      if (err == nil) {
         // TODO right here
-        // Add in Location check
+        Add in Location check
      }
     return
 }
