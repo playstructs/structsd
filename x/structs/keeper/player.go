@@ -247,6 +247,11 @@ type PlayerCache struct {
     StorageLoaded bool
     Storage       sdk.Coins
 
+    NonceAttributeId string
+    NonceLoaded     bool
+    NonceChanged    bool
+    Nonce           int64
+
     LoadAttributeId string
     LoadLoaded      bool
     LoadChanged     bool
@@ -276,6 +281,8 @@ func (k *Keeper) GetPlayerCacheFromId(ctx context.Context, playerId string) (Pla
         K: k,
         Ctx: ctx,
 
+        NonceAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_nonce, playerId),
+
         LoadAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_load, playerId),
         CapacityAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, playerId),
 
@@ -299,8 +306,15 @@ func (k *Keeper) GetPlayerCacheFromAddress(ctx context.Context, address string) 
 
 func (cache *PlayerCache) Commit() () {
     if (cache.PlayerChanged) { cache.K.SetPlayer(cache.Ctx, cache.Player) }
+
+    if (cache.NonceChanged) { cache.K.SetGridAttributeIncrement(cache.Ctx, cache.NonceAttributeId, uint64(cache.Nonce)) }
 }
 
+
+func (cache *PlayerCache) LoadNonce() {
+    cache.Nonce = int64(cache.K.GetGridAttribute(cache.Ctx, cache.NonceAttributeId))
+    cache.NonceLoaded = true
+}
 
 
 func (cache *PlayerCache) LoadCapacity() {
@@ -361,6 +375,14 @@ func (cache *PlayerCache) GetPlayer() (types.Player, error) {
 func (cache *PlayerCache) GetSubstationId() (string) {
     if (!cache.PlayerLoaded) { cache.LoadPlayer() }
     return cache.Player.SubstationId
+}
+
+func (cache *PlayerCache) GetNextNonce() (int64) {
+    if (!cache.NonceLoaded) { cache.LoadNonce() }
+
+    cache.Nonce = cache.Nonce + 1
+    cache.NonceChanged = true
+    return cache.Nonce
 }
 
 

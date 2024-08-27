@@ -172,6 +172,7 @@ var GridAttributeType_enum = map[string]GridAttributeType{
 	"allocationPointerEnd":     GridAttributeType_allocationPointerEnd,
 	"proxyNonce":               GridAttributeType_proxyNonce,
 	"lastAction":               GridAttributeType_lastAction,
+	"nonce":                    GridAttributeType_nonce,
 }
 
 

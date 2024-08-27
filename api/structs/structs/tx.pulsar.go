@@ -24842,6 +24842,52 @@ func (x *fastReflection_MsgStructMove) ProtoMethods() *protoiface.Methods {
 	}
 }
 
+var _ protoreflect.List = (*_MsgStructAttack_3_list)(nil)
+
+type _MsgStructAttack_3_list struct {
+	list *[]string
+}
+
+func (x *_MsgStructAttack_3_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_MsgStructAttack_3_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfString((*x.list)[i])
+}
+
+func (x *_MsgStructAttack_3_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_MsgStructAttack_3_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_MsgStructAttack_3_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message MsgStructAttack at list field TargetStructId as it is not of Message kind"))
+}
+
+func (x *_MsgStructAttack_3_list) Truncate(n int) {
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_MsgStructAttack_3_list) NewElement() protoreflect.Value {
+	v := ""
+	return protoreflect.ValueOfString(v)
+}
+
+func (x *_MsgStructAttack_3_list) IsValid() bool {
+	return x.list != nil
+}
+
 var (
 	md_MsgStructAttack                   protoreflect.MessageDescriptor
 	fd_MsgStructAttack_creator           protoreflect.FieldDescriptor
@@ -24936,8 +24982,8 @@ func (x *fastReflection_MsgStructAttack) Range(f func(protoreflect.FieldDescript
 			return
 		}
 	}
-	if x.TargetStructId != "" {
-		value := protoreflect.ValueOfString(x.TargetStructId)
+	if len(x.TargetStructId) != 0 {
+		value := protoreflect.ValueOfList(&_MsgStructAttack_3_list{list: &x.TargetStructId})
 		if !f(fd_MsgStructAttack_targetStructId, value) {
 			return
 		}
@@ -24968,7 +25014,7 @@ func (x *fastReflection_MsgStructAttack) Has(fd protoreflect.FieldDescriptor) bo
 	case "structs.structs.MsgStructAttack.operatingStructId":
 		return x.OperatingStructId != ""
 	case "structs.structs.MsgStructAttack.targetStructId":
-		return x.TargetStructId != ""
+		return len(x.TargetStructId) != 0
 	case "structs.structs.MsgStructAttack.weaponSystem":
 		return x.WeaponSystem != 0
 	default:
@@ -24992,7 +25038,7 @@ func (x *fastReflection_MsgStructAttack) Clear(fd protoreflect.FieldDescriptor) 
 	case "structs.structs.MsgStructAttack.operatingStructId":
 		x.OperatingStructId = ""
 	case "structs.structs.MsgStructAttack.targetStructId":
-		x.TargetStructId = ""
+		x.TargetStructId = nil
 	case "structs.structs.MsgStructAttack.weaponSystem":
 		x.WeaponSystem = 0
 	default:
@@ -25018,8 +25064,11 @@ func (x *fastReflection_MsgStructAttack) Get(descriptor protoreflect.FieldDescri
 		value := x.OperatingStructId
 		return protoreflect.ValueOfString(value)
 	case "structs.structs.MsgStructAttack.targetStructId":
-		value := x.TargetStructId
-		return protoreflect.ValueOfString(value)
+		if len(x.TargetStructId) == 0 {
+			return protoreflect.ValueOfList(&_MsgStructAttack_3_list{})
+		}
+		listValue := &_MsgStructAttack_3_list{list: &x.TargetStructId}
+		return protoreflect.ValueOfList(listValue)
 	case "structs.structs.MsgStructAttack.weaponSystem":
 		value := x.WeaponSystem
 		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
@@ -25048,7 +25097,9 @@ func (x *fastReflection_MsgStructAttack) Set(fd protoreflect.FieldDescriptor, va
 	case "structs.structs.MsgStructAttack.operatingStructId":
 		x.OperatingStructId = value.Interface().(string)
 	case "structs.structs.MsgStructAttack.targetStructId":
-		x.TargetStructId = value.Interface().(string)
+		lv := value.List()
+		clv := lv.(*_MsgStructAttack_3_list)
+		x.TargetStructId = *clv.list
 	case "structs.structs.MsgStructAttack.weaponSystem":
 		x.WeaponSystem = (TechWeaponSystem)(value.Enum())
 	default:
@@ -25071,12 +25122,16 @@ func (x *fastReflection_MsgStructAttack) Set(fd protoreflect.FieldDescriptor, va
 // Mutable is a mutating operation and unsafe for concurrent use.
 func (x *fastReflection_MsgStructAttack) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
+	case "structs.structs.MsgStructAttack.targetStructId":
+		if x.TargetStructId == nil {
+			x.TargetStructId = []string{}
+		}
+		value := &_MsgStructAttack_3_list{list: &x.TargetStructId}
+		return protoreflect.ValueOfList(value)
 	case "structs.structs.MsgStructAttack.creator":
 		panic(fmt.Errorf("field creator of message structs.structs.MsgStructAttack is not mutable"))
 	case "structs.structs.MsgStructAttack.operatingStructId":
 		panic(fmt.Errorf("field operatingStructId of message structs.structs.MsgStructAttack is not mutable"))
-	case "structs.structs.MsgStructAttack.targetStructId":
-		panic(fmt.Errorf("field targetStructId of message structs.structs.MsgStructAttack is not mutable"))
 	case "structs.structs.MsgStructAttack.weaponSystem":
 		panic(fmt.Errorf("field weaponSystem of message structs.structs.MsgStructAttack is not mutable"))
 	default:
@@ -25097,7 +25152,8 @@ func (x *fastReflection_MsgStructAttack) NewField(fd protoreflect.FieldDescripto
 	case "structs.structs.MsgStructAttack.operatingStructId":
 		return protoreflect.ValueOfString("")
 	case "structs.structs.MsgStructAttack.targetStructId":
-		return protoreflect.ValueOfString("")
+		list := []string{}
+		return protoreflect.ValueOfList(&_MsgStructAttack_3_list{list: &list})
 	case "structs.structs.MsgStructAttack.weaponSystem":
 		return protoreflect.ValueOfEnum(0)
 	default:
@@ -25177,9 +25233,11 @@ func (x *fastReflection_MsgStructAttack) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.TargetStructId)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
+		if len(x.TargetStructId) > 0 {
+			for _, s := range x.TargetStructId {
+				l = len(s)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
 		}
 		if x.WeaponSystem != 0 {
 			n += 1 + runtime.Sov(uint64(x.WeaponSystem))
@@ -25219,11 +25277,13 @@ func (x *fastReflection_MsgStructAttack) ProtoMethods() *protoiface.Methods {
 			dAtA[i] = 0x20
 		}
 		if len(x.TargetStructId) > 0 {
-			i -= len(x.TargetStructId)
-			copy(dAtA[i:], x.TargetStructId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TargetStructId)))
-			i--
-			dAtA[i] = 0x1a
+			for iNdEx := len(x.TargetStructId) - 1; iNdEx >= 0; iNdEx-- {
+				i -= len(x.TargetStructId[iNdEx])
+				copy(dAtA[i:], x.TargetStructId[iNdEx])
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.TargetStructId[iNdEx])))
+				i--
+				dAtA[i] = 0x1a
+			}
 		}
 		if len(x.OperatingStructId) > 0 {
 			i -= len(x.OperatingStructId)
@@ -25382,7 +25442,7 @@ func (x *fastReflection_MsgStructAttack) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.TargetStructId = string(dAtA[iNdEx:postIndex])
+				x.TargetStructId = append(x.TargetStructId, string(dAtA[iNdEx:postIndex]))
 				iNdEx = postIndex
 			case 4:
 				if wireType != 0 {
@@ -39748,7 +39808,7 @@ type MsgStructAttack struct {
 
 	Creator           string           `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	OperatingStructId string           `protobuf:"bytes,2,opt,name=operatingStructId,proto3" json:"operatingStructId,omitempty"`
-	TargetStructId    string           `protobuf:"bytes,3,opt,name=targetStructId,proto3" json:"targetStructId,omitempty"`
+	TargetStructId    []string         `protobuf:"bytes,3,rep,name=targetStructId,proto3" json:"targetStructId,omitempty"`
 	WeaponSystem      TechWeaponSystem `protobuf:"varint,4,opt,name=weaponSystem,proto3,enum=structs.structs.TechWeaponSystem" json:"weaponSystem,omitempty"`
 }
 
@@ -39786,11 +39846,11 @@ func (x *MsgStructAttack) GetOperatingStructId() string {
 	return ""
 }
 
-func (x *MsgStructAttack) GetTargetStructId() string {
+func (x *MsgStructAttack) GetTargetStructId() []string {
 	if x != nil {
 		return x.TargetStructId
 	}
-	return ""
+	return nil
 }
 
 func (x *MsgStructAttack) GetWeaponSystem() TechWeaponSystem {
@@ -41263,7 +41323,7 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49,
 	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69,
 	0x6e, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x26, 0x0a, 0x0e, 0x74, 0x61,
-	0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01,
+	0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x03, 0x20, 0x03,
 	0x28, 0x09, 0x52, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x49, 0x64, 0x12, 0x45, 0x0a, 0x0c, 0x77, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x79, 0x73, 0x74,
 	0x65, 0x6d, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,

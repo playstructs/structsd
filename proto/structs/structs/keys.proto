@@ -35,6 +35,7 @@ enum gridAttributeType {
     allocationPointerEnd    = 9;
     proxyNonce              = 10;
     lastAction              = 11;
+    nonce                   = 12;
 }
 
 enum allocationType {
@@ -89,7 +90,6 @@ enum structAttributeType {
     blockStartOreRefine         = 4;
 
     protectedStructIndex        = 5;
-
 }
 
 

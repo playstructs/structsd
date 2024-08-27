@@ -3,7 +3,7 @@ package keeper
 import (
 	"context"
 
-    //"fmt"
+    "fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
@@ -44,82 +44,73 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
         return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for this attack, but player (%s) only had %d", structure.GetTypeId() , structure.GetStructType().GetWeaponCharge(msg.WeaponSystem), structure.GetOwnerId(), playerCharge)
     }
 
+    for shot := uint64(0); shot < (structure.GetStructType().GetWeaponTargets(msg.WeaponSystem)); shot++ {
+        // Load the Target Struct cache object
+        targetStructure := k.GetStructCacheFromId(ctx, msg.TargetStructId[shot])
 
-    targetStructure := k.GetStructCacheFromId(ctx, msg.TargetStructId)
-    _ = targetStructure
+        /* Can the attacker attack? */
 
+        // Check that the Structs are within attacking range of each other
+        // This includes both a weapon<->ambit check, and a fleet<->planet
+        targetingError := structure.CanAttack(&targetStructure, msg.WeaponSystem)
+        if (targetingError != nil) {
+            k.DischargePlayer(ctx, structure.GetOwnerId())
+            return &types.MsgStructAttackResponse{}, targetingError
+        }
 
+        // TODO Event - Targeted
 
-    // Load Defender?
-    // Load Defender Location?
-        // Load Planet?
-        // Load Fleet
+        if (targetStructure.CanEvade(&structure, msg.WeaponSystem)) {
+            continue
+        }
 
-    // Load attacker location?
+        attackBlocked := false
 
+        // Check to make sure the attack is either counterable, blockable, or both. Otherwise skip this section
+        if ((structure.GetStructType().GetWeaponBlockable(msg.WeaponSystem)) || (structure.GetStructType().GetWeaponCounterable(msg.WeaponSystem))) {
 
-    /* Can the attacker attack? */
-        /*
-            - Is the Attacker Online? (Done ✅)
-            - Is the Defender Destroyed?
-            - Is the Defender within Range of the Attackers Position
-            - Is the Defender within Range of the Attackers Weapon?
-                - Including Stealth
-            - Is the Defender has a Defensive Block (None MVP ✅)
-            - Does the Planet have a Defensive Block (None MVP ✅)
+            // Check the Defenders
+            defenderPlayer := targetStructure.GetOwner()
+            defenders := targetStructure.GetDefenders()
+            for _, defender := range defenders {
+                fmt.Printf("Defender (%s) Protecting (%s) at Location (%s)", defender.DefendingStructId, defender.ProtectedStructId, defender.LocationId)
 
-        */
+                defenderStructure := k.GetStructCacheFromId(ctx, defender.DefendingStructId)
+                defenderStructure.ManualLoadOwner(defenderPlayer)
 
+                defenderReadinessError := defenderStructure.ReadinessCheck()
+                if (defenderReadinessError == nil) {
+                    if (!attackBlocked && (structure.GetStructType().GetWeaponBlockable(msg.WeaponSystem))) {
+                        attackBlocked = defenderStructure.AttemptBlock(&structure, msg.WeaponSystem, &targetStructure)
+                    }
 
+                }
 
-    // Is the defending struct within range of the attack type?
-    // Struct and Defender are within the same battle range (fleet comparisons, planets, etc)
+                if (structure.GetStructType().GetWeaponCounterable(msg.WeaponSystem)) {
+                    counterErrors := defenderStructure.CanCounterAttack(&structure)
+                    if (counterErrors == nil) {
+                        structure.TakeCounterAttackDamage(&defenderStructure)
+                    }
+                }
 
-    /* Struct Range
-        The ability of a Struct to target an enemy Struct depends on a number of factors.
+                defenderStructure.Commit()
+            }
+        }
 
-        - Attacker location type (Planet or Fleet)
-            - Where the attacker fleet location is
-                - planet and position in the list
-        - Defender location type (Planet or Fleet)
-            - Where the defender fleet location is
-                - planet and position in the list
+        if (structure.GetStructType().GetWeaponCounterable(msg.WeaponSystem)) {
+            counterErrors := targetStructure.CanCounterAttack(&structure)
+            if (counterErrors == nil) {
+                structure.TakeCounterAttackDamage(&targetStructure)
+            }
+        }
 
+        targetStructure.Commit()
 
-        If the attacker is on a planet
-            they can only fight a struct on a fleet
-                and that fleet must be at the planet
-                    and the fleet must be first in line of attack
-
-
-        If the attacker is on a fleet
-           the attacker can attack the planet or its fleet if they are
-            1) next in line in the queue
-            2) beside the fleet they're attacking
-
-    */
-    /*
-    switch structure.LocationType {
-        case types.ObjectType_fleet:
-
-        case types.ObjectType_planet:
-        default:
-            err = sdkerrors.Wrapf(types.ErrStructAction, "Struct (%s) cannot attack from this location (%s) ", structure.Id, structure.LocationType)
     }
 
-    // Attack in Range of Ambit
-
-
-
-
-    attackBlocked = false
-    // Check the Defenders
-    defenders = k.GetStructDefenders(ctx, msg.TargetStructId)
-    for defenders as defender
-
-    */
-
-
+    // Recoil Damage
+    structure.TakeRecoilDamage(msg.WeaponSystem)
+    structure.Commit()
 
     k.DischargePlayer(ctx, structure.GetOwnerId())
 

@@ -43,7 +43,6 @@ func (planet *Planet) SetSlot(structure Struct) (err error) {
 }
 
 
-
 func CreateEmptyPlanet() Planet {
 
     defaultEmptySlots := []string{"", "", "", ""}

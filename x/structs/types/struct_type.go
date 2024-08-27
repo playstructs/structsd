@@ -145,12 +145,35 @@ func (structType *StructType) GetWeaponShotSuccessRate(weaponSystem TechWeaponSy
     return weaponShotSuccessRate
 }
 
+func (structType *StructType) GetUnguidedDefensiveSuccessRate() (unguidedDefensiveSuccessRate fraction.Fraction) {
+    unguidedDefensiveSuccessRate, _ = fraction.New(structType.UnguidedDefensiveSuccessRateNumerator, structType.UnguidedDefensiveSuccessRateDenominator)
+    return unguidedDefensiveSuccessRate
+}
+
+func (structType *StructType) GetGuidedDefensiveSuccessRate() (guidedDefensiveSuccessRate fraction.Fraction) {
+    guidedDefensiveSuccessRate, _ = fraction.New(structType.GuidedDefensiveSuccessRateNumerator, structType.GuidedDefensiveSuccessRateDenominator)
+    return guidedDefensiveSuccessRate
+}
+
+
+func (structType *StructType) GetCounterAttackDamage(sameAmbit bool) (uint64) {
+    if (sameAmbit) {
+        return structType.CounterAttackSameAmbit
+    }
+    return structType.CounterAttack
+}
+
+
+
 
 func (structType *StructType) CanTargetAmbit(weaponSystem TechWeaponSystem, ambit Ambit) (bool) {
     return structType.GetWeaponAmbits(weaponSystem)&Ambit_flag[ambit] != 0
 }
 
+func (structType *StructType) CanCounterTargetAmbit(ambit Ambit) (bool) {
+    return (structType.PrimaryWeaponAmbits | structType.SecondaryWeaponAmbits)&Ambit_flag[ambit] != 0
+}
+
 func (structType *StructType) CanBlockTargeting() (bool) {
     return false
 }
-

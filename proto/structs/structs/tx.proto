@@ -460,10 +460,10 @@ message MsgStructMove {
 message MsgStructAttack {
   option (cosmos.msg.v1.signer) = "creator";
 
-  string creator                = 1;
-  string operatingStructId      = 2;
-  string targetStructId         = 3;
-  techWeaponSystem weaponSystem = 4;
+  string creator                  = 1;
+  string operatingStructId        = 2;
+  repeated string targetStructId  = 3;
+  techWeaponSystem weaponSystem   = 4;
 }
 
 message MsgStructAttackResponse {}
