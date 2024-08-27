@@ -280,6 +280,10 @@ func (cache *StructCache) IsOffline() bool {
     return !cache.IsOnline()
 }
 
+func (cache *StructCache) IsDestroyed() bool {
+   return cache.GetStatus()&types.StructStateDestroyed != 0
+}
+
 func (cache *StructCache) ReadinessCheck() (err error) {
     if (cache.IsOffline()) {
         err = sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is offline. Activate it", cache.StructId)
