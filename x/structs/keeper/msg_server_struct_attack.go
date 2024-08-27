@@ -19,8 +19,6 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-
-
     structure := k.GetStructCacheFromId(ctx, msg.OperatingStructId)
 
     // Check to see if the caller has permissions to proceed
