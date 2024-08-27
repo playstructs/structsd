@@ -84,7 +84,7 @@ const (
 	// 8
 	StructStateStored
 	// 16
-	StructStateStealth
+	StructStateHidden
 	// 32
     StructStateDestroyed
     // 64
@@ -93,7 +93,7 @@ const (
 
 const (
     StructStateless StructState = 0 << iota
-	StructStateAll = StructStateMaterialized | StructStateBuilt | StructStateOnline | StructStateStored | StructStateStealth | StructStateLocked
+	StructStateAll = StructStateMaterialized | StructStateBuilt | StructStateOnline | StructStateStored | StructStateHidden | StructStateLocked
 )
 
 
@@ -103,7 +103,7 @@ var StructState_enum = map[string]StructState {
     "built":        StructStateBuilt,
     "online":       StructStateOnline,
     "stored":       StructStateStored,
-    "stealth":      StructStateStealth,
+    "hidden":       StructStateHidden,
     "destroyed":    StructStateDestroyed,
     "locked":       StructStateLocked,
 	"all":          StructStateAll,

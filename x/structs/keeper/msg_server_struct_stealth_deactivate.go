@@ -37,7 +37,7 @@ func (k msgServer) StructStealthDeactivate(goCtx context.Context, msg *types.Msg
     }
 
     // Is Struct Stealth Mode not currently activated?
-    if (!k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateStealth))) {
+    if (!k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateHidden))) {
         k.DischargePlayer(ctx, callingPlayerId)
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) not in stealth mode", msg.StructId)
     }
@@ -56,7 +56,7 @@ func (k msgServer) StructStealthDeactivate(goCtx context.Context, msg *types.Msg
     }
 
     // Set the struct status flag to include built
-    k.SetStructAttributeFlagRemove(ctx, structStatusAttributeId, uint64(types.StructStateStealth))
+    k.SetStructAttributeFlagRemove(ctx, structStatusAttributeId, uint64(types.StructStateHidden))
 
 	return &types.MsgStructStatusResponse{Struct: structure}, nil
 }

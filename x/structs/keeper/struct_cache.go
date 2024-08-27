@@ -332,6 +332,17 @@ func (cache *StructCache) IsOffline() bool {
     return !cache.IsOnline()
 }
 
+func (cache *StructCache) IsHidden() bool {
+   return cache.GetStatus()&types.StructStateHidden != 0
+}
+
+func (cache *StructCache) RemoveHidden() {
+    if (cache.IsHidden()) {
+        cache.Status = cache.Status &^ types.StructStateHidden
+        cache.StatusChanged = true
+    }
+}
+
 func (cache *StructCache) IsDestroyed() bool {
    return cache.GetStatus()&types.StructStateDestroyed != 0
 }
@@ -403,6 +414,10 @@ func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem type
             // Not MVP CanBlockTargeting always returns false
             if ((!cache.GetStructType().GetWeaponBlockable(weaponSystem)) && (targetStruct.GetStructType().CanBlockTargeting())) {
                 err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) currently blocking Attacker Struct (%s)", targetStruct.StructId, cache.StructId)
+            } else {
+                if (targetStruct.IsHidden() && (targetStruct.GetOperatingAmbit() != cache.GetOperatingAmbit())) {
+                    err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is current hidden from Attacker Struct (%s)", targetStruct.StructId, cache.StructId)
+                }
             }
         }
      }
@@ -596,3 +611,4 @@ func (cache *StructCache) DestroyAndCommit() {
     cache.Status = cache.Status | types.StructStateDestroyed
 
 }
+
