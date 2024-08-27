@@ -335,6 +335,18 @@ func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem type
 
      // Now that the inexpensive checks are done, lets go deeper
      if (err == nil) {
+        switch (cache.GetLocationType()) {
+            case types.ObjectType_planet:
+                if (targetStruct.GetFleet().GetLocationId() == cache.GetLocationId()) {
+
+                }
+
+            case types.ObjectType_fleet:
+
+            default:
+                err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Attacker Struct (%s)", targetStruct.StructId, cache.StructId)
+        }
+
         // TODO right here
         //Add in Location check
         // if cache.getlocationtype is planet
