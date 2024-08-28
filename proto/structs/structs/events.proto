@@ -60,3 +60,56 @@ message EventAddressActivity { AddressActivity addressActivity = 1; }
 message EventGuildMembershipApplication { GuildMembershipApplication guildMembershipApplication = 1; }
 
 
+message EventAttack { EventAttackDetail eventAttackDetail = 1; }
+
+message EventAttackDetail {
+  string attackerStructId = 1;
+
+  techWeaponSystem    weaponSystem    = 2;
+  techWeaponControl   weaponControl   = 3;
+  techActiveWeaponry  activeWeaponry  = 4;
+
+  repeated EventAttackShotDetail eventAttackShotDetail = 5;
+
+  bool recoilDamageToAttacker         = 6;
+  uint64 recoilDamage                 = 7;
+  bool recoilDamageDestroyedAttacker  = 8;
+}
+
+message EventAttackShotDetail {
+  string  targetStructId = 1;
+
+  bool evaded                  = 2;
+  techUnitDefenses evadedCause = 3;
+
+  bool blocked              = 4;
+  string blockedByStructId  = 5;
+  bool blockerDestroyed     = 6;
+
+  repeated EventAttackDefenderCounterDetail eventAttackDefenderCounterDetail = 7;
+
+  uint64 damageDealt                    = 8;
+  uint64 damageReduction                = 9;
+  techUnitDefenses damageReductionCause = 10;
+  uint64 damage                         = 11;
+
+
+  bool targetCountered                    = 12;
+  uint64 targetCounteredDamage            = 13;
+  bool targetCounterDestroyedAttacker     = 14;
+  techPassiveWeaponry targetCounterCause  = 15;
+
+  bool targetDestroyed = 16;
+
+  bool postDestructionDamageToAttacker            = 17;
+  uint64 postDestructionDamage                    = 18;
+  bool postDestructionDamageDestroyedAttacker     = 19;
+  techPassiveWeaponry postDestructionDamageCause  = 20;
+
+}
+
+message EventAttackDefenderCounterDetail {
+  string  counterByStructId         = 1;
+  uint64  counterDamage             = 2;
+  bool    counterDestroyedAttacker  = 3;
+}
