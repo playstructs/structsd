@@ -523,6 +523,9 @@ func (cache *StructCache) CanEvade(attackerStruct *StructCache, weaponSystem typ
     if (successRate.Numerator() != int64(0)) {
         canEvade = cache.IsSuccessful(successRate)
     }
+
+    cache.GetEventAttackShotDetail().SetEvade(canEvade, cache.GetStructType().GetUnitDefenses())
+
     return
 }
 

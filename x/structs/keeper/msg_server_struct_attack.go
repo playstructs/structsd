@@ -70,7 +70,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
         // TODO Event - Targeted
 
         if (targetStructure.CanEvade(&structure, msg.WeaponSystem)) {
-            // TODO Event - Evade
+            structure.GetEventAttackDetail().AppendShot(targetStructure.FlushEventAttackShotDetail())
             continue
         }
 
@@ -125,6 +125,9 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
     // Recoil Damage
     structure.TakeRecoilDamage(msg.WeaponSystem)
+
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventAttack{EventAttackDetail: structure.GetEventAttackDetail()})
+
     structure.Commit()
 
     k.DischargePlayer(ctx, structure.GetOwnerId())

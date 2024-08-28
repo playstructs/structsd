@@ -36,6 +36,11 @@ func CreateEventAttackShotDetail(targetStructId string) (*EventAttackShotDetail)
     }
 }
 
+func (eventAttackShotDetail *EventAttackShotDetail) SetEvade(evaded bool, evadedCause TechUnitDefenses) {
+    eventAttackShotDetail.Evaded = evaded
+    eventAttackShotDetail.EvadedCause = evadedCause
+}
+
 func (eventAttackShotDetail *EventAttackShotDetail) SetBlocker(blockedByStructId string) {
     eventAttackShotDetail.BlockedByStructId = blockedByStructId
     eventAttackShotDetail.Blocked = true
