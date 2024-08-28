@@ -23,6 +23,13 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	}
 	k.SetParams(ctx, genState.Params)
 
+    var structTypeTop uint64
+    for _, elem := range types.CreateStructTypeGenesis() {
+        if (elem.Id > structTypeTop) { structTypeTop = elem.Id }
+        k.SetStructType(ctx, elem)
+    }
+    k.SetStructTypeCount(ctx, structTypeTop + 1)
+
     for _, elem := range genState.AddressList {
         k.SetPlayerIndexForAddress(ctx, elem.Address, elem.PlayerIndex)
     }
