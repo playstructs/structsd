@@ -519,7 +519,11 @@ func (cache *StructCache) TakeAttackDamage(attackingStruct *StructCache, weaponS
         }
 
         if (cache.Health == 0) {
-            // TODO destruction damage from the grave
+            // destruction damage from the grave
+            if (cache.GetStructType().GetPostDestructionDamage() > 0) {
+                attackingStruct.TakePostDestructionDamage(cache)
+            }
+
             cache.DestroyAndCommit()
         }
 
@@ -555,10 +559,10 @@ func (cache *StructCache) TakeRecoilDamage(weaponSystem types.TechWeaponSystem) 
 }
 
 
-func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (damage uint64) {
+func (cache *StructCache) TakePostDestructionDamage(attackingStruct *StructCache) (damage uint64) {
     if (cache.IsDestroyed()) { return 0 }
 
-    damage = counterStruct.GetStructType().GetCounterAttackDamage(cache.GetOperatingAmbit() == counterStruct.GetOperatingAmbit())
+    damage = cache.GetStructType().GetPostDestructionDamage()
 
     if (damage != 0) {
 
@@ -580,6 +584,37 @@ func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (d
     return
 }
 
+
+
+func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (damage uint64) {
+    if (cache.IsDestroyed()) { return 0 }
+
+    damage = counterStruct.GetStructType().GetCounterAttackDamage(cache.GetOperatingAmbit() == counterStruct.GetOperatingAmbit())
+
+    if (damage != 0) {
+
+        if (damage > cache.GetHealth()) {
+            cache.Health = 0
+            cache.HealthChanged = true
+
+        } else {
+            cache.Health = cache.GetHealth() - damage
+            cache.HealthChanged = true
+        }
+
+        if (cache.Health == 0) {
+            // destruction damage from the grave
+            if (cache.GetStructType().GetPostDestructionDamage() > 0) {
+                counterStruct.TakePostDestructionDamage(cache)
+            }
+            cache.DestroyAndCommit()
+        }
+
+    }
+
+    return
+}
+
 func (cache *StructCache) AttemptBlock(attacker *StructCache, weaponSystem types.TechWeaponSystem, target *StructCache) (blocked bool) {
     if (cache.Ready && attacker.Ready) {
         if (cache.GetOperatingAmbit() == target.GetOperatingAmbit()) {
@@ -591,9 +626,6 @@ func (cache *StructCache) AttemptBlock(attacker *StructCache, weaponSystem types
 }
 
 func (cache *StructCache) DestroyAndCommit() {
-    if (!cache.IsDestroyed()) {
-
-    }
 
     // Go Offline
     cache.Status = cache.Status &^ types.StructStateOnline
