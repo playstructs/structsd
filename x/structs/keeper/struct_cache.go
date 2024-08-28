@@ -642,5 +642,8 @@ func (cache *StructCache) DestroyAndCommit() {
     // Set to Destroyed
     cache.Status = cache.Status | types.StructStateDestroyed
 
+    cache.StatusChanged = true
+
+
 }
 
