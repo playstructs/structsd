@@ -183,6 +183,11 @@ func (k Keeper) StructDeactivate(ctx context.Context, structId string) {
 
 
 func (k Keeper) StructDestroy(ctx context.Context, structure types.Struct) {
+
+    // Remove from location? Maybe
+        // Or create a sweep action
+
+
     /*
     planet, planetFound := k.GetPlanet(ctx, structure.PlanetId)
     if (planetFound) {

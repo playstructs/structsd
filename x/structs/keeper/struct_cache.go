@@ -696,7 +696,7 @@ func (cache *StructCache) DestroyAndCommit() {
     // Go Offline
     cache.Status = cache.Status &^ types.StructStateOnline
 
-    // Remove from Planet
+
     // Remove from Planet Attributes
 
     // If a power planet
