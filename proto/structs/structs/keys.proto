@@ -104,8 +104,6 @@ enum planetAttributeType {
 
     orbitalJammingStationQuantity                           = 6;
     advancedOrbitalJammingStationQuantity                   = 7;
-
-    planetaryStructTypeTracker                              = 8;
 }
 
 enum techWeaponSystem {

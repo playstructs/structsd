@@ -251,7 +251,6 @@ var PlanetAttributeType_enum = map[string]PlanetAttributeType {
     "orbitalJammingStationQuantity":                            PlanetAttributeType_orbitalJammingStationQuantity,
     "advancedOrbitalJammingStationQuantity":                    PlanetAttributeType_advancedOrbitalJammingStationQuantity,
 
-    "planetaryStructTypeTracker":                               PlanetAttributeType_planetaryStructTypeTracker,
 }
 
 var TechWeaponSystem_enum = map[string]TechWeaponSystem {
