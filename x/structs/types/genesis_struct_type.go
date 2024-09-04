@@ -1570,7 +1570,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
 
      PostDestructionDamage: 0,
      GeneratingRate: 0,
-     PlanetaryShieldContribution: 1440,
+     PlanetaryShieldContribution: 1500,
 
      OreMiningDifficulty: 0,
      OreRefiningDifficulty: 0,
@@ -1653,7 +1653,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
 
      PostDestructionDamage: 0,
      GeneratingRate: 0,
-     PlanetaryShieldContribution: 2880,
+     PlanetaryShieldContribution: 4500,
 
      OreMiningDifficulty: 0,
      OreRefiningDifficulty: 0,
@@ -1736,7 +1736,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
 
      PostDestructionDamage: 0,
      GeneratingRate: 0,
-     PlanetaryShieldContribution: 7200,
+     PlanetaryShieldContribution: 9000,
 
      OreMiningDifficulty: 0,
      OreRefiningDifficulty: 0,
@@ -1819,7 +1819,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
 
      PostDestructionDamage: 0,
      GeneratingRate: 0,
-     PlanetaryShieldContribution: 2880,
+     PlanetaryShieldContribution: 4500,
 
      OreMiningDifficulty: 0,
      OreRefiningDifficulty: 0,
@@ -1902,7 +1902,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
 
      PostDestructionDamage: 0,
      GeneratingRate: 0,
-     PlanetaryShieldContribution: 2880,
+     PlanetaryShieldContribution: 4500,
 
      OreMiningDifficulty: 0,
      OreRefiningDifficulty: 0,
