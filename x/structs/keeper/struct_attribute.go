@@ -72,11 +72,11 @@ func (k Keeper) SetStructAttribute(ctx context.Context, structAttributeId string
 func (k Keeper) SetStructAttributeDelta(ctx context.Context, structAttributeId string, oldAmount uint64, newAmount uint64) (amount uint64, err error) {
     currentAmount := k.GetStructAttribute(ctx, structAttributeId)
 
-    if (oldAmount > currentAmount) {
-        // An error that should never happen
+    var resetAmount uint64
+    if (oldAmount < currentAmount) {
+        resetAmount = currentAmount - oldAmount
     }
 
-    resetAmount := currentAmount - oldAmount
     amount = resetAmount + newAmount
 
     fmt.Printf("Struct Change (Delta): (%s) %d to %d \n", structAttributeId, oldAmount, newAmount)
@@ -88,11 +88,9 @@ func (k Keeper) SetStructAttributeDelta(ctx context.Context, structAttributeId s
 func (k Keeper) SetStructAttributeDecrement(ctx context.Context, structAttributeId string, decrementAmount uint64) (amount uint64, err error) {
     currentAmount := k.GetStructAttribute(ctx, structAttributeId)
 
-    if (decrementAmount > currentAmount) {
-        // An error that should never happen
+    if (decrementAmount < currentAmount) {
+        amount = currentAmount - decrementAmount
     }
-
-    amount = currentAmount - decrementAmount
 
     fmt.Printf("Struct Change (Decrement): (%s) %d \n", structAttributeId, decrementAmount)
     k.SetStructAttribute(ctx, structAttributeId, amount)

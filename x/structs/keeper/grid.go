@@ -74,11 +74,11 @@ func (k Keeper) SetGridAttribute(ctx context.Context, gridAttributeId string, am
 func (k Keeper) SetGridAttributeDelta(ctx context.Context, gridAttributeId string, oldAmount uint64, newAmount uint64) (amount uint64, err error) {
     currentAmount := k.GetGridAttribute(ctx, gridAttributeId)
 
-    if (oldAmount > currentAmount) {
-        // An error that should never happen
+    var resetAmount uint64
+    if (oldAmount < currentAmount) {
+        resetAmount = currentAmount - oldAmount
     }
 
-    resetAmount := currentAmount - oldAmount
     amount = resetAmount + newAmount
 
     fmt.Printf("Grid Change (Delta): (%s) %d to %d \n", gridAttributeId, oldAmount, newAmount)
@@ -90,11 +90,10 @@ func (k Keeper) SetGridAttributeDelta(ctx context.Context, gridAttributeId strin
 func (k Keeper) SetGridAttributeDecrement(ctx context.Context, gridAttributeId string, decrementAmount uint64) (amount uint64, err error) {
     currentAmount := k.GetGridAttribute(ctx, gridAttributeId)
 
-    if (decrementAmount > currentAmount) {
-        // An error that should never happen
+    if (decrementAmount < currentAmount) {
+       amount = currentAmount - decrementAmount
     }
 
-    amount = currentAmount - decrementAmount
 
     fmt.Printf("Grid Change (Decrement): (%s) %d \n", gridAttributeId, decrementAmount)
     k.SetGridAttribute(ctx, gridAttributeId, amount)

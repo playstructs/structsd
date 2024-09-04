@@ -67,8 +67,9 @@ func (k Keeper) SetPlanetAttribute(ctx context.Context, planetAttributeId string
 func (k Keeper) SetPlanetAttributeDelta(ctx context.Context, planetAttributeId string, oldAmount uint64, newAmount uint64) (amount uint64, err error) {
     currentAmount := k.GetPlanetAttribute(ctx, planetAttributeId)
 
-    if (oldAmount > currentAmount) {
-        // An error that should never happen
+    var resetAmount uint64
+    if (oldAmount < currentAmount) {
+        resetAmount = currentAmount - oldAmount
     }
 
     resetAmount := currentAmount - oldAmount
@@ -83,11 +84,9 @@ func (k Keeper) SetPlanetAttributeDelta(ctx context.Context, planetAttributeId s
 func (k Keeper) SetPlanetAttributeDecrement(ctx context.Context, planetAttributeId string, decrementAmount uint64) (amount uint64, err error) {
     currentAmount := k.GetPlanetAttribute(ctx, planetAttributeId)
 
-    if (decrementAmount > currentAmount) {
-        // An error that should never happen
+    if (decrementAmount < currentAmount) {
+        amount = currentAmount - decrementAmount
     }
-
-    amount = currentAmount - decrementAmount
 
     fmt.Printf("Planet Change (Decrement): (%s) %d \n", planetAttributeId, decrementAmount)
     k.SetPlanetAttribute(ctx, planetAttributeId, amount)

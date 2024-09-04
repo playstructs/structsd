@@ -92,6 +92,14 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct Type (%d) was not found. Building a Struct with schematics might be tough", msg.StructTypeId)
     }
 
+    // Check that the player can build more of this type of Struct
+    if (structType.GetBuildLimit() > 0) {
+        if (k.GetStructAttribute(ctx, GetStructAttributeIDByObjectIdAndSubIndex(types.StructAttributeType_typeCount, sudoPlayer.Id, msg.StructTypeId)) >= structType.GetBuildLimit()) {
+            k.DischargePlayer(ctx, sudoPlayer.Id)
+            return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) cannot build more of this type ",sudoPlayer.Id)
+        }
+    }
+
     // Check Sudo Player Charge
     playerCharge := k.GetPlayerCharge(ctx, sudoPlayer.Id)
     if (playerCharge < structType.BuildCharge) {
@@ -127,6 +135,7 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
 
     // Append Struct
     structure = k.AppendStruct(ctx, structure, structType)
+    k.SetStructAttributeIncrement(ctx, GetStructAttributeIDByObjectIdAndSubIndex(types.StructAttributeType_typeCount, sudoPlayer.Id, msg.StructTypeId), 1)
 
     // Update the cross reference on the planet
     err = planet.SetSlot(structure)
