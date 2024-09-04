@@ -272,6 +272,11 @@ type PlayerCache struct {
     CapacitySecondaryChanged     bool
     CapacitySecondary            uint64
 
+    StoredOreAttributeId string
+    StoredOreLoaded      bool
+    StoredOreChanged     bool
+    StoredOre            uint64
+
 }
 
 
@@ -287,6 +292,8 @@ func (k *Keeper) GetPlayerCacheFromId(ctx context.Context, playerId string) (Pla
         CapacityAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, playerId),
 
         StructsLoadAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, playerId),
+
+        StoredOreAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_ore, playerId),
     }, nil
 }
 
@@ -355,6 +362,10 @@ func (cache *PlayerCache) LoadStructsLoad() {
     cache.StructsLoadLoaded = true
 }
 
+func (cache *PlayerCache) LoadStoredOre() {
+    cache.StoredOre = cache.K.GetGridAttribute(cache.Ctx, cache.StoredOreAttributeId)
+    cache.StoredOreLoaded = true
+}
 
 
 func (cache *PlayerCache) GetPlayer() (types.Player, error) {
@@ -367,9 +378,6 @@ func (cache *PlayerCache) GetPlayer() (types.Player, error) {
 
     return cache.Player, nil
 }
-
-
-
 
 
 func (cache *PlayerCache) GetSubstationId() (string) {
@@ -412,6 +420,11 @@ func (cache *PlayerCache) LoadCapacitySecondary() {
 func (cache *PlayerCache) GetCapacitySecondary() (uint64) {
     if (!cache.CapacitySecondaryLoaded) { cache.LoadCapacitySecondary() }
     return cache.CapacitySecondary
+}
+
+func (cache *PlayerCache) GetStoredOre() (uint64) {
+    if (!cache.StoredOreLoaded) { cache.LoadStoredOre() }
+    return cache.StoredOre
 }
 
 func (cache *PlayerCache) IsOnline() (online bool){

@@ -29,13 +29,13 @@ const (
     // Starting value for Reactor Owner Initialization
     InitialSubstationOwnerEnergy = 100
 
-
-    DifficultyBuildAgeRange  = 36000 // 10 // 1800 // 36000 // 1 days
-    DifficultyActionAgeRange = 252000 // 20 // 3600 // 252000 // 7 days
-
-    DifficultySabotageRangeMine   = DifficultyActionAgeRange  // 36000 // 1 days
-    DifficultySabotageRangeRefine = DifficultyActionAgeRange // 252000 // 7 days
-    DifficultySabotageRangePower  = 252000 // 252000 // 7 days
+    /*
+        Difficult Calculations
+        1500 = 1 hour
+        36000 = 1 day
+        252000 = 7 days
+    */
+    PlanetaryShieldBase = 9000 // Six Hour Target
 
 
     // Current Aim is a 3 hour max

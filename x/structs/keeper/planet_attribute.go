@@ -72,7 +72,6 @@ func (k Keeper) SetPlanetAttributeDelta(ctx context.Context, planetAttributeId s
         resetAmount = currentAmount - oldAmount
     }
 
-    resetAmount := currentAmount - oldAmount
     amount = resetAmount + newAmount
 
     fmt.Printf("Planet Change (Delta): (%s) %d to %d \n", planetAttributeId, oldAmount, newAmount)
