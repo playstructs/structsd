@@ -90,6 +90,8 @@ enum structAttributeType {
     blockStartOreRefine         = 4;
 
     protectedStructIndex        = 5;
+
+    typeCount                   = 6;
 }
 
 

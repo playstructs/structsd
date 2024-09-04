@@ -28,6 +28,11 @@ func GetStructAttributeIDByObjectId(structAttributeType types.StructAttributeTyp
 	return id
 }
 
+// GetStructAttributeIDByObjectIdAndSubIndex returns the string representation of the ID
+func GetStructAttributeIDByObjectIdAndSubIndex(structAttributeType types.StructAttributeType, objectId string, index uint64) string {
+    id := fmt.Sprintf("%d-%s-%d", structAttributeType, objectId, index)
+	return id
+}
 
 func (k Keeper) GetStructAttribute(ctx context.Context, structAttributeId string) (amount uint64) {
 	structAttributeStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructAttributeKey))
