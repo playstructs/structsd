@@ -16,7 +16,6 @@ message Planet {
   string creator        = 3;
   string owner          = 4;
 
-
   repeated string space = 5;
   repeated string air   = 6;
   repeated string land  = 7;

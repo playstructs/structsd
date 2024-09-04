@@ -325,6 +325,13 @@ func (cache *PlanetCache) FlushEventAttackShotDetail() ( *types.EventAttackShotD
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
  */
 
+// Get the Owner ID data
+func (cache *PlanetCache) SetStatus(status types.PlanetStatus) () {
+    if (!cache.PlanetLoaded) { cache.LoadPlanet() }
+
+    cache.Planet.Status = types.PlanetStatus
+    cache.PlanetChanged = true
+}
 
 
 // Set the Owner data manually
@@ -373,4 +380,17 @@ func (cache *PlanetCache) IsSuccessful(successRate fraction.Fraction) bool {
 	max := int(successRate.Denominator())
 
 	return (int(successRate.Numerator()) <= (randomnessOrb.Intn(max-min+1) + min))
+}
+
+
+/* Game Logic */
+
+func (cache *PlanetCache) AttemptComplete() (bool) {
+    if (cache.GetBuriedOre() > 0) {
+        return false
+    }
+
+    cache.SetStatus(types.PlanetStatus_complete)
+    return true
+
 }

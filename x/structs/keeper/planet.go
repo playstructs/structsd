@@ -89,12 +89,6 @@ func (k Keeper) GetPlanet(ctx context.Context, planetId string) (val types.Plane
 	}
 	k.cdc.MustUnmarshal(b, &val)
 
-    planetOre := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, val.Id))
-    playerOre := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, val.Owner))
-
-    val.OreRemaining = planetOre
-    val.OreStored    = playerOre
-
 	return val, true
 }
 
@@ -118,27 +112,10 @@ func (k Keeper) GetAllPlanet(ctx context.Context) (list []types.Planet) {
 		var val types.Planet
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
-        planetOre := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, val.Id))
-        playerOre := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, val.Owner))
-
-		val.OreRemaining = planetOre
-        val.OreStored    = playerOre
-
 		list = append(list, val)
 	}
 
 	return
 }
 
-
-func (k Keeper) PlanetComplete(ctx context.Context, planet types.Planet) (bool) {
-    if (planet.OreRemaining > 0) {
-        return false
-    }
-
-    planet.SetStatus(types.PlanetStatus_complete)
-    k.SetPlanet(ctx, planet)
-    return true
-
-}
 
