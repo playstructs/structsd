@@ -443,6 +443,26 @@ func (cache *StructCache) ActivationReadinessCheck() (err error) {
     return
 }
 
+func (cache *StructCache) GoOnline() {
+    // TODO convert to cache format
+    breaking line
+
+    // Add to the players struct load
+    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.PassiveDraw)
+
+    // Turn on the mining systems
+    if (structType.PlanetaryMining != types.TechPlanetaryMining_noPlanetaryMining) {
+        k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structure.Id), uint64(ctx.BlockHeight()))
+    }
+
+    // Turn on the refinery
+    if (structType.PlanetaryRefinery != types.TechPlanetaryRefineries_noPlanetaryRefinery) {
+        k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structure.Id), uint64(ctx.BlockHeight()))
+    }
+
+    // Set the struct status flag to include built
+    k.SetStructAttributeFlagAdd(ctx, structStatusAttributeId, uint64(types.StructStateOnline))
+}
 
 func (cache *StructCache) ReadinessCheck() (err error) {
     if (cache.IsOffline()) {

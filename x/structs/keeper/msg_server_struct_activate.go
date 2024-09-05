@@ -36,7 +36,6 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
         return &types.MsgStructStatusResponse{}, readinessError
     }
 
-
     playerCharge := k.GetPlayerCharge(ctx, structure.GetOwnerId())
     if (playerCharge < structure.GetStructType().GetActivateCharge()) {
         k.DischargePlayer(ctx, structure.GetOwnerId())
@@ -45,32 +44,17 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
 
 
 
-
+    structure.GoOnline()
     // go online
         // update player capacity
         // turn on systems
 
-    // commit struct
-    // commit struct player
 
 
 
-    // Add to the players struct load
-    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.PassiveDraw)
-
-    // Turn on the mining systems
-    if (structType.PlanetaryMining != types.TechPlanetaryMining_noPlanetaryMining) {
-        k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structure.Id), uint64(ctx.BlockHeight()))
-    }
-
-    // Turn on the refinery
-    if (structType.PlanetaryRefinery != types.TechPlanetaryRefineries_noPlanetaryRefinery) {
-        k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structure.Id), uint64(ctx.BlockHeight()))
-    }
-
-    // Set the struct status flag to include built
-    k.SetStructAttributeFlagAdd(ctx, structStatusAttributeId, uint64(types.StructStateOnline))
+    structure.Commit()
+    structure.GetPlayer().Commit()
 
 
-	return &types.MsgStructStatusResponse{Struct: structure}, nil
+	return &types.MsgStructStatusResponse{Struct: structure.GetStruct()}, nil
 }
