@@ -329,7 +329,7 @@ func (cache *PlanetCache) FlushEventAttackShotDetail() ( *types.EventAttackShotD
 func (cache *PlanetCache) SetStatus(status types.PlanetStatus) () {
     if (!cache.PlanetLoaded) { cache.LoadPlanet() }
 
-    cache.Planet.Status = types.PlanetStatus
+    cache.Planet.Status = status
     cache.PlanetChanged = true
 }
 
