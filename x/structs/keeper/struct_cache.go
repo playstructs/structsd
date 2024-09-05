@@ -419,6 +419,31 @@ func (cache *StructCache) IsDestroyed() bool {
 
 
 
+func (cache *StructCache) ActivationReadinessCheck() (err error) {
+    // Check Struct is Built
+    if (!cache.IsBuilt()){
+        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) isn't finished being built yet", cache.StructId)
+    }
+
+    // Check Struct is Offline
+    if (cache.IsOffline()){
+        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is already online", cache.StructId)
+    }
+
+    // Check Player is Online
+    if (cache.GetOwner().IsOffline()) {
+        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Player (%s) is offline due to power", cache.GetOwnerId())
+    }
+
+    // Check Player Capacity
+    if (!cache.GetOwner().CanSupportLoadAddition(cache.GetStructType().GetPassiveDraw())) {
+        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Player (%s) cannot handle the new load requirements", cache.GetOwnerId())
+    }
+
+    return
+}
+
+
 func (cache *StructCache) ReadinessCheck() (err error) {
     if (cache.IsOffline()) {
         err = sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is offline. Activate it", cache.StructId)

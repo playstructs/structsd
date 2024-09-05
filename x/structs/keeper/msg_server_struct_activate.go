@@ -16,76 +16,44 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
-    if (callingPlayerIndex == 0) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build actions requires Player account but none associated with %s", msg.Creator)
-    }
-    callingPlayerId := GetObjectID(types.ObjectType_player, callingPlayerIndex)
+    // load struct
+    structure := k.GetStructCacheFromId(ctx, msg.StructId)
 
-    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-    // Make sure the address calling this has Play permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionPlay)) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
+    // Check to see if the caller has permissions to proceed
+    permissionError := structure.CanBePlayedBy(msg.Creator)
+    if (permissionError != nil) {
+        return &types.MsgStructStatusResponse{}, permissionError
     }
 
-    structStatusAttributeId := GetStructAttributeIDByObjectId(types.StructAttributeType_status, msg.StructId)
-
-    // Has the Struct already been built?
-    if (!k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateBuilt))) {
-        k.DischargePlayer(ctx, callingPlayerId)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is not built", msg.StructId)
+    // Check Activation Readiness
+        // Check Struct is Built
+        // Check Struct is Offline
+        // Check Player is Online
+        // Check Player capacity
+    readinessError := structure.ActivationReadinessCheck()
+    if (readinessError != nil) {
+        k.DischargePlayer(ctx, structure.GetOwnerId())
+        return &types.MsgStructStatusResponse{}, readinessError
     }
 
-    // Has the Struct already been activated?
-    if (k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateOnline))) {
-        k.DischargePlayer(ctx, callingPlayerId)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already online", msg.StructId)
+
+    playerCharge := k.GetPlayerCharge(ctx, structure.GetOwnerId())
+    if (playerCharge < structure.GetStructType().GetActivateCharge()) {
+        k.DischargePlayer(ctx, structure.GetOwnerId())
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for this mining operation, but player (%s) only had %d", structure.GetTypeId() , structure.GetStructType().GetOreMiningCharge(), structure.GetOwnerId(), playerCharge)
     }
 
-    structure, structureFound := k.GetStruct(ctx, msg.StructId)
-    if (!structureFound) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) not found", msg.StructId)
-    }
 
-    if (callingPlayerId != structure.Owner) {
-        // Check permissions on Creator on Planet
-        playerPermissionId := GetObjectPermissionIDBytes(structure.Owner, callingPlayerId)
-        if (!k.PermissionHasOneOf(ctx, playerPermissionId, types.PermissionPlay)) {
-            return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayerId, structure.Owner)
-        }
-    }
-    sudoPlayer, _ := k.GetPlayer(ctx, structure.Owner, true)
-    if (!sudoPlayer.IsOnline()){
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",sudoPlayer.Id)
-    }
 
-    // Load Struct Type
-    structType, structTypeFound := k.GetStructType(ctx, structure.Type)
-    if (!structTypeFound) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct Type (%d) was not found. No idea how this struct is missing its schematics. Pls tell an adult", structure.Type)
-    }
 
-    // Check Sudo Player Charge
-    playerCharge := k.GetPlayerCharge(ctx, structure.Owner)
-    if (playerCharge < structType.ActivateCharge) {
-        k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to activate, but player (%s) only had %d", structure.Type, structType.ActivateCharge, structure.Owner, playerCharge)
-    }
+    // go online
+        // update player capacity
+        // turn on systems
 
-    // Check player Load for the passiveDraw capacity
-    sudoPlayerTotalLoad := sudoPlayer.Load + sudoPlayer.StructsLoad
-    sudoPlayerTotalCapacity := sudoPlayer.Capacity + sudoPlayer.CapacitySecondary
+    // commit struct
+    // commit struct player
 
-    // Is load completely shot already?
-    if (sudoPlayerTotalLoad > sudoPlayerTotalCapacity) {
-        k.DischargePlayer(ctx, sudoPlayer.Id)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during activation, but player (%s) has none available", structure.Type, structType.BuildDraw, sudoPlayer.Id)
 
-    // Otherwise is the difference enough to support the buildDraw rate
-    } else if ((sudoPlayerTotalCapacity - sudoPlayerTotalLoad) < structType.PassiveDraw) {
-        k.DischargePlayer(ctx, sudoPlayer.Id)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during activation, but player (%s) has %d available", structure.Type, structType.BuildDraw, sudoPlayer.Id,(sudoPlayerTotalCapacity - sudoPlayerTotalLoad))
-    }
 
     // Add to the players struct load
     k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.PassiveDraw)

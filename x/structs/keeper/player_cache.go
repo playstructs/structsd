@@ -337,5 +337,19 @@ func (cache *PlayerCache) AttemptPlanetExplore() (err error) {
     cache.SetPlanetId(newPlanetId)
     cache.PlanetLoaded = false
 
+    // TODO move fleet to new planet (if it's not elsewhere I guess?)
+
     return nil
+}
+
+func (cache *PlayerCache) CanSupportLoadAddition(additionalLoad uint64) (bool) {
+    // Check player Load for the passiveDraw capacity
+    totalLoad := cache.GetLoad() + cache.GetStructsLoad()
+    totalCapacity := cache.GetCapacity() + cache.GetCapacitySecondary()
+
+    if (totalLoad > totalCapacity) {
+        return false
+    }
+
+    return ((totalCapacity - totalLoad) >= additionalLoad)
 }
