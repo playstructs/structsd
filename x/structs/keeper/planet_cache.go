@@ -305,6 +305,13 @@ func (cache *PlanetCache) GetAdvancedOrbitalJammingStationQuantity() (uint64) {
     return cache.AdvancedOrbitalJammingStationQuantity
 }
 
+func (cache *PlanetCache) GetPlanetId() string {
+    return cache.PlanetId
+}
+
+func (cache *PlanetCache) GetLocationListStart() string {
+    return cache.GetPlanet().LocationListStart
+}
 
 func (cache *PlanetCache) GetEventAttackDetail() (*types.EventAttackDetail) {
     if (!cache.EventAttackDetailLoaded) { cache.EventAttackDetail = types.CreateEventAttackDetail() }
@@ -333,6 +340,16 @@ func (cache *PlanetCache) SetStatus(status types.PlanetStatus) () {
     cache.PlanetChanged = true
 }
 
+func (cache *PlanetCache) BuriedOreDecrement(amount uint64) {
+
+    if (cache.GetBuriedOre() > amount) {
+        cache.BuriedOre = cache.BuriedOre - amount
+    } else {
+        cache.BuriedOre = 0
+    }
+
+    cache.BuriedOreChanged = true
+}
 
 // Set the Owner data manually
 // Useful for loading multiple defenders
@@ -363,6 +380,9 @@ func (cache *PlanetCache) IsActive() bool {
    return (cache.GetPlanet().Status == types.PlanetStatus_active)
 }
 
+func (cache *PlanetCache) IsEmptyOfOre() bool {
+    return (cache.GetBuriedOre() == 0)
+}
 
 /* Rough but Consistent Randomness Check */
 func (cache *PlanetCache) IsSuccessful(successRate fraction.Fraction) bool {
@@ -386,11 +406,9 @@ func (cache *PlanetCache) IsSuccessful(successRate fraction.Fraction) bool {
 /* Game Logic */
 
 func (cache *PlanetCache) AttemptComplete() (bool) {
-    if (cache.GetBuriedOre() > 0) {
-        return false
+    if (cache.IsEmptyOfOre()) {
+        cache.SetStatus(types.PlanetStatus_complete)
+        return true
     }
-
-    cache.SetStatus(types.PlanetStatus_complete)
-    return true
-
+    return false
 }

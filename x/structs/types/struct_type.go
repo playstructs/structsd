@@ -23,6 +23,10 @@ func (structType *StructType) VerifyWeaponSystem(weaponSystem TechWeaponSystem) 
     return
 }
 
+func (structType *StructType) HasOreMiningSystem() (bool) {
+    return (structType.PlanetaryMining != TechPlanetaryMining_noPlanetaryMining)
+}
+
 func (structType *StructType) GetWeapon(weaponSystem TechWeaponSystem) (weapon TechActiveWeaponry) {
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:
@@ -162,7 +166,6 @@ func (structType *StructType) GetCounterAttackDamage(sameAmbit bool) (uint64) {
     }
     return structType.CounterAttack
 }
-
 
 
 

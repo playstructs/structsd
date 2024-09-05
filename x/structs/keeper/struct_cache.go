@@ -38,7 +38,7 @@ type StructCache struct {
     Fleet *types.Fleet
 
     PlanetLoaded bool
-    Planet *types.Planet
+    Planet *PlanetCache
 
     DefendersLoaded bool
     Defenders []types.StructDefender
@@ -174,9 +174,11 @@ func (cache *StructCache) LoadFleet() (bool) {
 
 // Load the Planet data
 func (cache *StructCache) LoadPlanet() (bool) {
-    newPlanet, newPlanetFound := cache.K.GetPlanet(cache.Ctx, cache.GetLocationId())
-    cache.Planet = &newPlanet
-    cache.PlanetLoaded = newPlanetFound
+    if (cache.GetLocationType() == types.ObjectType_planet) {
+        newPlanet := cache.K.GetPlanetCacheFromId(cache.Ctx, cache.GetLocationId())
+        cache.Planet = &newPlanet
+        cache.PlanetLoaded = true
+    }
     return cache.PlanetLoaded
 }
 
@@ -256,7 +258,7 @@ func (cache *StructCache) GetFleet() (*types.Fleet) {
     return cache.Fleet
 }
 
-func (cache *StructCache) GetPlanet() (*types.Planet) {
+func (cache *StructCache) GetPlanet() (*PlanetCache) {
     if (!cache.PlanetLoaded) { cache.LoadPlanet() }
     return cache.Planet
 }
@@ -298,6 +300,21 @@ func (cache *StructCache) GetStructType() (*types.StructType) {
     return cache.StructType
 }
 
+func (cache *StructCache) GetBlockStartBuild() (uint64) {
+    if (!cache.BlockStartBuildLoaded) { cache.LoadBlockStartBuild() }
+    return cache.BlockStartBuild
+}
+
+func (cache *StructCache) GetBlockStartOreMine() (uint64) {
+    if (!cache.BlockStartOreMineLoaded) { cache.LoadBlockStartOreMine() }
+    return cache.BlockStartOreMine
+}
+
+func (cache *StructCache) GetBlockStartOreRefine() (uint64) {
+    if (!cache.BlockStartOreRefineLoaded) { cache.LoadBlockStartOreRefine() }
+    return cache.BlockStartOreRefine
+}
+
 
 func (cache *StructCache) GetEventAttackDetail() (*types.EventAttackDetail) {
     if (!cache.EventAttackDetailLoaded) { cache.EventAttackDetail = types.CreateEventAttackDetail() }
@@ -329,6 +346,13 @@ func (cache *StructCache) SetOwnerId(owner string) {
 
     // Player object might be stale now
     cache.OwnerLoaded = false
+}
+
+func (cache *StructCache) ResetBlockStartOreMine() {
+    uctx := sdk.UnwrapSDKContext(cache.Ctx)
+    cache.BlockStartOreMine = uint64(uctx.BlockHeight())
+    cache.BlockStartOreMineLoaded = true
+    cache.BlockStartOreMineChanged = true
 }
 
 // Set the Owner data manually
@@ -440,6 +464,35 @@ func (cache *StructCache) CanBePlayedBy(address string) (err error) {
 }
 
 /* Game Functions */
+
+func (cache *StructCache) CanOreMinePlanet() (error) {
+
+    if (!cache.GetStructType().HasOreMiningSystem()) {
+        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) has no mining system", cache.StructId)
+    }
+
+    if (cache.GetBlockStartOreMine() == 0) {
+        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) not mining", cache.StructId)
+    }
+
+    if (cache.GetPlanet().IsComplete()) {
+        return sdkerrors.Wrapf(types.ErrStructMine, "Planet (%s) is already complete. Move on bud, no work to be done here", cache.GetPlanet().GetPlanetId())
+    }
+
+    if (cache.GetPlanet().IsEmptyOfOre()) {
+        return sdkerrors.Wrapf(types.ErrStructMine, "Planet (%s) is empty, nothing to mine", cache.GetPlanet().GetPlanetId())
+    }
+
+    return nil
+
+}
+
+func (cache *StructCache) OreMinePlanet() {
+    cache.GetOwner().StoredOreIncrement(1)
+    cache.GetPlanet().BuriedOreDecrement(1)
+
+    cache.ResetBlockStartOreMine()
+}
 
 func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem types.TechWeaponSystem) (err error) {
 

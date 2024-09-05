@@ -315,6 +315,12 @@ func (cache *PlayerCache) Commit() () {
     if (cache.PlayerChanged) { cache.K.SetPlayer(cache.Ctx, cache.Player) }
 
     if (cache.NonceChanged) { cache.K.SetGridAttributeIncrement(cache.Ctx, cache.NonceAttributeId, uint64(cache.Nonce)) }
+
+    if (cache.StoredOreChanged) {
+        cache.K.SetGridAttribute(cache.Ctx, cache.StoredOreAttributeId, cache.StoredOre)
+        cache.StoredOreChanged = false
+    }
+
 }
 
 
@@ -426,6 +432,23 @@ func (cache *PlayerCache) GetStoredOre() (uint64) {
     if (!cache.StoredOreLoaded) { cache.LoadStoredOre() }
     return cache.StoredOre
 }
+
+func (cache *PlayerCache) StoredOreDecrement(amount uint64) {
+
+    if (cache.GetStoredOre() > amount) {
+        cache.StoredOre = cache.StoredOre - amount
+    } else {
+        cache.StoredOre = 0
+    }
+
+    cache.StoredOreChanged = true
+}
+
+func (cache *PlayerCache) StoredOreIncrement(amount uint64) {
+    cache.StoredOre = cache.GetStoredOre() + amount
+    cache.StoredOreChanged = true
+}
+
 
 func (cache *PlayerCache) IsOnline() (online bool){
     if ((cache.GetLoad() + cache.GetStructsLoad()) <= (cache.GetCapacity() + cache.GetCapacitySecondary())) {
