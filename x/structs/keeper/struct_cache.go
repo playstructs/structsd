@@ -355,6 +355,14 @@ func (cache *StructCache) ResetBlockStartOreMine() {
     cache.BlockStartOreMineChanged = true
 }
 
+func (cache *StructCache) ResetBlockStartOreRefine() {
+    uctx := sdk.UnwrapSDKContext(cache.Ctx)
+    cache.BlockStartOreRefine = uint64(uctx.BlockHeight())
+    cache.BlockStartOreRefineLoaded = true
+    cache.BlockStartOreRefineChanged = true
+}
+
+
 // Set the Owner data manually
 // Useful for loading multiple defenders
 func (cache *StructCache) ManualLoadOwner(owner *PlayerCache) {
@@ -492,6 +500,33 @@ func (cache *StructCache) OreMinePlanet() {
     cache.GetPlanet().BuriedOreDecrement(1)
 
     cache.ResetBlockStartOreMine()
+}
+
+
+func (cache *StructCache) CanOreRefine() (error) {
+
+    if (!cache.GetStructType().HasOreRefiningSystem()) {
+        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) has no refining system", cache.StructId)
+    }
+
+    if (cache.GetBlockStartOreRefine() == 0) {
+        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) not mining", cache.StructId)
+    }
+
+    if (!cache.GetOwner().HasStoredOre()) {
+        return sdkerrors.Wrapf(types.ErrStructMine, "Player (%s) has no Ore to refine. Move on bud, no work to be done here", cache.GetOwner().PlayerId)
+    }
+
+    return nil
+
+}
+
+func (cache *StructCache) OreRefine() {
+
+    cache.GetOwner().StoredOreDecrement(1)
+    cache.GetOwner().DepositRefinedAlpha()
+
+    cache.ResetBlockStartOreRefine()
 }
 
 func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem types.TechWeaponSystem) (err error) {

@@ -43,8 +43,8 @@ func (k Keeper) AppendPlanet(
 	ctx context.Context,
 	//planet types.Planet,
 	player types.Player,
-) (planet types.Planet) {
-    planet = types.CreateEmptyPlanet()
+) (planetId string) {
+    planet := types.CreateEmptyPlanet()
 
 	// Create the planet
 	count := k.GetPlanetCount(ctx)
@@ -67,7 +67,7 @@ func (k Keeper) AppendPlanet(
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPlanet{Planet: &planet})
 
-	return planet
+	return planet.Id
 }
 
 // SetPlanet set a specific planet in the store

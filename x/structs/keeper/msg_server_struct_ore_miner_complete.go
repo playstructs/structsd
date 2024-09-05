@@ -37,7 +37,7 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
     playerCharge := k.GetPlayerCharge(ctx, structure.GetOwnerId())
     if (playerCharge < structure.GetStructType().GetOreMiningCharge()) {
         k.DischargePlayer(ctx, structure.GetOwnerId())
-        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for this attack, but player (%s) only had %d", structure.GetTypeId() , structure.GetStructType().GetOreMiningCharge(), structure.GetOwnerId(), playerCharge)
+        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for this mining operation, but player (%s) only had %d", structure.GetTypeId() , structure.GetStructType().GetOreMiningCharge(), structure.GetOwnerId(), playerCharge)
     }
 
     miningReadinessError := structure.CanOreMinePlanet()
@@ -45,8 +45,6 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
         k.DischargePlayer(ctx, structure.GetOwnerId())
         return &types.MsgStructOreMinerStatusResponse{}, miningReadinessError
     }
-
-
 
     activeOreMiningSystemBlockString    := strconv.FormatUint(structure.GetBlockStartOreMine() , 10)
     hashInput                           := msg.StructId + "MINE" + activeOreMiningSystemBlockString + "NONCE" + msg.Nonce

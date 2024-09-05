@@ -27,6 +27,10 @@ func (structType *StructType) HasOreMiningSystem() (bool) {
     return (structType.PlanetaryMining != TechPlanetaryMining_noPlanetaryMining)
 }
 
+func (structType *StructType) HasOreRefiningSystem() (bool) {
+    return (structType.PlanetaryRefinery != TechPlanetaryRefineries_noPlanetaryRefinery)
+}
+
 func (structType *StructType) GetWeapon(weaponSystem TechWeaponSystem) (weapon TechActiveWeaponry) {
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:

@@ -17,9 +17,14 @@ type PlayerCache struct {
     K *Keeper
     Ctx context.Context
 
+    Ready bool
+
     PlayerLoaded  bool
     PlayerChanged bool
     Player        types.Player
+
+    PlanetLoaded bool
+    Planet *PlanetCache
 
     StorageLoaded bool
     Storage       sdk.Coins
@@ -112,6 +117,12 @@ func (cache *PlayerCache) LoadCapacity() {
     cache.CapacityLoaded = true
 }
 
+func (cache *PlayerCache) LoadCapacitySecondary() {
+    cache.CapacitySecondaryAttributeId = GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, cache.GetSubstationId())
+
+    cache.CapacitySecondary = cache.K.GetGridAttribute(cache.Ctx, cache.CapacitySecondaryAttributeId)
+    cache.CapacitySecondaryLoaded = true
+}
 
 func (cache *PlayerCache) LoadLoad() {
     cache.Load = cache.K.GetGridAttribute(cache.Ctx, cache.LoadAttributeId)
@@ -129,6 +140,15 @@ func (cache *PlayerCache) LoadPlayer() (found bool) {
     return found
 }
 
+// Load the Planet data
+func (cache *PlayerCache) LoadPlanet() (bool) {
+    if (cache.HasPlanet()) {
+        newPlanet := cache.K.GetPlanetCacheFromId(cache.Ctx, cache.GetPlanetId())
+        cache.Planet = &newPlanet
+        cache.PlanetLoaded = true
+    }
+    return cache.PlanetLoaded
+}
 
 func (cache *PlayerCache) LoadStorage() (error){
     if (!cache.PlayerLoaded) {
@@ -163,9 +183,29 @@ func (cache *PlayerCache) GetPlayer() (types.Player, error) {
 }
 
 
+func (cache *PlayerCache) GetPlayerId() (string) {
+    return cache.PlayerId
+}
+
 func (cache *PlayerCache) GetSubstationId() (string) {
     if (!cache.PlayerLoaded) { cache.LoadPlayer() }
     return cache.Player.SubstationId
+}
+
+func (cache *PlayerCache) GetPlanet() (*PlanetCache) {
+    if (!cache.PlanetLoaded) { cache.LoadPlanet() }
+    return cache.Planet
+}
+
+
+func (cache *PlayerCache) GetPlanetId() (string) {
+    if (!cache.PlayerLoaded) { cache.LoadPlayer() }
+    return cache.Player.PlanetId
+}
+
+func (cache *PlayerCache) GetPrimaryAddress() (string) {
+    if (!cache.PlayerLoaded) { cache.LoadPlayer() }
+    return cache.Player.PrimaryAddress
 }
 
 func (cache *PlayerCache) GetNextNonce() (int64) {
@@ -193,12 +233,6 @@ func (cache *PlayerCache) GetCapacity() (uint64) {
     return cache.Capacity
 }
 
-func (cache *PlayerCache) LoadCapacitySecondary() {
-    cache.CapacitySecondaryAttributeId = GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, cache.GetSubstationId())
-
-    cache.CapacitySecondary = cache.K.GetGridAttribute(cache.Ctx, cache.CapacitySecondaryAttributeId)
-    cache.CapacitySecondaryLoaded = true
-}
 
 func (cache *PlayerCache) GetCapacitySecondary() (uint64) {
     if (!cache.CapacitySecondaryLoaded) { cache.LoadCapacitySecondary() }
@@ -208,6 +242,10 @@ func (cache *PlayerCache) GetCapacitySecondary() (uint64) {
 func (cache *PlayerCache) GetStoredOre() (uint64) {
     if (!cache.StoredOreLoaded) { cache.LoadStoredOre() }
     return cache.StoredOre
+}
+
+func (cache *PlayerCache) HasStoredOre() (bool) {
+    return (cache.GetStoredOre() > 0)
 }
 
 func (cache *PlayerCache) StoredOreDecrement(amount uint64) {
@@ -227,6 +265,24 @@ func (cache *PlayerCache) StoredOreIncrement(amount uint64) {
 }
 
 
+func (cache *PlayerCache) SetPlanetId(planetId string) {
+    cache.Player.PlanetId = planetId
+    cache.PlayerChanged = true
+}
+
+// DepositRefinedAlpha() - Immediately Commits
+// Turn this into a delayed commit like the rest
+func (cache *PlayerCache) DepositRefinedAlpha() {
+    // Got this far, let's reward the player with some fresh Alpha
+    // Mint the new Alpha to the module
+    newAlpha, _ := sdk.ParseCoinsNormalized("1alpha")
+    cache.K.bankKeeper.MintCoins(cache.Ctx, types.ModuleName, newAlpha)
+    // Transfer the refined Alpha to the player
+    playerAcc, _ := sdk.AccAddressFromBech32(cache.GetPrimaryAddress())
+    cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, types.ModuleName, playerAcc, newAlpha)
+}
+
+
 func (cache *PlayerCache) IsOnline() (online bool){
     if ((cache.GetLoad() + cache.GetStructsLoad()) <= (cache.GetCapacity() + cache.GetCapacitySecondary())) {
         online = true
@@ -238,4 +294,48 @@ func (cache *PlayerCache) IsOnline() (online bool){
 
 func (cache *PlayerCache) IsOffline() (bool){
     return !cache.IsOnline()
+}
+
+func (cache *PlayerCache) HasPlanet() (bool){
+    return (cache.GetPlanetId() != "")
+}
+
+/* Permissions */
+func (cache *PlayerCache) CanBePlayedBy(address string) (err error) {
+
+    // Make sure the address calling this has Play permissions
+    if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(address), types.PermissionPlay)) {
+        err = sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", address)
+
+    } else {
+        if (cache.GetPrimaryAddress() != address) {
+            callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
+            if (err != nil) {
+                if (callingPlayer.GetPlayerId() != cache.GetPlayerId()) {
+                    if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetPlayerId(), callingPlayer.GetPlayerId()), types.PermissionPlay)) {
+                       err = sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayer.GetPlayerId(), cache.GetPlayerId())
+                    }
+                }
+            }
+        }
+    }
+
+    return
+}
+
+func (cache *PlayerCache) ReadinessCheck() (err error) {
+    if (cache.IsOffline()) {
+        err = sdkerrors.Wrapf(types.ErrGridMalfunction, "Player (%s) is offline. Activate it", cache.PlayerId)
+    }
+    cache.Ready = true
+    return
+}
+
+
+func (cache *PlayerCache) AttemptPlanetExplore() (err error) {
+    newPlanetId := cache.K.AppendPlanet(cache.Ctx, cache.Player)
+    cache.SetPlanetId(newPlanetId)
+    cache.PlanetLoaded = false
+
+    return nil
 }

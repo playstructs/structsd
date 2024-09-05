@@ -18,107 +18,51 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
-    if (callingPlayerIndex == 0) {
-        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build actions requires Player account but none associated with %s", msg.Creator)
-    }
-    callingPlayerId := GetObjectID(types.ObjectType_player, callingPlayerIndex)
 
-    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-    // Make sure the address calling this has Play permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionPlay)) {
-        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
+	structure := k.GetStructCacheFromId(ctx, msg.StructId)
+
+    // Check to see if the caller has permissions to proceed
+    permissionError := structure.CanBePlayedBy(msg.Creator)
+    if (permissionError != nil) {
+        return &types.MsgStructOreRefineryStatusResponse{}, permissionError
     }
 
-    structStatusAttributeId := GetStructAttributeIDByObjectId(types.StructAttributeType_status, msg.StructId)
-
-    structure, structureFound := k.GetStruct(ctx, msg.StructId)
-    if (!structureFound) {
-        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) not found", msg.StructId)
+    // Is the Struct & Owner online?
+    readinessError := structure.ReadinessCheck()
+    if (readinessError != nil) {
+        k.DischargePlayer(ctx, structure.GetOwnerId())
+        return &types.MsgStructOreRefineryStatusResponse{}, readinessError
     }
 
-    // Is the Struct online?
-    if (k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateOnline))) {
-        k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is offline. Activate it", msg.StructId)
+
+    playerCharge := k.GetPlayerCharge(ctx, structure.GetOwnerId())
+    if (playerCharge < structure.GetStructType().GetOreRefiningCharge()) {
+        k.DischargePlayer(ctx, structure.GetOwnerId())
+        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for this refinement, but player (%s) only had %d", structure.GetTypeId() , structure.GetStructType().GetOreRefiningCharge(), structure.GetOwnerId(), playerCharge)
     }
 
-    if (callingPlayerId != structure.Owner) {
-        // Check permissions on Creator on Planet
-        playerPermissionId := GetObjectPermissionIDBytes(structure.Owner, callingPlayerId)
-        if (!k.PermissionHasOneOf(ctx, playerPermissionId, types.PermissionPlay)) {
-            return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayerId, structure.Owner)
-        }
-    }
-    sudoPlayer, _ := k.GetPlayer(ctx, structure.Owner, true)
-    if (!sudoPlayer.IsOnline()){
-        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",sudoPlayer.Id)
+    refiningReadinessError := structure.CanOreRefine()
+    if (refiningReadinessError != nil) {
+        k.DischargePlayer(ctx, structure.GetOwnerId())
+        return &types.MsgStructOreRefineryStatusResponse{}, refiningReadinessError
     }
 
-    // Load Struct Type
-    structType, structTypeFound := k.GetStructType(ctx, structure.Type)
-    if (!structTypeFound) {
-        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct Type (%d) was not found. Building a Struct with schematics might be tough", structure.Type)
+    activeOreRefiningSystemBlockString := strconv.FormatUint(structure.GetBlockStartOreRefine() , 10)
+    hashInput := structure.StructId + "REFINE" + activeOreRefiningSystemBlockString + "NONCE" + msg.Nonce
+
+    currentAge := uint64(ctx.BlockHeight()) - structure.GetBlockStartOreRefine()
+    if (!types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().GetOreRefiningDifficulty())) {
+       return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Work failure for input (%s) when trying to refine on Struct %s", hashInput, structure.StructId)
     }
 
-    // Check Sudo Player Charge
-    // Maaaayybe we let the calling player use its charge but idk
-    // Then people could have a stack of accounts to increase action throughput
-    playerCharge := k.GetPlayerCharge(ctx, structure.Owner)
-    if (playerCharge < structType.OreRefiningCharge) {
-        k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for refining, but player (%s) only had %d", structure.Type, structType.ActivateCharge, structure.Owner, playerCharge)
-    }
+    structure.OreRefine()
 
-    if (structType.PlanetaryMining == types.TechPlanetaryMining_noPlanetaryMining) {
-        k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) has no mining system", msg.StructId)
-    }
+    k.DischargePlayer(ctx, structure.GetOwnerId())
 
-    activeOreRefiningSystemBlock := k.GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structure.Id))
-    // Is Struct Ore Miner running?
-    if (activeOreRefiningSystemBlock == 0) {
-        k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) not refining", msg.StructId)
-    }
+    structure.Commit()
+    structure.GetOwner().Commit()
+    structure.GetPlanet().Commit()
 
-    planet, planetFound := k.GetPlanet(ctx, structure.LocationId)
-    if (!planetFound) {
-        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was not found, which is actually a pretty big problem. Please tell an adult", structure.LocationId)
-    }
 
-    if (planet.Status == types.PlanetStatus_complete) {
-        k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Planet (%s) is already complete. Move on bud, no work to be done here", structure.LocationId)
-    }
-
-    if (planet.OreStored == 0) {
-        k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Planet (%s) has nothing to refine", structure.LocationId)
-    }
-
-    activeOreRefiningSystemBlockString := strconv.FormatUint(activeOreRefiningSystemBlock , 10)
-    hashInput := structure.Id + "REFINE" + activeOreRefiningSystemBlockString + "NONCE" + msg.Nonce
-
-    currentAge := uint64(ctx.BlockHeight()) - activeOreRefiningSystemBlock
-    if (!types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structType.OreRefiningDifficulty)) {
-       return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Work failure for input (%s) when trying to refine on Struct %s", hashInput, structure.Id)
-    }
-
-    // Got this far, let's reward the player with some fresh Alpha
-    // Mint the new Alpha to the module
-    newAlpha, _ := sdk.ParseCoinsNormalized("1alpha")
-    k.bankKeeper.MintCoins(ctx, types.ModuleName, newAlpha)
-    // Transfer the refined Alpha to the player
-    playerAcc, _ := sdk.AccAddressFromBech32(sudoPlayer.PrimaryAddress)
-    k.bankKeeper.SendCoinsFromModuleToAccount(ctx, types.ModuleName, playerAcc, newAlpha)
-    // Remove the Ore
-    k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, structure.Owner), 1)
-
-    // Reset difficulty block
-    k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structure.Id), uint64(ctx.BlockHeight()))
-
-    k.DischargePlayer(ctx, structure.Owner)
-
-	return &types.MsgStructOreRefineryStatusResponse{Struct: structure}, nil
+	return &types.MsgStructOreRefineryStatusResponse{Struct: structure.GetStruct()}, nil
 }

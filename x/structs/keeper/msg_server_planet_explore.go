@@ -3,7 +3,7 @@ package keeper
 import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
+	//sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -14,42 +14,44 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
-    if (playerIndex == 0) {
-        return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Planet Exploration requires Player account but none associated with %s", msg.Creator)
-    }
-    player, _ := k.GetPlayerFromIndex(ctx, playerIndex, true)
-
-
-    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
-
-    // Make sure the address calling this has Play permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionPlay)) {
-        return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
+    // Load the Player record
+    player, playerLookupErr := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    if (playerLookupErr != nil) {
+        return &types.MsgPlanetExploreResponse{}, playerLookupErr
     }
 
-
-    if (!player.IsOnline()){
-        return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",player.Id)
+    // Check address play permissions
+    permissionError := player.CanBePlayedBy(msg.Creator)
+    if (permissionError != nil) {
+        return &types.MsgPlanetExploreResponse{}, permissionError
     }
 
+    // Is the Player online?
+    readinessError := player.ReadinessCheck()
+    if (readinessError != nil) {
+        k.DischargePlayer(ctx, player.GetPlayerId())
+        return &types.MsgPlanetExploreResponse{}, readinessError
+    }
 
-    if (player.PlanetId != "") {
-        // Check to see if the planet can be completed
-        currentPlanet, currentPlanetFound := k.GetPlanet(ctx, player.PlanetId)
-        if (!currentPlanetFound) {
-            return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was not found which in this case is extremely bad. Something horrible has happened", player.PlanetId)
-        }
-
-        if (!k.PlanetComplete(ctx, currentPlanet)) {
-             return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrPlanetExploration, "New Planet cannot be explored while current planet (%s) has Ore available for mining", player.PlanetId)
+    // check if there is a planet currently
+        // check that the planet can be completed
+        // complete the previous planet
+    if (player.HasPlanet()){
+        planetCompletionError := player.GetPlanet().AttemptComplete()
+        if (planetCompletionError != nil) {
+            k.DischargePlayer(ctx, player.GetPlayerId())
+            return &types.MsgPlanetExploreResponse{}, planetCompletionError
         }
     }
 
-    planet := k.AppendPlanet(ctx, player)
-    player.PlanetId = planet.Id
+    planetExploreError := player.AttemptPlanetExplore()
+    if (planetExploreError != nil) {
+        k.DischargePlayer(ctx, player.GetPlayerId())
+        return &types.MsgPlanetExploreResponse{}, planetExploreError
+    }
 
-    k.SetPlayer(ctx, player)
+    player.Commit()
+    player.GetPlanet().Commit()
 
-	return &types.MsgPlanetExploreResponse{Planet: planet}, nil
+	return &types.MsgPlanetExploreResponse{Planet: player.GetPlanet().GetPlanet()}, nil
 }

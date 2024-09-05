@@ -4,7 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-    //sdkerrors "cosmossdk.io/errors"
+    sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	"github.com/nethruster/go-fraction"
 
@@ -405,10 +405,13 @@ func (cache *PlanetCache) IsSuccessful(successRate fraction.Fraction) bool {
 
 /* Game Logic */
 
-func (cache *PlanetCache) AttemptComplete() (bool) {
+// AttemptComplete
+// TODO This has to do a LOT more than it currently is
+func (cache *PlanetCache) AttemptComplete() (error) {
     if (cache.IsEmptyOfOre()) {
         cache.SetStatus(types.PlanetStatus_complete)
-        return true
+        cache.Commit()
+        return nil
     }
-    return false
+    return sdkerrors.Wrapf(types.ErrPlanetExploration, "New Planet cannot be explored while current planet (%s) has Ore available for mining", cache.GetPlanetId())
 }
