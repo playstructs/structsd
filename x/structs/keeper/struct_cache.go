@@ -767,6 +767,16 @@ func (cache *StructCache) CanEvade(attackerStruct *StructCache, weaponSystem typ
 
     cache.GetEventAttackShotDetail().SetEvade(canEvade, cache.GetStructType().GetUnitDefenses())
 
+    if (!canEvade) {
+        // if attackerStruct.IsOnFleet()
+                // if cache is on planet, or fleet is at planet
+                    // if attacker operating ambit is air or space
+                        // if cache operating ambit is water or land
+                            // The next line will fail right now if the ship is on a fleet.
+                            // Maybe update GetPlanet()/LoadPlanet() to see if the fleet is at home, and if it is then load the planet. That might simplify a lot
+                            //canEvade = cache.IsSuccessful(cache.GetPlanet().GetLowOrbitBallisticsInterceptorNetworkSuccessRate())
+    }
+
     return
 }
 
