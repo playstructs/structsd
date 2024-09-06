@@ -74,6 +74,11 @@ message EventAttackDetail {
   bool recoilDamageToAttacker         = 6;
   uint64 recoilDamage                 = 7;
   bool recoilDamageDestroyedAttacker  = 8;
+
+  bool planetaryDefenseCannonDamageToAttacker         = 9;
+  uint64 planetaryDefenseCannonDamage                 = 10;
+  bool planetaryDefenseCannonDamageDestroyedAttacker  = 11;
+
 }
 
 message EventAttackShotDetail {

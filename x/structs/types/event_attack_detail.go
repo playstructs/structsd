@@ -24,6 +24,13 @@ func (eventAttackDetail *EventAttackDetail) SetRecoilDamage(recoilDamage uint64,
     eventAttackDetail.RecoilDamageDestroyedAttacker = recoilDamageDestroyedAttacker
 }
 
+func (eventAttackDetail *EventAttackDetail) SetPlanetaryDefenseCannonDamage(planetaryDefenseCannonDamage uint64, planetaryDefenseCannonDamageDestroyedAttacker bool) {
+    eventAttackDetail.PlanetaryDefenseCannonDamageToAttacker = true
+    eventAttackDetail.PlanetaryDefenseCannonDamage = planetaryDefenseCannonDamage
+    eventAttackDetail.PlanetaryDefenseCannonDamageDestroyedAttacker = planetaryDefenseCannonDamageDestroyedAttacker
+}
+
+
 func (eventAttackDetail *EventAttackDetail) AppendShot(eventAttackShotDetail *EventAttackShotDetail) {
     eventAttackDetail.EventAttackShotDetail = append(eventAttackDetail.EventAttackShotDetail, eventAttackShotDetail)
 }

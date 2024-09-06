@@ -48,6 +48,9 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     var eventAttackDetail *types.EventAttackDetail
     eventAttackDetail = structure.GetEventAttackDetail()
 
+    var targetWasPlanetary bool
+    var targetWasOnPlanet *PlanetCache
+
     // Begin taking shots. Most weapons only use a single shot but some perform multiple.
     for shot := uint64(0); shot < (structure.GetStructType().GetWeaponTargets(msg.WeaponSystem)); shot++ {
 
@@ -66,8 +69,6 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
             k.DischargePlayer(ctx, structure.GetOwnerId())
             return &types.MsgStructAttackResponse{}, targetingError
         }
-
-        // TODO Event - Targeted
 
         if (targetStructure.CanEvade(&structure, msg.WeaponSystem)) {
             structure.GetEventAttackDetail().AppendShot(targetStructure.FlushEventAttackShotDetail())
@@ -119,12 +120,21 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
         structure.GetEventAttackDetail().AppendShot(targetStructure.FlushEventAttackShotDetail())
 
+        if (targetStructure.GetStructType().GetCategory() == types.ObjectType_planet) {
+            targetWasPlanetary = true
+            targetWasOnPlanet = targetStructure.GetPlanet()
+        }
+
         // Possibly over committing if the same target is hit multiple times.
         targetStructure.Commit()
     }
 
     // Recoil Damage
     structure.TakeRecoilDamage(msg.WeaponSystem)
+
+    if (targetWasPlanetary) {
+        targetWasOnPlanet.AttemptDefenseCannon(&structure)
+    }
 
     _ = ctx.EventManager().EmitTypedEvent(&types.EventAttack{EventAttackDetail: structure.GetEventAttackDetail()})
 

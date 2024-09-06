@@ -920,6 +920,33 @@ func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (d
     return
 }
 
+
+func (cache *StructCache) TakePlanetaryDefenseCanonDamage(damage uint64) (uint64) {
+    if (cache.IsDestroyed()) { return 0 }
+
+    if (damage != 0) {
+
+        if (damage > cache.GetHealth()) {
+            damage = cache.GetHealth()
+            cache.Health = 0
+            cache.HealthChanged = true
+
+        } else {
+            cache.Health = cache.GetHealth() - damage
+            cache.HealthChanged = true
+        }
+
+        if (cache.Health == 0) {
+            cache.DestroyAndCommit()
+        }
+    }
+
+    cache.GetEventAttackDetail().SetPlanetaryDefenseCannonDamage(damage, cache.IsDestroyed())
+
+    return damage
+}
+
+
 func (cache *StructCache) AttemptBlock(attacker *StructCache, weaponSystem types.TechWeaponSystem, target *StructCache) (blocked bool) {
     if (cache.Ready && attacker.Ready) {
         if (cache.GetOperatingAmbit() == target.GetOperatingAmbit()) {

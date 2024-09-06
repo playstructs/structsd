@@ -465,3 +465,12 @@ func (cache *PlanetCache) AttemptComplete() (error) {
     }
     return sdkerrors.Wrapf(types.ErrPlanetExploration, "New Planet cannot be explored while current planet (%s) has Ore available for mining", cache.GetPlanetId())
 }
+
+
+
+func (cache *PlanetCache) AttemptDefenseCannon(attacker *StructCache) (cannoned bool) {
+    if (cache.GetDefensiveCannonQuantity() > 0) {
+        attacker.TakePlanetaryDefenseCanonDamage(cache.GetDefensiveCannonQuantity())
+    }
+    return
+}
