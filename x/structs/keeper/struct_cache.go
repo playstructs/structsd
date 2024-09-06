@@ -768,6 +768,7 @@ func (cache *StructCache) CanEvade(attackerStruct *StructCache, weaponSystem typ
     cache.GetEventAttackShotDetail().SetEvade(canEvade, cache.GetStructType().GetUnitDefenses())
 
     if (!canEvade) {
+    breaking line
         // if attackerStruct.IsOnFleet()
                 // if cache is on planet, or fleet is at planet
                     // if attacker operating ambit is air or space
