@@ -132,6 +132,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     // Recoil Damage
     structure.TakeRecoilDamage(msg.WeaponSystem)
 
+    // Check for Planetary Damage, namely Defense Cannons
     if (targetWasPlanetary) {
         targetWasOnPlanet.AttemptDefenseCannon(&structure)
     }

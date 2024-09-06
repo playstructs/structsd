@@ -66,6 +66,13 @@ type PlanetCache struct {
     AdvancedLowOrbitBallisticsInterceptorNetworkQuantityChanged bool
     AdvancedLowOrbitBallisticsInterceptorNetworkQuantity uint64
 
+    LowOrbitBallisticsInterceptorNetworkSuccessRateNumeratorAttributeId string
+    LowOrbitBallisticsInterceptorNetworkSuccessRateDenominatorAttributeId string
+    LowOrbitBallisticsInterceptorNetworkSuccessRateLoaded bool
+    LowOrbitBallisticsInterceptorNetworkSuccessRateChanged bool
+    LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator uint64
+    LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator uint64
+
     OrbitalJammingStationQuantityAttributeId string
     OrbitalJammingStationQuantityLoaded bool
     OrbitalJammingStationQuantityChanged bool
@@ -101,9 +108,13 @@ func (k *Keeper) GetPlanetCacheFromId(ctx context.Context, planetId string) (Pla
         DefensiveCannonQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_defensiveCannonQuantity, planetId),
 
         CoordinatedGlobalShieldNetworkQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_coordinatedGlobalShieldNetworkQuantity, planetId),
-        LowOrbitBallisticsInterceptorNetworkQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkQuantity, planetId),
 
+        LowOrbitBallisticsInterceptorNetworkQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkQuantity, planetId),
         AdvancedLowOrbitBallisticsInterceptorNetworkQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_advancedLowOrbitBallisticsInterceptorNetworkQuantity, planetId),
+
+        LowOrbitBallisticsInterceptorNetworkSuccessRateNumeratorAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator, planetId),
+        LowOrbitBallisticsInterceptorNetworkSuccessRateDenominatorAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator, planetId),
+
 
         OrbitalJammingStationQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_orbitalJammingStationQuantity, planetId),
         AdvancedOrbitalJammingStationQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_advancedOrbitalJammingStationQuantity, planetId),
@@ -153,6 +164,12 @@ func (cache *PlanetCache) Commit() () {
     if (cache.AdvancedLowOrbitBallisticsInterceptorNetworkQuantityChanged) {
         cache.K.SetPlanetAttribute(cache.Ctx, cache.AdvancedLowOrbitBallisticsInterceptorNetworkQuantityAttributeId, cache.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity)
         cache.AdvancedLowOrbitBallisticsInterceptorNetworkQuantityChanged = false
+    }
+
+    if (cache.LowOrbitBallisticsInterceptorNetworkSuccessRateChanged) {
+        cache.K.SetPlanetAttribute(cache.Ctx, cache.LowOrbitBallisticsInterceptorNetworkSuccessRateNumeratorAttributeId, cache.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator)
+        cache.K.SetPlanetAttribute(cache.Ctx, cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominatorAttributeId, cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator)
+        cache.LowOrbitBallisticsInterceptorNetworkSuccessRateChanged = false
     }
 
     if (cache.OrbitalJammingStationQuantityChanged) {
@@ -218,6 +235,13 @@ func (cache *PlanetCache) LoadCoordinatedGlobalShieldNetworkQuantity() {
 func (cache *PlanetCache) LoadLowOrbitBallisticsInterceptorNetworkQuantity() {
     cache.LowOrbitBallisticsInterceptorNetworkQuantity = cache.K.GetPlanetAttribute(cache.Ctx, cache.LowOrbitBallisticsInterceptorNetworkQuantityAttributeId)
     cache.LowOrbitBallisticsInterceptorNetworkQuantityLoaded = true
+}
+
+// Load the Planet LowOrbitBallisticsInterceptorNetworkSuccessRate records
+func (cache *PlanetCache) LoadLowOrbitBallisticsInterceptorNetworkSuccessRate() {
+    cache.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator = cache.K.GetPlanetAttribute(cache.Ctx, cache.LowOrbitBallisticsInterceptorNetworkSuccessRateNumeratorAttributeId)
+    cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator = cache.K.GetPlanetAttribute(cache.Ctx, cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominatorAttributeId)
+    cache.LowOrbitBallisticsInterceptorNetworkSuccessRateLoaded = true
 }
 
 // Load the Planet AdvancedLowOrbitBallisticsInterceptorNetworkQuantity record
@@ -293,6 +317,13 @@ func (cache *PlanetCache) GetLowOrbitBallisticsInterceptorNetworkQuantity() (uin
 func (cache *PlanetCache) GetAdvancedLowOrbitBallisticsInterceptorNetworkQuantity() (uint64) {
     if (!cache.AdvancedLowOrbitBallisticsInterceptorNetworkQuantityLoaded) { cache.LoadAdvancedLowOrbitBallisticsInterceptorNetworkQuantity() }
     return cache.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity
+}
+
+func (cache *PlanetCache) GetLowOrbitBallisticsInterceptorNetworkSuccessRate() (successRate fraction.Fraction) {
+    if (!cache.LowOrbitBallisticsInterceptorNetworkSuccessRateLoaded) { cache.LoadLowOrbitBallisticsInterceptorNetworkSuccessRate() }
+
+    successRate, _ = fraction.New(cache.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator, cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator)
+    return successRate
 }
 
 func (cache *PlanetCache) GetOrbitalJammingStationQuantity() (uint64) {
@@ -387,6 +418,8 @@ func (cache *PlanetCache) DefensiveCannonQuantityDecrement(amount uint64) {
 func (cache *PlanetCache) LowOrbitBallisticsInterceptorNetworkQuantityIncrement(amount uint64) {
     cache.LowOrbitBallisticsInterceptorNetworkQuantity = cache.GetLowOrbitBallisticsInterceptorNetworkQuantity() + amount
     cache.LowOrbitBallisticsInterceptorNetworkQuantityChanged = true
+
+    cache.LowOrbitBallisticsInterceptorNetworkRecalculate()
 }
 
 func (cache *PlanetCache) LowOrbitBallisticsInterceptorNetworkQuantityDecrement(amount uint64) {
@@ -398,8 +431,30 @@ func (cache *PlanetCache) LowOrbitBallisticsInterceptorNetworkQuantityDecrement(
     }
 
     cache.LowOrbitBallisticsInterceptorNetworkQuantityChanged = true
+    cache.LowOrbitBallisticsInterceptorNetworkRecalculate()
 }
 
+func (cache *PlanetCache) LowOrbitBallisticsInterceptorNetworkRecalculate() {
+    if ((cache.GetLowOrbitBallisticsInterceptorNetworkQuantity() + cache.GetAdvancedLowOrbitBallisticsInterceptorNetworkQuantity()) != 0) {
+        oneRate, _ := fraction.New(1,1)
+        individualFailureRate, _ := fraction.New(2,3)
+
+        overallFailureRate := individualFailureRate
+
+        // Intentionally starts at 1, since we start by adding one above.
+        for system := uint64(1); system < cache.GetLowOrbitBallisticsInterceptorNetworkQuantity(); system++ {
+            overallFailureRate = overallFailureRate.Multiply(individualFailureRate)
+        }
+
+        overallSuccessRate := oneRate.Subtract(overallFailureRate)
+
+        cache.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator = uint64(overallSuccessRate.Numerator())
+        cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator = uint64(overallSuccessRate.Denominator())
+        cache.LowOrbitBallisticsInterceptorNetworkSuccessRateChanged = true
+        cache.LowOrbitBallisticsInterceptorNetworkSuccessRateLoaded  = true
+
+    }
+}
 
 // Set the Owner data manually
 // Useful for loading multiple defenders

@@ -105,8 +105,13 @@ enum planetAttributeType {
     lowOrbitBallisticsInterceptorNetworkQuantity            = 4;
     advancedLowOrbitBallisticsInterceptorNetworkQuantity    = 5;
 
-    orbitalJammingStationQuantity                           = 6;
-    advancedOrbitalJammingStationQuantity                   = 7;
+    lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator      = 6;
+    lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator    = 7;
+
+    orbitalJammingStationQuantity                           = 8;
+    advancedOrbitalJammingStationQuantity                   = 9;
+
+
 }
 
 enum techWeaponSystem {

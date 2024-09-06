@@ -251,6 +251,9 @@ var PlanetAttributeType_enum = map[string]PlanetAttributeType {
     "lowOrbitBallisticsInterceptorNetworkQuantity":             PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkQuantity,
     "advancedLowOrbitBallisticsInterceptorNetworkQuantity":     PlanetAttributeType_advancedLowOrbitBallisticsInterceptorNetworkQuantity,
 
+    "lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator":     PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator,
+    "lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator":   PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator,
+
     "orbitalJammingStationQuantity":                            PlanetAttributeType_orbitalJammingStationQuantity,
     "advancedOrbitalJammingStationQuantity":                    PlanetAttributeType_advancedOrbitalJammingStationQuantity,
 
