@@ -362,6 +362,18 @@ func (cache *StructCache) ResetBlockStartOreRefine() {
     cache.BlockStartOreRefineChanged = true
 }
 
+func (cache *StructCache) ClearBlockStartOreMine() {
+    cache.BlockStartOreMine = 0
+    cache.BlockStartOreMineLoaded = true
+    cache.BlockStartOreMineChanged = true
+}
+
+func (cache *StructCache) ClearBlockStartOreRefine() {
+    cache.BlockStartOreRefine = 0
+    cache.BlockStartOreRefineLoaded = true
+    cache.BlockStartOreRefineChanged = true
+}
+
 
 // Set the Owner data manually
 // Useful for loading multiple defenders
@@ -406,32 +418,48 @@ func (cache *StructCache) IsHidden() bool {
    return cache.GetStatus()&types.StructStateHidden != 0
 }
 
-func (cache *StructCache) SetStatusOnline() {
+func (cache *StructCache) StatusAddOnline() {
     cache.Status = cache.GetStatus() | types.StructStateOnline
     cache.StatusChanged = true
 }
 
-func (cache *StructCache) SetStatusHidden() {
+func (cache *StructCache) StatusAddHidden() {
     cache.Status = cache.GetStatus() | types.StructStateHidden
     cache.StatusChanged = true
 }
 
-func (cache *StructCache) SetStatusDestroyed() {
+func (cache *StructCache) StatusAddDestroyed() {
     cache.Status = cache.GetStatus() | types.StructStateDestroyed
     cache.StatusChanged = true
 }
 
-func (cache *StructCache) RemoveHidden() {
+func (cache *StructCache) StatusRemoveHidden() {
     if (cache.IsHidden()) {
         cache.Status = cache.Status &^ types.StructStateHidden
         cache.StatusChanged = true
     }
 }
 
+func (cache *StructCache) StatusRemoveOnline() {
+    if (cache.IsOnline()) {
+        cache.Status = cache.Status &^ types.StructStateOnline
+        cache.StatusChanged = true
+    }
+}
+
+
+
 func (cache *StructCache) IsDestroyed() bool {
    return cache.GetStatus()&types.StructStateDestroyed != 0
 }
 
+func (cache *StructCache) GridStatusAddReady() {
+    cache.K.SetGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ready, cache.StructId), 1)
+}
+
+func (cache *StructCache) GridStatusRemoveReady() {
+    cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ready, cache.StructId ))
+}
 
 
 func (cache *StructCache) ActivationReadinessCheck() (err error) {
@@ -484,16 +512,64 @@ func (cache *StructCache) GoOnline() {
     if (cache.GetStructType().HasPlanetaryDefensesSystem()) {
         switch (cache.GetStructType().GetPlanetaryDefenses()) {
             case types.TechPlanetaryDefenses_defensiveCannon:
-                // defensiveCannonQuantity increment
+                cache.GetPlanet().DefensiveCannonQuantityIncrement(1)
             case types.TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork:
-                // lowOrbitBallisticsInterceptorNetworkQuantity increment
+                cache.GetPlanet().LowOrbitBallisticsInterceptorNetworkQuantityIncrement(1)
         }
     }
 
-    //  techPowerGeneration powerGeneration
+
+    if (cache.GetStructType().HasPowerGenerationSystem()) {
+        cache.GridStatusAddReady()
+    }
 
     // Set the struct status flag to include built
-    cache.SetStatusOnline()
+    cache.StatusAddOnline()
+}
+
+
+func (cache *StructCache) GoOffline() {
+    // Add to the players struct load
+    cache.GetOwner().StructsLoadDecrement(cache.GetStructType().GetPassiveDraw())
+    //k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.PassiveDraw)
+
+    // Turn off the mining systems
+    if (cache.GetStructType().HasOreMiningSystem()) {
+        cache.ClearBlockStartOreMine()
+    }
+
+    // Turn off the refinery
+    if (cache.GetStructType().HasOreRefiningSystem()) {
+        cache.ClearBlockStartOreRefine()
+    }
+
+    // Lower the planetary shields
+    if (cache.GetStructType().HasOreReserveDefensesSystem()) {
+        cache.GetPlanet().PlanetaryShieldDecrement(cache.GetStructType().GetPlanetaryShieldContribution())
+    }
+
+    // TODO
+    // This is the least generic/abstracted part of the code for now.
+    // Prob need to clean this up down the road
+    if (cache.GetStructType().HasPlanetaryDefensesSystem()) {
+        switch (cache.GetStructType().GetPlanetaryDefenses()) {
+            case types.TechPlanetaryDefenses_defensiveCannon:
+                cache.GetPlanet().DefensiveCannonQuantityDecrement(1)
+            case types.TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork:
+                cache.GetPlanet().LowOrbitBallisticsInterceptorNetworkQuantityDecrement(1)
+        }
+    }
+
+    if (cache.GetStructType().HasPowerGenerationSystem()) {
+        cache.GridStatusRemoveReady()
+
+        // Remove all allocations
+        allocations := cache.K.GetAllocationsFromSource(cache.Ctx, cache.StructId, false)
+        cache.K.DestroyAllAllocations(cache.Ctx, allocations)
+    }
+
+    // Set the struct status flag to include built
+    cache.StatusRemoveOnline()
 }
 
 func (cache *StructCache) ReadinessCheck() (err error) {
@@ -859,22 +935,77 @@ func (cache *StructCache) AttemptBlock(attacker *StructCache, weaponSystem types
 func (cache *StructCache) DestroyAndCommit() {
 
     // Go Offline
-    cache.Status = cache.Status &^ types.StructStateOnline
+    // Most of the destruction process is handled during this sub-process
+    cache.GoOffline()
 
+    // Drop the Struct Type count for the owner
+    cache.K.StructAttributeDecrement(cache.Ctx, GetStructAttributeIDByObjectIdAndSubIndex(types.StructAttributeType_typeCount, cache.GetOwnerId(), cache.GetStructType().GetId())
 
-    // Remove from Planet Attributes
+    // Don't clear these now, clear them on sweeps?
+    // "health":               StructAttributeType_health,
+    // "status":               StructAttributeType_status,
 
-    // If a power planet
-        // Remove infusions
-        // Remove allocations
-            // cascade
+    // It's possible the build was never complete, so clear out this attribute to be safe
+    k.ClearStructAttribute(ctx, BlockStartBuildAttributeId)
 
+    // Destroy mining systems
+    if (cache.GetStructType().HasOreMiningSystem()) {
+        cache.K.ClearStructAttribute(cache.Ctx, BlockStartOreMineAttributeId)
+    }
+
+    // Turn off the refinery
+    if (cache.GetStructType().HasOreRefiningSystem()) {
+        cache.K.ClearStructAttribute(cache.Ctx, BlockStartOreRefineAttributeId)
+    }
+
+    // Clear Defensive Relationships
+    cache.K.ClearStructAttribute(cache.Ctx, ProtectedStructIndexAttributeId)
+
+    // TODO clean this up to be more function based.. but it's fine
+    if (cache.GetStructType().HasPowerGenerationSystem()) {
+        // Clear Load
+        cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, cache.StructId ))
+
+        // Clear Capacity
+        cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, cache.StructId ))
+
+        // Clear Fuel
+        cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, cache.StructId ))
+
+        // Clear Power
+        cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, cache.StructId ))
+
+        // Clear Allocation Pointer Start + End
+        cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerStart, cache.StructId ))
+        cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerEnd, cache.StructId ))
+    }
+
+    // Clear Permissions
+    // This only clears permissions for the current owner, which is likely a problem in the future.
+    permissionId := GetObjectPermissionIDBytes(cache.StructId, cache.GetOwnerId())
+    cache.K.PermissionClearAll(cache.Ctx, permissionId)
+
+    // We're not going to remove it from the location yet, that happens during sweeps
 
     // Set to Destroyed
-    cache.Status = cache.Status | types.StructStateDestroyed
+    cache.StatusAddDestroyed()
 
-    cache.StatusChanged = true
+    // Might need to do this manually so it doesn't undo some of the above...
+    //cache.Commit()
+    if (cache.StructureChanged) {
+        cache.K.SetStruct(cache.Ctx, cache.Structure)
+        cache.StructureChanged = false
+    }
 
+    if (cache.HealthChanged) {
+        cache.K.SetStructAttribute(cache.Ctx, cache.HealthAttributeId, cache.Health)
+        cache.HealthChanged = false
+    }
+
+    if (cache.StatusChanged) {
+        cache.K.SetStructAttribute(cache.Ctx, cache.StatusAttributeId, uint64(cache.Status))
+        cache.StatusChanged = false
+    }
 
 }
 

@@ -43,7 +43,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     }
 
     // Jump out of Stealth Mode for the attack
-    structure.RemoveHidden()
+    structure.StatusRemoveHidden()
 
     var eventAttackDetail *types.EventAttackDetail
     eventAttackDetail = structure.GetEventAttackDetail()

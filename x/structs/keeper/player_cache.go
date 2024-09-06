@@ -58,7 +58,6 @@ type PlayerCache struct {
     StoredOreLoaded      bool
     StoredOreChanged     bool
     StoredOre            uint64
-
 }
 
 
@@ -76,6 +75,7 @@ func (k *Keeper) GetPlayerCacheFromId(ctx context.Context, playerId string) (Pla
         StructsLoadAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, playerId),
 
         StoredOreAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_ore, playerId),
+
     }, nil
 }
 

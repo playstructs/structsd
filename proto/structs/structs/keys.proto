@@ -36,6 +36,7 @@ enum gridAttributeType {
     proxyNonce              = 10;
     lastAction              = 11;
     nonce                   = 12;
+    ready                   = 13;
 }
 
 enum allocationType {

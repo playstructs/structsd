@@ -367,6 +367,40 @@ func (cache *PlanetCache) PlanetaryShieldDecrement(amount uint64) {
     cache.PlanetaryShieldChanged = true
 }
 
+func (cache *PlanetCache) DefensiveCannonQuantityIncrement(amount uint64) {
+    cache.DefensiveCannonQuantity = cache.GetDefensiveCannonQuantity() + amount
+    cache.DefensiveCannonQuantityChanged = true
+}
+
+func (cache *PlanetCache) DefensiveCannonQuantityDecrement(amount uint64) {
+
+    if (cache.GetDefensiveCannonQuantity() > amount) {
+        cache.DefensiveCannonQuantity = cache.DefensiveCannonQuantity - amount
+    } else {
+        cache.DefensiveCannonQuantity = 0
+    }
+
+    cache.DefensiveCannonQuantityChanged = true
+}
+
+
+func (cache *PlanetCache) LowOrbitBallisticsInterceptorNetworkQuantityIncrement(amount uint64) {
+    cache.LowOrbitBallisticsInterceptorNetworkQuantity = cache.GetLowOrbitBallisticsInterceptorNetworkQuantity() + amount
+    cache.LowOrbitBallisticsInterceptorNetworkQuantityChanged = true
+}
+
+func (cache *PlanetCache) LowOrbitBallisticsInterceptorNetworkQuantityDecrement(amount uint64) {
+
+    if (cache.GetLowOrbitBallisticsInterceptorNetworkQuantity() > amount) {
+        cache.LowOrbitBallisticsInterceptorNetworkQuantity = cache.LowOrbitBallisticsInterceptorNetworkQuantity - amount
+    } else {
+        cache.LowOrbitBallisticsInterceptorNetworkQuantity = 0
+    }
+
+    cache.LowOrbitBallisticsInterceptorNetworkQuantityChanged = true
+}
+
+
 // Set the Owner data manually
 // Useful for loading multiple defenders
 func (cache *PlanetCache) ManualLoadOwner(owner *PlayerCache) {

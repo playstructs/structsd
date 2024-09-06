@@ -39,6 +39,10 @@ func (structType *StructType) HasPlanetaryDefensesSystem() (bool) {
     return (structType.PlanetaryDefenses != TechPlanetaryDefenses_noPlanetaryDefense)
 }
 
+func (structType *StructType) HasPowerGenerationSystem() (bool) {
+  return (structType.PowerGeneration != TechPowerGeneration_noPowerGeneration)
+}
+
 func (structType *StructType) GetWeapon(weaponSystem TechWeaponSystem) (weapon TechActiveWeaponry) {
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:

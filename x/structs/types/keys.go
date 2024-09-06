@@ -173,6 +173,7 @@ var GridAttributeType_enum = map[string]GridAttributeType{
 	"proxyNonce":               GridAttributeType_proxyNonce,
 	"lastAction":               GridAttributeType_lastAction,
 	"nonce":                    GridAttributeType_nonce,
+	"ready":                    GridAttributeType_ready,
 }
 
 
