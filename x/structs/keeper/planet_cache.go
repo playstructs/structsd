@@ -351,6 +351,22 @@ func (cache *PlanetCache) BuriedOreDecrement(amount uint64) {
     cache.BuriedOreChanged = true
 }
 
+func (cache *PlanetCache) PlanetaryShieldIncrement(amount uint64) {
+    cache.PlanetaryShield = cache.GetPlanetaryShield() + amount
+    cache.PlanetaryShieldChanged = true
+}
+
+func (cache *PlanetCache) PlanetaryShieldDecrement(amount uint64) {
+
+    if (cache.GetPlanetaryShield() > amount) {
+        cache.PlanetaryShield = cache.PlanetaryShield - amount
+    } else {
+        cache.PlanetaryShield = 0
+    }
+
+    cache.PlanetaryShieldChanged = true
+}
+
 // Set the Owner data manually
 // Useful for loading multiple defenders
 func (cache *PlanetCache) ManualLoadOwner(owner *PlayerCache) {

@@ -31,6 +31,14 @@ func (structType *StructType) HasOreRefiningSystem() (bool) {
     return (structType.PlanetaryRefinery != TechPlanetaryRefineries_noPlanetaryRefinery)
 }
 
+func (structType *StructType) HasOreReserveDefensesSystem() (bool) {
+    return (structType.OreReserveDefenses != TechOreReserveDefenses_noOreReserveDefenses)
+}
+
+func (structType *StructType) HasPlanetaryDefensesSystem() (bool) {
+    return (structType.PlanetaryDefenses != TechPlanetaryDefenses_noPlanetaryDefense)
+}
+
 func (structType *StructType) GetWeapon(weaponSystem TechWeaponSystem) (weapon TechActiveWeaponry) {
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:

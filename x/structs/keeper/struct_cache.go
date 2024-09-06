@@ -406,6 +406,21 @@ func (cache *StructCache) IsHidden() bool {
    return cache.GetStatus()&types.StructStateHidden != 0
 }
 
+func (cache *StructCache) SetStatusOnline() {
+    cache.Status = cache.GetStatus() | types.StructStateOnline
+    cache.StatusChanged = true
+}
+
+func (cache *StructCache) SetStatusHidden() {
+    cache.Status = cache.GetStatus() | types.StructStateHidden
+    cache.StatusChanged = true
+}
+
+func (cache *StructCache) SetStatusDestroyed() {
+    cache.Status = cache.GetStatus() | types.StructStateDestroyed
+    cache.StatusChanged = true
+}
+
 func (cache *StructCache) RemoveHidden() {
     if (cache.IsHidden()) {
         cache.Status = cache.Status &^ types.StructStateHidden
@@ -444,24 +459,41 @@ func (cache *StructCache) ActivationReadinessCheck() (err error) {
 }
 
 func (cache *StructCache) GoOnline() {
-    // TODO convert to cache format
-    breaking line
-
     // Add to the players struct load
-    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.PassiveDraw)
+    cache.GetOwner().StructsLoadIncrement(cache.GetStructType().GetPassiveDraw())
+    //k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.PassiveDraw)
 
     // Turn on the mining systems
-    if (structType.PlanetaryMining != types.TechPlanetaryMining_noPlanetaryMining) {
-        k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structure.Id), uint64(ctx.BlockHeight()))
+    if (cache.GetStructType().HasOreMiningSystem()) {
+        cache.ResetBlockStartOreMine()
     }
 
     // Turn on the refinery
-    if (structType.PlanetaryRefinery != types.TechPlanetaryRefineries_noPlanetaryRefinery) {
-        k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structure.Id), uint64(ctx.BlockHeight()))
+    if (cache.GetStructType().HasOreRefiningSystem()) {
+        cache.ResetBlockStartOreRefine()
     }
 
+    // Raise the planetary shields
+    if (cache.GetStructType().HasOreReserveDefensesSystem()) {
+        cache.GetPlanet().PlanetaryShieldIncrement(cache.GetStructType().GetPlanetaryShieldContribution())
+    }
+
+    // TODO
+    // This is the least generic/abstracted part of the code for now.
+    // Prob need to clean this up down the road
+    if (cache.GetStructType().HasPlanetaryDefensesSystem()) {
+        switch (cache.GetStructType().GetPlanetaryDefenses()) {
+            case types.TechPlanetaryDefenses_defensiveCannon:
+                // defensiveCannonQuantity increment
+            case types.TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork:
+                // lowOrbitBallisticsInterceptorNetworkQuantity increment
+        }
+    }
+
+    //  techPowerGeneration powerGeneration
+
     // Set the struct status flag to include built
-    k.SetStructAttributeFlagAdd(ctx, structStatusAttributeId, uint64(types.StructStateOnline))
+    cache.SetStatusOnline()
 }
 
 func (cache *StructCache) ReadinessCheck() (err error) {

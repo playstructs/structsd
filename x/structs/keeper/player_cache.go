@@ -103,6 +103,11 @@ func (cache *PlayerCache) Commit() () {
         cache.StoredOreChanged = false
     }
 
+    if (cache.StructsLoadChanged) {
+        cache.K.SetGridAttribute(cache.Ctx, cache.StructsLoadAttributeId, cache.StructsLoad)
+        cache.StructsLoadChanged = false
+    }
+
 }
 
 
@@ -262,6 +267,23 @@ func (cache *PlayerCache) StoredOreDecrement(amount uint64) {
 func (cache *PlayerCache) StoredOreIncrement(amount uint64) {
     cache.StoredOre = cache.GetStoredOre() + amount
     cache.StoredOreChanged = true
+}
+
+
+func (cache *PlayerCache) StructsLoadDecrement(amount uint64) {
+
+    if (cache.GetStructsLoad() > amount) {
+        cache.StructsLoad = cache.StructsLoad - amount
+    } else {
+        cache.StructsLoad = 0
+    }
+
+    cache.StructsLoadChanged = true
+}
+
+func (cache *PlayerCache) StructsLoadIncrement(amount uint64) {
+    cache.StructsLoad = cache.GetStructsLoad() + amount
+    cache.StructsLoadChanged = true
 }
 
 

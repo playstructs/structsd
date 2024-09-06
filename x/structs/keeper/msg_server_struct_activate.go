@@ -43,17 +43,11 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
     }
 
 
-
     structure.GoOnline()
-    // go online
-        // update player capacity
-        // turn on systems
-
-
 
 
     structure.Commit()
-    structure.GetPlayer().Commit()
+    structure.GetOwner().Commit()
 
 
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct()}, nil
