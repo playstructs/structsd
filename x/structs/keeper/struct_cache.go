@@ -939,27 +939,27 @@ func (cache *StructCache) DestroyAndCommit() {
     cache.GoOffline()
 
     // Drop the Struct Type count for the owner
-    cache.K.StructAttributeDecrement(cache.Ctx, GetStructAttributeIDByObjectIdAndSubIndex(types.StructAttributeType_typeCount, cache.GetOwnerId(), cache.GetStructType().GetId())
+    cache.K.SetStructAttributeDecrement(cache.Ctx, GetStructAttributeIDByObjectIdAndSubIndex(types.StructAttributeType_typeCount, cache.GetOwnerId(), cache.GetStructType().GetId()),1)
 
     // Don't clear these now, clear them on sweeps?
     // "health":               StructAttributeType_health,
     // "status":               StructAttributeType_status,
 
     // It's possible the build was never complete, so clear out this attribute to be safe
-    k.ClearStructAttribute(ctx, BlockStartBuildAttributeId)
+    cache.K.ClearStructAttribute(cache.Ctx, cache.BlockStartBuildAttributeId)
 
     // Destroy mining systems
     if (cache.GetStructType().HasOreMiningSystem()) {
-        cache.K.ClearStructAttribute(cache.Ctx, BlockStartOreMineAttributeId)
+        cache.K.ClearStructAttribute(cache.Ctx, cache.BlockStartOreMineAttributeId)
     }
 
     // Turn off the refinery
     if (cache.GetStructType().HasOreRefiningSystem()) {
-        cache.K.ClearStructAttribute(cache.Ctx, BlockStartOreRefineAttributeId)
+        cache.K.ClearStructAttribute(cache.Ctx, cache.BlockStartOreRefineAttributeId)
     }
 
     // Clear Defensive Relationships
-    cache.K.ClearStructAttribute(cache.Ctx, ProtectedStructIndexAttributeId)
+    cache.K.ClearStructAttribute(cache.Ctx, cache.ProtectedStructIndexAttributeId)
 
     // TODO clean this up to be more function based.. but it's fine
     if (cache.GetStructType().HasPowerGenerationSystem()) {
