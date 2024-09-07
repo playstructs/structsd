@@ -35,7 +35,7 @@ type StructCache struct {
     Owner *PlayerCache
 
     FleetLoaded bool
-    Fleet *types.Fleet
+    Fleet *FleetCache
 
     PlanetLoaded bool
     Planet *PlanetCache
@@ -166,9 +166,9 @@ func (cache *StructCache) LoadOwner() (bool) {
 
 // Load the Fleet data
 func (cache *StructCache) LoadFleet() (bool) {
-    newFleet, newFleetFound := cache.K.GetFleet(cache.Ctx, cache.GetLocationId())
+    newFleet, _ := cache.K.GetFleetCacheFromId(cache.Ctx, cache.GetOwner().GetFleetId())
     cache.Fleet = &newFleet
-    cache.FleetLoaded = newFleetFound
+    cache.FleetLoaded = true
     return cache.FleetLoaded
 }
 
@@ -263,7 +263,7 @@ func (cache *StructCache) GetDefenders() ([]types.StructDefender) {
     return cache.Defenders
 }
 
-func (cache *StructCache) GetFleet() (*types.Fleet) {
+func (cache *StructCache) GetFleet() (*FleetCache) {
     if (!cache.FleetLoaded) { cache.LoadFleet() }
     return cache.Fleet
 }
@@ -1070,5 +1070,23 @@ func (cache *StructCache) DestroyAndCommit() {
         cache.StatusChanged = false
     }
 
+
+    // Can the Struct be a catalyst for raid-end
+        // cache.GetFleet().Defeat()
+        // Check for raid win conditions
+    if (cache.CanTriggerRaidDefeatByDestruction()) {
+        cache.GetFleet().Defeat()
+    }
 }
 
+
+func (cache *StructCache) CanTriggerRaidDefeatByDestruction() (bool) {
+    if (!cache.GetStructType().GetTriggerRaidDefeatByDestruction()) { return false }
+
+    // Make sure the ship isn't at home
+    // This win condition only works to defeat the attacking fleet
+    if (cache.GetPlanet().GetOwnerId() != cache.GetOwnerId()) {
+        return true
+    }
+    return false
+}

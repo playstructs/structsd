@@ -208,6 +208,12 @@ func (cache *PlayerCache) GetPlanetId() (string) {
     return cache.Player.PlanetId
 }
 
+
+func (cache *PlayerCache) GetFleetId() (string) {
+    if (!cache.PlayerLoaded) { cache.LoadPlayer() }
+    return cache.Player.FleetId
+}
+
 func (cache *PlayerCache) GetPrimaryAddress() (string) {
     if (!cache.PlayerLoaded) { cache.LoadPlayer() }
     return cache.Player.PrimaryAddress

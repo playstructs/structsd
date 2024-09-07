@@ -124,6 +124,10 @@ message StructType {
 
   uint64 guidedDefensiveSuccessRateNumerator      = 62;
   uint64 guidedDefensiveSuccessRateDenominator    = 63;
+
+  // I wish this was higher up in a different area of the definition
+  // but I really don't feel like renumbering this entire thing again.
+  bool triggerRaidDefeatByDestruction = 64;
 }
 
 message StructDefender {
