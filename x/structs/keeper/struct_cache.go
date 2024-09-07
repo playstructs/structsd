@@ -174,11 +174,21 @@ func (cache *StructCache) LoadFleet() (bool) {
 
 // Load the Planet data
 func (cache *StructCache) LoadPlanet() (bool) {
-    if (cache.GetLocationType() == types.ObjectType_planet) {
-        newPlanet := cache.K.GetPlanetCacheFromId(cache.Ctx, cache.GetLocationId())
-        cache.Planet = &newPlanet
-        cache.PlanetLoaded = true
+    switch (cache.GetLocationType()) {
+        case types.ObjectType_planet:
+            newPlanet := cache.K.GetPlanetCacheFromId(cache.Ctx, cache.GetLocationId())
+            cache.Planet = &newPlanet
+            cache.PlanetLoaded = true
+        case types.ObjectType_fleet:
+            if (cache.GetFleet().GetLocationType() == types.ObjectType_planet) {
+                newPlanet := cache.K.GetPlanetCacheFromId(cache.Ctx, cache.GetFleet().GetLocationId())
+                cache.Planet = &newPlanet
+                cache.PlanetLoaded = true
+            }
+
     }
+
+
     return cache.PlanetLoaded
 }
 
@@ -767,17 +777,30 @@ func (cache *StructCache) CanEvade(attackerStruct *StructCache, weaponSystem typ
 
     cache.GetEventAttackShotDetail().SetEvade(canEvade, cache.GetStructType().GetUnitDefenses())
 
+    // If there has already been an successful evade then don't both evading harder
     if (!canEvade) {
-    breaking line
-        // if attackerStruct.IsOnFleet()
-                // if cache is on planet, or fleet is at planet
-                    // if attacker operating ambit is air or space
-                        // if cache operating ambit is water or land
-                            // The next line will fail right now if the ship is on a fleet.
-                            // Maybe update GetPlanet()/LoadPlanet() to see if the fleet is at home, and if it is then load the planet. That might simplify a lot
-                            //canEvade = cache.IsSuccessful(cache.GetPlanet().GetLowOrbitBallisticsInterceptorNetworkSuccessRate())
+        // Check for Planetary Defenses - Low Orbit Ballistic Interceptor Network
+        if (attackerStruct.GetLocationType() == types.ObjectType_fleet) {
 
-                            // Add new event stuff too
+            // Is the Struct at home? Either via their fleet or on the planet directly
+            if (cache.GetPlanet().GetOwnerId() == cache.GetOwnerId()) {
+
+                // Grab the success rate for the interceptor network. If it returns an error, then the planet doesn't have it
+                successRate, successRateError := cache.GetPlanet().GetLowOrbitBallisticsInterceptorNetworkSuccessRate()
+                if (successRateError == nil) {
+
+                    // Only effective is the Struct is in the Air or Space
+                    if ((attackerStruct.GetOperatingAmbit() == types.Ambit_air) || (attackerStruct.GetOperatingAmbit() == types.Ambit_space)) {
+
+                        // Only effective if the target is in the Water or on Land
+                        if ((cache.GetOperatingAmbit() == types.Ambit_water) || (cache.GetOperatingAmbit() == types.Ambit_land)) {
+                            canEvade = cache.IsSuccessful(successRate)
+                            cache.GetEventAttackShotDetail().SetEvadeByPlanetaryDefenses(canEvade, types.TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     return

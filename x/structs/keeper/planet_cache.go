@@ -319,11 +319,11 @@ func (cache *PlanetCache) GetAdvancedLowOrbitBallisticsInterceptorNetworkQuantit
     return cache.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity
 }
 
-func (cache *PlanetCache) GetLowOrbitBallisticsInterceptorNetworkSuccessRate() (successRate fraction.Fraction) {
+func (cache *PlanetCache) GetLowOrbitBallisticsInterceptorNetworkSuccessRate() (successRate fraction.Fraction, err error) {
     if (!cache.LowOrbitBallisticsInterceptorNetworkSuccessRateLoaded) { cache.LoadLowOrbitBallisticsInterceptorNetworkSuccessRate() }
 
-    successRate, _ = fraction.New(cache.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator, cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator)
-    return successRate
+    successRate, err = fraction.New(cache.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator, cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator)
+    return
 }
 
 func (cache *PlanetCache) GetOrbitalJammingStationQuantity() (uint64) {

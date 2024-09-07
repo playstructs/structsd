@@ -87,29 +87,32 @@ message EventAttackShotDetail {
   bool evaded                  = 2;
   techUnitDefenses evadedCause = 3;
 
-  bool blocked              = 4;
-  string blockedByStructId  = 5;
-  bool blockerDestroyed     = 6;
+  bool evadedByPlanetaryDefenses  = 4;
+  techPlanetaryDefenses evadedByPlanetaryDefensesCause = 5;
 
-  repeated EventAttackDefenderCounterDetail eventAttackDefenderCounterDetail = 7;
+  bool blocked              = 6;
+  string blockedByStructId  = 7;
+  bool blockerDestroyed     = 8;
 
-  uint64 damageDealt                    = 8;
-  uint64 damageReduction                = 9;
-  techUnitDefenses damageReductionCause = 10;
-  uint64 damage                         = 11;
+  repeated EventAttackDefenderCounterDetail eventAttackDefenderCounterDetail = 9;
+
+  uint64 damageDealt                    = 10;
+  uint64 damageReduction                = 11;
+  techUnitDefenses damageReductionCause = 12;
+  uint64 damage                         = 13;
 
 
-  bool targetCountered                    = 12;
-  uint64 targetCounteredDamage            = 13;
-  bool targetCounterDestroyedAttacker     = 14;
-  techPassiveWeaponry targetCounterCause  = 15;
+  bool targetCountered                    = 14;
+  uint64 targetCounteredDamage            = 15;
+  bool targetCounterDestroyedAttacker     = 16;
+  techPassiveWeaponry targetCounterCause  = 17;
 
-  bool targetDestroyed = 16;
+  bool targetDestroyed = 18;
 
-  bool postDestructionDamageToAttacker            = 17;
-  uint64 postDestructionDamage                    = 18;
-  bool postDestructionDamageDestroyedAttacker     = 19;
-  techPassiveWeaponry postDestructionDamageCause  = 20;
+  bool postDestructionDamageToAttacker            = 19;
+  uint64 postDestructionDamage                    = 20;
+  bool postDestructionDamageDestroyedAttacker     = 21;
+  techPassiveWeaponry postDestructionDamageCause  = 22;
 
 }
 

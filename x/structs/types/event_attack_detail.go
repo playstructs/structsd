@@ -48,6 +48,12 @@ func (eventAttackShotDetail *EventAttackShotDetail) SetEvade(evaded bool, evaded
     eventAttackShotDetail.EvadedCause = evadedCause
 }
 
+
+func (eventAttackShotDetail *EventAttackShotDetail) SetEvadeByPlanetaryDefenses(evaded bool, evadedCause TechPlanetaryDefenses) {
+    eventAttackShotDetail.EvadedByPlanetaryDefenses = evaded
+    eventAttackShotDetail.EvadedByPlanetaryDefensesCause = evadedCause
+}
+
 func (eventAttackShotDetail *EventAttackShotDetail) SetBlocker(blockedByStructId string) {
     eventAttackShotDetail.BlockedByStructId = blockedByStructId
     eventAttackShotDetail.Blocked = true
