@@ -1,0 +1,72 @@
+package keeper
+
+import (
+	"context"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	//sdkerrors "cosmossdk.io/errors"
+	"structs/x/structs/types"
+)
+
+func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*types.MsgFleetMoveResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+    // Add an Active Address record to the
+    // indexer for UI requirements
+	k.AddressEmitActivity(ctx, msg.Creator)
+
+
+    // Load the fleet
+    fleet, fleetLookupErr := k.GetFleetCacheFromId(ctx, msg.FleetId)
+    if (fleetLookupErr != nil) {
+        return &types.MsgFleetMoveResponse{}, fleetLookupErr
+    }
+
+    // Check address play permissions
+    permissionError := fleet.GetOwner().CanBePlayedBy(msg.Creator)
+    if (permissionError != nil) {
+        return &types.MsgFleetMoveResponse{}, permissionError
+    }
+
+    destination, destinationError := k.GetPlanetCacheFromId(ctx, msg.DestinationLocationId)
+    if (destinationError != nil) {
+        return &types.MsgFleetMoveResponse{}, destinationError
+    }
+
+    // Is the Fleet able to move?
+    readinessError := fleet.PlanetMoveReadinessCheck(destination)
+    if (readinessError != nil) {
+        k.DischargePlayer(ctx, fleet.GetOwnerId())
+        return &types.MsgFleetMoveResponse{}, readinessError
+    }
+
+
+    planetMoveError := fleet.AttemptPlanetMove()
+    if (planetMoveError != nil) {
+        k.DischargePlayer(ctx, fleet.GetOwnerId())
+        return &types.MsgFleetMoveResponse{}, planetMoveError
+    }
+
+
+    // Position the Fleet in the queue
+    if (fleet.GetOwner().GetPlanetId() != msg.DestinationLocationId) {
+
+        if (destination.GetLocationListLast() != "") {
+            previousLastFleet, _ := k.GetFleetCacheFromId(ctx, destination.GetLocationListLast())
+            previousLastFleet.SetLocationListBackward(fleet.GetFleetId())
+            previousLastFleet.Commit()
+
+            fleet.SetLocationListForward(destination.GetLocationListLast())
+
+        }
+
+        destination.SetLocationListLast(fleet.GetFleetId())
+
+    }
+
+
+    fleet.Commit()
+    destination.Commit()
+
+
+	return &types.MsgFleetMoveResponse{Fleet: fleet.GetFleet()}, nil
+}

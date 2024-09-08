@@ -23,6 +23,7 @@ const (
 	Msg_AddressRegister_FullMethodName                               = "/structs.structs.Msg/AddressRegister"
 	Msg_AddressRevoke_FullMethodName                                 = "/structs.structs.Msg/AddressRevoke"
 	Msg_AllocationCreate_FullMethodName                              = "/structs.structs.Msg/AllocationCreate"
+	Msg_FleetMove_FullMethodName                                     = "/structs.structs.Msg/FleetMove"
 	Msg_GuildCreate_FullMethodName                                   = "/structs.structs.Msg/GuildCreate"
 	Msg_GuildUpdateOwnerId_FullMethodName                            = "/structs.structs.Msg/GuildUpdateOwnerId"
 	Msg_GuildUpdateEntrySubstationId_FullMethodName                  = "/structs.structs.Msg/GuildUpdateEntrySubstationId"
@@ -79,6 +80,7 @@ type MsgClient interface {
 	AddressRegister(ctx context.Context, in *MsgAddressRegister, opts ...grpc.CallOption) (*MsgAddressRegisterResponse, error)
 	AddressRevoke(ctx context.Context, in *MsgAddressRevoke, opts ...grpc.CallOption) (*MsgAddressRevokeResponse, error)
 	AllocationCreate(ctx context.Context, in *MsgAllocationCreate, opts ...grpc.CallOption) (*MsgAllocationCreateResponse, error)
+	FleetMove(ctx context.Context, in *MsgFleetMove, opts ...grpc.CallOption) (*MsgFleetMoveResponse, error)
 	GuildCreate(ctx context.Context, in *MsgGuildCreate, opts ...grpc.CallOption) (*MsgGuildCreateResponse, error)
 	GuildUpdateOwnerId(ctx context.Context, in *MsgGuildUpdateOwnerId, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEntrySubstationId(ctx context.Context, in *MsgGuildUpdateEntrySubstationId, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
@@ -163,6 +165,15 @@ func (c *msgClient) AddressRevoke(ctx context.Context, in *MsgAddressRevoke, opt
 func (c *msgClient) AllocationCreate(ctx context.Context, in *MsgAllocationCreate, opts ...grpc.CallOption) (*MsgAllocationCreateResponse, error) {
 	out := new(MsgAllocationCreateResponse)
 	err := c.cc.Invoke(ctx, Msg_AllocationCreate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) FleetMove(ctx context.Context, in *MsgFleetMove, opts ...grpc.CallOption) (*MsgFleetMoveResponse, error) {
+	out := new(MsgFleetMoveResponse)
+	err := c.cc.Invoke(ctx, Msg_FleetMove_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -575,6 +586,7 @@ type MsgServer interface {
 	AddressRegister(context.Context, *MsgAddressRegister) (*MsgAddressRegisterResponse, error)
 	AddressRevoke(context.Context, *MsgAddressRevoke) (*MsgAddressRevokeResponse, error)
 	AllocationCreate(context.Context, *MsgAllocationCreate) (*MsgAllocationCreateResponse, error)
+	FleetMove(context.Context, *MsgFleetMove) (*MsgFleetMoveResponse, error)
 	GuildCreate(context.Context, *MsgGuildCreate) (*MsgGuildCreateResponse, error)
 	GuildUpdateOwnerId(context.Context, *MsgGuildUpdateOwnerId) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEntrySubstationId(context.Context, *MsgGuildUpdateEntrySubstationId) (*MsgGuildUpdateResponse, error)
@@ -637,6 +649,9 @@ func (UnimplementedMsgServer) AddressRevoke(context.Context, *MsgAddressRevoke) 
 }
 func (UnimplementedMsgServer) AllocationCreate(context.Context, *MsgAllocationCreate) (*MsgAllocationCreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllocationCreate not implemented")
+}
+func (UnimplementedMsgServer) FleetMove(context.Context, *MsgFleetMove) (*MsgFleetMoveResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FleetMove not implemented")
 }
 func (UnimplementedMsgServer) GuildCreate(context.Context, *MsgGuildCreate) (*MsgGuildCreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildCreate not implemented")
@@ -851,6 +866,24 @@ func _Msg_AllocationCreate_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).AllocationCreate(ctx, req.(*MsgAllocationCreate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_FleetMove_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgFleetMove)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).FleetMove(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_FleetMove_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).FleetMove(ctx, req.(*MsgFleetMove))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1669,6 +1702,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AllocationCreate",
 			Handler:    _Msg_AllocationCreate_Handler,
+		},
+		{
+			MethodName: "FleetMove",
+			Handler:    _Msg_FleetMove_Handler,
 		},
 		{
 			MethodName: "GuildCreate",

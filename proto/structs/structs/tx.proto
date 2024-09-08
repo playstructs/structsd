@@ -29,6 +29,8 @@ service Msg {
 
   rpc AllocationCreate               (MsgAllocationCreate              ) returns (MsgAllocationCreateResponse );
 
+  rpc FleetMove                                     (MsgFleetMove                                     ) returns (MsgFleetMoveResponse );
+
   rpc GuildCreate                                   (MsgGuildCreate                                   ) returns (MsgGuildCreateResponse );
   rpc GuildUpdateOwnerId                            (MsgGuildUpdateOwnerId                            ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateEntrySubstationId                  (MsgGuildUpdateEntrySubstationId                  ) returns (MsgGuildUpdateResponse );
@@ -154,6 +156,17 @@ message MsgAllocationCreate {
 message MsgAllocationCreateResponse {
   string allocationId = 1;
 }
+
+message MsgFleetMove {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator  = 1;
+  string fleetId = 2;
+  string destinationLocationId = 3;
+  objectType destinationLocationType = 4;
+}
+
+message MsgFleetMoveResponse { Fleet fleet = 1; }
 
 message MsgGuildCreate {
   option (cosmos.msg.v1.signer) = "creator";
