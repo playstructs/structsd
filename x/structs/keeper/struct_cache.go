@@ -719,8 +719,17 @@ func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem type
                     err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Planetary Attacker Struct (%s)", targetStruct.StructId, cache.StructId)
                 }
             case types.ObjectType_fleet:
-                if ((cache.GetFleet().GetLocationListForward() != targetStruct.GetLocationId()) && (cache.GetFleet().GetLocationListBackward() != targetStruct.GetLocationId())) {
-                    err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Fleet Attacker Struct (%s)", targetStruct.StructId, cache.StructId)
+
+                if (cache.GetFleet().IsOnStation()) {
+                    if (cache.GetPlanet().GetLocationListStart() != targetStruct.GetLocationId()) {
+                        err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Planetary Attacker Struct (%s)", targetStruct.StructId, cache.StructId)
+                    }
+                } else {
+                    // if forward is "" and target.
+
+                    if ((cache.GetFleet().GetLocationListForward() != targetStruct.GetLocationId()) && (cache.GetFleet().GetLocationListBackward() != targetStruct.GetLocationId())) {
+                        err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Fleet Attacker Struct (%s)", targetStruct.StructId, cache.StructId)
+                    }
                 }
             default:
                 err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Attacker Struct (%s). Should tell an adult about this one", targetStruct.StructId, cache.StructId)

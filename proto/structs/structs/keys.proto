@@ -82,6 +82,12 @@ enum planetStatus {
     complete    = 1;
 }
 
+enum fleetStatus {
+    onStation   = 0;
+    away        = 1;
+}
+
+
 enum structAttributeType {
     health                      = 0;
     status                      = 1;

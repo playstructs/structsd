@@ -13,52 +13,6 @@ import (
 	sync "sync"
 )
 
-var _ protoreflect.List = (*_Fleet_7_list)(nil)
-
-type _Fleet_7_list struct {
-	list *[]string
-}
-
-func (x *_Fleet_7_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_Fleet_7_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfString((*x.list)[i])
-}
-
-func (x *_Fleet_7_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.String()
-	concreteValue := valueUnwrapped
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_Fleet_7_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.String()
-	concreteValue := valueUnwrapped
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_Fleet_7_list) AppendMutable() protoreflect.Value {
-	panic(fmt.Errorf("AppendMutable can not be called on message Fleet at list field Space as it is not of Message kind"))
-}
-
-func (x *_Fleet_7_list) Truncate(n int) {
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_Fleet_7_list) NewElement() protoreflect.Value {
-	v := ""
-	return protoreflect.ValueOfString(v)
-}
-
-func (x *_Fleet_7_list) IsValid() bool {
-	return x.list != nil
-}
-
 var _ protoreflect.List = (*_Fleet_8_list)(nil)
 
 type _Fleet_8_list struct {
@@ -89,7 +43,7 @@ func (x *_Fleet_8_list) Append(value protoreflect.Value) {
 }
 
 func (x *_Fleet_8_list) AppendMutable() protoreflect.Value {
-	panic(fmt.Errorf("AppendMutable can not be called on message Fleet at list field Air as it is not of Message kind"))
+	panic(fmt.Errorf("AppendMutable can not be called on message Fleet at list field Space as it is not of Message kind"))
 }
 
 func (x *_Fleet_8_list) Truncate(n int) {
@@ -135,7 +89,7 @@ func (x *_Fleet_9_list) Append(value protoreflect.Value) {
 }
 
 func (x *_Fleet_9_list) AppendMutable() protoreflect.Value {
-	panic(fmt.Errorf("AppendMutable can not be called on message Fleet at list field Land as it is not of Message kind"))
+	panic(fmt.Errorf("AppendMutable can not be called on message Fleet at list field Air as it is not of Message kind"))
 }
 
 func (x *_Fleet_9_list) Truncate(n int) {
@@ -181,7 +135,7 @@ func (x *_Fleet_10_list) Append(value protoreflect.Value) {
 }
 
 func (x *_Fleet_10_list) AppendMutable() protoreflect.Value {
-	panic(fmt.Errorf("AppendMutable can not be called on message Fleet at list field Water as it is not of Message kind"))
+	panic(fmt.Errorf("AppendMutable can not be called on message Fleet at list field Land as it is not of Message kind"))
 }
 
 func (x *_Fleet_10_list) Truncate(n int) {
@@ -197,12 +151,59 @@ func (x *_Fleet_10_list) IsValid() bool {
 	return x.list != nil
 }
 
+var _ protoreflect.List = (*_Fleet_11_list)(nil)
+
+type _Fleet_11_list struct {
+	list *[]string
+}
+
+func (x *_Fleet_11_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_Fleet_11_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfString((*x.list)[i])
+}
+
+func (x *_Fleet_11_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_Fleet_11_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.String()
+	concreteValue := valueUnwrapped
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_Fleet_11_list) AppendMutable() protoreflect.Value {
+	panic(fmt.Errorf("AppendMutable can not be called on message Fleet at list field Water as it is not of Message kind"))
+}
+
+func (x *_Fleet_11_list) Truncate(n int) {
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_Fleet_11_list) NewElement() protoreflect.Value {
+	v := ""
+	return protoreflect.ValueOfString(v)
+}
+
+func (x *_Fleet_11_list) IsValid() bool {
+	return x.list != nil
+}
+
 var (
 	md_Fleet                      protoreflect.MessageDescriptor
 	fd_Fleet_id                   protoreflect.FieldDescriptor
 	fd_Fleet_owner                protoreflect.FieldDescriptor
 	fd_Fleet_locationType         protoreflect.FieldDescriptor
 	fd_Fleet_locationId           protoreflect.FieldDescriptor
+	fd_Fleet_status               protoreflect.FieldDescriptor
 	fd_Fleet_locationListForward  protoreflect.FieldDescriptor
 	fd_Fleet_locationListBackward protoreflect.FieldDescriptor
 	fd_Fleet_space                protoreflect.FieldDescriptor
@@ -222,6 +223,7 @@ func init() {
 	fd_Fleet_owner = md_Fleet.Fields().ByName("owner")
 	fd_Fleet_locationType = md_Fleet.Fields().ByName("locationType")
 	fd_Fleet_locationId = md_Fleet.Fields().ByName("locationId")
+	fd_Fleet_status = md_Fleet.Fields().ByName("status")
 	fd_Fleet_locationListForward = md_Fleet.Fields().ByName("locationListForward")
 	fd_Fleet_locationListBackward = md_Fleet.Fields().ByName("locationListBackward")
 	fd_Fleet_space = md_Fleet.Fields().ByName("space")
@@ -323,6 +325,12 @@ func (x *fastReflection_Fleet) Range(f func(protoreflect.FieldDescriptor, protor
 			return
 		}
 	}
+	if x.Status != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.Status))
+		if !f(fd_Fleet_status, value) {
+			return
+		}
+	}
 	if x.LocationListForward != "" {
 		value := protoreflect.ValueOfString(x.LocationListForward)
 		if !f(fd_Fleet_locationListForward, value) {
@@ -336,25 +344,25 @@ func (x *fastReflection_Fleet) Range(f func(protoreflect.FieldDescriptor, protor
 		}
 	}
 	if len(x.Space) != 0 {
-		value := protoreflect.ValueOfList(&_Fleet_7_list{list: &x.Space})
+		value := protoreflect.ValueOfList(&_Fleet_8_list{list: &x.Space})
 		if !f(fd_Fleet_space, value) {
 			return
 		}
 	}
 	if len(x.Air) != 0 {
-		value := protoreflect.ValueOfList(&_Fleet_8_list{list: &x.Air})
+		value := protoreflect.ValueOfList(&_Fleet_9_list{list: &x.Air})
 		if !f(fd_Fleet_air, value) {
 			return
 		}
 	}
 	if len(x.Land) != 0 {
-		value := protoreflect.ValueOfList(&_Fleet_9_list{list: &x.Land})
+		value := protoreflect.ValueOfList(&_Fleet_10_list{list: &x.Land})
 		if !f(fd_Fleet_land, value) {
 			return
 		}
 	}
 	if len(x.Water) != 0 {
-		value := protoreflect.ValueOfList(&_Fleet_10_list{list: &x.Water})
+		value := protoreflect.ValueOfList(&_Fleet_11_list{list: &x.Water})
 		if !f(fd_Fleet_water, value) {
 			return
 		}
@@ -406,6 +414,8 @@ func (x *fastReflection_Fleet) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.LocationType != 0
 	case "structs.structs.Fleet.locationId":
 		return x.LocationId != ""
+	case "structs.structs.Fleet.status":
+		return x.Status != 0
 	case "structs.structs.Fleet.locationListForward":
 		return x.LocationListForward != ""
 	case "structs.structs.Fleet.locationListBackward":
@@ -450,6 +460,8 @@ func (x *fastReflection_Fleet) Clear(fd protoreflect.FieldDescriptor) {
 		x.LocationType = 0
 	case "structs.structs.Fleet.locationId":
 		x.LocationId = ""
+	case "structs.structs.Fleet.status":
+		x.Status = 0
 	case "structs.structs.Fleet.locationListForward":
 		x.LocationListForward = ""
 	case "structs.structs.Fleet.locationListBackward":
@@ -498,6 +510,9 @@ func (x *fastReflection_Fleet) Get(descriptor protoreflect.FieldDescriptor) prot
 	case "structs.structs.Fleet.locationId":
 		value := x.LocationId
 		return protoreflect.ValueOfString(value)
+	case "structs.structs.Fleet.status":
+		value := x.Status
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
 	case "structs.structs.Fleet.locationListForward":
 		value := x.LocationListForward
 		return protoreflect.ValueOfString(value)
@@ -506,27 +521,27 @@ func (x *fastReflection_Fleet) Get(descriptor protoreflect.FieldDescriptor) prot
 		return protoreflect.ValueOfString(value)
 	case "structs.structs.Fleet.space":
 		if len(x.Space) == 0 {
-			return protoreflect.ValueOfList(&_Fleet_7_list{})
+			return protoreflect.ValueOfList(&_Fleet_8_list{})
 		}
-		listValue := &_Fleet_7_list{list: &x.Space}
+		listValue := &_Fleet_8_list{list: &x.Space}
 		return protoreflect.ValueOfList(listValue)
 	case "structs.structs.Fleet.air":
 		if len(x.Air) == 0 {
-			return protoreflect.ValueOfList(&_Fleet_8_list{})
+			return protoreflect.ValueOfList(&_Fleet_9_list{})
 		}
-		listValue := &_Fleet_8_list{list: &x.Air}
+		listValue := &_Fleet_9_list{list: &x.Air}
 		return protoreflect.ValueOfList(listValue)
 	case "structs.structs.Fleet.land":
 		if len(x.Land) == 0 {
-			return protoreflect.ValueOfList(&_Fleet_9_list{})
+			return protoreflect.ValueOfList(&_Fleet_10_list{})
 		}
-		listValue := &_Fleet_9_list{list: &x.Land}
+		listValue := &_Fleet_10_list{list: &x.Land}
 		return protoreflect.ValueOfList(listValue)
 	case "structs.structs.Fleet.water":
 		if len(x.Water) == 0 {
-			return protoreflect.ValueOfList(&_Fleet_10_list{})
+			return protoreflect.ValueOfList(&_Fleet_11_list{})
 		}
-		listValue := &_Fleet_10_list{list: &x.Water}
+		listValue := &_Fleet_11_list{list: &x.Water}
 		return protoreflect.ValueOfList(listValue)
 	case "structs.structs.Fleet.spaceSlots":
 		value := x.SpaceSlots
@@ -568,25 +583,27 @@ func (x *fastReflection_Fleet) Set(fd protoreflect.FieldDescriptor, value protor
 		x.LocationType = (ObjectType)(value.Enum())
 	case "structs.structs.Fleet.locationId":
 		x.LocationId = value.Interface().(string)
+	case "structs.structs.Fleet.status":
+		x.Status = (FleetStatus)(value.Enum())
 	case "structs.structs.Fleet.locationListForward":
 		x.LocationListForward = value.Interface().(string)
 	case "structs.structs.Fleet.locationListBackward":
 		x.LocationListBackward = value.Interface().(string)
 	case "structs.structs.Fleet.space":
 		lv := value.List()
-		clv := lv.(*_Fleet_7_list)
+		clv := lv.(*_Fleet_8_list)
 		x.Space = *clv.list
 	case "structs.structs.Fleet.air":
 		lv := value.List()
-		clv := lv.(*_Fleet_8_list)
+		clv := lv.(*_Fleet_9_list)
 		x.Air = *clv.list
 	case "structs.structs.Fleet.land":
 		lv := value.List()
-		clv := lv.(*_Fleet_9_list)
+		clv := lv.(*_Fleet_10_list)
 		x.Land = *clv.list
 	case "structs.structs.Fleet.water":
 		lv := value.List()
-		clv := lv.(*_Fleet_10_list)
+		clv := lv.(*_Fleet_11_list)
 		x.Water = *clv.list
 	case "structs.structs.Fleet.spaceSlots":
 		x.SpaceSlots = value.Uint()
@@ -620,25 +637,25 @@ func (x *fastReflection_Fleet) Mutable(fd protoreflect.FieldDescriptor) protoref
 		if x.Space == nil {
 			x.Space = []string{}
 		}
-		value := &_Fleet_7_list{list: &x.Space}
+		value := &_Fleet_8_list{list: &x.Space}
 		return protoreflect.ValueOfList(value)
 	case "structs.structs.Fleet.air":
 		if x.Air == nil {
 			x.Air = []string{}
 		}
-		value := &_Fleet_8_list{list: &x.Air}
+		value := &_Fleet_9_list{list: &x.Air}
 		return protoreflect.ValueOfList(value)
 	case "structs.structs.Fleet.land":
 		if x.Land == nil {
 			x.Land = []string{}
 		}
-		value := &_Fleet_9_list{list: &x.Land}
+		value := &_Fleet_10_list{list: &x.Land}
 		return protoreflect.ValueOfList(value)
 	case "structs.structs.Fleet.water":
 		if x.Water == nil {
 			x.Water = []string{}
 		}
-		value := &_Fleet_10_list{list: &x.Water}
+		value := &_Fleet_11_list{list: &x.Water}
 		return protoreflect.ValueOfList(value)
 	case "structs.structs.Fleet.id":
 		panic(fmt.Errorf("field id of message structs.structs.Fleet is not mutable"))
@@ -648,6 +665,8 @@ func (x *fastReflection_Fleet) Mutable(fd protoreflect.FieldDescriptor) protoref
 		panic(fmt.Errorf("field locationType of message structs.structs.Fleet is not mutable"))
 	case "structs.structs.Fleet.locationId":
 		panic(fmt.Errorf("field locationId of message structs.structs.Fleet is not mutable"))
+	case "structs.structs.Fleet.status":
+		panic(fmt.Errorf("field status of message structs.structs.Fleet is not mutable"))
 	case "structs.structs.Fleet.locationListForward":
 		panic(fmt.Errorf("field locationListForward of message structs.structs.Fleet is not mutable"))
 	case "structs.structs.Fleet.locationListBackward":
@@ -681,22 +700,24 @@ func (x *fastReflection_Fleet) NewField(fd protoreflect.FieldDescriptor) protore
 		return protoreflect.ValueOfEnum(0)
 	case "structs.structs.Fleet.locationId":
 		return protoreflect.ValueOfString("")
+	case "structs.structs.Fleet.status":
+		return protoreflect.ValueOfEnum(0)
 	case "structs.structs.Fleet.locationListForward":
 		return protoreflect.ValueOfString("")
 	case "structs.structs.Fleet.locationListBackward":
 		return protoreflect.ValueOfString("")
 	case "structs.structs.Fleet.space":
 		list := []string{}
-		return protoreflect.ValueOfList(&_Fleet_7_list{list: &list})
+		return protoreflect.ValueOfList(&_Fleet_8_list{list: &list})
 	case "structs.structs.Fleet.air":
 		list := []string{}
-		return protoreflect.ValueOfList(&_Fleet_8_list{list: &list})
+		return protoreflect.ValueOfList(&_Fleet_9_list{list: &list})
 	case "structs.structs.Fleet.land":
 		list := []string{}
-		return protoreflect.ValueOfList(&_Fleet_9_list{list: &list})
+		return protoreflect.ValueOfList(&_Fleet_10_list{list: &list})
 	case "structs.structs.Fleet.water":
 		list := []string{}
-		return protoreflect.ValueOfList(&_Fleet_10_list{list: &list})
+		return protoreflect.ValueOfList(&_Fleet_11_list{list: &list})
 	case "structs.structs.Fleet.spaceSlots":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.Fleet.airSlots":
@@ -789,6 +810,9 @@ func (x *fastReflection_Fleet) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
+		if x.Status != 0 {
+			n += 1 + runtime.Sov(uint64(x.Status))
+		}
 		l = len(x.LocationListForward)
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
@@ -865,22 +889,22 @@ func (x *fastReflection_Fleet) ProtoMethods() *protoiface.Methods {
 		if x.WaterSlots != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.WaterSlots))
 			i--
-			dAtA[i] = 0x70
+			dAtA[i] = 0x78
 		}
 		if x.LandSlots != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.LandSlots))
 			i--
-			dAtA[i] = 0x68
+			dAtA[i] = 0x70
 		}
 		if x.AirSlots != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.AirSlots))
 			i--
-			dAtA[i] = 0x60
+			dAtA[i] = 0x68
 		}
 		if x.SpaceSlots != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.SpaceSlots))
 			i--
-			dAtA[i] = 0x58
+			dAtA[i] = 0x60
 		}
 		if len(x.Water) > 0 {
 			for iNdEx := len(x.Water) - 1; iNdEx >= 0; iNdEx-- {
@@ -888,7 +912,7 @@ func (x *fastReflection_Fleet) ProtoMethods() *protoiface.Methods {
 				copy(dAtA[i:], x.Water[iNdEx])
 				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Water[iNdEx])))
 				i--
-				dAtA[i] = 0x52
+				dAtA[i] = 0x5a
 			}
 		}
 		if len(x.Land) > 0 {
@@ -897,7 +921,7 @@ func (x *fastReflection_Fleet) ProtoMethods() *protoiface.Methods {
 				copy(dAtA[i:], x.Land[iNdEx])
 				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Land[iNdEx])))
 				i--
-				dAtA[i] = 0x4a
+				dAtA[i] = 0x52
 			}
 		}
 		if len(x.Air) > 0 {
@@ -906,7 +930,7 @@ func (x *fastReflection_Fleet) ProtoMethods() *protoiface.Methods {
 				copy(dAtA[i:], x.Air[iNdEx])
 				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Air[iNdEx])))
 				i--
-				dAtA[i] = 0x42
+				dAtA[i] = 0x4a
 			}
 		}
 		if len(x.Space) > 0 {
@@ -915,7 +939,7 @@ func (x *fastReflection_Fleet) ProtoMethods() *protoiface.Methods {
 				copy(dAtA[i:], x.Space[iNdEx])
 				i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Space[iNdEx])))
 				i--
-				dAtA[i] = 0x3a
+				dAtA[i] = 0x42
 			}
 		}
 		if len(x.LocationListBackward) > 0 {
@@ -923,14 +947,19 @@ func (x *fastReflection_Fleet) ProtoMethods() *protoiface.Methods {
 			copy(dAtA[i:], x.LocationListBackward)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.LocationListBackward)))
 			i--
-			dAtA[i] = 0x32
+			dAtA[i] = 0x3a
 		}
 		if len(x.LocationListForward) > 0 {
 			i -= len(x.LocationListForward)
 			copy(dAtA[i:], x.LocationListForward)
 			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.LocationListForward)))
 			i--
-			dAtA[i] = 0x2a
+			dAtA[i] = 0x32
+		}
+		if x.Status != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Status))
+			i--
+			dAtA[i] = 0x28
 		}
 		if len(x.LocationId) > 0 {
 			i -= len(x.LocationId)
@@ -1123,6 +1152,25 @@ func (x *fastReflection_Fleet) ProtoMethods() *protoiface.Methods {
 				x.LocationId = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 5:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
+				}
+				x.Status = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Status |= FleetStatus(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 6:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field LocationListForward", wireType)
 				}
@@ -1154,7 +1202,7 @@ func (x *fastReflection_Fleet) ProtoMethods() *protoiface.Methods {
 				}
 				x.LocationListForward = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
-			case 6:
+			case 7:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field LocationListBackward", wireType)
 				}
@@ -1186,7 +1234,7 @@ func (x *fastReflection_Fleet) ProtoMethods() *protoiface.Methods {
 				}
 				x.LocationListBackward = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
-			case 7:
+			case 8:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Space", wireType)
 				}
@@ -1218,7 +1266,7 @@ func (x *fastReflection_Fleet) ProtoMethods() *protoiface.Methods {
 				}
 				x.Space = append(x.Space, string(dAtA[iNdEx:postIndex]))
 				iNdEx = postIndex
-			case 8:
+			case 9:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Air", wireType)
 				}
@@ -1250,7 +1298,7 @@ func (x *fastReflection_Fleet) ProtoMethods() *protoiface.Methods {
 				}
 				x.Air = append(x.Air, string(dAtA[iNdEx:postIndex]))
 				iNdEx = postIndex
-			case 9:
+			case 10:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Land", wireType)
 				}
@@ -1282,7 +1330,7 @@ func (x *fastReflection_Fleet) ProtoMethods() *protoiface.Methods {
 				}
 				x.Land = append(x.Land, string(dAtA[iNdEx:postIndex]))
 				iNdEx = postIndex
-			case 10:
+			case 11:
 				if wireType != 2 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Water", wireType)
 				}
@@ -1314,7 +1362,7 @@ func (x *fastReflection_Fleet) ProtoMethods() *protoiface.Methods {
 				}
 				x.Water = append(x.Water, string(dAtA[iNdEx:postIndex]))
 				iNdEx = postIndex
-			case 11:
+			case 12:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SpaceSlots", wireType)
 				}
@@ -1333,7 +1381,7 @@ func (x *fastReflection_Fleet) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 12:
+			case 13:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AirSlots", wireType)
 				}
@@ -1352,7 +1400,7 @@ func (x *fastReflection_Fleet) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 13:
+			case 14:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field LandSlots", wireType)
 				}
@@ -1371,7 +1419,7 @@ func (x *fastReflection_Fleet) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 14:
+			case 15:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field WaterSlots", wireType)
 				}
@@ -1911,20 +1959,21 @@ type Fleet struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id                   string     `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Owner                string     `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
-	LocationType         ObjectType `protobuf:"varint,3,opt,name=locationType,proto3,enum=structs.structs.ObjectType" json:"locationType,omitempty"`
-	LocationId           string     `protobuf:"bytes,4,opt,name=locationId,proto3" json:"locationId,omitempty"`
-	LocationListForward  string     `protobuf:"bytes,5,opt,name=locationListForward,proto3" json:"locationListForward,omitempty"`   // Towards Planet
-	LocationListBackward string     `protobuf:"bytes,6,opt,name=locationListBackward,proto3" json:"locationListBackward,omitempty"` // Towards End of List
-	Space                []string   `protobuf:"bytes,7,rep,name=space,proto3" json:"space,omitempty"`
-	Air                  []string   `protobuf:"bytes,8,rep,name=air,proto3" json:"air,omitempty"`
-	Land                 []string   `protobuf:"bytes,9,rep,name=land,proto3" json:"land,omitempty"`
-	Water                []string   `protobuf:"bytes,10,rep,name=water,proto3" json:"water,omitempty"`
-	SpaceSlots           uint64     `protobuf:"varint,11,opt,name=spaceSlots,proto3" json:"spaceSlots,omitempty"`
-	AirSlots             uint64     `protobuf:"varint,12,opt,name=airSlots,proto3" json:"airSlots,omitempty"`
-	LandSlots            uint64     `protobuf:"varint,13,opt,name=landSlots,proto3" json:"landSlots,omitempty"`
-	WaterSlots           uint64     `protobuf:"varint,14,opt,name=waterSlots,proto3" json:"waterSlots,omitempty"`
+	Id                   string      `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Owner                string      `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
+	LocationType         ObjectType  `protobuf:"varint,3,opt,name=locationType,proto3,enum=structs.structs.ObjectType" json:"locationType,omitempty"`
+	LocationId           string      `protobuf:"bytes,4,opt,name=locationId,proto3" json:"locationId,omitempty"`
+	Status               FleetStatus `protobuf:"varint,5,opt,name=status,proto3,enum=structs.structs.FleetStatus" json:"status,omitempty"`
+	LocationListForward  string      `protobuf:"bytes,6,opt,name=locationListForward,proto3" json:"locationListForward,omitempty"`   // Towards Planet
+	LocationListBackward string      `protobuf:"bytes,7,opt,name=locationListBackward,proto3" json:"locationListBackward,omitempty"` // Towards End of List
+	Space                []string    `protobuf:"bytes,8,rep,name=space,proto3" json:"space,omitempty"`
+	Air                  []string    `protobuf:"bytes,9,rep,name=air,proto3" json:"air,omitempty"`
+	Land                 []string    `protobuf:"bytes,10,rep,name=land,proto3" json:"land,omitempty"`
+	Water                []string    `protobuf:"bytes,11,rep,name=water,proto3" json:"water,omitempty"`
+	SpaceSlots           uint64      `protobuf:"varint,12,opt,name=spaceSlots,proto3" json:"spaceSlots,omitempty"`
+	AirSlots             uint64      `protobuf:"varint,13,opt,name=airSlots,proto3" json:"airSlots,omitempty"`
+	LandSlots            uint64      `protobuf:"varint,14,opt,name=landSlots,proto3" json:"landSlots,omitempty"`
+	WaterSlots           uint64      `protobuf:"varint,15,opt,name=waterSlots,proto3" json:"waterSlots,omitempty"`
 }
 
 func (x *Fleet) Reset() {
@@ -1973,6 +2022,13 @@ func (x *Fleet) GetLocationId() string {
 		return x.LocationId
 	}
 	return ""
+}
+
+func (x *Fleet) GetStatus() FleetStatus {
+	if x != nil {
+		return x.Status
+	}
+	return FleetStatus_onStation
 }
 
 func (x *Fleet) GetLocationListForward() string {
@@ -2096,7 +2152,7 @@ var file_structs_structs_fleet_proto_rawDesc = []byte{
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x1a, 0x1a,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
 	0x6b, 0x65, 0x79, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x11, 0x61, 0x6d, 0x69, 0x6e,
-	0x6f, 0x2f, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xc0, 0x03,
+	0x6f, 0x2f, 0x61, 0x6d, 0x69, 0x6e, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xf6, 0x03,
 	0x0a, 0x05, 0x46, 0x6c, 0x65, 0x65, 0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72,
 	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x12, 0x3f, 0x0a,
@@ -2105,42 +2161,46 @@ var file_structs_structs_fleet_proto_rawDesc = []byte{
 	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65,
 	0x52, 0x0c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1e,
 	0x0a, 0x0a, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x04, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x0a, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x30,
-	0x0a, 0x13, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x46, 0x6f,
-	0x72, 0x77, 0x61, 0x72, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x13, 0x6c, 0x6f, 0x63,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x46, 0x6f, 0x72, 0x77, 0x61, 0x72, 0x64,
-	0x12, 0x32, 0x0a, 0x14, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74,
-	0x42, 0x61, 0x63, 0x6b, 0x77, 0x61, 0x72, 0x64, 0x18, 0x06, 0x20, 0x01, 0x28, 0x09, 0x52, 0x14,
-	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x42, 0x61, 0x63, 0x6b,
-	0x77, 0x61, 0x72, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x73, 0x70, 0x61, 0x63, 0x65, 0x18, 0x07, 0x20,
-	0x03, 0x28, 0x09, 0x52, 0x05, 0x73, 0x70, 0x61, 0x63, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x61, 0x69,
-	0x72, 0x18, 0x08, 0x20, 0x03, 0x28, 0x09, 0x52, 0x03, 0x61, 0x69, 0x72, 0x12, 0x12, 0x0a, 0x04,
-	0x6c, 0x61, 0x6e, 0x64, 0x18, 0x09, 0x20, 0x03, 0x28, 0x09, 0x52, 0x04, 0x6c, 0x61, 0x6e, 0x64,
-	0x12, 0x14, 0x0a, 0x05, 0x77, 0x61, 0x74, 0x65, 0x72, 0x18, 0x0a, 0x20, 0x03, 0x28, 0x09, 0x52,
-	0x05, 0x77, 0x61, 0x74, 0x65, 0x72, 0x12, 0x1e, 0x0a, 0x0a, 0x73, 0x70, 0x61, 0x63, 0x65, 0x53,
-	0x6c, 0x6f, 0x74, 0x73, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x73, 0x70, 0x61, 0x63,
-	0x65, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x12, 0x1a, 0x0a, 0x08, 0x61, 0x69, 0x72, 0x53, 0x6c, 0x6f,
-	0x74, 0x73, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x04, 0x52, 0x08, 0x61, 0x69, 0x72, 0x53, 0x6c, 0x6f,
-	0x74, 0x73, 0x12, 0x1c, 0x0a, 0x09, 0x6c, 0x61, 0x6e, 0x64, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x18,
-	0x0d, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x6c, 0x61, 0x6e, 0x64, 0x53, 0x6c, 0x6f, 0x74, 0x73,
-	0x12, 0x1e, 0x0a, 0x0a, 0x77, 0x61, 0x74, 0x65, 0x72, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x18, 0x0e,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x77, 0x61, 0x74, 0x65, 0x72, 0x53, 0x6c, 0x6f, 0x74, 0x73,
-	0x22, 0x4e, 0x0a, 0x14, 0x46, 0x6c, 0x65, 0x65, 0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75,
-	0x74, 0x65, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x74, 0x74, 0x72,
-	0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x61,
-	0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61,
-	0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65,
-	0x42, 0xa0, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0a, 0x46, 0x6c, 0x65, 0x65, 0x74, 0x50,
-	0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64,
-	0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02,
-	0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61,
-	0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x28, 0x09, 0x52, 0x0a, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x34,
+	0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1c,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x06, 0x73, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x12, 0x30, 0x0a, 0x13, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x4c, 0x69, 0x73, 0x74, 0x46, 0x6f, 0x72, 0x77, 0x61, 0x72, 0x64, 0x18, 0x06, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x13, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x46,
+	0x6f, 0x72, 0x77, 0x61, 0x72, 0x64, 0x12, 0x32, 0x0a, 0x14, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x4c, 0x69, 0x73, 0x74, 0x42, 0x61, 0x63, 0x6b, 0x77, 0x61, 0x72, 0x64, 0x18, 0x07,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x14, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4c, 0x69,
+	0x73, 0x74, 0x42, 0x61, 0x63, 0x6b, 0x77, 0x61, 0x72, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x73, 0x70,
+	0x61, 0x63, 0x65, 0x18, 0x08, 0x20, 0x03, 0x28, 0x09, 0x52, 0x05, 0x73, 0x70, 0x61, 0x63, 0x65,
+	0x12, 0x10, 0x0a, 0x03, 0x61, 0x69, 0x72, 0x18, 0x09, 0x20, 0x03, 0x28, 0x09, 0x52, 0x03, 0x61,
+	0x69, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x6c, 0x61, 0x6e, 0x64, 0x18, 0x0a, 0x20, 0x03, 0x28, 0x09,
+	0x52, 0x04, 0x6c, 0x61, 0x6e, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x77, 0x61, 0x74, 0x65, 0x72, 0x18,
+	0x0b, 0x20, 0x03, 0x28, 0x09, 0x52, 0x05, 0x77, 0x61, 0x74, 0x65, 0x72, 0x12, 0x1e, 0x0a, 0x0a,
+	0x73, 0x70, 0x61, 0x63, 0x65, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x0a, 0x73, 0x70, 0x61, 0x63, 0x65, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x12, 0x1a, 0x0a, 0x08,
+	0x61, 0x69, 0x72, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x18, 0x0d, 0x20, 0x01, 0x28, 0x04, 0x52, 0x08,
+	0x61, 0x69, 0x72, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x12, 0x1c, 0x0a, 0x09, 0x6c, 0x61, 0x6e, 0x64,
+	0x53, 0x6c, 0x6f, 0x74, 0x73, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x6c, 0x61, 0x6e,
+	0x64, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x12, 0x1e, 0x0a, 0x0a, 0x77, 0x61, 0x74, 0x65, 0x72, 0x53,
+	0x6c, 0x6f, 0x74, 0x73, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x77, 0x61, 0x74, 0x65,
+	0x72, 0x53, 0x6c, 0x6f, 0x74, 0x73, 0x22, 0x4e, 0x0a, 0x14, 0x46, 0x6c, 0x65, 0x65, 0x74, 0x41,
+	0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12, 0x20,
+	0x0a, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64,
+	0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x42, 0xa0, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0a,
+	0x46, 0x6c, 0x65, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02,
+	0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65,
+	0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -2160,14 +2220,16 @@ var file_structs_structs_fleet_proto_goTypes = []interface{}{
 	(*Fleet)(nil),                // 0: structs.structs.Fleet
 	(*FleetAttributeRecord)(nil), // 1: structs.structs.FleetAttributeRecord
 	(ObjectType)(0),              // 2: structs.structs.objectType
+	(FleetStatus)(0),             // 3: structs.structs.fleetStatus
 }
 var file_structs_structs_fleet_proto_depIdxs = []int32{
 	2, // 0: structs.structs.Fleet.locationType:type_name -> structs.structs.objectType
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	3, // 1: structs.structs.Fleet.status:type_name -> structs.structs.fleetStatus
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_structs_structs_fleet_proto_init() }

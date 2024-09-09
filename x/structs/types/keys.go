@@ -229,6 +229,12 @@ var PlanetStatus_enum = map[string]PlanetStatus {
 }
 
 
+var FleetStatus_enum = map[string]FleetStatus {
+    "onStation":    FleetStatus_onStation,
+    "away":         FleetStatus_away,
+}
+
+
 var StructAttributeType_enum = map[string]StructAttributeType {
     "health":               StructAttributeType_health,
     "status":               StructAttributeType_status,

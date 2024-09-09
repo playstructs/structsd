@@ -19433,6 +19433,12 @@ paths:
                     default: guild
                   locationId:
                     type: string
+                  status:
+                    type: string
+                    enum:
+                      - onStation
+                      - away
+                    default: onStation
                   locationListForward:
                     type: string
                     title: Towards Planet
@@ -22935,6 +22941,12 @@ paths:
                       default: guild
                     locationId:
                       type: string
+                    status:
+                      type: string
+                      enum:
+                        - onStation
+                        - away
+                      default: onStation
                     locationListForward:
                       type: string
                       title: Towards Planet
@@ -23107,6 +23119,12 @@ paths:
                     default: guild
                   locationId:
                     type: string
+                  status:
+                    type: string
+                    enum:
+                      - onStation
+                      - away
+                    default: onStation
                   locationListForward:
                     type: string
                     title: Towards Planet
@@ -23198,6 +23216,12 @@ paths:
                     default: guild
                   locationId:
                     type: string
+                  status:
+                    type: string
+                    enum:
+                      - onStation
+                      - away
+                    default: onStation
                   locationListForward:
                     type: string
                     title: Towards Planet
@@ -34434,6 +34458,12 @@ definitions:
         default: guild
       locationId:
         type: string
+      status:
+        type: string
+        enum:
+          - onStation
+          - away
+        default: onStation
       locationListForward:
         type: string
         title: Towards Planet
@@ -34594,6 +34624,12 @@ definitions:
             default: guild
           locationId:
             type: string
+          status:
+            type: string
+            enum:
+              - onStation
+              - away
+            default: onStation
           locationListForward:
             type: string
             title: Towards Planet
@@ -35501,6 +35537,12 @@ definitions:
       - space
       - local
     default: none
+  structs.structs.fleetStatus:
+    type: string
+    enum:
+      - onStation
+      - away
+    default: onStation
   structs.structs.guildJoinBypassLevel:
     type: string
     enum:
@@ -35947,6 +35989,12 @@ definitions:
               default: guild
             locationId:
               type: string
+            status:
+              type: string
+              enum:
+                - onStation
+                - away
+              default: onStation
             locationListForward:
               type: string
               title: Towards Planet
@@ -37031,6 +37079,12 @@ definitions:
             default: guild
           locationId:
             type: string
+          status:
+            type: string
+            enum:
+              - onStation
+              - away
+            default: onStation
           locationListForward:
             type: string
             title: Towards Planet

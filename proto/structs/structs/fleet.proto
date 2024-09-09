@@ -14,19 +14,20 @@ message Fleet {
 
   objectType  locationType    = 3;
   string      locationId      = 4;
+  fleetStatus status          = 5;
 
-  string      locationListForward   = 5; // Towards Planet
-  string      locationListBackward  = 6; // Towards End of List
+  string      locationListForward   = 6; // Towards Planet
+  string      locationListBackward  = 7; // Towards End of List
 
-  repeated string space = 7;
-  repeated string air   = 8;
-  repeated string land  = 9;
-  repeated string water = 10;
+  repeated string space = 8;
+  repeated string air   = 9;
+  repeated string land  = 10;
+  repeated string water = 11;
 
-  uint64 spaceSlots     = 11;
-  uint64 airSlots       = 12;
-  uint64 landSlots      = 13;
-  uint64 waterSlots     = 14;
+  uint64 spaceSlots     = 12;
+  uint64 airSlots       = 13;
+  uint64 landSlots      = 14;
+  uint64 waterSlots     = 15;
 
 }
 

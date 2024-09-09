@@ -132,6 +132,15 @@ func (cache *FleetCache) GetOwnerId() (string) {
     return cache.GetFleet().Owner
 }
 
+func (cache *FleetCache) IsOnStation() (bool) {
+    return (cache.GetFleet().Status == types.FleetStatus_onStation)
+}
+
+func (cache *FleetCache) IsAway() (bool) {
+    return (cache.GetFleet().Status == types.FleetStatus_away)
+}
+
+
 func (cache *FleetCache) SetLocation(locationId string, locationType types.ObjectType) {
     if (!cache.FleetLoaded) { cache.LoadFleet() }
 
