@@ -721,10 +721,12 @@ func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem type
             case types.ObjectType_fleet:
 
                 if (cache.GetFleet().IsOnStation()) {
+                    // If the Fleet is On Station, then the enemy should be in the first Fleet
                     if (cache.GetPlanet().GetLocationListStart() != targetStruct.GetLocationId()) {
                         err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Planetary Attacker Struct (%s)", targetStruct.StructId, cache.StructId)
                     }
                 } else {
+                    // If the Fleet is away, the enemy is either in one of the adjacent fleets, or is the planet being raided
                     // if forward is "" and target.
 
                     if ((cache.GetFleet().GetLocationListForward() != targetStruct.GetLocationId()) && (cache.GetFleet().GetLocationListBackward() != targetStruct.GetLocationId())) {
