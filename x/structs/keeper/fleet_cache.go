@@ -237,6 +237,9 @@ func (cache *FleetCache) SetLocation(locationId string, locationType types.Objec
             if (cache.GetLocationListBackward() != "") {
                 cache.GetPlanet().SetLocationListStart(cache.GetLocationListBackward())
                 cache.SetBackwardsLocationListForward("")
+            } else {
+                // might need to make this a local function and track updating planet for cascade of commit
+                cache.GetPlanet().SetLocationListStart("")
             }
         }  else {
             cache.
