@@ -7,7 +7,7 @@ import (
     //"fmt"
 
 	//sdk "github.com/cosmos/cosmos-sdk/types"
-	//sdkerrors "cosmossdk.io/errors"
+	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 
 )
@@ -28,6 +28,15 @@ type FleetCache struct {
     PlanetLoaded bool
     Planet *PlanetCache
 
+    ForwardFleetLoaded  bool
+    ForwardFleetChanged bool
+    ForwardFleet        *FleetCache
+
+
+    BackwardFleetLoaded  bool
+    BackwardFleetChanged bool
+    BackwardFleet        *FleetCache
+
 }
 
 
@@ -43,6 +52,10 @@ func (k *Keeper) GetFleetCacheFromId(ctx context.Context, fleetId string) (Fleet
 
 func (cache *FleetCache) Commit() () {
     if (cache.FleetChanged) { cache.K.SetFleet(cache.Ctx, cache.Fleet) }
+
+    if (cache.ForwardFleetChanged) { cache.GetForwardFleet().Commit() }
+
+    if (cache.BackwardFleetChanged) { cache.GetBackwardFleet().Commit() }
 
 }
 
@@ -74,6 +87,26 @@ func (cache *FleetCache) LoadPlanet() (bool) {
         cache.PlanetLoaded = true
     }
     return cache.PlanetLoaded
+}
+
+// Load the Forward Fleet data
+func (cache *FleetCache) LoadForwardFleet() (bool) {
+    if (cache.GetLocationListForward() != "") {
+        forwardFleet := cache.K.GetFleetCacheFromId(cache.Ctx, cache.GetLocationListForward())
+        cache.ForwardFleet = &forwardFleet
+        cache.ForwardFleetLoaded = true
+    }
+    return cache.ForwardLoaded
+}
+
+// Load the Forward Fleet data
+func (cache *FleetCache) LoadBackwardFleet() (bool) {
+    if (cache.GetLocationListBackward() != "") {
+        backwardFleet := cache.K.GetFleetCacheFromId(cache.Ctx, cache.GetLocationListBackward())
+        cache.BackwardFleet = &backwardFleet
+        cache.BackwardFleetLoaded = true
+    }
+    return cache.BackwardFleetLoaded
 }
 
 func (cache *FleetCache) ManualLoadPlanet(planet *PlanetCache) {
@@ -118,9 +151,56 @@ func (cache *FleetCache) GetLocationListForward() (string) {
     return cache.GetFleet().LocationListForward
 }
 
+func (cache *FleetCache) SetLocationListForward(fleetId string) () {
+    cache.GetFleet().SetLocationListForward(fleetId)
+    FleetChanged = true
+}
+
+
+func (cache *FleetCache) SetLocationListBackward(fleetId string) () {
+    cache.GetFleet().LocationListBackward = fleetId
+    FleetChanged = true
+}
+
+func (cache *FleetCache) SetForwardLocationListBackward(fleetId string) () {
+    cache.GetForwardFleet().SetLocationListBackward(fleetId)
+    ForwardFleetChanged = true
+}
+
+func (cache *FleetCache) SetForwardLocationListForward(fleetId string) () {
+    cache.GetForwardFleet().SetLocationListForward(fleetId)
+    ForwardFleetChanged = true
+}
+
+func (cache *FleetCache) GetForwardFleet() (*FleetCache) {
+    if (!cache.ForwardFleetLoaded) { cache.LoadForwardFleet() }
+
+    return cache.ForwardFleet
+}
+
+
 func (cache *FleetCache) GetLocationListBackward() (string) {
     return cache.GetFleet().LocationListBackward
 }
+
+
+func (cache *FleetCache) SetBackwardsLocationListBackward(fleetId string) () {
+    cache.GetBackwardFleet().SetLocationListBackward(fleetId)
+    BackwardFleetChanged = true
+}
+
+func (cache *FleetCache) SetBackwardsLocationListForward(fleetId string) () {
+    cache.GetBackwardFleet().SetLocationListForward(fleetId)
+    BackwardFleetChanged = true
+}
+
+func (cache *FleetCache) GetBackwardFleet() (*FleetCache) {
+    if (!cache.BackwardFleetLoaded) { cache.LoadBackwardFleet() }
+
+    return cache.BackwardFleet
+}
+
+
 
 // Get the Owner data
 func (cache *FleetCache) GetOwner() (*PlayerCache) {
@@ -140,13 +220,62 @@ func (cache *FleetCache) IsAway() (bool) {
     return (cache.GetFleet().Status == types.FleetStatus_away)
 }
 
+func (cache *FleetCache) HasCommandStruct() (bool) {
+    return (cache.GetFleet().CommandStruct != "")
+}
 
 func (cache *FleetCache) SetLocation(locationId string, locationType types.ObjectType) {
     if (!cache.FleetLoaded) { cache.LoadFleet() }
 
+    // Position the Fleet in the queue
+    if (cache.GetOwner().GetPlanetId() == locationId) {
+        // The Fleet has returned home. Clear out the other markets
+        // This needs to update the related Fleets as well!
+        cache.ClearFleetQueue()
+
+        if (cache.GetLocationListForward() == "") {
+            if (cache.GetLocationListBackward() != "") {
+                cache.GetPlanet().SetLocationListStart(cache.GetLocationListBackward())
+                cache.SetBackwardsLocationListForward("")
+            }
+        }  else {
+            cache.
+        }
+
+
+    } else {
+        if (destination.GetLocationListLast() != "") {
+            previousLastFleet, _ := k.GetFleetCacheFromId(ctx, destination.GetLocationListLast())
+            previousLastFleet.SetLocationListBackward(fleet.GetFleetId())
+            previousLastFleet.Commit()
+
+            fleet.SetLocationListForward(destination.GetLocationListLast())
+
+        }
+
+        destination.SetLocationListLast(fleet.GetFleetId())
+
+    }
+
+
     cache.Fleet.LocationId = locationId
     cache.Fleet.LocationType = locationType
     cache.FleetChanged = true
+
+
+
+}
+
+func (cache *FleetCache) PlanetMoveReadinessCheck() (error) {
+    if cache.GetOwner().IsOffline() {
+        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Player (%s) is offline due to power", cache.GetOwnerId())
+    }
+
+    if !cache.HasCommandStruct() {
+        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet (%s) needs a Command Struct before deploy", cache.GetFleetId())
+    }
+
+    return nil
 }
 
 func (cache *FleetCache) Defeat() (){
@@ -155,3 +284,4 @@ func (cache *FleetCache) Defeat() (){
     // Send Fleet home
     cache.SetLocation(cache.GetOwner().GetPlanetId(), types.ObjectType_planet)
 }
+

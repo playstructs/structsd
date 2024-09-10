@@ -29,6 +29,8 @@ message Fleet {
   uint64 landSlots      = 14;
   uint64 waterSlots     = 15;
 
+  string commandStruct  = 16;
+
 }
 
 message FleetAttributeRecord {

@@ -344,6 +344,10 @@ func (cache *PlanetCache) GetLocationListStart() string {
     return cache.GetPlanet().LocationListStart
 }
 
+func (cache *PlanetCache) GetLocationListLast() string {
+    return cache.GetPlanet().LocationListStart
+}
+
 func (cache *PlanetCache) GetEventAttackDetail() (*types.EventAttackDetail) {
     if (!cache.EventAttackDetailLoaded) { cache.EventAttackDetail = types.CreateEventAttackDetail() }
     return cache.EventAttackDetail
@@ -363,13 +367,23 @@ func (cache *PlanetCache) FlushEventAttackShotDetail() ( *types.EventAttackShotD
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
  */
 
-// Get the Owner ID data
 func (cache *PlanetCache) SetStatus(status types.PlanetStatus) () {
     if (!cache.PlanetLoaded) { cache.LoadPlanet() }
 
     cache.Planet.Status = status
     cache.PlanetChanged = true
 }
+
+func (cache *PlanetCache) SetLocationListStart(fleetId string) {
+    cache.GetPlanet().LocationListStart = fleetId
+    cache.PlanetChanged = true
+}
+
+func (cache *PlanetCache) SetLocationListLast(fleetId string) {
+     cache.GetPlanet().LocationListStart = fleetId
+     cache.PlanetChanged = true
+}
+
 
 func (cache *PlanetCache) BuriedOreDecrement(amount uint64) {
 

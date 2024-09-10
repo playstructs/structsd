@@ -715,21 +715,33 @@ func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem type
      if (err == nil) {
         switch (cache.GetLocationType()) {
             case types.ObjectType_planet:
-                if (cache.GetPlanet().GetLocationListStart() != targetStruct.GetLocationId()) {
+                if (cache.GetPlanet().GetLocationListStart() == targetStruct.GetLocationId()) {
+                    // The enemy fleet is here
+                } else {
                     err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Planetary Attacker Struct (%s)", targetStruct.StructId, cache.StructId)
                 }
+
             case types.ObjectType_fleet:
-
-                if (cache.GetFleet().IsOnStation()) {
-                    // If the Fleet is On Station, then the enemy should be in the first Fleet
-                    if (cache.GetPlanet().GetLocationListStart() != targetStruct.GetLocationId()) {
-                        err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Planetary Attacker Struct (%s)", targetStruct.StructId, cache.StructId)
+                // Is the Fleet at home?
+                if cache.GetFleet().IsOnStation() {
+                    // If the Fleet is On Station, ensure the enemy is reachable
+                    if cache.GetPlanet().GetLocationListStart() == targetStruct.GetLocationId() {
+                        // The Fleet is on station, and the enemy is reachable
+                        // Proceed with the intended action for the Fleet attacking the target
+                    } else {
+                        err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by from the Struct (%s) on Planet", targetStruct.StructId, cache.StructId)
                     }
+                // Or is the Fleet out raiding another planet?
                 } else {
-                    // If the Fleet is away, the enemy is either in one of the adjacent fleets, or is the planet being raided
-                    // if forward is "" and target.
-
-                    if ((cache.GetFleet().GetLocationListForward() != targetStruct.GetLocationId()) && (cache.GetFleet().GetLocationListBackward() != targetStruct.GetLocationId())) {
+                    // If the Fleet is away, first check if the target is on the same planet
+                    if cache.GetFleet().GetLocationListForward() == "" && cache.GetPlanetId() == targetStruct.GetPlanetId() {
+                        // Target has reached the planetary raid
+                        // Proceed with the intended action for the Fleet attacking the target
+                    // Otherwise check if the target is adjacent (either forward or backward)
+                    } else if cache.GetFleet().GetLocationListForward() == targetStruct.GetLocationId() && cache.GetFleet().GetLocationListBackward() == targetStruct.GetLocationId() {
+                        // The target is to either side of the Fleet
+                        // Proceed with the intended action for the Fleet attacking the target
+                    } else {
                         err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Fleet Attacker Struct (%s)", targetStruct.StructId, cache.StructId)
                     }
                 }

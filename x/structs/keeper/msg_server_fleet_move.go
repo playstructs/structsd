@@ -3,7 +3,7 @@ package keeper
 import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	//sdkerrors "cosmossdk.io/errors"
+	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -29,39 +29,19 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
 
     destination := k.GetPlanetCacheFromId(ctx, msg.DestinationLocationId)
     if (!destination.LoadPlanet()) {
-        return &types.MsgFleetMoveResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Player (%s) is offline due to power", cache.GetOwnerId())
+        return &types.MsgFleetMoveResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Player (%s) is offline due to power", destination.GetOwnerId())
     }
 
     // Is the Fleet able to move?
-    readinessError := fleet.PlanetMoveReadinessCheck(destination)
+    readinessError := fleet.PlanetMoveReadinessCheck()
     if (readinessError != nil) {
         k.DischargePlayer(ctx, fleet.GetOwnerId())
         return &types.MsgFleetMoveResponse{}, readinessError
     }
 
 
-    planetMoveError := fleet.AttemptPlanetMove()
-    if (planetMoveError != nil) {
-        k.DischargePlayer(ctx, fleet.GetOwnerId())
-        return &types.MsgFleetMoveResponse{}, planetMoveError
-    }
+    fleet.SetLocation(destination.GetLocationId(), types.ObjectType_planet)
 
-
-    // Position the Fleet in the queue
-    if (fleet.GetOwner().GetPlanetId() != msg.DestinationLocationId) {
-
-        if (destination.GetLocationListLast() != "") {
-            previousLastFleet, _ := k.GetFleetCacheFromId(ctx, destination.GetLocationListLast())
-            previousLastFleet.SetLocationListBackward(fleet.GetFleetId())
-            previousLastFleet.Commit()
-
-            fleet.SetLocationListForward(destination.GetLocationListLast())
-
-        }
-
-        destination.SetLocationListLast(fleet.GetFleetId())
-
-    }
 
 
     fleet.Commit()
