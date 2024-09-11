@@ -273,6 +273,10 @@ func (cache *StructCache) GetPlanet() (*PlanetCache) {
     return cache.Planet
 }
 
+func (cache *StructCache) GetPlanetId() (string) {
+    return cache.GetPlanet().GetPlanetId()
+}
+
 // Get the Location ID data
 func (cache *StructCache) GetLocationId() (string) {
     if (!cache.StructureLoaded) { cache.LoadStruct() }

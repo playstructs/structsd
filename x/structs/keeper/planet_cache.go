@@ -375,13 +375,17 @@ func (cache *PlanetCache) SetStatus(status types.PlanetStatus) () {
 }
 
 func (cache *PlanetCache) SetLocationListStart(fleetId string) {
-    cache.GetPlanet().LocationListStart = fleetId
+    if (!cache.PlanetLoaded) { cache.LoadPlanet() }
+
+    cache.Planet.LocationListStart = fleetId
     cache.PlanetChanged = true
 }
 
 func (cache *PlanetCache) SetLocationListLast(fleetId string) {
-     cache.GetPlanet().LocationListStart = fleetId
-     cache.PlanetChanged = true
+    if (!cache.PlanetLoaded) { cache.LoadPlanet() }
+
+    cache.Planet.LocationListStart = fleetId
+    cache.PlanetChanged = true
 }
 
 

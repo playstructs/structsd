@@ -40,13 +40,11 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
     }
 
 
-    fleet.SetLocation(destination.GetLocationId(), types.ObjectType_planet)
+    fleet.SetLocationToPlanet(destination)
 
 
 
     fleet.Commit()
-    destination.Commit()
 
-
-	return &types.MsgFleetMoveResponse{Fleet: fleet.GetFleet()}, nil
+	return &types.MsgFleetMoveResponse{Fleet: fleet.GetFleet().GetFleet()}, nil
 }
