@@ -106,15 +106,18 @@ func (k *Keeper) GetStructCacheFromId(ctx context.Context, structId string) (Str
 
 // Build this initial Struct Cache object
 // This does no validation on the provided structId
-func (k *Keeper) InitiateStruct(creatorAddress string, playerId string, structTypeId uint64, destinationId string, destinationType types.ObjectType, ambit types.Ambit, slot uint64) (StructCache) {
+func (k *Keeper) InitiateStruct(creatorAddress string, playerId string, structTypeId uint64, destinationId string, destinationType types.ObjectType, ambit types.Ambit, slot uint64) (StructCache, error) {
 
+    var err error
     var creator *PlayerCache
     var owner *PlayerCache
     var structType *types.StructType
     var planet *PlanetCache
     var fleet *FleetCache
 
-    // Load the Player
+    // Load the Owner Player
+
+    // Check Permissions based on Creator Address
 
     // Load the Struct Type
         // Do a check on the destination type
