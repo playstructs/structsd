@@ -111,6 +111,7 @@ func (k *Keeper) InitiateStruct(creatorAddress string, playerId string, structTy
     var err error
     var creator *PlayerCache
     var owner *PlayerCache
+    var structure type.Struct
     var structType *types.StructType
     var planet *PlanetCache
     var fleet *FleetCache
@@ -134,8 +135,11 @@ func (k *Keeper) InitiateStruct(creatorAddress string, playerId string, structTy
 
     }
 
+    // Create the Struct Object
 
-    structure := StructCache{
+
+    // Start to put the pieces together
+    structCache := StructCache{
                   StructId: structId,
                   K: k,
                   Ctx: ctx,
@@ -153,7 +157,7 @@ func (k *Keeper) InitiateStruct(creatorAddress string, playerId string, structTy
 
 
 
-    return structure
+    return structCache
 }
 
 
