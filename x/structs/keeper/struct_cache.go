@@ -104,6 +104,56 @@ func (k *Keeper) GetStructCacheFromId(ctx context.Context, structId string) (Str
     }
 }
 
+// Build this initial Struct Cache object
+// This does no validation on the provided structId
+func (k *Keeper) InitiateStruct(creatorAddress string, playerId string, structTypeId uint64, destinationId string, destinationType types.ObjectType, ambit types.Ambit, slot uint64) (StructCache) {
+
+    var creator *PlayerCache
+    var owner *PlayerCache
+    var structType *types.StructType
+    var planet *PlanetCache
+    var fleet *FleetCache
+
+    // Load the Player
+
+    // Load the Struct Type
+        // Do a check on the destination type
+
+
+    switch destinationType {
+        case types.ObjectType_planet:
+            // Load the Planet
+        case types.ObjectType_fleet:
+                // Load the Fleet (maybe)
+
+                // Load the Planet
+        default:
+
+    }
+
+
+    structure := StructCache{
+                  StructId: structId,
+                  K: k,
+                  Ctx: ctx,
+
+                  HealthAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_health, structId),
+                  StatusAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_status, structId),
+
+                  BlockStartBuildAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structId),
+                  BlockStartOreMineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structId),
+                  BlockStartOreRefineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structId),
+
+                  ProtectedStructIndexAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, structId),
+    }
+
+
+
+
+    return structure
+}
+
+
 func (cache *StructCache) Commit() () {
 
     if (cache.StructureChanged) {
@@ -185,10 +235,7 @@ func (cache *StructCache) LoadPlanet() (bool) {
                 cache.Planet = &newPlanet
                 cache.PlanetLoaded = true
             }
-
     }
-
-
     return cache.PlanetLoaded
 }
 
@@ -235,121 +282,60 @@ func (cache *StructCache) LoadProtectedStructIndex() {
     cache.ProtectedStructIndexLoaded = true
 }
 
+// Set the Owner data manually
+// Useful for loading multiple defenders
+func (cache *StructCache) ManualLoadOwner(owner *PlayerCache) {
+    cache.Owner = owner
+    cache.OwnerLoaded = true
+}
+
+// Set the Event data manually
+// Used to manage the same event across objects
+func (cache *StructCache) ManualLoadEventAttackDetail(eventAttackDetail *types.EventAttackDetail) {
+    cache.EventAttackDetail = eventAttackDetail
+    cache.EventAttackDetailLoaded = true
+}
+func (cache *StructCache) ManualLoadEventAttackShotDetail(eventAttackShotDetail *types.EventAttackShotDetail) {
+    cache.EventAttackShotDetail = eventAttackShotDetail
+    cache.EventAttackShotDetailLoaded = true
+}
+
 
 /* Getters
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
  */
 
-func (cache *StructCache) GetHealth() (uint64) {
-    if (!cache.HealthLoaded) { cache.LoadHealth() }
-    return cache.Health
-}
+func (cache *StructCache) GetStruct()   (types.Struct)  { if (!cache.StructureLoaded) { cache.LoadStruct() }; return cache.Structure }
+func (cache *StructCache) GetStructId() (string)        {  return cache.StructId }
 
-// Get the Owner ID data
-func (cache *StructCache) GetOwnerId() (string) {
-    if (!cache.StructureLoaded) { cache.LoadStruct() }
-    return cache.Structure.Owner
-}
+func (cache *StructCache) GetHealth()               (uint64)            { if (!cache.HealthLoaded) { cache.LoadHealth() }; return cache.Health }
+func (cache *StructCache) GetStatus()               (types.StructState) { if (!cache.StatusLoaded) { cache.LoadStatus() }; return cache.Status }
+func (cache *StructCache) GetBlockStartBuild()      (uint64)            { if (!cache.BlockStartBuildLoaded) { cache.LoadBlockStartBuild() }; return cache.BlockStartBuild }
+func (cache *StructCache) GetBlockStartOreMine()    (uint64)            { if (!cache.BlockStartOreMineLoaded) { cache.LoadBlockStartOreMine() }; return cache.BlockStartOreMine }
+func (cache *StructCache) GetBlockStartOreRefine()  (uint64)            { if (!cache.BlockStartOreRefineLoaded) { cache.LoadBlockStartOreRefine() }; return cache.BlockStartOreRefine }
 
-// Get the Owner data
-func (cache *StructCache) GetOwner() (*PlayerCache) {
-    if (!cache.OwnerLoaded) { cache.LoadOwner() }
-    return cache.Owner
-}
+func (cache *StructCache) GetStructType()   (*types.StructType) { if (!cache.StructTypeLoaded) { cache.LoadStructType() }; return cache.StructType }
+func (cache *StructCache) GetTypeId()       (uint64)            { if (!cache.StructureLoaded) { cache.LoadStruct() }; return cache.Structure.Type }
 
-// Get the Defenders data
-func (cache *StructCache) GetDefenders() ([]types.StructDefender) {
-    if (!cache.DefendersLoaded) { cache.LoadDefenders() }
-    return cache.Defenders
-}
+func (cache *StructCache) GetOwner()    (*PlayerCache)  { if (!cache.OwnerLoaded) { cache.LoadOwner() }; return cache.Owner }
+func (cache *StructCache) GetOwnerId()  (string)        { if (!cache.StructureLoaded) { cache.LoadStruct() }; return cache.Structure.Owner }
 
-func (cache *StructCache) GetFleet() (*FleetCache) {
-    if (!cache.FleetLoaded) { cache.LoadFleet() }
-    return cache.Fleet
-}
+func (cache *StructCache) GetLocationId()       (string)            { if (!cache.StructureLoaded) { cache.LoadStruct() }; return cache.Structure.LocationId }
+func (cache *StructCache) GetLocationType()     (types.ObjectType)  { if (!cache.StructureLoaded) { cache.LoadStruct() }; return cache.Structure.LocationType }
+func (cache *StructCache) GetOperatingAmbit()   (types.Ambit)       { if (!cache.StructureLoaded) { cache.LoadStruct() }; return cache.Structure.OperatingAmbit }
 
-func (cache *StructCache) GetPlanet() (*PlanetCache) {
-    if (!cache.PlanetLoaded) { cache.LoadPlanet() }
-    return cache.Planet
-}
+func (cache *StructCache) GetPlanet()   (*PlanetCache)  { if (!cache.PlanetLoaded) { cache.LoadPlanet() }; return cache.Planet }
+func (cache *StructCache) GetPlanetId() (string)        { return cache.GetPlanet().GetPlanetId() }
+func (cache *StructCache) GetFleet()    (*FleetCache)   { if (!cache.FleetLoaded) { cache.LoadFleet() }; return cache.Fleet }
 
-func (cache *StructCache) GetPlanetId() (string) {
-    return cache.GetPlanet().GetPlanetId()
-}
+func (cache *StructCache) GetDefenders() ([]types.StructDefender) { if (!cache.DefendersLoaded) { cache.LoadDefenders() }; return cache.Defenders }
 
-// Get the Location ID data
-func (cache *StructCache) GetLocationId() (string) {
-    if (!cache.StructureLoaded) { cache.LoadStruct() }
-    return cache.Structure.LocationId
-}
-
-// Get the Location Type data
-func (cache *StructCache) GetLocationType() (types.ObjectType) {
-    if (!cache.StructureLoaded) { cache.LoadStruct() }
-    return cache.Structure.LocationType
-}
-
-func (cache *StructCache) GetOperatingAmbit() (types.Ambit) {
-    if (!cache.StructureLoaded) { cache.LoadStruct() }
-    return cache.Structure.OperatingAmbit
-}
-
-func (cache *StructCache) GetStatus() (types.StructState) {
-    if (!cache.StatusLoaded) { cache.LoadStatus() }
-    return cache.Status
-}
-
-func (cache *StructCache) GetStruct() (types.Struct) {
-    if (!cache.StructureLoaded) { cache.LoadStruct() }
-    return cache.Structure
-}
-
-func (cache *StructCache) GetTypeId() (uint64) {
-    if (!cache.StructureLoaded) { cache.LoadStruct() }
-    return cache.Structure.Type
-}
-
-func (cache *StructCache) GetStructType() (*types.StructType) {
-    if (!cache.StructTypeLoaded) { cache.LoadStructType() }
-    return cache.StructType
-}
-
-func (cache *StructCache) GetBlockStartBuild() (uint64) {
-    if (!cache.BlockStartBuildLoaded) { cache.LoadBlockStartBuild() }
-    return cache.BlockStartBuild
-}
-
-func (cache *StructCache) GetBlockStartOreMine() (uint64) {
-    if (!cache.BlockStartOreMineLoaded) { cache.LoadBlockStartOreMine() }
-    return cache.BlockStartOreMine
-}
-
-func (cache *StructCache) GetBlockStartOreRefine() (uint64) {
-    if (!cache.BlockStartOreRefineLoaded) { cache.LoadBlockStartOreRefine() }
-    return cache.BlockStartOreRefine
-}
-
-
-func (cache *StructCache) GetEventAttackDetail() (*types.EventAttackDetail) {
-    if (!cache.EventAttackDetailLoaded) { cache.EventAttackDetail = types.CreateEventAttackDetail() }
-    return cache.EventAttackDetail
-}
-
-
-func (cache *StructCache) GetEventAttackShotDetail() (*types.EventAttackShotDetail) {
-    if (!cache.EventAttackShotDetailLoaded) { cache.EventAttackShotDetail = types.CreateEventAttackShotDetail(cache.StructId) }
-    return cache.EventAttackShotDetail
-}
-
-func (cache *StructCache) FlushEventAttackShotDetail() ( *types.EventAttackShotDetail) {
-    cache.EventAttackShotDetailLoaded = false
-    return cache.EventAttackShotDetail
-}
+func (cache *StructCache) GetEventAttackDetail() (*types.EventAttackDetail) { if (!cache.EventAttackDetailLoaded) { cache.EventAttackDetail = types.CreateEventAttackDetail() }; return cache.EventAttackDetail }
+func (cache *StructCache) GetEventAttackShotDetail() (*types.EventAttackShotDetail) { if (!cache.EventAttackShotDetailLoaded) { cache.EventAttackShotDetail = types.CreateEventAttackShotDetail(cache.StructId) }; return cache.EventAttackShotDetail }
 
 /* Setters - SET DOES NOT COMMIT()
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
  */
-
 
 // Set the Owner Id data
 func (cache *StructCache) SetOwnerId(owner string) {
@@ -388,24 +374,11 @@ func (cache *StructCache) ClearBlockStartOreRefine() {
     cache.BlockStartOreRefineChanged = true
 }
 
-
-// Set the Owner data manually
-// Useful for loading multiple defenders
-func (cache *StructCache) ManualLoadOwner(owner *PlayerCache) {
-    cache.Owner = owner
-    cache.OwnerLoaded = true
+func (cache *StructCache) FlushEventAttackShotDetail() ( *types.EventAttackShotDetail) {
+    cache.EventAttackShotDetailLoaded = false
+    return cache.EventAttackShotDetail
 }
 
-// Set the Event data manually
-// Used to manage the same event across objects
-func (cache *StructCache) ManualLoadEventAttackDetail(eventAttackDetail *types.EventAttackDetail) {
-    cache.EventAttackDetail = eventAttackDetail
-    cache.EventAttackDetailLoaded = true
-}
-func (cache *StructCache) ManualLoadEventAttackShotDetail(eventAttackShotDetail *types.EventAttackShotDetail) {
-    cache.EventAttackShotDetail = eventAttackShotDetail
-    cache.EventAttackShotDetailLoaded = true
-}
 
 
 /* Flag Commands for the Status field */
