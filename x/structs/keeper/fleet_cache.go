@@ -193,15 +193,7 @@ func (cache *FleetCache) SetLocationListBackward(fleetId string) () {
     cache.FleetChanged = true
 }
 
-func (cache *FleetCache) SetForwardFleetLocationListBackward(fleetId string) () {
-    cache.GetForwardFleet().SetLocationListBackward(fleetId)
-    cache.ForwardFleetChanged = true
-}
 
-func (cache *FleetCache) SetForwardFleetLocationListForward(fleetId string) () {
-    cache.GetForwardFleet().SetLocationListForward(fleetId)
-    cache.ForwardFleetChanged = true
-}
 
 func (cache *FleetCache) GetForwardFleet() (*FleetCache) {
     if (!cache.ForwardFleetLoaded) { cache.LoadForwardFleet() }
@@ -210,26 +202,31 @@ func (cache *FleetCache) GetForwardFleet() (*FleetCache) {
 }
 
 
+func (cache *FleetCache) GetPreviousForwardFleet() (*FleetCache) {
+    return cache.PreviousForwardFleet
+}
+
+
 func (cache *FleetCache) GetLocationListBackward() (string) {
     return cache.GetFleet().LocationListBackward
 }
 
 
-func (cache *FleetCache) SetBackwardFleetLocationListBackward(fleetId string) () {
-    cache.GetBackwardFleet().SetLocationListBackward(fleetId)
-    cache.BackwardFleetChanged = true
-}
 
-func (cache *FleetCache) SetBackwardFleetLocationListForward(fleetId string) () {
-    cache.GetBackwardFleet().SetLocationListForward(fleetId)
-    cache.BackwardFleetChanged = true
-}
 
 func (cache *FleetCache) GetBackwardFleet() (*FleetCache) {
     if (!cache.BackwardFleetLoaded) { cache.LoadBackwardFleet() }
 
     return cache.BackwardFleet
 }
+
+
+
+func (cache *FleetCache) GetPreviousBackwardFleet() (*FleetCache) {
+
+    return cache.PreviousBackwardFleet
+}
+
 
 func (cache *FleetCache) SetPlanetLocationListStart(fleetId string) ()  {
     cache.GetPlanet().SetLocationListStart(fleetId)
@@ -285,10 +282,12 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
     cache.PreviousPlanetChanged = cache.PlanetChanged
     cache.PreviousPlanetLoaded = cache.PlanetLoaded
 
-    cache.PreviousForwardFleet = cache.GetBackwardFleet()
-    cache.PreviousForwardFleetLoaded = cache.BackwardFleetLoaded
-    cache.PreviousForwardFleetChanged = cache.BackwardFleetChanged
+    previousForwardFleetId := cache.GetLocationListForward()
+    cache.PreviousForwardFleet = cache.GetForwardFleet()
+    cache.PreviousForwardFleetLoaded = cache.ForwardFleetLoaded
+    cache.PreviousForwardFleetChanged = cache.ForwardFleetChanged
 
+    previousBackwardFleetId := cache.GetLocationListBackward()
     cache.PreviousBackwardFleet = cache.GetBackwardFleet()
     cache.PreviousBackwardFleetLoaded = cache.BackwardFleetLoaded
     cache.PreviousBackwardFleetChanged = cache.BackwardFleetChanged
@@ -298,174 +297,60 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
     cache.Fleet.LocationType = types.ObjectType_planet
     cache.FleetChanged = true
 
-    cache.Planet = destination.GetPlanet()
-
+    cache.Planet = destination
 
 
     // Old destination wasn't home - update all the previous stuff
-    if (cache.GetOwner().GetPlanetId() != destination.GetPlanetId()) {
-        update the new shit
+    if (cache.GetOwner().GetPlanetId() != cache.GetPreviousPlanet().GetPlanetId()) {
 
+        // Are we at the start of the list?
+        if (previousForwardFleetId == "") {
+            cache.GetPreviousPlanet().SetLocationListStart(previousBackwardFleetId)
+            cache.PreviousPlanetChanged = true
+
+            cache.GetPreviousBackwardFleet().SetLocationListForward("")
+            cache.PreviousBackwardFleetChanged = true
+
+        // The back of the list
+        } else if (previousBackwardFleetId == "") {
+            cache.GetPreviousPlanet().SetLocationListLast(previousForwardFleetId)
+            cache.PreviousPlanetChanged = true
+
+            cache.GetPreviousForwardFleet().SetLocationListBackward("")
+            cache.PreviousForwardFleetChanged = true
+
+        // Or Somewhere In The Between
+        } else {
+            cache.GetPreviousForwardFleet().SetLocationListBackward(previousBackwardFleetId)
+            cache.PreviousForwardFleetChanged = true
+
+            cache.GetPreviousBackwardFleet().SetLocationListForward(previousForwardFleetId)
+            cache.PreviousBackwardFleetChanged = true
+
+        }
+
+        cache.SetLocationListForward("")
+        cache.SetLocationListBackward("")
     }
-
 
     // New destination isn't home - add it to the end of the list
     if (cache.GetOwner().GetPlanetId() != destination.GetPlanetId()) {
-        update the new shit
 
-    }
+        // Is it the first fleet to arrive?
+        if (cache.GetPlanet().GetLocationListStart() == "") {
+            cache.GetPlanet().SetLocationListStart(cache.GetFleetId())
+            cache.PlanetChanged = true
 
-
-
-    // always update the  old shit
-
-    // Position the Fleet in the queue
-    if (cache.GetOwner().GetPlanetId() == destination.GetPlanetId()) {
-        // The Fleet has returned home. Clear out the other markets
-        // This needs to update the related Fleets as well!
-
-        // Is the Fleet currently the first in line?
-        if (cache.GetLocationListForward() == "") {
-            // Is there another Fleet in the list?
-            if (cache.GetLocationListBackward() != "") {
-                // Promote the next ship in the list to be at the planet
-
-                // Update the planet pointer so it knows which
-                // Fleet is now first
-                cache.SetPlanetLocationListStart(cache.GetLocationListBackward())
-
-                // Update the next Fleet in line to know it's at the Planet
-                cache.Set - previous? - BackwardFleetLocationListForward("")
-
-            // There were no other fleets in the list, so empty the Planets pointers
-            } else {
-                cache.SetPlanetLocationListStart("")
-                cache.SetPlanetLocationListLast("")
-            }
-        // The Fleet was not the first in line and is somewhere else in the fleet list
-        }  else {
-
-            // If the Fleet is at the end of the line
-            if (cache.GetLocationListBackward() == "") {
-
-                // Update the Planet to point to the new end, the Fleet in front
-                cache.SetPlanetLocationListLast(cache.GetLocationListForward())
-                // The fleet in front should not point to nothing instead of the current fleet
-                cache.SetForwardFleetLocationListBackward("")
-
-            // The fleet is somewhere in the middle and needs updates to the other two fleets flanking it
-            } else {
-                // Nothing on the planet needs to be updated
-
-                // Update the forward fleet's backwards pointer to point to the backward fleet
-                cache.SetForwardFleetLocationListBackward(cache.GetLocationListBackward())
-                // Update the backward fleet's forward pointer to point to the forward fleet
-                cache.SetBackwardFleetLocationListForward(cache.GetLocationListForward())
-            }
-
-
-        }
-
-        // Now that the other fleets and the planet have all been updated, we can clear the old pointer values
-        cache.ClearFleetListPointers()
-
-        // Now let's push the old planet into the previous pointer
-        // This leaves it for the Commit() to cascade to it
-        cache.PreviousPlanet = cache.Planet
-        cache.PreviousPlanetChanged = cache.PlanetChanged
-        cache.PreviousPlanetLoaded = true
-
-        // Location updated and next call to GetPlanet() will pull the new location
-        cache.Fleet.LocationId = destination.GetPlanetId()
-        cache.Fleet.LocationType = types.ObjectType_planet
-        cache.FleetChanged = true
-
-        cache.Planet = destination
-        cache.PlanetLoaded = true
-
-
-    // This fleet is moving to another planet other than it's home world
-    } else {
-
-        // Is it leaving its home?
-        if (cache.GetLocationId() == cache.GetOwner().GetPlanetId()) {
-            // No updates should be made to the pointers of fleets and planets since
-            // fleets at home are treated differently than fleets abroad.
-            // They're considered to be on the planet
-
-
-
-            // Update the current end to point to this fleet
-
-
-            // Update the end of the Planet Pointer
-            destination.SetLocationListLast(cache.GetFleetId())
-
-
-
-
-            // update this fleet to point to that fleet
-
-        // We're leaving one planet to go to another.
-        // Probably the more complicated movement
         } else {
+            cache.SetLocationListForward(cache.GetPlanet().GetLocationListLast())
 
+            cache.GetForwardFleet().SetLocationListBackward(cache.GetFleetId())
+            cache.ForwardFleetChanged = true
         }
 
-
-
-
-        // Is the Fleet currently the first in line?
-        if (cache.GetLocationListForward() == "") {
-            // Is there another Fleet in the list?
-            if (cache.GetLocationListBackward() != "") {
-                // Promote the next ship in the list to be at the planet
-
-                // Update the planet pointer so it knows which
-                // Fleet is now first
-                cache.SetPlanetLocationListStart(cache.GetLocationListBackward())
-
-                // Update the next Fleet in line to know it's at the Planet
-                cache.SetBackwardFleetLocationListForward("")
-
-            // There were no other fleets in the list, so empty the Planets pointers
-            } else {
-                cache.SetPlanetLocationListStart("")
-                cache.SetPlanetLocationListLast("")
-            }
-        // The Fleet was not the first in line and is somewhere else in the fleet list
-        }  else {
-
-            // If the Fleet is at the end of the line
-            if (cache.GetLocationListBackward() == "") {
-
-                // Update the Planet to point to the new end, the Fleet in front
-                cache.SetPlanetLocationListLast(cache.GetLocationListForward())
-                // The fleet in front should not point to nothing instead of the current fleet
-                cache.SetForwardFleetLocationListBackward("")
-
-            // The fleet is somewhere in the middle and needs updates to the other two fleets flanking it
-            } else {
-                // Nothing on the planet needs to be updated
-
-                // Update the forward fleet's backwards pointer to point to the backward fleet
-                cache.SetForwardFleetLocationListBackward(cache.GetLocationListBackward())
-                // Update the backward fleet's forward pointer to point to the forward fleet
-                cache.SetBackwardFleetLocationListForward(cache.GetLocationListForward())
-            }
-
-
-        }
-
-
+        cache.GetPlanet().SetLocationListLast(cache.GetFleetId())
+        cache.PlanetChanged = true
     }
-
-
-    cache.Fleet.LocationId = destination.GetPlanetId()
-    cache.Fleet.LocationType = types.ObjectType_planet
-    cache.FleetChanged = true
-
-
 
 }
 
