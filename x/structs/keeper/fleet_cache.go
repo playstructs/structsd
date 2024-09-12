@@ -143,40 +143,29 @@ func (cache *FleetCache) ManualLoadOwner(owner *PlayerCache) {
     cache.OwnerLoaded = true
 }
 
+// Fleet Details
+func (cache *FleetCache) GetFleet()     (types.Fleet)   { if (!cache.FleetLoaded) { cache.LoadFleet() }; return cache.Fleet }
+func (cache *FleetCache) GetFleetId()   (string)        { return cache.FleetId }
 
+// Ownership Details
+func (cache *FleetCache) GetOwner()     (*PlayerCache)  { if (!cache.OwnerLoaded) { cache.LoadOwner() }; return cache.Owner }
+func (cache *FleetCache) GetOwnerId()   (string)        { return cache.GetFleet().Owner }
 
-func (cache *FleetCache) GetFleet() (types.Fleet) {
-    if (!cache.FleetLoaded) { cache.LoadFleet() }
+// Location Details
+func (cache *FleetCache) GetLocationId()        (string)            { return cache.GetFleet().LocationId }
+func (cache *FleetCache) GetLocationType()      (types.ObjectType)  { return cache.GetFleet().LocationType }
+func (cache *FleetCache) GetPlanet()            (*PlanetCache)      { if (!cache.PlanetLoaded) { cache.LoadPlanet() }; return cache.Planet }
+func (cache *FleetCache) GetPreviousPlanet()    (*PlanetCache)      { return cache.PreviousPlanet }
 
-    return cache.Fleet
-}
+// Planet Battle Queue Position
+func (cache *FleetCache) GetLocationListForward()   (string)        { return cache.GetFleet().LocationListForward }
+func (cache *FleetCache) GetForwardFleet()          (*FleetCache)   { if (!cache.ForwardFleetLoaded) { cache.LoadForwardFleet() }; return cache.ForwardFleet }
+func (cache *FleetCache) GetPreviousForwardFleet()  (*FleetCache)   { return cache.PreviousForwardFleet }
 
+func (cache *FleetCache) GetLocationListBackward()  (string)        { return cache.GetFleet().LocationListBackward }
+func (cache *FleetCache) GetBackwardFleet()         (*FleetCache)   { if (!cache.BackwardFleetLoaded) { cache.LoadBackwardFleet() }; return cache.BackwardFleet }
+func (cache *FleetCache) GetPreviousBackwardFleet() (*FleetCache)   { return cache.PreviousBackwardFleet }
 
-func (cache *FleetCache) GetFleetId() (string) {
-    return cache.FleetId
-}
-
-func (cache *FleetCache) GetPlanet() (*PlanetCache) {
-    if (!cache.PlanetLoaded) { cache.LoadPlanet() }
-    return cache.Planet
-}
-
-func (cache *FleetCache) GetPreviousPlanet() (*PlanetCache) {
-    return cache.PreviousPlanet
-}
-
-func (cache *FleetCache) GetLocationId() (string) {
-    return cache.GetFleet().LocationId
-}
-
-func (cache *FleetCache) GetLocationType() (types.ObjectType) {
-    return cache.GetFleet().LocationType
-}
-
-
-func (cache *FleetCache) GetLocationListForward() (string) {
-    return cache.GetFleet().LocationListForward
-}
 
 func (cache *FleetCache) SetLocationListForward(fleetId string) () {
     if (!cache.FleetLoaded) { cache.LoadFleet() }
@@ -185,76 +174,11 @@ func (cache *FleetCache) SetLocationListForward(fleetId string) () {
     cache.FleetChanged = true
 }
 
-
 func (cache *FleetCache) SetLocationListBackward(fleetId string) () {
     if (!cache.FleetLoaded) { cache.LoadFleet() }
 
     cache.Fleet.LocationListBackward = fleetId
     cache.FleetChanged = true
-}
-
-
-
-func (cache *FleetCache) GetForwardFleet() (*FleetCache) {
-    if (!cache.ForwardFleetLoaded) { cache.LoadForwardFleet() }
-
-    return cache.ForwardFleet
-}
-
-
-func (cache *FleetCache) GetPreviousForwardFleet() (*FleetCache) {
-    return cache.PreviousForwardFleet
-}
-
-
-func (cache *FleetCache) GetLocationListBackward() (string) {
-    return cache.GetFleet().LocationListBackward
-}
-
-
-
-
-func (cache *FleetCache) GetBackwardFleet() (*FleetCache) {
-    if (!cache.BackwardFleetLoaded) { cache.LoadBackwardFleet() }
-
-    return cache.BackwardFleet
-}
-
-
-
-func (cache *FleetCache) GetPreviousBackwardFleet() (*FleetCache) {
-
-    return cache.PreviousBackwardFleet
-}
-
-
-func (cache *FleetCache) SetPlanetLocationListStart(fleetId string) ()  {
-    cache.GetPlanet().SetLocationListStart(fleetId)
-    cache.PlanetChanged = true
-}
-
-func (cache *FleetCache) SetPlanetLocationListLast(fleetId string) ()  {
-    cache.GetPlanet().SetLocationListLast(fleetId)
-    cache.PlanetChanged = true
-}
-
-
-func (cache *FleetCache) ClearFleetListPointers() () {
-    if (!cache.FleetLoaded) { cache.LoadFleet() }
-
-    cache.Fleet.LocationListForward = ""
-    cache.Fleet.LocationListBackward = ""
-    cache.FleetChanged = true
-}
-
-// Get the Owner data
-func (cache *FleetCache) GetOwner() (*PlayerCache) {
-    if (!cache.OwnerLoaded) { cache.LoadOwner() }
-    return cache.Owner
-}
-
-func (cache *FleetCache) GetOwnerId() (string) {
-    return cache.GetFleet().Owner
 }
 
 func (cache *FleetCache) IsOnStation() (bool) {
