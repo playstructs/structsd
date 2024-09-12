@@ -39,7 +39,6 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
         return &types.MsgFleetMoveResponse{}, readinessError
     }
 
-
     fleet.SetLocationToPlanet(&destination)
 
     fleet.Commit()

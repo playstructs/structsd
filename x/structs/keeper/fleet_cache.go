@@ -199,6 +199,7 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
     // One day it'll matter that the previous destination might not be a planet
     // Until that day, let's not complicate this further.
 
+    // If we're already there, let's not waste cycles and writes.
     if (cache.GetLocationId() == destination.GetPlanetId()) { return }
 
     // Let's do some initial copies
