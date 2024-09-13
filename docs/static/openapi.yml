@@ -19473,7 +19473,7 @@ paths:
                   waterSlots:
                     type: string
                     format: uint64
-                  commandShip:
+                  commandStruct:
                     type: string
         default:
           description: An unexpected error response.
@@ -21235,11 +21235,27 @@ paths:
             properties:
               creator:
                 type: string
+              playerId:
+                type: string
               structTypeId:
                 type: string
                 format: uint64
-              planetId:
+              locationId:
                 type: string
+              locationType:
+                type: string
+                enum:
+                  - guild
+                  - player
+                  - planet
+                  - reactor
+                  - substation
+                  - struct
+                  - allocation
+                  - infusion
+                  - address
+                  - fleet
+                default: guild
               operatingAmbit:
                 type: string
                 enum:
@@ -22983,7 +22999,7 @@ paths:
                     waterSlots:
                       type: string
                       format: uint64
-                    commandShip:
+                    commandStruct:
                       type: string
               pagination:
                 type: object
@@ -23163,7 +23179,7 @@ paths:
                   waterSlots:
                     type: string
                     format: uint64
-                  commandShip:
+                  commandStruct:
                     type: string
         default:
           description: An unexpected error response.
@@ -23262,7 +23278,7 @@ paths:
                   waterSlots:
                     type: string
                     format: uint64
-                  commandShip:
+                  commandStruct:
                     type: string
         default:
           description: An unexpected error response.
@@ -34506,7 +34522,7 @@ definitions:
       waterSlots:
         type: string
         format: uint64
-      commandShip:
+      commandStruct:
         type: string
   structs.structs.GuildMembershipApplication:
     type: object
@@ -34674,7 +34690,7 @@ definitions:
           waterSlots:
             type: string
             format: uint64
-          commandShip:
+          commandStruct:
             type: string
   structs.structs.MsgGuildCreate:
     type: object
@@ -35072,11 +35088,27 @@ definitions:
     properties:
       creator:
         type: string
+      playerId:
+        type: string
       structTypeId:
         type: string
         format: uint64
-      planetId:
+      locationId:
         type: string
+      locationType:
+        type: string
+        enum:
+          - guild
+          - player
+          - planet
+          - reactor
+          - substation
+          - struct
+          - allocation
+          - infusion
+          - address
+          - fleet
+        default: guild
       operatingAmbit:
         type: string
         enum:
@@ -36041,7 +36073,7 @@ definitions:
             waterSlots:
               type: string
               format: uint64
-            commandShip:
+            commandStruct:
               type: string
       pagination:
         type: object
@@ -37133,7 +37165,7 @@ definitions:
           waterSlots:
             type: string
             format: uint64
-          commandShip:
+          commandStruct:
             type: string
   structs.structs.QueryGetGridResponse:
     type: object

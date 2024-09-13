@@ -32,12 +32,15 @@ type StructCache struct {
     StructType *types.StructType
 
     OwnerLoaded bool
+    OwnerChanged bool
     Owner *PlayerCache
 
     FleetLoaded bool
+    FleetChanged bool
     Fleet *FleetCache
 
     PlanetLoaded bool
+    PlanetChanged bool
     Planet *PlanetCache
 
     DefendersLoaded bool
@@ -106,7 +109,7 @@ func (k *Keeper) GetStructCacheFromId(ctx context.Context, structId string) (Str
 
 // Build this initial Struct Cache object
 // This does no validation on the provided structId
-func (k *Keeper) InitiateStruct(creatorAddress string, owner *PlayerCache, structType *types.StructType, destinationId string, destinationType types.ObjectType, ambit types.Ambit, slot uint64) (StructCache, error) {
+func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owner *PlayerCache, structType *types.StructType, destinationId string, destinationType types.ObjectType, ambit types.Ambit, slot uint64) (StructCache, error) {
 
     var ownerChanged bool
 
@@ -116,14 +119,12 @@ func (k *Keeper) InitiateStruct(creatorAddress string, owner *PlayerCache, struc
     var fleet *FleetCache
     var fleetChanged bool
 
-    // Check Owner Power availability
-
-
+    structure := types.CreateBaseStruct(structType, creatorAddress, owner.GetPlayerId(), destinationId, destinationType, ambit)
 
     switch destinationType {
         case types.ObjectType_planet:
             // Load Planet from the PlanetId
-            planet := cache.K.GetPlanetCacheFromId(cache.Ctx, destinationId)
+            planet := k.GetPlanetCacheFromId(ctx, destinationId)
             planetFound := planet.LoadPlanet()
             if !planetFound {
                 return StructCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was not found. Building a Struct in a void might be tough", destinationId)
@@ -134,83 +135,105 @@ func (k *Keeper) InitiateStruct(creatorAddress string, owner *PlayerCache, struc
                 return StructCache{}, err
             }
 
+            structure.Slot = slot
 
         case types.ObjectType_fleet:
                 // Load the Fleet
-                fleet := cache.K.GetFleetCacheFromId(cache.Ctx, destinationId)
+                fleet, _ := k.GetFleetCacheFromId(ctx, destinationId)
                 fleetFound := fleet.LoadFleet()
                 if !fleetFound {
                     return StructCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Fleet (%s) was not found. Building a Struct in a void might be tough", destinationId)
                 }
 
                 err := fleet.BuildInitiateReadiness(structType, ambit, slot)
-                    // Fleet isn't at home
-                    // structType isn't fleet
-                    // ambit doesn't exist
-                    // slot isn't available
                 if (err != nil) {
                     return StructCache{}, err
+                }
+
+                if (structType.Type != types.CommandStruct) {
+                    structure.Slot = slot
                 }
 
         default:
             return StructCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "We're not building these yet")
     }
 
-   // this needs some TODO'n
-   // this has some location checks built in that probably shouldn't be there now
-    structure, err := types.CreateBaseStruct(structType, creatorAddress, owner.GetPlayerId(), destinationId, destinationType, ambit, slot)
-    if (err != nil) {
-        return &types.StructCache{}, err
-    }
 
-    // Commit the initial object at this point
+    // Append Struct
+    structure = k.AppendStruct(ctx, structure)
+
+
+    owner.StructsLoadIncrement(structType.GetBuildDraw())
+    owner.BuildQuantityIncrement(structType.GetId())
+    ownerChanged = true
 
 
    switch destinationType {
         case types.ObjectType_planet:
-            // write to the planet
+
+            // Update the cross reference on the planet
+            err := planet.SetSlot(&structure)
+            if (err != nil) {
+                return StructCache{}, err
+            }
+            planetChanged = true
 
         case types.ObjectType_fleet:
-            // write to the fleet
+            // Update the cross reference on the planet
+            if (structType.Type == types.CommandStruct) {
+                fleet.SetCommandStruct(&structure)
+            } else {
+                err := fleet.SetSlot(&structure)
+                if (err != nil) {
+                    return StructCache{}, err
+                }
+            }
+
+            fleetChanged = true
 
     }
 
 
     // Start to put the pieces together
     structCache := StructCache{
-                  StructId: structId,
+                  StructId: structure.Id,
                   K: k,
                   Ctx: ctx,
 
-                  Owner: &owner,
+                  Owner: owner,
                   OwnerLoaded: true,
                   OwnerChanged: ownerChanged,
 
-                  Planet: &planet,
+                  Planet: planet,
                   PlanetLoaded: true,
                   PlanetChanged: planetChanged,
 
-                  Fleet: &fleet,
+                  Fleet: fleet,
                   FleetLoaded: true,
                   FleetChanged: fleetChanged,
 
                   // Include the health value
-                  HealthAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_health, structId),
+                  HealthAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_health, structure.Id),
+                  HealthChanged: true,
+                  HealthLoaded: true,
+                  Health: structType.GetMaxHealth(),
+
                   // Include the initial status value
-                  StatusAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_status, structId),
+                  StatusAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_status, structure.Id),
+                  StatusChanged: true,
+                  StatusLoaded: true,
+                  Status: types.StructState(types.StructStateMaterialized),
 
-                    // include the initial build block value
-                  BlockStartBuildAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structId),
-                  BlockStartOreMineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structId),
-                  BlockStartOreRefineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structId),
 
-                  ProtectedStructIndexAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, structId),
+                  // include the initial build block value
+                  BlockStartBuildAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structure.Id),
+                  BlockStartOreMineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structure.Id),
+                  BlockStartOreRefineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structure.Id),
+
+                  ProtectedStructIndexAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, structure.Id),
     }
 
-
-
-
-    return structCache
+    return structCache, nil
 }
 
 
@@ -219,6 +242,21 @@ func (cache *StructCache) Commit() () {
     if (cache.StructureChanged) {
         cache.K.SetStruct(cache.Ctx, cache.Structure)
         cache.StructureChanged = false
+    }
+
+    if (cache.OwnerChanged) {
+        cache.GetOwner().Commit()
+        cache.OwnerChanged = false
+    }
+
+    if (cache.PlanetChanged) {
+        cache.GetPlanet().Commit()
+        cache.PlanetChanged = false
+    }
+
+    if (cache.FleetChanged) {
+        cache.GetFleet().Commit()
+        cache.FleetChanged = false
     }
 
     if (cache.HealthChanged) {

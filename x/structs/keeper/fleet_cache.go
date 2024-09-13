@@ -298,3 +298,83 @@ func (cache *FleetCache) Defeat() (){
     cache.SetLocationToPlanet(cache.GetOwner().GetPlanet())
 }
 
+
+func (cache *FleetCache) BuildInitiateReadiness(structType *types.StructType, ambit types.Ambit, ambitSlot uint64) (error) {
+
+    if cache.IsAway() {
+        sdkerrors.Wrapf(types.ErrStructAction, "Structs cannot be built unless Fleet is On Station")
+    }
+
+    if (structType.Category != types.ObjectType_fleet) {
+        sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist in this location ")
+    }
+
+    // Check that the Struct can exist in the specified ambit
+    if types.Ambit_flag[ambit]&structType.PossibleAmbit == 0 {
+        return sdkerrors.Wrapf(types.ErrStructAction, "Struct cannot be exist in the defined ambit (%s) based on structType (%d) ", ambit, structType.Id)
+    }
+
+    if structType.Type == types.CommandStruct {
+        if cache.HasCommandStruct() {
+            return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The fleet (%s) already has a Command Struct", cache.GetFleetId())
+        }
+
+    } else {
+
+        var slots uint64
+        var slot string
+        // Check Ambit / Slot
+        switch ambit {
+            case types.Ambit_land:
+                slots = cache.GetFleet().LandSlots
+                slot  = cache.GetFleet().Land[ambitSlot]
+            case types.Ambit_water:
+                slots = cache.GetFleet().WaterSlots
+                slot  = cache.GetFleet().Water[ambitSlot]
+            case types.Ambit_air:
+                slots = cache.GetFleet().AirSlots
+                slot  = cache.GetFleet().Air[ambitSlot]
+            case types.Ambit_space:
+                slots = cache.GetFleet().SpaceSlots
+                slot  = cache.GetFleet().Space[ambitSlot]
+            default:
+                return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The Struct Build was initiated on a non-existent ambit")
+        }
+
+        if (ambitSlot >= slots) {
+            return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The Fleet (%s) specified doesn't have that slot available to build on", cache.GetFleetId())
+        }
+        if (slot != "") {
+            return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The Fleet (%s) specified already has a struct on that slot", cache.GetFleetId())
+        }
+    }
+    return nil
+}
+
+
+func (cache *FleetCache) SetSlot(structure *types.Struct) (err error) {
+    if (!cache.FleetLoaded) { cache.LoadFleet() }
+
+    switch structure.OperatingAmbit {
+        case types.Ambit_water:
+            cache.Fleet.Water[structure.Slot] = structure.Id
+        case types.Ambit_land:
+            cache.Fleet.Land[structure.Slot]  = structure.Id
+        case types.Ambit_air:
+            cache.Fleet.Air[structure.Slot]   = structure.Id
+        case types.Ambit_space:
+            cache.Fleet.Space[structure.Slot] = structure.Id
+        default:
+            err = sdkerrors.Wrapf(types.ErrStructAction, "Struct cannot exist in the defined ambit (%s) ", structure.OperatingAmbit)
+    }
+	cache.FleetChanged = true
+	return
+}
+
+
+func (cache *FleetCache) SetCommandStruct(structure *types.Struct) {
+    if (!cache.FleetLoaded) { cache.LoadFleet() }
+
+    cache.Fleet.CommandStruct = structure.Id
+    cache.FleetChanged = true
+}

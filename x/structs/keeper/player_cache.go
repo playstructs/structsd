@@ -34,6 +34,11 @@ type PlayerCache struct {
     NonceChanged    bool
     Nonce           int64
 
+    LastActionAttributeId   string
+    LastActionLoaded        bool
+    LastActionChanged       bool
+    LastAction              uint64
+
     LoadAttributeId string
     LoadLoaded      bool
     LoadChanged     bool
@@ -69,6 +74,8 @@ func (k *Keeper) GetPlayerCacheFromId(ctx context.Context, playerId string) (Pla
 
         NonceAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_nonce, playerId),
 
+        LastActionAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, playerId),
+
         LoadAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_load, playerId),
         CapacityAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, playerId),
 
@@ -96,7 +103,15 @@ func (k *Keeper) GetPlayerCacheFromAddress(ctx context.Context, address string) 
 func (cache *PlayerCache) Commit() () {
     if (cache.PlayerChanged) { cache.K.SetPlayer(cache.Ctx, cache.Player) }
 
-    if (cache.NonceChanged) { cache.K.SetGridAttributeIncrement(cache.Ctx, cache.NonceAttributeId, uint64(cache.Nonce)) }
+    if (cache.NonceChanged) {
+        cache.K.SetGridAttribute(cache.Ctx, cache.NonceAttributeId, uint64(cache.Nonce))
+        cache.NonceChanged = false
+    }
+
+    if (cache.LastActionChanged) {
+        cache.K.SetGridAttribute(cache.Ctx, cache.LastActionAttributeId, cache.LastAction)
+        cache.LastActionChanged = false
+    }
 
     if (cache.StoredOreChanged) {
         cache.K.SetGridAttribute(cache.Ctx, cache.StoredOreAttributeId, cache.StoredOre)
@@ -116,6 +131,10 @@ func (cache *PlayerCache) LoadNonce() {
     cache.NonceLoaded = true
 }
 
+func (cache *PlayerCache) LoadLastAction() {
+    cache.LastAction = cache.K.GetGridAttribute(cache.Ctx, cache.LastActionAttributeId)
+    cache.LastActionLoaded = true
+}
 
 func (cache *PlayerCache) LoadCapacity() {
     cache.Capacity = cache.K.GetGridAttribute(cache.Ctx, cache.CapacityAttributeId)
@@ -188,36 +207,32 @@ func (cache *PlayerCache) GetPlayer() (types.Player, error) {
 }
 
 
-func (cache *PlayerCache) GetPlayerId() (string) {
-    return cache.PlayerId
+func (cache *PlayerCache) GetPlayerId()         (string) { return cache.PlayerId }
+func (cache *PlayerCache) GetPrimaryAddress()   (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.PrimaryAddress }
+func (cache *PlayerCache) GetSubstationId()     (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.SubstationId }
+func (cache *PlayerCache) GetFleetId()          (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.FleetId }
+
+
+func (cache *PlayerCache) GetPlanet()   (*PlanetCache)  { if (!cache.PlanetLoaded) { cache.LoadPlanet() }; return cache.Planet }
+func (cache *PlayerCache) GetPlanetId() (string)        { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.PlanetId }
+
+func (cache *PlayerCache) GetStoredOre()            (uint64) { if (!cache.StoredOreLoaded) { cache.LoadStoredOre() }; return cache.StoredOre }
+func (cache *PlayerCache) GetLoad()                 (uint64) { if (!cache.LoadLoaded) { cache.LoadLoad() }; return cache.Load }
+func (cache *PlayerCache) GetStructsLoad()          (uint64) { if (!cache.StructsLoadLoaded) { cache.LoadStructsLoad() }; return cache.StructsLoad }
+func (cache *PlayerCache) GetCapacity()             (uint64) { if (!cache.CapacityLoaded) { cache.LoadCapacity() }; return cache.Capacity }
+func (cache *PlayerCache) GetCapacitySecondary()    (uint64) { if (!cache.CapacitySecondaryLoaded) { cache.LoadCapacitySecondary() }; return cache.CapacitySecondary }
+func (cache *PlayerCache) GetLastAction()           (uint64) { if (!cache.LastActionLoaded) { cache.LoadLastAction() }; return cache.LastAction }
+func (cache *PlayerCache) GetCharge()               (uint64) { ctxSDK := sdk.UnwrapSDKContext(cache.Ctx); return uint64(ctxSDK.BlockHeight()) - cache.GetLastAction() }
+func (cache *PlayerCache) GetAllocatableCapacity()  (uint64) {return cache.GetCapacity() - cache.GetLoad()}
+
+func (cache *PlayerCache) GetAvailableCapacity() (uint64) {
+    if (cache.GetLoad() + cache.GetStructsLoad()) > (cache.GetCapacity() + cache.GetCapacitySecondary()) {
+        return 0
+    } else {
+        return (cache.GetCapacity() + cache.GetCapacitySecondary()) - (cache.GetLoad() + cache.GetStructsLoad())
+    }
 }
 
-func (cache *PlayerCache) GetSubstationId() (string) {
-    if (!cache.PlayerLoaded) { cache.LoadPlayer() }
-    return cache.Player.SubstationId
-}
-
-func (cache *PlayerCache) GetPlanet() (*PlanetCache) {
-    if (!cache.PlanetLoaded) { cache.LoadPlanet() }
-    return cache.Planet
-}
-
-
-func (cache *PlayerCache) GetPlanetId() (string) {
-    if (!cache.PlayerLoaded) { cache.LoadPlayer() }
-    return cache.Player.PlanetId
-}
-
-
-func (cache *PlayerCache) GetFleetId() (string) {
-    if (!cache.PlayerLoaded) { cache.LoadPlayer() }
-    return cache.Player.FleetId
-}
-
-func (cache *PlayerCache) GetPrimaryAddress() (string) {
-    if (!cache.PlayerLoaded) { cache.LoadPlayer() }
-    return cache.Player.PrimaryAddress
-}
 
 func (cache *PlayerCache) GetNextNonce() (int64) {
     if (!cache.NonceLoaded) { cache.LoadNonce() }
@@ -227,37 +242,18 @@ func (cache *PlayerCache) GetNextNonce() (int64) {
     return cache.Nonce
 }
 
-
-func (cache *PlayerCache) GetLoad() (uint64) {
-    if (!cache.LoadLoaded) { cache.LoadLoad() }
-    return cache.Load
+func (cache *PlayerCache) GetBuiltQuantity(structTypeId uint64) (uint64) {
+    return cache.K.GetStructAttribute(cache.Ctx, GetStructAttributeIDByObjectIdAndSubIndex(types.StructAttributeType_typeCount, cache.GetPlayerId(), structTypeId))
 }
 
-
-func (cache *PlayerCache) GetStructsLoad() (uint64) {
-    if (!cache.StructsLoadLoaded) { cache.LoadStructsLoad() }
-    return cache.StructsLoad
+func (cache *PlayerCache) BuildQuantityIncrement(structTypeId uint64) {
+    cache.K.SetStructAttributeIncrement(cache.Ctx, GetStructAttributeIDByObjectIdAndSubIndex(types.StructAttributeType_typeCount, cache.GetPlayerId(), structTypeId), uint64(1))
 }
 
-func (cache *PlayerCache) GetCapacity() (uint64) {
-    if (!cache.CapacityLoaded) { cache.LoadCapacity() }
-    return cache.Capacity
+func (cache *PlayerCache) BuildQuantityDecrement(structTypeId uint64) {
+    cache.K.SetStructAttributeDecrement(cache.Ctx, GetStructAttributeIDByObjectIdAndSubIndex(types.StructAttributeType_typeCount, cache.GetPlayerId(), structTypeId), uint64(1))
 }
 
-
-func (cache *PlayerCache) GetCapacitySecondary() (uint64) {
-    if (!cache.CapacitySecondaryLoaded) { cache.LoadCapacitySecondary() }
-    return cache.CapacitySecondary
-}
-
-func (cache *PlayerCache) GetStoredOre() (uint64) {
-    if (!cache.StoredOreLoaded) { cache.LoadStoredOre() }
-    return cache.StoredOre
-}
-
-func (cache *PlayerCache) HasStoredOre() (bool) {
-    return (cache.GetStoredOre() > 0)
-}
 
 func (cache *PlayerCache) StoredOreDecrement(amount uint64) {
 
@@ -293,6 +289,13 @@ func (cache *PlayerCache) StructsLoadIncrement(amount uint64) {
 }
 
 
+func (cache *PlayerCache) Discharge() {
+    ctxSDK := sdk.UnwrapSDKContext(cache.Ctx)
+    cache.LastAction = uint64(ctxSDK.BlockHeight())
+    cache.LastActionChanged = true
+    cache.LastActionLoaded = true
+}
+
 func (cache *PlayerCache) SetPlanetId(planetId string) {
     cache.Player.PlanetId = planetId
     cache.PlayerChanged = true
@@ -326,6 +329,10 @@ func (cache *PlayerCache) IsOffline() (bool){
 
 func (cache *PlayerCache) HasPlanet() (bool){
     return (cache.GetPlanetId() != "")
+}
+
+func (cache *PlayerCache) HasStoredOre() (bool) {
+    return (cache.GetStoredOre() > 0)
 }
 
 /* Permissions */

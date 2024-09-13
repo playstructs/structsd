@@ -42,6 +42,9 @@ const (
     Charge_Volts = 100000000
     Charge_Resistance = 100.0
     Charge_Capacitance = 10.0
+
+    // This annoys me but whatever
+    CommandStruct = "Command"
 )
 
 var (

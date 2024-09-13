@@ -525,7 +525,69 @@ func (cache *PlanetCache) IsSuccessful(successRate fraction.Fraction) bool {
 	return (int(successRate.Numerator()) <= (randomnessOrb.Intn(max-min+1) + min))
 }
 
+func (cache *PlanetCache) BuildInitiateReadiness(structType *types.StructType, ambit types.Ambit, ambitSlot uint64) (error) {
+    if structType.Type == types.CommandStruct {
+        sdkerrors.Wrapf(types.ErrStructAction, "Command Structs can only be built directly in the fleet")
+    }
 
+    if (structType.Category != types.ObjectType_planet && structType.Category != types.ObjectType_fleet) {
+        sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist in this location (%s) ")
+    }
+
+    // Check that the Struct can exist in the specified ambit
+    if types.Ambit_flag[ambit]&structType.PossibleAmbit == 0 {
+        return sdkerrors.Wrapf(types.ErrStructAction, "Struct cannot be exist in the defined ambit (%s) based on structType (%d) ", ambit, structType.Id)
+    }
+
+    var slots uint64
+    var slot string
+    // Check Ambit / Slot
+    switch ambit {
+        case types.Ambit_land:
+            slots = cache.GetPlanet().LandSlots
+            slot  = cache.GetPlanet().Land[ambitSlot]
+        case types.Ambit_water:
+            slots = cache.GetPlanet().WaterSlots
+            slot  = cache.GetPlanet().Water[ambitSlot]
+        case types.Ambit_air:
+            slots = cache.GetPlanet().AirSlots
+            slot  = cache.GetPlanet().Air[ambitSlot]
+        case types.Ambit_space:
+            slots = cache.GetPlanet().SpaceSlots
+            slot  = cache.GetPlanet().Space[ambitSlot]
+        default:
+            return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The Struct Build was initiated on a non-existent ambit")
+    }
+
+    if (ambitSlot >= slots) {
+        return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet (%s) specified doesn't have that slot available to build on", cache.GetPlanetId())
+    }
+    if (slot != "") {
+        return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet (%s) specified already has a struct on that slot", cache.GetPlanetId())
+    }
+
+    return nil
+}
+
+
+func (cache *PlanetCache) SetSlot(structure *types.Struct) (err error) {
+    if (!cache.PlanetLoaded) { cache.LoadPlanet() }
+
+    switch structure.OperatingAmbit {
+        case types.Ambit_water:
+            cache.Planet.Water[structure.Slot] = structure.Id
+        case types.Ambit_land:
+            cache.Planet.Land[structure.Slot]  = structure.Id
+        case types.Ambit_air:
+            cache.Planet.Air[structure.Slot]   = structure.Id
+        case types.Ambit_space:
+            cache.Planet.Space[structure.Slot] = structure.Id
+        default:
+            err = sdkerrors.Wrapf(types.ErrStructAction, "Struct cannot exist in the defined ambit (%s) ", structure.OperatingAmbit)
+    }
+    cache.PlanetChanged = true
+	return
+}
 /* Game Logic */
 
 // AttemptComplete

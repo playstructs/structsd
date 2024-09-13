@@ -58,7 +58,6 @@ func (k Keeper) SetStructCount(ctx context.Context, count uint64) {
 func (k Keeper) AppendStruct(
 	ctx context.Context,
 	structure types.Struct,
-	structureType types.StructType,
 ) (types.Struct) {
  	ctxSDK := sdk.UnwrapSDKContext(ctx)
 
@@ -84,16 +83,9 @@ func (k Keeper) AppendStruct(
     permissionId := GetObjectPermissionIDBytes(structure.Id, structure.Owner)
     k.PermissionAdd(ctx, permissionId, types.PermissionAll)
 
-    // Set the main Struct dynamic attributes
-    // Current Health
-    k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_health, structure.Id),           structureType.MaxHealth)
-    // Base Status (zero)
-    k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_status, structure.Id),           uint64(types.StructStateMaterialized))
     // Block Start Build
     k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structure.Id),  uint64(ctxSDK.BlockHeight()))
 
-    // Set the grid details
-    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, structure.Owner),structureType.BuildDraw)
 
 	return structure
 }

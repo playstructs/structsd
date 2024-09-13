@@ -413,11 +413,13 @@ message MsgStructDeactivate {
 message MsgStructBuildInitiate {
   option (cosmos.msg.v1.signer) = "creator";
 
-  string creator        = 1;
-  uint64 structTypeId   = 2;
-  string planetId       = 3;
-  ambit operatingAmbit  = 4;
-  uint64 slot           = 5;
+  string creator          = 1;
+  string playerId         = 2;
+  uint64 structTypeId     = 3;
+  string locationId       = 4;
+  objectType locationType = 5;
+  ambit operatingAmbit    = 6;
+  uint64 slot             = 7;
 }
 
 

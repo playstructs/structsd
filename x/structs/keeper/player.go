@@ -9,7 +9,7 @@ import (
     storetypes "cosmossdk.io/store/types"
 
 	"context"
-    "math"
+    //"math"
     //"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -205,7 +205,10 @@ func (k Keeper) UpsertPlayer(ctx context.Context, playerAddress string, full boo
 }
 
 
+/*
+ The old charge function that actually used the math.
 
+ Now we handle the math externally and just calculate based on
 func (k Keeper) GetPlayerCharge(ctx context.Context, playerId string) (charge uint64) {
     ctxSDK := sdk.UnwrapSDKContext(ctx)
 
@@ -224,7 +227,16 @@ func (k Keeper) GetPlayerCharge(ctx context.Context, playerId string) (charge ui
 
 	return
 }
+*/
 
+func (k Keeper) GetPlayerCharge(ctx context.Context, playerId string) (charge uint64) {
+    ctxSDK := sdk.UnwrapSDKContext(ctx)
+
+    lastActionBlock := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, playerId))
+    charge = uint64(ctxSDK.BlockHeight()) - lastActionBlock
+
+	return
+}
 
 func (k Keeper) DischargePlayer(ctx context.Context, playerId string) {
     ctxSDK := sdk.UnwrapSDKContext(ctx)
