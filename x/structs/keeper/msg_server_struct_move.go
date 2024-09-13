@@ -43,6 +43,9 @@ func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (
         return &types.MsgStructStatusResponse{}, permissionError
     }
 
+    // I think we need to check power, but that might be being checked in AttemptMove
+    breaking change for comment above
+
     err := structure.AttemptMove(msg.LocationId, msg.LocationType, msg.Ambit, msg.Slot)
     if (err != nil) {
         return &types.MsgStructStatusResponse{}, err
