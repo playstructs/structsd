@@ -1286,7 +1286,6 @@ func (cache *StructCache) AttemptMove(destinationId string, destinationType type
             }
 
             cache.StructureChanged = true
-
     }
 
 
