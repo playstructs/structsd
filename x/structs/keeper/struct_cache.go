@@ -130,7 +130,7 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
                 return StructCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was not found. Building a Struct in a void might be tough", destinationId)
             }
 
-            err := planet.BuildInitiateReadiness(structType, ambit, slot)
+            err := planet.BuildInitiateReadiness(&structure, structType, ambit, slot)
             if (err != nil) {
                 return StructCache{}, err
             }
@@ -145,7 +145,7 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
                     return StructCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Fleet (%s) was not found. Building a Struct in a void might be tough", destinationId)
                 }
 
-                err := fleet.BuildInitiateReadiness(structType, ambit, slot)
+                err := fleet.BuildInitiateReadiness(&structure, structType, ambit, slot)
                 if (err != nil) {
                     return StructCache{}, err
                 }
@@ -172,7 +172,7 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
         case types.ObjectType_planet:
 
             // Update the cross reference on the planet
-            err := planet.SetSlot(&structure)
+            err := planet.SetSlot(structure)
             if (err != nil) {
                 return StructCache{}, err
             }
@@ -181,9 +181,9 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
         case types.ObjectType_fleet:
             // Update the cross reference on the planet
             if (structType.Type == types.CommandStruct) {
-                fleet.SetCommandStruct(&structure)
+                fleet.SetCommandStruct(structure)
             } else {
-                err := fleet.SetSlot(&structure)
+                err := fleet.SetSlot(structure)
                 if (err != nil) {
                     return StructCache{}, err
                 }
@@ -1187,4 +1187,108 @@ func (cache *StructCache) CanTriggerRaidDefeatByDestruction() (bool) {
         return true
     }
     return false
+}
+
+func (cache *StructCache) AttemptMove(destinationId string, destinationType types.ObjectType, ambit types.Ambit, slot uint64) (error) {
+    if (!cache.StructureLoaded) { cache.LoadStruct() }
+
+    if cache.IsOffline() {
+        return sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct cannot move when offline")
+    }
+
+    var planet PlanetCache
+    var fleet FleetCache
+
+    switch destinationType {
+        case types.ObjectType_planet:
+            // Load Planet from the PlanetId
+            planet = cache.K.GetPlanetCacheFromId(cache.Ctx, destinationId)
+            planetFound := planet.LoadPlanet()
+            if !planetFound {
+                return  sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was not found. Building a Struct in a void might be tough", destinationId)
+            }
+
+            err := planet.MoveReadiness(cache, ambit, slot)
+            if (err != nil) {
+                return err
+            }
+
+        case types.ObjectType_fleet:
+            // Load the Fleet
+            fleet, _ = cache.K.GetFleetCacheFromId(cache.Ctx, destinationId)
+            fleetFound := fleet.LoadFleet()
+            if !fleetFound {
+                return sdkerrors.Wrapf(types.ErrObjectNotFound, "Fleet (%s) was not found. Building a Struct in a void might be tough", destinationId)
+            }
+
+            err := fleet.MoveReadiness(cache, ambit, slot)
+            if (err != nil) {
+                return  err
+            }
+
+        default:
+            return sdkerrors.Wrapf(types.ErrObjectNotFound, "We're not building these yet")
+    }
+
+    switch (cache.Structure.LocationType) {
+        case types.ObjectType_planet:
+            previousPlanet := cache.K.GetPlanetCacheFromId(cache.Ctx, cache.Structure.LocationId)
+            previousPlanet.ClearSlot(cache.Structure.OperatingAmbit, cache.Structure.Slot)
+            previousPlanet.Commit()
+        case types.ObjectType_fleet:
+            if (cache.GetStructType().Type != types.CommandStruct) {
+                previousFleet, _ := cache.K.GetFleetCacheFromId(cache.Ctx, cache.Structure.LocationId)
+                previousFleet.ClearSlot(cache.Structure.OperatingAmbit, cache.Structure.Slot)
+                previousFleet.Commit()
+            }
+    }
+
+   switch destinationType {
+        case types.ObjectType_planet:
+
+            cache.Structure.LocationId = destinationId
+            cache.Structure.LocationType = destinationType
+            cache.Structure.OperatingAmbit = ambit
+
+            // Update the cross reference on the planet
+            err := planet.SetSlot(cache.Structure)
+            if (err != nil) {
+                return err
+            }
+
+
+            // TODO, do a check to see if the old planet had uncommitted changes
+            cache.Planet = &planet
+            cache.PlanetLoaded = true
+            cache.PlanetChanged = true
+        case types.ObjectType_fleet:
+
+            // Update the cross reference on the planet
+            if (cache.GetStructType().Type == types.CommandStruct) {
+                cache.Structure.OperatingAmbit = ambit
+            } else {
+
+                cache.Structure.LocationId = destinationId
+                cache.Structure.LocationType = destinationType
+                cache.Structure.OperatingAmbit = ambit
+                cache.Structure.Slot = slot
+
+
+                err := fleet.SetSlot(cache.Structure)
+                if (err != nil) {
+                    return err
+                }
+
+                // TODO, do a check to see if the old fleet had uncommitted changes
+                cache.Fleet = &fleet
+                cache.FleetLoaded = true
+                cache.FleetChanged = true
+            }
+
+            cache.StructureChanged = true
+
+    }
+
+
+    return  nil
 }

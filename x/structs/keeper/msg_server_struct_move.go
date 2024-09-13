@@ -11,71 +11,45 @@ import (
 	sdkerrors "cosmossdk.io/errors"
 	*/
 
+    sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 )
 
-
-func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (*types.MsgStructStatusResponse, error) {
 /*
-	ctx := sdk.UnwrapSDKContext(goCtx)
+message MsgStructMove {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator      = 1;
+  string structId     = 2;
+  string locationId   = 3;
+  string locationType = 4;
+  ambit  ambit        = 5;
+  uint64 slot         = 6;
+}
+
+*/
+func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (*types.MsgStructStatusResponse, error) {
+    ctx := sdk.UnwrapSDKContext(goCtx)
 
     // Add an Active Address record to the
     // indexer for UI requirements
-	k.AddressEmitActivity(ctx, msg.Creator)
+    k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
-    if (callingPlayerIndex == 0) {
-        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct actions requires Player account but none associated with %s", msg.Creator)
-    }
-    callingPlayerId := GetObjectID(types.ObjectType_player, callingPlayerIndex)
+    structure := k.GetStructCacheFromId(ctx, msg.StructId)
 
-    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-    // Make sure the address calling this has Play permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionPlay)) {
-        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
+    // Check to see if the caller has permissions to proceed
+    permissionError := structure.CanBePlayedBy(msg.Creator)
+    if (permissionError != nil) {
+        return &types.MsgStructStatusResponse{}, permissionError
     }
 
-    structStatusAttributeId := GetStructAttributeIDByObjectId(types.StructAttributeType_status, msg.StructId)
-
-    structure, structureFound := k.GetStruct(ctx, msg.StructId)
-    if (!structureFound) {
-        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) not found", msg.StructId)
+    err := structure.AttemptMove(msg.LocationId, msg.LocationType, msg.Ambit, msg.Slot)
+    if (err != nil) {
+        return &types.MsgStructStatusResponse{}, err
     }
 
-    // Is the Struct online?
-    if (k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateOnline))) {
-        k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is offline. Activate it", msg.StructId)
-    }
+    structure.GetOwner().Discharge()
+    structure.Commit()
 
-    if (callingPlayerId != structure.Owner) {
-        // Check permissions on Creator on Planet
-        playerPermissionId := GetObjectPermissionIDBytes(structure.Owner, callingPlayerId)
-        if (!k.PermissionHasOneOf(ctx, playerPermissionId, types.PermissionPlay)) {
-            return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayerId, structure.Owner)
-        }
-    }
-    sudoPlayer, _ := k.GetPlayer(ctx, structure.Owner, true)
-    if (!sudoPlayer.IsOnline()){
-        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",sudoPlayer.Id)
-    }
-
-    // Load Struct Type
-    structType, structTypeFound := k.GetStructType(ctx, structure.Type)
-    if (!structTypeFound) {
-        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct Type (%d) was not found. Building a Struct with schematics might be tough", structure.Type)
-    }
-
-    // Check Sudo Player Charge
-    // Maaaayybe we let the calling player use its charge but idk
-    // Then people could have a stack of accounts to increase action throughput
-    playerCharge := k.GetPlayerCharge(ctx, structure.Owner)
-    if (playerCharge < structType.OreMiningCharge) {
-        k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for mining, but player (%s) only had %d", structure.Type, structType.ActivateCharge, structure.Owner, playerCharge)
-    }
-
-    k.DischargePlayer(ctx, structure.Owner)
-*/
 	return &types.MsgStructStatusResponse{}, nil
 }

@@ -465,11 +465,12 @@ message MsgStructDefenseClear {
 message MsgStructMove {
   option (cosmos.msg.v1.signer) = "creator";
 
-  string creator      = 1;
-  string structId     = 2;
-  string locationId   = 3;
-  ambit  ambit        = 4;
-  uint64 slot         = 5;
+  string creator          = 1;
+  string structId         = 2;
+  string locationId       = 3;
+  objectType locationType = 4;
+  ambit  ambit            = 5;
+  uint64 slot             = 6;
 }
 
 message MsgStructAttack {

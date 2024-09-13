@@ -21662,6 +21662,20 @@ paths:
                 type: string
               locationId:
                 type: string
+              locationType:
+                type: string
+                enum:
+                  - guild
+                  - player
+                  - planet
+                  - reactor
+                  - substation
+                  - struct
+                  - allocation
+                  - infusion
+                  - address
+                  - fleet
+                default: guild
               ambit:
                 type: string
                 enum:
@@ -35165,6 +35179,20 @@ definitions:
         type: string
       locationId:
         type: string
+      locationType:
+        type: string
+        enum:
+          - guild
+          - player
+          - planet
+          - reactor
+          - substation
+          - struct
+          - allocation
+          - infusion
+          - address
+          - fleet
+        default: guild
       ambit:
         type: string
         enum:
