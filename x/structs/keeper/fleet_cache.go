@@ -372,9 +372,34 @@ func (cache *FleetCache) SetSlot(structure *types.Struct) (err error) {
 }
 
 
+
+func (cache *FleetCache) ClearSlot(ambit types.Ambit, slot uint64)  {
+    if (!cache.FleetLoaded) { cache.LoadFleet() }
+
+    switch ambit {
+        case types.Ambit_water:
+            cache.Fleet.Water[slot] = ""
+        case types.Ambit_land:
+            cache.Fleet.Land[slot]  = ""
+        case types.Ambit_air:
+            cache.Fleet.Air[slot]   = ""
+        case types.Ambit_space:
+            cache.Fleet.Space[slot] = ""
+    }
+    cache.FleetChanged = true
+}
+
+
 func (cache *FleetCache) SetCommandStruct(structure *types.Struct) {
     if (!cache.FleetLoaded) { cache.LoadFleet() }
 
     cache.Fleet.CommandStruct = structure.Id
+    cache.FleetChanged = true
+}
+
+func (cache *FleetCache) ClearCommandStruct() {
+    if (!cache.FleetLoaded) { cache.LoadFleet() }
+
+    cache.Fleet.CommandStruct = ""
     cache.FleetChanged = true
 }

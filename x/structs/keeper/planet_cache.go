@@ -588,6 +588,24 @@ func (cache *PlanetCache) SetSlot(structure *types.Struct) (err error) {
     cache.PlanetChanged = true
 	return
 }
+
+
+func (cache *PlanetCache) ClearSlot(ambit types.Ambit, slot uint64) {
+    if (!cache.PlanetLoaded) { cache.LoadPlanet() }
+
+    switch ambit {
+        case types.Ambit_water:
+            cache.Planet.Water[slot] = ""
+        case types.Ambit_land:
+            cache.Planet.Land[slot]  = ""
+        case types.Ambit_air:
+            cache.Planet.Air[slot]   = ""
+        case types.Ambit_space:
+            cache.Planet.Space[slot] = ""
+    }
+    cache.PlanetChanged = true
+}
+
 /* Game Logic */
 
 // AttemptComplete
