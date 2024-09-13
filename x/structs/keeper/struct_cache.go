@@ -106,36 +106,74 @@ func (k *Keeper) GetStructCacheFromId(ctx context.Context, structId string) (Str
 
 // Build this initial Struct Cache object
 // This does no validation on the provided structId
-func (k *Keeper) InitiateStruct(creatorAddress string, playerId string, structTypeId uint64, destinationId string, destinationType types.ObjectType, ambit types.Ambit, slot uint64) (StructCache, error) {
+func (k *Keeper) InitiateStruct(creatorAddress string, owner *PlayerCache, structType *types.StructType, destinationId string, destinationType types.ObjectType, ambit types.Ambit, slot uint64) (StructCache, error) {
 
-    var err error
-    var creator *PlayerCache
-    var owner *PlayerCache
-    var structure type.Struct
-    var structType *types.StructType
+    var ownerChanged bool
+
     var planet *PlanetCache
+    var planetChanged bool
+
     var fleet *FleetCache
+    var fleetChanged bool
 
-    // Load the Owner Player
+    // Check Owner Power availability
 
-    // Check Permissions based on Creator Address
-
-    // Load the Struct Type
-        // Do a check on the destination type
 
 
     switch destinationType {
         case types.ObjectType_planet:
-            // Load the Planet
+            // Load Planet from the PlanetId
+            planet := cache.K.GetPlanetCacheFromId(cache.Ctx, destinationId)
+            planetFound := planet.LoadPlanet()
+            if !planetFound {
+                return StructCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was not found. Building a Struct in a void might be tough", destinationId)
+            }
+
+            err := planet.BuildInitiateReadiness(structType, ambit, slot)
+            if (err != nil) {
+                return StructCache{}, err
+            }
+
+
         case types.ObjectType_fleet:
-                // Load the Fleet (maybe)
+                // Load the Fleet
+                fleet := cache.K.GetFleetCacheFromId(cache.Ctx, destinationId)
+                fleetFound := fleet.LoadFleet()
+                if !fleetFound {
+                    return StructCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Fleet (%s) was not found. Building a Struct in a void might be tough", destinationId)
+                }
 
-                // Load the Planet
+                err := fleet.BuildInitiateReadiness(structType, ambit, slot)
+                    // Fleet isn't at home
+                    // structType isn't fleet
+                    // ambit doesn't exist
+                    // slot isn't available
+                if (err != nil) {
+                    return StructCache{}, err
+                }
+
         default:
-
+            return StructCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "We're not building these yet")
     }
 
-    // Create the Struct Object
+   // this needs some TODO'n
+   // this has some location checks built in that probably shouldn't be there now
+    structure, err := types.CreateBaseStruct(structType, creatorAddress, owner.GetPlayerId(), destinationId, destinationType, ambit, slot)
+    if (err != nil) {
+        return &types.StructCache{}, err
+    }
+
+    // Commit the initial object at this point
+
+
+   switch destinationType {
+        case types.ObjectType_planet:
+            // write to the planet
+
+        case types.ObjectType_fleet:
+            // write to the fleet
+
+    }
 
 
     // Start to put the pieces together
@@ -144,9 +182,24 @@ func (k *Keeper) InitiateStruct(creatorAddress string, playerId string, structTy
                   K: k,
                   Ctx: ctx,
 
+                  Owner: &owner,
+                  OwnerLoaded: true,
+                  OwnerChanged: ownerChanged,
+
+                  Planet: &planet,
+                  PlanetLoaded: true,
+                  PlanetChanged: planetChanged,
+
+                  Fleet: &fleet,
+                  FleetLoaded: true,
+                  FleetChanged: fleetChanged,
+
+                  // Include the health value
                   HealthAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_health, structId),
+                  // Include the initial status value
                   StatusAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_status, structId),
 
+                    // include the initial build block value
                   BlockStartBuildAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structId),
                   BlockStartOreMineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structId),
                   BlockStartOreRefineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structId),

@@ -22,42 +22,53 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    // Load Initiator Player from the Creator
-    callingPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
-    if (callingPlayerIndex == 0) {
+    // Load the Owner Player
+    owner, err := cache.K.GetPlayerCacheFromId(cache.Ctx, msg.PlayerId)
+    if (err != nil) {
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build initialization requires Player account but none associated with %s", msg.Creator)
     }
-    callingPlayerId := GetObjectID(types.ObjectType_player, callingPlayerIndex)
 
-
-    // Load Planet from the PlanetId
-    planet, planetFound := k.GetPlanet(ctx, msg.PlanetId)
-    if (!planetFound) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was ot found. Building a Struct in a void might be tough", msg.PlanetId)
+    // Check address play permissions
+    permissionError := owner.CanBePlayedBy(msg.Creator)
+    if (permissionError != nil) {
+        return &types.MsgStructStatusResponse{}, permissionError
     }
 
-    // Load the target player account
-    sudoPlayer, sudoPlayerFound := k.GetPlayer(ctx, planet.Owner, true)
-    if (!sudoPlayerFound) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build initialization requires Player but somehow planet has none %s", planet.Owner)
+    // Load the Struct Type
+    structType, structTypeFound := k.GetStructType(ctx, msg.StructTypeId)
+    if !structTypeFound {
+        return MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct Type (%d) was not found. Building a Struct with schematics might be tough", msg.StructTypeId)
     }
+
+    // Check that the player can build more of this type of Struct
+    if (structType.GetBuildLimit() > 0) {
+        if (k.GetStructAttribute(ctx, GetStructAttributeIDByObjectIdAndSubIndex(types.StructAttributeType_typeCount, owner.GetPlayerId(), msg.StructTypeId)) >= structType.GetBuildLimit()) {
+            k.DischargePlayer(ctx, sudoPlayer.Id)
+            return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) cannot build more of this type ",sudoPlayer.Id)
+        }
+    }
+
+    // Check Sudo Player Charge
+    playerCharge := k.GetPlayerCharge(ctx, owner.GetPlayerId())
+    if (playerCharge < structType.BuildCharge) {
+        k.DischargePlayer(ctx, owner.GetPlayerId())
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to build, but player (%s) only had %d", msg.StructTypeId, structType.BuildCharge, sudoPlayer.Id, playerCharge)
+    }
+
+
+
+
+
+
+
+
+
+
     if (!sudoPlayer.IsOnline()){
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",sudoPlayer.Id)
     }
 
-    if (sudoPlayer.Id != callingPlayerId) {
-        // Check permissions on Creator on Planet
-        playerPermissionId := GetObjectPermissionIDBytes(sudoPlayer.Id, callingPlayerId)
-        if (!k.PermissionHasOneOf(ctx, playerPermissionId, types.PermissionPlay)) {
-            return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayerId, sudoPlayer.Id)
-        }
-    }
 
-    // Make sure the address calling this has Play permissions
-    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionPlay)) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
-    }
 
     var planetSlots uint64
     var planetSlot string
@@ -84,27 +95,6 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     }
     if (planetSlot != "") {
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet (%s) specified already has a struct on that slot", msg.PlanetId)
-    }
-
-    // Load Struct Type
-    structType, structTypeFound := k.GetStructType(ctx, msg.StructTypeId)
-    if (!structTypeFound) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct Type (%d) was not found. Building a Struct with schematics might be tough", msg.StructTypeId)
-    }
-
-    // Check that the player can build more of this type of Struct
-    if (structType.GetBuildLimit() > 0) {
-        if (k.GetStructAttribute(ctx, GetStructAttributeIDByObjectIdAndSubIndex(types.StructAttributeType_typeCount, sudoPlayer.Id, msg.StructTypeId)) >= structType.GetBuildLimit()) {
-            k.DischargePlayer(ctx, sudoPlayer.Id)
-            return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) cannot build more of this type ",sudoPlayer.Id)
-        }
-    }
-
-    // Check Sudo Player Charge
-    playerCharge := k.GetPlayerCharge(ctx, sudoPlayer.Id)
-    if (playerCharge < structType.BuildCharge) {
-        k.DischargePlayer(ctx, sudoPlayer.Id)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to build, but player (%s) only had %d", msg.StructTypeId, structType.BuildCharge, sudoPlayer.Id, playerCharge)
     }
 
     // This process will check the location details to make sure they're acceptable based on the structType

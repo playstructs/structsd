@@ -29,7 +29,7 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
 
     destination := k.GetPlanetCacheFromId(ctx, msg.DestinationLocationId)
     if (!destination.LoadPlanet()) {
-        return &types.MsgFleetMoveResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Player (%s) is offline due to power", destination.GetOwnerId())
+        return &types.MsgFleetMoveResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Planet (%s) wasn't found", msg.DestinationLocationId)
     }
 
     // Is the Fleet able to move?
