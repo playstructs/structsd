@@ -31,6 +31,11 @@ type PlanetCache struct {
     OwnerLoaded bool
     Owner *PlayerCache
 
+    BlockStartRaidAttributeId string
+    BlockStartRaidLoaded bool
+    BlockStartRaidChanged bool
+    BlockStartRaid  uint64
+
     BuriedOreAttributeId string
     BuriedOreLoaded bool
     BuriedOreChanged bool
@@ -101,6 +106,7 @@ func (k *Keeper) GetPlanetCacheFromId(ctx context.Context, planetId string) (Pla
         K: k,
         Ctx: ctx,
 
+        BlockStartRaidAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_blockStartRaid, planetId),
         BuriedOreAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_ore, planetId),
 
         PlanetaryShieldAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_planetaryShield, planetId),
@@ -128,6 +134,12 @@ func (cache *PlanetCache) Commit() () {
     if (cache.PlanetChanged) {
         cache.K.SetPlanet(cache.Ctx, cache.Planet)
         cache.PlanetChanged = false
+    }
+
+
+    if (cache.BlockStartRaidChanged) {
+        cache.K.SetPlanetAttribute(cache.Ctx, cache.BlockStartRaidAttributeId, cache.BlockStartRaid)
+        cache.BlockStartRaidChanged = false
     }
 
     if (cache.BuriedOreChanged) {
@@ -199,6 +211,13 @@ func (cache *PlanetCache) LoadOwner() (bool) {
     cache.Owner = &newOwner
     cache.OwnerLoaded = true
     return cache.OwnerLoaded
+}
+
+
+// Load the BuriedOre record
+func (cache *PlanetCache) LoadBlockStartRaid() {
+    cache.BlockStartRaid = cache.K.GetPlanetAttribute(cache.Ctx, cache.BlockStartRaidAttributeId)
+    cache.BlockStartRaidLoaded = true
 }
 
 // Load the BuriedOre record
@@ -282,6 +301,11 @@ func (cache *PlanetCache) GetOwner() (*PlayerCache) {
 func (cache *PlanetCache) GetPlanet() (types.Planet) {
     if (!cache.PlanetLoaded) { cache.LoadPlanet() }
     return cache.Planet
+}
+
+func (cache *PlanetCache) GetBlockStartRaid() (uint64) {
+    if (!cache.BlockStartRaidLoaded) { cache.LoadBlockStartRaid() }
+    return cache.BlockStartRaid
 }
 
 func (cache *PlanetCache) GetBuriedOre() (uint64) {
@@ -388,6 +412,12 @@ func (cache *PlanetCache) SetLocationListLast(fleetId string) {
     cache.PlanetChanged = true
 }
 
+func (cache *StructCache) ResetBlockStartRaid() {
+    uctx := sdk.UnwrapSDKContext(cache.Ctx)
+    cache.BlockStartRaid = uint64(uctx.BlockHeight())
+    cache.BlockStartRaidLoaded = true
+    cache.BlockStartRaidChanged = true
+}
 
 func (cache *PlanetCache) BuriedOreDecrement(amount uint64) {
 

@@ -117,7 +117,7 @@ enum planetAttributeType {
     orbitalJammingStationQuantity                           = 8;
     advancedOrbitalJammingStationQuantity                   = 9;
 
-
+    blockStartRaid                                          = 10;
 }
 
 enum techWeaponSystem {

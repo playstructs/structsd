@@ -47,6 +47,7 @@ const (
 	Msg_PermissionRevokeOnAddress_FullMethodName                     = "/structs.structs.Msg/PermissionRevokeOnAddress"
 	Msg_PermissionRevokeOnObject_FullMethodName                      = "/structs.structs.Msg/PermissionRevokeOnObject"
 	Msg_PlanetExplore_FullMethodName                                 = "/structs.structs.Msg/PlanetExplore"
+	Msg_PlanetRaidComplete_FullMethodName                            = "/structs.structs.Msg/PlanetRaidComplete"
 	Msg_PlayerUpdatePrimaryAddress_FullMethodName                    = "/structs.structs.Msg/PlayerUpdatePrimaryAddress"
 	Msg_StructActivate_FullMethodName                                = "/structs.structs.Msg/StructActivate"
 	Msg_StructDeactivate_FullMethodName                              = "/structs.structs.Msg/StructDeactivate"
@@ -104,6 +105,7 @@ type MsgClient interface {
 	PermissionRevokeOnAddress(ctx context.Context, in *MsgPermissionRevokeOnAddress, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
 	PermissionRevokeOnObject(ctx context.Context, in *MsgPermissionRevokeOnObject, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
 	PlanetExplore(ctx context.Context, in *MsgPlanetExplore, opts ...grpc.CallOption) (*MsgPlanetExploreResponse, error)
+	PlanetRaidComplete(ctx context.Context, in *MsgPlanetRaidComplete, opts ...grpc.CallOption) (*MsgPlanetRaidCompleteResponse, error)
 	PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlayerUpdatePrimaryAddress, opts ...grpc.CallOption) (*MsgPlayerUpdatePrimaryAddressResponse, error)
 	StructActivate(ctx context.Context, in *MsgStructActivate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructDeactivate(ctx context.Context, in *MsgStructDeactivate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
@@ -387,6 +389,15 @@ func (c *msgClient) PlanetExplore(ctx context.Context, in *MsgPlanetExplore, opt
 	return out, nil
 }
 
+func (c *msgClient) PlanetRaidComplete(ctx context.Context, in *MsgPlanetRaidComplete, opts ...grpc.CallOption) (*MsgPlanetRaidCompleteResponse, error) {
+	out := new(MsgPlanetRaidCompleteResponse)
+	err := c.cc.Invoke(ctx, Msg_PlanetRaidComplete_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlayerUpdatePrimaryAddress, opts ...grpc.CallOption) (*MsgPlayerUpdatePrimaryAddressResponse, error) {
 	out := new(MsgPlayerUpdatePrimaryAddressResponse)
 	err := c.cc.Invoke(ctx, Msg_PlayerUpdatePrimaryAddress_FullMethodName, in, out, opts...)
@@ -610,6 +621,7 @@ type MsgServer interface {
 	PermissionRevokeOnAddress(context.Context, *MsgPermissionRevokeOnAddress) (*MsgPermissionResponse, error)
 	PermissionRevokeOnObject(context.Context, *MsgPermissionRevokeOnObject) (*MsgPermissionResponse, error)
 	PlanetExplore(context.Context, *MsgPlanetExplore) (*MsgPlanetExploreResponse, error)
+	PlanetRaidComplete(context.Context, *MsgPlanetRaidComplete) (*MsgPlanetRaidCompleteResponse, error)
 	PlayerUpdatePrimaryAddress(context.Context, *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error)
 	StructActivate(context.Context, *MsgStructActivate) (*MsgStructStatusResponse, error)
 	StructDeactivate(context.Context, *MsgStructDeactivate) (*MsgStructStatusResponse, error)
@@ -721,6 +733,9 @@ func (UnimplementedMsgServer) PermissionRevokeOnObject(context.Context, *MsgPerm
 }
 func (UnimplementedMsgServer) PlanetExplore(context.Context, *MsgPlanetExplore) (*MsgPlanetExploreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlanetExplore not implemented")
+}
+func (UnimplementedMsgServer) PlanetRaidComplete(context.Context, *MsgPlanetRaidComplete) (*MsgPlanetRaidCompleteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlanetRaidComplete not implemented")
 }
 func (UnimplementedMsgServer) PlayerUpdatePrimaryAddress(context.Context, *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlayerUpdatePrimaryAddress not implemented")
@@ -1302,6 +1317,24 @@ func _Msg_PlanetExplore_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_PlanetRaidComplete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgPlanetRaidComplete)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).PlanetRaidComplete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_PlanetRaidComplete_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).PlanetRaidComplete(ctx, req.(*MsgPlanetRaidComplete))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_PlayerUpdatePrimaryAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgPlayerUpdatePrimaryAddress)
 	if err := dec(in); err != nil {
@@ -1798,6 +1831,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PlanetExplore",
 			Handler:    _Msg_PlanetExplore_Handler,
+		},
+		{
+			MethodName: "PlanetRaidComplete",
+			Handler:    _Msg_PlanetRaidComplete_Handler,
 		},
 		{
 			MethodName: "PlayerUpdatePrimaryAddress",

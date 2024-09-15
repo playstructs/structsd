@@ -19889,6 +19889,1053 @@ func (x *fastReflection_MsgPlanetExploreResponse) ProtoMethods() *protoiface.Met
 }
 
 var (
+	md_MsgPlanetRaidComplete         protoreflect.MessageDescriptor
+	fd_MsgPlanetRaidComplete_creator protoreflect.FieldDescriptor
+	fd_MsgPlanetRaidComplete_fleetId protoreflect.FieldDescriptor
+	fd_MsgPlanetRaidComplete_proof   protoreflect.FieldDescriptor
+	fd_MsgPlanetRaidComplete_nonce   protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_tx_proto_init()
+	md_MsgPlanetRaidComplete = File_structs_structs_tx_proto.Messages().ByName("MsgPlanetRaidComplete")
+	fd_MsgPlanetRaidComplete_creator = md_MsgPlanetRaidComplete.Fields().ByName("creator")
+	fd_MsgPlanetRaidComplete_fleetId = md_MsgPlanetRaidComplete.Fields().ByName("fleetId")
+	fd_MsgPlanetRaidComplete_proof = md_MsgPlanetRaidComplete.Fields().ByName("proof")
+	fd_MsgPlanetRaidComplete_nonce = md_MsgPlanetRaidComplete.Fields().ByName("nonce")
+}
+
+var _ protoreflect.Message = (*fastReflection_MsgPlanetRaidComplete)(nil)
+
+type fastReflection_MsgPlanetRaidComplete MsgPlanetRaidComplete
+
+func (x *MsgPlanetRaidComplete) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgPlanetRaidComplete)(x)
+}
+
+func (x *MsgPlanetRaidComplete) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_tx_proto_msgTypes[38]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_MsgPlanetRaidComplete_messageType fastReflection_MsgPlanetRaidComplete_messageType
+var _ protoreflect.MessageType = fastReflection_MsgPlanetRaidComplete_messageType{}
+
+type fastReflection_MsgPlanetRaidComplete_messageType struct{}
+
+func (x fastReflection_MsgPlanetRaidComplete_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgPlanetRaidComplete)(nil)
+}
+func (x fastReflection_MsgPlanetRaidComplete_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgPlanetRaidComplete)
+}
+func (x fastReflection_MsgPlanetRaidComplete_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgPlanetRaidComplete
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_MsgPlanetRaidComplete) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgPlanetRaidComplete
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_MsgPlanetRaidComplete) Type() protoreflect.MessageType {
+	return _fastReflection_MsgPlanetRaidComplete_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_MsgPlanetRaidComplete) New() protoreflect.Message {
+	return new(fastReflection_MsgPlanetRaidComplete)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_MsgPlanetRaidComplete) Interface() protoreflect.ProtoMessage {
+	return (*MsgPlanetRaidComplete)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_MsgPlanetRaidComplete) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Creator != "" {
+		value := protoreflect.ValueOfString(x.Creator)
+		if !f(fd_MsgPlanetRaidComplete_creator, value) {
+			return
+		}
+	}
+	if x.FleetId != "" {
+		value := protoreflect.ValueOfString(x.FleetId)
+		if !f(fd_MsgPlanetRaidComplete_fleetId, value) {
+			return
+		}
+	}
+	if x.Proof != "" {
+		value := protoreflect.ValueOfString(x.Proof)
+		if !f(fd_MsgPlanetRaidComplete_proof, value) {
+			return
+		}
+	}
+	if x.Nonce != "" {
+		value := protoreflect.ValueOfString(x.Nonce)
+		if !f(fd_MsgPlanetRaidComplete_nonce, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_MsgPlanetRaidComplete) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.MsgPlanetRaidComplete.creator":
+		return x.Creator != ""
+	case "structs.structs.MsgPlanetRaidComplete.fleetId":
+		return x.FleetId != ""
+	case "structs.structs.MsgPlanetRaidComplete.proof":
+		return x.Proof != ""
+	case "structs.structs.MsgPlanetRaidComplete.nonce":
+		return x.Nonce != ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetRaidComplete"))
+		}
+		panic(fmt.Errorf("message structs.structs.MsgPlanetRaidComplete does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgPlanetRaidComplete) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.MsgPlanetRaidComplete.creator":
+		x.Creator = ""
+	case "structs.structs.MsgPlanetRaidComplete.fleetId":
+		x.FleetId = ""
+	case "structs.structs.MsgPlanetRaidComplete.proof":
+		x.Proof = ""
+	case "structs.structs.MsgPlanetRaidComplete.nonce":
+		x.Nonce = ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetRaidComplete"))
+		}
+		panic(fmt.Errorf("message structs.structs.MsgPlanetRaidComplete does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_MsgPlanetRaidComplete) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.MsgPlanetRaidComplete.creator":
+		value := x.Creator
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.MsgPlanetRaidComplete.fleetId":
+		value := x.FleetId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.MsgPlanetRaidComplete.proof":
+		value := x.Proof
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.MsgPlanetRaidComplete.nonce":
+		value := x.Nonce
+		return protoreflect.ValueOfString(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetRaidComplete"))
+		}
+		panic(fmt.Errorf("message structs.structs.MsgPlanetRaidComplete does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgPlanetRaidComplete) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.MsgPlanetRaidComplete.creator":
+		x.Creator = value.Interface().(string)
+	case "structs.structs.MsgPlanetRaidComplete.fleetId":
+		x.FleetId = value.Interface().(string)
+	case "structs.structs.MsgPlanetRaidComplete.proof":
+		x.Proof = value.Interface().(string)
+	case "structs.structs.MsgPlanetRaidComplete.nonce":
+		x.Nonce = value.Interface().(string)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetRaidComplete"))
+		}
+		panic(fmt.Errorf("message structs.structs.MsgPlanetRaidComplete does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgPlanetRaidComplete) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.MsgPlanetRaidComplete.creator":
+		panic(fmt.Errorf("field creator of message structs.structs.MsgPlanetRaidComplete is not mutable"))
+	case "structs.structs.MsgPlanetRaidComplete.fleetId":
+		panic(fmt.Errorf("field fleetId of message structs.structs.MsgPlanetRaidComplete is not mutable"))
+	case "structs.structs.MsgPlanetRaidComplete.proof":
+		panic(fmt.Errorf("field proof of message structs.structs.MsgPlanetRaidComplete is not mutable"))
+	case "structs.structs.MsgPlanetRaidComplete.nonce":
+		panic(fmt.Errorf("field nonce of message structs.structs.MsgPlanetRaidComplete is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetRaidComplete"))
+		}
+		panic(fmt.Errorf("message structs.structs.MsgPlanetRaidComplete does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_MsgPlanetRaidComplete) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.MsgPlanetRaidComplete.creator":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.MsgPlanetRaidComplete.fleetId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.MsgPlanetRaidComplete.proof":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.MsgPlanetRaidComplete.nonce":
+		return protoreflect.ValueOfString("")
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetRaidComplete"))
+		}
+		panic(fmt.Errorf("message structs.structs.MsgPlanetRaidComplete does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_MsgPlanetRaidComplete) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgPlanetRaidComplete", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_MsgPlanetRaidComplete) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgPlanetRaidComplete) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_MsgPlanetRaidComplete) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_MsgPlanetRaidComplete) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*MsgPlanetRaidComplete)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.Creator)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.FleetId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.Proof)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.Nonce)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*MsgPlanetRaidComplete)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.Nonce) > 0 {
+			i -= len(x.Nonce)
+			copy(dAtA[i:], x.Nonce)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Nonce)))
+			i--
+			dAtA[i] = 0x22
+		}
+		if len(x.Proof) > 0 {
+			i -= len(x.Proof)
+			copy(dAtA[i:], x.Proof)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Proof)))
+			i--
+			dAtA[i] = 0x1a
+		}
+		if len(x.FleetId) > 0 {
+			i -= len(x.FleetId)
+			copy(dAtA[i:], x.FleetId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.FleetId)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.Creator) > 0 {
+			i -= len(x.Creator)
+			copy(dAtA[i:], x.Creator)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Creator)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*MsgPlanetRaidComplete)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgPlanetRaidComplete: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgPlanetRaidComplete: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Creator = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field FleetId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.FleetId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Proof", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Proof = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Nonce", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Nonce = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_MsgPlanetRaidCompleteResponse        protoreflect.MessageDescriptor
+	fd_MsgPlanetRaidCompleteResponse_planet protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_tx_proto_init()
+	md_MsgPlanetRaidCompleteResponse = File_structs_structs_tx_proto.Messages().ByName("MsgPlanetRaidCompleteResponse")
+	fd_MsgPlanetRaidCompleteResponse_planet = md_MsgPlanetRaidCompleteResponse.Fields().ByName("planet")
+}
+
+var _ protoreflect.Message = (*fastReflection_MsgPlanetRaidCompleteResponse)(nil)
+
+type fastReflection_MsgPlanetRaidCompleteResponse MsgPlanetRaidCompleteResponse
+
+func (x *MsgPlanetRaidCompleteResponse) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgPlanetRaidCompleteResponse)(x)
+}
+
+func (x *MsgPlanetRaidCompleteResponse) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_tx_proto_msgTypes[39]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_MsgPlanetRaidCompleteResponse_messageType fastReflection_MsgPlanetRaidCompleteResponse_messageType
+var _ protoreflect.MessageType = fastReflection_MsgPlanetRaidCompleteResponse_messageType{}
+
+type fastReflection_MsgPlanetRaidCompleteResponse_messageType struct{}
+
+func (x fastReflection_MsgPlanetRaidCompleteResponse_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgPlanetRaidCompleteResponse)(nil)
+}
+func (x fastReflection_MsgPlanetRaidCompleteResponse_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgPlanetRaidCompleteResponse)
+}
+func (x fastReflection_MsgPlanetRaidCompleteResponse_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgPlanetRaidCompleteResponse
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_MsgPlanetRaidCompleteResponse) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgPlanetRaidCompleteResponse
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_MsgPlanetRaidCompleteResponse) Type() protoreflect.MessageType {
+	return _fastReflection_MsgPlanetRaidCompleteResponse_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_MsgPlanetRaidCompleteResponse) New() protoreflect.Message {
+	return new(fastReflection_MsgPlanetRaidCompleteResponse)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_MsgPlanetRaidCompleteResponse) Interface() protoreflect.ProtoMessage {
+	return (*MsgPlanetRaidCompleteResponse)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_MsgPlanetRaidCompleteResponse) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Planet != nil {
+		value := protoreflect.ValueOfMessage(x.Planet.ProtoReflect())
+		if !f(fd_MsgPlanetRaidCompleteResponse_planet, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_MsgPlanetRaidCompleteResponse) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.MsgPlanetRaidCompleteResponse.planet":
+		return x.Planet != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetRaidCompleteResponse"))
+		}
+		panic(fmt.Errorf("message structs.structs.MsgPlanetRaidCompleteResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgPlanetRaidCompleteResponse) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.MsgPlanetRaidCompleteResponse.planet":
+		x.Planet = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetRaidCompleteResponse"))
+		}
+		panic(fmt.Errorf("message structs.structs.MsgPlanetRaidCompleteResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_MsgPlanetRaidCompleteResponse) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.MsgPlanetRaidCompleteResponse.planet":
+		value := x.Planet
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetRaidCompleteResponse"))
+		}
+		panic(fmt.Errorf("message structs.structs.MsgPlanetRaidCompleteResponse does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgPlanetRaidCompleteResponse) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.MsgPlanetRaidCompleteResponse.planet":
+		x.Planet = value.Message().Interface().(*Planet)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetRaidCompleteResponse"))
+		}
+		panic(fmt.Errorf("message structs.structs.MsgPlanetRaidCompleteResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgPlanetRaidCompleteResponse) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.MsgPlanetRaidCompleteResponse.planet":
+		if x.Planet == nil {
+			x.Planet = new(Planet)
+		}
+		return protoreflect.ValueOfMessage(x.Planet.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetRaidCompleteResponse"))
+		}
+		panic(fmt.Errorf("message structs.structs.MsgPlanetRaidCompleteResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_MsgPlanetRaidCompleteResponse) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.MsgPlanetRaidCompleteResponse.planet":
+		m := new(Planet)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgPlanetRaidCompleteResponse"))
+		}
+		panic(fmt.Errorf("message structs.structs.MsgPlanetRaidCompleteResponse does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_MsgPlanetRaidCompleteResponse) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgPlanetRaidCompleteResponse", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_MsgPlanetRaidCompleteResponse) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_MsgPlanetRaidCompleteResponse) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_MsgPlanetRaidCompleteResponse) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_MsgPlanetRaidCompleteResponse) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*MsgPlanetRaidCompleteResponse)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Planet != nil {
+			l = options.Size(x.Planet)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*MsgPlanetRaidCompleteResponse)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Planet != nil {
+			encoded, err := options.Marshal(x.Planet)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*MsgPlanetRaidCompleteResponse)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgPlanetRaidCompleteResponse: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgPlanetRaidCompleteResponse: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Planet", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.Planet == nil {
+					x.Planet = &Planet{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Planet); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
 	md_MsgPlayerUpdatePrimaryAddress                protoreflect.MessageDescriptor
 	fd_MsgPlayerUpdatePrimaryAddress_creator        protoreflect.FieldDescriptor
 	fd_MsgPlayerUpdatePrimaryAddress_primaryAddress protoreflect.FieldDescriptor
@@ -19910,7 +20957,7 @@ func (x *MsgPlayerUpdatePrimaryAddress) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgPlayerUpdatePrimaryAddress) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[38]
+	mi := &file_structs_structs_tx_proto_msgTypes[40]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20390,7 +21437,7 @@ func (x *MsgPlayerUpdatePrimaryAddressResponse) ProtoReflect() protoreflect.Mess
 }
 
 func (x *MsgPlayerUpdatePrimaryAddressResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[39]
+	mi := &file_structs_structs_tx_proto_msgTypes[41]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20748,7 +21795,7 @@ func (x *MsgStructStatusResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructStatusResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[40]
+	mi := &file_structs_structs_tx_proto_msgTypes[42]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21185,7 +22232,7 @@ func (x *MsgStructActivate) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructActivate) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[41]
+	mi := &file_structs_structs_tx_proto_msgTypes[43]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -21669,7 +22716,7 @@ func (x *MsgStructDeactivate) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructDeactivate) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[42]
+	mi := &file_structs_structs_tx_proto_msgTypes[44]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22163,7 +23210,7 @@ func (x *MsgStructBuildInitiate) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructBuildInitiate) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[43]
+	mi := &file_structs_structs_tx_proto_msgTypes[45]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22899,7 +23946,7 @@ func (x *MsgStructBuildComplete) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructBuildComplete) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[44]
+	mi := &file_structs_structs_tx_proto_msgTypes[46]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23569,7 +24616,7 @@ func (x *MsgStructBuildCompleteAndStash) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructBuildCompleteAndStash) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[45]
+	mi := &file_structs_structs_tx_proto_msgTypes[47]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24333,7 +25380,7 @@ func (x *MsgStructDefenseSet) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructDefenseSet) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[46]
+	mi := &file_structs_structs_tx_proto_msgTypes[48]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -24879,7 +25926,7 @@ func (x *MsgStructDefenseClear) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructDefenseClear) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[47]
+	mi := &file_structs_structs_tx_proto_msgTypes[49]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25371,7 +26418,7 @@ func (x *MsgStructMove) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructMove) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[48]
+	mi := &file_structs_structs_tx_proto_msgTypes[50]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26105,7 +27152,7 @@ func (x *MsgStructAttack) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructAttack) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[49]
+	mi := &file_structs_structs_tx_proto_msgTypes[51]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -26707,7 +27754,7 @@ func (x *MsgStructAttackResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructAttackResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[50]
+	mi := &file_structs_structs_tx_proto_msgTypes[52]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27067,7 +28114,7 @@ func (x *MsgStructStealthActivate) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructStealthActivate) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[51]
+	mi := &file_structs_structs_tx_proto_msgTypes[53]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -27551,7 +28598,7 @@ func (x *MsgStructStealthDeactivate) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructStealthDeactivate) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[52]
+	mi := &file_structs_structs_tx_proto_msgTypes[54]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28037,7 +29084,7 @@ func (x *MsgStructGeneratorInfuse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructGeneratorInfuse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[53]
+	mi := &file_structs_structs_tx_proto_msgTypes[55]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28579,7 +29626,7 @@ func (x *MsgStructGeneratorStatusResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructGeneratorStatusResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[54]
+	mi := &file_structs_structs_tx_proto_msgTypes[56]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -28943,7 +29990,7 @@ func (x *MsgStructOreMinerComplete) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructOreMinerComplete) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[55]
+	mi := &file_structs_structs_tx_proto_msgTypes[57]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29549,7 +30596,7 @@ func (x *MsgStructOreMinerStatusResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructOreMinerStatusResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[56]
+	mi := &file_structs_structs_tx_proto_msgTypes[58]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -29990,7 +31037,7 @@ func (x *MsgStructOreRefineryComplete) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructOreRefineryComplete) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[57]
+	mi := &file_structs_structs_tx_proto_msgTypes[59]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -30596,7 +31643,7 @@ func (x *MsgStructOreRefineryStatusResponse) ProtoReflect() protoreflect.Message
 }
 
 func (x *MsgStructOreRefineryStatusResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[58]
+	mi := &file_structs_structs_tx_proto_msgTypes[60]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -31039,7 +32086,7 @@ func (x *MsgStructStorageStash) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructStorageStash) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[59]
+	mi := &file_structs_structs_tx_proto_msgTypes[61]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -31685,7 +32732,7 @@ func (x *MsgStructStorageRecall) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgStructStorageRecall) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[60]
+	mi := &file_structs_structs_tx_proto_msgTypes[62]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -32377,7 +33424,7 @@ func (x *MsgSubstationCreate) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationCreate) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[61]
+	mi := &file_structs_structs_tx_proto_msgTypes[63]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -32921,7 +33968,7 @@ func (x *MsgSubstationCreateResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationCreateResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[62]
+	mi := &file_structs_structs_tx_proto_msgTypes[64]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -33345,7 +34392,7 @@ func (x *MsgSubstationDelete) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationDelete) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[63]
+	mi := &file_structs_structs_tx_proto_msgTypes[65]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -33887,7 +34934,7 @@ func (x *MsgSubstationDeleteResponse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationDeleteResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[64]
+	mi := &file_structs_structs_tx_proto_msgTypes[66]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -34249,7 +35296,7 @@ func (x *MsgSubstationAllocationConnect) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationAllocationConnect) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[65]
+	mi := &file_structs_structs_tx_proto_msgTypes[67]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -34791,7 +35838,7 @@ func (x *MsgSubstationAllocationConnectResponse) ProtoReflect() protoreflect.Mes
 }
 
 func (x *MsgSubstationAllocationConnectResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[66]
+	mi := &file_structs_structs_tx_proto_msgTypes[68]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -35151,7 +36198,7 @@ func (x *MsgSubstationAllocationDisconnect) ProtoReflect() protoreflect.Message 
 }
 
 func (x *MsgSubstationAllocationDisconnect) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[67]
+	mi := &file_structs_structs_tx_proto_msgTypes[69]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -35631,7 +36678,7 @@ func (x *MsgSubstationAllocationDisconnectResponse) ProtoReflect() protoreflect.
 }
 
 func (x *MsgSubstationAllocationDisconnectResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[68]
+	mi := &file_structs_structs_tx_proto_msgTypes[70]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -35993,7 +37040,7 @@ func (x *MsgSubstationPlayerConnect) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationPlayerConnect) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[69]
+	mi := &file_structs_structs_tx_proto_msgTypes[71]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -36535,7 +37582,7 @@ func (x *MsgSubstationPlayerConnectResponse) ProtoReflect() protoreflect.Message
 }
 
 func (x *MsgSubstationPlayerConnectResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[70]
+	mi := &file_structs_structs_tx_proto_msgTypes[72]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -36895,7 +37942,7 @@ func (x *MsgSubstationPlayerDisconnect) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationPlayerDisconnect) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[71]
+	mi := &file_structs_structs_tx_proto_msgTypes[73]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -37375,7 +38422,7 @@ func (x *MsgSubstationPlayerDisconnectResponse) ProtoReflect() protoreflect.Mess
 }
 
 func (x *MsgSubstationPlayerDisconnectResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[72]
+	mi := &file_structs_structs_tx_proto_msgTypes[74]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -37783,7 +38830,7 @@ func (x *MsgSubstationPlayerMigrate) ProtoReflect() protoreflect.Message {
 }
 
 func (x *MsgSubstationPlayerMigrate) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[73]
+	mi := &file_structs_structs_tx_proto_msgTypes[75]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -38339,7 +39386,7 @@ func (x *MsgSubstationPlayerMigrateResponse) ProtoReflect() protoreflect.Message
 }
 
 func (x *MsgSubstationPlayerMigrateResponse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_tx_proto_msgTypes[74]
+	mi := &file_structs_structs_tx_proto_msgTypes[76]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -40518,6 +41565,100 @@ func (x *MsgPlanetExploreResponse) GetPlanet() *Planet {
 	return nil
 }
 
+type MsgPlanetRaidComplete struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Creator string `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
+	FleetId string `protobuf:"bytes,2,opt,name=fleetId,proto3" json:"fleetId,omitempty"`
+	Proof   string `protobuf:"bytes,3,opt,name=proof,proto3" json:"proof,omitempty"`
+	Nonce   string `protobuf:"bytes,4,opt,name=nonce,proto3" json:"nonce,omitempty"`
+}
+
+func (x *MsgPlanetRaidComplete) Reset() {
+	*x = MsgPlanetRaidComplete{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_tx_proto_msgTypes[38]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MsgPlanetRaidComplete) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MsgPlanetRaidComplete) ProtoMessage() {}
+
+// Deprecated: Use MsgPlanetRaidComplete.ProtoReflect.Descriptor instead.
+func (*MsgPlanetRaidComplete) Descriptor() ([]byte, []int) {
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{38}
+}
+
+func (x *MsgPlanetRaidComplete) GetCreator() string {
+	if x != nil {
+		return x.Creator
+	}
+	return ""
+}
+
+func (x *MsgPlanetRaidComplete) GetFleetId() string {
+	if x != nil {
+		return x.FleetId
+	}
+	return ""
+}
+
+func (x *MsgPlanetRaidComplete) GetProof() string {
+	if x != nil {
+		return x.Proof
+	}
+	return ""
+}
+
+func (x *MsgPlanetRaidComplete) GetNonce() string {
+	if x != nil {
+		return x.Nonce
+	}
+	return ""
+}
+
+type MsgPlanetRaidCompleteResponse struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Planet *Planet `protobuf:"bytes,1,opt,name=planet,proto3" json:"planet,omitempty"`
+}
+
+func (x *MsgPlanetRaidCompleteResponse) Reset() {
+	*x = MsgPlanetRaidCompleteResponse{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_tx_proto_msgTypes[39]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *MsgPlanetRaidCompleteResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MsgPlanetRaidCompleteResponse) ProtoMessage() {}
+
+// Deprecated: Use MsgPlanetRaidCompleteResponse.ProtoReflect.Descriptor instead.
+func (*MsgPlanetRaidCompleteResponse) Descriptor() ([]byte, []int) {
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{39}
+}
+
+func (x *MsgPlanetRaidCompleteResponse) GetPlanet() *Planet {
+	if x != nil {
+		return x.Planet
+	}
+	return nil
+}
+
 type MsgPlayerUpdatePrimaryAddress struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -40530,7 +41671,7 @@ type MsgPlayerUpdatePrimaryAddress struct {
 func (x *MsgPlayerUpdatePrimaryAddress) Reset() {
 	*x = MsgPlayerUpdatePrimaryAddress{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[38]
+		mi := &file_structs_structs_tx_proto_msgTypes[40]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -40544,7 +41685,7 @@ func (*MsgPlayerUpdatePrimaryAddress) ProtoMessage() {}
 
 // Deprecated: Use MsgPlayerUpdatePrimaryAddress.ProtoReflect.Descriptor instead.
 func (*MsgPlayerUpdatePrimaryAddress) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{38}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *MsgPlayerUpdatePrimaryAddress) GetCreator() string {
@@ -40570,7 +41711,7 @@ type MsgPlayerUpdatePrimaryAddressResponse struct {
 func (x *MsgPlayerUpdatePrimaryAddressResponse) Reset() {
 	*x = MsgPlayerUpdatePrimaryAddressResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[39]
+		mi := &file_structs_structs_tx_proto_msgTypes[41]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -40584,7 +41725,7 @@ func (*MsgPlayerUpdatePrimaryAddressResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgPlayerUpdatePrimaryAddressResponse.ProtoReflect.Descriptor instead.
 func (*MsgPlayerUpdatePrimaryAddressResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{39}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{41}
 }
 
 type MsgStructStatusResponse struct {
@@ -40598,7 +41739,7 @@ type MsgStructStatusResponse struct {
 func (x *MsgStructStatusResponse) Reset() {
 	*x = MsgStructStatusResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[40]
+		mi := &file_structs_structs_tx_proto_msgTypes[42]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -40612,7 +41753,7 @@ func (*MsgStructStatusResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgStructStatusResponse.ProtoReflect.Descriptor instead.
 func (*MsgStructStatusResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{40}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *MsgStructStatusResponse) GetStruct() *Struct {
@@ -40634,7 +41775,7 @@ type MsgStructActivate struct {
 func (x *MsgStructActivate) Reset() {
 	*x = MsgStructActivate{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[41]
+		mi := &file_structs_structs_tx_proto_msgTypes[43]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -40648,7 +41789,7 @@ func (*MsgStructActivate) ProtoMessage() {}
 
 // Deprecated: Use MsgStructActivate.ProtoReflect.Descriptor instead.
 func (*MsgStructActivate) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{41}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *MsgStructActivate) GetCreator() string {
@@ -40677,7 +41818,7 @@ type MsgStructDeactivate struct {
 func (x *MsgStructDeactivate) Reset() {
 	*x = MsgStructDeactivate{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[42]
+		mi := &file_structs_structs_tx_proto_msgTypes[44]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -40691,7 +41832,7 @@ func (*MsgStructDeactivate) ProtoMessage() {}
 
 // Deprecated: Use MsgStructDeactivate.ProtoReflect.Descriptor instead.
 func (*MsgStructDeactivate) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{42}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *MsgStructDeactivate) GetCreator() string {
@@ -40725,7 +41866,7 @@ type MsgStructBuildInitiate struct {
 func (x *MsgStructBuildInitiate) Reset() {
 	*x = MsgStructBuildInitiate{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[43]
+		mi := &file_structs_structs_tx_proto_msgTypes[45]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -40739,7 +41880,7 @@ func (*MsgStructBuildInitiate) ProtoMessage() {}
 
 // Deprecated: Use MsgStructBuildInitiate.ProtoReflect.Descriptor instead.
 func (*MsgStructBuildInitiate) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{43}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *MsgStructBuildInitiate) GetCreator() string {
@@ -40806,7 +41947,7 @@ type MsgStructBuildComplete struct {
 func (x *MsgStructBuildComplete) Reset() {
 	*x = MsgStructBuildComplete{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[44]
+		mi := &file_structs_structs_tx_proto_msgTypes[46]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -40820,7 +41961,7 @@ func (*MsgStructBuildComplete) ProtoMessage() {}
 
 // Deprecated: Use MsgStructBuildComplete.ProtoReflect.Descriptor instead.
 func (*MsgStructBuildComplete) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{44}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *MsgStructBuildComplete) GetCreator() string {
@@ -40875,7 +42016,7 @@ type MsgStructBuildCompleteAndStash struct {
 func (x *MsgStructBuildCompleteAndStash) Reset() {
 	*x = MsgStructBuildCompleteAndStash{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[45]
+		mi := &file_structs_structs_tx_proto_msgTypes[47]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -40889,7 +42030,7 @@ func (*MsgStructBuildCompleteAndStash) ProtoMessage() {}
 
 // Deprecated: Use MsgStructBuildCompleteAndStash.ProtoReflect.Descriptor instead.
 func (*MsgStructBuildCompleteAndStash) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{45}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *MsgStructBuildCompleteAndStash) GetCreator() string {
@@ -40954,7 +42095,7 @@ type MsgStructDefenseSet struct {
 func (x *MsgStructDefenseSet) Reset() {
 	*x = MsgStructDefenseSet{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[46]
+		mi := &file_structs_structs_tx_proto_msgTypes[48]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -40968,7 +42109,7 @@ func (*MsgStructDefenseSet) ProtoMessage() {}
 
 // Deprecated: Use MsgStructDefenseSet.ProtoReflect.Descriptor instead.
 func (*MsgStructDefenseSet) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{46}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *MsgStructDefenseSet) GetCreator() string {
@@ -41004,7 +42145,7 @@ type MsgStructDefenseClear struct {
 func (x *MsgStructDefenseClear) Reset() {
 	*x = MsgStructDefenseClear{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[47]
+		mi := &file_structs_structs_tx_proto_msgTypes[49]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41018,7 +42159,7 @@ func (*MsgStructDefenseClear) ProtoMessage() {}
 
 // Deprecated: Use MsgStructDefenseClear.ProtoReflect.Descriptor instead.
 func (*MsgStructDefenseClear) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{47}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *MsgStructDefenseClear) GetCreator() string {
@@ -41051,7 +42192,7 @@ type MsgStructMove struct {
 func (x *MsgStructMove) Reset() {
 	*x = MsgStructMove{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[48]
+		mi := &file_structs_structs_tx_proto_msgTypes[50]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41065,7 +42206,7 @@ func (*MsgStructMove) ProtoMessage() {}
 
 // Deprecated: Use MsgStructMove.ProtoReflect.Descriptor instead.
 func (*MsgStructMove) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{48}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *MsgStructMove) GetCreator() string {
@@ -41124,7 +42265,7 @@ type MsgStructAttack struct {
 func (x *MsgStructAttack) Reset() {
 	*x = MsgStructAttack{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[49]
+		mi := &file_structs_structs_tx_proto_msgTypes[51]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41138,7 +42279,7 @@ func (*MsgStructAttack) ProtoMessage() {}
 
 // Deprecated: Use MsgStructAttack.ProtoReflect.Descriptor instead.
 func (*MsgStructAttack) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{49}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *MsgStructAttack) GetCreator() string {
@@ -41178,7 +42319,7 @@ type MsgStructAttackResponse struct {
 func (x *MsgStructAttackResponse) Reset() {
 	*x = MsgStructAttackResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[50]
+		mi := &file_structs_structs_tx_proto_msgTypes[52]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41192,7 +42333,7 @@ func (*MsgStructAttackResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgStructAttackResponse.ProtoReflect.Descriptor instead.
 func (*MsgStructAttackResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{50}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{52}
 }
 
 type MsgStructStealthActivate struct {
@@ -41207,7 +42348,7 @@ type MsgStructStealthActivate struct {
 func (x *MsgStructStealthActivate) Reset() {
 	*x = MsgStructStealthActivate{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[51]
+		mi := &file_structs_structs_tx_proto_msgTypes[53]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41221,7 +42362,7 @@ func (*MsgStructStealthActivate) ProtoMessage() {}
 
 // Deprecated: Use MsgStructStealthActivate.ProtoReflect.Descriptor instead.
 func (*MsgStructStealthActivate) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{51}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *MsgStructStealthActivate) GetCreator() string {
@@ -41250,7 +42391,7 @@ type MsgStructStealthDeactivate struct {
 func (x *MsgStructStealthDeactivate) Reset() {
 	*x = MsgStructStealthDeactivate{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[52]
+		mi := &file_structs_structs_tx_proto_msgTypes[54]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41264,7 +42405,7 @@ func (*MsgStructStealthDeactivate) ProtoMessage() {}
 
 // Deprecated: Use MsgStructStealthDeactivate.ProtoReflect.Descriptor instead.
 func (*MsgStructStealthDeactivate) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{52}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *MsgStructStealthDeactivate) GetCreator() string {
@@ -41294,7 +42435,7 @@ type MsgStructGeneratorInfuse struct {
 func (x *MsgStructGeneratorInfuse) Reset() {
 	*x = MsgStructGeneratorInfuse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[53]
+		mi := &file_structs_structs_tx_proto_msgTypes[55]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41308,7 +42449,7 @@ func (*MsgStructGeneratorInfuse) ProtoMessage() {}
 
 // Deprecated: Use MsgStructGeneratorInfuse.ProtoReflect.Descriptor instead.
 func (*MsgStructGeneratorInfuse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{53}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *MsgStructGeneratorInfuse) GetCreator() string {
@@ -41341,7 +42482,7 @@ type MsgStructGeneratorStatusResponse struct {
 func (x *MsgStructGeneratorStatusResponse) Reset() {
 	*x = MsgStructGeneratorStatusResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[54]
+		mi := &file_structs_structs_tx_proto_msgTypes[56]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41355,7 +42496,7 @@ func (*MsgStructGeneratorStatusResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgStructGeneratorStatusResponse.ProtoReflect.Descriptor instead.
 func (*MsgStructGeneratorStatusResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{54}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{56}
 }
 
 type MsgStructOreMinerComplete struct {
@@ -41372,7 +42513,7 @@ type MsgStructOreMinerComplete struct {
 func (x *MsgStructOreMinerComplete) Reset() {
 	*x = MsgStructOreMinerComplete{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[55]
+		mi := &file_structs_structs_tx_proto_msgTypes[57]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41386,7 +42527,7 @@ func (*MsgStructOreMinerComplete) ProtoMessage() {}
 
 // Deprecated: Use MsgStructOreMinerComplete.ProtoReflect.Descriptor instead.
 func (*MsgStructOreMinerComplete) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{55}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *MsgStructOreMinerComplete) GetCreator() string {
@@ -41428,7 +42569,7 @@ type MsgStructOreMinerStatusResponse struct {
 func (x *MsgStructOreMinerStatusResponse) Reset() {
 	*x = MsgStructOreMinerStatusResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[56]
+		mi := &file_structs_structs_tx_proto_msgTypes[58]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41442,7 +42583,7 @@ func (*MsgStructOreMinerStatusResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgStructOreMinerStatusResponse.ProtoReflect.Descriptor instead.
 func (*MsgStructOreMinerStatusResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{56}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *MsgStructOreMinerStatusResponse) GetStruct() *Struct {
@@ -41466,7 +42607,7 @@ type MsgStructOreRefineryComplete struct {
 func (x *MsgStructOreRefineryComplete) Reset() {
 	*x = MsgStructOreRefineryComplete{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[57]
+		mi := &file_structs_structs_tx_proto_msgTypes[59]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41480,7 +42621,7 @@ func (*MsgStructOreRefineryComplete) ProtoMessage() {}
 
 // Deprecated: Use MsgStructOreRefineryComplete.ProtoReflect.Descriptor instead.
 func (*MsgStructOreRefineryComplete) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{57}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *MsgStructOreRefineryComplete) GetCreator() string {
@@ -41522,7 +42663,7 @@ type MsgStructOreRefineryStatusResponse struct {
 func (x *MsgStructOreRefineryStatusResponse) Reset() {
 	*x = MsgStructOreRefineryStatusResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[58]
+		mi := &file_structs_structs_tx_proto_msgTypes[60]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41536,7 +42677,7 @@ func (*MsgStructOreRefineryStatusResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgStructOreRefineryStatusResponse.ProtoReflect.Descriptor instead.
 func (*MsgStructOreRefineryStatusResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{58}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *MsgStructOreRefineryStatusResponse) GetStruct() *Struct {
@@ -41561,7 +42702,7 @@ type MsgStructStorageStash struct {
 func (x *MsgStructStorageStash) Reset() {
 	*x = MsgStructStorageStash{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[59]
+		mi := &file_structs_structs_tx_proto_msgTypes[61]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41575,7 +42716,7 @@ func (*MsgStructStorageStash) ProtoMessage() {}
 
 // Deprecated: Use MsgStructStorageStash.ProtoReflect.Descriptor instead.
 func (*MsgStructStorageStash) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{59}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *MsgStructStorageStash) GetCreator() string {
@@ -41629,7 +42770,7 @@ type MsgStructStorageRecall struct {
 func (x *MsgStructStorageRecall) Reset() {
 	*x = MsgStructStorageRecall{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[60]
+		mi := &file_structs_structs_tx_proto_msgTypes[62]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41643,7 +42784,7 @@ func (*MsgStructStorageRecall) ProtoMessage() {}
 
 // Deprecated: Use MsgStructStorageRecall.ProtoReflect.Descriptor instead.
 func (*MsgStructStorageRecall) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{60}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *MsgStructStorageRecall) GetCreator() string {
@@ -41701,7 +42842,7 @@ type MsgSubstationCreate struct {
 func (x *MsgSubstationCreate) Reset() {
 	*x = MsgSubstationCreate{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[61]
+		mi := &file_structs_structs_tx_proto_msgTypes[63]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41715,7 +42856,7 @@ func (*MsgSubstationCreate) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationCreate.ProtoReflect.Descriptor instead.
 func (*MsgSubstationCreate) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{61}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *MsgSubstationCreate) GetCreator() string {
@@ -41750,7 +42891,7 @@ type MsgSubstationCreateResponse struct {
 func (x *MsgSubstationCreateResponse) Reset() {
 	*x = MsgSubstationCreateResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[62]
+		mi := &file_structs_structs_tx_proto_msgTypes[64]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41764,7 +42905,7 @@ func (*MsgSubstationCreateResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationCreateResponse.ProtoReflect.Descriptor instead.
 func (*MsgSubstationCreateResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{62}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *MsgSubstationCreateResponse) GetSubstationId() string {
@@ -41787,7 +42928,7 @@ type MsgSubstationDelete struct {
 func (x *MsgSubstationDelete) Reset() {
 	*x = MsgSubstationDelete{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[63]
+		mi := &file_structs_structs_tx_proto_msgTypes[65]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41801,7 +42942,7 @@ func (*MsgSubstationDelete) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationDelete.ProtoReflect.Descriptor instead.
 func (*MsgSubstationDelete) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{63}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *MsgSubstationDelete) GetCreator() string {
@@ -41834,7 +42975,7 @@ type MsgSubstationDeleteResponse struct {
 func (x *MsgSubstationDeleteResponse) Reset() {
 	*x = MsgSubstationDeleteResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[64]
+		mi := &file_structs_structs_tx_proto_msgTypes[66]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41848,7 +42989,7 @@ func (*MsgSubstationDeleteResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationDeleteResponse.ProtoReflect.Descriptor instead.
 func (*MsgSubstationDeleteResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{64}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{66}
 }
 
 type MsgSubstationAllocationConnect struct {
@@ -41864,7 +43005,7 @@ type MsgSubstationAllocationConnect struct {
 func (x *MsgSubstationAllocationConnect) Reset() {
 	*x = MsgSubstationAllocationConnect{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[65]
+		mi := &file_structs_structs_tx_proto_msgTypes[67]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41878,7 +43019,7 @@ func (*MsgSubstationAllocationConnect) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationAllocationConnect.ProtoReflect.Descriptor instead.
 func (*MsgSubstationAllocationConnect) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{65}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *MsgSubstationAllocationConnect) GetCreator() string {
@@ -41911,7 +43052,7 @@ type MsgSubstationAllocationConnectResponse struct {
 func (x *MsgSubstationAllocationConnectResponse) Reset() {
 	*x = MsgSubstationAllocationConnectResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[66]
+		mi := &file_structs_structs_tx_proto_msgTypes[68]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41925,7 +43066,7 @@ func (*MsgSubstationAllocationConnectResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationAllocationConnectResponse.ProtoReflect.Descriptor instead.
 func (*MsgSubstationAllocationConnectResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{66}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{68}
 }
 
 type MsgSubstationAllocationDisconnect struct {
@@ -41940,7 +43081,7 @@ type MsgSubstationAllocationDisconnect struct {
 func (x *MsgSubstationAllocationDisconnect) Reset() {
 	*x = MsgSubstationAllocationDisconnect{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[67]
+		mi := &file_structs_structs_tx_proto_msgTypes[69]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41954,7 +43095,7 @@ func (*MsgSubstationAllocationDisconnect) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationAllocationDisconnect.ProtoReflect.Descriptor instead.
 func (*MsgSubstationAllocationDisconnect) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{67}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *MsgSubstationAllocationDisconnect) GetCreator() string {
@@ -41980,7 +43121,7 @@ type MsgSubstationAllocationDisconnectResponse struct {
 func (x *MsgSubstationAllocationDisconnectResponse) Reset() {
 	*x = MsgSubstationAllocationDisconnectResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[68]
+		mi := &file_structs_structs_tx_proto_msgTypes[70]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -41994,7 +43135,7 @@ func (*MsgSubstationAllocationDisconnectResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationAllocationDisconnectResponse.ProtoReflect.Descriptor instead.
 func (*MsgSubstationAllocationDisconnectResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{68}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{70}
 }
 
 type MsgSubstationPlayerConnect struct {
@@ -42010,7 +43151,7 @@ type MsgSubstationPlayerConnect struct {
 func (x *MsgSubstationPlayerConnect) Reset() {
 	*x = MsgSubstationPlayerConnect{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[69]
+		mi := &file_structs_structs_tx_proto_msgTypes[71]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -42024,7 +43165,7 @@ func (*MsgSubstationPlayerConnect) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationPlayerConnect.ProtoReflect.Descriptor instead.
 func (*MsgSubstationPlayerConnect) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{69}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *MsgSubstationPlayerConnect) GetCreator() string {
@@ -42057,7 +43198,7 @@ type MsgSubstationPlayerConnectResponse struct {
 func (x *MsgSubstationPlayerConnectResponse) Reset() {
 	*x = MsgSubstationPlayerConnectResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[70]
+		mi := &file_structs_structs_tx_proto_msgTypes[72]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -42071,7 +43212,7 @@ func (*MsgSubstationPlayerConnectResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationPlayerConnectResponse.ProtoReflect.Descriptor instead.
 func (*MsgSubstationPlayerConnectResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{70}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{72}
 }
 
 type MsgSubstationPlayerDisconnect struct {
@@ -42086,7 +43227,7 @@ type MsgSubstationPlayerDisconnect struct {
 func (x *MsgSubstationPlayerDisconnect) Reset() {
 	*x = MsgSubstationPlayerDisconnect{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[71]
+		mi := &file_structs_structs_tx_proto_msgTypes[73]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -42100,7 +43241,7 @@ func (*MsgSubstationPlayerDisconnect) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationPlayerDisconnect.ProtoReflect.Descriptor instead.
 func (*MsgSubstationPlayerDisconnect) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{71}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *MsgSubstationPlayerDisconnect) GetCreator() string {
@@ -42126,7 +43267,7 @@ type MsgSubstationPlayerDisconnectResponse struct {
 func (x *MsgSubstationPlayerDisconnectResponse) Reset() {
 	*x = MsgSubstationPlayerDisconnectResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[72]
+		mi := &file_structs_structs_tx_proto_msgTypes[74]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -42140,7 +43281,7 @@ func (*MsgSubstationPlayerDisconnectResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationPlayerDisconnectResponse.ProtoReflect.Descriptor instead.
 func (*MsgSubstationPlayerDisconnectResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{72}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{74}
 }
 
 type MsgSubstationPlayerMigrate struct {
@@ -42156,7 +43297,7 @@ type MsgSubstationPlayerMigrate struct {
 func (x *MsgSubstationPlayerMigrate) Reset() {
 	*x = MsgSubstationPlayerMigrate{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[73]
+		mi := &file_structs_structs_tx_proto_msgTypes[75]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -42170,7 +43311,7 @@ func (*MsgSubstationPlayerMigrate) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationPlayerMigrate.ProtoReflect.Descriptor instead.
 func (*MsgSubstationPlayerMigrate) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{73}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *MsgSubstationPlayerMigrate) GetCreator() string {
@@ -42203,7 +43344,7 @@ type MsgSubstationPlayerMigrateResponse struct {
 func (x *MsgSubstationPlayerMigrateResponse) Reset() {
 	*x = MsgSubstationPlayerMigrateResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_tx_proto_msgTypes[74]
+		mi := &file_structs_structs_tx_proto_msgTypes[76]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -42217,7 +43358,7 @@ func (*MsgSubstationPlayerMigrateResponse) ProtoMessage() {}
 
 // Deprecated: Use MsgSubstationPlayerMigrateResponse.ProtoReflect.Descriptor instead.
 func (*MsgSubstationPlayerMigrateResponse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_tx_proto_rawDescGZIP(), []int{74}
+	return file_structs_structs_tx_proto_rawDescGZIP(), []int{76}
 }
 
 var File_structs_structs_tx_proto protoreflect.FileDescriptor
@@ -42548,6 +43689,20 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74,
 	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c,
 	0x61, 0x6e, 0x65, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x70, 0x6c, 0x61, 0x6e,
+	0x65, 0x74, 0x22, 0x85, 0x01, 0x0a, 0x15, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74,
+	0x52, 0x61, 0x69, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x18, 0x0a, 0x07,
+	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63,
+	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x18, 0x0a, 0x07, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x49,
+	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x49, 0x64,
+	0x12, 0x14, 0x0a, 0x05, 0x70, 0x72, 0x6f, 0x6f, 0x66, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x05, 0x70, 0x72, 0x6f, 0x6f, 0x66, 0x12, 0x14, 0x0a, 0x05, 0x6e, 0x6f, 0x6e, 0x63, 0x65, 0x18,
+	0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6e, 0x6f, 0x6e, 0x63, 0x65, 0x3a, 0x0c, 0x82, 0xe7,
+	0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x56, 0x0a, 0x1d, 0x4d, 0x73,
+	0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x61, 0x69, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c,
+	0x65, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x35, 0x0a, 0x06, 0x70,
+	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x17, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x50, 0x6c,
+	0x61, 0x6e, 0x65, 0x74, 0x42, 0x04, 0xc8, 0xde, 0x1f, 0x00, 0x52, 0x06, 0x70, 0x6c, 0x61, 0x6e,
 	0x65, 0x74, 0x22, 0x6f, 0x0a, 0x1d, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55,
 	0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72,
 	0x65, 0x73, 0x73, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01,
@@ -42823,7 +43978,7 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x24, 0x0a, 0x22,
 	0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61,
 	0x79, 0x65, 0x72, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
-	0x73, 0x65, 0x32, 0xed, 0x2b, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x5a, 0x0a, 0x0c, 0x55, 0x70,
+	0x73, 0x65, 0x32, 0xdb, 0x2c, 0x0a, 0x03, 0x4d, 0x73, 0x67, 0x12, 0x5a, 0x0a, 0x0c, 0x55, 0x70,
 	0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x12, 0x20, 0x2e, 0x73, 0x74, 0x72,
 	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
 	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x61, 0x72, 0x61, 0x6d, 0x73, 0x1a, 0x28, 0x2e, 0x73,
@@ -43023,168 +44178,175 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x45, 0x78, 0x70, 0x6c,
 	0x6f, 0x72, 0x65, 0x1a, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
 	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x45,
-	0x78, 0x70, 0x6c, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x84,
-	0x01, 0x0a, 0x1a, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50,
-	0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x2e, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50,
-	0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x1a, 0x36, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50,
-	0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x5e, 0x0a, 0x0e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41,
-	0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74,
+	0x78, 0x70, 0x6c, 0x6f, 0x72, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c,
+	0x0a, 0x12, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x61, 0x69, 0x64, 0x43, 0x6f, 0x6d, 0x70,
+	0x6c, 0x65, 0x74, 0x65, 0x12, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74,
+	0x52, 0x61, 0x69, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x1a, 0x2e, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
+	0x73, 0x67, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x52, 0x61, 0x69, 0x64, 0x43, 0x6f, 0x6d, 0x70,
+	0x6c, 0x65, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x84, 0x01, 0x0a,
+	0x1a, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x69,
+	0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x2e, 0x2e, 0x73, 0x74,
 	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
-	0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x62, 0x0a, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44,
-	0x65, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x1a,
-	0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75,
-	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x68, 0x0a, 0x13, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x6e, 0x69, 0x74, 0x69, 0x61, 0x74, 0x65,
-	0x12, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c,
-	0x64, 0x49, 0x6e, 0x69, 0x74, 0x69, 0x61, 0x74, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x69,
+	0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x1a, 0x36, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
+	0x67, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x50, 0x72, 0x69,
+	0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x5e, 0x0a, 0x0e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x63, 0x74,
+	0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75,
 	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53,
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f,
-	0x6e, 0x73, 0x65, 0x12, 0x68, 0x0a, 0x13, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69,
-	0x6c, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x27, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c,
-	0x65, 0x74, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53,
-	0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x62, 0x0a,
-	0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x53, 0x65,
-	0x74, 0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66,
-	0x65, 0x6e, 0x73, 0x65, 0x53, 0x65, 0x74, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x6e, 0x73, 0x65, 0x12, 0x62, 0x0a, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x61,
+	0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x1a, 0x28, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x68, 0x0a, 0x13, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x6e, 0x69, 0x74, 0x69, 0x61, 0x74, 0x65, 0x12, 0x27,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x49,
+	0x6e, 0x69, 0x74, 0x69, 0x61, 0x74, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72,
 	0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x66, 0x0a, 0x12, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e,
-	0x73, 0x65, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x12, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x1a,
-	0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75,
-	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x56, 0x0a, 0x0a, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x4d, 0x6f, 0x76, 0x65, 0x12, 0x1e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x4d, 0x6f, 0x76, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
-	0x65, 0x12, 0x5a, 0x0a, 0x0c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63,
-	0x6b, 0x12, 0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x74, 0x74,
-	0x61, 0x63, 0x6b, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41,
-	0x74, 0x74, 0x61, 0x63, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a,
-	0x15, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x63,
-	0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x53, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74,
+	0x65, 0x12, 0x68, 0x0a, 0x13, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64,
+	0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74,
 	0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
 	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61,
-	0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x70, 0x0a, 0x17, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x44, 0x65, 0x61, 0x63,
-	0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x12, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x53, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76,
-	0x61, 0x74, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53,
-	0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x75, 0x0a,
-	0x15, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x47, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72,
-	0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x12, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x47, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x49, 0x6e, 0x66, 0x75, 0x73,
-	0x65, 0x1a, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x47, 0x65, 0x6e,
-	0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70,
-	0x6f, 0x6e, 0x73, 0x65, 0x12, 0x76, 0x0a, 0x16, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x72,
-	0x65, 0x4d, 0x69, 0x6e, 0x65, 0x72, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x2a,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e,
-	0x65, 0x72, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x1a, 0x30, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x72, 0x53, 0x74,
-	0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7f, 0x0a, 0x19,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x72,
-	0x79, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x2d, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x72, 0x79,
-	0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x1a, 0x33, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x72, 0x79, 0x53,
-	0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x66, 0x0a,
-	0x10, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74,
-	0x65, 0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x1a, 0x2c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62,
-	0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73,
-	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x66, 0x0a, 0x10, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53,
-	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x1a,
-	0x2c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44,
-	0x65, 0x6c, 0x65, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x87, 0x01,
-	0x0a, 0x1b, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f,
-	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x2f, 0x2e,
+	0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x62, 0x0a, 0x10, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x53, 0x65, 0x74, 0x12,
+	0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e,
+	0x73, 0x65, 0x53, 0x65, 0x74, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x66, 0x0a, 0x12, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65,
+	0x43, 0x6c, 0x65, 0x61, 0x72, 0x12, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x6c, 0x65, 0x61, 0x72, 0x1a, 0x28, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c,
-	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x1a, 0x37,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c,
-	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x90, 0x01, 0x0a, 0x1e, 0x53, 0x75, 0x62, 0x73,
-	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x32, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67,
-	0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x1a, 0x3a,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c,
-	0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65,
-	0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a, 0x17, 0x53, 0x75,
-	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f,
-	0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52,
+	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x56, 0x0a, 0x0a, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x4d, 0x6f, 0x76, 0x65, 0x12, 0x1e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x4d, 0x6f, 0x76, 0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
+	0x5a, 0x0a, 0x0c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x12,
+	0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63,
+	0x6b, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x74, 0x74,
+	0x61, 0x63, 0x6b, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x6c, 0x0a, 0x15, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x63, 0x74, 0x69,
+	0x76, 0x61, 0x74, 0x65, 0x12, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x53, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74, 0x65, 0x1a,
+	0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61, 0x74, 0x75,
+	0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x70, 0x0a, 0x17, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x53, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69,
+	0x76, 0x61, 0x74, 0x65, 0x12, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x53, 0x74, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x44, 0x65, 0x61, 0x63, 0x74, 0x69, 0x76, 0x61, 0x74,
+	0x65, 0x1a, 0x28, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x74, 0x61,
+	0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x75, 0x0a, 0x15, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x47, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x49, 0x6e,
+	0x66, 0x75, 0x73, 0x65, 0x12, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x47, 0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x6f, 0x72, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x1a,
+	0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x47, 0x65, 0x6e, 0x65, 0x72,
+	0x61, 0x74, 0x6f, 0x72, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e,
+	0x73, 0x65, 0x12, 0x76, 0x0a, 0x16, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x4d,
+	0x69, 0x6e, 0x65, 0x72, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x2a, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
+	0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x72,
+	0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x1a, 0x30, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x72, 0x53, 0x74, 0x61, 0x74,
+	0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7f, 0x0a, 0x19, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x72, 0x79, 0x43,
+	0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x2d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x72, 0x79, 0x43, 0x6f,
+	0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x1a, 0x33, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x72, 0x79, 0x53, 0x74, 0x61,
+	0x74, 0x75, 0x73, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x66, 0x0a, 0x10, 0x53,
+	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x12,
+	0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43,
+	0x72, 0x65, 0x61, 0x74, 0x65, 0x1a, 0x2c, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e, 0x65,
-	0x63, 0x74, 0x1a, 0x33, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52,
-	0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x84, 0x01, 0x0a, 0x1a, 0x53, 0x75, 0x62, 0x73,
-	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69, 0x73, 0x63,
-	0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x2e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73,
-	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69, 0x73, 0x63,
-	0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x1a, 0x36, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73,
-	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69, 0x73, 0x63,
-	0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b,
-	0x0a, 0x17, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79,
-	0x65, 0x72, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x12, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53,
-	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4d,
-	0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x1a, 0x33, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73,
-	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4d, 0x69, 0x67, 0x72,
-	0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x1a, 0x05, 0x80, 0xe7, 0xb0,
-	0x2a, 0x01, 0x42, 0x9d, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72,
-	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b,
-	0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca,
-	0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea,
-	0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x72, 0x65, 0x61, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f,
+	0x6e, 0x73, 0x65, 0x12, 0x66, 0x0a, 0x10, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62,
+	0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x6c, 0x65, 0x74, 0x65, 0x1a, 0x2c, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x65, 0x6c,
+	0x65, 0x74, 0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x87, 0x01, 0x0a, 0x1b,
+	0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x2f, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
+	0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x1a, 0x37, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
+	0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f,
+	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x90, 0x01, 0x0a, 0x1e, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x69,
+	0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x12, 0x32, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75,
+	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x1a, 0x3a, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
+	0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x41, 0x6c, 0x6c, 0x6f,
+	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74,
+	0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a, 0x17, 0x53, 0x75, 0x62, 0x73,
+	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e,
+	0x65, 0x63, 0x74, 0x12, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74,
+	0x1a, 0x33, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x43, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73,
+	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x84, 0x01, 0x0a, 0x1a, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e,
+	0x6e, 0x65, 0x63, 0x74, 0x12, 0x2e, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e,
+	0x6e, 0x65, 0x63, 0x74, 0x1a, 0x36, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x44, 0x69, 0x73, 0x63, 0x6f, 0x6e,
+	0x6e, 0x65, 0x63, 0x74, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x7b, 0x0a, 0x17,
+	0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72,
+	0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x12, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62,
+	0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4d, 0x69, 0x67,
+	0x72, 0x61, 0x74, 0x65, 0x1a, 0x33, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74,
+	0x65, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x1a, 0x05, 0x80, 0xe7, 0xb0, 0x2a, 0x01,
+	0x42, 0x9d, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x07, 0x54, 0x78, 0x50, 0x72, 0x6f, 0x74,
+	0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69,
+	0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2,
+	0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -43199,7 +44361,7 @@ func file_structs_structs_tx_proto_rawDescGZIP() []byte {
 	return file_structs_structs_tx_proto_rawDescData
 }
 
-var file_structs_structs_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 75)
+var file_structs_structs_tx_proto_msgTypes = make([]protoimpl.MessageInfo, 77)
 var file_structs_structs_tx_proto_goTypes = []interface{}{
 	(*MsgUpdateParams)(nil),                                  // 0: structs.structs.MsgUpdateParams
 	(*MsgUpdateParamsResponse)(nil),                          // 1: structs.structs.MsgUpdateParamsResponse
@@ -43239,177 +44401,182 @@ var file_structs_structs_tx_proto_goTypes = []interface{}{
 	(*MsgPermissionResponse)(nil),                            // 35: structs.structs.MsgPermissionResponse
 	(*MsgPlanetExplore)(nil),                                 // 36: structs.structs.MsgPlanetExplore
 	(*MsgPlanetExploreResponse)(nil),                         // 37: structs.structs.MsgPlanetExploreResponse
-	(*MsgPlayerUpdatePrimaryAddress)(nil),                    // 38: structs.structs.MsgPlayerUpdatePrimaryAddress
-	(*MsgPlayerUpdatePrimaryAddressResponse)(nil),            // 39: structs.structs.MsgPlayerUpdatePrimaryAddressResponse
-	(*MsgStructStatusResponse)(nil),                          // 40: structs.structs.MsgStructStatusResponse
-	(*MsgStructActivate)(nil),                                // 41: structs.structs.MsgStructActivate
-	(*MsgStructDeactivate)(nil),                              // 42: structs.structs.MsgStructDeactivate
-	(*MsgStructBuildInitiate)(nil),                           // 43: structs.structs.MsgStructBuildInitiate
-	(*MsgStructBuildComplete)(nil),                           // 44: structs.structs.MsgStructBuildComplete
-	(*MsgStructBuildCompleteAndStash)(nil),                   // 45: structs.structs.MsgStructBuildCompleteAndStash
-	(*MsgStructDefenseSet)(nil),                              // 46: structs.structs.MsgStructDefenseSet
-	(*MsgStructDefenseClear)(nil),                            // 47: structs.structs.MsgStructDefenseClear
-	(*MsgStructMove)(nil),                                    // 48: structs.structs.MsgStructMove
-	(*MsgStructAttack)(nil),                                  // 49: structs.structs.MsgStructAttack
-	(*MsgStructAttackResponse)(nil),                          // 50: structs.structs.MsgStructAttackResponse
-	(*MsgStructStealthActivate)(nil),                         // 51: structs.structs.MsgStructStealthActivate
-	(*MsgStructStealthDeactivate)(nil),                       // 52: structs.structs.MsgStructStealthDeactivate
-	(*MsgStructGeneratorInfuse)(nil),                         // 53: structs.structs.MsgStructGeneratorInfuse
-	(*MsgStructGeneratorStatusResponse)(nil),                 // 54: structs.structs.MsgStructGeneratorStatusResponse
-	(*MsgStructOreMinerComplete)(nil),                        // 55: structs.structs.MsgStructOreMinerComplete
-	(*MsgStructOreMinerStatusResponse)(nil),                  // 56: structs.structs.MsgStructOreMinerStatusResponse
-	(*MsgStructOreRefineryComplete)(nil),                     // 57: structs.structs.MsgStructOreRefineryComplete
-	(*MsgStructOreRefineryStatusResponse)(nil),               // 58: structs.structs.MsgStructOreRefineryStatusResponse
-	(*MsgStructStorageStash)(nil),                            // 59: structs.structs.MsgStructStorageStash
-	(*MsgStructStorageRecall)(nil),                           // 60: structs.structs.MsgStructStorageRecall
-	(*MsgSubstationCreate)(nil),                              // 61: structs.structs.MsgSubstationCreate
-	(*MsgSubstationCreateResponse)(nil),                      // 62: structs.structs.MsgSubstationCreateResponse
-	(*MsgSubstationDelete)(nil),                              // 63: structs.structs.MsgSubstationDelete
-	(*MsgSubstationDeleteResponse)(nil),                      // 64: structs.structs.MsgSubstationDeleteResponse
-	(*MsgSubstationAllocationConnect)(nil),                   // 65: structs.structs.MsgSubstationAllocationConnect
-	(*MsgSubstationAllocationConnectResponse)(nil),           // 66: structs.structs.MsgSubstationAllocationConnectResponse
-	(*MsgSubstationAllocationDisconnect)(nil),                // 67: structs.structs.MsgSubstationAllocationDisconnect
-	(*MsgSubstationAllocationDisconnectResponse)(nil),        // 68: structs.structs.MsgSubstationAllocationDisconnectResponse
-	(*MsgSubstationPlayerConnect)(nil),                       // 69: structs.structs.MsgSubstationPlayerConnect
-	(*MsgSubstationPlayerConnectResponse)(nil),               // 70: structs.structs.MsgSubstationPlayerConnectResponse
-	(*MsgSubstationPlayerDisconnect)(nil),                    // 71: structs.structs.MsgSubstationPlayerDisconnect
-	(*MsgSubstationPlayerDisconnectResponse)(nil),            // 72: structs.structs.MsgSubstationPlayerDisconnectResponse
-	(*MsgSubstationPlayerMigrate)(nil),                       // 73: structs.structs.MsgSubstationPlayerMigrate
-	(*MsgSubstationPlayerMigrateResponse)(nil),               // 74: structs.structs.MsgSubstationPlayerMigrateResponse
-	(*Params)(nil),                                           // 75: structs.structs.Params
-	(AllocationType)(0),                                      // 76: structs.structs.allocationType
-	(ObjectType)(0),                                          // 77: structs.structs.objectType
-	(*Fleet)(nil),                                            // 78: structs.structs.Fleet
-	(GuildJoinBypassLevel)(0),                                // 79: structs.structs.guildJoinBypassLevel
-	(*GuildMembershipApplication)(nil),                       // 80: structs.structs.GuildMembershipApplication
-	(*Planet)(nil),                                           // 81: structs.structs.Planet
-	(*Struct)(nil),                                           // 82: structs.structs.Struct
-	(Ambit)(0),                                               // 83: structs.structs.ambit
-	(TechWeaponSystem)(0),                                    // 84: structs.structs.techWeaponSystem
+	(*MsgPlanetRaidComplete)(nil),                            // 38: structs.structs.MsgPlanetRaidComplete
+	(*MsgPlanetRaidCompleteResponse)(nil),                    // 39: structs.structs.MsgPlanetRaidCompleteResponse
+	(*MsgPlayerUpdatePrimaryAddress)(nil),                    // 40: structs.structs.MsgPlayerUpdatePrimaryAddress
+	(*MsgPlayerUpdatePrimaryAddressResponse)(nil),            // 41: structs.structs.MsgPlayerUpdatePrimaryAddressResponse
+	(*MsgStructStatusResponse)(nil),                          // 42: structs.structs.MsgStructStatusResponse
+	(*MsgStructActivate)(nil),                                // 43: structs.structs.MsgStructActivate
+	(*MsgStructDeactivate)(nil),                              // 44: structs.structs.MsgStructDeactivate
+	(*MsgStructBuildInitiate)(nil),                           // 45: structs.structs.MsgStructBuildInitiate
+	(*MsgStructBuildComplete)(nil),                           // 46: structs.structs.MsgStructBuildComplete
+	(*MsgStructBuildCompleteAndStash)(nil),                   // 47: structs.structs.MsgStructBuildCompleteAndStash
+	(*MsgStructDefenseSet)(nil),                              // 48: structs.structs.MsgStructDefenseSet
+	(*MsgStructDefenseClear)(nil),                            // 49: structs.structs.MsgStructDefenseClear
+	(*MsgStructMove)(nil),                                    // 50: structs.structs.MsgStructMove
+	(*MsgStructAttack)(nil),                                  // 51: structs.structs.MsgStructAttack
+	(*MsgStructAttackResponse)(nil),                          // 52: structs.structs.MsgStructAttackResponse
+	(*MsgStructStealthActivate)(nil),                         // 53: structs.structs.MsgStructStealthActivate
+	(*MsgStructStealthDeactivate)(nil),                       // 54: structs.structs.MsgStructStealthDeactivate
+	(*MsgStructGeneratorInfuse)(nil),                         // 55: structs.structs.MsgStructGeneratorInfuse
+	(*MsgStructGeneratorStatusResponse)(nil),                 // 56: structs.structs.MsgStructGeneratorStatusResponse
+	(*MsgStructOreMinerComplete)(nil),                        // 57: structs.structs.MsgStructOreMinerComplete
+	(*MsgStructOreMinerStatusResponse)(nil),                  // 58: structs.structs.MsgStructOreMinerStatusResponse
+	(*MsgStructOreRefineryComplete)(nil),                     // 59: structs.structs.MsgStructOreRefineryComplete
+	(*MsgStructOreRefineryStatusResponse)(nil),               // 60: structs.structs.MsgStructOreRefineryStatusResponse
+	(*MsgStructStorageStash)(nil),                            // 61: structs.structs.MsgStructStorageStash
+	(*MsgStructStorageRecall)(nil),                           // 62: structs.structs.MsgStructStorageRecall
+	(*MsgSubstationCreate)(nil),                              // 63: structs.structs.MsgSubstationCreate
+	(*MsgSubstationCreateResponse)(nil),                      // 64: structs.structs.MsgSubstationCreateResponse
+	(*MsgSubstationDelete)(nil),                              // 65: structs.structs.MsgSubstationDelete
+	(*MsgSubstationDeleteResponse)(nil),                      // 66: structs.structs.MsgSubstationDeleteResponse
+	(*MsgSubstationAllocationConnect)(nil),                   // 67: structs.structs.MsgSubstationAllocationConnect
+	(*MsgSubstationAllocationConnectResponse)(nil),           // 68: structs.structs.MsgSubstationAllocationConnectResponse
+	(*MsgSubstationAllocationDisconnect)(nil),                // 69: structs.structs.MsgSubstationAllocationDisconnect
+	(*MsgSubstationAllocationDisconnectResponse)(nil),        // 70: structs.structs.MsgSubstationAllocationDisconnectResponse
+	(*MsgSubstationPlayerConnect)(nil),                       // 71: structs.structs.MsgSubstationPlayerConnect
+	(*MsgSubstationPlayerConnectResponse)(nil),               // 72: structs.structs.MsgSubstationPlayerConnectResponse
+	(*MsgSubstationPlayerDisconnect)(nil),                    // 73: structs.structs.MsgSubstationPlayerDisconnect
+	(*MsgSubstationPlayerDisconnectResponse)(nil),            // 74: structs.structs.MsgSubstationPlayerDisconnectResponse
+	(*MsgSubstationPlayerMigrate)(nil),                       // 75: structs.structs.MsgSubstationPlayerMigrate
+	(*MsgSubstationPlayerMigrateResponse)(nil),               // 76: structs.structs.MsgSubstationPlayerMigrateResponse
+	(*Params)(nil),                                           // 77: structs.structs.Params
+	(AllocationType)(0),                                      // 78: structs.structs.allocationType
+	(ObjectType)(0),                                          // 79: structs.structs.objectType
+	(*Fleet)(nil),                                            // 80: structs.structs.Fleet
+	(GuildJoinBypassLevel)(0),                                // 81: structs.structs.guildJoinBypassLevel
+	(*GuildMembershipApplication)(nil),                       // 82: structs.structs.GuildMembershipApplication
+	(*Planet)(nil),                                           // 83: structs.structs.Planet
+	(*Struct)(nil),                                           // 84: structs.structs.Struct
+	(Ambit)(0),                                               // 85: structs.structs.ambit
+	(TechWeaponSystem)(0),                                    // 86: structs.structs.techWeaponSystem
 }
 var file_structs_structs_tx_proto_depIdxs = []int32{
-	75, // 0: structs.structs.MsgUpdateParams.params:type_name -> structs.structs.Params
-	76, // 1: structs.structs.MsgAllocationCreate.allocationType:type_name -> structs.structs.allocationType
-	77, // 2: structs.structs.MsgFleetMove.destinationLocationType:type_name -> structs.structs.objectType
-	78, // 3: structs.structs.MsgFleetMoveResponse.fleet:type_name -> structs.structs.Fleet
-	79, // 4: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildJoinBypassLevel:type_name -> structs.structs.guildJoinBypassLevel
-	79, // 5: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildJoinBypassLevel:type_name -> structs.structs.guildJoinBypassLevel
-	80, // 6: structs.structs.MsgGuildMembershipResponse.guildMembershipApplication:type_name -> structs.structs.GuildMembershipApplication
-	81, // 7: structs.structs.MsgPlanetExploreResponse.planet:type_name -> structs.structs.Planet
-	82, // 8: structs.structs.MsgStructStatusResponse.struct:type_name -> structs.structs.Struct
-	77, // 9: structs.structs.MsgStructBuildInitiate.locationType:type_name -> structs.structs.objectType
-	83, // 10: structs.structs.MsgStructBuildInitiate.operatingAmbit:type_name -> structs.structs.ambit
-	83, // 11: structs.structs.MsgStructBuildCompleteAndStash.storageAmbit:type_name -> structs.structs.ambit
-	77, // 12: structs.structs.MsgStructMove.locationType:type_name -> structs.structs.objectType
-	83, // 13: structs.structs.MsgStructMove.ambit:type_name -> structs.structs.ambit
-	84, // 14: structs.structs.MsgStructAttack.weaponSystem:type_name -> structs.structs.techWeaponSystem
-	82, // 15: structs.structs.MsgStructOreMinerStatusResponse.struct:type_name -> structs.structs.Struct
-	82, // 16: structs.structs.MsgStructOreRefineryStatusResponse.struct:type_name -> structs.structs.Struct
-	83, // 17: structs.structs.MsgStructStorageStash.ambit:type_name -> structs.structs.ambit
-	83, // 18: structs.structs.MsgStructStorageRecall.ambit:type_name -> structs.structs.ambit
-	0,  // 19: structs.structs.Msg.UpdateParams:input_type -> structs.structs.MsgUpdateParams
-	2,  // 20: structs.structs.Msg.AddressRegister:input_type -> structs.structs.MsgAddressRegister
-	4,  // 21: structs.structs.Msg.AddressRevoke:input_type -> structs.structs.MsgAddressRevoke
-	6,  // 22: structs.structs.Msg.AllocationCreate:input_type -> structs.structs.MsgAllocationCreate
-	8,  // 23: structs.structs.Msg.FleetMove:input_type -> structs.structs.MsgFleetMove
-	10, // 24: structs.structs.Msg.GuildCreate:input_type -> structs.structs.MsgGuildCreate
-	12, // 25: structs.structs.Msg.GuildUpdateOwnerId:input_type -> structs.structs.MsgGuildUpdateOwnerId
-	13, // 26: structs.structs.Msg.GuildUpdateEntrySubstationId:input_type -> structs.structs.MsgGuildUpdateEntrySubstationId
-	14, // 27: structs.structs.Msg.GuildUpdateEndpoint:input_type -> structs.structs.MsgGuildUpdateEndpoint
-	15, // 28: structs.structs.Msg.GuildUpdateJoinInfusionMinimum:input_type -> structs.structs.MsgGuildUpdateJoinInfusionMinimum
-	17, // 29: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByInvite:input_type -> structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite
-	16, // 30: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByRequest:input_type -> structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest
-	19, // 31: structs.structs.Msg.GuildMembershipInvite:input_type -> structs.structs.MsgGuildMembershipInvite
-	20, // 32: structs.structs.Msg.GuildMembershipInviteApprove:input_type -> structs.structs.MsgGuildMembershipInviteApprove
-	21, // 33: structs.structs.Msg.GuildMembershipInviteDeny:input_type -> structs.structs.MsgGuildMembershipInviteDeny
-	22, // 34: structs.structs.Msg.GuildMembershipInviteRevoke:input_type -> structs.structs.MsgGuildMembershipInviteRevoke
-	23, // 35: structs.structs.Msg.GuildMembershipJoin:input_type -> structs.structs.MsgGuildMembershipJoin
-	24, // 36: structs.structs.Msg.GuildMembershipJoinProxy:input_type -> structs.structs.MsgGuildMembershipJoinProxy
-	25, // 37: structs.structs.Msg.GuildMembershipKick:input_type -> structs.structs.MsgGuildMembershipKick
-	26, // 38: structs.structs.Msg.GuildMembershipRequest:input_type -> structs.structs.MsgGuildMembershipRequest
-	27, // 39: structs.structs.Msg.GuildMembershipRequestApprove:input_type -> structs.structs.MsgGuildMembershipRequestApprove
-	28, // 40: structs.structs.Msg.GuildMembershipRequestDeny:input_type -> structs.structs.MsgGuildMembershipRequestDeny
-	29, // 41: structs.structs.Msg.GuildMembershipRequestRevoke:input_type -> structs.structs.MsgGuildMembershipRequestRevoke
-	32, // 42: structs.structs.Msg.PermissionGrantOnAddress:input_type -> structs.structs.MsgPermissionGrantOnAddress
-	31, // 43: structs.structs.Msg.PermissionGrantOnObject:input_type -> structs.structs.MsgPermissionGrantOnObject
-	34, // 44: structs.structs.Msg.PermissionRevokeOnAddress:input_type -> structs.structs.MsgPermissionRevokeOnAddress
-	33, // 45: structs.structs.Msg.PermissionRevokeOnObject:input_type -> structs.structs.MsgPermissionRevokeOnObject
-	36, // 46: structs.structs.Msg.PlanetExplore:input_type -> structs.structs.MsgPlanetExplore
-	38, // 47: structs.structs.Msg.PlayerUpdatePrimaryAddress:input_type -> structs.structs.MsgPlayerUpdatePrimaryAddress
-	41, // 48: structs.structs.Msg.StructActivate:input_type -> structs.structs.MsgStructActivate
-	42, // 49: structs.structs.Msg.StructDeactivate:input_type -> structs.structs.MsgStructDeactivate
-	43, // 50: structs.structs.Msg.StructBuildInitiate:input_type -> structs.structs.MsgStructBuildInitiate
-	44, // 51: structs.structs.Msg.StructBuildComplete:input_type -> structs.structs.MsgStructBuildComplete
-	46, // 52: structs.structs.Msg.StructDefenseSet:input_type -> structs.structs.MsgStructDefenseSet
-	47, // 53: structs.structs.Msg.StructDefenseClear:input_type -> structs.structs.MsgStructDefenseClear
-	48, // 54: structs.structs.Msg.StructMove:input_type -> structs.structs.MsgStructMove
-	49, // 55: structs.structs.Msg.StructAttack:input_type -> structs.structs.MsgStructAttack
-	51, // 56: structs.structs.Msg.StructStealthActivate:input_type -> structs.structs.MsgStructStealthActivate
-	52, // 57: structs.structs.Msg.StructStealthDeactivate:input_type -> structs.structs.MsgStructStealthDeactivate
-	53, // 58: structs.structs.Msg.StructGeneratorInfuse:input_type -> structs.structs.MsgStructGeneratorInfuse
-	55, // 59: structs.structs.Msg.StructOreMinerComplete:input_type -> structs.structs.MsgStructOreMinerComplete
-	57, // 60: structs.structs.Msg.StructOreRefineryComplete:input_type -> structs.structs.MsgStructOreRefineryComplete
-	61, // 61: structs.structs.Msg.SubstationCreate:input_type -> structs.structs.MsgSubstationCreate
-	63, // 62: structs.structs.Msg.SubstationDelete:input_type -> structs.structs.MsgSubstationDelete
-	65, // 63: structs.structs.Msg.SubstationAllocationConnect:input_type -> structs.structs.MsgSubstationAllocationConnect
-	67, // 64: structs.structs.Msg.SubstationAllocationDisconnect:input_type -> structs.structs.MsgSubstationAllocationDisconnect
-	69, // 65: structs.structs.Msg.SubstationPlayerConnect:input_type -> structs.structs.MsgSubstationPlayerConnect
-	71, // 66: structs.structs.Msg.SubstationPlayerDisconnect:input_type -> structs.structs.MsgSubstationPlayerDisconnect
-	73, // 67: structs.structs.Msg.SubstationPlayerMigrate:input_type -> structs.structs.MsgSubstationPlayerMigrate
-	1,  // 68: structs.structs.Msg.UpdateParams:output_type -> structs.structs.MsgUpdateParamsResponse
-	3,  // 69: structs.structs.Msg.AddressRegister:output_type -> structs.structs.MsgAddressRegisterResponse
-	5,  // 70: structs.structs.Msg.AddressRevoke:output_type -> structs.structs.MsgAddressRevokeResponse
-	7,  // 71: structs.structs.Msg.AllocationCreate:output_type -> structs.structs.MsgAllocationCreateResponse
-	9,  // 72: structs.structs.Msg.FleetMove:output_type -> structs.structs.MsgFleetMoveResponse
-	11, // 73: structs.structs.Msg.GuildCreate:output_type -> structs.structs.MsgGuildCreateResponse
-	18, // 74: structs.structs.Msg.GuildUpdateOwnerId:output_type -> structs.structs.MsgGuildUpdateResponse
-	18, // 75: structs.structs.Msg.GuildUpdateEntrySubstationId:output_type -> structs.structs.MsgGuildUpdateResponse
-	18, // 76: structs.structs.Msg.GuildUpdateEndpoint:output_type -> structs.structs.MsgGuildUpdateResponse
-	18, // 77: structs.structs.Msg.GuildUpdateJoinInfusionMinimum:output_type -> structs.structs.MsgGuildUpdateResponse
-	18, // 78: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByInvite:output_type -> structs.structs.MsgGuildUpdateResponse
-	18, // 79: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByRequest:output_type -> structs.structs.MsgGuildUpdateResponse
-	30, // 80: structs.structs.Msg.GuildMembershipInvite:output_type -> structs.structs.MsgGuildMembershipResponse
-	30, // 81: structs.structs.Msg.GuildMembershipInviteApprove:output_type -> structs.structs.MsgGuildMembershipResponse
-	30, // 82: structs.structs.Msg.GuildMembershipInviteDeny:output_type -> structs.structs.MsgGuildMembershipResponse
-	30, // 83: structs.structs.Msg.GuildMembershipInviteRevoke:output_type -> structs.structs.MsgGuildMembershipResponse
-	30, // 84: structs.structs.Msg.GuildMembershipJoin:output_type -> structs.structs.MsgGuildMembershipResponse
-	30, // 85: structs.structs.Msg.GuildMembershipJoinProxy:output_type -> structs.structs.MsgGuildMembershipResponse
-	30, // 86: structs.structs.Msg.GuildMembershipKick:output_type -> structs.structs.MsgGuildMembershipResponse
-	30, // 87: structs.structs.Msg.GuildMembershipRequest:output_type -> structs.structs.MsgGuildMembershipResponse
-	30, // 88: structs.structs.Msg.GuildMembershipRequestApprove:output_type -> structs.structs.MsgGuildMembershipResponse
-	30, // 89: structs.structs.Msg.GuildMembershipRequestDeny:output_type -> structs.structs.MsgGuildMembershipResponse
-	30, // 90: structs.structs.Msg.GuildMembershipRequestRevoke:output_type -> structs.structs.MsgGuildMembershipResponse
-	35, // 91: structs.structs.Msg.PermissionGrantOnAddress:output_type -> structs.structs.MsgPermissionResponse
-	35, // 92: structs.structs.Msg.PermissionGrantOnObject:output_type -> structs.structs.MsgPermissionResponse
-	35, // 93: structs.structs.Msg.PermissionRevokeOnAddress:output_type -> structs.structs.MsgPermissionResponse
-	35, // 94: structs.structs.Msg.PermissionRevokeOnObject:output_type -> structs.structs.MsgPermissionResponse
-	37, // 95: structs.structs.Msg.PlanetExplore:output_type -> structs.structs.MsgPlanetExploreResponse
-	39, // 96: structs.structs.Msg.PlayerUpdatePrimaryAddress:output_type -> structs.structs.MsgPlayerUpdatePrimaryAddressResponse
-	40, // 97: structs.structs.Msg.StructActivate:output_type -> structs.structs.MsgStructStatusResponse
-	40, // 98: structs.structs.Msg.StructDeactivate:output_type -> structs.structs.MsgStructStatusResponse
-	40, // 99: structs.structs.Msg.StructBuildInitiate:output_type -> structs.structs.MsgStructStatusResponse
-	40, // 100: structs.structs.Msg.StructBuildComplete:output_type -> structs.structs.MsgStructStatusResponse
-	40, // 101: structs.structs.Msg.StructDefenseSet:output_type -> structs.structs.MsgStructStatusResponse
-	40, // 102: structs.structs.Msg.StructDefenseClear:output_type -> structs.structs.MsgStructStatusResponse
-	40, // 103: structs.structs.Msg.StructMove:output_type -> structs.structs.MsgStructStatusResponse
-	50, // 104: structs.structs.Msg.StructAttack:output_type -> structs.structs.MsgStructAttackResponse
-	40, // 105: structs.structs.Msg.StructStealthActivate:output_type -> structs.structs.MsgStructStatusResponse
-	40, // 106: structs.structs.Msg.StructStealthDeactivate:output_type -> structs.structs.MsgStructStatusResponse
-	54, // 107: structs.structs.Msg.StructGeneratorInfuse:output_type -> structs.structs.MsgStructGeneratorStatusResponse
-	56, // 108: structs.structs.Msg.StructOreMinerComplete:output_type -> structs.structs.MsgStructOreMinerStatusResponse
-	58, // 109: structs.structs.Msg.StructOreRefineryComplete:output_type -> structs.structs.MsgStructOreRefineryStatusResponse
-	62, // 110: structs.structs.Msg.SubstationCreate:output_type -> structs.structs.MsgSubstationCreateResponse
-	64, // 111: structs.structs.Msg.SubstationDelete:output_type -> structs.structs.MsgSubstationDeleteResponse
-	66, // 112: structs.structs.Msg.SubstationAllocationConnect:output_type -> structs.structs.MsgSubstationAllocationConnectResponse
-	68, // 113: structs.structs.Msg.SubstationAllocationDisconnect:output_type -> structs.structs.MsgSubstationAllocationDisconnectResponse
-	70, // 114: structs.structs.Msg.SubstationPlayerConnect:output_type -> structs.structs.MsgSubstationPlayerConnectResponse
-	72, // 115: structs.structs.Msg.SubstationPlayerDisconnect:output_type -> structs.structs.MsgSubstationPlayerDisconnectResponse
-	74, // 116: structs.structs.Msg.SubstationPlayerMigrate:output_type -> structs.structs.MsgSubstationPlayerMigrateResponse
-	68, // [68:117] is the sub-list for method output_type
-	19, // [19:68] is the sub-list for method input_type
-	19, // [19:19] is the sub-list for extension type_name
-	19, // [19:19] is the sub-list for extension extendee
-	0,  // [0:19] is the sub-list for field type_name
+	77, // 0: structs.structs.MsgUpdateParams.params:type_name -> structs.structs.Params
+	78, // 1: structs.structs.MsgAllocationCreate.allocationType:type_name -> structs.structs.allocationType
+	79, // 2: structs.structs.MsgFleetMove.destinationLocationType:type_name -> structs.structs.objectType
+	80, // 3: structs.structs.MsgFleetMoveResponse.fleet:type_name -> structs.structs.Fleet
+	81, // 4: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest.guildJoinBypassLevel:type_name -> structs.structs.guildJoinBypassLevel
+	81, // 5: structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite.guildJoinBypassLevel:type_name -> structs.structs.guildJoinBypassLevel
+	82, // 6: structs.structs.MsgGuildMembershipResponse.guildMembershipApplication:type_name -> structs.structs.GuildMembershipApplication
+	83, // 7: structs.structs.MsgPlanetExploreResponse.planet:type_name -> structs.structs.Planet
+	83, // 8: structs.structs.MsgPlanetRaidCompleteResponse.planet:type_name -> structs.structs.Planet
+	84, // 9: structs.structs.MsgStructStatusResponse.struct:type_name -> structs.structs.Struct
+	79, // 10: structs.structs.MsgStructBuildInitiate.locationType:type_name -> structs.structs.objectType
+	85, // 11: structs.structs.MsgStructBuildInitiate.operatingAmbit:type_name -> structs.structs.ambit
+	85, // 12: structs.structs.MsgStructBuildCompleteAndStash.storageAmbit:type_name -> structs.structs.ambit
+	79, // 13: structs.structs.MsgStructMove.locationType:type_name -> structs.structs.objectType
+	85, // 14: structs.structs.MsgStructMove.ambit:type_name -> structs.structs.ambit
+	86, // 15: structs.structs.MsgStructAttack.weaponSystem:type_name -> structs.structs.techWeaponSystem
+	84, // 16: structs.structs.MsgStructOreMinerStatusResponse.struct:type_name -> structs.structs.Struct
+	84, // 17: structs.structs.MsgStructOreRefineryStatusResponse.struct:type_name -> structs.structs.Struct
+	85, // 18: structs.structs.MsgStructStorageStash.ambit:type_name -> structs.structs.ambit
+	85, // 19: structs.structs.MsgStructStorageRecall.ambit:type_name -> structs.structs.ambit
+	0,  // 20: structs.structs.Msg.UpdateParams:input_type -> structs.structs.MsgUpdateParams
+	2,  // 21: structs.structs.Msg.AddressRegister:input_type -> structs.structs.MsgAddressRegister
+	4,  // 22: structs.structs.Msg.AddressRevoke:input_type -> structs.structs.MsgAddressRevoke
+	6,  // 23: structs.structs.Msg.AllocationCreate:input_type -> structs.structs.MsgAllocationCreate
+	8,  // 24: structs.structs.Msg.FleetMove:input_type -> structs.structs.MsgFleetMove
+	10, // 25: structs.structs.Msg.GuildCreate:input_type -> structs.structs.MsgGuildCreate
+	12, // 26: structs.structs.Msg.GuildUpdateOwnerId:input_type -> structs.structs.MsgGuildUpdateOwnerId
+	13, // 27: structs.structs.Msg.GuildUpdateEntrySubstationId:input_type -> structs.structs.MsgGuildUpdateEntrySubstationId
+	14, // 28: structs.structs.Msg.GuildUpdateEndpoint:input_type -> structs.structs.MsgGuildUpdateEndpoint
+	15, // 29: structs.structs.Msg.GuildUpdateJoinInfusionMinimum:input_type -> structs.structs.MsgGuildUpdateJoinInfusionMinimum
+	17, // 30: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByInvite:input_type -> structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByInvite
+	16, // 31: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByRequest:input_type -> structs.structs.MsgGuildUpdateJoinInfusionMinimumBypassByRequest
+	19, // 32: structs.structs.Msg.GuildMembershipInvite:input_type -> structs.structs.MsgGuildMembershipInvite
+	20, // 33: structs.structs.Msg.GuildMembershipInviteApprove:input_type -> structs.structs.MsgGuildMembershipInviteApprove
+	21, // 34: structs.structs.Msg.GuildMembershipInviteDeny:input_type -> structs.structs.MsgGuildMembershipInviteDeny
+	22, // 35: structs.structs.Msg.GuildMembershipInviteRevoke:input_type -> structs.structs.MsgGuildMembershipInviteRevoke
+	23, // 36: structs.structs.Msg.GuildMembershipJoin:input_type -> structs.structs.MsgGuildMembershipJoin
+	24, // 37: structs.structs.Msg.GuildMembershipJoinProxy:input_type -> structs.structs.MsgGuildMembershipJoinProxy
+	25, // 38: structs.structs.Msg.GuildMembershipKick:input_type -> structs.structs.MsgGuildMembershipKick
+	26, // 39: structs.structs.Msg.GuildMembershipRequest:input_type -> structs.structs.MsgGuildMembershipRequest
+	27, // 40: structs.structs.Msg.GuildMembershipRequestApprove:input_type -> structs.structs.MsgGuildMembershipRequestApprove
+	28, // 41: structs.structs.Msg.GuildMembershipRequestDeny:input_type -> structs.structs.MsgGuildMembershipRequestDeny
+	29, // 42: structs.structs.Msg.GuildMembershipRequestRevoke:input_type -> structs.structs.MsgGuildMembershipRequestRevoke
+	32, // 43: structs.structs.Msg.PermissionGrantOnAddress:input_type -> structs.structs.MsgPermissionGrantOnAddress
+	31, // 44: structs.structs.Msg.PermissionGrantOnObject:input_type -> structs.structs.MsgPermissionGrantOnObject
+	34, // 45: structs.structs.Msg.PermissionRevokeOnAddress:input_type -> structs.structs.MsgPermissionRevokeOnAddress
+	33, // 46: structs.structs.Msg.PermissionRevokeOnObject:input_type -> structs.structs.MsgPermissionRevokeOnObject
+	36, // 47: structs.structs.Msg.PlanetExplore:input_type -> structs.structs.MsgPlanetExplore
+	38, // 48: structs.structs.Msg.PlanetRaidComplete:input_type -> structs.structs.MsgPlanetRaidComplete
+	40, // 49: structs.structs.Msg.PlayerUpdatePrimaryAddress:input_type -> structs.structs.MsgPlayerUpdatePrimaryAddress
+	43, // 50: structs.structs.Msg.StructActivate:input_type -> structs.structs.MsgStructActivate
+	44, // 51: structs.structs.Msg.StructDeactivate:input_type -> structs.structs.MsgStructDeactivate
+	45, // 52: structs.structs.Msg.StructBuildInitiate:input_type -> structs.structs.MsgStructBuildInitiate
+	46, // 53: structs.structs.Msg.StructBuildComplete:input_type -> structs.structs.MsgStructBuildComplete
+	48, // 54: structs.structs.Msg.StructDefenseSet:input_type -> structs.structs.MsgStructDefenseSet
+	49, // 55: structs.structs.Msg.StructDefenseClear:input_type -> structs.structs.MsgStructDefenseClear
+	50, // 56: structs.structs.Msg.StructMove:input_type -> structs.structs.MsgStructMove
+	51, // 57: structs.structs.Msg.StructAttack:input_type -> structs.structs.MsgStructAttack
+	53, // 58: structs.structs.Msg.StructStealthActivate:input_type -> structs.structs.MsgStructStealthActivate
+	54, // 59: structs.structs.Msg.StructStealthDeactivate:input_type -> structs.structs.MsgStructStealthDeactivate
+	55, // 60: structs.structs.Msg.StructGeneratorInfuse:input_type -> structs.structs.MsgStructGeneratorInfuse
+	57, // 61: structs.structs.Msg.StructOreMinerComplete:input_type -> structs.structs.MsgStructOreMinerComplete
+	59, // 62: structs.structs.Msg.StructOreRefineryComplete:input_type -> structs.structs.MsgStructOreRefineryComplete
+	63, // 63: structs.structs.Msg.SubstationCreate:input_type -> structs.structs.MsgSubstationCreate
+	65, // 64: structs.structs.Msg.SubstationDelete:input_type -> structs.structs.MsgSubstationDelete
+	67, // 65: structs.structs.Msg.SubstationAllocationConnect:input_type -> structs.structs.MsgSubstationAllocationConnect
+	69, // 66: structs.structs.Msg.SubstationAllocationDisconnect:input_type -> structs.structs.MsgSubstationAllocationDisconnect
+	71, // 67: structs.structs.Msg.SubstationPlayerConnect:input_type -> structs.structs.MsgSubstationPlayerConnect
+	73, // 68: structs.structs.Msg.SubstationPlayerDisconnect:input_type -> structs.structs.MsgSubstationPlayerDisconnect
+	75, // 69: structs.structs.Msg.SubstationPlayerMigrate:input_type -> structs.structs.MsgSubstationPlayerMigrate
+	1,  // 70: structs.structs.Msg.UpdateParams:output_type -> structs.structs.MsgUpdateParamsResponse
+	3,  // 71: structs.structs.Msg.AddressRegister:output_type -> structs.structs.MsgAddressRegisterResponse
+	5,  // 72: structs.structs.Msg.AddressRevoke:output_type -> structs.structs.MsgAddressRevokeResponse
+	7,  // 73: structs.structs.Msg.AllocationCreate:output_type -> structs.structs.MsgAllocationCreateResponse
+	9,  // 74: structs.structs.Msg.FleetMove:output_type -> structs.structs.MsgFleetMoveResponse
+	11, // 75: structs.structs.Msg.GuildCreate:output_type -> structs.structs.MsgGuildCreateResponse
+	18, // 76: structs.structs.Msg.GuildUpdateOwnerId:output_type -> structs.structs.MsgGuildUpdateResponse
+	18, // 77: structs.structs.Msg.GuildUpdateEntrySubstationId:output_type -> structs.structs.MsgGuildUpdateResponse
+	18, // 78: structs.structs.Msg.GuildUpdateEndpoint:output_type -> structs.structs.MsgGuildUpdateResponse
+	18, // 79: structs.structs.Msg.GuildUpdateJoinInfusionMinimum:output_type -> structs.structs.MsgGuildUpdateResponse
+	18, // 80: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByInvite:output_type -> structs.structs.MsgGuildUpdateResponse
+	18, // 81: structs.structs.Msg.GuildUpdateJoinInfusionMinimumBypassByRequest:output_type -> structs.structs.MsgGuildUpdateResponse
+	30, // 82: structs.structs.Msg.GuildMembershipInvite:output_type -> structs.structs.MsgGuildMembershipResponse
+	30, // 83: structs.structs.Msg.GuildMembershipInviteApprove:output_type -> structs.structs.MsgGuildMembershipResponse
+	30, // 84: structs.structs.Msg.GuildMembershipInviteDeny:output_type -> structs.structs.MsgGuildMembershipResponse
+	30, // 85: structs.structs.Msg.GuildMembershipInviteRevoke:output_type -> structs.structs.MsgGuildMembershipResponse
+	30, // 86: structs.structs.Msg.GuildMembershipJoin:output_type -> structs.structs.MsgGuildMembershipResponse
+	30, // 87: structs.structs.Msg.GuildMembershipJoinProxy:output_type -> structs.structs.MsgGuildMembershipResponse
+	30, // 88: structs.structs.Msg.GuildMembershipKick:output_type -> structs.structs.MsgGuildMembershipResponse
+	30, // 89: structs.structs.Msg.GuildMembershipRequest:output_type -> structs.structs.MsgGuildMembershipResponse
+	30, // 90: structs.structs.Msg.GuildMembershipRequestApprove:output_type -> structs.structs.MsgGuildMembershipResponse
+	30, // 91: structs.structs.Msg.GuildMembershipRequestDeny:output_type -> structs.structs.MsgGuildMembershipResponse
+	30, // 92: structs.structs.Msg.GuildMembershipRequestRevoke:output_type -> structs.structs.MsgGuildMembershipResponse
+	35, // 93: structs.structs.Msg.PermissionGrantOnAddress:output_type -> structs.structs.MsgPermissionResponse
+	35, // 94: structs.structs.Msg.PermissionGrantOnObject:output_type -> structs.structs.MsgPermissionResponse
+	35, // 95: structs.structs.Msg.PermissionRevokeOnAddress:output_type -> structs.structs.MsgPermissionResponse
+	35, // 96: structs.structs.Msg.PermissionRevokeOnObject:output_type -> structs.structs.MsgPermissionResponse
+	37, // 97: structs.structs.Msg.PlanetExplore:output_type -> structs.structs.MsgPlanetExploreResponse
+	39, // 98: structs.structs.Msg.PlanetRaidComplete:output_type -> structs.structs.MsgPlanetRaidCompleteResponse
+	41, // 99: structs.structs.Msg.PlayerUpdatePrimaryAddress:output_type -> structs.structs.MsgPlayerUpdatePrimaryAddressResponse
+	42, // 100: structs.structs.Msg.StructActivate:output_type -> structs.structs.MsgStructStatusResponse
+	42, // 101: structs.structs.Msg.StructDeactivate:output_type -> structs.structs.MsgStructStatusResponse
+	42, // 102: structs.structs.Msg.StructBuildInitiate:output_type -> structs.structs.MsgStructStatusResponse
+	42, // 103: structs.structs.Msg.StructBuildComplete:output_type -> structs.structs.MsgStructStatusResponse
+	42, // 104: structs.structs.Msg.StructDefenseSet:output_type -> structs.structs.MsgStructStatusResponse
+	42, // 105: structs.structs.Msg.StructDefenseClear:output_type -> structs.structs.MsgStructStatusResponse
+	42, // 106: structs.structs.Msg.StructMove:output_type -> structs.structs.MsgStructStatusResponse
+	52, // 107: structs.structs.Msg.StructAttack:output_type -> structs.structs.MsgStructAttackResponse
+	42, // 108: structs.structs.Msg.StructStealthActivate:output_type -> structs.structs.MsgStructStatusResponse
+	42, // 109: structs.structs.Msg.StructStealthDeactivate:output_type -> structs.structs.MsgStructStatusResponse
+	56, // 110: structs.structs.Msg.StructGeneratorInfuse:output_type -> structs.structs.MsgStructGeneratorStatusResponse
+	58, // 111: structs.structs.Msg.StructOreMinerComplete:output_type -> structs.structs.MsgStructOreMinerStatusResponse
+	60, // 112: structs.structs.Msg.StructOreRefineryComplete:output_type -> structs.structs.MsgStructOreRefineryStatusResponse
+	64, // 113: structs.structs.Msg.SubstationCreate:output_type -> structs.structs.MsgSubstationCreateResponse
+	66, // 114: structs.structs.Msg.SubstationDelete:output_type -> structs.structs.MsgSubstationDeleteResponse
+	68, // 115: structs.structs.Msg.SubstationAllocationConnect:output_type -> structs.structs.MsgSubstationAllocationConnectResponse
+	70, // 116: structs.structs.Msg.SubstationAllocationDisconnect:output_type -> structs.structs.MsgSubstationAllocationDisconnectResponse
+	72, // 117: structs.structs.Msg.SubstationPlayerConnect:output_type -> structs.structs.MsgSubstationPlayerConnectResponse
+	74, // 118: structs.structs.Msg.SubstationPlayerDisconnect:output_type -> structs.structs.MsgSubstationPlayerDisconnectResponse
+	76, // 119: structs.structs.Msg.SubstationPlayerMigrate:output_type -> structs.structs.MsgSubstationPlayerMigrateResponse
+	70, // [70:120] is the sub-list for method output_type
+	20, // [20:70] is the sub-list for method input_type
+	20, // [20:20] is the sub-list for extension type_name
+	20, // [20:20] is the sub-list for extension extendee
+	0,  // [0:20] is the sub-list for field type_name
 }
 
 func init() { file_structs_structs_tx_proto_init() }
@@ -43881,7 +45048,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[38].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPlayerUpdatePrimaryAddress); i {
+			switch v := v.(*MsgPlanetRaidComplete); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -43893,7 +45060,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[39].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgPlayerUpdatePrimaryAddressResponse); i {
+			switch v := v.(*MsgPlanetRaidCompleteResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -43905,7 +45072,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[40].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructStatusResponse); i {
+			switch v := v.(*MsgPlayerUpdatePrimaryAddress); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -43917,7 +45084,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[41].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructActivate); i {
+			switch v := v.(*MsgPlayerUpdatePrimaryAddressResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -43929,7 +45096,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[42].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructDeactivate); i {
+			switch v := v.(*MsgStructStatusResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -43941,7 +45108,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[43].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructBuildInitiate); i {
+			switch v := v.(*MsgStructActivate); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -43953,7 +45120,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[44].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructBuildComplete); i {
+			switch v := v.(*MsgStructDeactivate); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -43965,7 +45132,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[45].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructBuildCompleteAndStash); i {
+			switch v := v.(*MsgStructBuildInitiate); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -43977,7 +45144,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[46].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructDefenseSet); i {
+			switch v := v.(*MsgStructBuildComplete); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -43989,7 +45156,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[47].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructDefenseClear); i {
+			switch v := v.(*MsgStructBuildCompleteAndStash); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44001,7 +45168,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[48].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructMove); i {
+			switch v := v.(*MsgStructDefenseSet); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44013,7 +45180,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[49].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructAttack); i {
+			switch v := v.(*MsgStructDefenseClear); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44025,7 +45192,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[50].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructAttackResponse); i {
+			switch v := v.(*MsgStructMove); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44037,7 +45204,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[51].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructStealthActivate); i {
+			switch v := v.(*MsgStructAttack); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44049,7 +45216,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[52].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructStealthDeactivate); i {
+			switch v := v.(*MsgStructAttackResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44061,7 +45228,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[53].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructGeneratorInfuse); i {
+			switch v := v.(*MsgStructStealthActivate); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44073,7 +45240,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[54].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructGeneratorStatusResponse); i {
+			switch v := v.(*MsgStructStealthDeactivate); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44085,7 +45252,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[55].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructOreMinerComplete); i {
+			switch v := v.(*MsgStructGeneratorInfuse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44097,7 +45264,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[56].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructOreMinerStatusResponse); i {
+			switch v := v.(*MsgStructGeneratorStatusResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44109,7 +45276,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[57].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructOreRefineryComplete); i {
+			switch v := v.(*MsgStructOreMinerComplete); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44121,7 +45288,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[58].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructOreRefineryStatusResponse); i {
+			switch v := v.(*MsgStructOreMinerStatusResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44133,7 +45300,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[59].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructStorageStash); i {
+			switch v := v.(*MsgStructOreRefineryComplete); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44145,7 +45312,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[60].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgStructStorageRecall); i {
+			switch v := v.(*MsgStructOreRefineryStatusResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44157,7 +45324,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[61].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationCreate); i {
+			switch v := v.(*MsgStructStorageStash); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44169,7 +45336,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[62].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationCreateResponse); i {
+			switch v := v.(*MsgStructStorageRecall); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44181,7 +45348,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[63].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationDelete); i {
+			switch v := v.(*MsgSubstationCreate); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44193,7 +45360,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[64].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationDeleteResponse); i {
+			switch v := v.(*MsgSubstationCreateResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44205,7 +45372,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[65].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationAllocationConnect); i {
+			switch v := v.(*MsgSubstationDelete); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44217,7 +45384,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[66].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationAllocationConnectResponse); i {
+			switch v := v.(*MsgSubstationDeleteResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44229,7 +45396,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[67].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationAllocationDisconnect); i {
+			switch v := v.(*MsgSubstationAllocationConnect); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44241,7 +45408,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[68].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationAllocationDisconnectResponse); i {
+			switch v := v.(*MsgSubstationAllocationConnectResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44253,7 +45420,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[69].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationPlayerConnect); i {
+			switch v := v.(*MsgSubstationAllocationDisconnect); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44265,7 +45432,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[70].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationPlayerConnectResponse); i {
+			switch v := v.(*MsgSubstationAllocationDisconnectResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44277,7 +45444,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[71].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationPlayerDisconnect); i {
+			switch v := v.(*MsgSubstationPlayerConnect); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44289,7 +45456,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[72].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationPlayerDisconnectResponse); i {
+			switch v := v.(*MsgSubstationPlayerConnectResponse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44301,7 +45468,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[73].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgSubstationPlayerMigrate); i {
+			switch v := v.(*MsgSubstationPlayerDisconnect); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -44313,6 +45480,30 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[74].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MsgSubstationPlayerDisconnectResponse); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_tx_proto_msgTypes[75].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*MsgSubstationPlayerMigrate); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_tx_proto_msgTypes[76].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*MsgSubstationPlayerMigrateResponse); i {
 			case 0:
 				return &v.state
@@ -44331,7 +45522,7 @@ func file_structs_structs_tx_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_structs_structs_tx_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   75,
+			NumMessages:   77,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

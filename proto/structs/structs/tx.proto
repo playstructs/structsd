@@ -58,6 +58,7 @@ service Msg {
   rpc PermissionRevokeOnObject       (MsgPermissionRevokeOnObject      ) returns (MsgPermissionResponse);
 
   rpc PlanetExplore                  (MsgPlanetExplore                 ) returns (MsgPlanetExploreResponse                 );
+  rpc PlanetRaidComplete             (MsgPlanetRaidComplete            ) returns (MsgPlanetRaidCompleteResponse                 );
 
   rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse    );
 
@@ -378,6 +379,19 @@ message MsgPlanetExplore {
 }
 
 message MsgPlanetExploreResponse {
+  Planet planet = 1 [(gogoproto.nullable) = false];
+}
+
+message MsgPlanetRaidComplete {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator      = 1;
+  string fleetId      = 2;
+  string proof        = 3;
+  string nonce        = 4;
+}
+
+message MsgPlanetRaidCompleteResponse {
   Planet planet = 1 [(gogoproto.nullable) = false];
 }
 
