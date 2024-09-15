@@ -1256,9 +1256,7 @@ func (cache *StructCache) AttemptMove(destinationId string, destinationType type
                 return err
             }
 
-
-            // TODO, do a check to see if the old planet had uncommitted changes
-            breaking change for comment above
+            cache.GetPlanet().Commit()
 
             cache.Planet = &planet
             cache.PlanetLoaded = true
@@ -1282,7 +1280,7 @@ func (cache *StructCache) AttemptMove(destinationId string, destinationType type
                 }
 
                 // TODO, do a check to see if the old fleet had uncommitted changes
-                breaking change for comment above
+                cache.GetFleet().Commit()
 
                 cache.Fleet = &fleet
                 cache.FleetLoaded = true

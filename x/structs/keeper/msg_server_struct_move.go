@@ -8,9 +8,9 @@ import (
     //"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
-	*/
 
+	*/
+    sdkerrors "cosmossdk.io/errors"
     sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 )
@@ -43,8 +43,12 @@ func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (
         return &types.MsgStructStatusResponse{}, permissionError
     }
 
-    // I think we need to check power, but that might be being checked in AttemptMove
-    breaking change for comment above
+    // Check Player Charge
+    if structure.GetOwner().GetCharge() < structure.GetStructType().GetMoveCharge() {
+        structure.GetOwner().Discharge()
+        structure.GetOwner().Commit()
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for movement, but player (%s) only had %d", structure.GetStructType().GetId(), structure.GetStructType().GetMoveCharge(), structure.GetOwnerId(), structure.GetOwner().GetCharge() )
+    }
 
     err := structure.AttemptMove(msg.LocationId, msg.LocationType, msg.Ambit, msg.Slot)
     if (err != nil) {
