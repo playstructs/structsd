@@ -404,7 +404,12 @@ func (cache *PlanetCache) SetLocationListStart(fleetId string) {
     cache.Planet.LocationListStart = fleetId
     cache.PlanetChanged = true
 
-    cache.ResetBlockStartRaid()
+    if (fleetId != "") {
+        uctx := sdk.UnwrapSDKContext(cache.Ctx)
+        _ = uctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleetId, PlanetId: cache.GetPlanetId(), Status: types.RaidStatus_initiated}})
+        cache.ResetBlockStartRaid()
+    }
+
 }
 
 func (cache *PlanetCache) SetLocationListLast(fleetId string) {

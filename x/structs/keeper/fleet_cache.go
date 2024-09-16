@@ -6,7 +6,7 @@ import (
     //"math"
     //"fmt"
 
-	//sdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 
@@ -293,6 +293,9 @@ func (cache *FleetCache) PlanetMoveReadinessCheck() (error) {
 
 func (cache *FleetCache) Defeat() (){
     if (!cache.FleetLoaded) { cache.LoadFleet() }
+
+    uctx := sdk.UnwrapSDKContext(cache.Ctx)
+    _ = uctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: cache.GetFleetId(), PlanetId: cache.GetPlanet().GetPlanetId(), Status: types.RaidStatus_attackerDefeated}})
 
     // Send Fleet home
     cache.SetLocationToPlanet(cache.GetOwner().GetPlanet())

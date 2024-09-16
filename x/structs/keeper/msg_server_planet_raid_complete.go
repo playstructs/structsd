@@ -34,28 +34,56 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 	k.AddressEmitActivity(ctx, msg.Creator)
 
     // Load Fleet
+    fleet, fleetLoadError := k.GetFleetCacheFromId(ctx, msg.FleetId)
+    if (fleetLoadError != nil) {
+        return &types.MsgPlanetRaidCompleteResponse{}, fleetLoadError
+    }
 
     // Check calling address can use Fleet
+    permissionError := fleet.GetOwner().CanBePlayedBy(msg.Creator)
+    if (permissionError != nil) {
+        return &types.MsgPlanetRaidCompleteResponse{}, permissionError
+    }
 
     // check that the fleet is Away
+    if fleet.IsOnStation() {
+       return &types.MsgPlanetRaidCompleteResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet cannot complete a Raid while On Station")
+    }
 
     // check that forward pointer for the fleet is ""
+    if (fleet.GetFleet().LocationListForward != "") {
+        return &types.MsgPlanetRaidCompleteResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet cannot complete a Raid unless it is the first in line")
+    }
 
     // check that the player is online
+    if fleet.GetOwner().IsOffline() {
+        return &types.MsgPlanetRaidCompleteResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet cannot complete a Raid unlessthe player is Online")
+    }
 
 
+    raidedPlanet            := fleet.GetPlanet().GetPlanetId()
     blockStartRaidString    := strconv.FormatUint(fleet.GetPlanet().GetBlockStartRaid() , 10)
-    hashInput               := msg.FleetId + '@' + fleet.GetPlanet().GetPlanetId() + "RAID" + blockStartRaidString + "NONCE" + msg.Nonce
+    hashInput               := msg.FleetId + "@" + fleet.GetPlanet().GetPlanetId() + "RAID" + blockStartRaidString + "NONCE" + msg.Nonce
 
     currentAge := uint64(ctx.BlockHeight()) - fleet.GetPlanet().GetBlockStartRaid()
     if (!types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, fleet.GetPlanet().GetBlockStartRaid())) {
-       return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Work failure for input (%s) when trying to mine on Struct %s", hashInput, structure.GetStructId())
+        _ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleet.GetFleetId(), PlanetId: raidedPlanet, Status: types.RaidStatus_ongoing}})
+       return &types.MsgPlanetRaidCompleteResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Work failure for input (%s) when trying to complete a Raid on Planet %s", hashInput, fleet.GetPlanet().GetPlanetId())
     }
 
     // Award the Ore from the defender to attacker
+    amountStolen := fleet.GetPlanet().GetOwner().GetStoredOre()
+    fleet.GetOwner().StoredOreIncrement(amountStolen)
+    fleet.GetPlanet().GetOwner().StoredOreEmpty()
+
+    fleet.GetOwner().Commit()
+    fleet.GetPlanet().GetOwner().Commit()
 
     // Move the Fleet back to Station
+    fleet.SetLocationToPlanet(fleet.GetOwner().GetPlanet())
+    fleet.Commit()
 
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleet.GetFleetId(), PlanetId: raidedPlanet, Status: types.RaidStatus_raidSuccessful}})
 
-	return &types.MsgPlanetRaidCompleteResponse{Planet: planet.GetPlanet()}, nil
+	return &types.MsgPlanetRaidCompleteResponse{Fleet: fleet.GetFleet(), Planet: fleet.GetPlanet().GetPlanet(), OreStolen: amountStolen}, nil
 }

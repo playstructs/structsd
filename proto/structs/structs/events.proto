@@ -121,3 +121,11 @@ message EventAttackDefenderCounterDetail {
   uint64  counterDamage             = 2;
   bool    counterDestroyedAttacker  = 3;
 }
+
+message EventRaid { EventRaidDetail eventRaidDetail = 1; }
+
+message EventRaidDetail {
+  string      fleetId    = 1;
+  string      planetId   = 2;
+  raidStatus  status     = 3;
+}

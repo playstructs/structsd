@@ -226,6 +226,14 @@ var Ambit_flag = map[Ambit]uint64 {
 }
 
 
+var RaidStatus_enum = map[string]RaidStatus {
+    "initiated":            RaidStatus_initiated,
+    "ongoing":              RaidStatus_ongoing,
+    "attackerDefeated":     RaidStatus_attackerDefeated,
+    "raidSuccessful":       RaidStatus_raidSuccessful,
+}
+
+
 var PlanetStatus_enum = map[string]PlanetStatus {
     "active":       PlanetStatus_active,
     "complete":     PlanetStatus_complete,

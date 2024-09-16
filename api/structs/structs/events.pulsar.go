@@ -11837,6 +11837,973 @@ func (x *fastReflection_EventAttackDefenderCounterDetail) ProtoMethods() *protoi
 	}
 }
 
+var (
+	md_EventRaid                 protoreflect.MessageDescriptor
+	fd_EventRaid_eventRaidDetail protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventRaid = File_structs_structs_events_proto.Messages().ByName("EventRaid")
+	fd_EventRaid_eventRaidDetail = md_EventRaid.Fields().ByName("eventRaidDetail")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventRaid)(nil)
+
+type fastReflection_EventRaid EventRaid
+
+func (x *EventRaid) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventRaid)(x)
+}
+
+func (x *EventRaid) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[23]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventRaid_messageType fastReflection_EventRaid_messageType
+var _ protoreflect.MessageType = fastReflection_EventRaid_messageType{}
+
+type fastReflection_EventRaid_messageType struct{}
+
+func (x fastReflection_EventRaid_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventRaid)(nil)
+}
+func (x fastReflection_EventRaid_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventRaid)
+}
+func (x fastReflection_EventRaid_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventRaid
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventRaid) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventRaid
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventRaid) Type() protoreflect.MessageType {
+	return _fastReflection_EventRaid_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventRaid) New() protoreflect.Message {
+	return new(fastReflection_EventRaid)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventRaid) Interface() protoreflect.ProtoMessage {
+	return (*EventRaid)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventRaid) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.EventRaidDetail != nil {
+		value := protoreflect.ValueOfMessage(x.EventRaidDetail.ProtoReflect())
+		if !f(fd_EventRaid_eventRaidDetail, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventRaid) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventRaid.eventRaidDetail":
+		return x.EventRaidDetail != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventRaid"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventRaid does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventRaid) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventRaid.eventRaidDetail":
+		x.EventRaidDetail = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventRaid"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventRaid does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventRaid) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventRaid.eventRaidDetail":
+		value := x.EventRaidDetail
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventRaid"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventRaid does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventRaid) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventRaid.eventRaidDetail":
+		x.EventRaidDetail = value.Message().Interface().(*EventRaidDetail)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventRaid"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventRaid does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventRaid) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventRaid.eventRaidDetail":
+		if x.EventRaidDetail == nil {
+			x.EventRaidDetail = new(EventRaidDetail)
+		}
+		return protoreflect.ValueOfMessage(x.EventRaidDetail.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventRaid"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventRaid does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventRaid) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventRaid.eventRaidDetail":
+		m := new(EventRaidDetail)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventRaid"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventRaid does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventRaid) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventRaid", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventRaid) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventRaid) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventRaid) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventRaid) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventRaid)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.EventRaidDetail != nil {
+			l = options.Size(x.EventRaidDetail)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventRaid)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.EventRaidDetail != nil {
+			encoded, err := options.Marshal(x.EventRaidDetail)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventRaid)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventRaid: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventRaid: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field EventRaidDetail", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.EventRaidDetail == nil {
+					x.EventRaidDetail = &EventRaidDetail{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.EventRaidDetail); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventRaidDetail          protoreflect.MessageDescriptor
+	fd_EventRaidDetail_fleetId  protoreflect.FieldDescriptor
+	fd_EventRaidDetail_planetId protoreflect.FieldDescriptor
+	fd_EventRaidDetail_status   protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventRaidDetail = File_structs_structs_events_proto.Messages().ByName("EventRaidDetail")
+	fd_EventRaidDetail_fleetId = md_EventRaidDetail.Fields().ByName("fleetId")
+	fd_EventRaidDetail_planetId = md_EventRaidDetail.Fields().ByName("planetId")
+	fd_EventRaidDetail_status = md_EventRaidDetail.Fields().ByName("status")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventRaidDetail)(nil)
+
+type fastReflection_EventRaidDetail EventRaidDetail
+
+func (x *EventRaidDetail) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventRaidDetail)(x)
+}
+
+func (x *EventRaidDetail) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[24]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventRaidDetail_messageType fastReflection_EventRaidDetail_messageType
+var _ protoreflect.MessageType = fastReflection_EventRaidDetail_messageType{}
+
+type fastReflection_EventRaidDetail_messageType struct{}
+
+func (x fastReflection_EventRaidDetail_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventRaidDetail)(nil)
+}
+func (x fastReflection_EventRaidDetail_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventRaidDetail)
+}
+func (x fastReflection_EventRaidDetail_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventRaidDetail
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventRaidDetail) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventRaidDetail
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventRaidDetail) Type() protoreflect.MessageType {
+	return _fastReflection_EventRaidDetail_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventRaidDetail) New() protoreflect.Message {
+	return new(fastReflection_EventRaidDetail)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventRaidDetail) Interface() protoreflect.ProtoMessage {
+	return (*EventRaidDetail)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventRaidDetail) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.FleetId != "" {
+		value := protoreflect.ValueOfString(x.FleetId)
+		if !f(fd_EventRaidDetail_fleetId, value) {
+			return
+		}
+	}
+	if x.PlanetId != "" {
+		value := protoreflect.ValueOfString(x.PlanetId)
+		if !f(fd_EventRaidDetail_planetId, value) {
+			return
+		}
+	}
+	if x.Status != 0 {
+		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.Status))
+		if !f(fd_EventRaidDetail_status, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventRaidDetail) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventRaidDetail.fleetId":
+		return x.FleetId != ""
+	case "structs.structs.EventRaidDetail.planetId":
+		return x.PlanetId != ""
+	case "structs.structs.EventRaidDetail.status":
+		return x.Status != 0
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventRaidDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventRaidDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventRaidDetail) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventRaidDetail.fleetId":
+		x.FleetId = ""
+	case "structs.structs.EventRaidDetail.planetId":
+		x.PlanetId = ""
+	case "structs.structs.EventRaidDetail.status":
+		x.Status = 0
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventRaidDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventRaidDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventRaidDetail) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventRaidDetail.fleetId":
+		value := x.FleetId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventRaidDetail.planetId":
+		value := x.PlanetId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventRaidDetail.status":
+		value := x.Status
+		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventRaidDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventRaidDetail does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventRaidDetail) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventRaidDetail.fleetId":
+		x.FleetId = value.Interface().(string)
+	case "structs.structs.EventRaidDetail.planetId":
+		x.PlanetId = value.Interface().(string)
+	case "structs.structs.EventRaidDetail.status":
+		x.Status = (RaidStatus)(value.Enum())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventRaidDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventRaidDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventRaidDetail) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventRaidDetail.fleetId":
+		panic(fmt.Errorf("field fleetId of message structs.structs.EventRaidDetail is not mutable"))
+	case "structs.structs.EventRaidDetail.planetId":
+		panic(fmt.Errorf("field planetId of message structs.structs.EventRaidDetail is not mutable"))
+	case "structs.structs.EventRaidDetail.status":
+		panic(fmt.Errorf("field status of message structs.structs.EventRaidDetail is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventRaidDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventRaidDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventRaidDetail) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventRaidDetail.fleetId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventRaidDetail.planetId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventRaidDetail.status":
+		return protoreflect.ValueOfEnum(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventRaidDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventRaidDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventRaidDetail) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventRaidDetail", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventRaidDetail) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventRaidDetail) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventRaidDetail) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventRaidDetail) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventRaidDetail)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.FleetId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.PlanetId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.Status != 0 {
+			n += 1 + runtime.Sov(uint64(x.Status))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventRaidDetail)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Status != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Status))
+			i--
+			dAtA[i] = 0x18
+		}
+		if len(x.PlanetId) > 0 {
+			i -= len(x.PlanetId)
+			copy(dAtA[i:], x.PlanetId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.PlanetId)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.FleetId) > 0 {
+			i -= len(x.FleetId)
+			copy(dAtA[i:], x.FleetId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.FleetId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventRaidDetail)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventRaidDetail: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventRaidDetail: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field FleetId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.FleetId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlanetId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.PlanetId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Status", wireType)
+				}
+				x.Status = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Status |= RaidStatus(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 // Code generated by protoc-gen-go. DO NOT EDIT.
 // versions:
 // 	protoc-gen-go v1.27.0
@@ -12919,6 +13886,92 @@ func (x *EventAttackDefenderCounterDetail) GetCounterDestroyedAttacker() bool {
 	return false
 }
 
+type EventRaid struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	EventRaidDetail *EventRaidDetail `protobuf:"bytes,1,opt,name=eventRaidDetail,proto3" json:"eventRaidDetail,omitempty"`
+}
+
+func (x *EventRaid) Reset() {
+	*x = EventRaid{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[23]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventRaid) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventRaid) ProtoMessage() {}
+
+// Deprecated: Use EventRaid.ProtoReflect.Descriptor instead.
+func (*EventRaid) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *EventRaid) GetEventRaidDetail() *EventRaidDetail {
+	if x != nil {
+		return x.EventRaidDetail
+	}
+	return nil
+}
+
+type EventRaidDetail struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	FleetId  string     `protobuf:"bytes,1,opt,name=fleetId,proto3" json:"fleetId,omitempty"`
+	PlanetId string     `protobuf:"bytes,2,opt,name=planetId,proto3" json:"planetId,omitempty"`
+	Status   RaidStatus `protobuf:"varint,3,opt,name=status,proto3,enum=structs.structs.RaidStatus" json:"status,omitempty"`
+}
+
+func (x *EventRaidDetail) Reset() {
+	*x = EventRaidDetail{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[24]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventRaidDetail) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventRaidDetail) ProtoMessage() {}
+
+// Deprecated: Use EventRaidDetail.ProtoReflect.Descriptor instead.
+func (*EventRaidDetail) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *EventRaidDetail) GetFleetId() string {
+	if x != nil {
+		return x.FleetId
+	}
+	return ""
+}
+
+func (x *EventRaidDetail) GetPlanetId() string {
+	if x != nil {
+		return x.PlanetId
+	}
+	return ""
+}
+
+func (x *EventRaidDetail) GetStatus() RaidStatus {
+	if x != nil {
+		return x.Status
+	}
+	return RaidStatus_initiated
+}
+
 var File_structs_structs_events_proto protoreflect.FileDescriptor
 
 var file_structs_structs_events_proto_rawDesc = []byte{
@@ -13208,18 +14261,31 @@ var file_structs_structs_events_proto_rawDesc = []byte{
 	0x12, 0x3a, 0x0a, 0x18, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72,
 	0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x03, 0x20, 0x01,
 	0x28, 0x08, 0x52, 0x18, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72,
-	0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x42, 0xa1, 0x01, 0x0a,
-	0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74,
-	0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69,
-	0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2,
-	0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x22, 0x57, 0x0a, 0x09,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x12, 0x4a, 0x0a, 0x0f, 0x65, 0x76, 0x65,
+	0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x44, 0x65,
+	0x74, 0x61, 0x69, 0x6c, 0x52, 0x0f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x44,
+	0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x7c, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61,
+	0x69, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x66, 0x6c, 0x65, 0x65,
+	0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x66, 0x6c, 0x65, 0x65, 0x74,
+	0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x12, 0x33,
+	0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x72, 0x61, 0x69, 0x64, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x06, 0x73, 0x74, 0x61,
+	0x74, 0x75, 0x73, 0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x45, 0x76, 0x65,
+	0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d,
+	0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53,
+	0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61,
+	0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -13234,7 +14300,7 @@ func file_structs_structs_events_proto_rawDescGZIP() []byte {
 	return file_structs_structs_events_proto_rawDescData
 }
 
-var file_structs_structs_events_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
+var file_structs_structs_events_proto_msgTypes = make([]protoimpl.MessageInfo, 25)
 var file_structs_structs_events_proto_goTypes = []interface{}{
 	(*EventAllocation)(nil),                  // 0: structs.structs.EventAllocation
 	(*EventFleet)(nil),                       // 1: structs.structs.EventFleet
@@ -13259,66 +14325,71 @@ var file_structs_structs_events_proto_goTypes = []interface{}{
 	(*EventAttackDetail)(nil),                // 20: structs.structs.EventAttackDetail
 	(*EventAttackShotDetail)(nil),            // 21: structs.structs.EventAttackShotDetail
 	(*EventAttackDefenderCounterDetail)(nil), // 22: structs.structs.EventAttackDefenderCounterDetail
-	(*Allocation)(nil),                       // 23: structs.structs.Allocation
-	(*Fleet)(nil),                            // 24: structs.structs.Fleet
-	(*Guild)(nil),                            // 25: structs.structs.Guild
-	(*Infusion)(nil),                         // 26: structs.structs.Infusion
-	(*Planet)(nil),                           // 27: structs.structs.Planet
-	(*PlanetAttributeRecord)(nil),            // 28: structs.structs.PlanetAttributeRecord
-	(*Player)(nil),                           // 29: structs.structs.Player
-	(*Reactor)(nil),                          // 30: structs.structs.Reactor
-	(*Struct)(nil),                           // 31: structs.structs.Struct
-	(*StructAttributeRecord)(nil),            // 32: structs.structs.StructAttributeRecord
-	(*StructDefender)(nil),                   // 33: structs.structs.StructDefender
-	(*StructType)(nil),                       // 34: structs.structs.StructType
-	(*Substation)(nil),                       // 35: structs.structs.Substation
-	(*PermissionRecord)(nil),                 // 36: structs.structs.PermissionRecord
-	(*GridRecord)(nil),                       // 37: structs.structs.GridRecord
-	(*AddressAssociation)(nil),               // 38: structs.structs.AddressAssociation
-	(*AddressActivity)(nil),                  // 39: structs.structs.AddressActivity
-	(*GuildMembershipApplication)(nil),       // 40: structs.structs.GuildMembershipApplication
-	(TechWeaponSystem)(0),                    // 41: structs.structs.techWeaponSystem
-	(TechWeaponControl)(0),                   // 42: structs.structs.techWeaponControl
-	(TechActiveWeaponry)(0),                  // 43: structs.structs.techActiveWeaponry
-	(TechUnitDefenses)(0),                    // 44: structs.structs.techUnitDefenses
-	(TechPlanetaryDefenses)(0),               // 45: structs.structs.techPlanetaryDefenses
-	(TechPassiveWeaponry)(0),                 // 46: structs.structs.techPassiveWeaponry
+	(*EventRaid)(nil),                        // 23: structs.structs.EventRaid
+	(*EventRaidDetail)(nil),                  // 24: structs.structs.EventRaidDetail
+	(*Allocation)(nil),                       // 25: structs.structs.Allocation
+	(*Fleet)(nil),                            // 26: structs.structs.Fleet
+	(*Guild)(nil),                            // 27: structs.structs.Guild
+	(*Infusion)(nil),                         // 28: structs.structs.Infusion
+	(*Planet)(nil),                           // 29: structs.structs.Planet
+	(*PlanetAttributeRecord)(nil),            // 30: structs.structs.PlanetAttributeRecord
+	(*Player)(nil),                           // 31: structs.structs.Player
+	(*Reactor)(nil),                          // 32: structs.structs.Reactor
+	(*Struct)(nil),                           // 33: structs.structs.Struct
+	(*StructAttributeRecord)(nil),            // 34: structs.structs.StructAttributeRecord
+	(*StructDefender)(nil),                   // 35: structs.structs.StructDefender
+	(*StructType)(nil),                       // 36: structs.structs.StructType
+	(*Substation)(nil),                       // 37: structs.structs.Substation
+	(*PermissionRecord)(nil),                 // 38: structs.structs.PermissionRecord
+	(*GridRecord)(nil),                       // 39: structs.structs.GridRecord
+	(*AddressAssociation)(nil),               // 40: structs.structs.AddressAssociation
+	(*AddressActivity)(nil),                  // 41: structs.structs.AddressActivity
+	(*GuildMembershipApplication)(nil),       // 42: structs.structs.GuildMembershipApplication
+	(TechWeaponSystem)(0),                    // 43: structs.structs.techWeaponSystem
+	(TechWeaponControl)(0),                   // 44: structs.structs.techWeaponControl
+	(TechActiveWeaponry)(0),                  // 45: structs.structs.techActiveWeaponry
+	(TechUnitDefenses)(0),                    // 46: structs.structs.techUnitDefenses
+	(TechPlanetaryDefenses)(0),               // 47: structs.structs.techPlanetaryDefenses
+	(TechPassiveWeaponry)(0),                 // 48: structs.structs.techPassiveWeaponry
+	(RaidStatus)(0),                          // 49: structs.structs.raidStatus
 }
 var file_structs_structs_events_proto_depIdxs = []int32{
-	23, // 0: structs.structs.EventAllocation.allocation:type_name -> structs.structs.Allocation
-	24, // 1: structs.structs.EventFleet.fleet:type_name -> structs.structs.Fleet
-	25, // 2: structs.structs.EventGuild.guild:type_name -> structs.structs.Guild
-	26, // 3: structs.structs.EventInfusion.infusion:type_name -> structs.structs.Infusion
-	27, // 4: structs.structs.EventPlanet.planet:type_name -> structs.structs.Planet
-	28, // 5: structs.structs.EventPlanetAttribute.planetAttributeRecord:type_name -> structs.structs.PlanetAttributeRecord
-	29, // 6: structs.structs.EventPlayer.player:type_name -> structs.structs.Player
-	30, // 7: structs.structs.EventReactor.reactor:type_name -> structs.structs.Reactor
-	31, // 8: structs.structs.EventStruct.structure:type_name -> structs.structs.Struct
-	32, // 9: structs.structs.EventStructAttribute.structAttributeRecord:type_name -> structs.structs.StructAttributeRecord
-	33, // 10: structs.structs.EventStructDefender.structDefender:type_name -> structs.structs.StructDefender
-	34, // 11: structs.structs.EventStructType.structType:type_name -> structs.structs.StructType
-	35, // 12: structs.structs.EventSubstation.substation:type_name -> structs.structs.Substation
-	36, // 13: structs.structs.EventPermission.permissionRecord:type_name -> structs.structs.PermissionRecord
-	37, // 14: structs.structs.EventGrid.gridRecord:type_name -> structs.structs.GridRecord
-	38, // 15: structs.structs.EventAddressAssociation.addressAssociation:type_name -> structs.structs.AddressAssociation
-	39, // 16: structs.structs.EventAddressActivity.addressActivity:type_name -> structs.structs.AddressActivity
-	40, // 17: structs.structs.EventGuildMembershipApplication.guildMembershipApplication:type_name -> structs.structs.GuildMembershipApplication
+	25, // 0: structs.structs.EventAllocation.allocation:type_name -> structs.structs.Allocation
+	26, // 1: structs.structs.EventFleet.fleet:type_name -> structs.structs.Fleet
+	27, // 2: structs.structs.EventGuild.guild:type_name -> structs.structs.Guild
+	28, // 3: structs.structs.EventInfusion.infusion:type_name -> structs.structs.Infusion
+	29, // 4: structs.structs.EventPlanet.planet:type_name -> structs.structs.Planet
+	30, // 5: structs.structs.EventPlanetAttribute.planetAttributeRecord:type_name -> structs.structs.PlanetAttributeRecord
+	31, // 6: structs.structs.EventPlayer.player:type_name -> structs.structs.Player
+	32, // 7: structs.structs.EventReactor.reactor:type_name -> structs.structs.Reactor
+	33, // 8: structs.structs.EventStruct.structure:type_name -> structs.structs.Struct
+	34, // 9: structs.structs.EventStructAttribute.structAttributeRecord:type_name -> structs.structs.StructAttributeRecord
+	35, // 10: structs.structs.EventStructDefender.structDefender:type_name -> structs.structs.StructDefender
+	36, // 11: structs.structs.EventStructType.structType:type_name -> structs.structs.StructType
+	37, // 12: structs.structs.EventSubstation.substation:type_name -> structs.structs.Substation
+	38, // 13: structs.structs.EventPermission.permissionRecord:type_name -> structs.structs.PermissionRecord
+	39, // 14: structs.structs.EventGrid.gridRecord:type_name -> structs.structs.GridRecord
+	40, // 15: structs.structs.EventAddressAssociation.addressAssociation:type_name -> structs.structs.AddressAssociation
+	41, // 16: structs.structs.EventAddressActivity.addressActivity:type_name -> structs.structs.AddressActivity
+	42, // 17: structs.structs.EventGuildMembershipApplication.guildMembershipApplication:type_name -> structs.structs.GuildMembershipApplication
 	20, // 18: structs.structs.EventAttack.eventAttackDetail:type_name -> structs.structs.EventAttackDetail
-	41, // 19: structs.structs.EventAttackDetail.weaponSystem:type_name -> structs.structs.techWeaponSystem
-	42, // 20: structs.structs.EventAttackDetail.weaponControl:type_name -> structs.structs.techWeaponControl
-	43, // 21: structs.structs.EventAttackDetail.activeWeaponry:type_name -> structs.structs.techActiveWeaponry
+	43, // 19: structs.structs.EventAttackDetail.weaponSystem:type_name -> structs.structs.techWeaponSystem
+	44, // 20: structs.structs.EventAttackDetail.weaponControl:type_name -> structs.structs.techWeaponControl
+	45, // 21: structs.structs.EventAttackDetail.activeWeaponry:type_name -> structs.structs.techActiveWeaponry
 	21, // 22: structs.structs.EventAttackDetail.eventAttackShotDetail:type_name -> structs.structs.EventAttackShotDetail
-	44, // 23: structs.structs.EventAttackShotDetail.evadedCause:type_name -> structs.structs.techUnitDefenses
-	45, // 24: structs.structs.EventAttackShotDetail.evadedByPlanetaryDefensesCause:type_name -> structs.structs.techPlanetaryDefenses
+	46, // 23: structs.structs.EventAttackShotDetail.evadedCause:type_name -> structs.structs.techUnitDefenses
+	47, // 24: structs.structs.EventAttackShotDetail.evadedByPlanetaryDefensesCause:type_name -> structs.structs.techPlanetaryDefenses
 	22, // 25: structs.structs.EventAttackShotDetail.eventAttackDefenderCounterDetail:type_name -> structs.structs.EventAttackDefenderCounterDetail
-	44, // 26: structs.structs.EventAttackShotDetail.damageReductionCause:type_name -> structs.structs.techUnitDefenses
-	46, // 27: structs.structs.EventAttackShotDetail.targetCounterCause:type_name -> structs.structs.techPassiveWeaponry
-	46, // 28: structs.structs.EventAttackShotDetail.postDestructionDamageCause:type_name -> structs.structs.techPassiveWeaponry
-	29, // [29:29] is the sub-list for method output_type
-	29, // [29:29] is the sub-list for method input_type
-	29, // [29:29] is the sub-list for extension type_name
-	29, // [29:29] is the sub-list for extension extendee
-	0,  // [0:29] is the sub-list for field type_name
+	46, // 26: structs.structs.EventAttackShotDetail.damageReductionCause:type_name -> structs.structs.techUnitDefenses
+	48, // 27: structs.structs.EventAttackShotDetail.targetCounterCause:type_name -> structs.structs.techPassiveWeaponry
+	48, // 28: structs.structs.EventAttackShotDetail.postDestructionDamageCause:type_name -> structs.structs.techPassiveWeaponry
+	24, // 29: structs.structs.EventRaid.eventRaidDetail:type_name -> structs.structs.EventRaidDetail
+	49, // 30: structs.structs.EventRaidDetail.status:type_name -> structs.structs.raidStatus
+	31, // [31:31] is the sub-list for method output_type
+	31, // [31:31] is the sub-list for method input_type
+	31, // [31:31] is the sub-list for extension type_name
+	31, // [31:31] is the sub-list for extension extendee
+	0,  // [0:31] is the sub-list for field type_name
 }
 
 func init() { file_structs_structs_events_proto_init() }
@@ -13617,6 +14688,30 @@ func file_structs_structs_events_proto_init() {
 				return nil
 			}
 		}
+		file_structs_structs_events_proto_msgTypes[23].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventRaid); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[24].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventRaidDetail); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -13624,7 +14719,7 @@ func file_structs_structs_events_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_structs_structs_events_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   23,
+			NumMessages:   25,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

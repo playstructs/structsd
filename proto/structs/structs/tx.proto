@@ -392,7 +392,9 @@ message MsgPlanetRaidComplete {
 }
 
 message MsgPlanetRaidCompleteResponse {
-  Planet planet = 1 [(gogoproto.nullable) = false];
+  Fleet fleet = 1 [(gogoproto.nullable) = false];
+  Planet planet = 2 [(gogoproto.nullable) = false];
+  uint64 oreStolen = 3;
 }
 
 message MsgPlayerUpdatePrimaryAddress {

@@ -255,6 +255,12 @@ func (cache *PlayerCache) BuildQuantityDecrement(structTypeId uint64) {
 }
 
 
+func (cache *PlayerCache) StoredOreEmpty() {
+    cache.StoredOre = 0
+    cache.StoredOreChanged = true
+}
+
+
 func (cache *PlayerCache) StoredOreDecrement(amount uint64) {
 
     if (cache.GetStoredOre() > amount) {

@@ -77,6 +77,13 @@ enum ambit {
 }
 
 
+enum raidStatus {
+    initiated           = 0;
+    ongoing             = 2;
+    attackerDefeated    = 1;
+    raidSuccessful      = 3;
+}
+
 enum planetStatus {
     active      = 0;
     complete    = 1;
