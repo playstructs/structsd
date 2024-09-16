@@ -19401,6 +19401,51 @@ paths:
                 format: uint64
       tags:
         - Msg
+  /structs.structs.Msg/AllocationUpdate:
+    post:
+      operationId: StructsStructsMsg_AllocationUpdate
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              allocationId:
+                type: string
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            properties:
+              creator:
+                type: string
+              allocationId:
+                type: string
+              power:
+                type: string
+                format: uint64
+      tags:
+        - Msg
   /structs.structs.Msg/FleetMove:
     post:
       operationId: StructsStructsMsg_FleetMove
@@ -34775,6 +34820,21 @@ definitions:
         type: string
         format: uint64
   structs.structs.MsgAllocationCreateResponse:
+    type: object
+    properties:
+      allocationId:
+        type: string
+  structs.structs.MsgAllocationUpdate:
+    type: object
+    properties:
+      creator:
+        type: string
+      allocationId:
+        type: string
+      power:
+        type: string
+        format: uint64
+  structs.structs.MsgAllocationUpdateResponse:
     type: object
     properties:
       allocationId:

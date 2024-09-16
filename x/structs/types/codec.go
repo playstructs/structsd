@@ -19,6 +19,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgAddressRevoke{},)
 
 	registry.RegisterImplementations((*sdk.Msg)(nil), &MsgAllocationCreate{}, )
+	registry.RegisterImplementations((*sdk.Msg)(nil), &MsgAllocationUpdate{}, )
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildCreate{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateEndpoint{}, )
