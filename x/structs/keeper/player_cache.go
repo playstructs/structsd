@@ -26,6 +26,9 @@ type PlayerCache struct {
     PlanetLoaded bool
     Planet *PlanetCache
 
+    FleetLoaded bool
+    Fleet *FleetCache
+
     StorageLoaded bool
     Storage       sdk.Coins
 
@@ -174,6 +177,16 @@ func (cache *PlayerCache) LoadPlanet() (bool) {
     return cache.PlanetLoaded
 }
 
+// Load the Planet data
+func (cache *PlayerCache) LoadFleet() (bool) {
+    newFleet, _ := cache.K.GetFleetCacheFromId(cache.Ctx, cache.GetFleetId())
+    cache.Fleet = &newFleet
+    cache.FleetLoaded = true
+
+    return cache.FleetLoaded
+}
+
+
 func (cache *PlayerCache) LoadStorage() (error){
     if (!cache.PlayerLoaded) {
         return nil // TODO update to be an error
@@ -210,8 +223,9 @@ func (cache *PlayerCache) GetPlayer() (types.Player, error) {
 func (cache *PlayerCache) GetPlayerId()         (string) { return cache.PlayerId }
 func (cache *PlayerCache) GetPrimaryAddress()   (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.PrimaryAddress }
 func (cache *PlayerCache) GetSubstationId()     (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.SubstationId }
-func (cache *PlayerCache) GetFleetId()          (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.FleetId }
 
+func (cache *PlayerCache) GetFleet()    (*FleetCache)   { if (!cache.FleetLoaded) { cache.LoadFleet() }; return cache.Fleet }
+func (cache *PlayerCache) GetFleetId()  (string)        { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.FleetId }
 
 func (cache *PlayerCache) GetPlanet()   (*PlanetCache)  { if (!cache.PlanetLoaded) { cache.LoadPlanet() }; return cache.Planet }
 func (cache *PlayerCache) GetPlanetId() (string)        { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.PlanetId }

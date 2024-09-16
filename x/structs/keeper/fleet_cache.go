@@ -193,6 +193,7 @@ func (cache *FleetCache) HasCommandStruct() (bool) {
     return (cache.GetFleet().CommandStruct != "")
 }
 
+
 func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
 
     // TODO/MVP
@@ -465,4 +466,33 @@ func (cache *FleetCache) ClearCommandStruct() {
 
     cache.Fleet.CommandStruct = ""
     cache.FleetChanged = true
+}
+
+
+
+
+
+func (cache *FleetCache) MigrateToNewPlanet(destination *PlanetCache) {
+
+    if (!cache.FleetLoaded) {
+        if !cache.LoadFleet() {
+            _ = destination.GetOwner()
+            newFleet := cache.K.AppendFleet(cache.Ctx, destination.GetOwner().Player)
+            cache.Fleet = newFleet
+            cache.FleetLoaded = true
+        }
+    }
+
+    // Online Migrate if it's at home
+    if cache.IsAway() { return }
+
+
+    // Location updated and next call to GetPlanet() will pull the new location
+    cache.Fleet.LocationId = destination.GetPlanetId()
+    cache.Fleet.LocationType = types.ObjectType_planet
+    cache.FleetChanged = true
+
+    cache.Planet = destination
+    cache.PlanetChanged = true
+
 }

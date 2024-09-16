@@ -53,5 +53,7 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
     player.Commit()
     player.GetPlanet().Commit()
 
+    player.GetFleet().MigrateToNewPlanet(player.GetPlanet())
+
 	return &types.MsgPlanetExploreResponse{Planet: player.GetPlanet().GetPlanet()}, nil
 }
