@@ -403,6 +403,8 @@ func (cache *PlanetCache) SetLocationListStart(fleetId string) {
 
     cache.Planet.LocationListStart = fleetId
     cache.PlanetChanged = true
+
+    cache.ResetBlockStartRaid()
 }
 
 func (cache *PlanetCache) SetLocationListLast(fleetId string) {
@@ -412,7 +414,7 @@ func (cache *PlanetCache) SetLocationListLast(fleetId string) {
     cache.PlanetChanged = true
 }
 
-func (cache *StructCache) ResetBlockStartRaid() {
+func (cache *PlanetCache) ResetBlockStartRaid() {
     uctx := sdk.UnwrapSDKContext(cache.Ctx)
     cache.BlockStartRaid = uint64(uctx.BlockHeight())
     cache.BlockStartRaidLoaded = true
