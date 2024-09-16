@@ -33,7 +33,6 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-
     // Load Fleet
 
     // Check calling address can use Fleet
@@ -44,7 +43,6 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 
     // check that the player is online
 
-    // need some sort of block height value...
 
     blockStartRaidString    := strconv.FormatUint(fleet.GetPlanet().GetBlockStartRaid() , 10)
     hashInput               := msg.FleetId + '@' + fleet.GetPlanet().GetPlanetId() + "RAID" + blockStartRaidString + "NONCE" + msg.Nonce
@@ -54,6 +52,9 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Work failure for input (%s) when trying to mine on Struct %s", hashInput, structure.GetStructId())
     }
 
+    // Award the Ore from the defender to attacker
+
+    // Move the Fleet back to Station
 
 
 	return &types.MsgPlanetRaidCompleteResponse{Planet: planet.GetPlanet()}, nil
