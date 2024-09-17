@@ -89,7 +89,7 @@ func (k Keeper) SetPlayer(ctx context.Context, player types.Player) {
 }
 
 // GetPlayer returns a player from its id
-func (k Keeper) GetPlayer(ctx context.Context, playerId string, full bool) (val types.Player, found bool) {
+func (k Keeper) GetPlayer(ctx context.Context, playerId string) (val types.Player, found bool) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlayerKey))
 	b := store.Get([]byte(playerId))
 	if b == nil {
@@ -97,22 +97,11 @@ func (k Keeper) GetPlayer(ctx context.Context, playerId string, full bool) (val 
 	}
 	k.cdc.MustUnmarshal(b, &val)
 
-    if (full) {
-        val.Load      = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
-        val.Capacity  = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
-
-        val.StructsLoad           = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, val.Id))
-        val.CapacitySecondary    = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, val.SubstationId))
-
-    	playerAcc, _ := sdk.AccAddressFromBech32(val.PrimaryAddress)
-    	val.Storage   = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
-    }
-
 	return val, true
 }
 
-func (k Keeper) GetPlayerFromIndex(ctx context.Context, playerIndex uint64, full bool) (val types.Player, found bool) {
-    val, found = k.GetPlayer(ctx, GetObjectID(types.ObjectType_player, playerIndex), full)
+func (k Keeper) GetPlayerFromIndex(ctx context.Context, playerIndex uint64) (val types.Player, found bool) {
+    val, found = k.GetPlayer(ctx, GetObjectID(types.ObjectType_player, playerIndex))
     return
 }
 
@@ -126,7 +115,7 @@ func (k Keeper) RemovePlayer(ctx context.Context, playerId string) {
 }
 
 // GetAllPlayer returns all player
-func (k Keeper) GetAllPlayer(ctx context.Context, full bool) (list []types.Player) {
+func (k Keeper) GetAllPlayer(ctx context.Context) (list []types.Player) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlayerKey))
 	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
@@ -136,18 +125,6 @@ func (k Keeper) GetAllPlayer(ctx context.Context, full bool) (list []types.Playe
 		var val types.Player
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
-
-        if (full) {
-            val.Load      = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
-            val.Capacity  = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
-
-            val.StructsLoad          = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, val.Id))
-            val.CapacitySecondary    = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, val.SubstationId))
-
-            playerAcc, _ := sdk.AccAddressFromBech32(val.PrimaryAddress)
-            val.Storage   = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
-        }
-
 		list = append(list, val)
 	}
 
@@ -155,7 +132,7 @@ func (k Keeper) GetAllPlayer(ctx context.Context, full bool) (list []types.Playe
 }
 
 // GetAllPlayer returns all player
-func (k Keeper) GetAllPlayerBySubstation(ctx context.Context, substationId string, full bool) (list []types.Player) {
+func (k Keeper) GetAllPlayerBySubstation(ctx context.Context, substationId string) (list []types.Player) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlayerKey))
 	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
@@ -166,19 +143,6 @@ func (k Keeper) GetAllPlayerBySubstation(ctx context.Context, substationId strin
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 
         if (val.SubstationId == substationId) {
-
-            if (full) {
-                val.Load      = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
-                val.Capacity  = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
-
-                val.StructsLoad           = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, val.Id))
-                val.CapacitySecondary    = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, val.SubstationId))
-
-
-                playerAcc, _ := sdk.AccAddressFromBech32(val.PrimaryAddress)
-                val.Storage   = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
-            }
-
             list = append(list, val)
 		}
 	}
@@ -187,7 +151,7 @@ func (k Keeper) GetAllPlayerBySubstation(ctx context.Context, substationId strin
 }
 
 // Technically more of an InGet than an UpSert
-func (k Keeper) UpsertPlayer(ctx context.Context, playerAddress string, full bool) (player types.Player) {
+func (k Keeper) UpsertPlayer(ctx context.Context, playerAddress string) (player types.Player) {
     playerIndex := k.GetPlayerIndexFromAddress(ctx, playerAddress)
 
     if (playerIndex == 0) {
@@ -198,7 +162,7 @@ func (k Keeper) UpsertPlayer(ctx context.Context, playerAddress string, full boo
         player = k.AppendPlayer(ctx, player)
 
     } else {
-        player, _ = k.GetPlayerFromIndex(ctx, playerIndex, full)
+        player, _ = k.GetPlayerFromIndex(ctx, playerIndex)
     }
 
     return player

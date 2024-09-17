@@ -198,6 +198,24 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "sourceObjectId"}, {ProtoField: "power"}},
                 },
                 {
+                    RpcMethod:      "AllocationDelete",
+                    Use:            "allocation-delete [allocation id]",
+                    Short:          "Delete a dynamic Allocation",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "allocationId"}},
+                },
+                {
+                    RpcMethod:      "AllocationTransfer",
+                    Use:            "allocation-transfer [allocation id] [new controller address]",
+                    Short:          "Transfer an Allocation to a different account",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "allocationId"}, {ProtoField: "controller"}},
+                },
+                {
+                    RpcMethod:      "AllocationUpdate",
+                    Use:            "allocation-update [allocation id] [power]",
+                    Short:          "Update a dynamic Allocation",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "allocationId"}, {ProtoField: "power"}},
+                },
+                {
                     RpcMethod:      "GuildCreate",
                     Use:            "guild-create [endpoint] [substation id]",
                     Short:          "Create a guild from an account with an associated Reactor",

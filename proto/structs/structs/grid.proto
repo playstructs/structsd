@@ -12,3 +12,20 @@ message GridRecord {
   string attributeId = 1;
   uint64 value = 2;
 }
+
+message GridAttributes {
+  uint64  ore                     = 1;
+  uint64  fuel                    = 2;
+  uint64  capacity                = 3;
+  uint64  load                    = 4;
+  uint64  structsLoad             = 5;
+  uint64  power                   = 6;
+  uint64  connectionCapacity      = 7;
+  uint64  connectionCount         = 8;
+  uint64  allocationPointerStart  = 9;
+  uint64  allocationPointerEnd    = 10;
+  uint64  proxyNonce              = 11;
+  uint64  lastAction              = 12;
+  uint64  nonce                   = 13;
+  uint64  ready                   = 14;
+}

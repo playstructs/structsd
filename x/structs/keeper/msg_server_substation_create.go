@@ -18,7 +18,7 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
 	connectPlayer := false
 
     // Make sure the allocation exists
-    allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId, true)
+    allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId)
     if (!allocationFound) {
         return &types.MsgSubstationCreateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "allocation (%s) not found", msg.AllocationId)
     }
@@ -32,8 +32,8 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
 	allocationPlayerIndex   := k.GetPlayerIndexFromAddress(ctx, allocation.Controller)
 	callingPlayerIndex      := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
 
-    allocationPlayer, AllocationPlayerFound := k.GetPlayerFromIndex(ctx, allocationPlayerIndex, true)
-    player := k.UpsertPlayer(ctx, msg.Creator, true)
+    allocationPlayer, AllocationPlayerFound := k.GetPlayerFromIndex(ctx, allocationPlayerIndex)
+    player := k.UpsertPlayer(ctx, msg.Creator)
 
     if (!AllocationPlayerFound) {
         if (allocation.Controller == msg.Creator){

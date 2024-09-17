@@ -13,11 +13,5 @@ message Substation {
 
     string owner                        = 2;
     string creator                      = 3;
-
-    uint64 load                         = 4;
-    uint64 capacity                     = 5;
-
-    uint64 connectionCount              = 6;
-    uint64 connectionCapacity           = 7;
 }
 

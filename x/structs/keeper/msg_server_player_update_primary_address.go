@@ -18,7 +18,7 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
     if (callingPlayerIndex == 0) {
         return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Player Management requires Player account but none associated with %s", msg.Creator)
     }
-    callingPlayer, _ := k.GetPlayerFromIndex(ctx, callingPlayerIndex, true)
+    callingPlayer, _ := k.GetPlayerFromIndex(ctx, callingPlayerIndex)
 
 
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)

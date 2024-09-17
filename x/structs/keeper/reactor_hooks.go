@@ -25,7 +25,7 @@ func (k Keeper) ReactorInitialize(ctx context.Context, validatorAddress sdk.ValA
     var reactor types.Reactor
     reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
     if reactorBytesFound {
-        reactor, _ = k.GetReactorByBytes(ctx, reactorBytes, false)
+        reactor, _ = k.GetReactorByBytes(ctx, reactorBytes)
     } else {
         /* Build the initial Reactor object */
         reactor = types.CreateEmptyReactor()
@@ -49,7 +49,7 @@ func (k Keeper) ReactorInitialize(ctx context.Context, validatorAddress sdk.ValA
 
         var identity sdk.AccAddress
         identity = validatorAddress.Bytes()
-        player := k.UpsertPlayer(ctx, identity.String(), false)
+        player := k.UpsertPlayer(ctx, identity.String())
 
         // Add the player as a permissioned user of the reactor
         permissionId := GetObjectPermissionIDBytes(reactor.Id, player.Id)
@@ -82,7 +82,7 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx context.Context, playerAddress
 	if !reactorBytesFound {
         return
 	}
-    reactor, _ := k.GetReactorByBytes(ctx, reactorBytes, false)
+    reactor, _ := k.GetReactorByBytes(ctx, reactorBytes)
 	validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
 
 
@@ -92,7 +92,7 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx context.Context, playerAddress
     if (err == nil) {
 
         delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
-        player := k.UpsertPlayer(ctx, playerAddress.String(), true)
+        player := k.UpsertPlayer(ctx, playerAddress.String())
 
         /*
          * Returns if needed (
@@ -144,7 +144,7 @@ func (k Keeper) ReactorRemoveInfusion(ctx context.Context, unbondingId uint64) {
 
         /* Does this Reactor exist? It really should... */
         reactorBytes, _ := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
-        reactor, _ := k.GetReactorByBytes(ctx, reactorBytes, false)
+        reactor, _ := k.GetReactorByBytes(ctx, reactorBytes)
 
         unbondingInfusion, _ := k.GetInfusion(ctx, reactor.Id, playerAddress.String())
 

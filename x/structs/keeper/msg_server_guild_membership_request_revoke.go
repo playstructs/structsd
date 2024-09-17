@@ -16,7 +16,7 @@ func (k msgServer) GuildMembershipRequestRevoke(goCtx context.Context, msg *type
 	k.AddressEmitActivity(ctx, msg.Creator)
 
 	// Look up requesting account
-	player := k.UpsertPlayer(ctx, msg.Creator, true)
+	player := k.UpsertPlayer(ctx, msg.Creator)
 
 	if (msg.PlayerId == "") {
 	    msg.PlayerId = player.Id

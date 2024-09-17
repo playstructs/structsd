@@ -47,10 +47,11 @@ func (k Keeper) Allocation(goCtx context.Context, req *types.QueryGetAllocationR
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	allocation, found := k.GetAllocation(ctx, req.Id, true)
+	allocation, found := k.GetAllocation(ctx, req.Id)
 	if !found {
 		return nil, types.ErrObjectNotFound
 	}
 
-	return &types.QueryGetAllocationResponse{Allocation: allocation}, nil
+    gridAttributes := k.GetGridAttributesByObject(ctx, req.Id)
+	return &types.QueryGetAllocationResponse{Allocation: allocation, GridAttributes: &gridAttributes}, nil
 }

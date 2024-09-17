@@ -158,7 +158,7 @@ func (cache *PlayerCache) LoadLoad() {
 
 
 func (cache *PlayerCache) LoadPlayer() (found bool) {
-    cache.Player, found = cache.K.GetPlayer(cache.Ctx, cache.PlayerId, true)
+    cache.Player, found = cache.K.GetPlayer(cache.Ctx, cache.PlayerId)
 
     if (found) {
         cache.PlayerLoaded = true

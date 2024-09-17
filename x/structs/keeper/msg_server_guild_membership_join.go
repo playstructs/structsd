@@ -16,7 +16,7 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 	k.AddressEmitActivity(ctx, msg.Creator)
 
 	// Look up requesting account
-	player := k.UpsertPlayer(ctx, msg.Creator, true)
+	player := k.UpsertPlayer(ctx, msg.Creator)
 
 	if (msg.PlayerId == "") {
 	    msg.PlayerId = player.Id
@@ -75,7 +75,7 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
                 return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Only Reactor infusions allowed, Infusion (%s) unacceptable", infusionId)
             }
 
-            reactor, reactorFound := k.GetReactor(ctx, infusion.DestinationId, false)
+            reactor, reactorFound := k.GetReactor(ctx, infusion.DestinationId)
             if (!reactorFound) {
                 return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Somehow this reactor (%s) doesn't exist, you should tell an adult",infusion.DestinationId)
             }
@@ -110,7 +110,7 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 
     if (msg.SubstationId != "") {
         // look up destination substation
-        substation, substationFound = k.GetSubstation(ctx, msg.SubstationId, true)
+        substation, substationFound = k.GetSubstation(ctx, msg.SubstationId)
 
         // Does the substation provided for override exist?
         if (!substationFound) {
@@ -128,7 +128,7 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 
     } else {
         guildMembershipApplication.SubstationId = guild.EntrySubstationId
-        substation, substationFound = k.GetSubstation(ctx, guildMembershipApplication.SubstationId, true)
+        substation, substationFound = k.GetSubstation(ctx, guildMembershipApplication.SubstationId)
     }
 
     guildMembershipApplication.Proposer             = player.Id
@@ -138,7 +138,7 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
     guildMembershipApplication.RegistrationStatus   = types.RegistrationStatus_approved
 
     // Look up joining account
-    targetPlayer := k.UpsertPlayer(ctx, msg.Creator, true)
+    targetPlayer := k.UpsertPlayer(ctx, msg.Creator)
     targetPlayer.GuildId = msg.GuildId
     k.SubstationConnectPlayer(ctx, substation, targetPlayer)
 

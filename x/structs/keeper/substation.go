@@ -121,7 +121,7 @@ func (k Keeper) RemoveSubstation(ctx context.Context, substationId string, migra
                 // TODO Move/copy this check to the message verification
                 return  // error
             }
-            migrationSubstation, migrationSubstationFound := k.GetSubstation(ctx, migrationSubstationId, true)
+            migrationSubstation, migrationSubstationFound := k.GetSubstation(ctx, migrationSubstationId)
             if (!migrationSubstationFound) {
                 return // error
             }
@@ -145,7 +145,7 @@ func (k Keeper) RemoveSubstation(ctx context.Context, substationId string, migra
      */
 
 	// Destroy allocations out
-    allocationsOut := k.GetAllocationsFromSource(ctx, substationId, false)
+    allocationsOut := k.GetAllocationsFromSource(ctx, substationId)
     k.DestroyAllAllocations(ctx, allocationsOut)
 
 	// Disconnect allocations in
@@ -171,7 +171,7 @@ func (k Keeper) RemoveSubstation(ctx context.Context, substationId string, migra
 }
 
 // GetSubstation returns a substation from its id
-func (k Keeper) GetSubstation(ctx context.Context, substationId string, full bool) (val types.Substation, found bool) {
+func (k Keeper) GetSubstation(ctx context.Context, substationId string) (val types.Substation, found bool) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.SubstationKey))
 	b := store.Get([]byte(substationId))
 	if b == nil {
@@ -179,18 +179,11 @@ func (k Keeper) GetSubstation(ctx context.Context, substationId string, full boo
 	}
 	k.cdc.MustUnmarshal(b, &val)
 
-	if full {
-        val.Load                = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
-        val.Capacity            = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
-        val.ConnectionCount      = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, val.Id))
-        val.ConnectionCapacity   = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, val.Id))
-	}
-
 	return val, true
 }
 
 // GetAllSubstation returns all substation
-func (k Keeper) GetAllSubstation(ctx context.Context, full bool) (list []types.Substation) {
+func (k Keeper) GetAllSubstation(ctx context.Context) (list []types.Substation) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.SubstationKey))
 	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
@@ -199,13 +192,6 @@ func (k Keeper) GetAllSubstation(ctx context.Context, full bool) (list []types.S
 	for ; iterator.Valid(); iterator.Next() {
 		var val types.Substation
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
-
-		if full {
-			val.Load                = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
-			val.Capacity            = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
-			val.ConnectionCount      = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, val.Id))
-			val.ConnectionCapacity   = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, val.Id))
-		}
 
 		list = append(list, val)
 	}

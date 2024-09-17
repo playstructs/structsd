@@ -57,11 +57,13 @@ func (k Keeper) Substation(goCtx context.Context, req *types.QueryGetSubstationR
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	substation, found := k.GetSubstation(ctx, req.Id, true)
+	substation, found := k.GetSubstation(ctx, req.Id)
 	if !found {
 		return nil, types.ErrObjectNotFound
 	}
 
-	return &types.QueryGetSubstationResponse{Substation: substation}, nil
+    gridAttributes := k.GetGridAttributesByObject(ctx, req.Id)
+
+	return &types.QueryGetSubstationResponse{Substation: substation, GridAttributes: &gridAttributes}, nil
 }
 

@@ -16,7 +16,7 @@ func (k msgServer) GuildMembershipInviteApprove(goCtx context.Context, msg *type
 	k.AddressEmitActivity(ctx, msg.Creator)
 
 	// Look up requesting account
-	player := k.UpsertPlayer(ctx, msg.Creator, true)
+	player := k.UpsertPlayer(ctx, msg.Creator)
 
 	if (msg.PlayerId == "") {
 	    msg.PlayerId = player.Id
@@ -61,7 +61,7 @@ func (k msgServer) GuildMembershipInviteApprove(goCtx context.Context, msg *type
 
     if (msg.SubstationId != "") {
         // look up destination substation
-        substation, substationFound = k.GetSubstation(ctx, msg.SubstationId, true)
+        substation, substationFound = k.GetSubstation(ctx, msg.SubstationId)
 
         // Does the substation provided for override exist?
         if (!substationFound) {
@@ -82,11 +82,11 @@ func (k msgServer) GuildMembershipInviteApprove(goCtx context.Context, msg *type
             guildMembershipApplication.SubstationId = guild.EntrySubstationId
         }
 
-        substation, substationFound = k.GetSubstation(ctx, guildMembershipApplication.SubstationId, true)
+        substation, substationFound = k.GetSubstation(ctx, guildMembershipApplication.SubstationId)
     }
 
     // Look up requesting account
-    targetPlayer := k.UpsertPlayer(ctx, msg.Creator, true)
+    targetPlayer := k.UpsertPlayer(ctx, msg.Creator)
     targetPlayer.GuildId = msg.GuildId
     k.SubstationConnectPlayer(ctx, substation, targetPlayer)
 

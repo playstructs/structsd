@@ -239,6 +239,7 @@ message QueryGetAllocationRequest {
 
 message QueryGetAllocationResponse {
   Allocation Allocation = 1 [(gogoproto.nullable) = false];
+  GridAttributes gridAttributes = 2;
 }
 
 message QueryAllAllocationRequest {
@@ -387,6 +388,7 @@ message QueryGetPlanetRequest {
 
 message QueryGetPlanetResponse {
   Planet Planet = 1 [(gogoproto.nullable) = false];
+  PlanetAttributes planetAttributes = 2;
 }
 
 message QueryAllPlanetRequest {
@@ -409,6 +411,7 @@ message QueryGetPlayerRequest {
 
 message QueryGetPlayerResponse {
   Player Player = 1 [(gogoproto.nullable) = false];
+  GridAttributes gridAttributes = 2;
 }
 
 message QueryAllPlayerRequest {
@@ -426,6 +429,7 @@ message QueryGetReactorRequest {
 
 message QueryGetReactorResponse {
   Reactor Reactor = 1 [(gogoproto.nullable) = false];
+  GridAttributes gridAttributes = 2;
 }
 
 message QueryAllReactorRequest {
@@ -444,6 +448,8 @@ message QueryGetStructRequest {
 
 message QueryGetStructResponse {
   Struct Struct = 1 [(gogoproto.nullable) = false];
+  StructAttributes structAttributes = 2;
+  GridAttributes gridAttributes = 3;
 }
 
 message QueryAllStructRequest {
@@ -487,6 +493,7 @@ message QueryGetSubstationRequest {
 
 message QueryGetSubstationResponse {
   Substation Substation = 1 [(gogoproto.nullable) = false];
+  GridAttributes gridAttributes = 2;
 }
 
 message QueryAllSubstationRequest {

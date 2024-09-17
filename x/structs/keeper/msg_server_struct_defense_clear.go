@@ -52,7 +52,7 @@ func (k msgServer) StructDefenseClear(goCtx context.Context, msg *types.MsgStruc
             return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayerId, structure.Owner)
         }
     }
-    sudoPlayer, _ := k.GetPlayer(ctx, structure.Owner, true)
+    sudoPlayer, _ := k.GetPlayer(ctx, structure.Owner)
     if (!sudoPlayer.IsOnline()){
         k.DischargePlayer(ctx, structure.Owner)
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",sudoPlayer.Id)

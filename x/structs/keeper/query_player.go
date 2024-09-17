@@ -61,10 +61,12 @@ func (k Keeper) Player(goCtx context.Context, req *types.QueryGetPlayerRequest) 
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	player, found := k.GetPlayer(ctx, req.Id, true)
+	player, found := k.GetPlayer(ctx, req.Id)
 	if !found {
 		return nil, types.ErrObjectNotFound
 	}
 
-	return &types.QueryGetPlayerResponse{Player: player}, nil
+	gridAttributes := k.GetGridAttributesByObject(ctx, req.Id)
+
+	return &types.QueryGetPlayerResponse{Player: player, GridAttributes: &gridAttributes}, nil
 }

@@ -22,7 +22,7 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	k.AddressEmitActivity(ctx, msg.Creator)
 
 	// Look up requesting account
-	proxyPlayer := k.UpsertPlayer(ctx, msg.Creator, true)
+	proxyPlayer := k.UpsertPlayer(ctx, msg.Creator)
 
 	// look up destination guild
 	guild, guildFound := k.GetGuild(ctx, proxyPlayer.GuildId)
@@ -109,7 +109,7 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	 */
 
 	if (msg.SubstationId != "") {
-	    substation, substationFound = k.GetSubstation(ctx, msg.SubstationId, true)
+	    substation, substationFound = k.GetSubstation(ctx, msg.SubstationId)
         if (!substationFound) {
             return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Provided Substation Override (%s) not found", msg.SubstationId)
         }
@@ -123,14 +123,14 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	}
 
     if (!substationFound) {
-        substation, substationFound = k.GetSubstation(ctx, guild.EntrySubstationId, true)
+        substation, substationFound = k.GetSubstation(ctx, guild.EntrySubstationId)
         if (!substationFound) {
             return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Entry Substation (%s) for Guild (%s) not found", guild.EntrySubstationId, guild.Id)
         }
     }
 
 	// create new player
-    player := k.UpsertPlayer(ctx, msg.Address, true)
+    player := k.UpsertPlayer(ctx, msg.Address)
 
 
     if (player.GuildId != "") {

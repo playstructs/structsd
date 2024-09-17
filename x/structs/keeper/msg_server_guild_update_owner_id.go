@@ -19,7 +19,7 @@ func (k msgServer) GuildUpdateOwnerId(goCtx context.Context, msg *types.MsgGuild
     if (playerIndex == 0) {
         return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Guild update requires Player account but none associated with %s", msg.Creator)
     }
-    player, _ := k.GetPlayerFromIndex(ctx, playerIndex, false)
+    player, _ := k.GetPlayerFromIndex(ctx, playerIndex)
 
     guild, guildFound := k.GetGuild(ctx, msg.GuildId)
     if (!guildFound) {
@@ -39,7 +39,7 @@ func (k msgServer) GuildUpdateOwnerId(goCtx context.Context, msg *types.MsgGuild
     }
 
     if (guild.Owner != msg.Owner) {
-        _, guildOwnerFound := k.GetPlayer(ctx, msg.Owner, false)
+        _, guildOwnerFound := k.GetPlayer(ctx, msg.Owner)
         if (!guildOwnerFound) {
             return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrGuildUpdate, "Guild could not change to new owner (%d) because they weren't found", msg.Owner)
         }

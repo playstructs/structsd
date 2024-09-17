@@ -17,13 +17,13 @@ func (k msgServer) PermissionRevokeOnObject(goCtx context.Context, msg *types.Ms
 
     var err error
 
-    player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator), false)
+    player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
     if (!playerFound) {
         return &types.MsgPermissionResponse{}, err
     }
 
     if (player.Id != msg.PlayerId) {
-        _, targetPlayerFound := k.GetPlayer(ctx, msg.PlayerId, false)
+        _, targetPlayerFound := k.GetPlayer(ctx, msg.PlayerId)
         if (!targetPlayerFound) {
             return &types.MsgPermissionResponse{}, err
         }

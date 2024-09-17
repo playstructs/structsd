@@ -16,7 +16,7 @@ func (k msgServer) AllocationTransfer(goCtx context.Context, msg *types.MsgAlloc
 
     // Check permissions on the substation
 
-	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId, true)
+	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId)
 	if (!allocationFound) {
 		return &types.MsgAllocationTransferResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "allocation (%s) not found", msg.AllocationId)
 	}

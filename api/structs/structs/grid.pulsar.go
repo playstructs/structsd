@@ -481,6 +481,1034 @@ func (x *fastReflection_GridRecord) ProtoMethods() *protoiface.Methods {
 	}
 }
 
+var (
+	md_GridAttributes                        protoreflect.MessageDescriptor
+	fd_GridAttributes_ore                    protoreflect.FieldDescriptor
+	fd_GridAttributes_fuel                   protoreflect.FieldDescriptor
+	fd_GridAttributes_capacity               protoreflect.FieldDescriptor
+	fd_GridAttributes_load                   protoreflect.FieldDescriptor
+	fd_GridAttributes_structsLoad            protoreflect.FieldDescriptor
+	fd_GridAttributes_power                  protoreflect.FieldDescriptor
+	fd_GridAttributes_connectionCapacity     protoreflect.FieldDescriptor
+	fd_GridAttributes_connectionCount        protoreflect.FieldDescriptor
+	fd_GridAttributes_allocationPointerStart protoreflect.FieldDescriptor
+	fd_GridAttributes_allocationPointerEnd   protoreflect.FieldDescriptor
+	fd_GridAttributes_proxyNonce             protoreflect.FieldDescriptor
+	fd_GridAttributes_lastAction             protoreflect.FieldDescriptor
+	fd_GridAttributes_nonce                  protoreflect.FieldDescriptor
+	fd_GridAttributes_ready                  protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_grid_proto_init()
+	md_GridAttributes = File_structs_structs_grid_proto.Messages().ByName("GridAttributes")
+	fd_GridAttributes_ore = md_GridAttributes.Fields().ByName("ore")
+	fd_GridAttributes_fuel = md_GridAttributes.Fields().ByName("fuel")
+	fd_GridAttributes_capacity = md_GridAttributes.Fields().ByName("capacity")
+	fd_GridAttributes_load = md_GridAttributes.Fields().ByName("load")
+	fd_GridAttributes_structsLoad = md_GridAttributes.Fields().ByName("structsLoad")
+	fd_GridAttributes_power = md_GridAttributes.Fields().ByName("power")
+	fd_GridAttributes_connectionCapacity = md_GridAttributes.Fields().ByName("connectionCapacity")
+	fd_GridAttributes_connectionCount = md_GridAttributes.Fields().ByName("connectionCount")
+	fd_GridAttributes_allocationPointerStart = md_GridAttributes.Fields().ByName("allocationPointerStart")
+	fd_GridAttributes_allocationPointerEnd = md_GridAttributes.Fields().ByName("allocationPointerEnd")
+	fd_GridAttributes_proxyNonce = md_GridAttributes.Fields().ByName("proxyNonce")
+	fd_GridAttributes_lastAction = md_GridAttributes.Fields().ByName("lastAction")
+	fd_GridAttributes_nonce = md_GridAttributes.Fields().ByName("nonce")
+	fd_GridAttributes_ready = md_GridAttributes.Fields().ByName("ready")
+}
+
+var _ protoreflect.Message = (*fastReflection_GridAttributes)(nil)
+
+type fastReflection_GridAttributes GridAttributes
+
+func (x *GridAttributes) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_GridAttributes)(x)
+}
+
+func (x *GridAttributes) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_grid_proto_msgTypes[1]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_GridAttributes_messageType fastReflection_GridAttributes_messageType
+var _ protoreflect.MessageType = fastReflection_GridAttributes_messageType{}
+
+type fastReflection_GridAttributes_messageType struct{}
+
+func (x fastReflection_GridAttributes_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_GridAttributes)(nil)
+}
+func (x fastReflection_GridAttributes_messageType) New() protoreflect.Message {
+	return new(fastReflection_GridAttributes)
+}
+func (x fastReflection_GridAttributes_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_GridAttributes
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_GridAttributes) Descriptor() protoreflect.MessageDescriptor {
+	return md_GridAttributes
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_GridAttributes) Type() protoreflect.MessageType {
+	return _fastReflection_GridAttributes_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_GridAttributes) New() protoreflect.Message {
+	return new(fastReflection_GridAttributes)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_GridAttributes) Interface() protoreflect.ProtoMessage {
+	return (*GridAttributes)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_GridAttributes) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.Ore != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Ore)
+		if !f(fd_GridAttributes_ore, value) {
+			return
+		}
+	}
+	if x.Fuel != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Fuel)
+		if !f(fd_GridAttributes_fuel, value) {
+			return
+		}
+	}
+	if x.Capacity != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Capacity)
+		if !f(fd_GridAttributes_capacity, value) {
+			return
+		}
+	}
+	if x.Load != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Load)
+		if !f(fd_GridAttributes_load, value) {
+			return
+		}
+	}
+	if x.StructsLoad != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.StructsLoad)
+		if !f(fd_GridAttributes_structsLoad, value) {
+			return
+		}
+	}
+	if x.Power != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Power)
+		if !f(fd_GridAttributes_power, value) {
+			return
+		}
+	}
+	if x.ConnectionCapacity != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.ConnectionCapacity)
+		if !f(fd_GridAttributes_connectionCapacity, value) {
+			return
+		}
+	}
+	if x.ConnectionCount != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.ConnectionCount)
+		if !f(fd_GridAttributes_connectionCount, value) {
+			return
+		}
+	}
+	if x.AllocationPointerStart != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.AllocationPointerStart)
+		if !f(fd_GridAttributes_allocationPointerStart, value) {
+			return
+		}
+	}
+	if x.AllocationPointerEnd != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.AllocationPointerEnd)
+		if !f(fd_GridAttributes_allocationPointerEnd, value) {
+			return
+		}
+	}
+	if x.ProxyNonce != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.ProxyNonce)
+		if !f(fd_GridAttributes_proxyNonce, value) {
+			return
+		}
+	}
+	if x.LastAction != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.LastAction)
+		if !f(fd_GridAttributes_lastAction, value) {
+			return
+		}
+	}
+	if x.Nonce != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Nonce)
+		if !f(fd_GridAttributes_nonce, value) {
+			return
+		}
+	}
+	if x.Ready != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Ready)
+		if !f(fd_GridAttributes_ready, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_GridAttributes) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.GridAttributes.ore":
+		return x.Ore != uint64(0)
+	case "structs.structs.GridAttributes.fuel":
+		return x.Fuel != uint64(0)
+	case "structs.structs.GridAttributes.capacity":
+		return x.Capacity != uint64(0)
+	case "structs.structs.GridAttributes.load":
+		return x.Load != uint64(0)
+	case "structs.structs.GridAttributes.structsLoad":
+		return x.StructsLoad != uint64(0)
+	case "structs.structs.GridAttributes.power":
+		return x.Power != uint64(0)
+	case "structs.structs.GridAttributes.connectionCapacity":
+		return x.ConnectionCapacity != uint64(0)
+	case "structs.structs.GridAttributes.connectionCount":
+		return x.ConnectionCount != uint64(0)
+	case "structs.structs.GridAttributes.allocationPointerStart":
+		return x.AllocationPointerStart != uint64(0)
+	case "structs.structs.GridAttributes.allocationPointerEnd":
+		return x.AllocationPointerEnd != uint64(0)
+	case "structs.structs.GridAttributes.proxyNonce":
+		return x.ProxyNonce != uint64(0)
+	case "structs.structs.GridAttributes.lastAction":
+		return x.LastAction != uint64(0)
+	case "structs.structs.GridAttributes.nonce":
+		return x.Nonce != uint64(0)
+	case "structs.structs.GridAttributes.ready":
+		return x.Ready != uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GridAttributes"))
+		}
+		panic(fmt.Errorf("message structs.structs.GridAttributes does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_GridAttributes) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.GridAttributes.ore":
+		x.Ore = uint64(0)
+	case "structs.structs.GridAttributes.fuel":
+		x.Fuel = uint64(0)
+	case "structs.structs.GridAttributes.capacity":
+		x.Capacity = uint64(0)
+	case "structs.structs.GridAttributes.load":
+		x.Load = uint64(0)
+	case "structs.structs.GridAttributes.structsLoad":
+		x.StructsLoad = uint64(0)
+	case "structs.structs.GridAttributes.power":
+		x.Power = uint64(0)
+	case "structs.structs.GridAttributes.connectionCapacity":
+		x.ConnectionCapacity = uint64(0)
+	case "structs.structs.GridAttributes.connectionCount":
+		x.ConnectionCount = uint64(0)
+	case "structs.structs.GridAttributes.allocationPointerStart":
+		x.AllocationPointerStart = uint64(0)
+	case "structs.structs.GridAttributes.allocationPointerEnd":
+		x.AllocationPointerEnd = uint64(0)
+	case "structs.structs.GridAttributes.proxyNonce":
+		x.ProxyNonce = uint64(0)
+	case "structs.structs.GridAttributes.lastAction":
+		x.LastAction = uint64(0)
+	case "structs.structs.GridAttributes.nonce":
+		x.Nonce = uint64(0)
+	case "structs.structs.GridAttributes.ready":
+		x.Ready = uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GridAttributes"))
+		}
+		panic(fmt.Errorf("message structs.structs.GridAttributes does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_GridAttributes) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.GridAttributes.ore":
+		value := x.Ore
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.GridAttributes.fuel":
+		value := x.Fuel
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.GridAttributes.capacity":
+		value := x.Capacity
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.GridAttributes.load":
+		value := x.Load
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.GridAttributes.structsLoad":
+		value := x.StructsLoad
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.GridAttributes.power":
+		value := x.Power
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.GridAttributes.connectionCapacity":
+		value := x.ConnectionCapacity
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.GridAttributes.connectionCount":
+		value := x.ConnectionCount
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.GridAttributes.allocationPointerStart":
+		value := x.AllocationPointerStart
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.GridAttributes.allocationPointerEnd":
+		value := x.AllocationPointerEnd
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.GridAttributes.proxyNonce":
+		value := x.ProxyNonce
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.GridAttributes.lastAction":
+		value := x.LastAction
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.GridAttributes.nonce":
+		value := x.Nonce
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.GridAttributes.ready":
+		value := x.Ready
+		return protoreflect.ValueOfUint64(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GridAttributes"))
+		}
+		panic(fmt.Errorf("message structs.structs.GridAttributes does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_GridAttributes) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.GridAttributes.ore":
+		x.Ore = value.Uint()
+	case "structs.structs.GridAttributes.fuel":
+		x.Fuel = value.Uint()
+	case "structs.structs.GridAttributes.capacity":
+		x.Capacity = value.Uint()
+	case "structs.structs.GridAttributes.load":
+		x.Load = value.Uint()
+	case "structs.structs.GridAttributes.structsLoad":
+		x.StructsLoad = value.Uint()
+	case "structs.structs.GridAttributes.power":
+		x.Power = value.Uint()
+	case "structs.structs.GridAttributes.connectionCapacity":
+		x.ConnectionCapacity = value.Uint()
+	case "structs.structs.GridAttributes.connectionCount":
+		x.ConnectionCount = value.Uint()
+	case "structs.structs.GridAttributes.allocationPointerStart":
+		x.AllocationPointerStart = value.Uint()
+	case "structs.structs.GridAttributes.allocationPointerEnd":
+		x.AllocationPointerEnd = value.Uint()
+	case "structs.structs.GridAttributes.proxyNonce":
+		x.ProxyNonce = value.Uint()
+	case "structs.structs.GridAttributes.lastAction":
+		x.LastAction = value.Uint()
+	case "structs.structs.GridAttributes.nonce":
+		x.Nonce = value.Uint()
+	case "structs.structs.GridAttributes.ready":
+		x.Ready = value.Uint()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GridAttributes"))
+		}
+		panic(fmt.Errorf("message structs.structs.GridAttributes does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_GridAttributes) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.GridAttributes.ore":
+		panic(fmt.Errorf("field ore of message structs.structs.GridAttributes is not mutable"))
+	case "structs.structs.GridAttributes.fuel":
+		panic(fmt.Errorf("field fuel of message structs.structs.GridAttributes is not mutable"))
+	case "structs.structs.GridAttributes.capacity":
+		panic(fmt.Errorf("field capacity of message structs.structs.GridAttributes is not mutable"))
+	case "structs.structs.GridAttributes.load":
+		panic(fmt.Errorf("field load of message structs.structs.GridAttributes is not mutable"))
+	case "structs.structs.GridAttributes.structsLoad":
+		panic(fmt.Errorf("field structsLoad of message structs.structs.GridAttributes is not mutable"))
+	case "structs.structs.GridAttributes.power":
+		panic(fmt.Errorf("field power of message structs.structs.GridAttributes is not mutable"))
+	case "structs.structs.GridAttributes.connectionCapacity":
+		panic(fmt.Errorf("field connectionCapacity of message structs.structs.GridAttributes is not mutable"))
+	case "structs.structs.GridAttributes.connectionCount":
+		panic(fmt.Errorf("field connectionCount of message structs.structs.GridAttributes is not mutable"))
+	case "structs.structs.GridAttributes.allocationPointerStart":
+		panic(fmt.Errorf("field allocationPointerStart of message structs.structs.GridAttributes is not mutable"))
+	case "structs.structs.GridAttributes.allocationPointerEnd":
+		panic(fmt.Errorf("field allocationPointerEnd of message structs.structs.GridAttributes is not mutable"))
+	case "structs.structs.GridAttributes.proxyNonce":
+		panic(fmt.Errorf("field proxyNonce of message structs.structs.GridAttributes is not mutable"))
+	case "structs.structs.GridAttributes.lastAction":
+		panic(fmt.Errorf("field lastAction of message structs.structs.GridAttributes is not mutable"))
+	case "structs.structs.GridAttributes.nonce":
+		panic(fmt.Errorf("field nonce of message structs.structs.GridAttributes is not mutable"))
+	case "structs.structs.GridAttributes.ready":
+		panic(fmt.Errorf("field ready of message structs.structs.GridAttributes is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GridAttributes"))
+		}
+		panic(fmt.Errorf("message structs.structs.GridAttributes does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_GridAttributes) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.GridAttributes.ore":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.GridAttributes.fuel":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.GridAttributes.capacity":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.GridAttributes.load":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.GridAttributes.structsLoad":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.GridAttributes.power":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.GridAttributes.connectionCapacity":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.GridAttributes.connectionCount":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.GridAttributes.allocationPointerStart":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.GridAttributes.allocationPointerEnd":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.GridAttributes.proxyNonce":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.GridAttributes.lastAction":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.GridAttributes.nonce":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.GridAttributes.ready":
+		return protoreflect.ValueOfUint64(uint64(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.GridAttributes"))
+		}
+		panic(fmt.Errorf("message structs.structs.GridAttributes does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_GridAttributes) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.GridAttributes", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_GridAttributes) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_GridAttributes) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_GridAttributes) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_GridAttributes) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*GridAttributes)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.Ore != 0 {
+			n += 1 + runtime.Sov(uint64(x.Ore))
+		}
+		if x.Fuel != 0 {
+			n += 1 + runtime.Sov(uint64(x.Fuel))
+		}
+		if x.Capacity != 0 {
+			n += 1 + runtime.Sov(uint64(x.Capacity))
+		}
+		if x.Load != 0 {
+			n += 1 + runtime.Sov(uint64(x.Load))
+		}
+		if x.StructsLoad != 0 {
+			n += 1 + runtime.Sov(uint64(x.StructsLoad))
+		}
+		if x.Power != 0 {
+			n += 1 + runtime.Sov(uint64(x.Power))
+		}
+		if x.ConnectionCapacity != 0 {
+			n += 1 + runtime.Sov(uint64(x.ConnectionCapacity))
+		}
+		if x.ConnectionCount != 0 {
+			n += 1 + runtime.Sov(uint64(x.ConnectionCount))
+		}
+		if x.AllocationPointerStart != 0 {
+			n += 1 + runtime.Sov(uint64(x.AllocationPointerStart))
+		}
+		if x.AllocationPointerEnd != 0 {
+			n += 1 + runtime.Sov(uint64(x.AllocationPointerEnd))
+		}
+		if x.ProxyNonce != 0 {
+			n += 1 + runtime.Sov(uint64(x.ProxyNonce))
+		}
+		if x.LastAction != 0 {
+			n += 1 + runtime.Sov(uint64(x.LastAction))
+		}
+		if x.Nonce != 0 {
+			n += 1 + runtime.Sov(uint64(x.Nonce))
+		}
+		if x.Ready != 0 {
+			n += 1 + runtime.Sov(uint64(x.Ready))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*GridAttributes)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.Ready != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Ready))
+			i--
+			dAtA[i] = 0x70
+		}
+		if x.Nonce != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Nonce))
+			i--
+			dAtA[i] = 0x68
+		}
+		if x.LastAction != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.LastAction))
+			i--
+			dAtA[i] = 0x60
+		}
+		if x.ProxyNonce != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.ProxyNonce))
+			i--
+			dAtA[i] = 0x58
+		}
+		if x.AllocationPointerEnd != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.AllocationPointerEnd))
+			i--
+			dAtA[i] = 0x50
+		}
+		if x.AllocationPointerStart != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.AllocationPointerStart))
+			i--
+			dAtA[i] = 0x48
+		}
+		if x.ConnectionCount != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.ConnectionCount))
+			i--
+			dAtA[i] = 0x40
+		}
+		if x.ConnectionCapacity != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.ConnectionCapacity))
+			i--
+			dAtA[i] = 0x38
+		}
+		if x.Power != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Power))
+			i--
+			dAtA[i] = 0x30
+		}
+		if x.StructsLoad != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.StructsLoad))
+			i--
+			dAtA[i] = 0x28
+		}
+		if x.Load != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Load))
+			i--
+			dAtA[i] = 0x20
+		}
+		if x.Capacity != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Capacity))
+			i--
+			dAtA[i] = 0x18
+		}
+		if x.Fuel != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Fuel))
+			i--
+			dAtA[i] = 0x10
+		}
+		if x.Ore != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Ore))
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*GridAttributes)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: GridAttributes: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: GridAttributes: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Ore", wireType)
+				}
+				x.Ore = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Ore |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Fuel", wireType)
+				}
+				x.Fuel = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Fuel |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Capacity", wireType)
+				}
+				x.Capacity = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Capacity |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 4:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Load", wireType)
+				}
+				x.Load = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Load |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 5:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field StructsLoad", wireType)
+				}
+				x.StructsLoad = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.StructsLoad |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 6:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Power", wireType)
+				}
+				x.Power = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Power |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 7:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ConnectionCapacity", wireType)
+				}
+				x.ConnectionCapacity = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.ConnectionCapacity |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 8:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ConnectionCount", wireType)
+				}
+				x.ConnectionCount = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.ConnectionCount |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 9:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AllocationPointerStart", wireType)
+				}
+				x.AllocationPointerStart = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.AllocationPointerStart |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 10:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AllocationPointerEnd", wireType)
+				}
+				x.AllocationPointerEnd = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.AllocationPointerEnd |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 11:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ProxyNonce", wireType)
+				}
+				x.ProxyNonce = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.ProxyNonce |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 12:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field LastAction", wireType)
+				}
+				x.LastAction = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.LastAction |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 13:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Nonce", wireType)
+				}
+				x.Nonce = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Nonce |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 14:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Ready", wireType)
+				}
+				x.Ready = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Ready |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 // Code generated by protoc-gen-go. DO NOT EDIT.
 // versions:
 // 	protoc-gen-go v1.27.0
@@ -537,6 +1565,145 @@ func (x *GridRecord) GetValue() uint64 {
 	return 0
 }
 
+type GridAttributes struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Ore                    uint64 `protobuf:"varint,1,opt,name=ore,proto3" json:"ore,omitempty"`
+	Fuel                   uint64 `protobuf:"varint,2,opt,name=fuel,proto3" json:"fuel,omitempty"`
+	Capacity               uint64 `protobuf:"varint,3,opt,name=capacity,proto3" json:"capacity,omitempty"`
+	Load                   uint64 `protobuf:"varint,4,opt,name=load,proto3" json:"load,omitempty"`
+	StructsLoad            uint64 `protobuf:"varint,5,opt,name=structsLoad,proto3" json:"structsLoad,omitempty"`
+	Power                  uint64 `protobuf:"varint,6,opt,name=power,proto3" json:"power,omitempty"`
+	ConnectionCapacity     uint64 `protobuf:"varint,7,opt,name=connectionCapacity,proto3" json:"connectionCapacity,omitempty"`
+	ConnectionCount        uint64 `protobuf:"varint,8,opt,name=connectionCount,proto3" json:"connectionCount,omitempty"`
+	AllocationPointerStart uint64 `protobuf:"varint,9,opt,name=allocationPointerStart,proto3" json:"allocationPointerStart,omitempty"`
+	AllocationPointerEnd   uint64 `protobuf:"varint,10,opt,name=allocationPointerEnd,proto3" json:"allocationPointerEnd,omitempty"`
+	ProxyNonce             uint64 `protobuf:"varint,11,opt,name=proxyNonce,proto3" json:"proxyNonce,omitempty"`
+	LastAction             uint64 `protobuf:"varint,12,opt,name=lastAction,proto3" json:"lastAction,omitempty"`
+	Nonce                  uint64 `protobuf:"varint,13,opt,name=nonce,proto3" json:"nonce,omitempty"`
+	Ready                  uint64 `protobuf:"varint,14,opt,name=ready,proto3" json:"ready,omitempty"`
+}
+
+func (x *GridAttributes) Reset() {
+	*x = GridAttributes{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_grid_proto_msgTypes[1]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *GridAttributes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GridAttributes) ProtoMessage() {}
+
+// Deprecated: Use GridAttributes.ProtoReflect.Descriptor instead.
+func (*GridAttributes) Descriptor() ([]byte, []int) {
+	return file_structs_structs_grid_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *GridAttributes) GetOre() uint64 {
+	if x != nil {
+		return x.Ore
+	}
+	return 0
+}
+
+func (x *GridAttributes) GetFuel() uint64 {
+	if x != nil {
+		return x.Fuel
+	}
+	return 0
+}
+
+func (x *GridAttributes) GetCapacity() uint64 {
+	if x != nil {
+		return x.Capacity
+	}
+	return 0
+}
+
+func (x *GridAttributes) GetLoad() uint64 {
+	if x != nil {
+		return x.Load
+	}
+	return 0
+}
+
+func (x *GridAttributes) GetStructsLoad() uint64 {
+	if x != nil {
+		return x.StructsLoad
+	}
+	return 0
+}
+
+func (x *GridAttributes) GetPower() uint64 {
+	if x != nil {
+		return x.Power
+	}
+	return 0
+}
+
+func (x *GridAttributes) GetConnectionCapacity() uint64 {
+	if x != nil {
+		return x.ConnectionCapacity
+	}
+	return 0
+}
+
+func (x *GridAttributes) GetConnectionCount() uint64 {
+	if x != nil {
+		return x.ConnectionCount
+	}
+	return 0
+}
+
+func (x *GridAttributes) GetAllocationPointerStart() uint64 {
+	if x != nil {
+		return x.AllocationPointerStart
+	}
+	return 0
+}
+
+func (x *GridAttributes) GetAllocationPointerEnd() uint64 {
+	if x != nil {
+		return x.AllocationPointerEnd
+	}
+	return 0
+}
+
+func (x *GridAttributes) GetProxyNonce() uint64 {
+	if x != nil {
+		return x.ProxyNonce
+	}
+	return 0
+}
+
+func (x *GridAttributes) GetLastAction() uint64 {
+	if x != nil {
+		return x.LastAction
+	}
+	return 0
+}
+
+func (x *GridAttributes) GetNonce() uint64 {
+	if x != nil {
+		return x.Nonce
+	}
+	return 0
+}
+
+func (x *GridAttributes) GetReady() uint64 {
+	if x != nil {
+		return x.Ready
+	}
+	return 0
+}
+
 var File_structs_structs_grid_proto protoreflect.FileDescriptor
 
 var file_structs_structs_grid_proto_rawDesc = []byte{
@@ -548,18 +1715,47 @@ var file_structs_structs_grid_proto_rawDesc = []byte{
 	0x64, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74,
 	0x65, 0x49, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x42, 0x9f, 0x01, 0x0a, 0x13, 0x63, 0x6f,
-	0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x42, 0x09, 0x47, 0x72, 0x69, 0x64, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20,
-	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69,
-	0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42,
-	0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f,
-	0x74, 0x6f, 0x33,
+	0x28, 0x04, 0x52, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0xd0, 0x03, 0x0a, 0x0e, 0x47, 0x72,
+	0x69, 0x64, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x12, 0x10, 0x0a, 0x03,
+	0x6f, 0x72, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x03, 0x6f, 0x72, 0x65, 0x12, 0x12,
+	0x0a, 0x04, 0x66, 0x75, 0x65, 0x6c, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x04, 0x66, 0x75,
+	0x65, 0x6c, 0x12, 0x1a, 0x0a, 0x08, 0x63, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x18, 0x03,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x08, 0x63, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x12, 0x12,
+	0x0a, 0x04, 0x6c, 0x6f, 0x61, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x04, 0x6c, 0x6f,
+	0x61, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x4c, 0x6f, 0x61,
+	0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x4c, 0x6f, 0x61, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x70, 0x6f, 0x77, 0x65, 0x72, 0x18, 0x06, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x05, 0x70, 0x6f, 0x77, 0x65, 0x72, 0x12, 0x2e, 0x0a, 0x12, 0x63, 0x6f,
+	0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79,
+	0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69,
+	0x6f, 0x6e, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x12, 0x28, 0x0a, 0x0f, 0x63, 0x6f,
+	0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x08, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x0f, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43,
+	0x6f, 0x75, 0x6e, 0x74, 0x12, 0x36, 0x0a, 0x16, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x53, 0x74, 0x61, 0x72, 0x74, 0x18, 0x09,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x16, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x50, 0x6f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x53, 0x74, 0x61, 0x72, 0x74, 0x12, 0x32, 0x0a, 0x14,
+	0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x65,
+	0x72, 0x45, 0x6e, 0x64, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x04, 0x52, 0x14, 0x61, 0x6c, 0x6c, 0x6f,
+	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x6f, 0x69, 0x6e, 0x74, 0x65, 0x72, 0x45, 0x6e, 0x64,
+	0x12, 0x1e, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x78, 0x79, 0x4e, 0x6f, 0x6e, 0x63, 0x65, 0x18, 0x0b,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x70, 0x72, 0x6f, 0x78, 0x79, 0x4e, 0x6f, 0x6e, 0x63, 0x65,
+	0x12, 0x1e, 0x0a, 0x0a, 0x6c, 0x61, 0x73, 0x74, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x0c,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x6c, 0x61, 0x73, 0x74, 0x41, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x12, 0x14, 0x0a, 0x05, 0x6e, 0x6f, 0x6e, 0x63, 0x65, 0x18, 0x0d, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x05, 0x6e, 0x6f, 0x6e, 0x63, 0x65, 0x12, 0x14, 0x0a, 0x05, 0x72, 0x65, 0x61, 0x64, 0x79, 0x18,
+	0x0e, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x72, 0x65, 0x61, 0x64, 0x79, 0x42, 0x9f, 0x01, 0x0a,
+	0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x42, 0x09, 0x47, 0x72, 0x69, 0x64, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
+	0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f,
+	0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c,
+	0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -574,9 +1770,10 @@ func file_structs_structs_grid_proto_rawDescGZIP() []byte {
 	return file_structs_structs_grid_proto_rawDescData
 }
 
-var file_structs_structs_grid_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_structs_structs_grid_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_structs_structs_grid_proto_goTypes = []interface{}{
-	(*GridRecord)(nil), // 0: structs.structs.GridRecord
+	(*GridRecord)(nil),     // 0: structs.structs.GridRecord
+	(*GridAttributes)(nil), // 1: structs.structs.GridAttributes
 }
 var file_structs_structs_grid_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -604,6 +1801,18 @@ func file_structs_structs_grid_proto_init() {
 				return nil
 			}
 		}
+		file_structs_structs_grid_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*GridAttributes); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -611,7 +1820,7 @@ func file_structs_structs_grid_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_structs_structs_grid_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   1,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

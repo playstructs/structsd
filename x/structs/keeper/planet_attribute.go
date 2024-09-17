@@ -103,3 +103,25 @@ func (k Keeper) SetPlanetAttributeIncrement(ctx context.Context, planetAttribute
 
     return
 }
+
+
+
+func (k Keeper) GetPlanetAttributesByObject(ctx context.Context, objectId string) (types.PlanetAttributes) {
+    return types.PlanetAttributes{
+        PlanetaryShield:                        k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_planetaryShield, objectId)),
+        RepairNetworkQuantity:                  k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_repairNetworkQuantity, objectId)),
+        DefensiveCannonQuantity:                k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_defensiveCannonQuantity, objectId)),
+        CoordinatedGlobalShieldNetworkQuantity: k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_coordinatedGlobalShieldNetworkQuantity, objectId)),
+
+        LowOrbitBallisticsInterceptorNetworkQuantity:           k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkQuantity, objectId)),
+        AdvancedLowOrbitBallisticsInterceptorNetworkQuantity:   k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_advancedLowOrbitBallisticsInterceptorNetworkQuantity, objectId)),
+
+        LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator:   k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator, objectId)),
+        LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator: k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator, objectId)),
+
+        OrbitalJammingStationQuantity:          k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_orbitalJammingStationQuantity, objectId)),
+        AdvancedOrbitalJammingStationQuantity:  k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_advancedOrbitalJammingStationQuantity, objectId)),
+
+        BlockStartRaid:                         k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_blockStartRaid, objectId)),
+  }
+}

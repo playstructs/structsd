@@ -37,3 +37,21 @@ message PlanetAttributeRecord {
   string attributeId = 1;
   uint64 value = 2;
 }
+
+message PlanetAttributes {
+  uint64  planetaryShield                                         = 1;
+  uint64  repairNetworkQuantity                                   = 2;
+  uint64  defensiveCannonQuantity                                 = 3;
+  uint64  coordinatedGlobalShieldNetworkQuantity                  = 4;
+
+  uint64  lowOrbitBallisticsInterceptorNetworkQuantity            = 5;
+  uint64  advancedLowOrbitBallisticsInterceptorNetworkQuantity    = 6;
+
+  uint64  lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator      = 7;
+  uint64  lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator    = 8;
+
+  uint64 orbitalJammingStationQuantity                           = 9;
+  uint64 advancedOrbitalJammingStationQuantity                   = 10;
+
+  uint64  blockStartRaid                                          = 11;
+}

@@ -17,13 +17,13 @@ func (k msgServer) PermissionGrantOnObject(goCtx context.Context, msg *types.Msg
 
    var err error
 
-    player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator), false)
+    player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
     if (!playerFound) {
         return nil, err
     }
 
     if (player.Id != msg.PlayerId) {
-        _, targetPlayerFound := k.GetPlayer(ctx, msg.PlayerId, false)
+        _, targetPlayerFound := k.GetPlayer(ctx, msg.PlayerId)
         if (!targetPlayerFound) {
             return nil, err
         }

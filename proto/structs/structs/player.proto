@@ -20,12 +20,9 @@ message Player {
   string planetId       = 7;
   string fleetId        = 8;
 
-  uint64 load           = 9;
-  uint64 capacity       = 10;
-  uint64 capacitySecondary  = 11;
-  uint64 structsLoad        = 12;
+}
 
-  cosmos.base.v1beta1.Coin storage = 13
-    [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
-  
+message PlayerInventory {
+  cosmos.base.v1beta1.Coin rocks = 13
+  [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
 }

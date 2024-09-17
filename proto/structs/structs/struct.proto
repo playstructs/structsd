@@ -147,6 +147,20 @@ message StructAttributeRecord {
   uint64 value = 2;
 }
 
+message StructAttributes {
+  uint64  health                      = 1;
+  uint64  status                      = 2;
+
+  uint64  blockStartBuild             = 3;
+  uint64  blockStartOreMine           = 4;
+  uint64  blockStartOreRefine         = 5;
+
+  uint64  protectedStructIndex        = 6;
+
+  uint64  typeCount                   = 7;
+}
+
+
 
 /*
 

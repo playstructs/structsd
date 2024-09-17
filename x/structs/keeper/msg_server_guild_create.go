@@ -22,7 +22,7 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
     validatorAddress = playerAddress.Bytes()
 
     reactorBytes, _ := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
-    reactor, reactorFound := k.GetReactorByBytes(ctx, reactorBytes, true)
+    reactor, reactorFound := k.GetReactorByBytes(ctx, reactorBytes)
 
     if (!reactorFound) {
         return &types.MsgGuildCreateResponse{}, sdkerrors.Wrapf(types.ErrReactorRequired, "Guild creation requires Reactor but none associated with %s", msg.Creator)
@@ -41,13 +41,13 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
         // during reactor initialization
         return &types.MsgGuildCreateResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Guild creation requires Player account but none associated with %s", msg.Creator)
     }
-    player, _ := k.GetPlayerFromIndex(ctx, playerIndex, false)
+    player, _ := k.GetPlayerFromIndex(ctx, playerIndex)
 
 
     if (msg.EntrySubstationId != "") {
 
         // Check that the Substation exists
-        _, substationFound := k.GetSubstation(ctx, msg.EntrySubstationId, false)
+        _, substationFound := k.GetSubstation(ctx, msg.EntrySubstationId)
         if (!substationFound) {
             return &types.MsgGuildCreateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "proposed substation (%s) not found", msg.EntrySubstationId)
         }

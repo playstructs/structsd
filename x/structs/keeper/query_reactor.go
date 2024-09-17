@@ -56,10 +56,11 @@ func (k Keeper) Reactor(goCtx context.Context, req *types.QueryGetReactorRequest
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	reactor, found := k.GetReactor(ctx, req.Id, true)
+	reactor, found := k.GetReactor(ctx, req.Id)
 	if !found {
 		return nil, types.ErrObjectNotFound
 	}
 
-	return &types.QueryGetReactorResponse{Reactor: reactor}, nil
+    gridAttributes := k.GetGridAttributesByObject(ctx, req.Id)
+	return &types.QueryGetReactorResponse{Reactor: reactor, GridAttributes: &gridAttributes }, nil
 }

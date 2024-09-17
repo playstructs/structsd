@@ -14,7 +14,7 @@ func (k msgServer) SubstationPlayerMigrate(goCtx context.Context, msg *types.Msg
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator), true)
+	player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
     if (!playerFound) {
         return &types.MsgSubstationPlayerMigrateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)
     }
@@ -31,7 +31,7 @@ func (k msgServer) SubstationPlayerMigrate(goCtx context.Context, msg *types.Msg
         return &types.MsgSubstationPlayerMigrateResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
     }
 
-    substation, sourceSubstationFound := k.GetSubstation(ctx, msg.SubstationId, false)
+    substation, sourceSubstationFound := k.GetSubstation(ctx, msg.SubstationId)
     if (!sourceSubstationFound) {
         return &types.MsgSubstationPlayerMigrateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "substation (%s) used for player connection not found", msg.SubstationId)
     }
@@ -49,7 +49,7 @@ func (k msgServer) SubstationPlayerMigrate(goCtx context.Context, msg *types.Msg
             }
         }
 
-        targetPlayer, targetPlayerFound := k.GetPlayer(ctx, targetPlayerId, true)
+        targetPlayer, targetPlayerFound := k.GetPlayer(ctx, targetPlayerId)
         if (!targetPlayerFound) {
             return &types.MsgSubstationPlayerMigrateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Target player (%s) could be be found", targetPlayerId)
         }

@@ -14,12 +14,12 @@ func (k msgServer) AllocationDelete(goCtx context.Context, msg *types.MsgAllocat
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId, true)
+	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId)
 	if (!allocationFound) {
 		return &types.MsgAllocationDeleteResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "allocation (%s) not found", msg.AllocationId)
 	}
 
-    player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator), true)
+    player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
     if (!playerFound) {
         return &types.MsgAllocationDeleteResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not perform allocation action with non-player address (%s)", msg.Creator)
     }

@@ -16,7 +16,7 @@ func (k msgServer) GuildMembershipKick(goCtx context.Context, msg *types.MsgGuil
 	k.AddressEmitActivity(ctx, msg.Creator)
 
 	// Look up requesting account
-	player := k.UpsertPlayer(ctx, msg.Creator, true)
+	player := k.UpsertPlayer(ctx, msg.Creator)
 
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has Associate permissions
@@ -50,13 +50,13 @@ func (k msgServer) GuildMembershipKick(goCtx context.Context, msg *types.MsgGuil
     }
 
     // Look up requesting account
-    targetPlayer := k.UpsertPlayer(ctx, msg.Creator, true)
+    targetPlayer := k.UpsertPlayer(ctx, msg.Creator)
     targetPlayer.GuildId = ""
 
     targetPlayerUpdated := false
     if (player.SubstationId != "") {
 
-        substation, substationFound := k.GetSubstation(ctx, targetPlayer.SubstationId, true)
+        substation, substationFound := k.GetSubstation(ctx, targetPlayer.SubstationId)
 
         if (substationFound) {
             if (substation.Owner != targetPlayer.Id) {

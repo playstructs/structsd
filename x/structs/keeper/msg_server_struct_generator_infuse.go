@@ -23,7 +23,7 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
         return &types.MsgStructGeneratorStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build actions requires Player account but none associated with %s", msg.Creator)
     }
     callingPlayerId := GetObjectID(types.ObjectType_player, callingPlayerIndex)
-    callingPlayer, _ := k.GetPlayer(ctx, callingPlayerId, true)
+    callingPlayer, _ := k.GetPlayer(ctx, callingPlayerId)
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has Assets permissions

@@ -103,7 +103,7 @@ func (k Keeper) SetReactor(ctx context.Context, reactor types.Reactor) {
 }
 
 // GetReactor returns a reactor from its id
-func (k Keeper) GetReactor(ctx context.Context, reactorId string, full bool) (val types.Reactor, found bool) {
+func (k Keeper) GetReactor(ctx context.Context, reactorId string) (val types.Reactor, found bool) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.ReactorKey))
 	b := store.Get([]byte(reactorId))
 	if b == nil {
@@ -111,17 +111,11 @@ func (k Keeper) GetReactor(ctx context.Context, reactorId string, full bool) (va
 	}
 	k.cdc.MustUnmarshal(b, &val)
 
-	if full {
-        val.Load        = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
-        val.Capacity    = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
-        val.Fuel        = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, val.Id))
-	}
-
 	return val, true
 }
 
 // GetReactor returns a reactor from its id
-func (k Keeper) GetReactorByBytes(ctx context.Context, id []byte, full bool) (val types.Reactor, found bool) {
+func (k Keeper) GetReactorByBytes(ctx context.Context, id []byte) (val types.Reactor, found bool) {
     if id == nil {
         return val, false
     }
@@ -132,12 +126,6 @@ func (k Keeper) GetReactorByBytes(ctx context.Context, id []byte, full bool) (va
 		return val, false
 	}
 	k.cdc.MustUnmarshal(b, &val)
-
-	if full {
-        val.Load        = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
-        val.Capacity    = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
-        val.Fuel        = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, val.Id))
-	}
 
 	return val, true
 }
@@ -152,7 +140,7 @@ func (k Keeper) RemoveReactor(ctx context.Context, reactorId string) {
 }
 
 // GetAllReactor returns all reactor
-func (k Keeper) GetAllReactor(ctx context.Context, full bool) (list []types.Reactor) {
+func (k Keeper) GetAllReactor(ctx context.Context) (list []types.Reactor) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.ReactorKey))
 	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
@@ -161,12 +149,6 @@ func (k Keeper) GetAllReactor(ctx context.Context, full bool) (list []types.Reac
 	for ; iterator.Valid(); iterator.Next() {
 		var val types.Reactor
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
-
-		if full {
-            val.Load        = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, val.Id))
-            val.Capacity    = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, val.Id))
-            val.Fuel        = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, val.Id))
-		}
 
 		list = append(list, val)
 	}

@@ -21696,6 +21696,42 @@ paths:
                   locationListLast:
                     type: string
                     title: End of the line
+              planetAttributes:
+                type: object
+                properties:
+                  planetaryShield:
+                    type: string
+                    format: uint64
+                  repairNetworkQuantity:
+                    type: string
+                    format: uint64
+                  defensiveCannonQuantity:
+                    type: string
+                    format: uint64
+                  coordinatedGlobalShieldNetworkQuantity:
+                    type: string
+                    format: uint64
+                  lowOrbitBallisticsInterceptorNetworkQuantity:
+                    type: string
+                    format: uint64
+                  advancedLowOrbitBallisticsInterceptorNetworkQuantity:
+                    type: string
+                    format: uint64
+                  lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator:
+                    type: string
+                    format: uint64
+                  lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator:
+                    type: string
+                    format: uint64
+                  orbitalJammingStationQuantity:
+                    type: string
+                    format: uint64
+                  advancedOrbitalJammingStationQuantity:
+                    type: string
+                    format: uint64
+                  blockStartRaid:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -21924,33 +21960,6 @@ paths:
                       type: string
                     fleetId:
                       type: string
-                    load:
-                      type: string
-                      format: uint64
-                    capacity:
-                      type: string
-                      format: uint64
-                    capacitySecondary:
-                      type: string
-                      format: uint64
-                    structsLoad:
-                      type: string
-                      format: uint64
-                    storage:
-                      type: object
-                      properties:
-                        denom:
-                          type: string
-                        amount:
-                          type: string
-                      description: >-
-                        Coin defines a token with a denomination and an amount.
-
-
-                        NOTE: The amount field is an Int which implements the
-                        custom method
-
-                        signatures required by gogoproto.
               pagination:
                 type: object
                 properties:
@@ -22086,33 +22095,51 @@ paths:
                     type: string
                   fleetId:
                     type: string
-                  load:
+              gridAttributes:
+                type: object
+                properties:
+                  ore:
+                    type: string
+                    format: uint64
+                  fuel:
                     type: string
                     format: uint64
                   capacity:
                     type: string
                     format: uint64
-                  capacitySecondary:
+                  load:
                     type: string
                     format: uint64
                   structsLoad:
                     type: string
                     format: uint64
-                  storage:
-                    type: object
-                    properties:
-                      denom:
-                        type: string
-                      amount:
-                        type: string
-                    description: >-
-                      Coin defines a token with a denomination and an amount.
-
-
-                      NOTE: The amount field is an Int which implements the
-                      custom method
-
-                      signatures required by gogoproto.
+                  power:
+                    type: string
+                    format: uint64
+                  connectionCapacity:
+                    type: string
+                    format: uint64
+                  connectionCount:
+                    type: string
+                    format: uint64
+                  allocationPointerStart:
+                    type: string
+                    format: uint64
+                  allocationPointerEnd:
+                    type: string
+                    format: uint64
+                  proxyNonce:
+                    type: string
+                    format: uint64
+                  lastAction:
+                    type: string
+                    format: uint64
+                  nonce:
+                    type: string
+                    format: uint64
+                  ready:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -22156,15 +22183,6 @@ paths:
                       type: string
                     validator:
                       type: string
-                    fuel:
-                      type: string
-                      format: uint64
-                    capacity:
-                      type: string
-                      format: uint64
-                    load:
-                      type: string
-                      format: uint64
                     guildId:
                       type: string
                     defaultCommission:
@@ -22294,6 +22312,19 @@ paths:
                     type: string
                   validator:
                     type: string
+                  guildId:
+                    type: string
+                  defaultCommission:
+                    type: string
+                  rawAddress:
+                    type: string
+                    format: byte
+              gridAttributes:
+                type: object
+                properties:
+                  ore:
+                    type: string
+                    format: uint64
                   fuel:
                     type: string
                     format: uint64
@@ -22303,13 +22334,36 @@ paths:
                   load:
                     type: string
                     format: uint64
-                  guildId:
+                  structsLoad:
                     type: string
-                  defaultCommission:
+                    format: uint64
+                  power:
                     type: string
-                  rawAddress:
+                    format: uint64
+                  connectionCapacity:
                     type: string
-                    format: byte
+                    format: uint64
+                  connectionCount:
+                    type: string
+                    format: uint64
+                  allocationPointerStart:
+                    type: string
+                    format: uint64
+                  allocationPointerEnd:
+                    type: string
+                    format: uint64
+                  proxyNonce:
+                    type: string
+                    format: uint64
+                  lastAction:
+                    type: string
+                    format: uint64
+                  nonce:
+                    type: string
+                    format: uint64
+                  ready:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -22553,6 +22607,75 @@ paths:
                       - local
                     default: none
                   slot:
+                    type: string
+                    format: uint64
+              structAttributes:
+                type: object
+                properties:
+                  health:
+                    type: string
+                    format: uint64
+                  status:
+                    type: string
+                    format: uint64
+                  blockStartBuild:
+                    type: string
+                    format: uint64
+                  blockStartOreMine:
+                    type: string
+                    format: uint64
+                  blockStartOreRefine:
+                    type: string
+                    format: uint64
+                  protectedStructIndex:
+                    type: string
+                    format: uint64
+                  typeCount:
+                    type: string
+                    format: uint64
+              gridAttributes:
+                type: object
+                properties:
+                  ore:
+                    type: string
+                    format: uint64
+                  fuel:
+                    type: string
+                    format: uint64
+                  capacity:
+                    type: string
+                    format: uint64
+                  load:
+                    type: string
+                    format: uint64
+                  structsLoad:
+                    type: string
+                    format: uint64
+                  power:
+                    type: string
+                    format: uint64
+                  connectionCapacity:
+                    type: string
+                    format: uint64
+                  connectionCount:
+                    type: string
+                    format: uint64
+                  allocationPointerStart:
+                    type: string
+                    format: uint64
+                  allocationPointerEnd:
+                    type: string
+                    format: uint64
+                  proxyNonce:
+                    type: string
+                    format: uint64
+                  lastAction:
+                    type: string
+                    format: uint64
+                  nonce:
+                    type: string
+                    format: uint64
+                  ready:
                     type: string
                     format: uint64
         default:
@@ -23431,18 +23554,6 @@ paths:
                       type: string
                     creator:
                       type: string
-                    load:
-                      type: string
-                      format: uint64
-                    capacity:
-                      type: string
-                      format: uint64
-                    connectionCount:
-                      type: string
-                      format: uint64
-                    connectionCapacity:
-                      type: string
-                      format: uint64
               pagination:
                 type: object
                 properties:
@@ -23567,16 +23678,49 @@ paths:
                     type: string
                   creator:
                     type: string
-                  load:
+              gridAttributes:
+                type: object
+                properties:
+                  ore:
+                    type: string
+                    format: uint64
+                  fuel:
                     type: string
                     format: uint64
                   capacity:
                     type: string
                     format: uint64
-                  connectionCount:
+                  load:
+                    type: string
+                    format: uint64
+                  structsLoad:
+                    type: string
+                    format: uint64
+                  power:
                     type: string
                     format: uint64
                   connectionCapacity:
+                    type: string
+                    format: uint64
+                  connectionCount:
+                    type: string
+                    format: uint64
+                  allocationPointerStart:
+                    type: string
+                    format: uint64
+                  allocationPointerEnd:
+                    type: string
+                    format: uint64
+                  proxyNonce:
+                    type: string
+                    format: uint64
+                  lastAction:
+                    type: string
+                    format: uint64
+                  nonce:
+                    type: string
+                    format: uint64
+                  ready:
                     type: string
                     format: uint64
         default:
@@ -34941,6 +35085,51 @@ definitions:
         format: uint64
       commandStruct:
         type: string
+  structs.structs.GridAttributes:
+    type: object
+    properties:
+      ore:
+        type: string
+        format: uint64
+      fuel:
+        type: string
+        format: uint64
+      capacity:
+        type: string
+        format: uint64
+      load:
+        type: string
+        format: uint64
+      structsLoad:
+        type: string
+        format: uint64
+      power:
+        type: string
+        format: uint64
+      connectionCapacity:
+        type: string
+        format: uint64
+      connectionCount:
+        type: string
+        format: uint64
+      allocationPointerStart:
+        type: string
+        format: uint64
+      allocationPointerEnd:
+        type: string
+        format: uint64
+      proxyNonce:
+        type: string
+        format: uint64
+      lastAction:
+        type: string
+        format: uint64
+      nonce:
+        type: string
+        format: uint64
+      ready:
+        type: string
+        format: uint64
   structs.structs.GridRecord:
     type: object
     properties:
@@ -35119,6 +35308,42 @@ definitions:
       locationListLast:
         type: string
         title: End of the line
+  structs.structs.PlanetAttributes:
+    type: object
+    properties:
+      planetaryShield:
+        type: string
+        format: uint64
+      repairNetworkQuantity:
+        type: string
+        format: uint64
+      defensiveCannonQuantity:
+        type: string
+        format: uint64
+      coordinatedGlobalShieldNetworkQuantity:
+        type: string
+        format: uint64
+      lowOrbitBallisticsInterceptorNetworkQuantity:
+        type: string
+        format: uint64
+      advancedLowOrbitBallisticsInterceptorNetworkQuantity:
+        type: string
+        format: uint64
+      lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator:
+        type: string
+        format: uint64
+      lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator:
+        type: string
+        format: uint64
+      orbitalJammingStationQuantity:
+        type: string
+        format: uint64
+      advancedOrbitalJammingStationQuantity:
+        type: string
+        format: uint64
+      blockStartRaid:
+        type: string
+        format: uint64
   structs.structs.Player:
     type: object
     properties:
@@ -35139,30 +35364,6 @@ definitions:
         type: string
       fleetId:
         type: string
-      load:
-        type: string
-        format: uint64
-      capacity:
-        type: string
-        format: uint64
-      capacitySecondary:
-        type: string
-        format: uint64
-      structsLoad:
-        type: string
-        format: uint64
-      storage:
-        type: object
-        properties:
-          denom:
-            type: string
-          amount:
-            type: string
-        description: |-
-          Coin defines a token with a denomination and an amount.
-
-          NOTE: The amount field is an Int which implements the custom method
-          signatures required by gogoproto.
   structs.structs.QueryAddressResponse:
     type: object
     properties:
@@ -35768,33 +35969,6 @@ definitions:
               type: string
             fleetId:
               type: string
-            load:
-              type: string
-              format: uint64
-            capacity:
-              type: string
-              format: uint64
-            capacitySecondary:
-              type: string
-              format: uint64
-            structsLoad:
-              type: string
-              format: uint64
-            storage:
-              type: object
-              properties:
-                denom:
-                  type: string
-                amount:
-                  type: string
-              description: >-
-                Coin defines a token with a denomination and an amount.
-
-
-                NOTE: The amount field is an Int which implements the custom
-                method
-
-                signatures required by gogoproto.
       pagination:
         type: object
         properties:
@@ -35833,15 +36007,6 @@ definitions:
               type: string
             validator:
               type: string
-            fuel:
-              type: string
-              format: uint64
-            capacity:
-              type: string
-              format: uint64
-            load:
-              type: string
-              format: uint64
             guildId:
               type: string
             defaultCommission:
@@ -36297,18 +36462,6 @@ definitions:
               type: string
             creator:
               type: string
-            load:
-              type: string
-              format: uint64
-            capacity:
-              type: string
-              format: uint64
-            connectionCount:
-              type: string
-              format: uint64
-            connectionCapacity:
-              type: string
-              format: uint64
       pagination:
         type: object
         properties:
@@ -36638,6 +36791,42 @@ definitions:
           locationListLast:
             type: string
             title: End of the line
+      planetAttributes:
+        type: object
+        properties:
+          planetaryShield:
+            type: string
+            format: uint64
+          repairNetworkQuantity:
+            type: string
+            format: uint64
+          defensiveCannonQuantity:
+            type: string
+            format: uint64
+          coordinatedGlobalShieldNetworkQuantity:
+            type: string
+            format: uint64
+          lowOrbitBallisticsInterceptorNetworkQuantity:
+            type: string
+            format: uint64
+          advancedLowOrbitBallisticsInterceptorNetworkQuantity:
+            type: string
+            format: uint64
+          lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator:
+            type: string
+            format: uint64
+          lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator:
+            type: string
+            format: uint64
+          orbitalJammingStationQuantity:
+            type: string
+            format: uint64
+          advancedOrbitalJammingStationQuantity:
+            type: string
+            format: uint64
+          blockStartRaid:
+            type: string
+            format: uint64
   structs.structs.QueryGetPlayerResponse:
     type: object
     properties:
@@ -36661,33 +36850,51 @@ definitions:
             type: string
           fleetId:
             type: string
-          load:
+      gridAttributes:
+        type: object
+        properties:
+          ore:
+            type: string
+            format: uint64
+          fuel:
             type: string
             format: uint64
           capacity:
             type: string
             format: uint64
-          capacitySecondary:
+          load:
             type: string
             format: uint64
           structsLoad:
             type: string
             format: uint64
-          storage:
-            type: object
-            properties:
-              denom:
-                type: string
-              amount:
-                type: string
-            description: >-
-              Coin defines a token with a denomination and an amount.
-
-
-              NOTE: The amount field is an Int which implements the custom
-              method
-
-              signatures required by gogoproto.
+          power:
+            type: string
+            format: uint64
+          connectionCapacity:
+            type: string
+            format: uint64
+          connectionCount:
+            type: string
+            format: uint64
+          allocationPointerStart:
+            type: string
+            format: uint64
+          allocationPointerEnd:
+            type: string
+            format: uint64
+          proxyNonce:
+            type: string
+            format: uint64
+          lastAction:
+            type: string
+            format: uint64
+          nonce:
+            type: string
+            format: uint64
+          ready:
+            type: string
+            format: uint64
   structs.structs.QueryGetReactorResponse:
     type: object
     properties:
@@ -36698,6 +36905,19 @@ definitions:
             type: string
           validator:
             type: string
+          guildId:
+            type: string
+          defaultCommission:
+            type: string
+          rawAddress:
+            type: string
+            format: byte
+      gridAttributes:
+        type: object
+        properties:
+          ore:
+            type: string
+            format: uint64
           fuel:
             type: string
             format: uint64
@@ -36707,13 +36927,36 @@ definitions:
           load:
             type: string
             format: uint64
-          guildId:
+          structsLoad:
             type: string
-          defaultCommission:
+            format: uint64
+          power:
             type: string
-          rawAddress:
+            format: uint64
+          connectionCapacity:
             type: string
-            format: byte
+            format: uint64
+          connectionCount:
+            type: string
+            format: uint64
+          allocationPointerStart:
+            type: string
+            format: uint64
+          allocationPointerEnd:
+            type: string
+            format: uint64
+          proxyNonce:
+            type: string
+            format: uint64
+          lastAction:
+            type: string
+            format: uint64
+          nonce:
+            type: string
+            format: uint64
+          ready:
+            type: string
+            format: uint64
   structs.structs.QueryGetStructAttributeResponse:
     type: object
     properties:
@@ -36768,6 +37011,75 @@ definitions:
               - local
             default: none
           slot:
+            type: string
+            format: uint64
+      structAttributes:
+        type: object
+        properties:
+          health:
+            type: string
+            format: uint64
+          status:
+            type: string
+            format: uint64
+          blockStartBuild:
+            type: string
+            format: uint64
+          blockStartOreMine:
+            type: string
+            format: uint64
+          blockStartOreRefine:
+            type: string
+            format: uint64
+          protectedStructIndex:
+            type: string
+            format: uint64
+          typeCount:
+            type: string
+            format: uint64
+      gridAttributes:
+        type: object
+        properties:
+          ore:
+            type: string
+            format: uint64
+          fuel:
+            type: string
+            format: uint64
+          capacity:
+            type: string
+            format: uint64
+          load:
+            type: string
+            format: uint64
+          structsLoad:
+            type: string
+            format: uint64
+          power:
+            type: string
+            format: uint64
+          connectionCapacity:
+            type: string
+            format: uint64
+          connectionCount:
+            type: string
+            format: uint64
+          allocationPointerStart:
+            type: string
+            format: uint64
+          allocationPointerEnd:
+            type: string
+            format: uint64
+          proxyNonce:
+            type: string
+            format: uint64
+          lastAction:
+            type: string
+            format: uint64
+          nonce:
+            type: string
+            format: uint64
+          ready:
             type: string
             format: uint64
   structs.structs.QueryGetStructTypeResponse:
@@ -37082,16 +37394,49 @@ definitions:
             type: string
           creator:
             type: string
-          load:
+      gridAttributes:
+        type: object
+        properties:
+          ore:
+            type: string
+            format: uint64
+          fuel:
             type: string
             format: uint64
           capacity:
             type: string
             format: uint64
-          connectionCount:
+          load:
+            type: string
+            format: uint64
+          structsLoad:
+            type: string
+            format: uint64
+          power:
             type: string
             format: uint64
           connectionCapacity:
+            type: string
+            format: uint64
+          connectionCount:
+            type: string
+            format: uint64
+          allocationPointerStart:
+            type: string
+            format: uint64
+          allocationPointerEnd:
+            type: string
+            format: uint64
+          proxyNonce:
+            type: string
+            format: uint64
+          lastAction:
+            type: string
+            format: uint64
+          nonce:
+            type: string
+            format: uint64
+          ready:
             type: string
             format: uint64
   structs.structs.QueryParamsResponse:
@@ -37108,15 +37453,6 @@ definitions:
         type: string
       validator:
         type: string
-      fuel:
-        type: string
-        format: uint64
-      capacity:
-        type: string
-        format: uint64
-      load:
-        type: string
-        format: uint64
       guildId:
         type: string
       defaultCommission:
@@ -37169,6 +37505,30 @@ definitions:
           - local
         default: none
       slot:
+        type: string
+        format: uint64
+  structs.structs.StructAttributes:
+    type: object
+    properties:
+      health:
+        type: string
+        format: uint64
+      status:
+        type: string
+        format: uint64
+      blockStartBuild:
+        type: string
+        format: uint64
+      blockStartOreMine:
+        type: string
+        format: uint64
+      blockStartOreRefine:
+        type: string
+        format: uint64
+      protectedStructIndex:
+        type: string
+        format: uint64
+      typeCount:
         type: string
         format: uint64
   structs.structs.StructType:
@@ -37477,18 +37837,6 @@ definitions:
         type: string
       creator:
         type: string
-      load:
-        type: string
-        format: uint64
-      capacity:
-        type: string
-        format: uint64
-      connectionCount:
-        type: string
-        format: uint64
-      connectionCapacity:
-        type: string
-        format: uint64
   structs.structs.allocationType:
     type: string
     enum:

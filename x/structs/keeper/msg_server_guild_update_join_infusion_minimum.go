@@ -19,7 +19,7 @@ func (k msgServer) GuildUpdateJoinInfusionMinimum(goCtx context.Context, msg *ty
     if (playerIndex == 0) {
         return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Guild update requires Player account but none associated with %s", msg.Creator)
     }
-    player, _ := k.GetPlayerFromIndex(ctx, playerIndex, false)
+    player, _ := k.GetPlayerFromIndex(ctx, playerIndex)
 
     guild, guildFound := k.GetGuild(ctx, msg.GuildId)
     if (!guildFound) {

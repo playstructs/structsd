@@ -1941,6 +1941,890 @@ func (x *fastReflection_PlanetAttributeRecord) ProtoMethods() *protoiface.Method
 	}
 }
 
+var (
+	md_PlanetAttributes                                                            protoreflect.MessageDescriptor
+	fd_PlanetAttributes_planetaryShield                                            protoreflect.FieldDescriptor
+	fd_PlanetAttributes_repairNetworkQuantity                                      protoreflect.FieldDescriptor
+	fd_PlanetAttributes_defensiveCannonQuantity                                    protoreflect.FieldDescriptor
+	fd_PlanetAttributes_coordinatedGlobalShieldNetworkQuantity                     protoreflect.FieldDescriptor
+	fd_PlanetAttributes_lowOrbitBallisticsInterceptorNetworkQuantity               protoreflect.FieldDescriptor
+	fd_PlanetAttributes_advancedLowOrbitBallisticsInterceptorNetworkQuantity       protoreflect.FieldDescriptor
+	fd_PlanetAttributes_lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator   protoreflect.FieldDescriptor
+	fd_PlanetAttributes_lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator protoreflect.FieldDescriptor
+	fd_PlanetAttributes_orbitalJammingStationQuantity                              protoreflect.FieldDescriptor
+	fd_PlanetAttributes_advancedOrbitalJammingStationQuantity                      protoreflect.FieldDescriptor
+	fd_PlanetAttributes_blockStartRaid                                             protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_planet_proto_init()
+	md_PlanetAttributes = File_structs_structs_planet_proto.Messages().ByName("PlanetAttributes")
+	fd_PlanetAttributes_planetaryShield = md_PlanetAttributes.Fields().ByName("planetaryShield")
+	fd_PlanetAttributes_repairNetworkQuantity = md_PlanetAttributes.Fields().ByName("repairNetworkQuantity")
+	fd_PlanetAttributes_defensiveCannonQuantity = md_PlanetAttributes.Fields().ByName("defensiveCannonQuantity")
+	fd_PlanetAttributes_coordinatedGlobalShieldNetworkQuantity = md_PlanetAttributes.Fields().ByName("coordinatedGlobalShieldNetworkQuantity")
+	fd_PlanetAttributes_lowOrbitBallisticsInterceptorNetworkQuantity = md_PlanetAttributes.Fields().ByName("lowOrbitBallisticsInterceptorNetworkQuantity")
+	fd_PlanetAttributes_advancedLowOrbitBallisticsInterceptorNetworkQuantity = md_PlanetAttributes.Fields().ByName("advancedLowOrbitBallisticsInterceptorNetworkQuantity")
+	fd_PlanetAttributes_lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator = md_PlanetAttributes.Fields().ByName("lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator")
+	fd_PlanetAttributes_lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator = md_PlanetAttributes.Fields().ByName("lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator")
+	fd_PlanetAttributes_orbitalJammingStationQuantity = md_PlanetAttributes.Fields().ByName("orbitalJammingStationQuantity")
+	fd_PlanetAttributes_advancedOrbitalJammingStationQuantity = md_PlanetAttributes.Fields().ByName("advancedOrbitalJammingStationQuantity")
+	fd_PlanetAttributes_blockStartRaid = md_PlanetAttributes.Fields().ByName("blockStartRaid")
+}
+
+var _ protoreflect.Message = (*fastReflection_PlanetAttributes)(nil)
+
+type fastReflection_PlanetAttributes PlanetAttributes
+
+func (x *PlanetAttributes) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_PlanetAttributes)(x)
+}
+
+func (x *PlanetAttributes) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_planet_proto_msgTypes[2]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_PlanetAttributes_messageType fastReflection_PlanetAttributes_messageType
+var _ protoreflect.MessageType = fastReflection_PlanetAttributes_messageType{}
+
+type fastReflection_PlanetAttributes_messageType struct{}
+
+func (x fastReflection_PlanetAttributes_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_PlanetAttributes)(nil)
+}
+func (x fastReflection_PlanetAttributes_messageType) New() protoreflect.Message {
+	return new(fastReflection_PlanetAttributes)
+}
+func (x fastReflection_PlanetAttributes_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_PlanetAttributes
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_PlanetAttributes) Descriptor() protoreflect.MessageDescriptor {
+	return md_PlanetAttributes
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_PlanetAttributes) Type() protoreflect.MessageType {
+	return _fastReflection_PlanetAttributes_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_PlanetAttributes) New() protoreflect.Message {
+	return new(fastReflection_PlanetAttributes)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_PlanetAttributes) Interface() protoreflect.ProtoMessage {
+	return (*PlanetAttributes)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_PlanetAttributes) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.PlanetaryShield != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.PlanetaryShield)
+		if !f(fd_PlanetAttributes_planetaryShield, value) {
+			return
+		}
+	}
+	if x.RepairNetworkQuantity != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.RepairNetworkQuantity)
+		if !f(fd_PlanetAttributes_repairNetworkQuantity, value) {
+			return
+		}
+	}
+	if x.DefensiveCannonQuantity != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.DefensiveCannonQuantity)
+		if !f(fd_PlanetAttributes_defensiveCannonQuantity, value) {
+			return
+		}
+	}
+	if x.CoordinatedGlobalShieldNetworkQuantity != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.CoordinatedGlobalShieldNetworkQuantity)
+		if !f(fd_PlanetAttributes_coordinatedGlobalShieldNetworkQuantity, value) {
+			return
+		}
+	}
+	if x.LowOrbitBallisticsInterceptorNetworkQuantity != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.LowOrbitBallisticsInterceptorNetworkQuantity)
+		if !f(fd_PlanetAttributes_lowOrbitBallisticsInterceptorNetworkQuantity, value) {
+			return
+		}
+	}
+	if x.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity)
+		if !f(fd_PlanetAttributes_advancedLowOrbitBallisticsInterceptorNetworkQuantity, value) {
+			return
+		}
+	}
+	if x.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator)
+		if !f(fd_PlanetAttributes_lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator, value) {
+			return
+		}
+	}
+	if x.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator)
+		if !f(fd_PlanetAttributes_lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator, value) {
+			return
+		}
+	}
+	if x.OrbitalJammingStationQuantity != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.OrbitalJammingStationQuantity)
+		if !f(fd_PlanetAttributes_orbitalJammingStationQuantity, value) {
+			return
+		}
+	}
+	if x.AdvancedOrbitalJammingStationQuantity != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.AdvancedOrbitalJammingStationQuantity)
+		if !f(fd_PlanetAttributes_advancedOrbitalJammingStationQuantity, value) {
+			return
+		}
+	}
+	if x.BlockStartRaid != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.BlockStartRaid)
+		if !f(fd_PlanetAttributes_blockStartRaid, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_PlanetAttributes) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.PlanetAttributes.planetaryShield":
+		return x.PlanetaryShield != uint64(0)
+	case "structs.structs.PlanetAttributes.repairNetworkQuantity":
+		return x.RepairNetworkQuantity != uint64(0)
+	case "structs.structs.PlanetAttributes.defensiveCannonQuantity":
+		return x.DefensiveCannonQuantity != uint64(0)
+	case "structs.structs.PlanetAttributes.coordinatedGlobalShieldNetworkQuantity":
+		return x.CoordinatedGlobalShieldNetworkQuantity != uint64(0)
+	case "structs.structs.PlanetAttributes.lowOrbitBallisticsInterceptorNetworkQuantity":
+		return x.LowOrbitBallisticsInterceptorNetworkQuantity != uint64(0)
+	case "structs.structs.PlanetAttributes.advancedLowOrbitBallisticsInterceptorNetworkQuantity":
+		return x.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity != uint64(0)
+	case "structs.structs.PlanetAttributes.lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator":
+		return x.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator != uint64(0)
+	case "structs.structs.PlanetAttributes.lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator":
+		return x.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator != uint64(0)
+	case "structs.structs.PlanetAttributes.orbitalJammingStationQuantity":
+		return x.OrbitalJammingStationQuantity != uint64(0)
+	case "structs.structs.PlanetAttributes.advancedOrbitalJammingStationQuantity":
+		return x.AdvancedOrbitalJammingStationQuantity != uint64(0)
+	case "structs.structs.PlanetAttributes.blockStartRaid":
+		return x.BlockStartRaid != uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.PlanetAttributes"))
+		}
+		panic(fmt.Errorf("message structs.structs.PlanetAttributes does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_PlanetAttributes) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.PlanetAttributes.planetaryShield":
+		x.PlanetaryShield = uint64(0)
+	case "structs.structs.PlanetAttributes.repairNetworkQuantity":
+		x.RepairNetworkQuantity = uint64(0)
+	case "structs.structs.PlanetAttributes.defensiveCannonQuantity":
+		x.DefensiveCannonQuantity = uint64(0)
+	case "structs.structs.PlanetAttributes.coordinatedGlobalShieldNetworkQuantity":
+		x.CoordinatedGlobalShieldNetworkQuantity = uint64(0)
+	case "structs.structs.PlanetAttributes.lowOrbitBallisticsInterceptorNetworkQuantity":
+		x.LowOrbitBallisticsInterceptorNetworkQuantity = uint64(0)
+	case "structs.structs.PlanetAttributes.advancedLowOrbitBallisticsInterceptorNetworkQuantity":
+		x.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity = uint64(0)
+	case "structs.structs.PlanetAttributes.lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator":
+		x.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator = uint64(0)
+	case "structs.structs.PlanetAttributes.lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator":
+		x.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator = uint64(0)
+	case "structs.structs.PlanetAttributes.orbitalJammingStationQuantity":
+		x.OrbitalJammingStationQuantity = uint64(0)
+	case "structs.structs.PlanetAttributes.advancedOrbitalJammingStationQuantity":
+		x.AdvancedOrbitalJammingStationQuantity = uint64(0)
+	case "structs.structs.PlanetAttributes.blockStartRaid":
+		x.BlockStartRaid = uint64(0)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.PlanetAttributes"))
+		}
+		panic(fmt.Errorf("message structs.structs.PlanetAttributes does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_PlanetAttributes) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.PlanetAttributes.planetaryShield":
+		value := x.PlanetaryShield
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.PlanetAttributes.repairNetworkQuantity":
+		value := x.RepairNetworkQuantity
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.PlanetAttributes.defensiveCannonQuantity":
+		value := x.DefensiveCannonQuantity
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.PlanetAttributes.coordinatedGlobalShieldNetworkQuantity":
+		value := x.CoordinatedGlobalShieldNetworkQuantity
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.PlanetAttributes.lowOrbitBallisticsInterceptorNetworkQuantity":
+		value := x.LowOrbitBallisticsInterceptorNetworkQuantity
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.PlanetAttributes.advancedLowOrbitBallisticsInterceptorNetworkQuantity":
+		value := x.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.PlanetAttributes.lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator":
+		value := x.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.PlanetAttributes.lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator":
+		value := x.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.PlanetAttributes.orbitalJammingStationQuantity":
+		value := x.OrbitalJammingStationQuantity
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.PlanetAttributes.advancedOrbitalJammingStationQuantity":
+		value := x.AdvancedOrbitalJammingStationQuantity
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.PlanetAttributes.blockStartRaid":
+		value := x.BlockStartRaid
+		return protoreflect.ValueOfUint64(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.PlanetAttributes"))
+		}
+		panic(fmt.Errorf("message structs.structs.PlanetAttributes does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_PlanetAttributes) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.PlanetAttributes.planetaryShield":
+		x.PlanetaryShield = value.Uint()
+	case "structs.structs.PlanetAttributes.repairNetworkQuantity":
+		x.RepairNetworkQuantity = value.Uint()
+	case "structs.structs.PlanetAttributes.defensiveCannonQuantity":
+		x.DefensiveCannonQuantity = value.Uint()
+	case "structs.structs.PlanetAttributes.coordinatedGlobalShieldNetworkQuantity":
+		x.CoordinatedGlobalShieldNetworkQuantity = value.Uint()
+	case "structs.structs.PlanetAttributes.lowOrbitBallisticsInterceptorNetworkQuantity":
+		x.LowOrbitBallisticsInterceptorNetworkQuantity = value.Uint()
+	case "structs.structs.PlanetAttributes.advancedLowOrbitBallisticsInterceptorNetworkQuantity":
+		x.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity = value.Uint()
+	case "structs.structs.PlanetAttributes.lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator":
+		x.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator = value.Uint()
+	case "structs.structs.PlanetAttributes.lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator":
+		x.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator = value.Uint()
+	case "structs.structs.PlanetAttributes.orbitalJammingStationQuantity":
+		x.OrbitalJammingStationQuantity = value.Uint()
+	case "structs.structs.PlanetAttributes.advancedOrbitalJammingStationQuantity":
+		x.AdvancedOrbitalJammingStationQuantity = value.Uint()
+	case "structs.structs.PlanetAttributes.blockStartRaid":
+		x.BlockStartRaid = value.Uint()
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.PlanetAttributes"))
+		}
+		panic(fmt.Errorf("message structs.structs.PlanetAttributes does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_PlanetAttributes) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.PlanetAttributes.planetaryShield":
+		panic(fmt.Errorf("field planetaryShield of message structs.structs.PlanetAttributes is not mutable"))
+	case "structs.structs.PlanetAttributes.repairNetworkQuantity":
+		panic(fmt.Errorf("field repairNetworkQuantity of message structs.structs.PlanetAttributes is not mutable"))
+	case "structs.structs.PlanetAttributes.defensiveCannonQuantity":
+		panic(fmt.Errorf("field defensiveCannonQuantity of message structs.structs.PlanetAttributes is not mutable"))
+	case "structs.structs.PlanetAttributes.coordinatedGlobalShieldNetworkQuantity":
+		panic(fmt.Errorf("field coordinatedGlobalShieldNetworkQuantity of message structs.structs.PlanetAttributes is not mutable"))
+	case "structs.structs.PlanetAttributes.lowOrbitBallisticsInterceptorNetworkQuantity":
+		panic(fmt.Errorf("field lowOrbitBallisticsInterceptorNetworkQuantity of message structs.structs.PlanetAttributes is not mutable"))
+	case "structs.structs.PlanetAttributes.advancedLowOrbitBallisticsInterceptorNetworkQuantity":
+		panic(fmt.Errorf("field advancedLowOrbitBallisticsInterceptorNetworkQuantity of message structs.structs.PlanetAttributes is not mutable"))
+	case "structs.structs.PlanetAttributes.lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator":
+		panic(fmt.Errorf("field lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator of message structs.structs.PlanetAttributes is not mutable"))
+	case "structs.structs.PlanetAttributes.lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator":
+		panic(fmt.Errorf("field lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator of message structs.structs.PlanetAttributes is not mutable"))
+	case "structs.structs.PlanetAttributes.orbitalJammingStationQuantity":
+		panic(fmt.Errorf("field orbitalJammingStationQuantity of message structs.structs.PlanetAttributes is not mutable"))
+	case "structs.structs.PlanetAttributes.advancedOrbitalJammingStationQuantity":
+		panic(fmt.Errorf("field advancedOrbitalJammingStationQuantity of message structs.structs.PlanetAttributes is not mutable"))
+	case "structs.structs.PlanetAttributes.blockStartRaid":
+		panic(fmt.Errorf("field blockStartRaid of message structs.structs.PlanetAttributes is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.PlanetAttributes"))
+		}
+		panic(fmt.Errorf("message structs.structs.PlanetAttributes does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_PlanetAttributes) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.PlanetAttributes.planetaryShield":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.PlanetAttributes.repairNetworkQuantity":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.PlanetAttributes.defensiveCannonQuantity":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.PlanetAttributes.coordinatedGlobalShieldNetworkQuantity":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.PlanetAttributes.lowOrbitBallisticsInterceptorNetworkQuantity":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.PlanetAttributes.advancedLowOrbitBallisticsInterceptorNetworkQuantity":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.PlanetAttributes.lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.PlanetAttributes.lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.PlanetAttributes.orbitalJammingStationQuantity":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.PlanetAttributes.advancedOrbitalJammingStationQuantity":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.PlanetAttributes.blockStartRaid":
+		return protoreflect.ValueOfUint64(uint64(0))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.PlanetAttributes"))
+		}
+		panic(fmt.Errorf("message structs.structs.PlanetAttributes does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_PlanetAttributes) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.PlanetAttributes", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_PlanetAttributes) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_PlanetAttributes) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_PlanetAttributes) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_PlanetAttributes) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*PlanetAttributes)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.PlanetaryShield != 0 {
+			n += 1 + runtime.Sov(uint64(x.PlanetaryShield))
+		}
+		if x.RepairNetworkQuantity != 0 {
+			n += 1 + runtime.Sov(uint64(x.RepairNetworkQuantity))
+		}
+		if x.DefensiveCannonQuantity != 0 {
+			n += 1 + runtime.Sov(uint64(x.DefensiveCannonQuantity))
+		}
+		if x.CoordinatedGlobalShieldNetworkQuantity != 0 {
+			n += 1 + runtime.Sov(uint64(x.CoordinatedGlobalShieldNetworkQuantity))
+		}
+		if x.LowOrbitBallisticsInterceptorNetworkQuantity != 0 {
+			n += 1 + runtime.Sov(uint64(x.LowOrbitBallisticsInterceptorNetworkQuantity))
+		}
+		if x.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity != 0 {
+			n += 1 + runtime.Sov(uint64(x.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity))
+		}
+		if x.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator != 0 {
+			n += 1 + runtime.Sov(uint64(x.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator))
+		}
+		if x.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator != 0 {
+			n += 1 + runtime.Sov(uint64(x.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator))
+		}
+		if x.OrbitalJammingStationQuantity != 0 {
+			n += 1 + runtime.Sov(uint64(x.OrbitalJammingStationQuantity))
+		}
+		if x.AdvancedOrbitalJammingStationQuantity != 0 {
+			n += 1 + runtime.Sov(uint64(x.AdvancedOrbitalJammingStationQuantity))
+		}
+		if x.BlockStartRaid != 0 {
+			n += 1 + runtime.Sov(uint64(x.BlockStartRaid))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*PlanetAttributes)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.BlockStartRaid != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BlockStartRaid))
+			i--
+			dAtA[i] = 0x58
+		}
+		if x.AdvancedOrbitalJammingStationQuantity != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.AdvancedOrbitalJammingStationQuantity))
+			i--
+			dAtA[i] = 0x50
+		}
+		if x.OrbitalJammingStationQuantity != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.OrbitalJammingStationQuantity))
+			i--
+			dAtA[i] = 0x48
+		}
+		if x.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator))
+			i--
+			dAtA[i] = 0x40
+		}
+		if x.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator))
+			i--
+			dAtA[i] = 0x38
+		}
+		if x.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity))
+			i--
+			dAtA[i] = 0x30
+		}
+		if x.LowOrbitBallisticsInterceptorNetworkQuantity != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.LowOrbitBallisticsInterceptorNetworkQuantity))
+			i--
+			dAtA[i] = 0x28
+		}
+		if x.CoordinatedGlobalShieldNetworkQuantity != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.CoordinatedGlobalShieldNetworkQuantity))
+			i--
+			dAtA[i] = 0x20
+		}
+		if x.DefensiveCannonQuantity != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.DefensiveCannonQuantity))
+			i--
+			dAtA[i] = 0x18
+		}
+		if x.RepairNetworkQuantity != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.RepairNetworkQuantity))
+			i--
+			dAtA[i] = 0x10
+		}
+		if x.PlanetaryShield != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.PlanetaryShield))
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*PlanetAttributes)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: PlanetAttributes: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: PlanetAttributes: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlanetaryShield", wireType)
+				}
+				x.PlanetaryShield = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.PlanetaryShield |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field RepairNetworkQuantity", wireType)
+				}
+				x.RepairNetworkQuantity = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.RepairNetworkQuantity |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DefensiveCannonQuantity", wireType)
+				}
+				x.DefensiveCannonQuantity = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.DefensiveCannonQuantity |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 4:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CoordinatedGlobalShieldNetworkQuantity", wireType)
+				}
+				x.CoordinatedGlobalShieldNetworkQuantity = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.CoordinatedGlobalShieldNetworkQuantity |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 5:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field LowOrbitBallisticsInterceptorNetworkQuantity", wireType)
+				}
+				x.LowOrbitBallisticsInterceptorNetworkQuantity = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.LowOrbitBallisticsInterceptorNetworkQuantity |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 6:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AdvancedLowOrbitBallisticsInterceptorNetworkQuantity", wireType)
+				}
+				x.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 7:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator", wireType)
+				}
+				x.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 8:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator", wireType)
+				}
+				x.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 9:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OrbitalJammingStationQuantity", wireType)
+				}
+				x.OrbitalJammingStationQuantity = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.OrbitalJammingStationQuantity |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 10:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AdvancedOrbitalJammingStationQuantity", wireType)
+				}
+				x.AdvancedOrbitalJammingStationQuantity = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.AdvancedOrbitalJammingStationQuantity |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 11:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BlockStartRaid", wireType)
+				}
+				x.BlockStartRaid = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.BlockStartRaid |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 // Code generated by protoc-gen-go. DO NOT EDIT.
 // versions:
 // 	protoc-gen-go v1.27.0
@@ -2144,6 +3028,121 @@ func (x *PlanetAttributeRecord) GetValue() uint64 {
 	return 0
 }
 
+type PlanetAttributes struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	PlanetaryShield                                            uint64 `protobuf:"varint,1,opt,name=planetaryShield,proto3" json:"planetaryShield,omitempty"`
+	RepairNetworkQuantity                                      uint64 `protobuf:"varint,2,opt,name=repairNetworkQuantity,proto3" json:"repairNetworkQuantity,omitempty"`
+	DefensiveCannonQuantity                                    uint64 `protobuf:"varint,3,opt,name=defensiveCannonQuantity,proto3" json:"defensiveCannonQuantity,omitempty"`
+	CoordinatedGlobalShieldNetworkQuantity                     uint64 `protobuf:"varint,4,opt,name=coordinatedGlobalShieldNetworkQuantity,proto3" json:"coordinatedGlobalShieldNetworkQuantity,omitempty"`
+	LowOrbitBallisticsInterceptorNetworkQuantity               uint64 `protobuf:"varint,5,opt,name=lowOrbitBallisticsInterceptorNetworkQuantity,proto3" json:"lowOrbitBallisticsInterceptorNetworkQuantity,omitempty"`
+	AdvancedLowOrbitBallisticsInterceptorNetworkQuantity       uint64 `protobuf:"varint,6,opt,name=advancedLowOrbitBallisticsInterceptorNetworkQuantity,proto3" json:"advancedLowOrbitBallisticsInterceptorNetworkQuantity,omitempty"`
+	LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator   uint64 `protobuf:"varint,7,opt,name=lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator,proto3" json:"lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator,omitempty"`
+	LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator uint64 `protobuf:"varint,8,opt,name=lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator,proto3" json:"lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator,omitempty"`
+	OrbitalJammingStationQuantity                              uint64 `protobuf:"varint,9,opt,name=orbitalJammingStationQuantity,proto3" json:"orbitalJammingStationQuantity,omitempty"`
+	AdvancedOrbitalJammingStationQuantity                      uint64 `protobuf:"varint,10,opt,name=advancedOrbitalJammingStationQuantity,proto3" json:"advancedOrbitalJammingStationQuantity,omitempty"`
+	BlockStartRaid                                             uint64 `protobuf:"varint,11,opt,name=blockStartRaid,proto3" json:"blockStartRaid,omitempty"`
+}
+
+func (x *PlanetAttributes) Reset() {
+	*x = PlanetAttributes{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_planet_proto_msgTypes[2]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *PlanetAttributes) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PlanetAttributes) ProtoMessage() {}
+
+// Deprecated: Use PlanetAttributes.ProtoReflect.Descriptor instead.
+func (*PlanetAttributes) Descriptor() ([]byte, []int) {
+	return file_structs_structs_planet_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *PlanetAttributes) GetPlanetaryShield() uint64 {
+	if x != nil {
+		return x.PlanetaryShield
+	}
+	return 0
+}
+
+func (x *PlanetAttributes) GetRepairNetworkQuantity() uint64 {
+	if x != nil {
+		return x.RepairNetworkQuantity
+	}
+	return 0
+}
+
+func (x *PlanetAttributes) GetDefensiveCannonQuantity() uint64 {
+	if x != nil {
+		return x.DefensiveCannonQuantity
+	}
+	return 0
+}
+
+func (x *PlanetAttributes) GetCoordinatedGlobalShieldNetworkQuantity() uint64 {
+	if x != nil {
+		return x.CoordinatedGlobalShieldNetworkQuantity
+	}
+	return 0
+}
+
+func (x *PlanetAttributes) GetLowOrbitBallisticsInterceptorNetworkQuantity() uint64 {
+	if x != nil {
+		return x.LowOrbitBallisticsInterceptorNetworkQuantity
+	}
+	return 0
+}
+
+func (x *PlanetAttributes) GetAdvancedLowOrbitBallisticsInterceptorNetworkQuantity() uint64 {
+	if x != nil {
+		return x.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity
+	}
+	return 0
+}
+
+func (x *PlanetAttributes) GetLowOrbitBallisticsInterceptorNetworkSuccessRateNumerator() uint64 {
+	if x != nil {
+		return x.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator
+	}
+	return 0
+}
+
+func (x *PlanetAttributes) GetLowOrbitBallisticsInterceptorNetworkSuccessRateDenominator() uint64 {
+	if x != nil {
+		return x.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator
+	}
+	return 0
+}
+
+func (x *PlanetAttributes) GetOrbitalJammingStationQuantity() uint64 {
+	if x != nil {
+		return x.OrbitalJammingStationQuantity
+	}
+	return 0
+}
+
+func (x *PlanetAttributes) GetAdvancedOrbitalJammingStationQuantity() uint64 {
+	if x != nil {
+		return x.AdvancedOrbitalJammingStationQuantity
+	}
+	return 0
+}
+
+func (x *PlanetAttributes) GetBlockStartRaid() uint64 {
+	if x != nil {
+		return x.BlockStartRaid
+	}
+	return 0
+}
+
 var File_structs_structs_planet_proto protoreflect.FileDescriptor
 
 var file_structs_structs_planet_proto_rawDesc = []byte{
@@ -2186,18 +3185,76 @@ var file_structs_structs_planet_proto_rawDesc = []byte{
 	0x0a, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x18, 0x01, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64,
 	0x12, 0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b,
-	0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63,
-	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2,
-	0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d,
-	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x9c, 0x07, 0x0a, 0x10, 0x50, 0x6c, 0x61, 0x6e, 0x65,
+	0x74, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x12, 0x28, 0x0a, 0x0f, 0x70,
+	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x53, 0x68, 0x69, 0x65, 0x6c, 0x64, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x53,
+	0x68, 0x69, 0x65, 0x6c, 0x64, 0x12, 0x34, 0x0a, 0x15, 0x72, 0x65, 0x70, 0x61, 0x69, 0x72, 0x4e,
+	0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x51, 0x75, 0x61, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x18, 0x02,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x72, 0x65, 0x70, 0x61, 0x69, 0x72, 0x4e, 0x65, 0x74, 0x77,
+	0x6f, 0x72, 0x6b, 0x51, 0x75, 0x61, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x12, 0x38, 0x0a, 0x17, 0x64,
+	0x65, 0x66, 0x65, 0x6e, 0x73, 0x69, 0x76, 0x65, 0x43, 0x61, 0x6e, 0x6e, 0x6f, 0x6e, 0x51, 0x75,
+	0x61, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x17, 0x64, 0x65,
+	0x66, 0x65, 0x6e, 0x73, 0x69, 0x76, 0x65, 0x43, 0x61, 0x6e, 0x6e, 0x6f, 0x6e, 0x51, 0x75, 0x61,
+	0x6e, 0x74, 0x69, 0x74, 0x79, 0x12, 0x56, 0x0a, 0x26, 0x63, 0x6f, 0x6f, 0x72, 0x64, 0x69, 0x6e,
+	0x61, 0x74, 0x65, 0x64, 0x47, 0x6c, 0x6f, 0x62, 0x61, 0x6c, 0x53, 0x68, 0x69, 0x65, 0x6c, 0x64,
+	0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x51, 0x75, 0x61, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x18,
+	0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x26, 0x63, 0x6f, 0x6f, 0x72, 0x64, 0x69, 0x6e, 0x61, 0x74,
+	0x65, 0x64, 0x47, 0x6c, 0x6f, 0x62, 0x61, 0x6c, 0x53, 0x68, 0x69, 0x65, 0x6c, 0x64, 0x4e, 0x65,
+	0x74, 0x77, 0x6f, 0x72, 0x6b, 0x51, 0x75, 0x61, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x12, 0x62, 0x0a,
+	0x2c, 0x6c, 0x6f, 0x77, 0x4f, 0x72, 0x62, 0x69, 0x74, 0x42, 0x61, 0x6c, 0x6c, 0x69, 0x73, 0x74,
+	0x69, 0x63, 0x73, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x63, 0x65, 0x70, 0x74, 0x6f, 0x72, 0x4e, 0x65,
+	0x74, 0x77, 0x6f, 0x72, 0x6b, 0x51, 0x75, 0x61, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x18, 0x05, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x2c, 0x6c, 0x6f, 0x77, 0x4f, 0x72, 0x62, 0x69, 0x74, 0x42, 0x61, 0x6c,
+	0x6c, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x63, 0x65, 0x70, 0x74,
+	0x6f, 0x72, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x51, 0x75, 0x61, 0x6e, 0x74, 0x69, 0x74,
+	0x79, 0x12, 0x72, 0x0a, 0x34, 0x61, 0x64, 0x76, 0x61, 0x6e, 0x63, 0x65, 0x64, 0x4c, 0x6f, 0x77,
+	0x4f, 0x72, 0x62, 0x69, 0x74, 0x42, 0x61, 0x6c, 0x6c, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x49,
+	0x6e, 0x74, 0x65, 0x72, 0x63, 0x65, 0x70, 0x74, 0x6f, 0x72, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72,
+	0x6b, 0x51, 0x75, 0x61, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x18, 0x06, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x34, 0x61, 0x64, 0x76, 0x61, 0x6e, 0x63, 0x65, 0x64, 0x4c, 0x6f, 0x77, 0x4f, 0x72, 0x62, 0x69,
+	0x74, 0x42, 0x61, 0x6c, 0x6c, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x49, 0x6e, 0x74, 0x65, 0x72,
+	0x63, 0x65, 0x70, 0x74, 0x6f, 0x72, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x51, 0x75, 0x61,
+	0x6e, 0x74, 0x69, 0x74, 0x79, 0x12, 0x7a, 0x0a, 0x38, 0x6c, 0x6f, 0x77, 0x4f, 0x72, 0x62, 0x69,
+	0x74, 0x42, 0x61, 0x6c, 0x6c, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x49, 0x6e, 0x74, 0x65, 0x72,
+	0x63, 0x65, 0x70, 0x74, 0x6f, 0x72, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x53, 0x75, 0x63,
+	0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f,
+	0x72, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x38, 0x6c, 0x6f, 0x77, 0x4f, 0x72, 0x62, 0x69,
+	0x74, 0x42, 0x61, 0x6c, 0x6c, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x49, 0x6e, 0x74, 0x65, 0x72,
+	0x63, 0x65, 0x70, 0x74, 0x6f, 0x72, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x53, 0x75, 0x63,
+	0x63, 0x65, 0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x4e, 0x75, 0x6d, 0x65, 0x72, 0x61, 0x74, 0x6f,
+	0x72, 0x12, 0x7e, 0x0a, 0x3a, 0x6c, 0x6f, 0x77, 0x4f, 0x72, 0x62, 0x69, 0x74, 0x42, 0x61, 0x6c,
+	0x6c, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x63, 0x65, 0x70, 0x74,
+	0x6f, 0x72, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73,
+	0x52, 0x61, 0x74, 0x65, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x69, 0x6e, 0x61, 0x74, 0x6f, 0x72, 0x18,
+	0x08, 0x20, 0x01, 0x28, 0x04, 0x52, 0x3a, 0x6c, 0x6f, 0x77, 0x4f, 0x72, 0x62, 0x69, 0x74, 0x42,
+	0x61, 0x6c, 0x6c, 0x69, 0x73, 0x74, 0x69, 0x63, 0x73, 0x49, 0x6e, 0x74, 0x65, 0x72, 0x63, 0x65,
+	0x70, 0x74, 0x6f, 0x72, 0x4e, 0x65, 0x74, 0x77, 0x6f, 0x72, 0x6b, 0x53, 0x75, 0x63, 0x63, 0x65,
+	0x73, 0x73, 0x52, 0x61, 0x74, 0x65, 0x44, 0x65, 0x6e, 0x6f, 0x6d, 0x69, 0x6e, 0x61, 0x74, 0x6f,
+	0x72, 0x12, 0x44, 0x0a, 0x1d, 0x6f, 0x72, 0x62, 0x69, 0x74, 0x61, 0x6c, 0x4a, 0x61, 0x6d, 0x6d,
+	0x69, 0x6e, 0x67, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x51, 0x75, 0x61, 0x6e, 0x74, 0x69,
+	0x74, 0x79, 0x18, 0x09, 0x20, 0x01, 0x28, 0x04, 0x52, 0x1d, 0x6f, 0x72, 0x62, 0x69, 0x74, 0x61,
+	0x6c, 0x4a, 0x61, 0x6d, 0x6d, 0x69, 0x6e, 0x67, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x51,
+	0x75, 0x61, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x12, 0x54, 0x0a, 0x25, 0x61, 0x64, 0x76, 0x61, 0x6e,
+	0x63, 0x65, 0x64, 0x4f, 0x72, 0x62, 0x69, 0x74, 0x61, 0x6c, 0x4a, 0x61, 0x6d, 0x6d, 0x69, 0x6e,
+	0x67, 0x53, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x51, 0x75, 0x61, 0x6e, 0x74, 0x69, 0x74, 0x79,
+	0x18, 0x0a, 0x20, 0x01, 0x28, 0x04, 0x52, 0x25, 0x61, 0x64, 0x76, 0x61, 0x6e, 0x63, 0x65, 0x64,
+	0x4f, 0x72, 0x62, 0x69, 0x74, 0x61, 0x6c, 0x4a, 0x61, 0x6d, 0x6d, 0x69, 0x6e, 0x67, 0x53, 0x74,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x51, 0x75, 0x61, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x12, 0x26, 0x0a,
+	0x0e, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74, 0x52, 0x61, 0x69, 0x64, 0x18,
+	0x0b, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0e, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72,
+	0x74, 0x52, 0x61, 0x69, 0x64, 0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x50,
+	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02,
+	0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65,
+	0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -2212,14 +3269,15 @@ func file_structs_structs_planet_proto_rawDescGZIP() []byte {
 	return file_structs_structs_planet_proto_rawDescData
 }
 
-var file_structs_structs_planet_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_structs_structs_planet_proto_msgTypes = make([]protoimpl.MessageInfo, 3)
 var file_structs_structs_planet_proto_goTypes = []interface{}{
 	(*Planet)(nil),                // 0: structs.structs.Planet
 	(*PlanetAttributeRecord)(nil), // 1: structs.structs.PlanetAttributeRecord
-	(PlanetStatus)(0),             // 2: structs.structs.planetStatus
+	(*PlanetAttributes)(nil),      // 2: structs.structs.PlanetAttributes
+	(PlanetStatus)(0),             // 3: structs.structs.planetStatus
 }
 var file_structs_structs_planet_proto_depIdxs = []int32{
-	2, // 0: structs.structs.Planet.status:type_name -> structs.structs.planetStatus
+	3, // 0: structs.structs.Planet.status:type_name -> structs.structs.planetStatus
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name
@@ -2258,6 +3316,18 @@ func file_structs_structs_planet_proto_init() {
 				return nil
 			}
 		}
+		file_structs_structs_planet_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*PlanetAttributes); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -2265,7 +3335,7 @@ func file_structs_structs_planet_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_structs_structs_planet_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   3,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

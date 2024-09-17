@@ -14,14 +14,10 @@ import (
 )
 
 var (
-	md_Substation                    protoreflect.MessageDescriptor
-	fd_Substation_id                 protoreflect.FieldDescriptor
-	fd_Substation_owner              protoreflect.FieldDescriptor
-	fd_Substation_creator            protoreflect.FieldDescriptor
-	fd_Substation_load               protoreflect.FieldDescriptor
-	fd_Substation_capacity           protoreflect.FieldDescriptor
-	fd_Substation_connectionCount    protoreflect.FieldDescriptor
-	fd_Substation_connectionCapacity protoreflect.FieldDescriptor
+	md_Substation         protoreflect.MessageDescriptor
+	fd_Substation_id      protoreflect.FieldDescriptor
+	fd_Substation_owner   protoreflect.FieldDescriptor
+	fd_Substation_creator protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -30,10 +26,6 @@ func init() {
 	fd_Substation_id = md_Substation.Fields().ByName("id")
 	fd_Substation_owner = md_Substation.Fields().ByName("owner")
 	fd_Substation_creator = md_Substation.Fields().ByName("creator")
-	fd_Substation_load = md_Substation.Fields().ByName("load")
-	fd_Substation_capacity = md_Substation.Fields().ByName("capacity")
-	fd_Substation_connectionCount = md_Substation.Fields().ByName("connectionCount")
-	fd_Substation_connectionCapacity = md_Substation.Fields().ByName("connectionCapacity")
 }
 
 var _ protoreflect.Message = (*fastReflection_Substation)(nil)
@@ -119,30 +111,6 @@ func (x *fastReflection_Substation) Range(f func(protoreflect.FieldDescriptor, p
 			return
 		}
 	}
-	if x.Load != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.Load)
-		if !f(fd_Substation_load, value) {
-			return
-		}
-	}
-	if x.Capacity != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.Capacity)
-		if !f(fd_Substation_capacity, value) {
-			return
-		}
-	}
-	if x.ConnectionCount != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.ConnectionCount)
-		if !f(fd_Substation_connectionCount, value) {
-			return
-		}
-	}
-	if x.ConnectionCapacity != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.ConnectionCapacity)
-		if !f(fd_Substation_connectionCapacity, value) {
-			return
-		}
-	}
 }
 
 // Has reports whether a field is populated.
@@ -164,14 +132,6 @@ func (x *fastReflection_Substation) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.Owner != ""
 	case "structs.structs.Substation.creator":
 		return x.Creator != ""
-	case "structs.structs.Substation.load":
-		return x.Load != uint64(0)
-	case "structs.structs.Substation.capacity":
-		return x.Capacity != uint64(0)
-	case "structs.structs.Substation.connectionCount":
-		return x.ConnectionCount != uint64(0)
-	case "structs.structs.Substation.connectionCapacity":
-		return x.ConnectionCapacity != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Substation"))
@@ -194,14 +154,6 @@ func (x *fastReflection_Substation) Clear(fd protoreflect.FieldDescriptor) {
 		x.Owner = ""
 	case "structs.structs.Substation.creator":
 		x.Creator = ""
-	case "structs.structs.Substation.load":
-		x.Load = uint64(0)
-	case "structs.structs.Substation.capacity":
-		x.Capacity = uint64(0)
-	case "structs.structs.Substation.connectionCount":
-		x.ConnectionCount = uint64(0)
-	case "structs.structs.Substation.connectionCapacity":
-		x.ConnectionCapacity = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Substation"))
@@ -227,18 +179,6 @@ func (x *fastReflection_Substation) Get(descriptor protoreflect.FieldDescriptor)
 	case "structs.structs.Substation.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.Substation.load":
-		value := x.Load
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Substation.capacity":
-		value := x.Capacity
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Substation.connectionCount":
-		value := x.ConnectionCount
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Substation.connectionCapacity":
-		value := x.ConnectionCapacity
-		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Substation"))
@@ -265,14 +205,6 @@ func (x *fastReflection_Substation) Set(fd protoreflect.FieldDescriptor, value p
 		x.Owner = value.Interface().(string)
 	case "structs.structs.Substation.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.Substation.load":
-		x.Load = value.Uint()
-	case "structs.structs.Substation.capacity":
-		x.Capacity = value.Uint()
-	case "structs.structs.Substation.connectionCount":
-		x.ConnectionCount = value.Uint()
-	case "structs.structs.Substation.connectionCapacity":
-		x.ConnectionCapacity = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Substation"))
@@ -299,14 +231,6 @@ func (x *fastReflection_Substation) Mutable(fd protoreflect.FieldDescriptor) pro
 		panic(fmt.Errorf("field owner of message structs.structs.Substation is not mutable"))
 	case "structs.structs.Substation.creator":
 		panic(fmt.Errorf("field creator of message structs.structs.Substation is not mutable"))
-	case "structs.structs.Substation.load":
-		panic(fmt.Errorf("field load of message structs.structs.Substation is not mutable"))
-	case "structs.structs.Substation.capacity":
-		panic(fmt.Errorf("field capacity of message structs.structs.Substation is not mutable"))
-	case "structs.structs.Substation.connectionCount":
-		panic(fmt.Errorf("field connectionCount of message structs.structs.Substation is not mutable"))
-	case "structs.structs.Substation.connectionCapacity":
-		panic(fmt.Errorf("field connectionCapacity of message structs.structs.Substation is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Substation"))
@@ -326,14 +250,6 @@ func (x *fastReflection_Substation) NewField(fd protoreflect.FieldDescriptor) pr
 		return protoreflect.ValueOfString("")
 	case "structs.structs.Substation.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.Substation.load":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Substation.capacity":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Substation.connectionCount":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Substation.connectionCapacity":
-		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Substation"))
@@ -415,18 +331,6 @@ func (x *fastReflection_Substation) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if x.Load != 0 {
-			n += 1 + runtime.Sov(uint64(x.Load))
-		}
-		if x.Capacity != 0 {
-			n += 1 + runtime.Sov(uint64(x.Capacity))
-		}
-		if x.ConnectionCount != 0 {
-			n += 1 + runtime.Sov(uint64(x.ConnectionCount))
-		}
-		if x.ConnectionCapacity != 0 {
-			n += 1 + runtime.Sov(uint64(x.ConnectionCapacity))
-		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -455,26 +359,6 @@ func (x *fastReflection_Substation) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.ConnectionCapacity != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.ConnectionCapacity))
-			i--
-			dAtA[i] = 0x38
-		}
-		if x.ConnectionCount != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.ConnectionCount))
-			i--
-			dAtA[i] = 0x30
-		}
-		if x.Capacity != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.Capacity))
-			i--
-			dAtA[i] = 0x28
-		}
-		if x.Load != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.Load))
-			i--
-			dAtA[i] = 0x20
 		}
 		if len(x.Creator) > 0 {
 			i -= len(x.Creator)
@@ -642,82 +526,6 @@ func (x *fastReflection_Substation) ProtoMethods() *protoiface.Methods {
 				}
 				x.Creator = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
-			case 4:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Load", wireType)
-				}
-				x.Load = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.Load |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 5:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Capacity", wireType)
-				}
-				x.Capacity = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.Capacity |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 6:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ConnectionCount", wireType)
-				}
-				x.ConnectionCount = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.ConnectionCount |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 7:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ConnectionCapacity", wireType)
-				}
-				x.ConnectionCapacity = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.ConnectionCapacity |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -771,13 +579,9 @@ type Substation struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id                 string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Owner              string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
-	Creator            string `protobuf:"bytes,3,opt,name=creator,proto3" json:"creator,omitempty"`
-	Load               uint64 `protobuf:"varint,4,opt,name=load,proto3" json:"load,omitempty"`
-	Capacity           uint64 `protobuf:"varint,5,opt,name=capacity,proto3" json:"capacity,omitempty"`
-	ConnectionCount    uint64 `protobuf:"varint,6,opt,name=connectionCount,proto3" json:"connectionCount,omitempty"`
-	ConnectionCapacity uint64 `protobuf:"varint,7,opt,name=connectionCapacity,proto3" json:"connectionCapacity,omitempty"`
+	Id      string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Owner   string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
+	Creator string `protobuf:"bytes,3,opt,name=creator,proto3" json:"creator,omitempty"`
 }
 
 func (x *Substation) Reset() {
@@ -821,34 +625,6 @@ func (x *Substation) GetCreator() string {
 	return ""
 }
 
-func (x *Substation) GetLoad() uint64 {
-	if x != nil {
-		return x.Load
-	}
-	return 0
-}
-
-func (x *Substation) GetCapacity() uint64 {
-	if x != nil {
-		return x.Capacity
-	}
-	return 0
-}
-
-func (x *Substation) GetConnectionCount() uint64 {
-	if x != nil {
-		return x.ConnectionCount
-	}
-	return 0
-}
-
-func (x *Substation) GetConnectionCapacity() uint64 {
-	if x != nil {
-		return x.ConnectionCapacity
-	}
-	return 0
-}
-
 var File_structs_structs_substation_proto protoreflect.FileDescriptor
 
 var file_structs_structs_substation_proto_rawDesc = []byte{
@@ -858,32 +634,23 @@ var file_structs_structs_substation_proto_rawDesc = []byte{
 	0x63, 0x74, 0x73, 0x1a, 0x14, 0x67, 0x6f, 0x67, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67,
 	0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x20, 0x73, 0x74, 0x72, 0x75, 0x63,
 	0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x61, 0x6c, 0x6c, 0x6f, 0x63,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xd6, 0x01, 0x0a, 0x0a,
-	0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x6f, 0x77,
-	0x6e, 0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72,
-	0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x12, 0x0a, 0x04, 0x6c, 0x6f,
-	0x61, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x04, 0x6c, 0x6f, 0x61, 0x64, 0x12, 0x1a,
-	0x0a, 0x08, 0x63, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x18, 0x05, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x08, 0x63, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x12, 0x28, 0x0a, 0x0f, 0x63, 0x6f,
-	0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x06, 0x20,
-	0x01, 0x28, 0x04, 0x52, 0x0f, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43,
-	0x6f, 0x75, 0x6e, 0x74, 0x12, 0x2e, 0x0a, 0x12, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69,
-	0x6f, 0x6e, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x12, 0x63, 0x6f, 0x6e, 0x6e, 0x65, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x61, 0x70, 0x61,
-	0x63, 0x69, 0x74, 0x79, 0x42, 0xa5, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0f, 0x53, 0x75,
-	0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a,
-	0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70,
-	0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50,
-	0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x4c, 0x0a, 0x0a, 0x53,
+	0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x14, 0x0a, 0x05, 0x6f, 0x77, 0x6e,
+	0x65, 0x72, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x12,
+	0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x42, 0xa5, 0x01, 0x0a, 0x13, 0x63, 0x6f,
+	0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x42, 0x0f, 0x53, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x72, 0x6f,
+	0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e,
+	0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02,
+	0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02,
+	0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
