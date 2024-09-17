@@ -118,5 +118,7 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 
     k.UpsertInfusion(ctx, types.ObjectType_struct, structure.Id, callingPlayer.PrimaryAddress, callingPlayer, newInfusionAmount, math.LegacyZeroDec(), structType.GeneratingRate )
 
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventAlphaInfuse{&types.EventAlphaInfuseDetail{PlayerId: callingPlayer.Id, PrimaryAddress: callingPlayer.PrimaryAddress, Amount: infusionAmount[0].Amount.Uint64()}})
+
 	return &types.MsgStructGeneratorStatusResponse{}, nil
 }

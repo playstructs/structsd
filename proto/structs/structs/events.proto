@@ -59,6 +59,14 @@ message EventAddressActivity { AddressActivity addressActivity = 1; }
 
 message EventGuildMembershipApplication { GuildMembershipApplication guildMembershipApplication = 1; }
 
+message EventAlphaRefine { EventAlphaRefineDetail eventAlphaRefineDetail = 1;}
+message EventAlphaRefineDetail { string playerId = 1; string primaryAddress = 2; uint64 amount = 3;}
+
+message EventAlphaInfuse { EventAlphaInfuseDetail eventAlphaInfuseDetail = 1;}
+message EventAlphaInfuseDetail { string playerId = 1; string primaryAddress = 2; uint64 amount = 3;}
+
+message EventAlphaDefuse { EventAlphaDefuseDetail eventAlphaDefuseDetail = 1;}
+message EventAlphaDefuseDetail { string primaryAddress = 1; uint64 amount = 2;}
 
 message EventAttack { EventAttackDetail eventAttackDetail = 1; }
 

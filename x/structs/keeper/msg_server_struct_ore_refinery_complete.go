@@ -63,6 +63,7 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
     structure.GetOwner().Commit()
     structure.GetPlanet().Commit()
 
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventAlphaRefine{&types.EventAlphaRefineDetail{PlayerId: structure.GetOwnerId(), PrimaryAddress: structure.GetOwner().GetPrimaryAddress(), Amount: 1}})
 
 	return &types.MsgStructOreRefineryStatusResponse{Struct: structure.GetStruct()}, nil
 }

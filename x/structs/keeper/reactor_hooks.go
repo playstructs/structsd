@@ -155,5 +155,9 @@ func (k Keeper) ReactorRemoveInfusion(ctx context.Context, unbondingId uint64) {
 
         unbondingInfusion.Defusing = amount
         k.SetInfusion(ctx, unbondingInfusion)
+
+        uctx := sdk.UnwrapSDKContext(ctx)
+        _ = uctx.EventManager().EmitTypedEvent(&types.EventAlphaInfuse{&types.EventAlphaInfuseDetail{PrimaryAddress: unbondingDelegation.DelegatorAddress, Amount: amount.Uint64()}})
+
     }
 }
