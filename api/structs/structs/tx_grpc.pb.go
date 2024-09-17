@@ -23,7 +23,9 @@ const (
 	Msg_AddressRegister_FullMethodName                               = "/structs.structs.Msg/AddressRegister"
 	Msg_AddressRevoke_FullMethodName                                 = "/structs.structs.Msg/AddressRevoke"
 	Msg_AllocationCreate_FullMethodName                              = "/structs.structs.Msg/AllocationCreate"
+	Msg_AllocationDelete_FullMethodName                              = "/structs.structs.Msg/AllocationDelete"
 	Msg_AllocationUpdate_FullMethodName                              = "/structs.structs.Msg/AllocationUpdate"
+	Msg_AllocationTransfer_FullMethodName                            = "/structs.structs.Msg/AllocationTransfer"
 	Msg_FleetMove_FullMethodName                                     = "/structs.structs.Msg/FleetMove"
 	Msg_GuildCreate_FullMethodName                                   = "/structs.structs.Msg/GuildCreate"
 	Msg_GuildUpdateOwnerId_FullMethodName                            = "/structs.structs.Msg/GuildUpdateOwnerId"
@@ -82,7 +84,9 @@ type MsgClient interface {
 	AddressRegister(ctx context.Context, in *MsgAddressRegister, opts ...grpc.CallOption) (*MsgAddressRegisterResponse, error)
 	AddressRevoke(ctx context.Context, in *MsgAddressRevoke, opts ...grpc.CallOption) (*MsgAddressRevokeResponse, error)
 	AllocationCreate(ctx context.Context, in *MsgAllocationCreate, opts ...grpc.CallOption) (*MsgAllocationCreateResponse, error)
+	AllocationDelete(ctx context.Context, in *MsgAllocationDelete, opts ...grpc.CallOption) (*MsgAllocationDeleteResponse, error)
 	AllocationUpdate(ctx context.Context, in *MsgAllocationUpdate, opts ...grpc.CallOption) (*MsgAllocationUpdateResponse, error)
+	AllocationTransfer(ctx context.Context, in *MsgAllocationTransfer, opts ...grpc.CallOption) (*MsgAllocationTransferResponse, error)
 	FleetMove(ctx context.Context, in *MsgFleetMove, opts ...grpc.CallOption) (*MsgFleetMoveResponse, error)
 	GuildCreate(ctx context.Context, in *MsgGuildCreate, opts ...grpc.CallOption) (*MsgGuildCreateResponse, error)
 	GuildUpdateOwnerId(ctx context.Context, in *MsgGuildUpdateOwnerId, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
@@ -175,9 +179,27 @@ func (c *msgClient) AllocationCreate(ctx context.Context, in *MsgAllocationCreat
 	return out, nil
 }
 
+func (c *msgClient) AllocationDelete(ctx context.Context, in *MsgAllocationDelete, opts ...grpc.CallOption) (*MsgAllocationDeleteResponse, error) {
+	out := new(MsgAllocationDeleteResponse)
+	err := c.cc.Invoke(ctx, Msg_AllocationDelete_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) AllocationUpdate(ctx context.Context, in *MsgAllocationUpdate, opts ...grpc.CallOption) (*MsgAllocationUpdateResponse, error) {
 	out := new(MsgAllocationUpdateResponse)
 	err := c.cc.Invoke(ctx, Msg_AllocationUpdate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) AllocationTransfer(ctx context.Context, in *MsgAllocationTransfer, opts ...grpc.CallOption) (*MsgAllocationTransferResponse, error) {
+	out := new(MsgAllocationTransferResponse)
+	err := c.cc.Invoke(ctx, Msg_AllocationTransfer_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -608,7 +630,9 @@ type MsgServer interface {
 	AddressRegister(context.Context, *MsgAddressRegister) (*MsgAddressRegisterResponse, error)
 	AddressRevoke(context.Context, *MsgAddressRevoke) (*MsgAddressRevokeResponse, error)
 	AllocationCreate(context.Context, *MsgAllocationCreate) (*MsgAllocationCreateResponse, error)
+	AllocationDelete(context.Context, *MsgAllocationDelete) (*MsgAllocationDeleteResponse, error)
 	AllocationUpdate(context.Context, *MsgAllocationUpdate) (*MsgAllocationUpdateResponse, error)
+	AllocationTransfer(context.Context, *MsgAllocationTransfer) (*MsgAllocationTransferResponse, error)
 	FleetMove(context.Context, *MsgFleetMove) (*MsgFleetMoveResponse, error)
 	GuildCreate(context.Context, *MsgGuildCreate) (*MsgGuildCreateResponse, error)
 	GuildUpdateOwnerId(context.Context, *MsgGuildUpdateOwnerId) (*MsgGuildUpdateResponse, error)
@@ -674,8 +698,14 @@ func (UnimplementedMsgServer) AddressRevoke(context.Context, *MsgAddressRevoke) 
 func (UnimplementedMsgServer) AllocationCreate(context.Context, *MsgAllocationCreate) (*MsgAllocationCreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllocationCreate not implemented")
 }
+func (UnimplementedMsgServer) AllocationDelete(context.Context, *MsgAllocationDelete) (*MsgAllocationDeleteResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllocationDelete not implemented")
+}
 func (UnimplementedMsgServer) AllocationUpdate(context.Context, *MsgAllocationUpdate) (*MsgAllocationUpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllocationUpdate not implemented")
+}
+func (UnimplementedMsgServer) AllocationTransfer(context.Context, *MsgAllocationTransfer) (*MsgAllocationTransferResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllocationTransfer not implemented")
 }
 func (UnimplementedMsgServer) FleetMove(context.Context, *MsgFleetMove) (*MsgFleetMoveResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FleetMove not implemented")
@@ -900,6 +930,24 @@ func _Msg_AllocationCreate_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_AllocationDelete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAllocationDelete)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).AllocationDelete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_AllocationDelete_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).AllocationDelete(ctx, req.(*MsgAllocationDelete))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_AllocationUpdate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgAllocationUpdate)
 	if err := dec(in); err != nil {
@@ -914,6 +962,24 @@ func _Msg_AllocationUpdate_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).AllocationUpdate(ctx, req.(*MsgAllocationUpdate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_AllocationTransfer_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAllocationTransfer)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).AllocationTransfer(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_AllocationTransfer_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).AllocationTransfer(ctx, req.(*MsgAllocationTransfer))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1770,8 +1836,16 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_AllocationCreate_Handler,
 		},
 		{
+			MethodName: "AllocationDelete",
+			Handler:    _Msg_AllocationDelete_Handler,
+		},
+		{
 			MethodName: "AllocationUpdate",
 			Handler:    _Msg_AllocationUpdate_Handler,
+		},
+		{
+			MethodName: "AllocationTransfer",
+			Handler:    _Msg_AllocationTransfer_Handler,
 		},
 		{
 			MethodName: "FleetMove",

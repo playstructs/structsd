@@ -28,7 +28,9 @@ service Msg {
   rpc AddressRevoke                  (MsgAddressRevoke                 ) returns (MsgAddressRevokeResponse );
 
   rpc AllocationCreate               (MsgAllocationCreate              ) returns (MsgAllocationCreateResponse );
+  rpc AllocationDelete               (MsgAllocationDelete              ) returns (MsgAllocationDeleteResponse );
   rpc AllocationUpdate               (MsgAllocationUpdate              ) returns (MsgAllocationUpdateResponse );
+  rpc AllocationTransfer             (MsgAllocationTransfer            ) returns (MsgAllocationTransferResponse );
 
   rpc FleetMove                                     (MsgFleetMove                                     ) returns (MsgFleetMoveResponse );
 
@@ -159,6 +161,18 @@ message MsgAllocationCreateResponse {
   string allocationId = 1;
 }
 
+message MsgAllocationDelete {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator       = 1;
+  string allocationId  = 2;
+}
+
+message MsgAllocationDeleteResponse {
+  string allocationId = 1;
+}
+
+
 message MsgAllocationUpdate {
   option (cosmos.msg.v1.signer) = "creator";
 
@@ -170,6 +184,19 @@ message MsgAllocationUpdate {
 message MsgAllocationUpdateResponse {
   string allocationId = 1;
 }
+
+message MsgAllocationTransfer {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator       = 1;
+  string allocationId  = 2;
+  string controller    = 3;
+}
+
+message MsgAllocationTransferResponse {
+  string allocationId = 1;
+}
+
 
 message MsgFleetMove {
   option (cosmos.msg.v1.signer) = "creator";
