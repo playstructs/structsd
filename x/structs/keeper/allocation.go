@@ -95,29 +95,29 @@ func (k Keeper) AppendAllocation(
 
 // SetAllocation set a specific allocation in the store
 // Update the grid accordingly for both sources and destinations
-func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation, newPower uint64) (types.Allocation, error){
+func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation, newPower uint64) (types.Allocation, uint64, error){
 
 	previousAllocation, previousAllocationFound := k.GetAllocation(ctx, allocation.Id)
 	if (!previousAllocationFound) {
 	    // This should be an append, not a set.
-	    return allocation, sdkerrors.Wrapf(types.ErrAllocationSet, "Trying to set an allocation that doesn't exist yet. Should have been an append?")
+	    return allocation, newPower, sdkerrors.Wrapf(types.ErrAllocationSet, "Trying to set an allocation that doesn't exist yet. Should have been an append?")
 	}
 
     previousPower := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocation.Id))
 
 	if (previousAllocation.SourceObjectId != allocation.SourceObjectId) {
 	    // Should never change the Source of an Allocation
-	    return allocation, sdkerrors.Wrapf(types.ErrAllocationSet, "Source Object (%s vs %s) should never change during an allocation update", previousAllocation.SourceObjectId, allocation.SourceObjectId)
+	    return allocation, newPower, sdkerrors.Wrapf(types.ErrAllocationSet, "Source Object (%s vs %s) should never change during an allocation update", previousAllocation.SourceObjectId, allocation.SourceObjectId)
 	}
 
 	if (previousAllocation.Index != allocation.Index) {
 	    // Should never change the SourceId of an Allocation
-	    return allocation, sdkerrors.Wrapf(types.ErrAllocationSet, "Allocation Index (%d vs %d) should never change during an allocation update", previousAllocation.Index, allocation.Index)
+	    return allocation, newPower, sdkerrors.Wrapf(types.ErrAllocationSet, "Allocation Index (%d vs %d) should never change during an allocation update", previousAllocation.Index, allocation.Index)
 	}
 
     if (previousAllocation.Type != allocation.Type) {
         // Allocation Type should never change
-	    return allocation, sdkerrors.Wrapf(types.ErrAllocationSet, "Allocation Type (%d vs %d) should never change during an allocation update", previousAllocation.Type, allocation.Type)
+	    return allocation, newPower, sdkerrors.Wrapf(types.ErrAllocationSet, "Allocation Type (%d vs %d) should never change during an allocation update", previousAllocation.Type, allocation.Type)
     }
 
 
@@ -201,7 +201,7 @@ func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation, 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAllocation{Allocation: &allocation})
 
-    return allocation, nil
+    return allocation, newPower,  nil
 
 }
 
