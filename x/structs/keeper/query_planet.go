@@ -88,3 +88,15 @@ func (k Keeper) PlanetAllByPlayer(goCtx context.Context, req *types.QueryAllPlan
 
 	return &types.QueryAllPlanetResponse{Planet: planets, Pagination: pageRes}, nil
 }
+
+
+func (k Keeper) PlanetAttribute(goCtx context.Context, req *types.QueryGetPlanetAttributeRequest) (*types.QueryGetPlanetAttributeResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	ctx := sdk.UnwrapSDKContext(goCtx)
+	planetAttribute := k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_enum[req.AttributeType], req.PlanetId))
+
+	return &types.QueryGetPlanetAttributeResponse{Attribute: planetAttribute}, nil
+}

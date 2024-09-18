@@ -21429,8 +21429,6 @@ paths:
                 type: string
               nonce:
                 type: string
-              activate:
-                type: boolean
       tags:
         - Msg
   /structs.structs.Msg/StructBuildInitiate:
@@ -25201,6 +25199,47 @@ paths:
                   additionalProperties: {}
       parameters:
         - name: id
+          in: path
+          required: true
+          type: string
+      tags:
+        - Query
+  /structs/planet_attribute/{planetId}/{attributeType}:
+    get:
+      operationId: StructsStructsQuery_PlanetAttribute
+      responses:
+        '200':
+          description: A successful response.
+          schema:
+            type: object
+            properties:
+              attribute:
+                type: string
+                format: uint64
+        default:
+          description: An unexpected error response.
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+              message:
+                type: string
+              details:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    '@type':
+                      type: string
+                  additionalProperties: {}
+      parameters:
+        - name: planetId
+          in: path
+          required: true
+          type: string
+        - name: attributeType
           in: path
           required: true
           type: string
@@ -35738,8 +35777,6 @@ definitions:
         type: string
       nonce:
         type: string
-      activate:
-        type: boolean
   structs.structs.MsgStructBuildInitiate:
     type: object
     properties:
@@ -38038,6 +38075,12 @@ definitions:
             type: string
             format: uint64
     title: Generic Responses for Permissions
+  structs.structs.QueryGetPlanetAttributeResponse:
+    type: object
+    properties:
+      attribute:
+        type: string
+        format: uint64
   structs.structs.QueryGetPlanetResponse:
     type: object
     properties:

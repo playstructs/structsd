@@ -14,6 +14,11 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 			EnhanceCustomCommand: true, // only required if you want to use the custom command
 			RpcCommandOptions: []*autocliv1.RpcCommandOptions{
 				{
+                    RpcMethod:      "GetBlockHeight",
+                    Use:            "block-height",
+                    Short:          "Get the current Block Height",
+                },
+				{
                     RpcMethod:      "Address",
                     Use:            "address [address]",
                     Short:          "Show the details of a specific Address",
@@ -40,6 +45,23 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     RpcMethod:      "AllocationAll",
                     Use:            "allocation-all",
                     Short:          "Returns all Allocations",
+                },
+				{
+                    RpcMethod:      "Fleet",
+                    Use:            "fleet [fleet id]",
+                    Short:          "Show the details of a specific Fleet",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
+                },
+				{
+                    RpcMethod:      "FleetByIndex",
+                    Use:            "fleet-by-index [index]",
+                    Short:          "Show the details of a specific Fleet, as looked up by the index",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "index"}},
+                },
+                {
+                    RpcMethod:      "FleetAll",
+                    Use:            "fleet-all",
+                    Short:          "Returns all Fleets",
                 },
 				{
                     RpcMethod:      "Grid",
@@ -119,11 +141,24 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     Short:          "Show the details of a specific Planet",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
                 },
+				{
+                    RpcMethod:      "PlanetAllByPlayer",
+                    Use:            "planet-all-by-player [player id]",
+                    Short:          "Show all Planets belonging to a Player",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"}},
+                },
                 {
                     RpcMethod:      "PlanetAll",
                     Use:            "planet-all",
                     Short:          "Returns all Planets",
                 },
+				{
+                    RpcMethod:      "PlanetAttribute",
+                    Use:            "planet-attribute [planet id] [attribute type]",
+                    Short:          "Show the details of a specific Planet Attribute",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "planetId"},{ProtoField: "attributeType"}},
+                },
+
                 {
                     RpcMethod:      "Player",
                     Use:            "player [player id]",
@@ -156,6 +191,23 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     RpcMethod:      "StructAll",
                     Use:            "struct-all",
                     Short:          "Returns all Structs",
+                },
+				{
+                    RpcMethod:      "StructAttribute",
+                    Use:            "struct-attribute [struct id] [attribute type]",
+                    Short:          "Show the details of a specific Struct Attribute",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"},{ProtoField: "attributeType"}},
+                },
+				{
+                    RpcMethod:      "StructType",
+                    Use:            "struct-type [struct type id]",
+                    Short:          "Show the details of a specific Struct Type",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
+                },
+                {
+                    RpcMethod:      "StructTypeAll",
+                    Use:            "struct-type-all",
+                    Short:          "Returns all Struct Types",
                 },
 				{
                     RpcMethod:      "Substation",
@@ -329,7 +381,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      Short:          "Update the owner of the Guild",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"},{ProtoField: "owner"}},
                  },
-
                  {
                      RpcMethod:      "PermissionGrantOnObject",
                      Use:            "permission-grant-on-object [object id] [player id] [permissions]",
@@ -361,11 +412,11 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      Short:          "Explore a new planet",
                  },
                  {
-                      RpcMethod:      "PlanetRaidComplete",
-                      Use:            "planet-raid-complete [fleet id] [proof] [nonce]",
-                      Short:          "Complete a Planet Raid",
-                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "fleetId"},{ProtoField: "proof"},{ProtoField: "nonce"}},
-                  },
+                    RpcMethod:      "PlanetRaidComplete",
+                    Use:            "planet-raid-complete [fleet id] [proof] [nonce]",
+                    Short:          "Complete a Planet Raid",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "fleetId"},{ProtoField: "proof"},{ProtoField: "nonce"}},
+                 },
                  {
                      RpcMethod:      "PlayerUpdatePrimaryAddress",
                      Use:            "player-update-primary-address [address]",
@@ -376,6 +427,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      RpcMethod:      "StructActivate",
                      Use:            "struct-activate [struct id]",
                      Short:          "Bring a Struct online",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"}},
+                 },
+                 {
+                     RpcMethod:      "StructDeactivate",
+                     Use:            "struct-deactivate [struct id]",
+                     Short:          "Take a Struct offline",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"}},
                  },
                  {
@@ -391,10 +448,34 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"},{ProtoField: "proof"},{ProtoField: "nonce"}},
                  },
                  {
+                     RpcMethod:      "StructBuildInitiate",
+                     Use:            "struct-build-initiate [player id] [struct type id] [location id] [location type] [operating ambit] [slot]",
+                     Short:          "Initiate the construction of a Struct",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"},{ProtoField: "structTypeId"},{ProtoField: "locationId"},{ProtoField: "locationType"},{ProtoField: "operatingAmbit"},{ProtoField: "slot", Optional: true }},
+                 },
+                 {
+                     RpcMethod:      "StructDefenseClear",
+                     Use:            "struct-defense-clear [defender struct id]",
+                     Short:          "Clear the defensive relationship for a defending Struct",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "defenderStructId"}},
+                 },
+                 {
+                     RpcMethod:      "StructDefenseSet",
+                     Use:            "struct-defense-set [defender struct id] [protected struct id]",
+                     Short:          "Set a defensive relationship for a Struct",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "defenderStructId"},{ProtoField: "protectedStructId"}},
+                 },
+                 {
                      RpcMethod:      "StructGeneratorInfuse",
                      Use:            "struct-generator-infuse [struct id] [infusion amount]",
                      Short:          "Infuse Alpha into a generating Struct (cannot be undone!)",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"},{ProtoField: "infuseAmount"}},
+                 },
+                 {
+                     RpcMethod:      "StructMove",
+                     Use:            "struct-move [struct id] [location id] [location type] [ambit] [slot]",
+                     Short:          "Move a Struct to a different ambit, slot, or location",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"},{ProtoField: "locationId"},{ProtoField: "locationType"},{ProtoField: "ambit"},{ProtoField: "slot", Optional: true }},
                  },
                  {
                      RpcMethod:      "StructOreMinerComplete",
@@ -408,7 +489,18 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      Short:          "Complete a Struct refining action",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"},{ProtoField: "proof"},{ProtoField: "nonce"}},
                  },
-
+                 {
+                     RpcMethod:      "StructStealthActivate",
+                     Use:            "struct-stealth-activate [struct id]",
+                     Short:          "Activate the Stealth systems on a Struct",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"}},
+                 },
+                 {
+                     RpcMethod:      "StructStealthDeactivate",
+                     Use:            "struct-stealth-deactivate [struct id]",
+                     Short:          "Deactivate the Stealth systems on a Struct",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"}},
+                 },
                  {
                      RpcMethod:      "SubstationAllocationConnect",
                      Use:            "substation-allocation-connect [allocation id] [destination id]",

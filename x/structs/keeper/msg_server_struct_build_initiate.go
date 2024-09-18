@@ -68,8 +68,13 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during build, but player (%s) has %d available", msg.StructTypeId, structType.BuildDraw, owner.GetPlayerId(),owner.GetAvailableCapacity())
     }
 
+    // todo actually verify the darn location
+
 
     structure, err := k.InitiateStruct(ctx, msg.Creator, &owner, &structType, msg.LocationId, msg.LocationType, msg.OperatingAmbit, msg.Slot)
+    if (err != nil) {
+        return &types.MsgStructStatusResponse{}, err
+    }
 
     owner.Discharge()
     structure.Commit()

@@ -46,6 +46,7 @@ const (
 	Query_Planet_FullMethodName                        = "/structs.structs.Query/Planet"
 	Query_PlanetAll_FullMethodName                     = "/structs.structs.Query/PlanetAll"
 	Query_PlanetAllByPlayer_FullMethodName             = "/structs.structs.Query/PlanetAllByPlayer"
+	Query_PlanetAttribute_FullMethodName               = "/structs.structs.Query/PlanetAttribute"
 	Query_Reactor_FullMethodName                       = "/structs.structs.Query/Reactor"
 	Query_ReactorAll_FullMethodName                    = "/structs.structs.Query/ReactorAll"
 	Query_Struct_FullMethodName                        = "/structs.structs.Query/Struct"
@@ -102,6 +103,7 @@ type QueryClient interface {
 	Planet(ctx context.Context, in *QueryGetPlanetRequest, opts ...grpc.CallOption) (*QueryGetPlanetResponse, error)
 	PlanetAll(ctx context.Context, in *QueryAllPlanetRequest, opts ...grpc.CallOption) (*QueryAllPlanetResponse, error)
 	PlanetAllByPlayer(ctx context.Context, in *QueryAllPlanetByPlayerRequest, opts ...grpc.CallOption) (*QueryAllPlanetResponse, error)
+	PlanetAttribute(ctx context.Context, in *QueryGetPlanetAttributeRequest, opts ...grpc.CallOption) (*QueryGetPlanetAttributeResponse, error)
 	// Queries a list of Reactor items.
 	Reactor(ctx context.Context, in *QueryGetReactorRequest, opts ...grpc.CallOption) (*QueryGetReactorResponse, error)
 	ReactorAll(ctx context.Context, in *QueryAllReactorRequest, opts ...grpc.CallOption) (*QueryAllReactorResponse, error)
@@ -368,6 +370,15 @@ func (c *queryClient) PlanetAllByPlayer(ctx context.Context, in *QueryAllPlanetB
 	return out, nil
 }
 
+func (c *queryClient) PlanetAttribute(ctx context.Context, in *QueryGetPlanetAttributeRequest, opts ...grpc.CallOption) (*QueryGetPlanetAttributeResponse, error) {
+	out := new(QueryGetPlanetAttributeResponse)
+	err := c.cc.Invoke(ctx, Query_PlanetAttribute_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) Reactor(ctx context.Context, in *QueryGetReactorRequest, opts ...grpc.CallOption) (*QueryGetReactorResponse, error) {
 	out := new(QueryGetReactorResponse)
 	err := c.cc.Invoke(ctx, Query_Reactor_FullMethodName, in, out, opts...)
@@ -494,6 +505,7 @@ type QueryServer interface {
 	Planet(context.Context, *QueryGetPlanetRequest) (*QueryGetPlanetResponse, error)
 	PlanetAll(context.Context, *QueryAllPlanetRequest) (*QueryAllPlanetResponse, error)
 	PlanetAllByPlayer(context.Context, *QueryAllPlanetByPlayerRequest) (*QueryAllPlanetResponse, error)
+	PlanetAttribute(context.Context, *QueryGetPlanetAttributeRequest) (*QueryGetPlanetAttributeResponse, error)
 	// Queries a list of Reactor items.
 	Reactor(context.Context, *QueryGetReactorRequest) (*QueryGetReactorResponse, error)
 	ReactorAll(context.Context, *QueryAllReactorRequest) (*QueryAllReactorResponse, error)
@@ -594,6 +606,9 @@ func (UnimplementedQueryServer) PlanetAll(context.Context, *QueryAllPlanetReques
 }
 func (UnimplementedQueryServer) PlanetAllByPlayer(context.Context, *QueryAllPlanetByPlayerRequest) (*QueryAllPlanetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlanetAllByPlayer not implemented")
+}
+func (UnimplementedQueryServer) PlanetAttribute(context.Context, *QueryGetPlanetAttributeRequest) (*QueryGetPlanetAttributeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlanetAttribute not implemented")
 }
 func (UnimplementedQueryServer) Reactor(context.Context, *QueryGetReactorRequest) (*QueryGetReactorResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Reactor not implemented")
@@ -1121,6 +1136,24 @@ func _Query_PlanetAllByPlayer_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_PlanetAttribute_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetPlanetAttributeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).PlanetAttribute(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_PlanetAttribute_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).PlanetAttribute(ctx, req.(*QueryGetPlanetAttributeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_Reactor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryGetReactorRequest)
 	if err := dec(in); err != nil {
@@ -1397,6 +1430,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PlanetAllByPlayer",
 			Handler:    _Query_PlanetAllByPlayer_Handler,
+		},
+		{
+			MethodName: "PlanetAttribute",
+			Handler:    _Query_PlanetAttribute_Handler,
 		},
 		{
 			MethodName: "Reactor",

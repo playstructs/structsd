@@ -4,6 +4,7 @@ package structs.structs;
 
 option go_package = "structs/x/structs/types";
 import "structs/structs/keys.proto";
+import "amino/amino.proto";
 
 message Struct {
   // What it is
@@ -16,9 +17,9 @@ message Struct {
   string owner    = 5;
 
   // Where it is
-  objectType  locationType    = 6;
+  objectType  locationType    = 6 [(amino.dont_omitempty) = true];
   string      locationId      = 7;
-  ambit       operatingAmbit  = 8;
+  ambit       operatingAmbit  = 8 [(amino.dont_omitempty) = true];
   uint64      slot            = 9;
 }
 
@@ -27,7 +28,7 @@ message StructType {
   string  type  = 2;
 
   // Fundamental attributes
-  objectType      category        = 3; // Planet or Fleet
+  objectType      category        = 3 [(amino.dont_omitempty) = true]; // Planet or Fleet
   uint64          buildLimit      = 4; // How many of this Struct Type a player can have
   uint64          buildDifficulty = 5; // How much compute is needed to build
   uint64          buildDraw       = 6; // How much energy the Struct consumes during building
@@ -42,8 +43,8 @@ message StructType {
   bool    slotBound       = 11; // Does the Struct occupy a slot. Trying to find something to help set Command Ships apart
 
   // Primary Weapon Configuration
-  techActiveWeaponry  primaryWeapon                 = 12;
-  techWeaponControl   primaryWeaponControl          = 13;
+  techActiveWeaponry  primaryWeapon                 = 12 [(amino.dont_omitempty) = true];
+  techWeaponControl   primaryWeaponControl          = 13 [(amino.dont_omitempty) = true];
   uint64              primaryWeaponCharge           = 14;
   uint64              primaryWeaponAmbits           = 15;
   uint64              primaryWeaponTargets          = 16;
@@ -56,8 +57,8 @@ message StructType {
   uint64              primaryWeaponShotSuccessRateDenominator = 23;
 
   // Secondary Weapon Configuration
-  techActiveWeaponry  secondaryWeapon                 = 24;
-  techWeaponControl   secondaryWeaponControl          = 25;
+  techActiveWeaponry  secondaryWeapon                 = 24 [(amino.dont_omitempty) = true];
+  techWeaponControl   secondaryWeaponControl          = 25 [(amino.dont_omitempty) = true];
   uint64              secondaryWeaponCharge           = 26;
   uint64              secondaryWeaponAmbits           = 27;
   uint64              secondaryWeaponTargets          = 28;
@@ -70,16 +71,16 @@ message StructType {
   uint64              secondaryWeaponShotSuccessRateDenominator = 35;
 
   // Tech Tree Features
-  techPassiveWeaponry               passiveWeaponry             = 36;
+  techPassiveWeaponry               passiveWeaponry             = 36 [(amino.dont_omitempty) = true];
 
-  techUnitDefenses                  unitDefenses                = 37;
-  techOreReserveDefenses            oreReserveDefenses          = 38;
-  techPlanetaryDefenses             planetaryDefenses           = 39;
+  techUnitDefenses                  unitDefenses                = 37 [(amino.dont_omitempty) = true];
+  techOreReserveDefenses            oreReserveDefenses          = 38 [(amino.dont_omitempty) = true];
+  techPlanetaryDefenses             planetaryDefenses           = 39 [(amino.dont_omitempty) = true];
 
-  techPlanetaryMining               planetaryMining             = 40;
-  techPlanetaryRefineries           planetaryRefinery           = 41;
+  techPlanetaryMining               planetaryMining             = 40 [(amino.dont_omitempty) = true];
+  techPlanetaryRefineries           planetaryRefinery           = 41 [(amino.dont_omitempty) = true];
 
-  techPowerGeneration               powerGeneration             = 42;
+  techPowerGeneration               powerGeneration             = 42 [(amino.dont_omitempty) = true];
 
   // Charge uses
   uint64 activateCharge         = 43;
