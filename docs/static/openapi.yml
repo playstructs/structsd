@@ -19785,6 +19785,51 @@ paths:
                   locked:
                     type: boolean
                     title: Locking will be needed for IBC
+              gridAttributes:
+                type: object
+                properties:
+                  ore:
+                    type: string
+                    format: uint64
+                  fuel:
+                    type: string
+                    format: uint64
+                  capacity:
+                    type: string
+                    format: uint64
+                  load:
+                    type: string
+                    format: uint64
+                  structsLoad:
+                    type: string
+                    format: uint64
+                  power:
+                    type: string
+                    format: uint64
+                  connectionCapacity:
+                    type: string
+                    format: uint64
+                  connectionCount:
+                    type: string
+                    format: uint64
+                  allocationPointerStart:
+                    type: string
+                    format: uint64
+                  allocationPointerEnd:
+                    type: string
+                    format: uint64
+                  proxyNonce:
+                    type: string
+                    format: uint64
+                  lastAction:
+                    type: string
+                    format: uint64
+                  nonce:
+                    type: string
+                    format: uint64
+                  ready:
+                    type: string
+                    format: uint64
         default:
           description: An unexpected error response.
           schema:
@@ -36528,6 +36573,51 @@ definitions:
           locked:
             type: boolean
             title: Locking will be needed for IBC
+      gridAttributes:
+        type: object
+        properties:
+          ore:
+            type: string
+            format: uint64
+          fuel:
+            type: string
+            format: uint64
+          capacity:
+            type: string
+            format: uint64
+          load:
+            type: string
+            format: uint64
+          structsLoad:
+            type: string
+            format: uint64
+          power:
+            type: string
+            format: uint64
+          connectionCapacity:
+            type: string
+            format: uint64
+          connectionCount:
+            type: string
+            format: uint64
+          allocationPointerStart:
+            type: string
+            format: uint64
+          allocationPointerEnd:
+            type: string
+            format: uint64
+          proxyNonce:
+            type: string
+            format: uint64
+          lastAction:
+            type: string
+            format: uint64
+          nonce:
+            type: string
+            format: uint64
+          ready:
+            type: string
+            format: uint64
   structs.structs.QueryGetFleetResponse:
     type: object
     properties:
