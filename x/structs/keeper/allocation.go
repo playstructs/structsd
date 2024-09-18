@@ -93,6 +93,19 @@ func (k Keeper) AppendAllocation(
 	return allocation.Id, power, nil
 }
 
+func (k Keeper) SetAllocationOnly(ctx context.Context, allocation types.Allocation) (types.Allocation, error){
+
+    store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AllocationKey))
+    b := k.cdc.MustMarshal(&allocation)
+    store.Set([]byte(allocation.Id), b)
+
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAllocation{Allocation: &allocation})
+
+    return allocation,  nil
+
+}
+
 // SetAllocation set a specific allocation in the store
 // Update the grid accordingly for both sources and destinations
 func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation, newPower uint64) (types.Allocation, uint64, error){
@@ -160,7 +173,7 @@ func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation, 
             // Update Connection Capacity
             k.UpdateGridConnectionCapacity(ctx, allocation.DestinationId)
 
-            if (previousAllocation.Power > newPower) {
+            if (previousPower > newPower) {
                 // Add Destination to the Grid Queue
                 k.AppendGridCascadeQueue(ctx, allocation.DestinationId)
             }
@@ -233,9 +246,12 @@ func (k Keeper) RemoveAllocation(ctx context.Context, allocationId string) {
 func (k Keeper) DestroyAllocation(ctx context.Context, allocationId string) (destroyed bool){
     allocation, allocationFound := k.GetAllocation(ctx, allocationId)
 
+    power := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocationId))
+
+
     if allocationFound {
         // Decrease the Load of the Source
-        k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, allocation.SourceObjectId), allocation.Power)
+        k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, allocation.SourceObjectId), power)
         // Update Connection Capacity
         k.UpdateGridConnectionCapacity(ctx, allocation.SourceObjectId)
 
@@ -246,7 +262,7 @@ func (k Keeper) DestroyAllocation(ctx context.Context, allocationId string) (des
             // Update Connection Capacity
             k.UpdateGridConnectionCapacity(ctx, allocation.DestinationId)
 
-            k.SetGridAttributeDecrement(ctx, destinationCapacityId, allocation.Power)
+            k.SetGridAttributeDecrement(ctx, destinationCapacityId, power)
             // Add Destination to the Grid Queue
             k.AppendGridCascadeQueue(ctx, allocation.DestinationId)
         }

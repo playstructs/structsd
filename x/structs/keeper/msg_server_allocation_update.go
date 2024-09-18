@@ -50,11 +50,10 @@ func (k msgServer) AllocationUpdate(goCtx context.Context, msg *types.MsgAllocat
         return &types.MsgAllocationUpdateResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Cannot update Allocation to be zero. Please delete it instead")
     }
 
-    allocation.Power = msg.Power
-	allocation, _ = k.SetAllocation(ctx, allocation)
+	allocation, _, err := k.SetAllocation(ctx, allocation, msg.Power)
 
 	return &types.MsgAllocationUpdateResponse{
 		AllocationId: msg.AllocationId,
-	}, nil
+	}, err
 
 }

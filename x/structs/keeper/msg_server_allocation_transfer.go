@@ -30,7 +30,7 @@ func (k msgServer) AllocationTransfer(goCtx context.Context, msg *types.MsgAlloc
     }
 
     allocation.Controller = msg.Controller
-	allocation, _ = k.SetAllocation(ctx, allocation)
+	allocation, _ = k.SetAllocationOnly(ctx, allocation)
 
 	return &types.MsgAllocationTransferResponse{
 		AllocationId: msg.AllocationId,

@@ -19,7 +19,7 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
         msg.Controller = msg.Creator
     }
 
-	allocation := types.CreateAllocationStub(msg.AllocationType, msg.SourceObjectId, msg.Power, msg.Creator, msg.Controller)
+	allocation := types.CreateAllocationStub(msg.AllocationType, msg.SourceObjectId, msg.Creator, msg.Controller)
 
     player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
     if (!playerFound) {
@@ -44,7 +44,7 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
         return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
     }
 
-	allocationId, err := k.AppendAllocation(ctx, allocation)
+	allocationId, _ , err := k.AppendAllocation(ctx, allocation, msg.Power)
 
 	return &types.MsgAllocationCreateResponse{
 		AllocationId: allocationId,

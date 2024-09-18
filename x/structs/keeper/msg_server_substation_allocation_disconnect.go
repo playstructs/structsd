@@ -50,8 +50,9 @@ func (k msgServer) SubstationAllocationDisconnect(goCtx context.Context, msg *ty
     }
 
 
+    power := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocation.Id))
     allocation.DestinationId = ""
-    allocation, err = k.SetAllocation(ctx, allocation)
+    allocation, _, err = k.SetAllocation(ctx, allocation, power)
 
 	return &types.MsgSubstationAllocationDisconnectResponse{}, err
 }

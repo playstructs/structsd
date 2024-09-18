@@ -64,9 +64,9 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
 		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationConnectionChangeImpossible, "destination substation (%s) cannot change to same destination", allocation.DestinationId)
 	}
 
-
+    power := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocation.Id))
     allocation.DestinationId = substation.Id
-    allocation, err = k.SetAllocation(ctx, allocation)
+    allocation, _, err = k.SetAllocation(ctx, allocation, power)
 
 	return &types.MsgSubstationAllocationConnectResponse{}, err
 }

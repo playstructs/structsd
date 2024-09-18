@@ -62,7 +62,9 @@ func (k Keeper) AppendSubstation(
 
     // Update the allocations new destination
     allocation.DestinationId = substation.Id
-    updatedAllocation, err = k.SetAllocation(ctx, allocation)
+
+    power := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocation.Id))
+    updatedAllocation, _, err = k.SetAllocation(ctx, allocation, power)
     if (err != nil) {
         return substation, updatedAllocation, err
     }
