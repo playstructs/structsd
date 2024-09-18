@@ -649,7 +649,7 @@ func (cache *StructCache) GoOffline() {
         cache.GridStatusRemoveReady()
 
         // Remove all allocations
-        allocations := cache.K.GetAllocationsFromSource(cache.Ctx, cache.StructId, false)
+        allocations := cache.K.GetAllocationsFromSource(cache.Ctx, cache.StructId)
         cache.K.DestroyAllAllocations(cache.Ctx, allocations)
     }
 

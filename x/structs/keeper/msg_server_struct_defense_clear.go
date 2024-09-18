@@ -20,66 +20,47 @@ func (k msgServer) StructDefenseClear(goCtx context.Context, msg *types.MsgStruc
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
-    if (callingPlayerIndex == 0) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct actions requires Player account but none associated with %s", msg.Creator)
-    }
-    callingPlayerId := GetObjectID(types.ObjectType_player, callingPlayerIndex)
+    // load struct
+    structure := k.GetStructCacheFromId(ctx, msg.DefenderStructId)
 
-    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-    // Make sure the address calling this has Play permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionPlay)) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
+    // Check to see if the caller has permissions to proceed
+    permissionError := structure.CanBePlayedBy(msg.Creator)
+    if (permissionError != nil) {
+        return &types.MsgStructStatusResponse{}, permissionError
     }
 
-    structStatusAttributeId := GetStructAttributeIDByObjectId(types.StructAttributeType_status, msg.DefenderStructId)
-
-    structure, structureFound := k.GetStruct(ctx, msg.DefenderStructId)
-    if (!structureFound) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) not found", msg.DefenderStructId)
+    if !structure.LoadStruct(){
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) does not exist", msg.DefenderStructId)
     }
 
-    // Is the Struct online?
-    if (k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateOnline))) {
-        k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is offline. Activate it", msg.DefenderStructId)
+    if structure.IsOffline() {
+        structure.GetOwner().Discharge()
+        structure.GetOwner().Commit()
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already built", msg.DefenderStructId)
     }
 
-    if (callingPlayerId != structure.Owner) {
-        // Check permissions on Creator on Planet
-        playerPermissionId := GetObjectPermissionIDBytes(structure.Owner, callingPlayerId)
-        if (!k.PermissionHasOneOf(ctx, playerPermissionId, types.PermissionPlay)) {
-            return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayerId, structure.Owner)
-        }
-    }
-    sudoPlayer, _ := k.GetPlayer(ctx, structure.Owner)
-    if (!sudoPlayer.IsOnline()){
-        k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",sudoPlayer.Id)
+    // Check Player Charge
+    if (structure.GetOwner().GetCharge() < structure.GetStructType().DefendChangeCharge) {
+        structure.GetOwner().Discharge()
+        structure.GetOwner().Commit()
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to change defensive stance, but player (%s) only had %d", structure.GetStructType().Id, structure.GetStructType().DefendChangeCharge, structure.GetOwnerId(), structure.GetOwner().GetCharge() )
     }
 
-    // Load Struct Type
-    structType, structTypeFound := k.GetStructType(ctx, structure.Type)
-    if (!structTypeFound) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct Type (%d) was not found. Pls tell an adult.", structure.Type)
-    }
-
-    // Check Sudo Player Charge
-    playerCharge := k.GetPlayerCharge(ctx, structure.Owner)
-    if (playerCharge < structType.DefendChangeCharge) {
-        k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for defensive changes, but player (%s) only had %d", structure.Type, structType.ActivateCharge, structure.Owner, playerCharge)
+    if structure.GetOwner().IsOffline(){
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",structure.GetOwnerId())
     }
 
     protectedStructIndex := k.GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, msg.DefenderStructId))
     if (protectedStructIndex == 0) {
-        k.DischargePlayer(ctx, structure.Owner)
+        structure.GetOwner().Discharge()
+        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct %s not defending anything", msg.DefenderStructId)
     }
     protectedStructId := GetObjectID(types.ObjectType_struct, protectedStructIndex)
 
     k.ClearStructDefender(ctx, protectedStructId, msg.DefenderStructId)
-    k.DischargePlayer(ctx, structure.Owner)
+    structure.GetOwner().Discharge()
+    structure.GetOwner().Commit()
 
 	return &types.MsgStructStatusResponse{}, nil
 }

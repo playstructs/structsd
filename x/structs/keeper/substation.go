@@ -110,7 +110,7 @@ func (k Keeper) RemoveSubstation(ctx context.Context, substationId string, migra
     playerConnections := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, substationId))
     if (playerConnections > 0) {
 
-        connectedPlayers := k.GetAllPlayerBySubstation(ctx, substationId, true)
+        connectedPlayers := k.GetAllPlayerBySubstation(ctx, substationId)
         // Need all players connected
         if (migrationSubstationId == "") {
             for _, disconnectPlayer := range connectedPlayers {
@@ -150,7 +150,7 @@ func (k Keeper) RemoveSubstation(ctx context.Context, substationId string, migra
 
 	// Disconnect allocations in
     // TODO Need a more efficient way than scan
-     allocationsIn := k.GetAllAllocationsFromDestination(ctx, substationId, false)
+     allocationsIn := k.GetAllAllocationsFromDestination(ctx, substationId)
      k.DestroyAllAllocations(ctx, allocationsIn)
 
 

@@ -92,7 +92,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	genesis.AddressList    = k.GetAllAddressExport(ctx)
 
-	genesis.AllocationList = k.GetAllAllocation(ctx, false)
+	genesis.AllocationList = k.GetAllAllocation(ctx)
 
 	genesis.InfusionList = k.GetAllInfusion(ctx)
 
@@ -102,16 +102,16 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.PlanetList = k.GetAllPlanet(ctx)
 	genesis.PlanetCount = k.GetPlanetCount(ctx)
 
-	genesis.PlayerList = k.GetAllPlayer(ctx, false)
+	genesis.PlayerList = k.GetAllPlayer(ctx)
 	genesis.PlayerCount = k.GetPlayerCount(ctx)
 
-	genesis.ReactorList = k.GetAllReactor(ctx, false)
+	genesis.ReactorList = k.GetAllReactor(ctx)
 	genesis.ReactorCount = k.GetReactorCount(ctx)
 
 	genesis.StructList = k.GetAllStruct(ctx)
     genesis.StructCount = k.GetStructCount(ctx)
 
-	genesis.SubstationList = k.GetAllSubstation(ctx, false)
+	genesis.SubstationList = k.GetAllSubstation(ctx)
 	genesis.SubstationCount = k.GetSubstationCount(ctx)
 
 	genesis.GridList        = k.GetAllGridExport(ctx)

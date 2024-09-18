@@ -34,11 +34,6 @@ func (k Keeper) ReactorAll(goCtx context.Context, req *types.QueryAllReactorRequ
 			return err
 		}
 
-        reactor.Load        = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, reactor.Id))
-        reactor.Capacity    = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, reactor.Id))
-        reactor.Fuel        = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, reactor.Id))
-
-
 		reactors = append(reactors, reactor)
 		return nil
 	})

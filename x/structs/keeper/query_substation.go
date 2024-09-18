@@ -34,12 +34,6 @@ func (k Keeper) SubstationAll(goCtx context.Context, req *types.QueryAllSubstati
 			return err
 		}
 
-
-        substation.Load                = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, substation.Id))
-        substation.Capacity            = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, substation.Id))
-        substation.ConnectionCount      = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, substation.Id))
-        substation.ConnectionCapacity   = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, substation.Id))
-
 		substations = append(substations, substation)
 		return nil
 	})

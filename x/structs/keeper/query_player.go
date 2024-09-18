@@ -34,16 +34,6 @@ func (k Keeper) PlayerAll(goCtx context.Context, req *types.QueryAllPlayerReques
 			return err
 		}
 
-
-        player.Load      = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, player.Id))
-        player.Capacity  = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id))
-
-        player.StructsLoad           = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, player.Id))
-        player.CapacitySecondary    = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, player.SubstationId))
-
-        playerAcc, _ := sdk.AccAddressFromBech32(player.PrimaryAddress)
-        player.Storage = k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
-
 		players = append(players, player)
 		return nil
 	})
