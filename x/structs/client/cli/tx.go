@@ -25,6 +25,7 @@ func GetTxCmd() *cobra.Command {
 		RunE:                       client.ValidateCmd,
 	}
 
+    cmd.AddCommand(CmdPlanetRaidCompute())
 	cmd.AddCommand(CmdStructBuildCompute())
 	cmd.AddCommand(CmdStructMineCompute())
     cmd.AddCommand(CmdStructRefineCompute())

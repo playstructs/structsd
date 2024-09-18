@@ -96,7 +96,7 @@ func (k *Keeper) GetPlayerCacheFromIndex(ctx context.Context, index uint64) (Pla
 func (k *Keeper) GetPlayerCacheFromAddress(ctx context.Context, address string) (PlayerCache, error) {
     index := k.GetPlayerIndexFromAddress(ctx, address)
 
-    if (index > 0) {
+    if (index == 0) {
         return PlayerCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player Account Not Found")
     }
 
