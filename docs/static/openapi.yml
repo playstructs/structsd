@@ -23047,9 +23047,6 @@ paths:
                       format: uint64
                     destinationId:
                       type: string
-                    power:
-                      type: string
-                      format: uint64
                     creator:
                       type: string
                       title: Who does this currently belong to
@@ -23198,9 +23195,6 @@ paths:
                     format: uint64
                   destinationId:
                     type: string
-                  power:
-                    type: string
-                    format: uint64
                   creator:
                     type: string
                     title: Who does this currently belong to
@@ -36442,9 +36436,6 @@ definitions:
         format: uint64
       destinationId:
         type: string
-      power:
-        type: string
-        format: uint64
       creator:
         type: string
         title: Who does this currently belong to
@@ -36740,9 +36731,6 @@ definitions:
               format: uint64
             destinationId:
               type: string
-            power:
-              type: string
-              format: uint64
             creator:
               type: string
               title: Who does this currently belong to
@@ -37817,9 +37805,6 @@ definitions:
             format: uint64
           destinationId:
             type: string
-          power:
-            type: string
-            format: uint64
           creator:
             type: string
             title: Who does this currently belong to

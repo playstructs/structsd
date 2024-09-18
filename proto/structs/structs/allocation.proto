@@ -17,12 +17,11 @@ message Allocation {
   string      sourceObjectId      = 3;
   uint64      index               = 4;
   string      destinationId       = 5;
-  uint64      power               = 6;
 
   // Who does this currently belong to
-  string      creator             = 7;
-  string      controller          = 8;
+  string      creator             = 6;
+  string      controller          = 7;
 
   // Locking will be needed for IBC
-  bool        locked              = 9;
+  bool        locked              = 8;
 }

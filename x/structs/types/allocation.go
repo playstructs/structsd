@@ -5,14 +5,13 @@ import (
     //"strconv"
 )
 
-func CreateAllocationStub(allocationType AllocationType, sourceObjectId string, power uint64, creator string, controller string ) Allocation {
+func CreateAllocationStub(allocationType AllocationType, sourceObjectId string, creator string, controller string ) Allocation {
 	return Allocation{
 	    Id: "",
 		Type: allocationType,
 		SourceObjectId: sourceObjectId,
 		Index: 0,
 		DestinationId: "",
-		Power: power,
 		Creator: creator,
 		Controller: controller,
 		Locked: false,

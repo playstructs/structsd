@@ -30,7 +30,8 @@ func GetAllocationID(sourceObjectId string, index uint64) (id string) {
 func (k Keeper) AppendAllocation(
 	ctx context.Context,
 	allocation types.Allocation,
-) (allocationId string, err error) {
+	power uint64,
+) (allocationId string, finalPower uint64, err error) {
     // Set the ID of the appended value
 
     allocation.Index = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerEnd, allocation.SourceObjectId))
@@ -42,11 +43,11 @@ func (k Keeper) AppendAllocation(
 	    // Automated Allocations must be the only allocation on a source
 	    sourceAllocations := k.GetAllocationsFromSource(ctx, allocation.SourceObjectId)
 	    if (len(sourceAllocations) > 0) {
-	        return allocation.Id, sdkerrors.Wrapf(types.ErrAllocationAppend, "Allocation Source (%s) cannot have an automated Allocation with other allocations in place", allocation.SourceObjectId)
+	        return allocation.Id, power, sdkerrors.Wrapf(types.ErrAllocationAppend, "Allocation Source (%s) cannot have an automated Allocation with other allocations in place", allocation.SourceObjectId)
 	    }
 
 	    // Update the Power definition to be the capacity of the source
-	    allocation.Power =  allocationSourceCapacity
+	    power =  allocationSourceCapacity
 
 	    // Add the AutoResize flag
 	    k.SetAutoResizeAllocationSource(ctx, allocation.Id, allocation.SourceObjectId)
@@ -54,26 +55,26 @@ func (k Keeper) AppendAllocation(
     } else {
         sourceLoad := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, allocation.SourceObjectId))
         availableCapacity := allocationSourceCapacity - sourceLoad
-        if (availableCapacity < allocation.Power) {
-            return allocation.Id, sdkerrors.Wrapf(types.ErrAllocationAppend, "Allocation Source (%s) does not have the capacity (%d) for the power (%d) defined in this allocation",  allocation.SourceObjectId, availableCapacity, allocation.Power)
+        if (availableCapacity < power) {
+            return allocation.Id, power, sdkerrors.Wrapf(types.ErrAllocationAppend, "Allocation Source (%s) does not have the capacity (%d) for the power (%d) defined in this allocation",  allocation.SourceObjectId, availableCapacity, power)
         }
     }
 
     // By this point, the function should be sure of it's success as stores will be written to
 
     // Update the Source Load
-    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, allocation.SourceObjectId), allocation.Power)
+    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, allocation.SourceObjectId), power)
     // Update Connection Capacity
     k.UpdateGridConnectionCapacity(ctx, allocation.SourceObjectId)
 
     // Set the Allocation Power
-    k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocation.Id), allocation.Power)
+    k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocation.Id), power)
 
     // If a destination is already set for the allocation, update the capacity details there too
     //
     // Permission checks on this connection should be done in the calling function
     if (allocation.DestinationId != "") {
-        k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, allocation.DestinationId), allocation.Power)
+        k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, allocation.DestinationId), power)
 
         // Update Connection Capacity
         k.UpdateGridConnectionCapacity(ctx, allocation.DestinationId)
@@ -89,18 +90,20 @@ func (k Keeper) AppendAllocation(
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAllocation{Allocation: &allocation})
 
-	return allocation.Id, nil
+	return allocation.Id, power, nil
 }
 
 // SetAllocation set a specific allocation in the store
 // Update the grid accordingly for both sources and destinations
-func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation) (types.Allocation, error){
+func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation, newPower uint64) (types.Allocation, error){
 
 	previousAllocation, previousAllocationFound := k.GetAllocation(ctx, allocation.Id)
 	if (!previousAllocationFound) {
 	    // This should be an append, not a set.
 	    return allocation, sdkerrors.Wrapf(types.ErrAllocationSet, "Trying to set an allocation that doesn't exist yet. Should have been an append?")
 	}
+
+    previousPower := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocation.Id))
 
 	if (previousAllocation.SourceObjectId != allocation.SourceObjectId) {
 	    // Should never change the Source of an Allocation
@@ -119,14 +122,14 @@ func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation) 
 
 
     if (allocation.Type == types.AllocationType_automated) {
-        allocation.Power = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, allocation.SourceObjectId))
+        newPower = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, allocation.SourceObjectId))
 
     } else if (allocation.Type == types.AllocationType_static) {
-        allocation.Power = previousAllocation.Power
+        newPower = previousPower
     }
 
-    if (previousAllocation.Power != allocation.Power) {
-        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, allocation.Id), previousAllocation.Power, allocation.Power)
+    if (previousPower != newPower) {
+        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocation.Id), previousPower, newPower)
     }
 
     /* Possible Destination Changes
@@ -150,14 +153,14 @@ func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation) 
 
 
     if (previousAllocation.DestinationId == allocation.DestinationId) {
-        if ((allocation.DestinationId != "") && (previousAllocation.Power != allocation.Power)) {
+        if ((allocation.DestinationId != "") && (previousPower != newPower)) {
 
-            k.SetGridAttributeDelta(ctx, destinationCapacityId, previousAllocation.Power, allocation.Power)
+            k.SetGridAttributeDelta(ctx, destinationCapacityId, previousPower, newPower)
 
             // Update Connection Capacity
             k.UpdateGridConnectionCapacity(ctx, allocation.DestinationId)
 
-            if (previousAllocation.Power > allocation.Power) {
+            if (previousAllocation.Power > newPower) {
                 // Add Destination to the Grid Queue
                 k.AppendGridCascadeQueue(ctx, allocation.DestinationId)
             }
@@ -168,7 +171,7 @@ func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation) 
         // Deal with the previous Destination first
         if (previousAllocation.DestinationId != "") {
             // Decrease the Capacity of the old Destination
-            k.SetGridAttributeDecrement(ctx, previousDestinationCapacityId, previousAllocation.Power)
+            k.SetGridAttributeDecrement(ctx, previousDestinationCapacityId, previousPower)
 
             // Deal with the player connection capacity
             k.UpdateGridConnectionCapacity(ctx, previousAllocation.DestinationId)
@@ -183,7 +186,7 @@ func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation) 
             // We know that destination is greater than zero here because they're not equal to previousAllocation
 
             // Increment the Capacity of the new Destination
-            k.SetGridAttributeIncrement(ctx, destinationCapacityId, allocation.Power)
+            k.SetGridAttributeIncrement(ctx, destinationCapacityId, newPower)
 
             // Deal with the player connection capacity
             k.UpdateGridConnectionCapacity(ctx, allocation.DestinationId)
