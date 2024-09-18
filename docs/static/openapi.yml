@@ -19637,20 +19637,6 @@ paths:
                 type: string
               destinationLocationId:
                 type: string
-              destinationLocationType:
-                type: string
-                enum:
-                  - guild
-                  - player
-                  - planet
-                  - reactor
-                  - substation
-                  - struct
-                  - allocation
-                  - infusion
-                  - address
-                  - fleet
-                default: guild
       tags:
         - Msg
   /structs.structs.Msg/GuildCreate:
@@ -35161,20 +35147,6 @@ definitions:
         type: string
       destinationLocationId:
         type: string
-      destinationLocationType:
-        type: string
-        enum:
-          - guild
-          - player
-          - planet
-          - reactor
-          - substation
-          - struct
-          - allocation
-          - infusion
-          - address
-          - fleet
-        default: guild
   structs.structs.MsgFleetMoveResponse:
     type: object
     properties:

@@ -216,6 +216,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "allocationId"}, {ProtoField: "power"}},
                 },
                 {
+                    RpcMethod:      "FleetMove",
+                    Use:            "fleet-move [fleet id] [destination location id]",
+                    Short:          "Move a fleet from one planet to another",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "fleetId"}, {ProtoField: "destinationLocationId"}},
+                },
+                {
                     RpcMethod:      "GuildCreate",
                     Use:            "guild-create [endpoint] [substation id]",
                     Short:          "Create a guild from an account with an associated Reactor",
@@ -355,6 +361,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      Short:          "Explore a new planet",
                  },
                  {
+                      RpcMethod:      "PlanetRaidComplete",
+                      Use:            "planet-raid-complete [fleet id] [proof] [nonce]",
+                      Short:          "Complete a Planet Raid",
+                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "fleetId"},{ProtoField: "proof"},{ProtoField: "nonce"}},
+                  },
+                 {
                      RpcMethod:      "PlayerUpdatePrimaryAddress",
                      Use:            "player-update-primary-address [address]",
                      Short:          "Revoke a set of permissions on from an address",
@@ -365,6 +377,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      Use:            "struct-activate [struct id]",
                      Short:          "Bring a Struct online",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"}},
+                 },
+                 {
+                     RpcMethod:      "StructAttack",
+                     Use:            "struct-attack [operating struct id] [target struct id,target struct id2,...] [weapon system]",
+                     Short:          "Attack a Struct with a Struct",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "operatingStructId"},{ProtoField: "targetStructId"},{ProtoField: "weaponSystem"}},
                  },
                  {
                      RpcMethod:      "StructBuildComplete",

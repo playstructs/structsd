@@ -204,7 +204,6 @@ message MsgFleetMove {
   string creator  = 1;
   string fleetId = 2;
   string destinationLocationId = 3;
-  objectType destinationLocationType = 4;
 }
 
 message MsgFleetMoveResponse { Fleet fleet = 1; }
