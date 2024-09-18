@@ -208,3 +208,18 @@ func (k Keeper) DischargePlayer(ctx context.Context, playerId string) {
 }
 
 
+/*
+    message PlayerInventory {
+      cosmos.base.v1beta1.Coin rocks = 13
+      [(gogoproto.nullable) = false, (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"];
+    }
+*/
+
+func (k Keeper) GetPlayerInventory(ctx context.Context, primaryAddress string) (types.PlayerInventory){
+
+     playerAcc, _ := sdk.AccAddressFromBech32(primaryAddress)
+     storage := k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
+
+     return types.PlayerInventory{Rocks: storage}
+
+}

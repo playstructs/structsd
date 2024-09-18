@@ -412,6 +412,7 @@ message QueryGetPlayerRequest {
 message QueryGetPlayerResponse {
   Player Player = 1 [(gogoproto.nullable) = false];
   GridAttributes gridAttributes = 2;
+  PlayerInventory playerInventory = 3;
 }
 
 message QueryAllPlayerRequest {
