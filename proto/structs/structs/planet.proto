@@ -50,8 +50,8 @@ message PlanetAttributes {
   uint64  lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator      = 7;
   uint64  lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator    = 8;
 
-  uint64 orbitalJammingStationQuantity                           = 9;
-  uint64 advancedOrbitalJammingStationQuantity                   = 10;
+  uint64  orbitalJammingStationQuantity                           = 9;
+  uint64  advancedOrbitalJammingStationQuantity                   = 10;
 
   uint64  blockStartRaid                                          = 11;
 }
