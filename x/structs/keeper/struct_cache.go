@@ -1124,6 +1124,14 @@ func (cache *StructCache) DestroyAndCommit() {
 
     // TODO clean this up to be more function based.. but it's fine
     if (cache.GetStructType().HasPowerGenerationSystem()) {
+        // Clear out infusions
+        cache.K.DestroyAllInfusions(cache.Ctx, cache.K.GetAllInfusionsByDestination(cache.Ctx, cache.StructId))
+
+        // Clear out all remaining allocations
+        // clearing out all infusions should automatically clear allocations too,
+        // but some allocations, such as automated ones may still exist
+        cache.K.DestroyAllAllocations(cache.Ctx, cache.K.GetAllocationsFromSource(cache.Ctx, cache.StructId))
+
         // Clear Load
         cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, cache.StructId ))
 
@@ -1139,6 +1147,7 @@ func (cache *StructCache) DestroyAndCommit() {
         // Clear Allocation Pointer Start + End
         cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerStart, cache.StructId ))
         cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerEnd, cache.StructId ))
+
     }
 
     // Clear Permissions
