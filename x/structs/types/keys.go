@@ -131,6 +131,7 @@ const (
 	StructCountKey  = "Struct/count/"
 	StructDefenderKey  = "Struct/defender/"
     StructAttributeKey  = "Struct/attribute/"
+    StructDestroyedQueueKey = "Struct/destroyed/"
 
 	StructFuelToEnergyConversion = 200
 )

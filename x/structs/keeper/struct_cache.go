@@ -421,6 +421,8 @@ func (cache *StructCache) GetOwnerId()  (string)        { if (!cache.StructureLo
 func (cache *StructCache) GetLocationId()       (string)            { if (!cache.StructureLoaded) { cache.LoadStruct() }; return cache.Structure.LocationId }
 func (cache *StructCache) GetLocationType()     (types.ObjectType)  { if (!cache.StructureLoaded) { cache.LoadStruct() }; return cache.Structure.LocationType }
 func (cache *StructCache) GetOperatingAmbit()   (types.Ambit)       { if (!cache.StructureLoaded) { cache.LoadStruct() }; return cache.Structure.OperatingAmbit }
+func (cache *StructCache) GetSlot()             (uint64)            { if (!cache.StructureLoaded) { cache.LoadStruct() }; return cache.Structure.Slot }
+
 
 func (cache *StructCache) GetPlanet()   (*PlanetCache)  { if (!cache.PlanetLoaded) { cache.LoadPlanet() }; return cache.Planet }
 func (cache *StructCache) GetPlanetId() (string)        { return cache.GetPlanet().GetPlanetId() }
@@ -1183,7 +1185,25 @@ func (cache *StructCache) DestroyAndCommit() {
         // Check for raid win conditions
     if (cache.CanTriggerRaidDefeatByDestruction()) {
         cache.GetFleet().Defeat()
+        cache.FleetChanged = true
     }
+
+    switch cache.GetLocationType() {
+        case types.ObjectType_planet:
+            cache.GetPlanet().ClearSlot(cache.GetOperatingAmbit(), cache.GetSlot())
+            cache.PlanetChanged = true
+        case types.ObjectType_fleet:
+            if (cache.GetStructType().Type != types.CommandStruct) {
+                cache.GetFleet().ClearCommandStruct()
+            } else {
+                cache.GetFleet().ClearSlot(cache.GetOperatingAmbit(), cache.GetSlot())
+            }
+            cache.FleetChanged = true
+    }
+
+    cache.K.AppendStructDestructionQueue(cache.Ctx, cache.StructId)
+
+    cache.Commit()
 }
 
 

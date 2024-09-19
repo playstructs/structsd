@@ -9,7 +9,7 @@ import (
 // BeginBlocker will persist the current header and validator set as a historical entry
 // and prune the oldest entry based on the HistoricalEntries parameter
 func (k *Keeper) BeginBlocker(ctx context.Context) {
-
+    k.StructSweepDestroyed(ctx)
 }
 
 // Called every block, update validator set

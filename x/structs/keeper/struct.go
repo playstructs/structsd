@@ -139,4 +139,29 @@ func (k Keeper) GetAllStruct(ctx context.Context) (list []types.Struct) {
 
 
 
+func (k Keeper) AppendStructDestructionQueue(ctx context.Context, structId string) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructDestroyedQueueKey))
+	store.Set([]byte(structId), []byte{})
+}
 
+
+func (k Keeper) StructSweepDestroyed(ctx context.Context) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructDestroyedQueueKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+        // Attributes
+        // "health":               StructAttributeType_health,
+        k.ClearStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_health, string(iterator.Key()) ))
+        // "status":               StructAttributeType_status,
+        k.ClearStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_status, string(iterator.Key()) ))
+
+        // Object
+        k.RemoveStruct(ctx, string(iterator.Key()))
+
+        store.Delete(iterator.Key())
+	}
+
+}
