@@ -469,15 +469,11 @@ func (cache *FleetCache) ClearCommandStruct() {
 }
 
 
-
-
-
 func (cache *FleetCache) MigrateToNewPlanet(destination *PlanetCache) {
 
     if (!cache.FleetLoaded) {
         if !cache.LoadFleet() {
-            _ = destination.GetOwner()
-            newFleet := cache.K.AppendFleet(cache.Ctx, destination.GetOwner().Player)
+            newFleet := cache.K.AppendFleet(cache.Ctx, cache.GetOwner())
             cache.Fleet = newFleet
             cache.FleetLoaded = true
         }

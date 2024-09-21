@@ -50,10 +50,11 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
         return &types.MsgPlanetExploreResponse{}, planetExploreError
     }
 
+    player.GetFleet().ManualLoadOwner(&player)
+    player.GetFleet().MigrateToNewPlanet(player.GetPlanet())
+
     player.Commit()
     player.GetPlanet().Commit()
-
-    player.GetFleet().MigrateToNewPlanet(player.GetPlanet())
 
 	return &types.MsgPlanetExploreResponse{Planet: player.GetPlanet().GetPlanet()}, nil
 }

@@ -223,6 +223,8 @@ func (cache *PlayerCache) GetPlayer() (types.Player, error) {
 func (cache *PlayerCache) GetPlayerId()         (string) { return cache.PlayerId }
 func (cache *PlayerCache) GetPrimaryAddress()   (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.PrimaryAddress }
 func (cache *PlayerCache) GetSubstationId()     (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.SubstationId }
+func (cache *PlayerCache) GetIndex()            (uint64) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.Index }
+
 
 func (cache *PlayerCache) GetFleet()    (*FleetCache)   { if (!cache.FleetLoaded) { cache.LoadFleet() }; return cache.Fleet }
 func (cache *PlayerCache) GetFleetId()  (string)        { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.FleetId }
@@ -317,7 +319,16 @@ func (cache *PlayerCache) Discharge() {
 }
 
 func (cache *PlayerCache) SetPlanetId(planetId string) {
+    if (!cache.PlayerLoaded) { cache.LoadPlayer() }
+
     cache.Player.PlanetId = planetId
+    cache.PlayerChanged = true
+}
+
+func (cache *PlayerCache) SetFleetId(fleetId string) {
+    if (!cache.PlayerLoaded) { cache.LoadPlayer() }
+
+    cache.Player.FleetId = fleetId
     cache.PlayerChanged = true
 }
 
