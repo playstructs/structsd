@@ -15,7 +15,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
         Type: "something",
         Category: ObjectType_fleet,
 
-        BuildDifficulty: 0,
+        BuildDifficulty: 15,
         BuildDraw: 0,
         MaxHealth: 3,
         PassiveDraw: 0,
@@ -59,13 +59,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
         PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
         PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-        ActivateCharge: 0,
+        ActivateCharge: 15,
         BuildCharge: 0,
         DefendChangeCharge: 0,
         MoveCharge: 0,
         OreMiningCharge: 0,
         OreRefiningCharge: 0,
-        StealthActivateCharge: 0,
+        StealthActivateCharge: 15,
 
 
         AttackReduction: 0,
@@ -101,7 +101,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      TriggerRaidDefeatByDestruction: true,
 
      BuildLimit: 1,
-     BuildDifficulty: 200,
+     BuildDifficulty: 15,
      BuildDraw: 100,
      PassiveDraw: 50,
      MaxHealth: 6,
@@ -144,13 +144,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 120,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -184,7 +184,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_fleet,
 
      BuildLimit: 0,
-     BuildDifficulty: 765,
+     BuildDifficulty: 15,
      BuildDraw: 375,
      PassiveDraw: 225,
      MaxHealth: 3,
@@ -227,13 +227,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -267,7 +267,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_fleet,
 
      BuildLimit: 0,
-     BuildDifficulty: 250,
+     BuildDifficulty: 15,
      BuildDraw: 200,
      PassiveDraw: 100,
      MaxHealth: 3,
@@ -310,13 +310,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -350,7 +350,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_fleet,
 
      BuildLimit: 0,
-     BuildDifficulty: 450,
+     BuildDifficulty: 15,
      BuildDraw: 150,
      PassiveDraw: 75,
      MaxHealth: 3,
@@ -393,13 +393,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -433,7 +433,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_fleet,
 
      BuildLimit: 0,
-     BuildDifficulty: 215,
+     BuildDifficulty: 15,
      BuildDraw: 225,
      PassiveDraw: 150,
      MaxHealth: 3,
@@ -476,13 +476,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -516,7 +516,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_fleet,
 
      BuildLimit: 0,
-     BuildDifficulty: 455,
+     BuildDifficulty: 15,
      BuildDraw: 200,
      PassiveDraw: 125,
      MaxHealth: 3,
@@ -559,13 +559,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 12,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -599,7 +599,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_fleet,
 
      BuildLimit: 0,
-     BuildDifficulty: 460,
+     BuildDifficulty: 15,
      BuildDraw: 225,
      PassiveDraw: 125,
      MaxHealth: 3,
@@ -642,13 +642,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -682,7 +682,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_fleet,
 
      BuildLimit: 0,
-     BuildDifficulty: 305,
+     BuildDifficulty: 15,
      BuildDraw: 125,
      PassiveDraw: 75,
      MaxHealth: 3,
@@ -725,13 +725,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: false,
@@ -765,7 +765,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_fleet,
 
      BuildLimit: 0,
-     BuildDifficulty: 220,
+     BuildDifficulty: 15,
      BuildDraw: 200,
      PassiveDraw: 75,
      MaxHealth: 3,
@@ -808,13 +808,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 1,
      AttackCounterable: true,
@@ -848,7 +848,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_fleet,
 
      BuildLimit: 0,
-     BuildDifficulty: 450,
+     BuildDifficulty: 15,
      BuildDraw: 150,
      PassiveDraw: 75,
      MaxHealth: 3,
@@ -891,13 +891,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -931,7 +931,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_fleet,
 
      BuildLimit: 0,
-     BuildDifficulty: 515,
+     BuildDifficulty: 15,
      BuildDraw: 325,
      PassiveDraw: 200,
      MaxHealth: 3,
@@ -974,13 +974,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -1014,7 +1014,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_fleet,
 
      BuildLimit: 0,
-     BuildDifficulty: 600,
+     BuildDifficulty: 15,
      BuildDraw: 200,
      PassiveDraw: 100,
      MaxHealth: 3,
@@ -1057,13 +1057,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -1097,7 +1097,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_fleet,
 
      BuildLimit: 0,
-     BuildDifficulty: 455,
+     BuildDifficulty: 15,
      BuildDraw: 200,
      PassiveDraw: 125,
      MaxHealth: 3,
@@ -1140,13 +1140,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 12,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -1180,7 +1180,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_planet,
 
      BuildLimit: 1,
-     BuildDifficulty: 700,
+     BuildDifficulty: 15,
      BuildDraw: 100,
      PassiveDraw: 500,
      MaxHealth: 3,
@@ -1223,13 +1223,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 360,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -1263,7 +1263,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_planet,
 
      BuildLimit: 1,
-     BuildDifficulty: 700,
+     BuildDifficulty: 15,
      BuildDraw: 100,
      PassiveDraw: 500,
      MaxHealth: 3,
@@ -1306,13 +1306,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 360,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -1346,7 +1346,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_planet,
 
      BuildLimit: 1,
-     BuildDifficulty: 700,
+     BuildDifficulty: 15,
      BuildDraw: 100,
      PassiveDraw: 500,
      MaxHealth: 3,
@@ -1389,13 +1389,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_oreRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 360,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -1429,7 +1429,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_planet,
 
      BuildLimit: 1,
-     BuildDifficulty: 700,
+     BuildDifficulty: 15,
      BuildDraw: 100,
      PassiveDraw: 500,
      MaxHealth: 3,
@@ -1472,13 +1472,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_oreRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 360,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -1512,7 +1512,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_planet,
 
      BuildLimit: 1,
-     BuildDifficulty: 720,
+     BuildDifficulty: 15,
      BuildDraw: 100,
      PassiveDraw: 200,
      MaxHealth: 3,
@@ -1555,13 +1555,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -1595,7 +1595,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_planet,
 
      BuildLimit: 1,
-     BuildDifficulty: 2880,
+     BuildDifficulty: 15,
      BuildDraw: 450,
      PassiveDraw: 600,
      MaxHealth: 3,
@@ -1638,13 +1638,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -1678,7 +1678,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_planet,
 
      BuildLimit: 1,
-     BuildDifficulty: 3600,
+     BuildDifficulty: 15,
      BuildDraw: 200,
      PassiveDraw: 750,
      MaxHealth: 3,
@@ -1721,13 +1721,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -1761,7 +1761,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_planet,
 
      BuildLimit: 1,
-     BuildDifficulty: 2880,
+     BuildDifficulty: 15,
      BuildDraw: 450,
      PassiveDraw: 600,
      MaxHealth: 3,
@@ -1804,13 +1804,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -1844,7 +1844,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_planet,
 
      BuildLimit: 1,
-     BuildDifficulty: 2880,
+     BuildDifficulty: 15,
      BuildDraw: 450,
      PassiveDraw: 600,
      MaxHealth: 3,
@@ -1887,13 +1887,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -1927,7 +1927,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_planet,
 
      BuildLimit: 1,
-     BuildDifficulty: 700,
+     BuildDifficulty: 15,
      BuildDraw: 500,
      PassiveDraw: 500,
      MaxHealth: 3,
@@ -1970,13 +1970,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_smallGenerator,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -2010,7 +2010,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_planet,
 
      BuildLimit: 1,
-     BuildDifficulty: 1440,
+     BuildDifficulty: 15,
      BuildDraw: 50000,
      PassiveDraw: 5000,
      MaxHealth: 3,
@@ -2053,13 +2053,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_mediumGenerator,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -2093,7 +2093,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_planet,
 
      BuildLimit: 1,
-     BuildDifficulty: 5000,
+     BuildDifficulty: 15,
      BuildDraw: 500000,
      PassiveDraw: 50000,
      MaxHealth: 3,
@@ -2136,13 +2136,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_largeGenerator,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -2176,7 +2176,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_planet,
 
      BuildLimit: 1,
-     BuildDifficulty: 700,
+     BuildDifficulty: 15,
      BuildDraw: 500,
      PassiveDraw: 500,
      MaxHealth: 3,
@@ -2219,13 +2219,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_smallGenerator,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -2258,7 +2258,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_planet,
 
      BuildLimit: 1,
-     BuildDifficulty: 1440,
+     BuildDifficulty: 15,
      BuildDraw: 50000,
      PassiveDraw: 5000,
      MaxHealth: 3,
@@ -2301,13 +2301,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_mediumGenerator,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,
@@ -2340,7 +2340,7 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      Category: ObjectType_planet,
 
      BuildLimit: 1,
-     BuildDifficulty: 5000,
+     BuildDifficulty: 15,
      BuildDraw: 500000,
      PassiveDraw: 50000,
      MaxHealth: 3,
@@ -2383,13 +2383,13 @@ func CreateStructTypeGenesis() (genesisStructTypes []StructType) {
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_largeGenerator,
 
-     ActivateCharge: 360,
+     ActivateCharge: 15,
      BuildCharge: 12,
      DefendChangeCharge: 12,
      MoveCharge: 0,
      OreMiningCharge: 0,
      OreRefiningCharge: 0,
-     StealthActivateCharge: 0,
+     StealthActivateCharge: 15,
 
      AttackReduction: 0,
      AttackCounterable: true,

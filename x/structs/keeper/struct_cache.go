@@ -505,6 +505,12 @@ func (cache *StructCache) IsHidden() bool {
    return cache.GetStatus()&types.StructStateHidden != 0
 }
 
+func (cache *StructCache) StatusAddBuilt() {
+    cache.Status = cache.GetStatus() | types.StructStateBuilt
+    cache.StatusChanged = true
+    cache.Changed()
+}
+
 func (cache *StructCache) StatusAddOnline() {
     cache.Status = cache.GetStatus() | types.StructStateOnline
     cache.StatusChanged = true

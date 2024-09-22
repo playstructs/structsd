@@ -138,9 +138,10 @@ func (k Keeper) StructAttributeFlagHasOneOf(ctx context.Context, structAttribute
 
 
 func (k Keeper) GetStructAttributesByObject(ctx context.Context, objectId string) (types.StructAttributes) {
+    status := k.GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_status, objectId))
     return types.StructAttributes{
         Health: k.GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_health, objectId)),
-        Status: k.GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_status, objectId)),
+        Status: status,
 
         BlockStartBuild: k.GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, objectId)),
         BlockStartOreMine: k.GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, objectId)),
@@ -149,5 +150,12 @@ func (k Keeper) GetStructAttributesByObject(ctx context.Context, objectId string
         ProtectedStructIndex: k.GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, objectId)),
 
         //typeCount: k.GetStructAttribute(ctx, GetStructAttributeIDByObjectIdAndSubIndex(types.StructAttributeType_typeCount, objectId),
+
+        IsMaterialized:    types.StructState(status)&types.StructStateMaterialized != 0,
+        IsOnline:          types.StructState(status)&types.StructStateOnline != 0,
+        IsHidden:          types.StructState(status)&types.StructStateHidden != 0,
+        IsDestroyed:       types.StructState(status)&types.StructStateDestroyed != 0,
+        IsLocked:          types.StructState(status)&types.StructStateLocked != 0,
+
   }
 }

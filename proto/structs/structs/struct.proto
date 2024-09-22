@@ -159,6 +159,13 @@ message StructAttributes {
   uint64  protectedStructIndex        = 6;
 
   uint64  typeCount                   = 7;
+
+  bool isMaterialized                 = 8;
+  bool isOnline                       = 9;
+  bool isHidden                       = 10;
+  bool isDestroyed                    = 11;
+  bool isLocked                       = 12;
+
 }
 
 

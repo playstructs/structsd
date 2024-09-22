@@ -70,6 +70,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrStructBuildComplete, "Work failure for input (%s) when trying to build Struct %s", hashInput, structure.GetStructId())
     }
 
+    structure.StatusAddBuilt()
     structure.GoOnline()
     structure.Commit()
 

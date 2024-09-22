@@ -5678,6 +5678,11 @@ var (
 	fd_StructAttributes_blockStartOreRefine  protoreflect.FieldDescriptor
 	fd_StructAttributes_protectedStructIndex protoreflect.FieldDescriptor
 	fd_StructAttributes_typeCount            protoreflect.FieldDescriptor
+	fd_StructAttributes_isMaterialized       protoreflect.FieldDescriptor
+	fd_StructAttributes_isOnline             protoreflect.FieldDescriptor
+	fd_StructAttributes_isHidden             protoreflect.FieldDescriptor
+	fd_StructAttributes_isDestroyed          protoreflect.FieldDescriptor
+	fd_StructAttributes_isLocked             protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -5690,6 +5695,11 @@ func init() {
 	fd_StructAttributes_blockStartOreRefine = md_StructAttributes.Fields().ByName("blockStartOreRefine")
 	fd_StructAttributes_protectedStructIndex = md_StructAttributes.Fields().ByName("protectedStructIndex")
 	fd_StructAttributes_typeCount = md_StructAttributes.Fields().ByName("typeCount")
+	fd_StructAttributes_isMaterialized = md_StructAttributes.Fields().ByName("isMaterialized")
+	fd_StructAttributes_isOnline = md_StructAttributes.Fields().ByName("isOnline")
+	fd_StructAttributes_isHidden = md_StructAttributes.Fields().ByName("isHidden")
+	fd_StructAttributes_isDestroyed = md_StructAttributes.Fields().ByName("isDestroyed")
+	fd_StructAttributes_isLocked = md_StructAttributes.Fields().ByName("isLocked")
 }
 
 var _ protoreflect.Message = (*fastReflection_StructAttributes)(nil)
@@ -5799,6 +5809,36 @@ func (x *fastReflection_StructAttributes) Range(f func(protoreflect.FieldDescrip
 			return
 		}
 	}
+	if x.IsMaterialized != false {
+		value := protoreflect.ValueOfBool(x.IsMaterialized)
+		if !f(fd_StructAttributes_isMaterialized, value) {
+			return
+		}
+	}
+	if x.IsOnline != false {
+		value := protoreflect.ValueOfBool(x.IsOnline)
+		if !f(fd_StructAttributes_isOnline, value) {
+			return
+		}
+	}
+	if x.IsHidden != false {
+		value := protoreflect.ValueOfBool(x.IsHidden)
+		if !f(fd_StructAttributes_isHidden, value) {
+			return
+		}
+	}
+	if x.IsDestroyed != false {
+		value := protoreflect.ValueOfBool(x.IsDestroyed)
+		if !f(fd_StructAttributes_isDestroyed, value) {
+			return
+		}
+	}
+	if x.IsLocked != false {
+		value := protoreflect.ValueOfBool(x.IsLocked)
+		if !f(fd_StructAttributes_isLocked, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -5828,6 +5868,16 @@ func (x *fastReflection_StructAttributes) Has(fd protoreflect.FieldDescriptor) b
 		return x.ProtectedStructIndex != uint64(0)
 	case "structs.structs.StructAttributes.typeCount":
 		return x.TypeCount != uint64(0)
+	case "structs.structs.StructAttributes.isMaterialized":
+		return x.IsMaterialized != false
+	case "structs.structs.StructAttributes.isOnline":
+		return x.IsOnline != false
+	case "structs.structs.StructAttributes.isHidden":
+		return x.IsHidden != false
+	case "structs.structs.StructAttributes.isDestroyed":
+		return x.IsDestroyed != false
+	case "structs.structs.StructAttributes.isLocked":
+		return x.IsLocked != false
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructAttributes"))
@@ -5858,6 +5908,16 @@ func (x *fastReflection_StructAttributes) Clear(fd protoreflect.FieldDescriptor)
 		x.ProtectedStructIndex = uint64(0)
 	case "structs.structs.StructAttributes.typeCount":
 		x.TypeCount = uint64(0)
+	case "structs.structs.StructAttributes.isMaterialized":
+		x.IsMaterialized = false
+	case "structs.structs.StructAttributes.isOnline":
+		x.IsOnline = false
+	case "structs.structs.StructAttributes.isHidden":
+		x.IsHidden = false
+	case "structs.structs.StructAttributes.isDestroyed":
+		x.IsDestroyed = false
+	case "structs.structs.StructAttributes.isLocked":
+		x.IsLocked = false
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructAttributes"))
@@ -5895,6 +5955,21 @@ func (x *fastReflection_StructAttributes) Get(descriptor protoreflect.FieldDescr
 	case "structs.structs.StructAttributes.typeCount":
 		value := x.TypeCount
 		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.StructAttributes.isMaterialized":
+		value := x.IsMaterialized
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.StructAttributes.isOnline":
+		value := x.IsOnline
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.StructAttributes.isHidden":
+		value := x.IsHidden
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.StructAttributes.isDestroyed":
+		value := x.IsDestroyed
+		return protoreflect.ValueOfBool(value)
+	case "structs.structs.StructAttributes.isLocked":
+		value := x.IsLocked
+		return protoreflect.ValueOfBool(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructAttributes"))
@@ -5929,6 +6004,16 @@ func (x *fastReflection_StructAttributes) Set(fd protoreflect.FieldDescriptor, v
 		x.ProtectedStructIndex = value.Uint()
 	case "structs.structs.StructAttributes.typeCount":
 		x.TypeCount = value.Uint()
+	case "structs.structs.StructAttributes.isMaterialized":
+		x.IsMaterialized = value.Bool()
+	case "structs.structs.StructAttributes.isOnline":
+		x.IsOnline = value.Bool()
+	case "structs.structs.StructAttributes.isHidden":
+		x.IsHidden = value.Bool()
+	case "structs.structs.StructAttributes.isDestroyed":
+		x.IsDestroyed = value.Bool()
+	case "structs.structs.StructAttributes.isLocked":
+		x.IsLocked = value.Bool()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructAttributes"))
@@ -5963,6 +6048,16 @@ func (x *fastReflection_StructAttributes) Mutable(fd protoreflect.FieldDescripto
 		panic(fmt.Errorf("field protectedStructIndex of message structs.structs.StructAttributes is not mutable"))
 	case "structs.structs.StructAttributes.typeCount":
 		panic(fmt.Errorf("field typeCount of message structs.structs.StructAttributes is not mutable"))
+	case "structs.structs.StructAttributes.isMaterialized":
+		panic(fmt.Errorf("field isMaterialized of message structs.structs.StructAttributes is not mutable"))
+	case "structs.structs.StructAttributes.isOnline":
+		panic(fmt.Errorf("field isOnline of message structs.structs.StructAttributes is not mutable"))
+	case "structs.structs.StructAttributes.isHidden":
+		panic(fmt.Errorf("field isHidden of message structs.structs.StructAttributes is not mutable"))
+	case "structs.structs.StructAttributes.isDestroyed":
+		panic(fmt.Errorf("field isDestroyed of message structs.structs.StructAttributes is not mutable"))
+	case "structs.structs.StructAttributes.isLocked":
+		panic(fmt.Errorf("field isLocked of message structs.structs.StructAttributes is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructAttributes"))
@@ -5990,6 +6085,16 @@ func (x *fastReflection_StructAttributes) NewField(fd protoreflect.FieldDescript
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.StructAttributes.typeCount":
 		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.StructAttributes.isMaterialized":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.StructAttributes.isOnline":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.StructAttributes.isHidden":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.StructAttributes.isDestroyed":
+		return protoreflect.ValueOfBool(false)
+	case "structs.structs.StructAttributes.isLocked":
+		return protoreflect.ValueOfBool(false)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructAttributes"))
@@ -6080,6 +6185,21 @@ func (x *fastReflection_StructAttributes) ProtoMethods() *protoiface.Methods {
 		if x.TypeCount != 0 {
 			n += 1 + runtime.Sov(uint64(x.TypeCount))
 		}
+		if x.IsMaterialized {
+			n += 2
+		}
+		if x.IsOnline {
+			n += 2
+		}
+		if x.IsHidden {
+			n += 2
+		}
+		if x.IsDestroyed {
+			n += 2
+		}
+		if x.IsLocked {
+			n += 2
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -6108,6 +6228,56 @@ func (x *fastReflection_StructAttributes) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.IsLocked {
+			i--
+			if x.IsLocked {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x60
+		}
+		if x.IsDestroyed {
+			i--
+			if x.IsDestroyed {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x58
+		}
+		if x.IsHidden {
+			i--
+			if x.IsHidden {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x50
+		}
+		if x.IsOnline {
+			i--
+			if x.IsOnline {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x48
+		}
+		if x.IsMaterialized {
+			i--
+			if x.IsMaterialized {
+				dAtA[i] = 1
+			} else {
+				dAtA[i] = 0
+			}
+			i--
+			dAtA[i] = 0x40
 		}
 		if x.TypeCount != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.TypeCount))
@@ -6326,6 +6496,106 @@ func (x *fastReflection_StructAttributes) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
+			case 8:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field IsMaterialized", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.IsMaterialized = bool(v != 0)
+			case 9:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field IsOnline", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.IsOnline = bool(v != 0)
+			case 10:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field IsHidden", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.IsHidden = bool(v != 0)
+			case 11:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field IsDestroyed", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.IsDestroyed = bool(v != 0)
+			case 12:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field IsLocked", wireType)
+				}
+				var v int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					v |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				x.IsLocked = bool(v != 0)
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -7164,6 +7434,11 @@ type StructAttributes struct {
 	BlockStartOreRefine  uint64 `protobuf:"varint,5,opt,name=blockStartOreRefine,proto3" json:"blockStartOreRefine,omitempty"`
 	ProtectedStructIndex uint64 `protobuf:"varint,6,opt,name=protectedStructIndex,proto3" json:"protectedStructIndex,omitempty"`
 	TypeCount            uint64 `protobuf:"varint,7,opt,name=typeCount,proto3" json:"typeCount,omitempty"`
+	IsMaterialized       bool   `protobuf:"varint,8,opt,name=isMaterialized,proto3" json:"isMaterialized,omitempty"`
+	IsOnline             bool   `protobuf:"varint,9,opt,name=isOnline,proto3" json:"isOnline,omitempty"`
+	IsHidden             bool   `protobuf:"varint,10,opt,name=isHidden,proto3" json:"isHidden,omitempty"`
+	IsDestroyed          bool   `protobuf:"varint,11,opt,name=isDestroyed,proto3" json:"isDestroyed,omitempty"`
+	IsLocked             bool   `protobuf:"varint,12,opt,name=isLocked,proto3" json:"isLocked,omitempty"`
 }
 
 func (x *StructAttributes) Reset() {
@@ -7233,6 +7508,41 @@ func (x *StructAttributes) GetTypeCount() uint64 {
 		return x.TypeCount
 	}
 	return 0
+}
+
+func (x *StructAttributes) GetIsMaterialized() bool {
+	if x != nil {
+		return x.IsMaterialized
+	}
+	return false
+}
+
+func (x *StructAttributes) GetIsOnline() bool {
+	if x != nil {
+		return x.IsOnline
+	}
+	return false
+}
+
+func (x *StructAttributes) GetIsHidden() bool {
+	if x != nil {
+		return x.IsHidden
+	}
+	return false
+}
+
+func (x *StructAttributes) GetIsDestroyed() bool {
+	if x != nil {
+		return x.IsDestroyed
+	}
+	return false
+}
+
+func (x *StructAttributes) GetIsLocked() bool {
+	if x != nil {
+		return x.IsLocked
+	}
+	return false
 }
 
 var File_structs_structs_struct_proto protoreflect.FileDescriptor
@@ -7529,7 +7839,7 @@ var file_structs_structs_struct_proto_rawDesc = []byte{
 	0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01,
 	0x28, 0x09, 0x52, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x12,
 	0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05,
-	0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0x9e, 0x02, 0x0a, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0xbc, 0x03, 0x0a, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x68, 0x65,
 	0x61, 0x6c, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x68, 0x65, 0x61, 0x6c,
 	0x74, 0x68, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x02, 0x20, 0x01,
@@ -7547,18 +7857,27 @@ var file_structs_structs_struct_proto_rawDesc = []byte{
 	0x28, 0x04, 0x52, 0x14, 0x70, 0x72, 0x6f, 0x74, 0x65, 0x63, 0x74, 0x65, 0x64, 0x53, 0x74, 0x72,
 	0x75, 0x63, 0x74, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x12, 0x1c, 0x0a, 0x09, 0x74, 0x79, 0x70, 0x65,
 	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x74, 0x79, 0x70,
-	0x65, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63,
-	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2,
-	0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d,
-	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x33,
+	0x65, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x26, 0x0a, 0x0e, 0x69, 0x73, 0x4d, 0x61, 0x74, 0x65,
+	0x72, 0x69, 0x61, 0x6c, 0x69, 0x7a, 0x65, 0x64, 0x18, 0x08, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0e,
+	0x69, 0x73, 0x4d, 0x61, 0x74, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x69, 0x7a, 0x65, 0x64, 0x12, 0x1a,
+	0x0a, 0x08, 0x69, 0x73, 0x4f, 0x6e, 0x6c, 0x69, 0x6e, 0x65, 0x18, 0x09, 0x20, 0x01, 0x28, 0x08,
+	0x52, 0x08, 0x69, 0x73, 0x4f, 0x6e, 0x6c, 0x69, 0x6e, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x69, 0x73,
+	0x48, 0x69, 0x64, 0x64, 0x65, 0x6e, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x69, 0x73,
+	0x48, 0x69, 0x64, 0x64, 0x65, 0x6e, 0x12, 0x20, 0x0a, 0x0b, 0x69, 0x73, 0x44, 0x65, 0x73, 0x74,
+	0x72, 0x6f, 0x79, 0x65, 0x64, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0b, 0x69, 0x73, 0x44,
+	0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x69, 0x73, 0x4c, 0x6f,
+	0x63, 0x6b, 0x65, 0x64, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x69, 0x73, 0x4c, 0x6f,
+	0x63, 0x6b, 0x65, 0x64, 0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73,
+	0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03,
+	0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74,
+	0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a,
+	0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
