@@ -108,7 +108,7 @@ COMPUTE:
                     currentBlockResponse, _ = queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
                     currentBlock = currentBlockResponse.BlockHeight
                     currentAge = currentBlock - refineStartBlock
-                    newDifficulty = types.CalculateDifficulty(float64(currentAge), structType.BuildDifficulty)
+                    newDifficulty = types.CalculateDifficulty(float64(currentAge), structType.OreRefiningDifficulty)
 
                     if currentDifficulty != newDifficulty {
                         currentDifficulty = newDifficulty
@@ -129,7 +129,7 @@ COMPUTE:
 				newHash.Write([]byte(newInput))
 				newHashOutput := hex.EncodeToString(newHash.Sum(nil))
 
-				if (!types.HashBuildAndCheckDifficulty(newInput, newHashOutput, currentAge, structType.BuildDifficulty)) { goto COMPUTE }
+				if (!types.HashBuildAndCheckDifficulty(newInput, newHashOutput, currentAge, structType.OreRefiningDifficulty)) { goto COMPUTE }
 
 				fmt.Println("")
 				fmt.Println("Refining Complete!")
