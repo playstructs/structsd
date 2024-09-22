@@ -5,6 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
+	"fmt"
 )
 
 /* MsgStructBuildInitiate
@@ -70,7 +71,9 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
 
     // todo actually verify the darn location
 
-
+    fmt.Printf("Trying to materialized a Struct \n")
+    fmt.Printf("Struct Type: %s ", structType.Type)
+    fmt.Printf("Destination: %s %s %d", msg.LocationId, msg.LocationType, msg.Slot)
     structure, err := k.InitiateStruct(ctx, msg.Creator, &owner, &structType, msg.LocationId, msg.LocationType, msg.OperatingAmbit, msg.Slot)
     if (err != nil) {
         return &types.MsgStructStatusResponse{}, err
@@ -78,6 +81,7 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
 
     owner.Discharge()
     structure.Commit()
+    structure.GetPlanet().Commit()
 
 
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct()}, nil

@@ -14,6 +14,8 @@ import (
     "bytes"
     "encoding/binary"
 
+    "fmt"
+
 )
 
 
@@ -113,10 +115,10 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
 
     var ownerChanged bool
 
-    var planet *PlanetCache
+    var planet PlanetCache
     var planetChanged bool
 
-    var fleet *FleetCache
+    var fleet FleetCache
     var fleetChanged bool
 
     structure := types.CreateBaseStruct(structType, creatorAddress, owner.GetPlayerId(), destinationId, destinationType, ambit)
@@ -124,7 +126,7 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
     switch destinationType {
         case types.ObjectType_planet:
             // Load Planet from the PlanetId
-            planet := k.GetPlanetCacheFromId(ctx, destinationId)
+            planet = k.GetPlanetCacheFromId(ctx, destinationId)
             planetFound := planet.LoadPlanet()
             if !planetFound {
                 return StructCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was not found. Building a Struct in a void might be tough", destinationId)
@@ -136,10 +138,10 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
             }
 
             structure.Slot = slot
-
+            fmt.Printf("\n Setting Location Slot for Planet: %d \n", structure.Slot)
         case types.ObjectType_fleet:
                 // Load the Fleet
-                fleet, _ := k.GetFleetCacheFromId(ctx, destinationId)
+                fleet, _ = k.GetFleetCacheFromId(ctx, destinationId)
                 fleetFound := fleet.LoadFleet()
                 if !fleetFound {
                     return StructCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Fleet (%s) was not found. Building a Struct in a void might be tough", destinationId)
@@ -172,6 +174,7 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
         case types.ObjectType_planet:
 
             // Update the cross reference on the planet
+            fmt.Printf("\n About to Set Slot %d on %s \n", structure.Slot, planet.GetPlanetId())
             err := planet.SetSlot(structure)
             if (err != nil) {
                 return StructCache{}, err
@@ -204,11 +207,11 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
                   OwnerLoaded: true,
                   OwnerChanged: ownerChanged,
 
-                  Planet: planet,
+                  Planet: &planet,
                   PlanetLoaded: true,
                   PlanetChanged: planetChanged,
 
-                  Fleet: fleet,
+                  Fleet: &fleet,
                   FleetLoaded: true,
                   FleetChanged: fleetChanged,
 

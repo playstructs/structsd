@@ -13,6 +13,7 @@ import (
 	"math/rand"
     "bytes"
     "encoding/binary"
+    "fmt"
 
 )
 
@@ -105,6 +106,34 @@ func (k *Keeper) GetPlanetCacheFromId(ctx context.Context, planetId string) (Pla
         PlanetId: planetId,
         K: k,
         Ctx: ctx,
+
+        PlanetLoaded: false,
+        PlanetChanged: false,
+        OwnerLoaded: false,
+        BlockStartRaidLoaded: false,
+        BlockStartRaidChanged: false,
+        BuriedOreLoaded: false,
+        BuriedOreChanged: false,
+        PlanetaryShieldLoaded: false,
+        PlanetaryShieldChanged: false,
+        RepairNetworkQuantityLoaded: false,
+        RepairNetworkQuantityChanged: false,
+        DefensiveCannonQuantityLoaded: false,
+        DefensiveCannonQuantityChanged: false,
+        CoordinatedGlobalShieldNetworkQuantityLoaded: false,
+        CoordinatedGlobalShieldNetworkQuantityChanged: false,
+        LowOrbitBallisticsInterceptorNetworkQuantityLoaded: false,
+        LowOrbitBallisticsInterceptorNetworkQuantityChanged: false,
+        AdvancedLowOrbitBallisticsInterceptorNetworkQuantityLoaded: false,
+        AdvancedLowOrbitBallisticsInterceptorNetworkQuantityChanged: false,
+        LowOrbitBallisticsInterceptorNetworkSuccessRateLoaded: false,
+        LowOrbitBallisticsInterceptorNetworkSuccessRateChanged: false,
+        OrbitalJammingStationQuantityLoaded: false,
+        OrbitalJammingStationQuantityChanged: false,
+        AdvancedOrbitalJammingStationQuantityLoaded: false,
+        AdvancedOrbitalJammingStationQuantityChanged: false,
+        EventAttackDetailLoaded: false,
+        EventAttackShotDetailLoaded: false,
 
         BlockStartRaidAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_blockStartRaid, planetId),
         BuriedOreAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_ore, planetId),
@@ -361,6 +390,7 @@ func (cache *PlanetCache) GetAdvancedOrbitalJammingStationQuantity() (uint64) {
 }
 
 func (cache *PlanetCache) GetPlanetId() string {
+    fmt.Printf("\n ok what in the fuck. Does the ID not exist? %s \n", cache.PlanetId)
     return cache.PlanetId
 }
 
@@ -662,6 +692,10 @@ func (cache *PlanetCache) MoveReadiness(structure *StructCache, ambit types.Ambi
 
 
 func (cache *PlanetCache) SetSlot(structure types.Struct) (err error) {
+
+    fmt.Printf(" Planet %s", cache.GetPlanetId())
+    fmt.Printf(" Setting Slot: %d", structure.Slot)
+/*
     if (!cache.PlanetLoaded) { cache.LoadPlanet() }
 
     switch structure.OperatingAmbit {
@@ -676,6 +710,7 @@ func (cache *PlanetCache) SetSlot(structure types.Struct) (err error) {
         default:
             err = sdkerrors.Wrapf(types.ErrStructAction, "Struct cannot exist in the defined ambit (%s) ", structure.OperatingAmbit)
     }
+*/
     cache.PlanetChanged = true
 	return
 }
