@@ -23,6 +23,8 @@ type PlanetCache struct {
     K *Keeper
     Ctx context.Context
 
+    AnyChange bool
+
     Ready bool
 
     PlanetLoaded  bool
@@ -107,6 +109,8 @@ func (k *Keeper) GetPlanetCacheFromId(ctx context.Context, planetId string) (Pla
         K: k,
         Ctx: ctx,
 
+        AnyChange: false,
+
         PlanetLoaded: false,
         PlanetChanged: false,
         OwnerLoaded: false,
@@ -159,12 +163,18 @@ func (k *Keeper) GetPlanetCacheFromId(ctx context.Context, planetId string) (Pla
 }
 
 func (cache *PlanetCache) Commit() () {
+    cache.AnyChange = false
+
+    fmt.Printf("\n Updating Planet From Cache (%s) \n", cache.PlanetId)
 
     if (cache.PlanetChanged) {
         cache.K.SetPlanet(cache.Ctx, cache.Planet)
         cache.PlanetChanged = false
     }
 
+    if (cache.GetOwner().IsChanged()) {
+        cache.GetOwner().Commit()
+    }
 
     if (cache.BlockStartRaidChanged) {
         cache.K.SetPlanetAttribute(cache.Ctx, cache.BlockStartRaidAttributeId, cache.BlockStartRaid)
@@ -175,7 +185,6 @@ func (cache *PlanetCache) Commit() () {
         cache.K.SetGridAttribute(cache.Ctx, cache.BuriedOreAttributeId, cache.BuriedOre)
         cache.BuriedOreChanged = false
     }
-
 
     if (cache.PlanetaryShieldChanged) {
         cache.K.SetPlanetAttribute(cache.Ctx, cache.PlanetaryShieldAttributeId, cache.PlanetaryShield)
@@ -223,6 +232,14 @@ func (cache *PlanetCache) Commit() () {
         cache.AdvancedOrbitalJammingStationQuantityChanged = false
     }
 
+}
+
+func (cache *PlanetCache) IsChanged() bool {
+    return cache.AnyChange
+}
+
+func (cache *PlanetCache) Changed() {
+    cache.AnyChange = true
 }
 
 /* Separate Loading functions for each of the underlying containers */
@@ -390,7 +407,6 @@ func (cache *PlanetCache) GetAdvancedOrbitalJammingStationQuantity() (uint64) {
 }
 
 func (cache *PlanetCache) GetPlanetId() string {
-    fmt.Printf("\n ok what in the fuck. Does the ID not exist? %s \n", cache.PlanetId)
     return cache.PlanetId
 }
 
@@ -426,6 +442,7 @@ func (cache *PlanetCache) SetStatus(status types.PlanetStatus) () {
 
     cache.Planet.Status = status
     cache.PlanetChanged = true
+    cache.Changed()
 }
 
 func (cache *PlanetCache) SetLocationListStart(fleetId string) {
@@ -433,6 +450,7 @@ func (cache *PlanetCache) SetLocationListStart(fleetId string) {
 
     cache.Planet.LocationListStart = fleetId
     cache.PlanetChanged = true
+    cache.Changed()
 
     if (fleetId != "") {
         uctx := sdk.UnwrapSDKContext(cache.Ctx)
@@ -447,6 +465,7 @@ func (cache *PlanetCache) SetLocationListLast(fleetId string) {
 
     cache.Planet.LocationListStart = fleetId
     cache.PlanetChanged = true
+    cache.Changed()
 }
 
 func (cache *PlanetCache) ResetBlockStartRaid() {
@@ -454,6 +473,7 @@ func (cache *PlanetCache) ResetBlockStartRaid() {
     cache.BlockStartRaid = uint64(uctx.BlockHeight())
     cache.BlockStartRaidLoaded = true
     cache.BlockStartRaidChanged = true
+    cache.Changed()
 }
 
 func (cache *PlanetCache) BuriedOreDecrement(amount uint64) {
@@ -465,11 +485,13 @@ func (cache *PlanetCache) BuriedOreDecrement(amount uint64) {
     }
 
     cache.BuriedOreChanged = true
+    cache.Changed()
 }
 
 func (cache *PlanetCache) PlanetaryShieldIncrement(amount uint64) {
     cache.PlanetaryShield = cache.GetPlanetaryShield() + amount
     cache.PlanetaryShieldChanged = true
+    cache.Changed()
 }
 
 func (cache *PlanetCache) PlanetaryShieldDecrement(amount uint64) {
@@ -481,11 +503,13 @@ func (cache *PlanetCache) PlanetaryShieldDecrement(amount uint64) {
     }
 
     cache.PlanetaryShieldChanged = true
+    cache.Changed()
 }
 
 func (cache *PlanetCache) DefensiveCannonQuantityIncrement(amount uint64) {
     cache.DefensiveCannonQuantity = cache.GetDefensiveCannonQuantity() + amount
     cache.DefensiveCannonQuantityChanged = true
+    cache.Changed()
 }
 
 func (cache *PlanetCache) DefensiveCannonQuantityDecrement(amount uint64) {
@@ -497,12 +521,14 @@ func (cache *PlanetCache) DefensiveCannonQuantityDecrement(amount uint64) {
     }
 
     cache.DefensiveCannonQuantityChanged = true
+    cache.Changed()
 }
 
 
 func (cache *PlanetCache) LowOrbitBallisticsInterceptorNetworkQuantityIncrement(amount uint64) {
     cache.LowOrbitBallisticsInterceptorNetworkQuantity = cache.GetLowOrbitBallisticsInterceptorNetworkQuantity() + amount
     cache.LowOrbitBallisticsInterceptorNetworkQuantityChanged = true
+    cache.Changed()
 
     cache.LowOrbitBallisticsInterceptorNetworkRecalculate()
 }
@@ -516,6 +542,7 @@ func (cache *PlanetCache) LowOrbitBallisticsInterceptorNetworkQuantityDecrement(
     }
 
     cache.LowOrbitBallisticsInterceptorNetworkQuantityChanged = true
+    cache.Changed()
     cache.LowOrbitBallisticsInterceptorNetworkRecalculate()
 }
 
@@ -537,6 +564,7 @@ func (cache *PlanetCache) LowOrbitBallisticsInterceptorNetworkRecalculate() {
         cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator = uint64(overallSuccessRate.Denominator())
         cache.LowOrbitBallisticsInterceptorNetworkSuccessRateChanged = true
         cache.LowOrbitBallisticsInterceptorNetworkSuccessRateLoaded  = true
+        cache.Changed()
 
     }
 }
@@ -695,7 +723,7 @@ func (cache *PlanetCache) SetSlot(structure types.Struct) (err error) {
 
     fmt.Printf(" Planet %s", cache.GetPlanetId())
     fmt.Printf(" Setting Slot: %d", structure.Slot)
-/*
+
     if (!cache.PlanetLoaded) { cache.LoadPlanet() }
 
     switch structure.OperatingAmbit {
@@ -710,8 +738,9 @@ func (cache *PlanetCache) SetSlot(structure types.Struct) (err error) {
         default:
             err = sdkerrors.Wrapf(types.ErrStructAction, "Struct cannot exist in the defined ambit (%s) ", structure.OperatingAmbit)
     }
-*/
+
     cache.PlanetChanged = true
+    cache.Changed()
 	return
 }
 
@@ -730,6 +759,7 @@ func (cache *PlanetCache) ClearSlot(ambit types.Ambit, slot uint64) {
             cache.Planet.Space[slot] = ""
     }
     cache.PlanetChanged = true
+    cache.Changed()
 }
 
 /* Game Logic */

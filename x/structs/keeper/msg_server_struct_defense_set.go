@@ -98,7 +98,7 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
     k.SetStructDefender(ctx, protectedStructure, structure.GetStruct())
 
     structure.GetOwner().Discharge()
-    structure.GetOwner().Commit()
+    structure.Commit()
 
 	return &types.MsgStructStatusResponse{}, nil
 }

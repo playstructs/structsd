@@ -26,6 +26,8 @@ type StructCache struct {
 
     Ready bool
 
+    AnyChange bool
+
     StructureLoaded  bool
     StructureChanged bool
     Structure  types.Struct
@@ -98,6 +100,8 @@ func (k *Keeper) GetStructCacheFromId(ctx context.Context, structId string) (Str
         K: k,
         Ctx: ctx,
 
+        AnyChange: false,
+
         HealthAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_health, structId),
         StatusAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_status, structId),
 
@@ -111,43 +115,24 @@ func (k *Keeper) GetStructCacheFromId(ctx context.Context, structId string) (Str
 
 // Build this initial Struct Cache object
 // This does no validation on the provided structId
-func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owner *PlayerCache, structType *types.StructType, destinationId string, destinationType types.ObjectType, ambit types.Ambit, slot uint64) (StructCache, error) {
+func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owner *PlayerCache, structType *types.StructType, destinationType types.ObjectType, ambit types.Ambit, slot uint64) (StructCache, error) {
 
-    var ownerChanged bool
-
-    var planet PlanetCache
-    var planetChanged bool
-
-    var fleet FleetCache
-    var fleetChanged bool
-
-    structure := types.CreateBaseStruct(structType, creatorAddress, owner.GetPlayerId(), destinationId, destinationType, ambit)
+    structure := types.CreateBaseStruct(structType, creatorAddress, owner.GetPlayerId(), destinationType, ambit)
 
     switch destinationType {
         case types.ObjectType_planet:
-            // Load Planet from the PlanetId
-            planet = k.GetPlanetCacheFromId(ctx, destinationId)
-            planetFound := planet.LoadPlanet()
-            if !planetFound {
-                return StructCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was not found. Building a Struct in a void might be tough", destinationId)
-            }
 
-            err := planet.BuildInitiateReadiness(&structure, structType, ambit, slot)
+            err := owner.GetPlanet().BuildInitiateReadiness(&structure, structType, ambit, slot)
             if (err != nil) {
                 return StructCache{}, err
             }
 
+            structure.LocationId = owner.GetPlanetId()
             structure.Slot = slot
             fmt.Printf("\n Setting Location Slot for Planet: %d \n", structure.Slot)
         case types.ObjectType_fleet:
-                // Load the Fleet
-                fleet, _ = k.GetFleetCacheFromId(ctx, destinationId)
-                fleetFound := fleet.LoadFleet()
-                if !fleetFound {
-                    return StructCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Fleet (%s) was not found. Building a Struct in a void might be tough", destinationId)
-                }
 
-                err := fleet.BuildInitiateReadiness(&structure, structType, ambit, slot)
+                err := owner.GetFleet().BuildInitiateReadiness(&structure, structType, ambit, slot)
                 if (err != nil) {
                     return StructCache{}, err
                 }
@@ -156,6 +141,7 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
                     structure.Slot = slot
                 }
 
+                structure.LocationId = owner.GetFleetId()
         default:
             return StructCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "We're not building these yet")
     }
@@ -167,33 +153,28 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
 
     owner.StructsLoadIncrement(structType.GetBuildDraw())
     owner.BuildQuantityIncrement(structType.GetId())
-    ownerChanged = true
 
 
    switch destinationType {
         case types.ObjectType_planet:
 
             // Update the cross reference on the planet
-            fmt.Printf("\n About to Set Slot %d on %s \n", structure.Slot, planet.GetPlanetId())
-            err := planet.SetSlot(structure)
+            fmt.Printf("\n About to Set Slot %d on %s \n", structure.Slot, owner.GetPlanet().GetPlanetId())
+            err := owner.GetPlanet().SetSlot(structure)
             if (err != nil) {
                 return StructCache{}, err
             }
-            planetChanged = true
 
         case types.ObjectType_fleet:
             // Update the cross reference on the planet
             if (structType.Type == types.CommandStruct) {
-                fleet.SetCommandStruct(structure)
+                owner.GetFleet().SetCommandStruct(structure)
             } else {
-                err := fleet.SetSlot(structure)
+                err := owner.GetFleet().SetSlot(structure)
                 if (err != nil) {
                     return StructCache{}, err
                 }
             }
-
-            fleetChanged = true
-
     }
 
 
@@ -203,17 +184,20 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
                   K: k,
                   Ctx: ctx,
 
+                  AnyChange: true,
+
+                  Structure: structure,
+                  StructureChanged: false,
+                  StructureLoaded: true,
+
                   Owner: owner,
                   OwnerLoaded: true,
-                  OwnerChanged: ownerChanged,
 
-                  Planet: &planet,
+                  Planet: owner.GetPlanet(),
                   PlanetLoaded: true,
-                  PlanetChanged: planetChanged,
 
-                  Fleet: &fleet,
+                  Fleet: owner.GetFleet(),
                   FleetLoaded: true,
-                  FleetChanged: fleetChanged,
 
                   // Include the health value
                   HealthAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_health, structure.Id),
@@ -241,25 +225,25 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
 
 
 func (cache *StructCache) Commit() () {
+    cache.AnyChange = false
+
+    fmt.Printf("\n Updating Struct From Cache (%s) \n", cache.StructId)
 
     if (cache.StructureChanged) {
         cache.K.SetStruct(cache.Ctx, cache.Structure)
         cache.StructureChanged = false
     }
 
-    if (cache.OwnerChanged) {
+    if (cache.GetOwner().IsChanged()) {
         cache.GetOwner().Commit()
-        cache.OwnerChanged = false
     }
 
-    if (cache.PlanetChanged) {
+    if (cache.GetPlanet().IsChanged()) {
         cache.GetPlanet().Commit()
-        cache.PlanetChanged = false
     }
 
-    if (cache.FleetChanged) {
+    if (cache.GetFleet().IsChanged()) {
         cache.GetFleet().Commit()
-        cache.FleetChanged = false
     }
 
     if (cache.HealthChanged) {
@@ -289,6 +273,14 @@ func (cache *StructCache) Commit() () {
         cache.K.SetStructAttribute(cache.Ctx, cache.ProtectedStructIndexAttributeId, cache.ProtectedStructIndex)
         cache.ProtectedStructIndexChanged = false
     }
+}
+
+func (cache *StructCache) IsChanged() bool {
+    return cache.AnyChange
+}
+
+func (cache *StructCache) Changed() {
+    cache.AnyChange = true
 }
 
 /* Separate Loading functions for each of the underlying containers */
@@ -446,6 +438,7 @@ func (cache *StructCache) SetOwnerId(owner string) {
 
     cache.Structure.Owner = owner
     cache.StructureChanged = true
+    cache.Changed()
 
     // Player object might be stale now
     cache.OwnerLoaded = false
@@ -456,6 +449,7 @@ func (cache *StructCache) ResetBlockStartOreMine() {
     cache.BlockStartOreMine = uint64(uctx.BlockHeight())
     cache.BlockStartOreMineLoaded = true
     cache.BlockStartOreMineChanged = true
+    cache.Changed()
 }
 
 func (cache *StructCache) ResetBlockStartOreRefine() {
@@ -463,18 +457,21 @@ func (cache *StructCache) ResetBlockStartOreRefine() {
     cache.BlockStartOreRefine = uint64(uctx.BlockHeight())
     cache.BlockStartOreRefineLoaded = true
     cache.BlockStartOreRefineChanged = true
+    cache.Changed()
 }
 
 func (cache *StructCache) ClearBlockStartOreMine() {
     cache.BlockStartOreMine = 0
     cache.BlockStartOreMineLoaded = true
     cache.BlockStartOreMineChanged = true
+    cache.Changed()
 }
 
 func (cache *StructCache) ClearBlockStartOreRefine() {
     cache.BlockStartOreRefine = 0
     cache.BlockStartOreRefineLoaded = true
     cache.BlockStartOreRefineChanged = true
+    cache.Changed()
 }
 
 func (cache *StructCache) FlushEventAttackShotDetail() ( *types.EventAttackShotDetail) {
@@ -511,22 +508,26 @@ func (cache *StructCache) IsHidden() bool {
 func (cache *StructCache) StatusAddOnline() {
     cache.Status = cache.GetStatus() | types.StructStateOnline
     cache.StatusChanged = true
+    cache.Changed()
 }
 
 func (cache *StructCache) StatusAddHidden() {
     cache.Status = cache.GetStatus() | types.StructStateHidden
     cache.StatusChanged = true
+    cache.Changed()
 }
 
 func (cache *StructCache) StatusAddDestroyed() {
     cache.Status = cache.GetStatus() | types.StructStateDestroyed
     cache.StatusChanged = true
+    cache.Changed()
 }
 
 func (cache *StructCache) StatusRemoveHidden() {
     if (cache.IsHidden()) {
         cache.Status = cache.Status &^ types.StructStateHidden
         cache.StatusChanged = true
+        cache.Changed()
     }
 }
 
@@ -534,6 +535,7 @@ func (cache *StructCache) StatusRemoveOnline() {
     if (cache.IsOnline()) {
         cache.Status = cache.Status &^ types.StructStateOnline
         cache.StatusChanged = true
+        cache.Changed()
     }
 }
 
@@ -942,10 +944,12 @@ func (cache *StructCache) TakeAttackDamage(attackingStruct *StructCache, weaponS
         if (damage > cache.GetHealth()) {
             cache.Health = 0
             cache.HealthChanged = true
+            cache.Changed()
 
         } else {
             cache.Health = cache.GetHealth() - damage
             cache.HealthChanged = true
+            cache.Changed()
         }
 
         if (cache.Health == 0) {
@@ -979,10 +983,12 @@ func (cache *StructCache) TakeRecoilDamage(weaponSystem types.TechWeaponSystem) 
         if (damage > cache.GetHealth()) {
             cache.Health = 0
             cache.HealthChanged = true
+            cache.Changed()
 
         } else {
             cache.Health = cache.GetHealth() - damage
             cache.HealthChanged = true
+            cache.Changed()
         }
 
         if (cache.Health == 0) {
@@ -1005,10 +1011,12 @@ func (cache *StructCache) TakePostDestructionDamage(attackingStruct *StructCache
         if (damage > cache.GetHealth()) {
             cache.Health = 0
             cache.HealthChanged = true
+            cache.Changed()
 
         } else {
             cache.Health = cache.GetHealth() - damage
             cache.HealthChanged = true
+            cache.Changed()
         }
 
         if (cache.Health == 0) {
@@ -1034,10 +1042,12 @@ func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (d
         if (damage > cache.GetHealth()) {
             cache.Health = 0
             cache.HealthChanged = true
+            cache.Changed()
 
         } else {
             cache.Health = cache.GetHealth() - damage
             cache.HealthChanged = true
+            cache.Changed()
         }
 
         if (cache.Health == 0) {
@@ -1069,10 +1079,12 @@ func (cache *StructCache) TakePlanetaryDefenseCanonDamage(damage uint64) (uint64
             damage = cache.GetHealth()
             cache.Health = 0
             cache.HealthChanged = true
+            cache.Changed()
 
         } else {
             cache.Health = cache.GetHealth() - damage
             cache.HealthChanged = true
+            cache.Changed()
         }
 
         if (cache.Health == 0) {

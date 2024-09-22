@@ -4,7 +4,7 @@ import (
 
 	"context"
     //"math"
-    //"fmt"
+    "fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
@@ -17,6 +17,7 @@ type FleetCache struct {
     K *Keeper
     Ctx context.Context
 
+    AnyChange bool
 
     FleetLoaded  bool
     FleetChanged bool
@@ -59,22 +60,39 @@ func (k *Keeper) GetFleetCacheFromId(ctx context.Context, fleetId string) (Fleet
         K: k,
         Ctx: ctx,
 
+        AnyChange: false,
+
     }, nil
 }
 
 
 func (cache *FleetCache) Commit() () {
+    cache.AnyChange = false
+
+    fmt.Printf("\n Updating Fleet From Cache (%s) \n", cache.FleetId)
+
     if (cache.FleetChanged) { cache.K.SetFleet(cache.Ctx, cache.Fleet) }
 
-    if (cache.PlanetChanged) { cache.GetPlanet().Commit() }
-    if (cache.PreviousPlanetChanged) { cache.GetPreviousPlanet().Commit() }
+    if (cache.GetOwner().IsChanged()) { cache.GetOwner().Commit() }
 
-    if (cache.ForwardFleetChanged) { cache.GetForwardFleet().Commit() }
+    if (cache.GetPlanet().IsChanged()) { cache.GetPlanet().Commit() }
+    if (cache.PreviousPlanet != nil && cache.GetPreviousPlanet().IsChanged()) { cache.GetPreviousPlanet().Commit() }
 
-    if (cache.BackwardFleetChanged) { cache.GetBackwardFleet().Commit() }
+    if (cache.GetForwardFleet().IsChanged()) { cache.GetForwardFleet().Commit() }
+    if (cache.GetBackwardFleet().IsChanged()) { cache.GetBackwardFleet().Commit() }
+
+    if (cache.PreviousForwardFleet != nil && cache.GetPreviousForwardFleet().IsChanged()) { cache.GetPreviousForwardFleet().Commit() }
+    if (cache.PreviousBackwardFleet != nil && cache.GetPreviousBackwardFleet().IsChanged()) { cache.GetPreviousBackwardFleet().Commit() }
 
 }
 
+func (cache *FleetCache) IsChanged() bool {
+    return cache.AnyChange
+}
+
+func (cache *FleetCache) Changed() {
+    cache.AnyChange = true
+}
 
 
 func (cache *FleetCache) LoadFleet() (found bool) {

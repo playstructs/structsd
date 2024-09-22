@@ -60,8 +60,6 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
     k.DischargePlayer(ctx, structure.GetOwnerId())
 
     structure.Commit()
-    structure.GetOwner().Commit()
-    structure.GetPlanet().Commit()
 
     _ = ctx.EventManager().EmitTypedEvent(&types.EventAlphaRefine{&types.EventAlphaRefineDetail{PlayerId: structure.GetOwnerId(), PrimaryAddress: structure.GetOwner().GetPrimaryAddress(), Amount: 1}})
 

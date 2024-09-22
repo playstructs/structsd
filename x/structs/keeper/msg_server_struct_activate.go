@@ -44,11 +44,7 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
 
 
     structure.GoOnline()
-
-
     structure.Commit()
-    structure.GetOwner().Commit()
-
 
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct()}, nil
 }

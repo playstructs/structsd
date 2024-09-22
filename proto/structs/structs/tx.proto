@@ -471,10 +471,9 @@ message MsgStructBuildInitiate {
   string creator          = 1;
   string playerId         = 2;
   uint64 structTypeId     = 3;
-  string locationId       = 4;
-  objectType locationType = 5;
-  ambit operatingAmbit    = 6;
-  uint64 slot             = 7;
+  objectType locationType = 4;
+  ambit operatingAmbit    = 5;
+  uint64 slot             = 6;
 }
 
 

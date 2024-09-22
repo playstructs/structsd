@@ -59,8 +59,9 @@ func (k msgServer) StructDefenseClear(goCtx context.Context, msg *types.MsgStruc
     protectedStructId := GetObjectID(types.ObjectType_struct, protectedStructIndex)
 
     k.ClearStructDefender(ctx, protectedStructId, msg.DefenderStructId)
+
     structure.GetOwner().Discharge()
-    structure.GetOwner().Commit()
+    structure.Commit()
 
 	return &types.MsgStructStatusResponse{}, nil
 }

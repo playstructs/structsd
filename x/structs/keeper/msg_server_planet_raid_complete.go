@@ -76,9 +76,6 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
     fleet.GetOwner().StoredOreIncrement(amountStolen)
     fleet.GetPlanet().GetOwner().StoredOreEmpty()
 
-    fleet.GetOwner().Commit()
-    fleet.GetPlanet().GetOwner().Commit()
-
     // Move the Fleet back to Station
     fleet.SetLocationToPlanet(fleet.GetOwner().GetPlanet())
     fleet.Commit()

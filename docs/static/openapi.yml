@@ -21519,8 +21519,6 @@ paths:
               structTypeId:
                 type: string
                 format: uint64
-              locationId:
-                type: string
               locationType:
                 type: string
                 enum:
@@ -35787,8 +35785,6 @@ definitions:
       structTypeId:
         type: string
         format: uint64
-      locationId:
-        type: string
       locationType:
         type: string
         enum:

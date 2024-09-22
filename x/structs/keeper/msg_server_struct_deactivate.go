@@ -48,7 +48,6 @@ func (k msgServer) StructDeactivate(goCtx context.Context, msg *types.MsgStructD
 
     structure.GoOffline()
     structure.Commit()
-    structure.GetOwner().Commit()
 
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct()}, nil
 }

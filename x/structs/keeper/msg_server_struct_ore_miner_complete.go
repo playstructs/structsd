@@ -60,8 +60,6 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
     k.DischargePlayer(ctx, structure.GetOwnerId())
 
     structure.Commit()
-    structure.GetOwner().Commit()
-    structure.GetPlanet().Commit()
 
 	return &types.MsgStructOreMinerStatusResponse{Struct: structure.GetStruct()}, nil
 }

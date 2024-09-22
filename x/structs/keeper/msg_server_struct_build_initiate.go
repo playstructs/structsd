@@ -73,15 +73,14 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
 
     fmt.Printf("Trying to materialized a Struct \n")
     fmt.Printf("Struct Type: %s ", structType.Type)
-    fmt.Printf("Destination: %s %s %d", msg.LocationId, msg.LocationType, msg.Slot)
-    structure, err := k.InitiateStruct(ctx, msg.Creator, &owner, &structType, msg.LocationId, msg.LocationType, msg.OperatingAmbit, msg.Slot)
+    fmt.Printf("Destination: %s %d", msg.LocationType, msg.Slot)
+    structure, err := k.InitiateStruct(ctx, msg.Creator, &owner, &structType, msg.LocationType, msg.OperatingAmbit, msg.Slot)
     if (err != nil) {
         return &types.MsgStructStatusResponse{}, err
     }
 
     owner.Discharge()
     structure.Commit()
-    structure.GetPlanet().Commit()
 
 
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct()}, nil

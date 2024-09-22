@@ -72,7 +72,6 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 
     structure.GoOnline()
     structure.Commit()
-    structure.GetOwner().Commit()
 
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct()}, nil
 }

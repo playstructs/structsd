@@ -26086,7 +26086,6 @@ var (
 	fd_MsgStructBuildInitiate_creator        protoreflect.FieldDescriptor
 	fd_MsgStructBuildInitiate_playerId       protoreflect.FieldDescriptor
 	fd_MsgStructBuildInitiate_structTypeId   protoreflect.FieldDescriptor
-	fd_MsgStructBuildInitiate_locationId     protoreflect.FieldDescriptor
 	fd_MsgStructBuildInitiate_locationType   protoreflect.FieldDescriptor
 	fd_MsgStructBuildInitiate_operatingAmbit protoreflect.FieldDescriptor
 	fd_MsgStructBuildInitiate_slot           protoreflect.FieldDescriptor
@@ -26098,7 +26097,6 @@ func init() {
 	fd_MsgStructBuildInitiate_creator = md_MsgStructBuildInitiate.Fields().ByName("creator")
 	fd_MsgStructBuildInitiate_playerId = md_MsgStructBuildInitiate.Fields().ByName("playerId")
 	fd_MsgStructBuildInitiate_structTypeId = md_MsgStructBuildInitiate.Fields().ByName("structTypeId")
-	fd_MsgStructBuildInitiate_locationId = md_MsgStructBuildInitiate.Fields().ByName("locationId")
 	fd_MsgStructBuildInitiate_locationType = md_MsgStructBuildInitiate.Fields().ByName("locationType")
 	fd_MsgStructBuildInitiate_operatingAmbit = md_MsgStructBuildInitiate.Fields().ByName("operatingAmbit")
 	fd_MsgStructBuildInitiate_slot = md_MsgStructBuildInitiate.Fields().ByName("slot")
@@ -26187,12 +26185,6 @@ func (x *fastReflection_MsgStructBuildInitiate) Range(f func(protoreflect.FieldD
 			return
 		}
 	}
-	if x.LocationId != "" {
-		value := protoreflect.ValueOfString(x.LocationId)
-		if !f(fd_MsgStructBuildInitiate_locationId, value) {
-			return
-		}
-	}
 	if x.LocationType != 0 {
 		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.LocationType))
 		if !f(fd_MsgStructBuildInitiate_locationType, value) {
@@ -26232,8 +26224,6 @@ func (x *fastReflection_MsgStructBuildInitiate) Has(fd protoreflect.FieldDescrip
 		return x.PlayerId != ""
 	case "structs.structs.MsgStructBuildInitiate.structTypeId":
 		return x.StructTypeId != uint64(0)
-	case "structs.structs.MsgStructBuildInitiate.locationId":
-		return x.LocationId != ""
 	case "structs.structs.MsgStructBuildInitiate.locationType":
 		return x.LocationType != 0
 	case "structs.structs.MsgStructBuildInitiate.operatingAmbit":
@@ -26262,8 +26252,6 @@ func (x *fastReflection_MsgStructBuildInitiate) Clear(fd protoreflect.FieldDescr
 		x.PlayerId = ""
 	case "structs.structs.MsgStructBuildInitiate.structTypeId":
 		x.StructTypeId = uint64(0)
-	case "structs.structs.MsgStructBuildInitiate.locationId":
-		x.LocationId = ""
 	case "structs.structs.MsgStructBuildInitiate.locationType":
 		x.LocationType = 0
 	case "structs.structs.MsgStructBuildInitiate.operatingAmbit":
@@ -26295,9 +26283,6 @@ func (x *fastReflection_MsgStructBuildInitiate) Get(descriptor protoreflect.Fiel
 	case "structs.structs.MsgStructBuildInitiate.structTypeId":
 		value := x.StructTypeId
 		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.MsgStructBuildInitiate.locationId":
-		value := x.LocationId
-		return protoreflect.ValueOfString(value)
 	case "structs.structs.MsgStructBuildInitiate.locationType":
 		value := x.LocationType
 		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
@@ -26333,8 +26318,6 @@ func (x *fastReflection_MsgStructBuildInitiate) Set(fd protoreflect.FieldDescrip
 		x.PlayerId = value.Interface().(string)
 	case "structs.structs.MsgStructBuildInitiate.structTypeId":
 		x.StructTypeId = value.Uint()
-	case "structs.structs.MsgStructBuildInitiate.locationId":
-		x.LocationId = value.Interface().(string)
 	case "structs.structs.MsgStructBuildInitiate.locationType":
 		x.LocationType = (ObjectType)(value.Enum())
 	case "structs.structs.MsgStructBuildInitiate.operatingAmbit":
@@ -26367,8 +26350,6 @@ func (x *fastReflection_MsgStructBuildInitiate) Mutable(fd protoreflect.FieldDes
 		panic(fmt.Errorf("field playerId of message structs.structs.MsgStructBuildInitiate is not mutable"))
 	case "structs.structs.MsgStructBuildInitiate.structTypeId":
 		panic(fmt.Errorf("field structTypeId of message structs.structs.MsgStructBuildInitiate is not mutable"))
-	case "structs.structs.MsgStructBuildInitiate.locationId":
-		panic(fmt.Errorf("field locationId of message structs.structs.MsgStructBuildInitiate is not mutable"))
 	case "structs.structs.MsgStructBuildInitiate.locationType":
 		panic(fmt.Errorf("field locationType of message structs.structs.MsgStructBuildInitiate is not mutable"))
 	case "structs.structs.MsgStructBuildInitiate.operatingAmbit":
@@ -26394,8 +26375,6 @@ func (x *fastReflection_MsgStructBuildInitiate) NewField(fd protoreflect.FieldDe
 		return protoreflect.ValueOfString("")
 	case "structs.structs.MsgStructBuildInitiate.structTypeId":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.MsgStructBuildInitiate.locationId":
-		return protoreflect.ValueOfString("")
 	case "structs.structs.MsgStructBuildInitiate.locationType":
 		return protoreflect.ValueOfEnum(0)
 	case "structs.structs.MsgStructBuildInitiate.operatingAmbit":
@@ -26482,10 +26461,6 @@ func (x *fastReflection_MsgStructBuildInitiate) ProtoMethods() *protoiface.Metho
 		if x.StructTypeId != 0 {
 			n += 1 + runtime.Sov(uint64(x.StructTypeId))
 		}
-		l = len(x.LocationId)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
 		if x.LocationType != 0 {
 			n += 1 + runtime.Sov(uint64(x.LocationType))
 		}
@@ -26527,24 +26502,17 @@ func (x *fastReflection_MsgStructBuildInitiate) ProtoMethods() *protoiface.Metho
 		if x.Slot != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.Slot))
 			i--
-			dAtA[i] = 0x38
+			dAtA[i] = 0x30
 		}
 		if x.OperatingAmbit != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.OperatingAmbit))
 			i--
-			dAtA[i] = 0x30
+			dAtA[i] = 0x28
 		}
 		if x.LocationType != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.LocationType))
 			i--
-			dAtA[i] = 0x28
-		}
-		if len(x.LocationId) > 0 {
-			i -= len(x.LocationId)
-			copy(dAtA[i:], x.LocationId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.LocationId)))
-			i--
-			dAtA[i] = 0x22
+			dAtA[i] = 0x20
 		}
 		if x.StructTypeId != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.StructTypeId))
@@ -26698,38 +26666,6 @@ func (x *fastReflection_MsgStructBuildInitiate) ProtoMethods() *protoiface.Metho
 					}
 				}
 			case 4:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field LocationId", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.LocationId = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 5:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field LocationType", wireType)
 				}
@@ -26748,7 +26684,7 @@ func (x *fastReflection_MsgStructBuildInitiate) ProtoMethods() *protoiface.Metho
 						break
 					}
 				}
-			case 6:
+			case 5:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OperatingAmbit", wireType)
 				}
@@ -26767,7 +26703,7 @@ func (x *fastReflection_MsgStructBuildInitiate) ProtoMethods() *protoiface.Metho
 						break
 					}
 				}
-			case 7:
+			case 6:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Slot", wireType)
 				}
@@ -44964,10 +44900,9 @@ type MsgStructBuildInitiate struct {
 	Creator        string     `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	PlayerId       string     `protobuf:"bytes,2,opt,name=playerId,proto3" json:"playerId,omitempty"`
 	StructTypeId   uint64     `protobuf:"varint,3,opt,name=structTypeId,proto3" json:"structTypeId,omitempty"`
-	LocationId     string     `protobuf:"bytes,4,opt,name=locationId,proto3" json:"locationId,omitempty"`
-	LocationType   ObjectType `protobuf:"varint,5,opt,name=locationType,proto3,enum=structs.structs.ObjectType" json:"locationType,omitempty"`
-	OperatingAmbit Ambit      `protobuf:"varint,6,opt,name=operatingAmbit,proto3,enum=structs.structs.Ambit" json:"operatingAmbit,omitempty"`
-	Slot           uint64     `protobuf:"varint,7,opt,name=slot,proto3" json:"slot,omitempty"`
+	LocationType   ObjectType `protobuf:"varint,4,opt,name=locationType,proto3,enum=structs.structs.ObjectType" json:"locationType,omitempty"`
+	OperatingAmbit Ambit      `protobuf:"varint,5,opt,name=operatingAmbit,proto3,enum=structs.structs.Ambit" json:"operatingAmbit,omitempty"`
+	Slot           uint64     `protobuf:"varint,6,opt,name=slot,proto3" json:"slot,omitempty"`
 }
 
 func (x *MsgStructBuildInitiate) Reset() {
@@ -45009,13 +44944,6 @@ func (x *MsgStructBuildInitiate) GetStructTypeId() uint64 {
 		return x.StructTypeId
 	}
 	return 0
-}
-
-func (x *MsgStructBuildInitiate) GetLocationId() string {
-	if x != nil {
-		return x.LocationId
-	}
-	return ""
 }
 
 func (x *MsgStructBuildInitiate) GetLocationType() ObjectType {
@@ -46862,7 +46790,7 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f,
 	0x72, 0x12, 0x1a, 0x0a, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x3a, 0x0c, 0x82,
-	0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0xb5, 0x02, 0x0a, 0x16,
+	0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x95, 0x02, 0x0a, 0x16,
 	0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x6e,
 	0x69, 0x74, 0x69, 0x61, 0x74, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f,
 	0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
@@ -46870,17 +46798,15 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x22, 0x0a, 0x0c,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01,
 	0x28, 0x04, 0x52, 0x0c, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x49, 0x64,
-	0x12, 0x1e, 0x0a, 0x0a, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x04,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64,
 	0x12, 0x3f, 0x0a, 0x0c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65,
-	0x18, 0x05, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54,
 	0x79, 0x70, 0x65, 0x52, 0x0c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70,
 	0x65, 0x12, 0x3e, 0x0a, 0x0e, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d,
-	0x62, 0x69, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x62, 0x69, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75,
 	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69,
 	0x74, 0x52, 0x0e, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69,
-	0x74, 0x12, 0x12, 0x0a, 0x04, 0x73, 0x6c, 0x6f, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x74, 0x12, 0x12, 0x0a, 0x04, 0x73, 0x6c, 0x6f, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x04, 0x52,
 	0x04, 0x73, 0x6c, 0x6f, 0x74, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61,
 	0x74, 0x6f, 0x72, 0x22, 0x88, 0x01, 0x0a, 0x16, 0x4d, 0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63,
 	0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x43, 0x6f, 0x6d, 0x70, 0x6c, 0x65, 0x74, 0x65, 0x12, 0x18,

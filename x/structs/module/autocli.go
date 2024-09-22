@@ -449,9 +449,9 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                  },
                  {
                      RpcMethod:      "StructBuildInitiate",
-                     Use:            "struct-build-initiate [player id] [struct type id] [location id] [location type] [operating ambit] [slot]",
+                     Use:            "struct-build-initiate [player id] [struct type id] [location type] [operating ambit] [slot]",
                      Short:          "Initiate the construction of a Struct",
-                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"},{ProtoField: "structTypeId"},{ProtoField: "locationId"},{ProtoField: "locationType"},{ProtoField: "operatingAmbit"},{ProtoField: "slot", Optional: true }},
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"},{ProtoField: "structTypeId"},{ProtoField: "locationType"},{ProtoField: "operatingAmbit"},{ProtoField: "slot", Optional: true }},
                  },
                  {
                      RpcMethod:      "StructDefenseClear",

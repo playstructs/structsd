@@ -15,7 +15,7 @@ import (
 
 
 
-func CreateBaseStruct(structType *StructType, creator string, owner string, locationId string, locationType ObjectType, ambit Ambit) (Struct) {
+func CreateBaseStruct(structType *StructType, creator string, owner string, locationType ObjectType, ambit Ambit) (Struct) {
     return Struct{
         Creator: creator,
         Owner: owner,
@@ -23,7 +23,6 @@ func CreateBaseStruct(structType *StructType, creator string, owner string, loca
         Type: structType.Id,
 
         LocationType: locationType,
-        LocationId: locationId,
         OperatingAmbit: ambit,
     }
 }

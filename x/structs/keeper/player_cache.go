@@ -4,7 +4,7 @@ import (
 
 	"context"
     //"math"
-    //"fmt"
+    "fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
@@ -16,6 +16,8 @@ type PlayerCache struct {
     PlayerId string
     K *Keeper
     Ctx context.Context
+
+    AnyChange bool
 
     Ready bool
 
@@ -75,6 +77,8 @@ func (k *Keeper) GetPlayerCacheFromId(ctx context.Context, playerId string) (Pla
         K: k,
         Ctx: ctx,
 
+        AnyChange: false,
+
         NonceAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_nonce, playerId),
 
         LastActionAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, playerId),
@@ -104,7 +108,19 @@ func (k *Keeper) GetPlayerCacheFromAddress(ctx context.Context, address string) 
 }
 
 func (cache *PlayerCache) Commit() () {
+    cache.AnyChange = false
+
+    fmt.Printf("\n Updating Player From Cache (%s) \n", cache.PlayerId)
+
     if (cache.PlayerChanged) { cache.K.SetPlayer(cache.Ctx, cache.Player) }
+
+    if (cache.GetPlanet().IsChanged()) {
+        cache.GetPlanet().Commit()
+    }
+
+    if (cache.GetFleet().IsChanged()){
+        cache.GetFleet().Commit()
+    }
 
     if (cache.NonceChanged) {
         cache.K.SetGridAttribute(cache.Ctx, cache.NonceAttributeId, uint64(cache.Nonce))
@@ -126,6 +142,14 @@ func (cache *PlayerCache) Commit() () {
         cache.StructsLoadChanged = false
     }
 
+}
+
+func (cache *PlayerCache) IsChanged() bool {
+    return cache.AnyChange
+}
+
+func (cache *PlayerCache) Changed() {
+    cache.AnyChange = true
 }
 
 
@@ -274,6 +298,7 @@ func (cache *PlayerCache) BuildQuantityDecrement(structTypeId uint64) {
 func (cache *PlayerCache) StoredOreEmpty() {
     cache.StoredOre = 0
     cache.StoredOreChanged = true
+    cache.Changed()
 }
 
 
@@ -286,11 +311,13 @@ func (cache *PlayerCache) StoredOreDecrement(amount uint64) {
     }
 
     cache.StoredOreChanged = true
+    cache.Changed()
 }
 
 func (cache *PlayerCache) StoredOreIncrement(amount uint64) {
     cache.StoredOre = cache.GetStoredOre() + amount
     cache.StoredOreChanged = true
+    cache.Changed()
 }
 
 
@@ -303,11 +330,13 @@ func (cache *PlayerCache) StructsLoadDecrement(amount uint64) {
     }
 
     cache.StructsLoadChanged = true
+    cache.Changed()
 }
 
 func (cache *PlayerCache) StructsLoadIncrement(amount uint64) {
     cache.StructsLoad = cache.GetStructsLoad() + amount
     cache.StructsLoadChanged = true
+    cache.Changed()
 }
 
 
@@ -316,6 +345,7 @@ func (cache *PlayerCache) Discharge() {
     cache.LastAction = uint64(ctxSDK.BlockHeight())
     cache.LastActionChanged = true
     cache.LastActionLoaded = true
+    cache.Changed()
 }
 
 func (cache *PlayerCache) SetPlanetId(planetId string) {
@@ -323,6 +353,7 @@ func (cache *PlayerCache) SetPlanetId(planetId string) {
 
     cache.Player.PlanetId = planetId
     cache.PlayerChanged = true
+    cache.Changed()
 }
 
 func (cache *PlayerCache) SetFleetId(fleetId string) {
@@ -330,6 +361,7 @@ func (cache *PlayerCache) SetFleetId(fleetId string) {
 
     cache.Player.FleetId = fleetId
     cache.PlayerChanged = true
+    cache.Changed()
 }
 
 // DepositRefinedAlpha() - Immediately Commits
