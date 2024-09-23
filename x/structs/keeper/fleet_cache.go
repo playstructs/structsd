@@ -245,6 +245,7 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
 
 
     // Old destination wasn't home - update all the previous stuff
+    Breaking Change.
     if (cache.GetOwner().GetPlanetId() != cache.GetPreviousPlanet().GetPlanetId()) {
 
         // Are we at the start of the list?
