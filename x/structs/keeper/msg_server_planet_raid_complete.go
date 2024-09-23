@@ -57,7 +57,7 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 
     // check that the player is online
     if fleet.GetOwner().IsOffline() {
-        return &types.MsgPlanetRaidCompleteResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet cannot complete a Raid unlessthe player is Online")
+        return &types.MsgPlanetRaidCompleteResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet cannot complete a Raid unless the player is Online")
     }
 
 

@@ -21331,10 +21331,6 @@ paths:
                   type: string
               weaponSystem:
                 type: string
-                enum:
-                  - primaryWeapon
-                  - secondaryWeapon
-                default: primaryWeapon
       tags:
         - Msg
   /structs.structs.Msg/StructBuildComplete:
@@ -35815,10 +35811,6 @@ definitions:
           type: string
       weaponSystem:
         type: string
-        enum:
-          - primaryWeapon
-          - secondaryWeapon
-        default: primaryWeapon
   structs.structs.MsgStructAttackResponse:
     type: object
   structs.structs.MsgStructBuildComplete:
@@ -36395,12 +36387,6 @@ definitions:
       - denied
       - revoked
     default: proposed
-  structs.structs.techWeaponSystem:
-    type: string
-    enum:
-      - primaryWeapon
-      - secondaryWeapon
-    default: primaryWeapon
   cosmos.base.query.v1beta1.PageRequest:
     type: object
     properties:

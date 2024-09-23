@@ -222,7 +222,7 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
     if (cache.GetLocationId() == destination.GetPlanetId()) { return }
 
     // Let's do some initial copies
-    cache.PreviousPlanet = cache.Planet
+    cache.PreviousPlanet = cache.GetPlanet()
     cache.PreviousPlanetChanged = cache.PlanetChanged
     cache.PreviousPlanetLoaded = cache.PlanetLoaded
 
@@ -245,7 +245,6 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
 
 
     // Old destination wasn't home - update all the previous stuff
-    Breaking Change.
     if (cache.GetOwner().GetPlanetId() != cache.GetPreviousPlanet().GetPlanetId()) {
 
         // Are we at the start of the list?
@@ -253,8 +252,11 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
             cache.GetPreviousPlanet().SetLocationListStart(previousBackwardFleetId)
             cache.PreviousPlanetChanged = true
 
-            cache.GetPreviousBackwardFleet().SetLocationListForward("")
-            cache.PreviousBackwardFleetChanged = true
+            if (cache.GetPreviousBackwardFleet() != nil) {
+                cache.GetPreviousBackwardFleet().SetLocationListForward("")
+                cache.PreviousBackwardFleetChanged = true
+            }
+
 
         // The back of the list
         } else if (previousBackwardFleetId == "") {
@@ -295,7 +297,13 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
 
         cache.GetPlanet().SetLocationListLast(cache.GetFleetId())
         cache.PlanetChanged = true
+
+        cache.Fleet.Status = types.FleetStatus_away
+    } else {
+        cache.Fleet.Status = types.FleetStatus_onStation
     }
+
+
     cache.Changed()
 
 }
@@ -514,5 +522,6 @@ func (cache *FleetCache) MigrateToNewPlanet(destination *PlanetCache) {
 
     cache.Planet = destination
     cache.PlanetChanged = true
+    cache.Changed()
 
 }

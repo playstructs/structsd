@@ -13,6 +13,8 @@ import (
     //sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 
+	"fmt"
+
 )
 
 // GetStructCount get the total number of struct
@@ -140,6 +142,7 @@ func (k Keeper) GetAllStruct(ctx context.Context) (list []types.Struct) {
 
 
 func (k Keeper) AppendStructDestructionQueue(ctx context.Context, structId string) {
+    fmt.Printf("\n Sweep %s later", structId)
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructDestroyedQueueKey))
 	store.Set([]byte(structId), []byte{})
 }
@@ -152,6 +155,7 @@ func (k Keeper) StructSweepDestroyed(ctx context.Context) {
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
+	    fmt.Printf("\n Sweeping... %s \n", string(iterator.Key()))
         // Attributes
         // "health":               StructAttributeType_health,
         k.ClearStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_health, string(iterator.Key()) ))
@@ -163,5 +167,4 @@ func (k Keeper) StructSweepDestroyed(ctx context.Context) {
 
         store.Delete(iterator.Key())
 	}
-
 }

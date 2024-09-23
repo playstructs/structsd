@@ -14,7 +14,6 @@ func (k *Keeper) BeginBlocker(ctx context.Context) {
 
 // Called every block, update validator set
 func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error) {
-
 	/* Cascade all the possible failures across the grid
 	 *
 	 * This will mean that there will be some cases in which

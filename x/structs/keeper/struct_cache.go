@@ -425,8 +425,8 @@ func (cache *StructCache) GetFleet()    (*FleetCache)   { if (!cache.FleetLoaded
 
 func (cache *StructCache) GetDefenders() ([]types.StructDefender) { if (!cache.DefendersLoaded) { cache.LoadDefenders() }; return cache.Defenders }
 
-func (cache *StructCache) GetEventAttackDetail() (*types.EventAttackDetail) { if (!cache.EventAttackDetailLoaded) { cache.EventAttackDetail = types.CreateEventAttackDetail() }; return cache.EventAttackDetail }
-func (cache *StructCache) GetEventAttackShotDetail() (*types.EventAttackShotDetail) { if (!cache.EventAttackShotDetailLoaded) { cache.EventAttackShotDetail = types.CreateEventAttackShotDetail(cache.StructId) }; return cache.EventAttackShotDetail }
+func (cache *StructCache) GetEventAttackDetail()     (*types.EventAttackDetail) { if (!cache.EventAttackDetailLoaded) { cache.EventAttackDetail = types.CreateEventAttackDetail(); cache.EventAttackDetailLoaded = true }; return cache.EventAttackDetail }
+func (cache *StructCache) GetEventAttackShotDetail() (*types.EventAttackShotDetail) { if (!cache.EventAttackShotDetailLoaded) { cache.EventAttackShotDetail = types.CreateEventAttackShotDetail(cache.StructId); cache.EventAttackShotDetailLoaded = true }; return cache.EventAttackShotDetail }
 
 /* Setters - SET DOES NOT COMMIT()
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
@@ -692,11 +692,15 @@ func (cache *StructCache) IsSuccessful(successRate fraction.Fraction) bool {
 	buf := bytes.NewBuffer(uctx.BlockHeader().LastCommitHash)
 	binary.Read(buf, binary.BigEndian, &seed)
 
+    fmt.Printf("Checking randomness using seed %d", seed)
     seed = seed + cache.GetOwner().GetNextNonce()
-
+    fmt.Printf("Offsetting seed with nonce to %d", seed)
+    fmt.Printf("Odds of %d in %d", successRate.Numerator(), successRate.Denominator())
 	randomnessOrb := rand.New(rand.NewSource(seed))
 	min := 1
 	max := int(successRate.Denominator())
+
+    fmt.Printf("Result: %t", (int(successRate.Numerator()) <= (randomnessOrb.Intn(max-min+1) + min)))
 
 	return (int(successRate.Numerator()) <= (randomnessOrb.Intn(max-min+1) + min))
 }
@@ -786,7 +790,7 @@ func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem type
         err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is already destroyed", targetStruct.StructId)
      } else {
         if (!cache.GetStructType().CanTargetAmbit(weaponSystem, targetStruct.GetOperatingAmbit())) {
-            err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) cannot be hit from Attacker Struct (%s) using this weapon system", targetStruct.StructId, cache.StructId)
+            err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) cannot be hit from Attacker Struct (%s) using this weapon system %s", targetStruct.StructId, cache.StructId, weaponSystem)
         } else {
             // Not MVP CanBlockTargeting always returns false
             if ((!cache.GetStructType().GetWeaponBlockable(weaponSystem)) && (targetStruct.GetStructType().CanBlockTargeting())) {

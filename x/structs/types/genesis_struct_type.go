@@ -112,7 +112,7 @@ structType = StructType{
  PrimaryWeapon:  TechActiveWeaponry_guidedWeaponry,                                 
  PrimaryWeaponControl: TechWeaponControl_guided,                     
  PrimaryWeaponCharge: 1,                                         
- PrimaryWeaponAmbits: 0,                          
+ PrimaryWeaponAmbits: 62,
  PrimaryWeaponTargets: 1,                                       
  PrimaryWeaponShots: 1,                                           
  PrimaryWeaponDamage: 2,                                         

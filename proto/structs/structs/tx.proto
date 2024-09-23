@@ -532,7 +532,7 @@ message MsgStructAttack {
   string creator                  = 1;
   string operatingStructId        = 2;
   repeated string targetStructId  = 3;
-  techWeaponSystem weaponSystem   = 4;
+  string weaponSystem   = 4;
 }
 
 message MsgStructAttackResponse {}

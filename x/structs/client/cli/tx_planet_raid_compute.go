@@ -128,9 +128,9 @@ COMPUTE:
 			}
 
 
-			msg := &types.MsgStructOreRefineryComplete{
+			msg := &types.MsgPlanetRaidComplete{
                 Creator:  clientCtx.GetFromAddress().String(),
-                StructId: argFleetId,
+                FleetId: argFleetId,
                 Proof: argProof,
                 Nonce: argNonce,
             }
