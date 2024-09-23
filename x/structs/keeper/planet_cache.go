@@ -608,15 +608,18 @@ func (cache *PlanetCache) IsSuccessful(successRate fraction.Fraction) bool {
 
 	var seed int64
 
-	buf := bytes.NewBuffer(uctx.BlockHeader().LastCommitHash)
+	buf := bytes.NewBuffer(uctx.BlockHeader().AppHash)
 	binary.Read(buf, binary.BigEndian, &seed)
-
+    fmt.Printf("Checking randomness using seed %d \n", seed)
     seed = seed + cache.GetOwner().GetNextNonce()
+    fmt.Printf("Offsetting seed with nonce to %d \n", seed)
+    fmt.Printf("Odds of %d in %d \n", successRate.Numerator(), successRate.Denominator())
 
 	randomnessOrb := rand.New(rand.NewSource(seed))
 	min := 1
 	max := int(successRate.Denominator())
 
+    fmt.Printf("Result: %t \n", (int(successRate.Numerator()) <= (randomnessOrb.Intn(max-min+1) + min)))
 	return (int(successRate.Numerator()) <= (randomnessOrb.Intn(max-min+1) + min))
 }
 
