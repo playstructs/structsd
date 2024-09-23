@@ -172,7 +172,7 @@ func (cache *PlanetCache) Commit() () {
         cache.PlanetChanged = false
     }
 
-    if (cache.GetOwner().IsChanged()) {
+    if (cache.Owner != nil && cache.GetOwner().IsChanged()) {
         cache.GetOwner().Commit()
     }
 

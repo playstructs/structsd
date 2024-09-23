@@ -234,15 +234,15 @@ func (cache *StructCache) Commit() () {
         cache.StructureChanged = false
     }
 
-    if (cache.GetOwner().IsChanged()) {
+    if (cache.Owner != nil && cache.GetOwner().IsChanged()) {
         cache.GetOwner().Commit()
     }
 
-    if (cache.GetPlanet().IsChanged()) {
+    if (cache.Planet != nil && cache.GetPlanet().IsChanged()) {
         cache.GetPlanet().Commit()
     }
 
-    if (cache.GetFleet().IsChanged()) {
+    if (cache.Fleet != nil && cache.GetFleet().IsChanged()) {
         cache.GetFleet().Commit()
     }
 

@@ -41,9 +41,10 @@ func (k msgServer) StructDefenseClear(goCtx context.Context, msg *types.MsgStruc
 
     // Check Player Charge
     if (structure.GetOwner().GetCharge() < structure.GetStructType().DefendChangeCharge) {
+        err := sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to change defensive stance, but player (%s) only had %d", structure.GetStructType().Id, structure.GetStructType().DefendChangeCharge, structure.GetOwnerId(), structure.GetOwner().GetCharge() )
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to change defensive stance, but player (%s) only had %d", structure.GetStructType().Id, structure.GetStructType().DefendChangeCharge, structure.GetOwnerId(), structure.GetOwner().GetCharge() )
+        return &types.MsgStructStatusResponse{}, err
     }
 
     if structure.GetOwner().IsOffline(){

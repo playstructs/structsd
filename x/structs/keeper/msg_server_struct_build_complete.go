@@ -38,9 +38,10 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 
     // Check Player Charge
     if (structure.GetOwner().GetCharge() < structure.GetStructType().ActivateCharge) {
+        err := sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to build, but player (%s) only had %d", structure.GetStructType().Id, structure.GetStructType().ActivateCharge, structure.GetOwnerId(), structure.GetOwner().GetCharge() )
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to build, but player (%s) only had %d", structure.GetStructType().Id, structure.GetStructType().ActivateCharge, structure.GetOwnerId(), structure.GetOwner().GetCharge() )
+        return &types.MsgStructStatusResponse{}, err
     }
 
     if structure.GetOwner().IsOffline(){

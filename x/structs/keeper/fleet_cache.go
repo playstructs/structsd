@@ -73,13 +73,13 @@ func (cache *FleetCache) Commit() () {
 
     if (cache.FleetChanged) { cache.K.SetFleet(cache.Ctx, cache.Fleet) }
 
-    if (cache.GetOwner().IsChanged()) { cache.GetOwner().Commit() }
+    if (cache.Owner != nil && cache.GetOwner().IsChanged()) { cache.GetOwner().Commit() }
 
-    if (cache.GetPlanet().IsChanged()) { cache.GetPlanet().Commit() }
+    if (cache.Planet != nil && cache.GetPlanet().IsChanged()) { cache.GetPlanet().Commit() }
     if (cache.PreviousPlanet != nil && cache.GetPreviousPlanet().IsChanged()) { cache.GetPreviousPlanet().Commit() }
 
-    if (cache.GetForwardFleet().IsChanged()) { cache.GetForwardFleet().Commit() }
-    if (cache.GetBackwardFleet().IsChanged()) { cache.GetBackwardFleet().Commit() }
+    if (cache.ForwardFleet != nil && cache.GetForwardFleet().IsChanged()) { cache.GetForwardFleet().Commit() }
+    if (cache.BackwardFleet != nil && cache.GetBackwardFleet().IsChanged()) { cache.GetBackwardFleet().Commit() }
 
     if (cache.PreviousForwardFleet != nil && cache.GetPreviousForwardFleet().IsChanged()) { cache.GetPreviousForwardFleet().Commit() }
     if (cache.PreviousBackwardFleet != nil && cache.GetPreviousBackwardFleet().IsChanged()) { cache.GetPreviousBackwardFleet().Commit() }
@@ -295,6 +295,7 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
         cache.GetPlanet().SetLocationListLast(cache.GetFleetId())
         cache.PlanetChanged = true
     }
+    cache.Changed()
 
 }
 
@@ -450,6 +451,7 @@ func (cache *FleetCache) SetSlot(structure types.Struct) (err error) {
             err = sdkerrors.Wrapf(types.ErrStructAction, "Struct cannot exist in the defined ambit (%s) ", structure.OperatingAmbit)
     }
 	cache.FleetChanged = true
+	cache.Changed()
 	return
 }
 
@@ -469,6 +471,7 @@ func (cache *FleetCache) ClearSlot(ambit types.Ambit, slot uint64)  {
             cache.Fleet.Space[slot] = ""
     }
     cache.FleetChanged = true
+    cache.Changed()
 }
 
 
@@ -477,6 +480,7 @@ func (cache *FleetCache) SetCommandStruct(structure types.Struct) {
 
     cache.Fleet.CommandStruct = structure.Id
     cache.FleetChanged = true
+    cache.Changed()
 }
 
 func (cache *FleetCache) ClearCommandStruct() {
@@ -484,6 +488,7 @@ func (cache *FleetCache) ClearCommandStruct() {
 
     cache.Fleet.CommandStruct = ""
     cache.FleetChanged = true
+    cache.Changed()
 }
 
 

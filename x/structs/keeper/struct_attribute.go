@@ -152,6 +152,7 @@ func (k Keeper) GetStructAttributesByObject(ctx context.Context, objectId string
         //typeCount: k.GetStructAttribute(ctx, GetStructAttributeIDByObjectIdAndSubIndex(types.StructAttributeType_typeCount, objectId),
 
         IsMaterialized:    types.StructState(status)&types.StructStateMaterialized != 0,
+        IsBuilt:           types.StructState(status)&types.StructStateBuilt != 0,
         IsOnline:          types.StructState(status)&types.StructStateOnline != 0,
         IsHidden:          types.StructState(status)&types.StructStateHidden != 0,
         IsDestroyed:       types.StructState(status)&types.StructStateDestroyed != 0,

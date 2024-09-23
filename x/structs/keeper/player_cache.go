@@ -114,11 +114,11 @@ func (cache *PlayerCache) Commit() () {
 
     if (cache.PlayerChanged) { cache.K.SetPlayer(cache.Ctx, cache.Player) }
 
-    if (cache.GetPlanet().IsChanged()) {
+    if (cache.Planet != nil && cache.GetPlanet().IsChanged()) {
         cache.GetPlanet().Commit()
     }
 
-    if (cache.GetFleet().IsChanged()){
+    if (cache.Fleet != nil && cache.GetFleet().IsChanged()){
         cache.GetFleet().Commit()
     }
 

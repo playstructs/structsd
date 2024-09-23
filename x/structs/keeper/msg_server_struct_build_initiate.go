@@ -52,9 +52,10 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
 
     // Check Player Charge
     if (owner.GetCharge() < structType.BuildCharge) {
+        err := sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to build, but player (%s) only had %d", msg.StructTypeId, structType.BuildCharge, owner.GetPlayerId(), owner.GetCharge() )
         owner.Discharge()
         owner.Commit()
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to build, but player (%s) only had %d", msg.StructTypeId, structType.BuildCharge, owner.GetPlayerId(), owner.GetCharge() )
+        return &types.MsgStructStatusResponse{}, err
     }
 
 

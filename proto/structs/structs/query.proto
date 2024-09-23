@@ -392,7 +392,8 @@ message QueryGetPlanetRequest {
 
 message QueryGetPlanetResponse {
   Planet Planet = 1 [(gogoproto.nullable) = false];
-  PlanetAttributes planetAttributes = 2;
+  GridAttributes gridAttributes = 2;
+  PlanetAttributes planetAttributes = 3;
 }
 
 message QueryAllPlanetRequest {

@@ -52,9 +52,10 @@ func (k Keeper) Planet(goCtx context.Context, req *types.QueryGetPlanetRequest) 
 		return nil, types.ErrObjectNotFound
 	}
 
+    gridAttributes := k.GetGridAttributesByObject(ctx, req.Id)
     planetAttributes := k.GetPlanetAttributesByObject(ctx, req.Id)
 
-	return &types.QueryGetPlanetResponse{Planet: planet, PlanetAttributes: &planetAttributes}, nil
+	return &types.QueryGetPlanetResponse{Planet: planet, GridAttributes: &gridAttributes, PlanetAttributes: &planetAttributes}, nil
 }
 
 

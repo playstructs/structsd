@@ -45,9 +45,10 @@ func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (
 
     // Check Player Charge
     if structure.GetOwner().GetCharge() < structure.GetStructType().GetMoveCharge() {
+        err := sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for movement, but player (%s) only had %d", structure.GetStructType().GetId(), structure.GetStructType().GetMoveCharge(), structure.GetOwnerId(), structure.GetOwner().GetCharge() )
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for movement, but player (%s) only had %d", structure.GetStructType().GetId(), structure.GetStructType().GetMoveCharge(), structure.GetOwnerId(), structure.GetOwner().GetCharge() )
+        return &types.MsgStructStatusResponse{}, err
     }
 
     err := structure.AttemptMove(msg.LocationId, msg.LocationType, msg.Ambit, msg.Slot)
