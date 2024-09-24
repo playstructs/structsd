@@ -169,7 +169,9 @@ structType = StructType{
  UnguidedDefensiveSuccessRateDenominator: 0, 
             
  GuidedDefensiveSuccessRateNumerator: 0,       
- GuidedDefensiveSuccessRateDenominator: 0,     
+ GuidedDefensiveSuccessRateDenominator: 0,
+
+ TriggerRaidDefeatByDestruction: true,
                                                          
  } 
 genesisStructTypes = append(genesisStructTypes, structType) 
