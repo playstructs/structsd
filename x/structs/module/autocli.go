@@ -473,9 +473,9 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                  },
                  {
                      RpcMethod:      "StructMove",
-                     Use:            "struct-move [struct id] [location id] [location type] [ambit] [slot]",
+                     Use:            "struct-move [struct id] [location type] [ambit] [slot]",
                      Short:          "Move a Struct to a different ambit, slot, or location",
-                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"},{ProtoField: "locationId"},{ProtoField: "locationType"},{ProtoField: "ambit"},{ProtoField: "slot", Optional: true }},
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"},{ProtoField: "locationType"},{ProtoField: "ambit"},{ProtoField: "slot", Optional: true }},
                  },
                  {
                      RpcMethod:      "StructOreMinerComplete",

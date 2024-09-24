@@ -405,14 +405,14 @@ func (cache *PlayerCache) CanBePlayedBy(address string) (err error) {
     if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(address), types.PermissionPlay)) {
         err = sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", address)
 
-    } else {
-        if (cache.GetPrimaryAddress() != address) {
-            callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
-            if (err != nil) {
-                if (callingPlayer.GetPlayerId() != cache.GetPlayerId()) {
-                    if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetPlayerId(), callingPlayer.GetPlayerId()), types.PermissionPlay)) {
-                       err = sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayer.GetPlayerId(), cache.GetPlayerId())
-                    }
+    }
+
+    if (cache.GetPrimaryAddress() != address) {
+        callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
+        if (err != nil) {
+            if (callingPlayer.GetPlayerId() != cache.GetPlayerId()) {
+                if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetPlayerId(), callingPlayer.GetPlayerId()), types.PermissionPlay)) {
+                   err = sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayer.GetPlayerId(), cache.GetPlayerId())
                 }
             }
         }

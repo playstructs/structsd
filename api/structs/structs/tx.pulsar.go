@@ -29177,7 +29177,6 @@ var (
 	md_MsgStructMove              protoreflect.MessageDescriptor
 	fd_MsgStructMove_creator      protoreflect.FieldDescriptor
 	fd_MsgStructMove_structId     protoreflect.FieldDescriptor
-	fd_MsgStructMove_locationId   protoreflect.FieldDescriptor
 	fd_MsgStructMove_locationType protoreflect.FieldDescriptor
 	fd_MsgStructMove_ambit        protoreflect.FieldDescriptor
 	fd_MsgStructMove_slot         protoreflect.FieldDescriptor
@@ -29188,7 +29187,6 @@ func init() {
 	md_MsgStructMove = File_structs_structs_tx_proto.Messages().ByName("MsgStructMove")
 	fd_MsgStructMove_creator = md_MsgStructMove.Fields().ByName("creator")
 	fd_MsgStructMove_structId = md_MsgStructMove.Fields().ByName("structId")
-	fd_MsgStructMove_locationId = md_MsgStructMove.Fields().ByName("locationId")
 	fd_MsgStructMove_locationType = md_MsgStructMove.Fields().ByName("locationType")
 	fd_MsgStructMove_ambit = md_MsgStructMove.Fields().ByName("ambit")
 	fd_MsgStructMove_slot = md_MsgStructMove.Fields().ByName("slot")
@@ -29271,12 +29269,6 @@ func (x *fastReflection_MsgStructMove) Range(f func(protoreflect.FieldDescriptor
 			return
 		}
 	}
-	if x.LocationId != "" {
-		value := protoreflect.ValueOfString(x.LocationId)
-		if !f(fd_MsgStructMove_locationId, value) {
-			return
-		}
-	}
 	if x.LocationType != 0 {
 		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.LocationType))
 		if !f(fd_MsgStructMove_locationType, value) {
@@ -29314,8 +29306,6 @@ func (x *fastReflection_MsgStructMove) Has(fd protoreflect.FieldDescriptor) bool
 		return x.Creator != ""
 	case "structs.structs.MsgStructMove.structId":
 		return x.StructId != ""
-	case "structs.structs.MsgStructMove.locationId":
-		return x.LocationId != ""
 	case "structs.structs.MsgStructMove.locationType":
 		return x.LocationType != 0
 	case "structs.structs.MsgStructMove.ambit":
@@ -29342,8 +29332,6 @@ func (x *fastReflection_MsgStructMove) Clear(fd protoreflect.FieldDescriptor) {
 		x.Creator = ""
 	case "structs.structs.MsgStructMove.structId":
 		x.StructId = ""
-	case "structs.structs.MsgStructMove.locationId":
-		x.LocationId = ""
 	case "structs.structs.MsgStructMove.locationType":
 		x.LocationType = 0
 	case "structs.structs.MsgStructMove.ambit":
@@ -29371,9 +29359,6 @@ func (x *fastReflection_MsgStructMove) Get(descriptor protoreflect.FieldDescript
 		return protoreflect.ValueOfString(value)
 	case "structs.structs.MsgStructMove.structId":
 		value := x.StructId
-		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgStructMove.locationId":
-		value := x.LocationId
 		return protoreflect.ValueOfString(value)
 	case "structs.structs.MsgStructMove.locationType":
 		value := x.LocationType
@@ -29408,8 +29393,6 @@ func (x *fastReflection_MsgStructMove) Set(fd protoreflect.FieldDescriptor, valu
 		x.Creator = value.Interface().(string)
 	case "structs.structs.MsgStructMove.structId":
 		x.StructId = value.Interface().(string)
-	case "structs.structs.MsgStructMove.locationId":
-		x.LocationId = value.Interface().(string)
 	case "structs.structs.MsgStructMove.locationType":
 		x.LocationType = (ObjectType)(value.Enum())
 	case "structs.structs.MsgStructMove.ambit":
@@ -29440,8 +29423,6 @@ func (x *fastReflection_MsgStructMove) Mutable(fd protoreflect.FieldDescriptor) 
 		panic(fmt.Errorf("field creator of message structs.structs.MsgStructMove is not mutable"))
 	case "structs.structs.MsgStructMove.structId":
 		panic(fmt.Errorf("field structId of message structs.structs.MsgStructMove is not mutable"))
-	case "structs.structs.MsgStructMove.locationId":
-		panic(fmt.Errorf("field locationId of message structs.structs.MsgStructMove is not mutable"))
 	case "structs.structs.MsgStructMove.locationType":
 		panic(fmt.Errorf("field locationType of message structs.structs.MsgStructMove is not mutable"))
 	case "structs.structs.MsgStructMove.ambit":
@@ -29464,8 +29445,6 @@ func (x *fastReflection_MsgStructMove) NewField(fd protoreflect.FieldDescriptor)
 	case "structs.structs.MsgStructMove.creator":
 		return protoreflect.ValueOfString("")
 	case "structs.structs.MsgStructMove.structId":
-		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgStructMove.locationId":
 		return protoreflect.ValueOfString("")
 	case "structs.structs.MsgStructMove.locationType":
 		return protoreflect.ValueOfEnum(0)
@@ -29550,10 +29529,6 @@ func (x *fastReflection_MsgStructMove) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		l = len(x.LocationId)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
 		if x.LocationType != 0 {
 			n += 1 + runtime.Sov(uint64(x.LocationType))
 		}
@@ -29606,13 +29581,6 @@ func (x *fastReflection_MsgStructMove) ProtoMethods() *protoiface.Methods {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.LocationType))
 			i--
 			dAtA[i] = 0x20
-		}
-		if len(x.LocationId) > 0 {
-			i -= len(x.LocationId)
-			copy(dAtA[i:], x.LocationId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.LocationId)))
-			i--
-			dAtA[i] = 0x1a
 		}
 		if len(x.StructId) > 0 {
 			i -= len(x.StructId)
@@ -29740,38 +29708,6 @@ func (x *fastReflection_MsgStructMove) ProtoMethods() *protoiface.Methods {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
 				x.StructId = string(dAtA[iNdEx:postIndex])
-				iNdEx = postIndex
-			case 3:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field LocationId", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				postIndex := iNdEx + intStringLen
-				if postIndex < 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
-				}
-				if postIndex > l {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-				}
-				x.LocationId = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 4:
 				if wireType != 0 {
@@ -45226,7 +45162,6 @@ type MsgStructMove struct {
 
 	Creator      string     `protobuf:"bytes,1,opt,name=creator,proto3" json:"creator,omitempty"`
 	StructId     string     `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
-	LocationId   string     `protobuf:"bytes,3,opt,name=locationId,proto3" json:"locationId,omitempty"`
 	LocationType ObjectType `protobuf:"varint,4,opt,name=locationType,proto3,enum=structs.structs.ObjectType" json:"locationType,omitempty"`
 	Ambit        Ambit      `protobuf:"varint,5,opt,name=ambit,proto3,enum=structs.structs.Ambit" json:"ambit,omitempty"`
 	Slot         uint64     `protobuf:"varint,6,opt,name=slot,proto3" json:"slot,omitempty"`
@@ -45262,13 +45197,6 @@ func (x *MsgStructMove) GetCreator() string {
 func (x *MsgStructMove) GetStructId() string {
 	if x != nil {
 		return x.StructId
-	}
-	return ""
-}
-
-func (x *MsgStructMove) GetLocationId() string {
-	if x != nil {
-		return x.LocationId
 	}
 	return ""
 }
@@ -46867,13 +46795,11 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x12, 0x2a, 0x0a, 0x10, 0x64, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75,
 	0x63, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x10, 0x64, 0x65, 0x66, 0x65,
 	0x6e, 0x64, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x3a, 0x0c, 0x82, 0xe7,
-	0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0xf6, 0x01, 0x0a, 0x0d, 0x4d,
+	0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0xd6, 0x01, 0x0a, 0x0d, 0x4d,
 	0x73, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4d, 0x6f, 0x76, 0x65, 0x12, 0x18, 0x0a, 0x07,
 	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63,
 	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1a, 0x0a, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x49, 0x64, 0x12, 0x1e, 0x0a, 0x0a, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
 	0x49, 0x64, 0x12, 0x3f, 0x0a, 0x0c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79,
 	0x70, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
 	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63,

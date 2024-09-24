@@ -520,7 +520,6 @@ message MsgStructMove {
 
   string creator          = 1;
   string structId         = 2;
-  string locationId       = 3;
   objectType locationType = 4;
   ambit  ambit            = 5;
   uint64 slot             = 6;

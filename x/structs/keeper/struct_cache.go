@@ -712,13 +712,13 @@ func (cache *StructCache) CanBePlayedBy(address string) (err error) {
     if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(address), types.PermissionPlay)) {
         err = sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", address)
 
-    } else {
-        callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
-        if (err != nil) {
-            if (callingPlayer.PlayerId != cache.GetOwnerId()) {
-                if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.PlayerId), types.PermissionPlay)) {
-                   err = sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayer.PlayerId, cache.GetOwnerId())
-                }
+    }
+
+    callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
+    if (err != nil) {
+        if (callingPlayer.PlayerId != cache.GetOwnerId()) {
+            if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.PlayerId), types.PermissionPlay)) {
+               err = sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayer.PlayerId, cache.GetOwnerId())
             }
         }
     }
@@ -1243,78 +1243,53 @@ func (cache *StructCache) CanTriggerRaidDefeatByDestruction() (bool) {
     return false
 }
 
-func (cache *StructCache) AttemptMove(destinationId string, destinationType types.ObjectType, ambit types.Ambit, slot uint64) (error) {
+func (cache *StructCache) AttemptMove(destinationType types.ObjectType, ambit types.Ambit, slot uint64) (error) {
     if (!cache.StructureLoaded) { cache.LoadStruct() }
 
     if cache.IsOffline() {
         return sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct cannot move when offline")
     }
 
-    var planet PlanetCache
-    var fleet FleetCache
-
     switch destinationType {
         case types.ObjectType_planet:
-            // Load Planet from the PlanetId
-            planet = cache.K.GetPlanetCacheFromId(cache.Ctx, destinationId)
-            planetFound := planet.LoadPlanet()
-            if !planetFound {
-                return  sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was not found. Building a Struct in a void might be tough", destinationId)
-            }
-
-            err := planet.MoveReadiness(cache, ambit, slot)
+            err := cache.GetOwner().GetPlanet().MoveReadiness(cache, ambit, slot)
             if (err != nil) {
                 return err
             }
-
         case types.ObjectType_fleet:
-            // Load the Fleet
-            fleet, _ = cache.K.GetFleetCacheFromId(cache.Ctx, destinationId)
-            fleetFound := fleet.LoadFleet()
-            if !fleetFound {
-                return sdkerrors.Wrapf(types.ErrObjectNotFound, "Fleet (%s) was not found. Building a Struct in a void might be tough", destinationId)
-            }
-
-            err := fleet.MoveReadiness(cache, ambit, slot)
+            err := cache.GetOwner().GetFleet().MoveReadiness(cache, ambit, slot)
             if (err != nil) {
                 return  err
             }
-
         default:
             return sdkerrors.Wrapf(types.ErrObjectNotFound, "We're not building these yet")
     }
 
     switch (cache.Structure.LocationType) {
         case types.ObjectType_planet:
-            previousPlanet := cache.K.GetPlanetCacheFromId(cache.Ctx, cache.Structure.LocationId)
-            previousPlanet.ClearSlot(cache.Structure.OperatingAmbit, cache.Structure.Slot)
-            previousPlanet.Commit()
+            cache.GetOwner().GetPlanet().ClearSlot(cache.Structure.OperatingAmbit, cache.Structure.Slot)
+            cache.GetOwner().Changed()
         case types.ObjectType_fleet:
             if (cache.GetStructType().Type != types.CommandStruct) {
-                previousFleet, _ := cache.K.GetFleetCacheFromId(cache.Ctx, cache.Structure.LocationId)
-                previousFleet.ClearSlot(cache.Structure.OperatingAmbit, cache.Structure.Slot)
-                previousFleet.Commit()
+                cache.GetOwner().GetFleet().ClearSlot(cache.Structure.OperatingAmbit, cache.Structure.Slot)
+                cache.GetOwner().Changed()
             }
     }
 
    switch destinationType {
         case types.ObjectType_planet:
 
-            cache.Structure.LocationId = destinationId
+            cache.Structure.LocationId = cache.GetOwner().GetPlanetId()
             cache.Structure.LocationType = destinationType
             cache.Structure.OperatingAmbit = ambit
 
             // Update the cross reference on the planet
-            err := planet.SetSlot(cache.Structure)
+            err := cache.GetOwner().GetPlanet().SetSlot(cache.Structure)
             if (err != nil) {
                 return err
             }
+            cache.GetOwner().Changed()
 
-            cache.GetPlanet().Commit()
-
-            cache.Planet = &planet
-            cache.PlanetLoaded = true
-            cache.PlanetChanged = true
         case types.ObjectType_fleet:
 
             // Update the cross reference on the planet
@@ -1322,28 +1297,22 @@ func (cache *StructCache) AttemptMove(destinationId string, destinationType type
                 cache.Structure.OperatingAmbit = ambit
             } else {
 
-                cache.Structure.LocationId = destinationId
+                cache.Structure.LocationId = cache.GetOwner().GetFleetId()
                 cache.Structure.LocationType = destinationType
                 cache.Structure.OperatingAmbit = ambit
                 cache.Structure.Slot = slot
 
 
-                err := fleet.SetSlot(cache.Structure)
+                err := cache.GetOwner().GetFleet().SetSlot(cache.Structure)
                 if (err != nil) {
                     return err
                 }
-
-                // TODO, do a check to see if the old fleet had uncommitted changes
-                cache.GetFleet().Commit()
-
-                cache.Fleet = &fleet
-                cache.FleetLoaded = true
-                cache.FleetChanged = true
+                cache.GetOwner().Changed()
             }
 
             cache.StructureChanged = true
     }
 
-
+    cache.Changed()
     return  nil
 }

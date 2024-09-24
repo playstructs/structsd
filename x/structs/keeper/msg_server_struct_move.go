@@ -51,7 +51,7 @@ func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (
         return &types.MsgStructStatusResponse{}, err
     }
 
-    err := structure.AttemptMove(msg.LocationId, msg.LocationType, msg.Ambit, msg.Slot)
+    err := structure.AttemptMove( msg.LocationType, msg.Ambit, msg.Slot)
     if (err != nil) {
         return &types.MsgStructStatusResponse{}, err
     }

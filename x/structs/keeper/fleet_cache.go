@@ -26,6 +26,9 @@ type FleetCache struct {
     OwnerLoaded bool
     Owner *PlayerCache
 
+    CommandStructLoaded bool
+    CommandStruct *StructCache
+
     PlanetLoaded bool
     PlanetChanged bool
     Planet *PlanetCache
@@ -113,6 +116,15 @@ func (cache *FleetCache) LoadOwner() (bool) {
     return cache.OwnerLoaded
 }
 
+// Load the Player data
+func (cache *FleetCache) LoadCommandStruct() (bool) {
+    cmdStruct, _ := cache.K.GetStructCacheFromId(cache.Ctx, cache.GetCommandStructId())
+    cache.CommandStruct = &cmdStruct
+    cache.CommandStructLoaded = true
+    return cache.CommandStructLoaded
+}
+
+
 // Load the Planet data
 func (cache *FleetCache) LoadPlanet() (bool) {
     if (cache.GetLocationType() == types.ObjectType_planet) {
@@ -168,6 +180,10 @@ func (cache *FleetCache) GetFleetId()   (string)        { return cache.FleetId }
 // Ownership Details
 func (cache *FleetCache) GetOwner()     (*PlayerCache)  { if (!cache.OwnerLoaded) { cache.LoadOwner() }; return cache.Owner }
 func (cache *FleetCache) GetOwnerId()   (string)        { return cache.GetFleet().Owner }
+
+// Command Struct Details
+func (cache *FleetCache) GetCommandStruct()     (*StructCache)  { if (!cache.CommandStructLoaded) { cache.LoadCommandStruct() }; return cache.CommandStruct }
+func (cache *FleetCache) GetCommandStructId()   (string)        { return cache.GetFleet().CommandStruct }
 
 // Location Details
 func (cache *FleetCache) GetLocationId()        (string)            { return cache.GetFleet().LocationId }
@@ -315,6 +331,10 @@ func (cache *FleetCache) PlanetMoveReadinessCheck() (error) {
 
     if !cache.HasCommandStruct() {
         return sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet (%s) needs a Command Struct before deploy", cache.GetFleetId())
+    }
+
+    if cache.GetCommandStruct().IsOffline {
+        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet (%s) needs an Online Command Struct before deploy", cache.GetFleetId())
     }
 
     return nil
