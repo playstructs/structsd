@@ -118,7 +118,7 @@ func (cache *FleetCache) LoadOwner() (bool) {
 
 // Load the Player data
 func (cache *FleetCache) LoadCommandStruct() (bool) {
-    cmdStruct, _ := cache.K.GetStructCacheFromId(cache.Ctx, cache.GetCommandStructId())
+    cmdStruct := cache.K.GetStructCacheFromId(cache.Ctx, cache.GetCommandStructId())
     cache.CommandStruct = &cmdStruct
     cache.CommandStructLoaded = true
     return cache.CommandStructLoaded
@@ -333,7 +333,7 @@ func (cache *FleetCache) PlanetMoveReadinessCheck() (error) {
         return sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet (%s) needs a Command Struct before deploy", cache.GetFleetId())
     }
 
-    if cache.GetCommandStruct().IsOffline {
+    if cache.GetCommandStruct().IsOffline() {
         return sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet (%s) needs an Online Command Struct before deploy", cache.GetFleetId())
     }
 
