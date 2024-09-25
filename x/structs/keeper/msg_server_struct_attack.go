@@ -92,7 +92,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
             defenderPlayer := targetStructure.GetOwner()
             defenders := targetStructure.GetDefenders()
             for _, defender := range defenders {
-                fmt.Printf("Defender (%s) at Location (%s)", defender.GetStructId(), defender.GetLocationId())
+                fmt.Printf("Defender (%s) at Location (%s) \n", defender.GetStructId(), defender.GetLocationId())
 
                 defender.Defender = true
                 defender.ManualLoadOwner(defenderPlayer)
@@ -101,15 +101,19 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
                 defenderReadinessError := defender.ReadinessCheck()
                 if (defenderReadinessError == nil) {
+                    fmt.Printf("Defender seems ready to defend.. \n")
                     if (!attackBlocked && (structure.GetStructType().GetWeaponBlockable(types.TechWeaponSystem_enum[msg.WeaponSystem]))) {
+                        fmt.Printf("Defender blocked!.. \n")
                         attackBlocked = defender.AttemptBlock(&structure, types.TechWeaponSystem_enum[msg.WeaponSystem], &targetStructure)
                     }
 
                 }
 
                 if (structure.GetStructType().GetWeaponCounterable(types.TechWeaponSystem_enum[msg.WeaponSystem])) {
+                    fmt.Printf("Defender trying to counter!.. \n")
                     counterErrors := defender.CanCounterAttack(&structure)
                     if (counterErrors == nil) {
+                        fmt.Printf("Defender counter-attacking!.. \n")
                         structure.TakeCounterAttackDamage(defender)
                     }
                 }
@@ -129,8 +133,10 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
 
         if (structure.GetStructType().GetWeaponCounterable(types.TechWeaponSystem_enum[msg.WeaponSystem])) {
+            fmt.Printf("Target trying to Counter now!.. \n")
             counterErrors := targetStructure.CanCounterAttack(&structure)
             if (counterErrors == nil) {
+                fmt.Printf("Target Countering!.. \n")
                 structure.TakeCounterAttackDamage(&targetStructure)
             }
         }

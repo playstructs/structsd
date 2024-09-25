@@ -848,9 +848,11 @@ func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem type
 func (cache *StructCache) CanCounterAttack(attackerStruct *StructCache) (err error) {
 
      if (attackerStruct.IsDestroyed() || cache.IsDestroyed()) {
+        fmt.Printf("Counter Struct (%s) or Attacker Struct (%s) is already destroyed", cache.StructId, attackerStruct.StructId)
         err = sdkerrors.Wrapf(types.ErrStructAction, "Counter Struct (%s) or Attacker Struct (%s) is already destroyed", cache.StructId, attackerStruct.StructId)
      } else {
         if (!cache.GetStructType().CanCounterTargetAmbit(attackerStruct.GetOperatingAmbit())) {
+            fmt.Printf("Attacker Struct (%s) cannot be hit from Counter Struct (%s) using this weapon system", attackerStruct.StructId, cache.StructId)
             err = sdkerrors.Wrapf(types.ErrStructAction, "Attacker Struct (%s) cannot be hit from Counter Struct (%s) using this weapon system", attackerStruct.StructId, cache.StructId)
         }
      }
@@ -860,10 +862,12 @@ func (cache *StructCache) CanCounterAttack(attackerStruct *StructCache) (err err
         switch (cache.GetLocationType()) {
             case types.ObjectType_planet:
                 if (cache.GetPlanet().GetLocationListStart() != attackerStruct.GetLocationId()) {
+                    fmt.Printf("Target Struct (%s) is unreachable by Planetary Attacker Struct (%s)", attackerStruct.StructId, cache.StructId)
                     err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Planetary Attacker Struct (%s)", attackerStruct.StructId, cache.StructId)
                 }
             case types.ObjectType_fleet:
                 if ((cache.GetFleet().GetLocationListForward() != attackerStruct.GetLocationId()) && (cache.GetFleet().GetLocationListBackward() != attackerStruct.GetLocationId())) {
+                    fmt.Printf("Attacker Struct (%s) is unreachable by Counter Attacker Struct (%s)", attackerStruct.StructId, cache.StructId)
                     err = sdkerrors.Wrapf(types.ErrStructAction, "Attacker Struct (%s) is unreachable by Counter Attacker Struct (%s)", attackerStruct.StructId, cache.StructId)
                 }
             default:
@@ -872,8 +876,6 @@ func (cache *StructCache) CanCounterAttack(attackerStruct *StructCache) (err err
      }
     return
 }
-
-
 
 
 func (cache *StructCache) CanEvade(attackerStruct *StructCache, weaponSystem types.TechWeaponSystem) (canEvade bool) {
@@ -1147,7 +1149,7 @@ func (cache *StructCache) DestroyAndCommit() {
     }
 
     // Clear Defensive Relationships
-    cache.K.ClearStructAttribute(cache.Ctx, cache.ProtectedStructIndexAttributeId)
+    cache.K.DestroyStructDefender(cache.Ctx, cache.GetStructId())
 
     // TODO clean this up to be more function based.. but it's fine
     if (cache.GetStructType().HasPowerGenerationSystem()) {

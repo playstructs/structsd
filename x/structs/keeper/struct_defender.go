@@ -73,6 +73,17 @@ func (k Keeper) ClearStructDefender(ctx context.Context, protectedStructId strin
 	k.ClearStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, structDefenderId))
 }
 
+// DestroyStructDefender clears a structs defensive posture
+func (k Keeper) DestroyStructDefender(ctx context.Context, structDefenderId string) {
+	currentProtectedStructIndex := k.GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, structDefenderId))
+
+	if (currentProtectedStructIndex > 0) {
+    	k.RemoveStructDefender(ctx, GetObjectID(types.ObjectType_struct, currentProtectedStructIndex), structDefenderId)
+    	k.ClearStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, structDefenderId))
+	}
+
+}
+
 
 // RemoveStructDefender removes a struct defender from the store
 func (k Keeper) RemoveStructDefender(ctx context.Context, protectedStructId string, structDefenderId string) {

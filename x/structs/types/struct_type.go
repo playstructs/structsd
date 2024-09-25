@@ -4,6 +4,7 @@ import (
 	//sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
 	"github.com/nethruster/go-fraction"
+	"fmt"
 )
 
 
@@ -190,6 +191,7 @@ func (structType *StructType) CanTargetAmbit(weaponSystem TechWeaponSystem, ambi
 }
 
 func (structType *StructType) CanCounterTargetAmbit(ambit Ambit) (bool) {
+    fmt.Printf("\n %s Checking on counter of primary %d secondary %d and ambit %d and ambit %d\n", structType.Type, structType.PrimaryWeaponAmbits, structType.SecondaryWeaponAmbits, Ambit_flag[ambit], ambit)
     return (structType.PrimaryWeaponAmbits | structType.SecondaryWeaponAmbits)&Ambit_flag[ambit] != 0
 }
 
