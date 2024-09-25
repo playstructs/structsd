@@ -24,38 +24,29 @@ func DefenderKeyPrefix(objectId string) []byte {
 func (k Keeper) SetStructDefender(
 	ctx context.Context,
 	//struct types.Struct,
-	protectedStruct types.Struct,
-	defendingStruct types.Struct,
+	protectedStructId string,
+	protectedStructIndex uint64,
+	defendingStructId string,
 ) (structDefender types.StructDefender) {
  	ctxSDK := sdk.UnwrapSDKContext(ctx)
 
-    currentProtectedStructIndex := k.GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, defendingStruct.Id))
-    if (currentProtectedStructIndex > 0 && currentProtectedStructIndex != protectedStruct.Index) {
+    currentProtectedStructIndex := k.GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, defendingStructId))
+    if (currentProtectedStructIndex > 0 && currentProtectedStructIndex != protectedStructIndex) {
         // Call Remove instead of Clear since there is no reason remove this Struct Attribute, we'll update it later instead.
-        k.RemoveStructDefender(ctx, GetObjectID(types.ObjectType_struct, currentProtectedStructIndex), defendingStruct.Id)
+        k.RemoveStructDefender(ctx, GetObjectID(types.ObjectType_struct, currentProtectedStructIndex), defendingStructId)
     }
-
- 	// Get the Counter Attributes from the Type
- 	defenderStructType, _ := k.GetStructType(ctx, defendingStruct.Type)
 
     structDefender = types.StructDefender{
-          ProtectedStructId: protectedStruct.Id,
-          DefendingStructId: defendingStruct.Id,
-
-          LocationType: defendingStruct.LocationType,
-          LocationId: defendingStruct.LocationId,
-          OperatingAmbit: defendingStruct.OperatingAmbit,
-
-          CounterAttack: defenderStructType.CounterAttack,
-          CounterAttackSameAmbit: defenderStructType.CounterAttackSameAmbit,
+          ProtectedStructId: protectedStructId,
+          DefendingStructId: defendingStructId,
     }
 
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), DefenderKeyPrefix(protectedStruct.Id))
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), DefenderKeyPrefix(protectedStructId))
 	appendedValue := k.cdc.MustMarshal(&structDefender)
-	store.Set([]byte(defendingStruct.Id), appendedValue)
+	store.Set([]byte(defendingStructId), appendedValue)
 
 	// Set the Defending Structs' local attribute too
-	k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, defendingStruct.Id), protectedStruct.Index)
+	k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, defendingStructId), protectedStructIndex)
 
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStructDefender{StructDefender: &structDefender})
 
@@ -90,7 +81,7 @@ func (k Keeper) RemoveStructDefender(ctx context.Context, protectedStructId stri
 }
 
 // GetAllStructDefender returns all struct defenders for a specific struct
-func (k Keeper) GetAllStructDefender(ctx context.Context, protectedStructId string) (list []types.StructDefender) {
+func (k Keeper) GetAllStructDefender(ctx context.Context, protectedStructId string) (list []string) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), DefenderKeyPrefix(protectedStructId))
 	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
@@ -99,9 +90,25 @@ func (k Keeper) GetAllStructDefender(ctx context.Context, protectedStructId stri
 	for ; iterator.Valid(); iterator.Next() {
 		var val types.StructDefender
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		list = append(list, val)
+		list = append(list, val.DefendingStructId)
 	}
 
 	return
 }
 
+// GetAllStructCacheDefender returns all struct defenders for a specific struct
+func (k Keeper) GetAllStructCacheDefender(ctx context.Context, protectedStructId string) (list []*StructCache) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), DefenderKeyPrefix(protectedStructId))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.StructDefender
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		newCache := k.GetStructCacheFromId(ctx, val.DefendingStructId)
+		list = append(list, &newCache)
+	}
+
+	return
+}

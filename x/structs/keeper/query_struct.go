@@ -63,8 +63,9 @@ func (k Keeper) Struct(goCtx context.Context, req *types.QueryGetStructRequest) 
 
     gridAttributes := k.GetGridAttributesByObject(ctx, req.Id)
     structAttributes := k.GetStructAttributesByObject(ctx, req.Id)
+    structDefenders :=  k.GetAllStructDefender(ctx, req.Id)
 
-	return &types.QueryGetStructResponse{Struct: structure, GridAttributes: &gridAttributes, StructAttributes: &structAttributes}, nil
+	return &types.QueryGetStructResponse{Struct: structure, GridAttributes: &gridAttributes, StructAttributes: &structAttributes, StructDefenders: structDefenders }, nil
 }
 
 func (k Keeper) StructAttribute(goCtx context.Context, req *types.QueryGetStructAttributeRequest) (*types.QueryGetStructAttributeResponse, error) {

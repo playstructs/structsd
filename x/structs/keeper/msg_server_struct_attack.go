@@ -92,30 +92,29 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
             defenderPlayer := targetStructure.GetOwner()
             defenders := targetStructure.GetDefenders()
             for _, defender := range defenders {
-                fmt.Printf("Defender (%s) Protecting (%s) at Location (%s)", defender.DefendingStructId, defender.ProtectedStructId, defender.LocationId)
+                fmt.Printf("Defender (%s) at Location (%s)", defender.GetStructId(), defender.GetLocationId())
 
-                defenderStructure := k.GetStructCacheFromId(ctx, defender.DefendingStructId)
-                defenderStructure.Defender = true
-                defenderStructure.ManualLoadOwner(defenderPlayer)
-                defenderStructure.ManualLoadEventAttackDetail(eventAttackDetail)
-                defenderStructure.ManualLoadEventAttackShotDetail(eventAttackShotDetail)
+                defender.Defender = true
+                defender.ManualLoadOwner(defenderPlayer)
+                defender.ManualLoadEventAttackDetail(eventAttackDetail)
+                defender.ManualLoadEventAttackShotDetail(eventAttackShotDetail)
 
-                defenderReadinessError := defenderStructure.ReadinessCheck()
+                defenderReadinessError := defender.ReadinessCheck()
                 if (defenderReadinessError == nil) {
                     if (!attackBlocked && (structure.GetStructType().GetWeaponBlockable(types.TechWeaponSystem_enum[msg.WeaponSystem]))) {
-                        attackBlocked = defenderStructure.AttemptBlock(&structure, types.TechWeaponSystem_enum[msg.WeaponSystem], &targetStructure)
+                        attackBlocked = defender.AttemptBlock(&structure, types.TechWeaponSystem_enum[msg.WeaponSystem], &targetStructure)
                     }
 
                 }
 
                 if (structure.GetStructType().GetWeaponCounterable(types.TechWeaponSystem_enum[msg.WeaponSystem])) {
-                    counterErrors := defenderStructure.CanCounterAttack(&structure)
+                    counterErrors := defender.CanCounterAttack(&structure)
                     if (counterErrors == nil) {
-                        structure.TakeCounterAttackDamage(&defenderStructure)
+                        structure.TakeCounterAttackDamage(defender)
                     }
                 }
 
-                defenderStructure.Commit()
+                defender.Commit()
             }
         }
 

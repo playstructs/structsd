@@ -466,6 +466,7 @@ message QueryGetStructResponse {
   Struct Struct = 1 [(gogoproto.nullable) = false];
   StructAttributes structAttributes = 2;
   GridAttributes gridAttributes = 3;
+  repeated string structDefenders = 4;
 }
 
 message QueryAllStructRequest {

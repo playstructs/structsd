@@ -48,7 +48,7 @@ type StructCache struct {
     Planet *PlanetCache
 
     DefendersLoaded bool
-    Defenders []types.StructDefender
+    Defenders []*StructCache
 
     HealthAttributeId string
     HealthLoaded  bool
@@ -334,7 +334,7 @@ func (cache *StructCache) LoadPlanet() (bool) {
 
 // Load the Defenders data
 func (cache *StructCache) LoadDefenders() (bool) {
-    cache.Defenders = cache.K.GetAllStructDefender(cache.Ctx, cache.GetOwnerId())
+    cache.Defenders = cache.K.GetAllStructCacheDefender(cache.Ctx, cache.GetStructId())
     cache.DefendersLoaded = true
     return cache.DefendersLoaded
 }
@@ -423,7 +423,7 @@ func (cache *StructCache) GetPlanet()   (*PlanetCache)  { if (!cache.PlanetLoade
 func (cache *StructCache) GetPlanetId() (string)        { return cache.GetPlanet().GetPlanetId() }
 func (cache *StructCache) GetFleet()    (*FleetCache)   { if (!cache.FleetLoaded) { cache.LoadFleet() }; return cache.Fleet }
 
-func (cache *StructCache) GetDefenders() ([]types.StructDefender) { if (!cache.DefendersLoaded) { cache.LoadDefenders() }; return cache.Defenders }
+func (cache *StructCache) GetDefenders() ([]*StructCache) { if (!cache.DefendersLoaded) { cache.LoadDefenders() }; return cache.Defenders }
 
 func (cache *StructCache) GetEventAttackDetail()     (*types.EventAttackDetail) { if (!cache.EventAttackDetailLoaded) { cache.EventAttackDetail = types.CreateEventAttackDetail(); cache.EventAttackDetailLoaded = true }; return cache.EventAttackDetail }
 func (cache *StructCache) GetEventAttackShotDetail() (*types.EventAttackShotDetail) { if (!cache.EventAttackShotDetailLoaded) { cache.EventAttackShotDetail = types.CreateEventAttackShotDetail(cache.StructId); cache.EventAttackShotDetailLoaded = true }; return cache.EventAttackShotDetail }

@@ -4462,14 +4462,9 @@ func (x *fastReflection_StructType) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_StructDefender                        protoreflect.MessageDescriptor
-	fd_StructDefender_protectedStructId      protoreflect.FieldDescriptor
-	fd_StructDefender_defendingStructId      protoreflect.FieldDescriptor
-	fd_StructDefender_locationType           protoreflect.FieldDescriptor
-	fd_StructDefender_locationId             protoreflect.FieldDescriptor
-	fd_StructDefender_operatingAmbit         protoreflect.FieldDescriptor
-	fd_StructDefender_counterAttack          protoreflect.FieldDescriptor
-	fd_StructDefender_counterAttackSameAmbit protoreflect.FieldDescriptor
+	md_StructDefender                   protoreflect.MessageDescriptor
+	fd_StructDefender_protectedStructId protoreflect.FieldDescriptor
+	fd_StructDefender_defendingStructId protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -4477,11 +4472,6 @@ func init() {
 	md_StructDefender = File_structs_structs_struct_proto.Messages().ByName("StructDefender")
 	fd_StructDefender_protectedStructId = md_StructDefender.Fields().ByName("protectedStructId")
 	fd_StructDefender_defendingStructId = md_StructDefender.Fields().ByName("defendingStructId")
-	fd_StructDefender_locationType = md_StructDefender.Fields().ByName("locationType")
-	fd_StructDefender_locationId = md_StructDefender.Fields().ByName("locationId")
-	fd_StructDefender_operatingAmbit = md_StructDefender.Fields().ByName("operatingAmbit")
-	fd_StructDefender_counterAttack = md_StructDefender.Fields().ByName("counterAttack")
-	fd_StructDefender_counterAttackSameAmbit = md_StructDefender.Fields().ByName("counterAttackSameAmbit")
 }
 
 var _ protoreflect.Message = (*fastReflection_StructDefender)(nil)
@@ -4561,36 +4551,6 @@ func (x *fastReflection_StructDefender) Range(f func(protoreflect.FieldDescripto
 			return
 		}
 	}
-	if x.LocationType != 0 {
-		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.LocationType))
-		if !f(fd_StructDefender_locationType, value) {
-			return
-		}
-	}
-	if x.LocationId != "" {
-		value := protoreflect.ValueOfString(x.LocationId)
-		if !f(fd_StructDefender_locationId, value) {
-			return
-		}
-	}
-	if x.OperatingAmbit != 0 {
-		value := protoreflect.ValueOfEnum((protoreflect.EnumNumber)(x.OperatingAmbit))
-		if !f(fd_StructDefender_operatingAmbit, value) {
-			return
-		}
-	}
-	if x.CounterAttack != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.CounterAttack)
-		if !f(fd_StructDefender_counterAttack, value) {
-			return
-		}
-	}
-	if x.CounterAttackSameAmbit != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.CounterAttackSameAmbit)
-		if !f(fd_StructDefender_counterAttackSameAmbit, value) {
-			return
-		}
-	}
 }
 
 // Has reports whether a field is populated.
@@ -4610,16 +4570,6 @@ func (x *fastReflection_StructDefender) Has(fd protoreflect.FieldDescriptor) boo
 		return x.ProtectedStructId != ""
 	case "structs.structs.StructDefender.defendingStructId":
 		return x.DefendingStructId != ""
-	case "structs.structs.StructDefender.locationType":
-		return x.LocationType != 0
-	case "structs.structs.StructDefender.locationId":
-		return x.LocationId != ""
-	case "structs.structs.StructDefender.operatingAmbit":
-		return x.OperatingAmbit != 0
-	case "structs.structs.StructDefender.counterAttack":
-		return x.CounterAttack != uint64(0)
-	case "structs.structs.StructDefender.counterAttackSameAmbit":
-		return x.CounterAttackSameAmbit != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDefender"))
@@ -4640,16 +4590,6 @@ func (x *fastReflection_StructDefender) Clear(fd protoreflect.FieldDescriptor) {
 		x.ProtectedStructId = ""
 	case "structs.structs.StructDefender.defendingStructId":
 		x.DefendingStructId = ""
-	case "structs.structs.StructDefender.locationType":
-		x.LocationType = 0
-	case "structs.structs.StructDefender.locationId":
-		x.LocationId = ""
-	case "structs.structs.StructDefender.operatingAmbit":
-		x.OperatingAmbit = 0
-	case "structs.structs.StructDefender.counterAttack":
-		x.CounterAttack = uint64(0)
-	case "structs.structs.StructDefender.counterAttackSameAmbit":
-		x.CounterAttackSameAmbit = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDefender"))
@@ -4672,21 +4612,6 @@ func (x *fastReflection_StructDefender) Get(descriptor protoreflect.FieldDescrip
 	case "structs.structs.StructDefender.defendingStructId":
 		value := x.DefendingStructId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.StructDefender.locationType":
-		value := x.LocationType
-		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
-	case "structs.structs.StructDefender.locationId":
-		value := x.LocationId
-		return protoreflect.ValueOfString(value)
-	case "structs.structs.StructDefender.operatingAmbit":
-		value := x.OperatingAmbit
-		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
-	case "structs.structs.StructDefender.counterAttack":
-		value := x.CounterAttack
-		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.StructDefender.counterAttackSameAmbit":
-		value := x.CounterAttackSameAmbit
-		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDefender"))
@@ -4711,16 +4636,6 @@ func (x *fastReflection_StructDefender) Set(fd protoreflect.FieldDescriptor, val
 		x.ProtectedStructId = value.Interface().(string)
 	case "structs.structs.StructDefender.defendingStructId":
 		x.DefendingStructId = value.Interface().(string)
-	case "structs.structs.StructDefender.locationType":
-		x.LocationType = (ObjectType)(value.Enum())
-	case "structs.structs.StructDefender.locationId":
-		x.LocationId = value.Interface().(string)
-	case "structs.structs.StructDefender.operatingAmbit":
-		x.OperatingAmbit = (Ambit)(value.Enum())
-	case "structs.structs.StructDefender.counterAttack":
-		x.CounterAttack = value.Uint()
-	case "structs.structs.StructDefender.counterAttackSameAmbit":
-		x.CounterAttackSameAmbit = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDefender"))
@@ -4745,16 +4660,6 @@ func (x *fastReflection_StructDefender) Mutable(fd protoreflect.FieldDescriptor)
 		panic(fmt.Errorf("field protectedStructId of message structs.structs.StructDefender is not mutable"))
 	case "structs.structs.StructDefender.defendingStructId":
 		panic(fmt.Errorf("field defendingStructId of message structs.structs.StructDefender is not mutable"))
-	case "structs.structs.StructDefender.locationType":
-		panic(fmt.Errorf("field locationType of message structs.structs.StructDefender is not mutable"))
-	case "structs.structs.StructDefender.locationId":
-		panic(fmt.Errorf("field locationId of message structs.structs.StructDefender is not mutable"))
-	case "structs.structs.StructDefender.operatingAmbit":
-		panic(fmt.Errorf("field operatingAmbit of message structs.structs.StructDefender is not mutable"))
-	case "structs.structs.StructDefender.counterAttack":
-		panic(fmt.Errorf("field counterAttack of message structs.structs.StructDefender is not mutable"))
-	case "structs.structs.StructDefender.counterAttackSameAmbit":
-		panic(fmt.Errorf("field counterAttackSameAmbit of message structs.structs.StructDefender is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDefender"))
@@ -4772,16 +4677,6 @@ func (x *fastReflection_StructDefender) NewField(fd protoreflect.FieldDescriptor
 		return protoreflect.ValueOfString("")
 	case "structs.structs.StructDefender.defendingStructId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.StructDefender.locationType":
-		return protoreflect.ValueOfEnum(0)
-	case "structs.structs.StructDefender.locationId":
-		return protoreflect.ValueOfString("")
-	case "structs.structs.StructDefender.operatingAmbit":
-		return protoreflect.ValueOfEnum(0)
-	case "structs.structs.StructDefender.counterAttack":
-		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.StructDefender.counterAttackSameAmbit":
-		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDefender"))
@@ -4859,22 +4754,6 @@ func (x *fastReflection_StructDefender) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if x.LocationType != 0 {
-			n += 1 + runtime.Sov(uint64(x.LocationType))
-		}
-		l = len(x.LocationId)
-		if l > 0 {
-			n += 1 + l + runtime.Sov(uint64(l))
-		}
-		if x.OperatingAmbit != 0 {
-			n += 1 + runtime.Sov(uint64(x.OperatingAmbit))
-		}
-		if x.CounterAttack != 0 {
-			n += 1 + runtime.Sov(uint64(x.CounterAttack))
-		}
-		if x.CounterAttackSameAmbit != 0 {
-			n += 1 + runtime.Sov(uint64(x.CounterAttackSameAmbit))
-		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -4903,33 +4782,6 @@ func (x *fastReflection_StructDefender) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
-		}
-		if x.CounterAttackSameAmbit != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.CounterAttackSameAmbit))
-			i--
-			dAtA[i] = 0x38
-		}
-		if x.CounterAttack != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.CounterAttack))
-			i--
-			dAtA[i] = 0x30
-		}
-		if x.OperatingAmbit != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.OperatingAmbit))
-			i--
-			dAtA[i] = 0x28
-		}
-		if len(x.LocationId) > 0 {
-			i -= len(x.LocationId)
-			copy(dAtA[i:], x.LocationId)
-			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.LocationId)))
-			i--
-			dAtA[i] = 0x22
-		}
-		if x.LocationType != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.LocationType))
-			i--
-			dAtA[i] = 0x18
 		}
 		if len(x.DefendingStructId) > 0 {
 			i -= len(x.DefendingStructId)
@@ -5058,114 +4910,500 @@ func (x *fastReflection_StructDefender) ProtoMethods() *protoiface.Methods {
 				}
 				x.DefendingStructId = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
-			case 3:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field LocationType", wireType)
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
-				x.LocationType = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.LocationType |= ObjectType(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 4:
-				if wireType != 2 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field LocationId", wireType)
-				}
-				var stringLen uint64
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					stringLen |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-				intStringLen := int(stringLen)
-				if intStringLen < 0 {
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
-				postIndex := iNdEx + intStringLen
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var _ protoreflect.List = (*_StructDefenders_1_list)(nil)
+
+type _StructDefenders_1_list struct {
+	list *[]*StructDefender
+}
+
+func (x *_StructDefenders_1_list) Len() int {
+	if x.list == nil {
+		return 0
+	}
+	return len(*x.list)
+}
+
+func (x *_StructDefenders_1_list) Get(i int) protoreflect.Value {
+	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
+}
+
+func (x *_StructDefenders_1_list) Set(i int, value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*StructDefender)
+	(*x.list)[i] = concreteValue
+}
+
+func (x *_StructDefenders_1_list) Append(value protoreflect.Value) {
+	valueUnwrapped := value.Message()
+	concreteValue := valueUnwrapped.Interface().(*StructDefender)
+	*x.list = append(*x.list, concreteValue)
+}
+
+func (x *_StructDefenders_1_list) AppendMutable() protoreflect.Value {
+	v := new(StructDefender)
+	*x.list = append(*x.list, v)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_StructDefenders_1_list) Truncate(n int) {
+	for i := n; i < len(*x.list); i++ {
+		(*x.list)[i] = nil
+	}
+	*x.list = (*x.list)[:n]
+}
+
+func (x *_StructDefenders_1_list) NewElement() protoreflect.Value {
+	v := new(StructDefender)
+	return protoreflect.ValueOfMessage(v.ProtoReflect())
+}
+
+func (x *_StructDefenders_1_list) IsValid() bool {
+	return x.list != nil
+}
+
+var (
+	md_StructDefenders                 protoreflect.MessageDescriptor
+	fd_StructDefenders_structDefenders protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_struct_proto_init()
+	md_StructDefenders = File_structs_structs_struct_proto.Messages().ByName("StructDefenders")
+	fd_StructDefenders_structDefenders = md_StructDefenders.Fields().ByName("structDefenders")
+}
+
+var _ protoreflect.Message = (*fastReflection_StructDefenders)(nil)
+
+type fastReflection_StructDefenders StructDefenders
+
+func (x *StructDefenders) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_StructDefenders)(x)
+}
+
+func (x *StructDefenders) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_struct_proto_msgTypes[3]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_StructDefenders_messageType fastReflection_StructDefenders_messageType
+var _ protoreflect.MessageType = fastReflection_StructDefenders_messageType{}
+
+type fastReflection_StructDefenders_messageType struct{}
+
+func (x fastReflection_StructDefenders_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_StructDefenders)(nil)
+}
+func (x fastReflection_StructDefenders_messageType) New() protoreflect.Message {
+	return new(fastReflection_StructDefenders)
+}
+func (x fastReflection_StructDefenders_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_StructDefenders
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_StructDefenders) Descriptor() protoreflect.MessageDescriptor {
+	return md_StructDefenders
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_StructDefenders) Type() protoreflect.MessageType {
+	return _fastReflection_StructDefenders_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_StructDefenders) New() protoreflect.Message {
+	return new(fastReflection_StructDefenders)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_StructDefenders) Interface() protoreflect.ProtoMessage {
+	return (*StructDefenders)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_StructDefenders) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if len(x.StructDefenders) != 0 {
+		value := protoreflect.ValueOfList(&_StructDefenders_1_list{list: &x.StructDefenders})
+		if !f(fd_StructDefenders_structDefenders, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_StructDefenders) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.StructDefenders.structDefenders":
+		return len(x.StructDefenders) != 0
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDefenders"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructDefenders does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructDefenders) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.StructDefenders.structDefenders":
+		x.StructDefenders = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDefenders"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructDefenders does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_StructDefenders) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.StructDefenders.structDefenders":
+		if len(x.StructDefenders) == 0 {
+			return protoreflect.ValueOfList(&_StructDefenders_1_list{})
+		}
+		listValue := &_StructDefenders_1_list{list: &x.StructDefenders}
+		return protoreflect.ValueOfList(listValue)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDefenders"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructDefenders does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructDefenders) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.StructDefenders.structDefenders":
+		lv := value.List()
+		clv := lv.(*_StructDefenders_1_list)
+		x.StructDefenders = *clv.list
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDefenders"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructDefenders does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructDefenders) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.StructDefenders.structDefenders":
+		if x.StructDefenders == nil {
+			x.StructDefenders = []*StructDefender{}
+		}
+		value := &_StructDefenders_1_list{list: &x.StructDefenders}
+		return protoreflect.ValueOfList(value)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDefenders"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructDefenders does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_StructDefenders) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.StructDefenders.structDefenders":
+		list := []*StructDefender{}
+		return protoreflect.ValueOfList(&_StructDefenders_1_list{list: &list})
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDefenders"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructDefenders does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_StructDefenders) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.StructDefenders", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_StructDefenders) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructDefenders) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_StructDefenders) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_StructDefenders) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*StructDefenders)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if len(x.StructDefenders) > 0 {
+			for _, e := range x.StructDefenders {
+				l = options.Size(e)
+				n += 1 + l + runtime.Sov(uint64(l))
+			}
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*StructDefenders)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.StructDefenders) > 0 {
+			for iNdEx := len(x.StructDefenders) - 1; iNdEx >= 0; iNdEx-- {
+				encoded, err := options.Marshal(x.StructDefenders[iNdEx])
+				if err != nil {
+					return protoiface.MarshalOutput{
+						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+						Buf:               input.Buf,
+					}, err
+				}
+				i -= len(encoded)
+				copy(dAtA[i:], encoded)
+				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+				i--
+				dAtA[i] = 0xa
+			}
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*StructDefenders)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: StructDefenders: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: StructDefenders: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field StructDefenders", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
 				if postIndex < 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
 				}
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.LocationId = string(dAtA[iNdEx:postIndex])
+				x.StructDefenders = append(x.StructDefenders, &StructDefender{})
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.StructDefenders[len(x.StructDefenders)-1]); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
 				iNdEx = postIndex
-			case 5:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field OperatingAmbit", wireType)
-				}
-				x.OperatingAmbit = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.OperatingAmbit |= Ambit(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 6:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CounterAttack", wireType)
-				}
-				x.CounterAttack = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.CounterAttack |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
-			case 7:
-				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CounterAttackSameAmbit", wireType)
-				}
-				x.CounterAttackSameAmbit = 0
-				for shift := uint(0); ; shift += 7 {
-					if shift >= 64 {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
-					}
-					if iNdEx >= l {
-						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
-					}
-					b := dAtA[iNdEx]
-					iNdEx++
-					x.CounterAttackSameAmbit |= uint64(b&0x7F) << shift
-					if b < 0x80 {
-						break
-					}
-				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -5223,7 +5461,7 @@ func (x *StructAttributeRecord) ProtoReflect() protoreflect.Message {
 }
 
 func (x *StructAttributeRecord) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_struct_proto_msgTypes[3]
+	mi := &file_structs_structs_struct_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5713,7 +5951,7 @@ func (x *StructAttributes) ProtoReflect() protoreflect.Message {
 }
 
 func (x *StructAttributes) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_struct_proto_msgTypes[4]
+	mi := &file_structs_structs_struct_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7355,13 +7593,8 @@ type StructDefender struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	ProtectedStructId      string     `protobuf:"bytes,1,opt,name=protectedStructId,proto3" json:"protectedStructId,omitempty"`
-	DefendingStructId      string     `protobuf:"bytes,2,opt,name=defendingStructId,proto3" json:"defendingStructId,omitempty"`
-	LocationType           ObjectType `protobuf:"varint,3,opt,name=locationType,proto3,enum=structs.structs.ObjectType" json:"locationType,omitempty"`
-	LocationId             string     `protobuf:"bytes,4,opt,name=locationId,proto3" json:"locationId,omitempty"`
-	OperatingAmbit         Ambit      `protobuf:"varint,5,opt,name=operatingAmbit,proto3,enum=structs.structs.Ambit" json:"operatingAmbit,omitempty"`
-	CounterAttack          uint64     `protobuf:"varint,6,opt,name=counterAttack,proto3" json:"counterAttack,omitempty"`
-	CounterAttackSameAmbit uint64     `protobuf:"varint,7,opt,name=counterAttackSameAmbit,proto3" json:"counterAttackSameAmbit,omitempty"`
+	ProtectedStructId string `protobuf:"bytes,1,opt,name=protectedStructId,proto3" json:"protectedStructId,omitempty"`
+	DefendingStructId string `protobuf:"bytes,2,opt,name=defendingStructId,proto3" json:"defendingStructId,omitempty"`
 }
 
 func (x *StructDefender) Reset() {
@@ -7398,39 +7631,39 @@ func (x *StructDefender) GetDefendingStructId() string {
 	return ""
 }
 
-func (x *StructDefender) GetLocationType() ObjectType {
-	if x != nil {
-		return x.LocationType
-	}
-	return ObjectType_guild
+type StructDefenders struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	StructDefenders []*StructDefender `protobuf:"bytes,1,rep,name=structDefenders,proto3" json:"structDefenders,omitempty"`
 }
 
-func (x *StructDefender) GetLocationId() string {
-	if x != nil {
-		return x.LocationId
+func (x *StructDefenders) Reset() {
+	*x = StructDefenders{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_struct_proto_msgTypes[3]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
 	}
-	return ""
 }
 
-func (x *StructDefender) GetOperatingAmbit() Ambit {
-	if x != nil {
-		return x.OperatingAmbit
-	}
-	return Ambit_none
+func (x *StructDefenders) String() string {
+	return protoimpl.X.MessageStringOf(x)
 }
 
-func (x *StructDefender) GetCounterAttack() uint64 {
-	if x != nil {
-		return x.CounterAttack
-	}
-	return 0
+func (*StructDefenders) ProtoMessage() {}
+
+// Deprecated: Use StructDefenders.ProtoReflect.Descriptor instead.
+func (*StructDefenders) Descriptor() ([]byte, []int) {
+	return file_structs_structs_struct_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *StructDefender) GetCounterAttackSameAmbit() uint64 {
+func (x *StructDefenders) GetStructDefenders() []*StructDefender {
 	if x != nil {
-		return x.CounterAttackSameAmbit
+		return x.StructDefenders
 	}
-	return 0
+	return nil
 }
 
 type StructAttributeRecord struct {
@@ -7445,7 +7678,7 @@ type StructAttributeRecord struct {
 func (x *StructAttributeRecord) Reset() {
 	*x = StructAttributeRecord{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_struct_proto_msgTypes[3]
+		mi := &file_structs_structs_struct_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -7459,7 +7692,7 @@ func (*StructAttributeRecord) ProtoMessage() {}
 
 // Deprecated: Use StructAttributeRecord.ProtoReflect.Descriptor instead.
 func (*StructAttributeRecord) Descriptor() ([]byte, []int) {
-	return file_structs_structs_struct_proto_rawDescGZIP(), []int{3}
+	return file_structs_structs_struct_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *StructAttributeRecord) GetAttributeId() string {
@@ -7499,7 +7732,7 @@ type StructAttributes struct {
 func (x *StructAttributes) Reset() {
 	*x = StructAttributes{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_struct_proto_msgTypes[4]
+		mi := &file_structs_structs_struct_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -7513,7 +7746,7 @@ func (*StructAttributes) ProtoMessage() {}
 
 // Deprecated: Use StructAttributes.ProtoReflect.Descriptor instead.
 func (*StructAttributes) Descriptor() ([]byte, []int) {
-	return file_structs_structs_struct_proto_rawDescGZIP(), []int{4}
+	return file_structs_structs_struct_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *StructAttributes) GetHealth() uint64 {
@@ -7873,75 +8106,65 @@ var file_structs_structs_struct_proto_rawDesc = []byte{
 	0x65, 0x61, 0x74, 0x42, 0x79, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e,
 	0x18, 0x40, 0x20, 0x01, 0x28, 0x08, 0x52, 0x1e, 0x74, 0x72, 0x69, 0x67, 0x67, 0x65, 0x72, 0x52,
 	0x61, 0x69, 0x64, 0x44, 0x65, 0x66, 0x65, 0x61, 0x74, 0x42, 0x79, 0x44, 0x65, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0xeb, 0x02, 0x0a, 0x0e, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x12, 0x2c, 0x0a, 0x11, 0x70, 0x72, 0x6f,
-	0x74, 0x65, 0x63, 0x74, 0x65, 0x64, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x70, 0x72, 0x6f, 0x74, 0x65, 0x63, 0x74, 0x65, 0x64, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x2c, 0x0a, 0x11, 0x64, 0x65, 0x66, 0x65, 0x6e,
-	0x64, 0x69, 0x6e, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x11, 0x64, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x3f, 0x0a, 0x0c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x54, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62,
-	0x6a, 0x65, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x52, 0x0c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x1e, 0x0a, 0x0a, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x49, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x6c, 0x6f, 0x63, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x3e, 0x0a, 0x0e, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74,
-	0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x61, 0x6d, 0x62, 0x69, 0x74, 0x52, 0x0e, 0x6f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e,
-	0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x24, 0x0a, 0x0d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65,
-	0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x18, 0x06, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x63,
-	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x12, 0x36, 0x0a, 0x16,
-	0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x61, 0x6d,
-	0x65, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x16, 0x63, 0x6f,
-	0x75, 0x6e, 0x74, 0x65, 0x72, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x61, 0x6d, 0x65, 0x41,
-	0x6d, 0x62, 0x69, 0x74, 0x22, 0x4f, 0x0a, 0x15, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x74,
-	0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12, 0x20, 0x0a,
-	0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x12,
-	0x14, 0x0a, 0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05,
-	0x76, 0x61, 0x6c, 0x75, 0x65, 0x22, 0xd6, 0x03, 0x0a, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x68, 0x65,
-	0x61, 0x6c, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x68, 0x65, 0x61, 0x6c,
-	0x74, 0x68, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x28, 0x0a, 0x0f, 0x62, 0x6c,
-	0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x04, 0x52, 0x0f, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74, 0x42,
-	0x75, 0x69, 0x6c, 0x64, 0x12, 0x2c, 0x0a, 0x11, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61,
-	0x72, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x11, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69,
-	0x6e, 0x65, 0x12, 0x30, 0x0a, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74,
-	0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74, 0x4f, 0x72, 0x65, 0x52, 0x65,
-	0x66, 0x69, 0x6e, 0x65, 0x12, 0x32, 0x0a, 0x14, 0x70, 0x72, 0x6f, 0x74, 0x65, 0x63, 0x74, 0x65,
-	0x64, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x06, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x14, 0x70, 0x72, 0x6f, 0x74, 0x65, 0x63, 0x74, 0x65, 0x64, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x12, 0x1c, 0x0a, 0x09, 0x74, 0x79, 0x70, 0x65,
-	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x74, 0x79, 0x70,
-	0x65, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x12, 0x26, 0x0a, 0x0e, 0x69, 0x73, 0x4d, 0x61, 0x74, 0x65,
-	0x72, 0x69, 0x61, 0x6c, 0x69, 0x7a, 0x65, 0x64, 0x18, 0x08, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0e,
-	0x69, 0x73, 0x4d, 0x61, 0x74, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x69, 0x7a, 0x65, 0x64, 0x12, 0x18,
-	0x0a, 0x07, 0x69, 0x73, 0x42, 0x75, 0x69, 0x6c, 0x74, 0x18, 0x09, 0x20, 0x01, 0x28, 0x08, 0x52,
-	0x07, 0x69, 0x73, 0x42, 0x75, 0x69, 0x6c, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x69, 0x73, 0x4f, 0x6e,
-	0x6c, 0x69, 0x6e, 0x65, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x69, 0x73, 0x4f, 0x6e,
-	0x6c, 0x69, 0x6e, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x69, 0x73, 0x48, 0x69, 0x64, 0x64, 0x65, 0x6e,
-	0x18, 0x0b, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x69, 0x73, 0x48, 0x69, 0x64, 0x64, 0x65, 0x6e,
-	0x12, 0x20, 0x0a, 0x0b, 0x69, 0x73, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x18,
-	0x0c, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0b, 0x69, 0x73, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79,
-	0x65, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x69, 0x73, 0x4c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x18, 0x0d,
-	0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x69, 0x73, 0x4c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0xa1,
-	0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x50, 0x72,
-	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b,
-	0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca,
-	0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea,
-	0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x6c, 0x0a, 0x0e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x12, 0x2c, 0x0a, 0x11, 0x70, 0x72, 0x6f, 0x74,
+	0x65, 0x63, 0x74, 0x65, 0x64, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x11, 0x70, 0x72, 0x6f, 0x74, 0x65, 0x63, 0x74, 0x65, 0x64, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x2c, 0x0a, 0x11, 0x64, 0x65, 0x66, 0x65, 0x6e, 0x64,
+	0x69, 0x6e, 0x67, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x11, 0x64, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x49, 0x64, 0x22, 0x5c, 0x0a, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65,
+	0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x73, 0x12, 0x49, 0x0a, 0x0f, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x73, 0x18, 0x01, 0x20, 0x03, 0x28, 0x0b,
+	0x32, 0x1f, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65,
+	0x72, 0x52, 0x0f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65,
+	0x72, 0x73, 0x22, 0x4f, 0x0a, 0x15, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x74, 0x74, 0x72,
+	0x69, 0x62, 0x75, 0x74, 0x65, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x61,
+	0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0b, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x49, 0x64, 0x12, 0x14, 0x0a,
+	0x05, 0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x05, 0x76, 0x61,
+	0x6c, 0x75, 0x65, 0x22, 0xd6, 0x03, 0x0a, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x41, 0x74,
+	0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x65, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x68, 0x65, 0x61, 0x6c,
+	0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x68, 0x65, 0x61, 0x6c, 0x74, 0x68,
+	0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x28, 0x0a, 0x0f, 0x62, 0x6c, 0x6f, 0x63,
+	0x6b, 0x53, 0x74, 0x61, 0x72, 0x74, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x0f, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74, 0x42, 0x75, 0x69,
+	0x6c, 0x64, 0x12, 0x2c, 0x0a, 0x11, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74,
+	0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x11, 0x62,
+	0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65,
+	0x12, 0x30, 0x0a, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74, 0x4f, 0x72,
+	0x65, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x18, 0x05, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x62,
+	0x6c, 0x6f, 0x63, 0x6b, 0x53, 0x74, 0x61, 0x72, 0x74, 0x4f, 0x72, 0x65, 0x52, 0x65, 0x66, 0x69,
+	0x6e, 0x65, 0x12, 0x32, 0x0a, 0x14, 0x70, 0x72, 0x6f, 0x74, 0x65, 0x63, 0x74, 0x65, 0x64, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x18, 0x06, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x14, 0x70, 0x72, 0x6f, 0x74, 0x65, 0x63, 0x74, 0x65, 0x64, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x49, 0x6e, 0x64, 0x65, 0x78, 0x12, 0x1c, 0x0a, 0x09, 0x74, 0x79, 0x70, 0x65, 0x43, 0x6f,
+	0x75, 0x6e, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x09, 0x74, 0x79, 0x70, 0x65, 0x43,
+	0x6f, 0x75, 0x6e, 0x74, 0x12, 0x26, 0x0a, 0x0e, 0x69, 0x73, 0x4d, 0x61, 0x74, 0x65, 0x72, 0x69,
+	0x61, 0x6c, 0x69, 0x7a, 0x65, 0x64, 0x18, 0x08, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0e, 0x69, 0x73,
+	0x4d, 0x61, 0x74, 0x65, 0x72, 0x69, 0x61, 0x6c, 0x69, 0x7a, 0x65, 0x64, 0x12, 0x18, 0x0a, 0x07,
+	0x69, 0x73, 0x42, 0x75, 0x69, 0x6c, 0x74, 0x18, 0x09, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x69,
+	0x73, 0x42, 0x75, 0x69, 0x6c, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x69, 0x73, 0x4f, 0x6e, 0x6c, 0x69,
+	0x6e, 0x65, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x69, 0x73, 0x4f, 0x6e, 0x6c, 0x69,
+	0x6e, 0x65, 0x12, 0x1a, 0x0a, 0x08, 0x69, 0x73, 0x48, 0x69, 0x64, 0x64, 0x65, 0x6e, 0x18, 0x0b,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x08, 0x69, 0x73, 0x48, 0x69, 0x64, 0x64, 0x65, 0x6e, 0x12, 0x20,
+	0x0a, 0x0b, 0x69, 0x73, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x18, 0x0c, 0x20,
+	0x01, 0x28, 0x08, 0x52, 0x0b, 0x69, 0x73, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64,
+	0x12, 0x1a, 0x0a, 0x08, 0x69, 0x73, 0x4c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x18, 0x0d, 0x20, 0x01,
+	0x28, 0x08, 0x52, 0x08, 0x69, 0x73, 0x4c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0xa1, 0x01, 0x0a,
+	0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x50, 0x72, 0x6f, 0x74,
+	0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69,
+	0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2,
+	0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -7956,47 +8179,47 @@ func file_structs_structs_struct_proto_rawDescGZIP() []byte {
 	return file_structs_structs_struct_proto_rawDescData
 }
 
-var file_structs_structs_struct_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_structs_structs_struct_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_structs_structs_struct_proto_goTypes = []interface{}{
 	(*Struct)(nil),                // 0: structs.structs.Struct
 	(*StructType)(nil),            // 1: structs.structs.StructType
 	(*StructDefender)(nil),        // 2: structs.structs.StructDefender
-	(*StructAttributeRecord)(nil), // 3: structs.structs.StructAttributeRecord
-	(*StructAttributes)(nil),      // 4: structs.structs.StructAttributes
-	(ObjectType)(0),               // 5: structs.structs.objectType
-	(Ambit)(0),                    // 6: structs.structs.ambit
-	(TechActiveWeaponry)(0),       // 7: structs.structs.techActiveWeaponry
-	(TechWeaponControl)(0),        // 8: structs.structs.techWeaponControl
-	(TechPassiveWeaponry)(0),      // 9: structs.structs.techPassiveWeaponry
-	(TechUnitDefenses)(0),         // 10: structs.structs.techUnitDefenses
-	(TechOreReserveDefenses)(0),   // 11: structs.structs.techOreReserveDefenses
-	(TechPlanetaryDefenses)(0),    // 12: structs.structs.techPlanetaryDefenses
-	(TechPlanetaryMining)(0),      // 13: structs.structs.techPlanetaryMining
-	(TechPlanetaryRefineries)(0),  // 14: structs.structs.techPlanetaryRefineries
-	(TechPowerGeneration)(0),      // 15: structs.structs.techPowerGeneration
+	(*StructDefenders)(nil),       // 3: structs.structs.StructDefenders
+	(*StructAttributeRecord)(nil), // 4: structs.structs.StructAttributeRecord
+	(*StructAttributes)(nil),      // 5: structs.structs.StructAttributes
+	(ObjectType)(0),               // 6: structs.structs.objectType
+	(Ambit)(0),                    // 7: structs.structs.ambit
+	(TechActiveWeaponry)(0),       // 8: structs.structs.techActiveWeaponry
+	(TechWeaponControl)(0),        // 9: structs.structs.techWeaponControl
+	(TechPassiveWeaponry)(0),      // 10: structs.structs.techPassiveWeaponry
+	(TechUnitDefenses)(0),         // 11: structs.structs.techUnitDefenses
+	(TechOreReserveDefenses)(0),   // 12: structs.structs.techOreReserveDefenses
+	(TechPlanetaryDefenses)(0),    // 13: structs.structs.techPlanetaryDefenses
+	(TechPlanetaryMining)(0),      // 14: structs.structs.techPlanetaryMining
+	(TechPlanetaryRefineries)(0),  // 15: structs.structs.techPlanetaryRefineries
+	(TechPowerGeneration)(0),      // 16: structs.structs.techPowerGeneration
 }
 var file_structs_structs_struct_proto_depIdxs = []int32{
-	5,  // 0: structs.structs.Struct.locationType:type_name -> structs.structs.objectType
-	6,  // 1: structs.structs.Struct.operatingAmbit:type_name -> structs.structs.ambit
-	5,  // 2: structs.structs.StructType.category:type_name -> structs.structs.objectType
-	7,  // 3: structs.structs.StructType.primaryWeapon:type_name -> structs.structs.techActiveWeaponry
-	8,  // 4: structs.structs.StructType.primaryWeaponControl:type_name -> structs.structs.techWeaponControl
-	7,  // 5: structs.structs.StructType.secondaryWeapon:type_name -> structs.structs.techActiveWeaponry
-	8,  // 6: structs.structs.StructType.secondaryWeaponControl:type_name -> structs.structs.techWeaponControl
-	9,  // 7: structs.structs.StructType.passiveWeaponry:type_name -> structs.structs.techPassiveWeaponry
-	10, // 8: structs.structs.StructType.unitDefenses:type_name -> structs.structs.techUnitDefenses
-	11, // 9: structs.structs.StructType.oreReserveDefenses:type_name -> structs.structs.techOreReserveDefenses
-	12, // 10: structs.structs.StructType.planetaryDefenses:type_name -> structs.structs.techPlanetaryDefenses
-	13, // 11: structs.structs.StructType.planetaryMining:type_name -> structs.structs.techPlanetaryMining
-	14, // 12: structs.structs.StructType.planetaryRefinery:type_name -> structs.structs.techPlanetaryRefineries
-	15, // 13: structs.structs.StructType.powerGeneration:type_name -> structs.structs.techPowerGeneration
-	5,  // 14: structs.structs.StructDefender.locationType:type_name -> structs.structs.objectType
-	6,  // 15: structs.structs.StructDefender.operatingAmbit:type_name -> structs.structs.ambit
-	16, // [16:16] is the sub-list for method output_type
-	16, // [16:16] is the sub-list for method input_type
-	16, // [16:16] is the sub-list for extension type_name
-	16, // [16:16] is the sub-list for extension extendee
-	0,  // [0:16] is the sub-list for field type_name
+	6,  // 0: structs.structs.Struct.locationType:type_name -> structs.structs.objectType
+	7,  // 1: structs.structs.Struct.operatingAmbit:type_name -> structs.structs.ambit
+	6,  // 2: structs.structs.StructType.category:type_name -> structs.structs.objectType
+	8,  // 3: structs.structs.StructType.primaryWeapon:type_name -> structs.structs.techActiveWeaponry
+	9,  // 4: structs.structs.StructType.primaryWeaponControl:type_name -> structs.structs.techWeaponControl
+	8,  // 5: structs.structs.StructType.secondaryWeapon:type_name -> structs.structs.techActiveWeaponry
+	9,  // 6: structs.structs.StructType.secondaryWeaponControl:type_name -> structs.structs.techWeaponControl
+	10, // 7: structs.structs.StructType.passiveWeaponry:type_name -> structs.structs.techPassiveWeaponry
+	11, // 8: structs.structs.StructType.unitDefenses:type_name -> structs.structs.techUnitDefenses
+	12, // 9: structs.structs.StructType.oreReserveDefenses:type_name -> structs.structs.techOreReserveDefenses
+	13, // 10: structs.structs.StructType.planetaryDefenses:type_name -> structs.structs.techPlanetaryDefenses
+	14, // 11: structs.structs.StructType.planetaryMining:type_name -> structs.structs.techPlanetaryMining
+	15, // 12: structs.structs.StructType.planetaryRefinery:type_name -> structs.structs.techPlanetaryRefineries
+	16, // 13: structs.structs.StructType.powerGeneration:type_name -> structs.structs.techPowerGeneration
+	2,  // 14: structs.structs.StructDefenders.structDefenders:type_name -> structs.structs.StructDefender
+	15, // [15:15] is the sub-list for method output_type
+	15, // [15:15] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_structs_structs_struct_proto_init() }
@@ -8043,7 +8266,7 @@ func file_structs_structs_struct_proto_init() {
 			}
 		}
 		file_structs_structs_struct_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*StructAttributeRecord); i {
+			switch v := v.(*StructDefenders); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -8055,6 +8278,18 @@ func file_structs_structs_struct_proto_init() {
 			}
 		}
 		file_structs_structs_struct_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StructAttributeRecord); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_struct_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*StructAttributes); i {
 			case 0:
 				return &v.state
@@ -8073,7 +8308,7 @@ func file_structs_structs_struct_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_structs_structs_struct_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

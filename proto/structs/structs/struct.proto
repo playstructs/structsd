@@ -134,14 +134,12 @@ message StructType {
 message StructDefender {
   string  protectedStructId      = 1;
   string  defendingStructId      = 2;
-
-  objectType  locationType       = 3;
-  string      locationId         = 4;
-  ambit       operatingAmbit     = 5;
-
-  uint64  counterAttack          = 6;
-  uint64  counterAttackSameAmbit = 7;
 }
+
+message StructDefenders {
+  repeated StructDefender structDefenders = 1;
+}
+
 
 message StructAttributeRecord {
   string attributeId = 1;

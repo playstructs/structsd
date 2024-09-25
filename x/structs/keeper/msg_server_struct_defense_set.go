@@ -96,7 +96,8 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is not within ranger to defend Struct (%s) ", structure.GetStructId(), msg.ProtectedStructId)
     }
 
-    k.SetStructDefender(ctx, protectedStructure, structure.GetStruct())
+
+    k.SetStructDefender(ctx, msg.ProtectedStructId, protectedStructure.Index, structure.GetStructId())
 
     structure.GetOwner().Discharge()
     structure.Commit()
