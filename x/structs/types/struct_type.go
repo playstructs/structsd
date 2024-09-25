@@ -186,13 +186,28 @@ func (structType *StructType) GetCounterAttackDamage(sameAmbit bool) (uint64) {
 
 
 
-func (structType *StructType) CanTargetAmbit(weaponSystem TechWeaponSystem, ambit Ambit) (bool) {
-    return structType.GetWeaponAmbits(weaponSystem)&Ambit_flag[ambit] != 0
+func (structType *StructType) CanTargetAmbit(weaponSystem TechWeaponSystem, counterAmbit Ambit, targetAmbit Ambit) (bool) {
+
+    allAmbits := structType.GetWeaponAmbits(weaponSystem)
+    // Is local anywhere in the ambits?
+    if (allAmbits&Ambit_flag[Ambit_local] != 0) {
+        allAmbits = allAmbits | Ambit_flag[counterAmbit]
+    }
+
+    return allAmbits&Ambit_flag[targetAmbit] != 0
 }
 
-func (structType *StructType) CanCounterTargetAmbit(ambit Ambit) (bool) {
-    fmt.Printf("\n %s Checking on counter of primary %d secondary %d and ambit %d and ambit %d\n", structType.Type, structType.PrimaryWeaponAmbits, structType.SecondaryWeaponAmbits, Ambit_flag[ambit], ambit)
-    return (structType.PrimaryWeaponAmbits | structType.SecondaryWeaponAmbits)&Ambit_flag[ambit] != 0
+func (structType *StructType) CanCounterTargetAmbit(counterAmbit Ambit, targetAmbit Ambit) (bool) {
+    fmt.Printf("\n %s Checking on counter of primary %d secondary %d and ambit %d and ambit %d\n", structType.Type, structType.PrimaryWeaponAmbits, structType.SecondaryWeaponAmbits, Ambit_flag[targetAmbit], targetAmbit)
+
+    allAmbits := structType.PrimaryWeaponAmbits | structType.SecondaryWeaponAmbits
+
+    // Is local anywhere in the ambits?
+    if (allAmbits&Ambit_flag[Ambit_local] != 0) {
+        allAmbits = allAmbits | Ambit_flag[counterAmbit]
+    }
+
+    return allAmbits&Ambit_flag[targetAmbit] != 0
 }
 
 func (structType *StructType) CanBlockTargeting() (bool) {

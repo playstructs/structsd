@@ -3,11 +3,12 @@ package types
 import (
 	//sdk "github.com/cosmos/cosmos-sdk/types"
 	//sdkerrors "cosmossdk.io/errors"
+	"fmt"
 )
 
 
 func CreateEventAttackDetail() (*EventAttackDetail) {
-    return &EventAttackDetail{}
+    return &EventAttackDetail{ }
 }
 
 func (eventAttackDetail *EventAttackDetail) SetBaseDetails(attackerStructId string, weaponSystem TechWeaponSystem, weaponControl TechWeaponControl, activeWeaponry TechActiveWeaponry) {
@@ -40,6 +41,7 @@ func (eventAttackDetail *EventAttackDetail) AppendShot(eventAttackShotDetail *Ev
 func CreateEventAttackShotDetail(targetStructId string) (*EventAttackShotDetail) {
     return &EventAttackShotDetail{
         TargetStructId: targetStructId,
+        EventAttackDefenderCounterDetail: []*EventAttackDefenderCounterDetail{},
     }
 }
 
@@ -88,6 +90,7 @@ func (eventAttackShotDetail *EventAttackShotDetail) SetPostDestructionDamage(pos
 }
 
 func (eventAttackShotDetail *EventAttackShotDetail) AppendDefenderCounter(counterByStructId string, counterDamage uint64, counterDestroyedAttacker bool) {
+    fmt.Printf("Recording Counter Attack %s %d %t \n", counterByStructId, counterDamage, counterDestroyedAttacker)
     eventAttackDefenderCounterDetail := EventAttackDefenderCounterDetail{
         CounterByStructId: counterByStructId,
         CounterDamage: counterDamage,

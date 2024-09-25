@@ -789,7 +789,7 @@ func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem type
      if (targetStruct.IsDestroyed()) {
         err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is already destroyed", targetStruct.StructId)
      } else {
-        if (!cache.GetStructType().CanTargetAmbit(weaponSystem, targetStruct.GetOperatingAmbit())) {
+        if (!cache.GetStructType().CanTargetAmbit(weaponSystem, cache.GetOperatingAmbit(), targetStruct.GetOperatingAmbit())) {
             err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) cannot be hit from Attacker Struct (%s) using this weapon system %s", targetStruct.StructId, cache.StructId, weaponSystem)
         } else {
             // Not MVP CanBlockTargeting always returns false
@@ -851,7 +851,7 @@ func (cache *StructCache) CanCounterAttack(attackerStruct *StructCache) (err err
         fmt.Printf("Counter Struct (%s) or Attacker Struct (%s) is already destroyed", cache.StructId, attackerStruct.StructId)
         err = sdkerrors.Wrapf(types.ErrStructAction, "Counter Struct (%s) or Attacker Struct (%s) is already destroyed", cache.StructId, attackerStruct.StructId)
      } else {
-        if (!cache.GetStructType().CanCounterTargetAmbit(attackerStruct.GetOperatingAmbit())) {
+        if (!cache.GetStructType().CanCounterTargetAmbit(cache.GetOperatingAmbit(), attackerStruct.GetOperatingAmbit())) {
             fmt.Printf("Attacker Struct (%s) cannot be hit from Counter Struct (%s) using this weapon system", attackerStruct.StructId, cache.StructId)
             err = sdkerrors.Wrapf(types.ErrStructAction, "Attacker Struct (%s) cannot be hit from Counter Struct (%s) using this weapon system", attackerStruct.StructId, cache.StructId)
         }
@@ -861,17 +861,38 @@ func (cache *StructCache) CanCounterAttack(attackerStruct *StructCache) (err err
      if (err == nil) {
         switch (cache.GetLocationType()) {
             case types.ObjectType_planet:
-                if (cache.GetPlanet().GetLocationListStart() != attackerStruct.GetLocationId()) {
-                    fmt.Printf("Target Struct (%s) is unreachable by Planetary Attacker Struct (%s)", attackerStruct.StructId, cache.StructId)
-                    err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Planetary Attacker Struct (%s)", attackerStruct.StructId, cache.StructId)
+                if (cache.GetPlanet().GetLocationListStart() == attackerStruct.GetLocationId()) {
+                    // The enemy fleet is here
+                } else {
+                    err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Planetary Counter-Attacker Struct (%s)", attackerStruct.StructId, cache.StructId)
                 }
+
             case types.ObjectType_fleet:
-                if ((cache.GetFleet().GetLocationListForward() != attackerStruct.GetLocationId()) && (cache.GetFleet().GetLocationListBackward() != attackerStruct.GetLocationId())) {
-                    fmt.Printf("Attacker Struct (%s) is unreachable by Counter Attacker Struct (%s)", attackerStruct.StructId, cache.StructId)
-                    err = sdkerrors.Wrapf(types.ErrStructAction, "Attacker Struct (%s) is unreachable by Counter Attacker Struct (%s)", attackerStruct.StructId, cache.StructId)
+                // Is the Fleet at home?
+                if cache.GetFleet().IsOnStation() {
+                    // If the Fleet is On Station, ensure the enemy is reachable
+                    if cache.GetPlanet().GetLocationListStart() == attackerStruct.GetLocationId() {
+                        // The Fleet is on station, and the enemy is reachable
+                        // Proceed with the intended action for the Fleet attacking the target
+                    } else {
+                        err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by from the Counter-Attacker Struct (%s) on Planet", attackerStruct.StructId, cache.StructId)
+                    }
+                // Or is the Fleet out raiding another planet?
+                } else {
+                    // If the Fleet is away, first check if the target is on the same planet
+                    if cache.GetFleet().GetLocationListForward() == "" && cache.GetPlanetId() == attackerStruct.GetPlanetId() {
+                        // Target has reached the planetary raid
+                        // Proceed with the intended action for the Fleet attacking the target
+                    // Otherwise check if the target is adjacent (either forward or backward)
+                    } else if cache.GetFleet().GetLocationListForward() == attackerStruct.GetLocationId() && cache.GetFleet().GetLocationListBackward() == attackerStruct.GetLocationId() {
+                        // The target is to either side of the Fleet
+                        // Proceed with the intended action for the Fleet attacking the target
+                    } else {
+                        err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Fleet Counter-Attacker Struct (%s)", attackerStruct.StructId, cache.StructId)
+                    }
                 }
             default:
-                err = sdkerrors.Wrapf(types.ErrStructAction, "Attacker Struct (%s) is unreachable by Counter Struct (%s). Should tell an adult about this one", attackerStruct.StructId, cache.StructId)
+                err = sdkerrors.Wrapf(types.ErrStructAction, "Attacker Struct (%s) is unreachable by Counter-Attacker Struct (%s). Should tell an adult about this one", attackerStruct.StructId, cache.StructId)
         }
      }
     return

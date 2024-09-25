@@ -426,12 +426,7 @@ func (cache *FleetCache) MoveReadiness(structure *StructCache, ambit types.Ambit
         return sdkerrors.Wrapf(types.ErrStructAction, "Struct cannot be exist in the defined ambit (%s) based on structType (%d) ", ambit, structure.GetStructType().GetId())
     }
 
-    if structure.GetStructType().Type == types.CommandStruct {
-        if cache.HasCommandStruct() {
-            return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The fleet (%s) already has a Command Struct", cache.GetFleetId())
-        }
-
-    } else {
+    if structure.GetStructType().Type != types.CommandStruct {
 
         var slots uint64
         var slot string
