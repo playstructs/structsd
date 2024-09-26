@@ -1094,12 +1094,12 @@ func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (d
 
     }
 
-    if (cache.Defender) {
+    if (counterStruct.Defender) {
         fmt.Printf("Generating a defender counter-attack record for the event \n")
-        counterStruct.GetEventAttackShotDetail().AppendDefenderCounter(counterStruct.StructId, damage, cache.IsDestroyed())
+        cache.GetEventAttackShotDetail().AppendDefenderCounter(counterStruct.StructId, damage, cache.IsDestroyed())
     } else {
         fmt.Printf("Generating a target counter-attack record for the event \n")
-        counterStruct.GetEventAttackShotDetail().AppendTargetCounter(damage, cache.IsDestroyed(), counterStruct.GetStructType().GetPassiveWeaponry())
+        cache.GetEventAttackShotDetail().AppendTargetCounter(damage, cache.IsDestroyed(), counterStruct.GetStructType().GetPassiveWeaponry())
     }
 
     return

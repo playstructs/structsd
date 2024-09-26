@@ -90,7 +90,7 @@ func (eventAttackShotDetail *EventAttackShotDetail) SetPostDestructionDamage(pos
 }
 
 func (eventAttackShotDetail *EventAttackShotDetail) AppendDefenderCounter(counterByStructId string, counterDamage uint64, counterDestroyedAttacker bool) {
-    fmt.Printf("Recording Counter Attack %s %d %t \n", counterByStructId, counterDamage, counterDestroyedAttacker)
+    fmt.Printf("Recording Defensive Counter Attack %s %d %t \n", counterByStructId, counterDamage, counterDestroyedAttacker)
     eventAttackDefenderCounterDetail := EventAttackDefenderCounterDetail{
         CounterByStructId: counterByStructId,
         CounterDamage: counterDamage,
@@ -101,6 +101,7 @@ func (eventAttackShotDetail *EventAttackShotDetail) AppendDefenderCounter(counte
 }
 
 func (eventAttackShotDetail *EventAttackShotDetail) AppendTargetCounter(counterDamage uint64, counterDestroyedAttacker bool, passiveWeaponry TechPassiveWeaponry) {
+    fmt.Printf("Recording Primary Counter Attack %d %t \n",  counterDamage, counterDestroyedAttacker)
     eventAttackShotDetail.TargetCountered = true
     eventAttackShotDetail.TargetCounteredDamage = counterDamage
     eventAttackShotDetail.TargetCounterDestroyedAttacker = counterDestroyedAttacker
