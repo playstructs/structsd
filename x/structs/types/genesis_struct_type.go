@@ -666,7 +666,7 @@ structType = StructType{
  OreRefiningDifficulty: 0,
 
  UnguidedDefensiveSuccessRateNumerator: 2,
- UnguidedDefensiveSuccessRateDenominator: 2,
+ UnguidedDefensiveSuccessRateDenominator: 3,
 
  GuidedDefensiveSuccessRateNumerator: 0,
  GuidedDefensiveSuccessRateDenominator: 0,
