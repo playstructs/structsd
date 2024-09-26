@@ -1069,7 +1069,7 @@ func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (d
     if (cache.IsDestroyed()) { return 0 }
 
     damage = counterStruct.GetStructType().GetCounterAttackDamage(cache.GetOperatingAmbit() == counterStruct.GetOperatingAmbit())
-
+    fmt.Printf("Performing %d of counter-attack damage by %s on %s \n", damage, counterStruct.GetStructId(), cache.GetStructId())
     if (damage != 0) {
 
         if (damage > cache.GetHealth()) {
@@ -1085,6 +1085,7 @@ func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (d
 
         if (cache.Health == 0) {
             // destruction damage from the grave
+            fmt.Printf("Struct %s died during counter-attack", cache.GetStructId())
             if (cache.GetStructType().GetPostDestructionDamage() > 0) {
                 counterStruct.TakePostDestructionDamage(cache)
             }
@@ -1094,9 +1095,11 @@ func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (d
     }
 
     if (cache.Defender) {
-        cache.GetEventAttackShotDetail().AppendDefenderCounter(counterStruct.StructId, damage, cache.IsDestroyed())
+        fmt.Printf("Generating a defender counter-attack record for the event \n")
+        counterStruct.GetEventAttackShotDetail().AppendDefenderCounter(counterStruct.StructId, damage, cache.IsDestroyed())
     } else {
-        cache.GetEventAttackShotDetail().AppendTargetCounter(damage, cache.IsDestroyed(), counterStruct.GetStructType().GetPassiveWeaponry())
+        fmt.Printf("Generating a target counter-attack record for the event \n")
+        counterStruct.GetEventAttackShotDetail().AppendTargetCounter(damage, cache.IsDestroyed(), counterStruct.GetStructType().GetPassiveWeaponry())
     }
 
     return

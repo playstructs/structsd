@@ -49,6 +49,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     eventAttackDetail = structure.GetEventAttackDetail()
     eventAttackDetail.SetBaseDetails(structure.GetStructId(), types.TechWeaponSystem_enum[msg.WeaponSystem], structure.GetStructType().GetWeaponControl(types.TechWeaponSystem_enum[msg.WeaponSystem]), structure.GetStructType().GetWeapon(types.TechWeaponSystem_enum[msg.WeaponSystem]))
 
+    structure.ManualLoadEventAttackDetail(eventAttackDetail)
 
     var targetWasPlanetary bool
     var targetWasOnPlanet *PlanetCache
@@ -103,7 +104,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
                 if (defenderReadinessError == nil) {
                     fmt.Printf("Defender seems ready to defend.. \n")
                     if (!attackBlocked && (structure.GetStructType().GetWeaponBlockable(types.TechWeaponSystem_enum[msg.WeaponSystem]))) {
-                        fmt.Printf("Defender blocked!.. \n")
+                        fmt.Printf("Defender to attempt a block!.. \n")
                         attackBlocked = defender.AttemptBlock(&structure, types.TechWeaponSystem_enum[msg.WeaponSystem], &targetStructure)
                     }
 
