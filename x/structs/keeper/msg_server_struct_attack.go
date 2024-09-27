@@ -167,11 +167,12 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
     k.DischargePlayer(ctx, structure.GetOwnerId())
 
-    fmt.Println(ctx.GasMeter().String())
-    if (ctx.ExecMode() != sdk.ExecModeFinalize) {
+    fmt.Println(ctx.ExecMode())
+    if (ctx.ExecMode()== sdk.ExecModeCheck) {
         //ctx.GasMeter().RefundGas(ctx.GasMeter().GasConsumed(), "Walkin it back")
-        ctx.GasMeter().ConsumeGas(uint64(90000), "Messin' with the estimator")
+        ctx.GasMeter().ConsumeGas(uint64(200000), "Messin' with the estimator")
     }
+    fmt.Println(ctx.GasMeter().String())
 
 	return &types.MsgStructAttackResponse{}, nil
 }
