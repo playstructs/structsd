@@ -117,7 +117,7 @@ COMPUTE:
 				newHash.Write([]byte(newInput))
 				newHashOutput := hex.EncodeToString(newHash.Sum(nil))
 
-				if (!types.HashBuildAndCheckDifficulty(newInput, newHashOutput, currentAge, planetAttributes.BlockStartRaid)) { goto COMPUTE }
+				if (!types.HashBuildAndCheckDifficulty(newInput, newHashOutput, currentAge, planetAttributes.PlanetaryShield)) { goto COMPUTE }
 
 				fmt.Println("")
 				fmt.Println("Raid Complete!")

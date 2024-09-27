@@ -56,6 +56,7 @@ func (k Keeper) AppendPlanet(
 
 
     k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, planet.Id), types.PlanetStartingOre)
+    k.SetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_planetaryShield, planet.Id), types.PlanetaryShieldBase)
 
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlanetKey))
 	appendedValue := k.cdc.MustMarshal(&planet)

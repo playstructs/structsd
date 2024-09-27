@@ -35,7 +35,7 @@ const (
         36000 = 1 day
         252000 = 7 days
     */
-    PlanetaryShieldBase = 9000 // Six Hour Target
+    PlanetaryShieldBase = 100 // One Hour Target
 
 
     // Current Aim is a 3 hour max
