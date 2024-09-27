@@ -99,8 +99,9 @@ structType = StructType{
  Type: "Command",
  Category: ObjectType_fleet,
 
+ TriggerRaidDefeatByDestruction: true,
  BuildLimit: 1,
- BuildDifficulty: 2,
+ BuildDifficulty: 200,
  BuildDraw: 100,
  PassiveDraw: 50,
  MaxHealth: 6,
@@ -143,10 +144,10 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
- MoveCharge: 5,
+ MoveCharge: 8,
  OreMiningCharge: 0,
  OreRefiningCharge: 0,
  StealthActivateCharge: 0,
@@ -171,8 +172,6 @@ structType = StructType{
  GuidedDefensiveSuccessRateNumerator: 0,
  GuidedDefensiveSuccessRateDenominator: 0,
 
-  TriggerRaidDefeatByDestruction: true,
-
  }
 genesisStructTypes = append(genesisStructTypes, structType)
 
@@ -185,7 +184,7 @@ structType = StructType{
  Category: ObjectType_fleet,
 
  BuildLimit: 0,
- BuildDifficulty: 3,
+ BuildDifficulty: 765,
  BuildDraw: 375,
  PassiveDraw: 225,
  MaxHealth: 3,
@@ -196,7 +195,7 @@ structType = StructType{
 
  PrimaryWeapon:  TechActiveWeaponry_unguidedWeaponry,
  PrimaryWeaponControl: TechWeaponControl_unguided,
- PrimaryWeaponCharge: 10,
+ PrimaryWeaponCharge: 20,
  PrimaryWeaponAmbits: 22,
  PrimaryWeaponTargets: 1,
  PrimaryWeaponShots: 1,
@@ -228,7 +227,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -254,7 +253,7 @@ structType = StructType{
  UnguidedDefensiveSuccessRateDenominator: 0,
 
  GuidedDefensiveSuccessRateNumerator: 2,
- GuidedDefensiveSuccessRateDenominator: 2,
+ GuidedDefensiveSuccessRateDenominator: 3,
 
  }
 genesisStructTypes = append(genesisStructTypes, structType)
@@ -268,7 +267,7 @@ structType = StructType{
  Category: ObjectType_fleet,
 
  BuildLimit: 0,
- BuildDifficulty: 3,
+ BuildDifficulty: 250,
  BuildDraw: 200,
  PassiveDraw: 100,
  MaxHealth: 3,
@@ -292,7 +291,7 @@ structType = StructType{
 
  SecondaryWeapon:  TechActiveWeaponry_attackRun,
  SecondaryWeaponControl: TechWeaponControl_unguided,
- SecondaryWeaponCharge: 5,
+ SecondaryWeaponCharge: 8,
  SecondaryWeaponAmbits: 16,
  SecondaryWeaponTargets: 1,
  SecondaryWeaponShots: 3,
@@ -311,7 +310,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -351,7 +350,7 @@ structType = StructType{
  Category: ObjectType_fleet,
 
  BuildLimit: 0,
- BuildDifficulty: 2,
+ BuildDifficulty: 450,
  BuildDraw: 150,
  PassiveDraw: 75,
  MaxHealth: 3,
@@ -362,7 +361,7 @@ structType = StructType{
 
  PrimaryWeapon:  TechActiveWeaponry_guidedWeaponry,
  PrimaryWeaponControl: TechWeaponControl_guided,
- PrimaryWeaponCharge: 5,
+ PrimaryWeaponCharge: 8,
  PrimaryWeaponAmbits: 24,
  PrimaryWeaponTargets: 1,
  PrimaryWeaponShots: 1,
@@ -394,7 +393,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -434,7 +433,7 @@ structType = StructType{
  Category: ObjectType_fleet,
 
  BuildLimit: 0,
- BuildDifficulty: 3,
+ BuildDifficulty: 215,
  BuildDraw: 225,
  PassiveDraw: 150,
  MaxHealth: 3,
@@ -477,7 +476,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -503,7 +502,7 @@ structType = StructType{
  UnguidedDefensiveSuccessRateDenominator: 0,
 
  GuidedDefensiveSuccessRateNumerator: 2,
- GuidedDefensiveSuccessRateDenominator: 2,
+ GuidedDefensiveSuccessRateDenominator: 3,
 
  }
 genesisStructTypes = append(genesisStructTypes, structType)
@@ -517,7 +516,7 @@ structType = StructType{
  Category: ObjectType_fleet,
 
  BuildLimit: 0,
- BuildDifficulty: 3,
+ BuildDifficulty: 455,
  BuildDraw: 200,
  PassiveDraw: 125,
  MaxHealth: 3,
@@ -528,7 +527,7 @@ structType = StructType{
 
  PrimaryWeapon:  TechActiveWeaponry_guidedWeaponry,
  PrimaryWeaponControl: TechWeaponControl_guided,
- PrimaryWeaponCharge: 5,
+ PrimaryWeaponCharge: 8,
  PrimaryWeaponAmbits: 6,
  PrimaryWeaponTargets: 1,
  PrimaryWeaponShots: 1,
@@ -560,7 +559,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -600,7 +599,7 @@ structType = StructType{
  Category: ObjectType_fleet,
 
  BuildLimit: 0,
- BuildDifficulty: 3,
+ BuildDifficulty: 460,
  BuildDraw: 225,
  PassiveDraw: 125,
  MaxHealth: 3,
@@ -611,7 +610,7 @@ structType = StructType{
 
  PrimaryWeapon:  TechActiveWeaponry_guidedWeaponry,
  PrimaryWeaponControl: TechWeaponControl_guided,
- PrimaryWeaponCharge: 5,
+ PrimaryWeaponCharge: 8,
  PrimaryWeaponAmbits: 24,
  PrimaryWeaponTargets: 1,
  PrimaryWeaponShots: 1,
@@ -643,7 +642,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -683,7 +682,7 @@ structType = StructType{
  Category: ObjectType_fleet,
 
  BuildLimit: 0,
- BuildDifficulty: 2,
+ BuildDifficulty: 305,
  BuildDraw: 125,
  PassiveDraw: 75,
  MaxHealth: 3,
@@ -694,7 +693,7 @@ structType = StructType{
 
  PrimaryWeapon:  TechActiveWeaponry_unguidedWeaponry,
  PrimaryWeaponControl: TechWeaponControl_unguided,
- PrimaryWeaponCharge: 5,
+ PrimaryWeaponCharge: 8,
  PrimaryWeaponAmbits: 6,
  PrimaryWeaponTargets: 1,
  PrimaryWeaponShots: 1,
@@ -726,7 +725,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -766,7 +765,7 @@ structType = StructType{
  Category: ObjectType_fleet,
 
  BuildLimit: 0,
- BuildDifficulty: 3,
+ BuildDifficulty: 220,
  BuildDraw: 200,
  PassiveDraw: 75,
  MaxHealth: 3,
@@ -809,7 +808,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -849,7 +848,7 @@ structType = StructType{
  Category: ObjectType_fleet,
 
  BuildLimit: 0,
- BuildDifficulty: 2,
+ BuildDifficulty: 450,
  BuildDraw: 150,
  PassiveDraw: 75,
  MaxHealth: 3,
@@ -860,7 +859,7 @@ structType = StructType{
 
  PrimaryWeapon:  TechActiveWeaponry_guidedWeaponry,
  PrimaryWeaponControl: TechWeaponControl_guided,
- PrimaryWeaponCharge: 5,
+ PrimaryWeaponCharge: 8,
  PrimaryWeaponAmbits: 24,
  PrimaryWeaponTargets: 1,
  PrimaryWeaponShots: 1,
@@ -892,7 +891,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -932,7 +931,7 @@ structType = StructType{
  Category: ObjectType_fleet,
 
  BuildLimit: 0,
- BuildDifficulty: 4,
+ BuildDifficulty: 515,
  BuildDraw: 325,
  PassiveDraw: 200,
  MaxHealth: 3,
@@ -943,7 +942,7 @@ structType = StructType{
 
  PrimaryWeapon:  TechActiveWeaponry_guidedWeaponry,
  PrimaryWeaponControl: TechWeaponControl_guided,
- PrimaryWeaponCharge: 5,
+ PrimaryWeaponCharge: 8,
  PrimaryWeaponAmbits: 6,
  PrimaryWeaponTargets: 1,
  PrimaryWeaponShots: 1,
@@ -975,7 +974,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -1001,7 +1000,7 @@ structType = StructType{
  UnguidedDefensiveSuccessRateDenominator: 0,
 
  GuidedDefensiveSuccessRateNumerator: 2,
- GuidedDefensiveSuccessRateDenominator: 2,
+ GuidedDefensiveSuccessRateDenominator: 3,
 
  }
 genesisStructTypes = append(genesisStructTypes, structType)
@@ -1015,7 +1014,7 @@ structType = StructType{
  Category: ObjectType_fleet,
 
  BuildLimit: 0,
- BuildDifficulty: 2,
+ BuildDifficulty: 600,
  BuildDraw: 200,
  PassiveDraw: 100,
  MaxHealth: 3,
@@ -1026,7 +1025,7 @@ structType = StructType{
 
  PrimaryWeapon:  TechActiveWeaponry_guidedWeaponry,
  PrimaryWeaponControl: TechWeaponControl_guided,
- PrimaryWeaponCharge: 5,
+ PrimaryWeaponCharge: 8,
  PrimaryWeaponAmbits: 10,
  PrimaryWeaponTargets: 1,
  PrimaryWeaponShots: 1,
@@ -1058,7 +1057,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -1098,7 +1097,7 @@ structType = StructType{
  Category: ObjectType_fleet,
 
  BuildLimit: 0,
- BuildDifficulty: 3,
+ BuildDifficulty: 455,
  BuildDraw: 200,
  PassiveDraw: 125,
  MaxHealth: 3,
@@ -1109,7 +1108,7 @@ structType = StructType{
 
  PrimaryWeapon:  TechActiveWeaponry_guidedWeaponry,
  PrimaryWeaponControl: TechWeaponControl_guided,
- PrimaryWeaponCharge: 5,
+ PrimaryWeaponCharge: 8,
  PrimaryWeaponAmbits: 18,
  PrimaryWeaponTargets: 1,
  PrimaryWeaponShots: 1,
@@ -1141,7 +1140,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -1181,7 +1180,7 @@ structType = StructType{
  Category: ObjectType_planet,
 
  BuildLimit: 1,
- BuildDifficulty: 1,
+ BuildDifficulty: 700,
  BuildDraw: 100,
  PassiveDraw: 500,
  MaxHealth: 3,
@@ -1224,11 +1223,11 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
- OreMiningCharge: 10,
+ OreMiningCharge: 20,
  OreRefiningCharge: 0,
  StealthActivateCharge: 0,
 
@@ -1243,7 +1242,7 @@ structType = StructType{
  GeneratingRate: 0,
  PlanetaryShieldContribution: 0,
 
- OreMiningDifficulty: 15,
+ OreMiningDifficulty: 14000,
  OreRefiningDifficulty: 0,
 
  UnguidedDefensiveSuccessRateNumerator: 0,
@@ -1264,7 +1263,7 @@ structType = StructType{
  Category: ObjectType_planet,
 
  BuildLimit: 1,
- BuildDifficulty: 1,
+ BuildDifficulty: 700,
  BuildDraw: 100,
  PassiveDraw: 500,
  MaxHealth: 3,
@@ -1307,11 +1306,11 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
- OreMiningCharge: 10,
+ OreMiningCharge: 20,
  OreRefiningCharge: 0,
  StealthActivateCharge: 0,
 
@@ -1326,7 +1325,7 @@ structType = StructType{
  GeneratingRate: 0,
  PlanetaryShieldContribution: 0,
 
- OreMiningDifficulty: 15,
+ OreMiningDifficulty: 14000,
  OreRefiningDifficulty: 0,
 
  UnguidedDefensiveSuccessRateNumerator: 0,
@@ -1347,7 +1346,7 @@ structType = StructType{
  Category: ObjectType_planet,
 
  BuildLimit: 1,
- BuildDifficulty: 1,
+ BuildDifficulty: 700,
  BuildDraw: 100,
  PassiveDraw: 500,
  MaxHealth: 3,
@@ -1390,12 +1389,12 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_oreRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
- OreRefiningCharge: 10,
+ OreRefiningCharge: 20,
  StealthActivateCharge: 0,
 
  AttackReduction: 0,
@@ -1410,7 +1409,7 @@ structType = StructType{
  PlanetaryShieldContribution: 0,
 
  OreMiningDifficulty: 0,
- OreRefiningDifficulty: 15,
+ OreRefiningDifficulty: 28000,
 
  UnguidedDefensiveSuccessRateNumerator: 0,
  UnguidedDefensiveSuccessRateDenominator: 0,
@@ -1430,7 +1429,7 @@ structType = StructType{
  Category: ObjectType_planet,
 
  BuildLimit: 1,
- BuildDifficulty: 1,
+ BuildDifficulty: 700,
  BuildDraw: 100,
  PassiveDraw: 500,
  MaxHealth: 3,
@@ -1473,12 +1472,12 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_oreRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
- OreRefiningCharge: 10,
+ OreRefiningCharge: 20,
  StealthActivateCharge: 0,
 
  AttackReduction: 0,
@@ -1493,7 +1492,7 @@ structType = StructType{
  PlanetaryShieldContribution: 0,
 
  OreMiningDifficulty: 0,
- OreRefiningDifficulty: 15,
+ OreRefiningDifficulty: 28000,
 
  UnguidedDefensiveSuccessRateNumerator: 0,
  UnguidedDefensiveSuccessRateDenominator: 0,
@@ -1513,7 +1512,7 @@ structType = StructType{
  Category: ObjectType_planet,
 
  BuildLimit: 1,
- BuildDifficulty: 1,
+ BuildDifficulty: 720,
  BuildDraw: 100,
  PassiveDraw: 200,
  MaxHealth: 3,
@@ -1556,7 +1555,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -1596,7 +1595,7 @@ structType = StructType{
  Category: ObjectType_planet,
 
  BuildLimit: 1,
- BuildDifficulty: 2,
+ BuildDifficulty: 2880,
  BuildDraw: 450,
  PassiveDraw: 600,
  MaxHealth: 3,
@@ -1639,7 +1638,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -1679,7 +1678,7 @@ structType = StructType{
  Category: ObjectType_planet,
 
  BuildLimit: 1,
- BuildDifficulty: 1,
+ BuildDifficulty: 3600,
  BuildDraw: 200,
  PassiveDraw: 750,
  MaxHealth: 3,
@@ -1722,7 +1721,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -1762,7 +1761,7 @@ structType = StructType{
  Category: ObjectType_planet,
 
  BuildLimit: 1,
- BuildDifficulty: 2,
+ BuildDifficulty: 2880,
  BuildDraw: 450,
  PassiveDraw: 600,
  MaxHealth: 3,
@@ -1805,7 +1804,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -1845,7 +1844,7 @@ structType = StructType{
  Category: ObjectType_planet,
 
  BuildLimit: 1,
- BuildDifficulty: 2,
+ BuildDifficulty: 2880,
  BuildDraw: 450,
  PassiveDraw: 600,
  MaxHealth: 3,
@@ -1888,7 +1887,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -1928,7 +1927,7 @@ structType = StructType{
  Category: ObjectType_planet,
 
  BuildLimit: 1,
- BuildDifficulty: 1,
+ BuildDifficulty: 700,
  BuildDraw: 500,
  PassiveDraw: 500,
  MaxHealth: 3,
@@ -1971,7 +1970,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_smallGenerator,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -2011,7 +2010,7 @@ structType = StructType{
  Category: ObjectType_planet,
 
  BuildLimit: 1,
- BuildDifficulty: 1,
+ BuildDifficulty: 1440,
  BuildDraw: 50000,
  PassiveDraw: 5000,
  MaxHealth: 3,
@@ -2054,7 +2053,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_mediumGenerator,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -2094,7 +2093,7 @@ structType = StructType{
  Category: ObjectType_planet,
 
  BuildLimit: 1,
- BuildDifficulty: 1,
+ BuildDifficulty: 5000,
  BuildDraw: 500000,
  PassiveDraw: 50000,
  MaxHealth: 3,
@@ -2137,7 +2136,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_largeGenerator,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -2177,7 +2176,7 @@ structType = StructType{
  Category: ObjectType_planet,
 
  BuildLimit: 1,
- BuildDifficulty: 1,
+ BuildDifficulty: 700,
  BuildDraw: 500,
  PassiveDraw: 500,
  MaxHealth: 3,
@@ -2220,7 +2219,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_smallGenerator,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -2260,7 +2259,7 @@ structType = StructType{
  Category: ObjectType_planet,
 
  BuildLimit: 1,
- BuildDifficulty: 1,
+ BuildDifficulty: 1440,
  BuildDraw: 50000,
  PassiveDraw: 5000,
  MaxHealth: 3,
@@ -2303,7 +2302,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_mediumGenerator,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -2343,7 +2342,7 @@ structType = StructType{
  Category: ObjectType_planet,
 
  BuildLimit: 1,
- BuildDifficulty: 1,
+ BuildDifficulty: 5000,
  BuildDraw: 500000,
  PassiveDraw: 50000,
  MaxHealth: 3,
@@ -2386,7 +2385,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
  PowerGeneration: TechPowerGeneration_largeGenerator,
 
- ActivateCharge: 10,
+ ActivateCharge: 20,
  BuildCharge: 1,
  DefendChangeCharge: 1,
  MoveCharge: 0,
@@ -2416,6 +2415,7 @@ structType = StructType{
 
  }
 genesisStructTypes = append(genesisStructTypes, structType)
+
 
 
 
