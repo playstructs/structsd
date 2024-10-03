@@ -193,6 +193,10 @@ service Query {
     option (google.api.http).get = "/structs/substation";
   }
 
+  rpc ValidateSignature (QueryValidateSignatureRequest) returns (QueryValidateSignatureResponse) {
+    option (google.api.http).get = "/structs/validate_signature/{address}/{proofPubKey}/{proofSignature}/{message}"
+  }
+
 }
 
 // QueryParamsRequest is request type for the Query/Params RPC method.
@@ -522,3 +526,18 @@ message QueryAllSubstationResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+
+message QueryValidateSignatureRequest {
+  string address        = 1;
+  string message        = 2;
+  string proofPubKey    = 3;
+  string proofSignature = 4;
+}
+
+message QueryValidateSignatureResponse {
+  bool pubkeyFormatError      = 1;
+  bool signatureFormatError   = 2;
+  bool addressPubkeyMismatch  = 3;
+  bool signatureInvalid       = 4;
+  bool valid                  = 5;
+}
