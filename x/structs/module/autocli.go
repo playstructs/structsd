@@ -405,7 +405,18 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      Short:          "Revoke a set of permissions on from an address",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "address"},{ProtoField: "permissions"}},
                  },
-
+                 {
+                     RpcMethod:      "PermissionSetOnObject",
+                     Use:            "permission-set-on-object [object id] [player id] [permissions]",
+                     Short:          "Clear previous permissions and apply a new full set on an object from a player",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "objectId"},{ProtoField: "playerId"},{ProtoField: "permissions"}},
+                 },
+                 {
+                     RpcMethod:      "PermissionSetOnAddress",
+                     Use:            "permission-set-on-address [address] [permissions]",
+                     Short:          "Clear previous permissions and apply a new full set on from an address",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "address"},{ProtoField: "permissions"}},
+                 },
                  {
                      RpcMethod:      "PlanetExplore",
                      Use:            "planet-explore",
