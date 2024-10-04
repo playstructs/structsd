@@ -194,7 +194,7 @@ service Query {
   }
 
   rpc ValidateSignature (QueryValidateSignatureRequest) returns (QueryValidateSignatureResponse) {
-    option (google.api.http).get = "/structs/validate_signature/{address}/{proofPubKey}/{proofSignature}/{message}"
+    option (google.api.http).get = "/structs/validate_signature/{address}/{proofPubKey}/{proofSignature}/{message}";
   }
 
 }
