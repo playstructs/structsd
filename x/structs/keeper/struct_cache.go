@@ -382,6 +382,11 @@ func (cache *StructCache) ManualLoadOwner(owner *PlayerCache) {
     cache.OwnerLoaded = true
 }
 
+func (cache *StructCache) ManualLoadPlanet(planet *PlanetCache) {
+    cache.Planet = planet
+    cache.PlanetLoaded = true
+}
+
 // Set the Event data manually
 // Used to manage the same event across objects
 func (cache *StructCache) ManualLoadEventAttackDetail(eventAttackDetail *types.EventAttackDetail) {
