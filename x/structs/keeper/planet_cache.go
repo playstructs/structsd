@@ -782,7 +782,7 @@ func (cache *PlanetCache) AttemptComplete() (error) {
         // For Space
         for _, structId := range structsToDestroy {
             if structId != "" {
-                planetStruct = cache.K.GetStructCacheFromId(cache.Ctx, structId)
+                planetStruct := cache.K.GetStructCacheFromId(cache.Ctx, structId)
                 planetStruct.ManualLoadOwner(cache.GetOwner())
                 planetStruct.ManualLoadPlanet(cache)
                 planetStruct.DestroyAndCommit()
@@ -790,8 +790,10 @@ func (cache *PlanetCache) AttemptComplete() (error) {
         }
 
         // Send Fleets away
-        for cache.LocationListStart != "" {
-               breaking
+        for cache.GetLocationListStart() != "" {
+               currentFleet, _ := cache.K.GetFleetCacheFromId(cache.Ctx, cache.GetLocationListStart())
+               currentFleet.ManualLoadPlanet(cache)
+               currentFleet.PeaceDeal()
         }
 
         cache.Commit()

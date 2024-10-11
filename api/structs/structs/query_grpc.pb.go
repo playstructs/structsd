@@ -56,6 +56,7 @@ const (
 	Query_StructTypeAll_FullMethodName                 = "/structs.structs.Query/StructTypeAll"
 	Query_Substation_FullMethodName                    = "/structs.structs.Query/Substation"
 	Query_SubstationAll_FullMethodName                 = "/structs.structs.Query/SubstationAll"
+	Query_ValidateSignature_FullMethodName             = "/structs.structs.Query/ValidateSignature"
 )
 
 // QueryClient is the client API for Query service.
@@ -117,6 +118,7 @@ type QueryClient interface {
 	// Queries a list of Substation items.
 	Substation(ctx context.Context, in *QueryGetSubstationRequest, opts ...grpc.CallOption) (*QueryGetSubstationResponse, error)
 	SubstationAll(ctx context.Context, in *QueryAllSubstationRequest, opts ...grpc.CallOption) (*QueryAllSubstationResponse, error)
+	ValidateSignature(ctx context.Context, in *QueryValidateSignatureRequest, opts ...grpc.CallOption) (*QueryValidateSignatureResponse, error)
 }
 
 type queryClient struct {
@@ -460,6 +462,15 @@ func (c *queryClient) SubstationAll(ctx context.Context, in *QueryAllSubstationR
 	return out, nil
 }
 
+func (c *queryClient) ValidateSignature(ctx context.Context, in *QueryValidateSignatureRequest, opts ...grpc.CallOption) (*QueryValidateSignatureResponse, error) {
+	out := new(QueryValidateSignatureResponse)
+	err := c.cc.Invoke(ctx, Query_ValidateSignature_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
@@ -519,6 +530,7 @@ type QueryServer interface {
 	// Queries a list of Substation items.
 	Substation(context.Context, *QueryGetSubstationRequest) (*QueryGetSubstationResponse, error)
 	SubstationAll(context.Context, *QueryAllSubstationRequest) (*QueryAllSubstationResponse, error)
+	ValidateSignature(context.Context, *QueryValidateSignatureRequest) (*QueryValidateSignatureResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -636,6 +648,9 @@ func (UnimplementedQueryServer) Substation(context.Context, *QueryGetSubstationR
 }
 func (UnimplementedQueryServer) SubstationAll(context.Context, *QueryAllSubstationRequest) (*QueryAllSubstationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubstationAll not implemented")
+}
+func (UnimplementedQueryServer) ValidateSignature(context.Context, *QueryValidateSignatureRequest) (*QueryValidateSignatureResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateSignature not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -1316,6 +1331,24 @@ func _Query_SubstationAll_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_ValidateSignature_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryValidateSignatureRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ValidateSignature(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_ValidateSignature_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ValidateSignature(ctx, req.(*QueryValidateSignatureRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1470,6 +1503,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SubstationAll",
 			Handler:    _Query_SubstationAll_Handler,
+		},
+		{
+			MethodName: "ValidateSignature",
+			Handler:    _Query_ValidateSignature_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -2,9 +2,9 @@ package cli
 
 import (
 
-    "context"
+    //"context"
 	"github.com/cosmos/cosmos-sdk/client"
-	"github.com/cosmos/cosmos-sdk/client/flags"
+	//"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/spf13/cobra"
 	"structs/x/structs/types"
 
@@ -25,7 +25,7 @@ message QueryValidateSignatureResponse {
   bool valid                  = 5;
 }
 */
-func CmdPlayerMe() *cobra.Command {
+func ValidateSignature() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "validate-signature [address] [message] [signature] [pubkey]",
 		Short: "Validate the signature and source of a generic message",
@@ -35,6 +35,8 @@ func CmdPlayerMe() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			queryClient := types.NewQueryClient(clientCtx)
 
             params := types.QueryValidateSignatureRequest{
                   Address:          args[0],

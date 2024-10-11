@@ -3,18 +3,18 @@ package keeper
 import (
 	"context"
 
-	"github.com/cosmos/cosmos-sdk/runtime"
-	"cosmossdk.io/store/prefix"
-	sdk "github.com/cosmos/cosmos-sdk/types"
+	//"github.com/cosmos/cosmos-sdk/runtime"
+	//"cosmossdk.io/store/prefix"
+	//sdk "github.com/cosmos/cosmos-sdk/types"
 	//sdkerrors "cosmossdk.io/errors"
-	"github.com/cosmos/cosmos-sdk/types/query"
+	//"github.com/cosmos/cosmos-sdk/types/query"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"structs/x/structs/types"
 
     "encoding/hex"
     crypto "github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-    "fmt"
+    //"fmt"
     //"encoding/binary"
     //"strings"
     //"strconv"
@@ -45,7 +45,7 @@ func (k Keeper) ValidateSignature(goCtx context.Context, req *types.QueryValidat
     response := types.QueryValidateSignatureResponse{}
     var invalid bool
 
-    decodedProofPubKey, decodeErr := hex.DecodeString(msg.ProofPubKey)
+    decodedProofPubKey, decodeErr := hex.DecodeString(req.ProofPubKey)
     if decodeErr != nil {
         response.PubkeyFormatError = true
         response.SignatureInvalid = true
@@ -55,7 +55,7 @@ func (k Keeper) ValidateSignature(goCtx context.Context, req *types.QueryValidat
     // Convert provided pub key into a bech32 string (i.e., an address)
 	address := types.PubKeyToBech32(decodedProofPubKey)
 
-    if (address != msg.Address) {
+    if (address != req.Address) {
         response.AddressPubkeyMismatch = true
         response.SignatureInvalid = true
         invalid = true
@@ -65,7 +65,7 @@ func (k Keeper) ValidateSignature(goCtx context.Context, req *types.QueryValidat
     pubKey.Key = decodedProofPubKey
 
     // Decode the Signature from Hex Encoding
-    decodedProofSignature, decodeErr := hex.DecodeString(msg.ProofSignature)
+    decodedProofSignature, decodeErr := hex.DecodeString(req.ProofSignature)
     if decodeErr != nil {
         response.SignatureFormatError = true
         response.SignatureInvalid = true
@@ -74,7 +74,7 @@ func (k Keeper) ValidateSignature(goCtx context.Context, req *types.QueryValidat
 
     // Proof needs to only be 64 characters. Some systems provide a checksum bit on the end that ruins it all
     if !invalid {
-        if pubKey.VerifySignature([]byte(msg.Message), decodedProofSignature[:64]) {
+        if pubKey.VerifySignature([]byte(req.Message), decodedProofSignature[:64]) {
             response.Valid = true
         } else {
             response.SignatureInvalid = true
