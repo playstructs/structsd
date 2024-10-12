@@ -64,6 +64,7 @@ func (k Keeper) SetStructAttribute(ctx context.Context, structAttributeId string
 
 	store.Set([]byte(structAttributeId), bz)
 
+
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStructAttribute{&types.StructAttributeRecord{AttributeId: structAttributeId, Value: amount}})
     fmt.Printf("Struct Change (Set): (%s) %d \n", structAttributeId, amount)
