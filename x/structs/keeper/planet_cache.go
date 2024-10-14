@@ -768,7 +768,6 @@ func (cache *PlanetCache) ClearSlot(ambit types.Ambit, slot uint64) {
 /* Game Logic */
 
 // AttemptComplete
-// TODO This has to do a LOT more than it currently is
 func (cache *PlanetCache) AttemptComplete() (error) {
     if (cache.IsEmptyOfOre()) {
         cache.SetStatus(types.PlanetStatus_complete)
