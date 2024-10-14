@@ -364,6 +364,14 @@ func (cache *PlayerCache) SetFleetId(fleetId string) {
     cache.Changed()
 }
 
+func (cache *PlayerCache) SetPrimaryAddress(address string) {
+    if (!cache.PlayerLoaded) { cache.LoadPlayer() }
+
+    cache.Player.PrimaryAddress = address
+    cache.PlayerChanged = true
+    cache.Changed()
+}
+
 // DepositRefinedAlpha() - Immediately Commits
 // Turn this into a delayed commit like the rest
 func (cache *PlayerCache) DepositRefinedAlpha() {
@@ -400,19 +408,22 @@ func (cache *PlayerCache) HasStoredOre() (bool) {
 
 /* Permissions */
 func (cache *PlayerCache) CanBePlayedBy(address string) (err error) {
+    return cache.CanBeAdministratedBy(address, types.PermissionPlay)
+}
 
-    // Make sure the address calling this has Play permissions
-    if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(address), types.PermissionPlay)) {
-        err = sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", address)
+func (cache *PlayerCache) CanBeAdministratedBy(address string, permission types.Permission) (err error) {
 
+    // Make sure the address calling this has request permissions
+    if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(address), permission)) {
+        err = sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) doesn't have the required permissions ", address)
     }
 
     if (cache.GetPrimaryAddress() != address) {
         callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
         if (err != nil) {
             if (callingPlayer.GetPlayerId() != cache.GetPlayerId()) {
-                if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetPlayerId(), callingPlayer.GetPlayerId()), types.PermissionPlay)) {
-                   err = sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayer.GetPlayerId(), cache.GetPlayerId())
+                if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetPlayerId(), callingPlayer.GetPlayerId()), permission)) {
+                   err = sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) doesn't have the required permissions on target player (%s)", callingPlayer.GetPlayerId(), cache.GetPlayerId())
                 }
             }
         }

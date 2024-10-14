@@ -133,10 +133,11 @@ message MsgAddressRegister {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator        = 1;
-  string address        = 2;
-  string proofPubKey    = 3;
-  string proofSignature = 4;
-  uint64 permissions    = 5;
+  string playerId       = 2;
+  string address        = 3;
+  string proofPubKey    = 4;
+  string proofSignature = 5;
+  uint64 permissions    = 6;
 }
 
 message MsgAddressRegisterResponse {}
@@ -461,7 +462,8 @@ message MsgPlayerUpdatePrimaryAddress {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator        = 1;
-  string primaryAddress = 2;
+  string playerId       = 2;
+  string primaryAddress = 3;
 }
 
 message MsgPlayerUpdatePrimaryAddressResponse {}
