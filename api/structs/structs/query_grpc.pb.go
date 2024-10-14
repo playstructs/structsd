@@ -47,11 +47,13 @@ const (
 	Query_PlanetAll_FullMethodName                     = "/structs.structs.Query/PlanetAll"
 	Query_PlanetAllByPlayer_FullMethodName             = "/structs.structs.Query/PlanetAllByPlayer"
 	Query_PlanetAttribute_FullMethodName               = "/structs.structs.Query/PlanetAttribute"
+	Query_PlanetAttributeAll_FullMethodName            = "/structs.structs.Query/PlanetAttributeAll"
 	Query_Reactor_FullMethodName                       = "/structs.structs.Query/Reactor"
 	Query_ReactorAll_FullMethodName                    = "/structs.structs.Query/ReactorAll"
 	Query_Struct_FullMethodName                        = "/structs.structs.Query/Struct"
 	Query_StructAll_FullMethodName                     = "/structs.structs.Query/StructAll"
 	Query_StructAttribute_FullMethodName               = "/structs.structs.Query/StructAttribute"
+	Query_StructAttributeAll_FullMethodName            = "/structs.structs.Query/StructAttributeAll"
 	Query_StructType_FullMethodName                    = "/structs.structs.Query/StructType"
 	Query_StructTypeAll_FullMethodName                 = "/structs.structs.Query/StructTypeAll"
 	Query_Substation_FullMethodName                    = "/structs.structs.Query/Substation"
@@ -105,6 +107,8 @@ type QueryClient interface {
 	PlanetAll(ctx context.Context, in *QueryAllPlanetRequest, opts ...grpc.CallOption) (*QueryAllPlanetResponse, error)
 	PlanetAllByPlayer(ctx context.Context, in *QueryAllPlanetByPlayerRequest, opts ...grpc.CallOption) (*QueryAllPlanetResponse, error)
 	PlanetAttribute(ctx context.Context, in *QueryGetPlanetAttributeRequest, opts ...grpc.CallOption) (*QueryGetPlanetAttributeResponse, error)
+	// Queries a list of all Planet Attributes
+	PlanetAttributeAll(ctx context.Context, in *QueryAllPlanetAttributeRequest, opts ...grpc.CallOption) (*QueryAllPlanetAttributeResponse, error)
 	// Queries a list of Reactor items.
 	Reactor(ctx context.Context, in *QueryGetReactorRequest, opts ...grpc.CallOption) (*QueryGetReactorResponse, error)
 	ReactorAll(ctx context.Context, in *QueryAllReactorRequest, opts ...grpc.CallOption) (*QueryAllReactorResponse, error)
@@ -112,6 +116,8 @@ type QueryClient interface {
 	Struct(ctx context.Context, in *QueryGetStructRequest, opts ...grpc.CallOption) (*QueryGetStructResponse, error)
 	StructAll(ctx context.Context, in *QueryAllStructRequest, opts ...grpc.CallOption) (*QueryAllStructResponse, error)
 	StructAttribute(ctx context.Context, in *QueryGetStructAttributeRequest, opts ...grpc.CallOption) (*QueryGetStructAttributeResponse, error)
+	// Queries a list of all Struct Attributes
+	StructAttributeAll(ctx context.Context, in *QueryAllStructAttributeRequest, opts ...grpc.CallOption) (*QueryAllStructAttributeResponse, error)
 	// Queries a list of Struct Types items.
 	StructType(ctx context.Context, in *QueryGetStructTypeRequest, opts ...grpc.CallOption) (*QueryGetStructTypeResponse, error)
 	StructTypeAll(ctx context.Context, in *QueryAllStructTypeRequest, opts ...grpc.CallOption) (*QueryAllStructTypeResponse, error)
@@ -381,6 +387,15 @@ func (c *queryClient) PlanetAttribute(ctx context.Context, in *QueryGetPlanetAtt
 	return out, nil
 }
 
+func (c *queryClient) PlanetAttributeAll(ctx context.Context, in *QueryAllPlanetAttributeRequest, opts ...grpc.CallOption) (*QueryAllPlanetAttributeResponse, error) {
+	out := new(QueryAllPlanetAttributeResponse)
+	err := c.cc.Invoke(ctx, Query_PlanetAttributeAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) Reactor(ctx context.Context, in *QueryGetReactorRequest, opts ...grpc.CallOption) (*QueryGetReactorResponse, error) {
 	out := new(QueryGetReactorResponse)
 	err := c.cc.Invoke(ctx, Query_Reactor_FullMethodName, in, out, opts...)
@@ -420,6 +435,15 @@ func (c *queryClient) StructAll(ctx context.Context, in *QueryAllStructRequest, 
 func (c *queryClient) StructAttribute(ctx context.Context, in *QueryGetStructAttributeRequest, opts ...grpc.CallOption) (*QueryGetStructAttributeResponse, error) {
 	out := new(QueryGetStructAttributeResponse)
 	err := c.cc.Invoke(ctx, Query_StructAttribute_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) StructAttributeAll(ctx context.Context, in *QueryAllStructAttributeRequest, opts ...grpc.CallOption) (*QueryAllStructAttributeResponse, error) {
+	out := new(QueryAllStructAttributeResponse)
+	err := c.cc.Invoke(ctx, Query_StructAttributeAll_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -517,6 +541,8 @@ type QueryServer interface {
 	PlanetAll(context.Context, *QueryAllPlanetRequest) (*QueryAllPlanetResponse, error)
 	PlanetAllByPlayer(context.Context, *QueryAllPlanetByPlayerRequest) (*QueryAllPlanetResponse, error)
 	PlanetAttribute(context.Context, *QueryGetPlanetAttributeRequest) (*QueryGetPlanetAttributeResponse, error)
+	// Queries a list of all Planet Attributes
+	PlanetAttributeAll(context.Context, *QueryAllPlanetAttributeRequest) (*QueryAllPlanetAttributeResponse, error)
 	// Queries a list of Reactor items.
 	Reactor(context.Context, *QueryGetReactorRequest) (*QueryGetReactorResponse, error)
 	ReactorAll(context.Context, *QueryAllReactorRequest) (*QueryAllReactorResponse, error)
@@ -524,6 +550,8 @@ type QueryServer interface {
 	Struct(context.Context, *QueryGetStructRequest) (*QueryGetStructResponse, error)
 	StructAll(context.Context, *QueryAllStructRequest) (*QueryAllStructResponse, error)
 	StructAttribute(context.Context, *QueryGetStructAttributeRequest) (*QueryGetStructAttributeResponse, error)
+	// Queries a list of all Struct Attributes
+	StructAttributeAll(context.Context, *QueryAllStructAttributeRequest) (*QueryAllStructAttributeResponse, error)
 	// Queries a list of Struct Types items.
 	StructType(context.Context, *QueryGetStructTypeRequest) (*QueryGetStructTypeResponse, error)
 	StructTypeAll(context.Context, *QueryAllStructTypeRequest) (*QueryAllStructTypeResponse, error)
@@ -622,6 +650,9 @@ func (UnimplementedQueryServer) PlanetAllByPlayer(context.Context, *QueryAllPlan
 func (UnimplementedQueryServer) PlanetAttribute(context.Context, *QueryGetPlanetAttributeRequest) (*QueryGetPlanetAttributeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlanetAttribute not implemented")
 }
+func (UnimplementedQueryServer) PlanetAttributeAll(context.Context, *QueryAllPlanetAttributeRequest) (*QueryAllPlanetAttributeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlanetAttributeAll not implemented")
+}
 func (UnimplementedQueryServer) Reactor(context.Context, *QueryGetReactorRequest) (*QueryGetReactorResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Reactor not implemented")
 }
@@ -636,6 +667,9 @@ func (UnimplementedQueryServer) StructAll(context.Context, *QueryAllStructReques
 }
 func (UnimplementedQueryServer) StructAttribute(context.Context, *QueryGetStructAttributeRequest) (*QueryGetStructAttributeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructAttribute not implemented")
+}
+func (UnimplementedQueryServer) StructAttributeAll(context.Context, *QueryAllStructAttributeRequest) (*QueryAllStructAttributeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StructAttributeAll not implemented")
 }
 func (UnimplementedQueryServer) StructType(context.Context, *QueryGetStructTypeRequest) (*QueryGetStructTypeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructType not implemented")
@@ -1169,6 +1203,24 @@ func _Query_PlanetAttribute_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_PlanetAttributeAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllPlanetAttributeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).PlanetAttributeAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_PlanetAttributeAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).PlanetAttributeAll(ctx, req.(*QueryAllPlanetAttributeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_Reactor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryGetReactorRequest)
 	if err := dec(in); err != nil {
@@ -1255,6 +1307,24 @@ func _Query_StructAttribute_Handler(srv interface{}, ctx context.Context, dec fu
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).StructAttribute(ctx, req.(*QueryGetStructAttributeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_StructAttributeAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllStructAttributeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).StructAttributeAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_StructAttributeAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).StructAttributeAll(ctx, req.(*QueryAllStructAttributeRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1469,6 +1539,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_PlanetAttribute_Handler,
 		},
 		{
+			MethodName: "PlanetAttributeAll",
+			Handler:    _Query_PlanetAttributeAll_Handler,
+		},
+		{
 			MethodName: "Reactor",
 			Handler:    _Query_Reactor_Handler,
 		},
@@ -1487,6 +1561,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StructAttribute",
 			Handler:    _Query_StructAttribute_Handler,
+		},
+		{
+			MethodName: "StructAttributeAll",
+			Handler:    _Query_StructAttributeAll_Handler,
 		},
 		{
 			MethodName: "StructType",
