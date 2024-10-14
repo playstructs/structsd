@@ -153,6 +153,11 @@ service Query {
     option (google.api.http).get = "/structs/planet_attribute/{planetId}/{attributeType}";
   }
 
+  // Queries a list of all Planet Attributes
+  rpc PlanetAttributeAll (QueryAllPlanetAttributeRequest) returns (QueryAllPlanetAttributeResponse) {
+    option (google.api.http).get = "/structs/planet_attribute";
+  }
+
   // Queries a list of Reactor items.
   rpc Reactor    (QueryGetReactorRequest) returns (QueryGetReactorResponse) {
     option (google.api.http).get = "/structs/reactor/{id}";
@@ -173,6 +178,11 @@ service Query {
 
   rpc StructAttribute    (QueryGetStructAttributeRequest) returns (QueryGetStructAttributeResponse) {
     option (google.api.http).get = "/structs/struct_attribute/{structId}/{attributeType}";
+  }
+
+  // Queries a list of all Struct Attributes
+  rpc StructAttributeAll (QueryAllStructAttributeRequest) returns (QueryAllStructAttributeResponse) {
+    option (google.api.http).get = "/structs/struct_attribute";
   }
 
   // Queries a list of Struct Types items.
@@ -423,6 +433,15 @@ message QueryGetPlanetAttributeResponse {
   uint64 attribute = 1;
 }
 
+message QueryAllPlanetAttributeRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllPlanetAttributeResponse {
+  repeated PlanetAttributeRecord planetAttributeRecords = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
 
 message QueryGetPlayerRequest {
   string id = 1;
@@ -490,6 +509,16 @@ message QueryGetStructAttributeRequest {
 message QueryGetStructAttributeResponse {
   uint64 attribute = 1;
 }
+
+message QueryAllStructAttributeRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllStructAttributeResponse {
+  repeated StructAttributeRecord structAttributeRecords = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
 
 message QueryGetStructTypeRequest {
   uint64 id = 1;
