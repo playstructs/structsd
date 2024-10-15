@@ -107,6 +107,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     Use:            "infusion-all",
                     Short:          "Returns all Infusions",
                 },
+                {
+                    RpcMethod:      "InfusionAllByDestination",
+                    Use:            "infusion-all-by-destination [destination id]",
+                    Short:          "Returns all Infusions to a specific destination",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "destinationId"}},
+                },
 				{
 					RpcMethod:      "Params",
 					Use:            "params",

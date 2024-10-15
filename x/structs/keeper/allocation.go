@@ -17,6 +17,9 @@ import (
 
 )
 
+func AllocationKeyPrefix(sourceId string) []byte {
+	return []byte(types.AllocationKey + sourceId + "/")
+}
 
 func GetAllocationID(sourceObjectId string, index uint64) (id string) {
     id = fmt.Sprintf("%s-%d", sourceObjectId, index)

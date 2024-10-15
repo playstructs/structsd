@@ -37,6 +37,7 @@ const (
 	Query_GuildMembershipApplicationAll_FullMethodName = "/structs.structs.Query/GuildMembershipApplicationAll"
 	Query_Infusion_FullMethodName                      = "/structs.structs.Query/Infusion"
 	Query_InfusionAll_FullMethodName                   = "/structs.structs.Query/InfusionAll"
+	Query_InfusionAllByDestination_FullMethodName      = "/structs.structs.Query/InfusionAllByDestination"
 	Query_Permission_FullMethodName                    = "/structs.structs.Query/Permission"
 	Query_PermissionByObject_FullMethodName            = "/structs.structs.Query/PermissionByObject"
 	Query_PermissionByPlayer_FullMethodName            = "/structs.structs.Query/PermissionByPlayer"
@@ -91,6 +92,7 @@ type QueryClient interface {
 	// Queries a list of Infusions.
 	Infusion(ctx context.Context, in *QueryGetInfusionRequest, opts ...grpc.CallOption) (*QueryGetInfusionResponse, error)
 	InfusionAll(ctx context.Context, in *QueryAllInfusionRequest, opts ...grpc.CallOption) (*QueryAllInfusionResponse, error)
+	InfusionAllByDestination(ctx context.Context, in *QueryAllInfusionByDestinationRequest, opts ...grpc.CallOption) (*QueryAllInfusionResponse, error)
 	// Queries a specific Permission
 	Permission(ctx context.Context, in *QueryGetPermissionRequest, opts ...grpc.CallOption) (*QueryGetPermissionResponse, error)
 	// Queries a list of Permissions based on Object
@@ -291,6 +293,15 @@ func (c *queryClient) Infusion(ctx context.Context, in *QueryGetInfusionRequest,
 func (c *queryClient) InfusionAll(ctx context.Context, in *QueryAllInfusionRequest, opts ...grpc.CallOption) (*QueryAllInfusionResponse, error) {
 	out := new(QueryAllInfusionResponse)
 	err := c.cc.Invoke(ctx, Query_InfusionAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) InfusionAllByDestination(ctx context.Context, in *QueryAllInfusionByDestinationRequest, opts ...grpc.CallOption) (*QueryAllInfusionResponse, error) {
+	out := new(QueryAllInfusionResponse)
+	err := c.cc.Invoke(ctx, Query_InfusionAllByDestination_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -525,6 +536,7 @@ type QueryServer interface {
 	// Queries a list of Infusions.
 	Infusion(context.Context, *QueryGetInfusionRequest) (*QueryGetInfusionResponse, error)
 	InfusionAll(context.Context, *QueryAllInfusionRequest) (*QueryAllInfusionResponse, error)
+	InfusionAllByDestination(context.Context, *QueryAllInfusionByDestinationRequest) (*QueryAllInfusionResponse, error)
 	// Queries a specific Permission
 	Permission(context.Context, *QueryGetPermissionRequest) (*QueryGetPermissionResponse, error)
 	// Queries a list of Permissions based on Object
@@ -619,6 +631,9 @@ func (UnimplementedQueryServer) Infusion(context.Context, *QueryGetInfusionReque
 }
 func (UnimplementedQueryServer) InfusionAll(context.Context, *QueryAllInfusionRequest) (*QueryAllInfusionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InfusionAll not implemented")
+}
+func (UnimplementedQueryServer) InfusionAllByDestination(context.Context, *QueryAllInfusionByDestinationRequest) (*QueryAllInfusionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InfusionAllByDestination not implemented")
 }
 func (UnimplementedQueryServer) Permission(context.Context, *QueryGetPermissionRequest) (*QueryGetPermissionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Permission not implemented")
@@ -1019,6 +1034,24 @@ func _Query_InfusionAll_Handler(srv interface{}, ctx context.Context, dec func(i
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).InfusionAll(ctx, req.(*QueryAllInfusionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_InfusionAllByDestination_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllInfusionByDestinationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).InfusionAllByDestination(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_InfusionAllByDestination_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).InfusionAllByDestination(ctx, req.(*QueryAllInfusionByDestinationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1497,6 +1530,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "InfusionAll",
 			Handler:    _Query_InfusionAll_Handler,
+		},
+		{
+			MethodName: "InfusionAllByDestination",
+			Handler:    _Query_InfusionAllByDestination_Handler,
 		},
 		{
 			MethodName: "Permission",
