@@ -21,11 +21,29 @@ func AllocationKeyPrefix(sourceId string) []byte {
 	return []byte(types.AllocationKey + sourceId + "/")
 }
 
-func GetAllocationID(sourceObjectId string, index uint64) (id string) {
-    id = fmt.Sprintf("%s-%d", sourceObjectId, index)
-	return
+// GetAllocationCount get the total number of allocations
+func (k Keeper) GetAllocationCount(ctx context.Context) uint64 {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
+	byteKey := types.KeyPrefix(types.AllocationCountKey)
+	bz := store.Get(byteKey)
+
+	// Count doesn't exist: no element
+	if bz == nil || binary.BigEndian.Uint64(bz) == 0  {
+		return types.KeeperStartValue
+	}
+
+	// Parse bytes
+	return binary.BigEndian.Uint64(bz)
 }
 
+// SetAllocationCount set the total number of allocations
+func (k Keeper) SetAllocationCount(ctx context.Context, count uint64) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
+	byteKey := types.KeyPrefix(types.AllocationCountKey)
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, count)
+	store.Set(byteKey, bz)
+}
 
 // AppendAllocation appends a allocation in the store with a new id
 //
@@ -37,13 +55,16 @@ func (k Keeper) AppendAllocation(
 ) (allocationId string, finalPower uint64, err error) {
     // Set the ID of the appended value
 
-    allocation.Index = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerEnd, allocation.SourceObjectId))
-    allocation.Id = GetAllocationID(allocation.SourceObjectId, allocation.Index)
+    allocation.Index = k.GetAllocationCount(ctx)
+    k.SetAllocationCount(ctx, allocation.Index + 1)
+
+    allocation.Id = GetObjectID(types.ObjectType_allocation, allocation.Index)
 
     allocationSourceCapacity := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, allocation.SourceObjectId))
 	if (allocation.Type == types.AllocationType_automated) {
 
 	    // Automated Allocations must be the only allocation on a source
+	    // TODO - make a quicker lookup. This is going to get slow as allocation increase
 	    sourceAllocations := k.GetAllocationsFromSource(ctx, allocation.SourceObjectId)
 	    if (len(sourceAllocations) > 0) {
 	        return allocation.Id, power, sdkerrors.Wrapf(types.ErrAllocationAppend, "Allocation Source (%s) cannot have an automated Allocation with other allocations in place", allocation.SourceObjectId)
@@ -83,10 +104,7 @@ func (k Keeper) AppendAllocation(
         k.UpdateGridConnectionCapacity(ctx, allocation.DestinationId)
     }
 
-    // Increase the Index Pointer
-    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerEnd, allocation.SourceObjectId), 1)
-
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AllocationKey))
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), AllocationKeyPrefix(allocation.SourceObjectId))
 	appendedValue := k.cdc.MustMarshal(&allocation)
 	store.Set([]byte(allocation.Id), appendedValue)
 
@@ -98,7 +116,7 @@ func (k Keeper) AppendAllocation(
 
 func (k Keeper) SetAllocationOnly(ctx context.Context, allocation types.Allocation) (types.Allocation, error){
 
-    store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AllocationKey))
+    store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), AllocationKeyPrefix(allocation.SourceObjectId))
     b := k.cdc.MustMarshal(&allocation)
     store.Set([]byte(allocation.Id), b)
 
@@ -210,7 +228,7 @@ func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation, 
         }
     }
 
-    store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AllocationKey))
+    store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), AllocationKeyPrefix(allocation.SourceObjectId))
     b := k.cdc.MustMarshal(&allocation)
     store.Set([]byte(allocation.Id), b)
 
@@ -226,7 +244,7 @@ func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation, 
 // ImportAllocation set a specific allocation in the store
 // Assumes Grid updates happen elsewhere
 func (k Keeper) ImportAllocation(ctx context.Context, allocation types.Allocation){
-    store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AllocationKey))
+    store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), AllocationKeyPrefix(allocation.SourceObjectId))
     b := k.cdc.MustMarshal(&allocation)
     store.Set([]byte(allocation.Id), b)
 
@@ -238,7 +256,7 @@ func (k Keeper) ImportAllocation(ctx context.Context, allocation types.Allocatio
 
 // RemoveAllocation removes a allocation from the store
 func (k Keeper) RemoveAllocation(ctx context.Context, allocationId string) {
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AllocationKey))
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), AllocationKeyPrefix(allocation.SourceObjectId))
 	store.Delete([]byte(allocationId))
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
@@ -295,8 +313,8 @@ func (k Keeper) DestroyAllAllocations(ctx context.Context, allocations []types.A
 
 
 // GetAllocation returns a allocation from its id
-func (k Keeper) GetAllocation(ctx context.Context, allocationId string) (val types.Allocation, found bool) {
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AllocationKey))
+func (k Keeper) GetAllocation(ctx context.Context, sourceObjectId string, allocationId string) (val types.Allocation, found bool) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), AllocationKeyPrefix(sourceObjectId))
 	b := store.Get([]byte(allocationId))
 	if b == nil {
 		return val, false
@@ -327,18 +345,17 @@ func (k Keeper) GetAllAllocation(ctx context.Context) (list []types.Allocation) 
 // GetAllocationsFromSource returns all allocation relating to a source
 func (k Keeper) GetAllocationsFromSource(ctx context.Context, sourceObjectId string) (list []types.Allocation) {
 
-    allocationPointer    := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerStart, sourceObjectId))
-    allocationPointerEnd := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerEnd, sourceObjectId))
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), AllocationKeyPrefix(sourceObjectId))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
-    // Iterate through the allocationPointer until we successfully delete an allocation
-    for (allocationPointer < allocationPointerEnd) {
-        allocation, allocationFound := k.GetAllocation(ctx, GetAllocationID(sourceObjectId, allocationPointer))
-        allocationPointer           = allocationPointer + 1
+	defer iterator.Close()
 
-        if allocationFound {
-            list = append(list, allocation)
-        }
-    }
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.Allocation
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+
+		list = append(list, val)
+	}
 
     return
 }
@@ -400,7 +417,7 @@ func (k Keeper) ClearAutoResizeAllocationBySource(ctx context.Context, sourceObj
 
 
 func (k Keeper) AutoResizeAllocation(ctx context.Context, allocationId string, sourceId string, oldPower uint64, newPower uint64) {
-    allocation, _ := k.GetAllocation(ctx, allocationId)
+    allocation, _ := k.GetAllocation(ctx, sourceId, allocationId)
 
     // Update Allocation Power
     k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocationId), newPower)

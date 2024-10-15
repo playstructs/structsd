@@ -19441,6 +19441,8 @@ paths:
             properties:
               creator:
                 type: string
+              allocationSourceId:
+                type: string
               allocationId:
                 type: string
       tags:
@@ -19482,6 +19484,8 @@ paths:
             type: object
             properties:
               creator:
+                type: string
+              allocationSourceId:
                 type: string
               allocationId:
                 type: string
@@ -19526,6 +19530,8 @@ paths:
             type: object
             properties:
               creator:
+                type: string
+              allocationSourceId:
                 type: string
               allocationId:
                 type: string
@@ -22443,6 +22449,8 @@ paths:
             properties:
               creator:
                 type: string
+              allocationSourceId:
+                type: string
               allocationId:
                 type: string
               destinationId:
@@ -22483,6 +22491,8 @@ paths:
             type: object
             properties:
               creator:
+                type: string
+              allocationSourceId:
                 type: string
               allocationId:
                 type: string
@@ -22527,6 +22537,8 @@ paths:
               creator:
                 type: string
               owner:
+                type: string
+              allocationSourceId:
                 type: string
               allocationId:
                 type: string
@@ -35753,6 +35765,8 @@ definitions:
     properties:
       creator:
         type: string
+      allocationSourceId:
+        type: string
       allocationId:
         type: string
   structs.structs.MsgAllocationDeleteResponse:
@@ -35764,6 +35778,8 @@ definitions:
     type: object
     properties:
       creator:
+        type: string
+      allocationSourceId:
         type: string
       allocationId:
         type: string
@@ -35778,6 +35794,8 @@ definitions:
     type: object
     properties:
       creator:
+        type: string
+      allocationSourceId:
         type: string
       allocationId:
         type: string
@@ -36705,6 +36723,8 @@ definitions:
     properties:
       creator:
         type: string
+      allocationSourceId:
+        type: string
       allocationId:
         type: string
       destinationId:
@@ -36716,6 +36736,8 @@ definitions:
     properties:
       creator:
         type: string
+      allocationSourceId:
+        type: string
       allocationId:
         type: string
   structs.structs.MsgSubstationAllocationDisconnectResponse:
@@ -36726,6 +36748,8 @@ definitions:
       creator:
         type: string
       owner:
+        type: string
+      allocationSourceId:
         type: string
       allocationId:
         type: string

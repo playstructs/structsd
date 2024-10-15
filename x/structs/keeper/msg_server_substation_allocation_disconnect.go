@@ -22,7 +22,7 @@ func (k msgServer) SubstationAllocationDisconnect(goCtx context.Context, msg *ty
         return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)
     }
 
-	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId)
+	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationSourceId, msg.AllocationId)
 	if (!allocationFound) {
 		return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "allocation (%s) not found", msg.AllocationId)
 	}
