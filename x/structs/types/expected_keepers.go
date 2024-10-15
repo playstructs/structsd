@@ -27,6 +27,11 @@ type StakingKeeper interface {
     GetUnbondingDelegation(context.Context, sdk.AccAddress, sdk.ValAddress) (staking.UnbondingDelegation, error)
     GetUnbondingDelegationByUnbondingID(context.Context, uint64) (staking.UnbondingDelegation, error)
 
+    GetDelegatorDelegations(ctx context.Context, delegator sdk.AccAddress, maxRetrieve uint16) ([]staking.Delegation, error)
+	SetDelegation(ctx context.Context, delegation staking.Delegation) error
+	RemoveDelegation(ctx context.Context, delegation staking.Delegation) error
+
+
 }
 
 // StakingHooks event hooks for staking validator object (noalias)

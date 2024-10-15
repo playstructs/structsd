@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
+	"math"
 )
 
 func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRevoke) (*types.MsgAddressRevokeResponse, error) {
@@ -45,8 +46,14 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
         return &types.MsgAddressRevokeResponse{}, err
     }
 
+    // Move Reactor Infusions over
+    primaryDelegations, _ := k.stakingKeeper.GetDelegatorDelegations(ctx, oldAcc, math.MaxUint16)
+    for _, delegation := range primaryDelegations {
+        k.stakingKeeper.RemoveDelegation(ctx, delegation)
 
-    // Move Reactor Infusions
+        delegation.DelegatorAddress = player.GetPrimaryAddress()
+        k.stakingKeeper.SetDelegation(ctx, delegation)
+    }
 
 
     // Clear Permissions

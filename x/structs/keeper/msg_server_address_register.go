@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
     "encoding/hex"
+    "math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
@@ -104,7 +105,15 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
         return &types.MsgAddressRegisterResponse{}, err
     }
 
-    // TODO migrate Reactor Infusions too
+    // Move Reactor Infusions over
+    primaryDelegations, _ := k.stakingKeeper.GetDelegatorDelegations(ctx, newAcc, math.MaxUint16)
+    for _, delegation := range primaryDelegations {
+        k.stakingKeeper.RemoveDelegation(ctx, delegation)
+
+        delegation.DelegatorAddress = player.GetPrimaryAddress()
+        k.stakingKeeper.SetDelegation(ctx, delegation)
+    }
+
 
 	return &types.MsgAddressRegisterResponse{}, nil
 }
