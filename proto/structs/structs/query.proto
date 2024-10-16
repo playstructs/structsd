@@ -118,7 +118,6 @@ service Query {
     option (google.api.http).get = "/structs/infusion_by_destination/{destinationId}";
   }
 
-
   // Queries a specific Permission
   rpc Permission (QueryGetPermissionRequest) returns (QueryGetPermissionResponse) {
     option (google.api.http).get = "/structs/permission/{permissionId}";

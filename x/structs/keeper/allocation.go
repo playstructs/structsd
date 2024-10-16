@@ -15,9 +15,6 @@ import (
 
 )
 
-
-
-
 // AppendAllocation appends a allocation in the store with a new id
 //
 // This process also impacts the energy grid
