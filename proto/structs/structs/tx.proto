@@ -169,8 +169,7 @@ message MsgAllocationDelete {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator            = 1;
-  string allocationSourceId = 2;
-  string allocationId       = 3;
+  string allocationId       = 2;
 }
 
 message MsgAllocationDeleteResponse {
@@ -182,9 +181,8 @@ message MsgAllocationUpdate {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator            = 1;
-  string allocationSourceId = 2;
-  string allocationId       = 3;
-  uint64 power              = 4;
+  string allocationId       = 2;
+  uint64 power              = 3;
 }
 
 message MsgAllocationUpdateResponse {
@@ -195,9 +193,8 @@ message MsgAllocationTransfer {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator            = 1;
-  string allocationSourceId = 2;
-  string allocationId       = 3;
-  string controller         = 4;
+  string allocationId       = 2;
+  string controller         = 3;
 }
 
 message MsgAllocationTransferResponse {
@@ -642,8 +639,7 @@ message MsgSubstationCreate {
 
   string creator      = 1;
   string owner        = 2;
-  string allocationSourceId = 3;
-  string allocationId = 4;
+  string allocationId = 3;
 }
 
 message MsgSubstationCreateResponse {
@@ -664,9 +660,8 @@ message MsgSubstationAllocationConnect {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator            = 1;
-  string allocationSourceId = 2;
-  string allocationId       = 3;
-  string destinationId      = 4;
+  string allocationId       = 2;
+  string destinationId      = 3;
 }
 
 message MsgSubstationAllocationConnectResponse {}
@@ -675,8 +670,7 @@ message MsgSubstationAllocationDisconnect {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator            = 1;
-  string allocationSourceId = 2;
-  string allocationId       = 3;
+  string allocationId       = 2;
 }
 
 message MsgSubstationAllocationDisconnectResponse {}
