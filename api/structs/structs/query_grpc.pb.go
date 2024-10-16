@@ -26,6 +26,8 @@ const (
 	Query_AddressAllByPlayer_FullMethodName            = "/structs.structs.Query/AddressAllByPlayer"
 	Query_Allocation_FullMethodName                    = "/structs.structs.Query/Allocation"
 	Query_AllocationAll_FullMethodName                 = "/structs.structs.Query/AllocationAll"
+	Query_AllocationAllBySource_FullMethodName         = "/structs.structs.Query/AllocationAllBySource"
+	Query_AllocationAllByDestination_FullMethodName    = "/structs.structs.Query/AllocationAllByDestination"
 	Query_Fleet_FullMethodName                         = "/structs.structs.Query/Fleet"
 	Query_FleetByIndex_FullMethodName                  = "/structs.structs.Query/FleetByIndex"
 	Query_FleetAll_FullMethodName                      = "/structs.structs.Query/FleetAll"
@@ -76,6 +78,8 @@ type QueryClient interface {
 	// Queries a list of Allocation items.
 	Allocation(ctx context.Context, in *QueryGetAllocationRequest, opts ...grpc.CallOption) (*QueryGetAllocationResponse, error)
 	AllocationAll(ctx context.Context, in *QueryAllAllocationRequest, opts ...grpc.CallOption) (*QueryAllAllocationResponse, error)
+	AllocationAllBySource(ctx context.Context, in *QueryAllAllocationBySourceRequest, opts ...grpc.CallOption) (*QueryAllAllocationResponse, error)
+	AllocationAllByDestination(ctx context.Context, in *QueryAllAllocationByDestinationRequest, opts ...grpc.CallOption) (*QueryAllAllocationResponse, error)
 	// Queries a list of Fleet items.
 	Fleet(ctx context.Context, in *QueryGetFleetRequest, opts ...grpc.CallOption) (*QueryGetFleetResponse, error)
 	FleetByIndex(ctx context.Context, in *QueryGetFleetByIndexRequest, opts ...grpc.CallOption) (*QueryGetFleetResponse, error)
@@ -194,6 +198,24 @@ func (c *queryClient) Allocation(ctx context.Context, in *QueryGetAllocationRequ
 func (c *queryClient) AllocationAll(ctx context.Context, in *QueryAllAllocationRequest, opts ...grpc.CallOption) (*QueryAllAllocationResponse, error) {
 	out := new(QueryAllAllocationResponse)
 	err := c.cc.Invoke(ctx, Query_AllocationAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) AllocationAllBySource(ctx context.Context, in *QueryAllAllocationBySourceRequest, opts ...grpc.CallOption) (*QueryAllAllocationResponse, error) {
+	out := new(QueryAllAllocationResponse)
+	err := c.cc.Invoke(ctx, Query_AllocationAllBySource_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) AllocationAllByDestination(ctx context.Context, in *QueryAllAllocationByDestinationRequest, opts ...grpc.CallOption) (*QueryAllAllocationResponse, error) {
+	out := new(QueryAllAllocationResponse)
+	err := c.cc.Invoke(ctx, Query_AllocationAllByDestination_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -520,6 +542,8 @@ type QueryServer interface {
 	// Queries a list of Allocation items.
 	Allocation(context.Context, *QueryGetAllocationRequest) (*QueryGetAllocationResponse, error)
 	AllocationAll(context.Context, *QueryAllAllocationRequest) (*QueryAllAllocationResponse, error)
+	AllocationAllBySource(context.Context, *QueryAllAllocationBySourceRequest) (*QueryAllAllocationResponse, error)
+	AllocationAllByDestination(context.Context, *QueryAllAllocationByDestinationRequest) (*QueryAllAllocationResponse, error)
 	// Queries a list of Fleet items.
 	Fleet(context.Context, *QueryGetFleetRequest) (*QueryGetFleetResponse, error)
 	FleetByIndex(context.Context, *QueryGetFleetByIndexRequest) (*QueryGetFleetResponse, error)
@@ -598,6 +622,12 @@ func (UnimplementedQueryServer) Allocation(context.Context, *QueryGetAllocationR
 }
 func (UnimplementedQueryServer) AllocationAll(context.Context, *QueryAllAllocationRequest) (*QueryAllAllocationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllocationAll not implemented")
+}
+func (UnimplementedQueryServer) AllocationAllBySource(context.Context, *QueryAllAllocationBySourceRequest) (*QueryAllAllocationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllocationAllBySource not implemented")
+}
+func (UnimplementedQueryServer) AllocationAllByDestination(context.Context, *QueryAllAllocationByDestinationRequest) (*QueryAllAllocationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllocationAllByDestination not implemented")
 }
 func (UnimplementedQueryServer) Fleet(context.Context, *QueryGetFleetRequest) (*QueryGetFleetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Fleet not implemented")
@@ -836,6 +866,42 @@ func _Query_AllocationAll_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).AllocationAll(ctx, req.(*QueryAllAllocationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_AllocationAllBySource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllAllocationBySourceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).AllocationAllBySource(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_AllocationAllBySource_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).AllocationAllBySource(ctx, req.(*QueryAllAllocationBySourceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_AllocationAllByDestination_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllAllocationByDestinationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).AllocationAllByDestination(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_AllocationAllByDestination_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).AllocationAllByDestination(ctx, req.(*QueryAllAllocationByDestinationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1486,6 +1552,14 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AllocationAll",
 			Handler:    _Query_AllocationAll_Handler,
+		},
+		{
+			MethodName: "AllocationAllBySource",
+			Handler:    _Query_AllocationAllBySource_Handler,
+		},
+		{
+			MethodName: "AllocationAllByDestination",
+			Handler:    _Query_AllocationAllByDestination_Handler,
 		},
 		{
 			MethodName: "Fleet",

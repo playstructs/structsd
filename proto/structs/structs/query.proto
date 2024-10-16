@@ -57,6 +57,14 @@ service Query {
     option (google.api.http).get = "/structs/allocation";
   }
 
+  rpc AllocationAllBySource (QueryAllAllocationBySourceRequest) returns (QueryAllAllocationResponse) {
+    option (google.api.http).get = "/structs/allocation_by_source/{sourceId}";
+  }
+
+  rpc AllocationAllByDestination (QueryAllAllocationByDestinationRequest) returns (QueryAllAllocationResponse) {
+    option (google.api.http).get = "/structs/allocation_by_destination/{destinationId}";
+  }
+
   // Queries a list of Fleet items.
   rpc Fleet (QueryGetFleetRequest) returns (QueryGetFleetResponse) {
     option (google.api.http).get = "/structs/fleet/{id}";
@@ -267,6 +275,15 @@ message QueryGetAllocationResponse {
 
 message QueryAllAllocationRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAllocationBySourceRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+  string sourceId = 2;
+}
+message QueryAllAllocationByDestinationRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+  string destinationId = 2;
 }
 
 message QueryAllAllocationResponse {

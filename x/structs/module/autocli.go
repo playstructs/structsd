@@ -46,6 +46,18 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     Use:            "allocation-all",
                     Short:          "Returns all Allocations",
                 },
+                {
+                    RpcMethod:      "AllocationAllByDestination",
+                    Use:            "allocation-all-by-destination [destination id]",
+                    Short:          "Returns all Allocations connected to a specific destination",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "destinationId"}},
+                },
+                {
+                    RpcMethod:      "AllocationAllBySource",
+                    Use:            "allocation-all-by-source [source id]",
+                    Short:          "Returns all Allocations originating from a specific source",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "sourceId"}},
+                },
 				{
                     RpcMethod:      "Fleet",
                     Use:            "fleet [fleet id]",
