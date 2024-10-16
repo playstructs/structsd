@@ -16,7 +16,7 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
 
     var err error
 
-	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationSourceId, msg.AllocationId)
+	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId)
 	if (!allocationFound) {
 		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "allocation (%s) not found", msg.AllocationId)
 	}

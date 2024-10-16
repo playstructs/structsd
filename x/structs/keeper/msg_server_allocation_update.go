@@ -14,7 +14,7 @@ func (k msgServer) AllocationUpdate(goCtx context.Context, msg *types.MsgAllocat
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationSourceId, msg.AllocationId)
+	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId)
 	if (!allocationFound) {
 		return &types.MsgAllocationUpdateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "allocation (%s) not found", msg.AllocationId)
 	}

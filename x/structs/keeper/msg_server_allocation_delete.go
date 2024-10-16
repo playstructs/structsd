@@ -14,7 +14,7 @@ func (k msgServer) AllocationDelete(goCtx context.Context, msg *types.MsgAllocat
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	allocation, allocationFound := k.GetAllocation(ctx,  msg.AllocationSourceId, msg.AllocationId)
+	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId)
 	if (!allocationFound) {
 		return &types.MsgAllocationDeleteResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "allocation (%s) not found", msg.AllocationId)
 	}
@@ -46,7 +46,7 @@ func (k msgServer) AllocationDelete(goCtx context.Context, msg *types.MsgAllocat
         return &types.MsgAllocationDeleteResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Allocation Type must be Dynamic for deleting ")
     }
 
-    k.DestroyAllocation(ctx, msg.AllocationSourceId, msg.AllocationId)
+    k.DestroyAllocation(ctx, msg.AllocationId)
 
 	return &types.MsgAllocationDeleteResponse{
 		AllocationId: msg.AllocationId,

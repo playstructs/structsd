@@ -18,7 +18,7 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
 	connectPlayer := false
 
     // Make sure the allocation exists
-    allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationSourceId, msg.AllocationId)
+    allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId)
     if (!allocationFound) {
         return &types.MsgSubstationCreateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "allocation (%s) not found", msg.AllocationId)
     }
