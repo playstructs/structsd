@@ -13,8 +13,6 @@ import (
 
 	sdkerrors "cosmossdk.io/errors"
 
-	"fmt"
-
 )
 
 
@@ -40,7 +38,7 @@ func (k Keeper) AppendAllocation(
 
 	    // Automated Allocations must be the only allocation on a source
 	    // TODO - make a quicker lookup. This is going to get slow as allocation increase
-	    sourceAllocations := k.GetAllocationsFromSource(ctx, allocation.SourceObjectId)
+	    sourceAllocations := k.GetAllAllocationIdBySourceIndex(ctx, allocation.SourceObjectId)
 	    if (len(sourceAllocations) > 0) {
 	        return allocation.Id, power, sdkerrors.Wrapf(types.ErrAllocationAppend, "Allocation Source (%s) cannot have an automated Allocation with other allocations in place", allocation.SourceObjectId)
 	    }

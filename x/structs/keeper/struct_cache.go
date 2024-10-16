@@ -667,7 +667,7 @@ func (cache *StructCache) GoOffline() {
         cache.GridStatusRemoveReady()
 
         // Remove all allocations
-        allocations := cache.K.GetAllocationsFromSource(cache.Ctx, cache.StructId)
+        allocations := cache.K.GetAllAllocationBySourceIndex(cache.Ctx, cache.StructId)
         cache.K.DestroyAllAllocations(cache.Ctx, allocations)
     }
 
@@ -1188,7 +1188,7 @@ func (cache *StructCache) DestroyAndCommit() {
         // Clear out all remaining allocations
         // clearing out all infusions should automatically clear allocations too,
         // but some allocations, such as automated ones may still exist
-        cache.K.DestroyAllAllocations(cache.Ctx, cache.K.GetAllocationsFromSource(cache.Ctx, cache.StructId))
+        cache.K.DestroyAllAllocations(cache.Ctx, cache.K.GetAllAllocationBySourceIndex(cache.Ctx, cache.StructId))
 
         // Clear Load
         cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, cache.StructId ))

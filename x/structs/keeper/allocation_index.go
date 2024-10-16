@@ -1,19 +1,15 @@
 package keeper
 
 import (
-	//"encoding/binary"
+	"encoding/binary"
     "context"
 
     "github.com/cosmos/cosmos-sdk/runtime"
 	"cosmossdk.io/store/prefix"
 	storetypes "cosmossdk.io/store/types"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 
-	sdkerrors "cosmossdk.io/errors"
-
-	"fmt"
 
 )
 
