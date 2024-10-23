@@ -75,7 +75,7 @@ func (k Keeper) ReactorInitialize(ctx context.Context, validatorAddress sdk.ValA
  *   AfterDelegationModified
  *
  */
-func (k Keeper) ReactorUpdatePlayerAllocation(ctx context.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) {
+func (k Keeper) ReactorUpdatePlayerInfusion(ctx context.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) {
 
 	/* Does this Reactor exist? */
 	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
@@ -111,7 +111,29 @@ func (k Keeper) ReactorUpdatePlayerAllocation(ctx context.Context, playerAddress
         k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String(), player, delegationShare.Uint64(), reactor.DefaultCommission, types.ReactorFuelToEnergyConversion)
     }
 
+}
 
+
+
+/* Change Reactor Allocations for Player Delegations
+ *
+ * Triggered during Staking Hooks:
+ *   AfterDelegationRemoved
+ *
+ */
+func (k Keeper) ReactorRemoveInfusion(ctx context.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) {
+
+	/* Does this Reactor exist? */
+	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
+	if !reactorBytesFound {
+        return
+	}
+    reactor, _ := k.GetReactorByBytes(ctx, reactorBytes)
+
+    infusion, found := k.GetInfusion(ctx, reactor.Id, playerAddress.String())
+    if found {
+        k.DestroyInfusion(ctx, infusion)
+    }
 }
 
 
@@ -129,7 +151,7 @@ func (k Keeper) ReactorUpdateFromValidator(ctx context.Context, validatorAddress
 }
 
 
-func (k Keeper) ReactorRemoveInfusion(ctx context.Context, unbondingId uint64) {
+func (k Keeper) ReactorInfusionUnbonding(ctx context.Context, unbondingId uint64) {
     fmt.Printf("New Unbonding Request %d \n", unbondingId)
     unbondingDelegation, err := k.stakingKeeper.GetUnbondingDelegationByUnbondingID(ctx, unbondingId)
 
