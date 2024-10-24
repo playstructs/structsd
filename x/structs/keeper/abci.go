@@ -11,6 +11,8 @@ import (
 // and prune the oldest entry based on the HistoricalEntries parameter
 func (k *Keeper) BeginBlocker(ctx context.Context) {
 
+    k.EmitEventTime(ctx)
+
     k.EventAllGenesis(ctx)
 
     k.StructSweepDestroyed(ctx)
@@ -27,6 +29,12 @@ func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error)
 	k.GridCascade(sdk.UnwrapSDKContext(ctx))
 
 	return []abci.ValidatorUpdate{}, nil
+}
+
+
+func (k Keeper) EmitEventTime(ctx context.Context) {
+    ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventTime{&types.EventTimeDetail{BlockHeight: ctxSDK.BlockHeight(), BlockTime: ctxSDK.HeaderInfo().Time }})
 }
 
 func (k *Keeper) EventAllGenesis(ctx context.Context) {

@@ -6,6 +6,7 @@ package structs.structs;
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "structs/structs/params.proto";
+import "google/protobuf/timestamp.proto";
 
 import "structs/structs/address.proto";
 import "structs/structs/allocation.proto";
@@ -48,6 +49,13 @@ option go_package = "structs/x/structs/types";
   message EventStructDefender   { StructDefender structDefender = 1; }
   message EventStructType       { StructType structType = 1; }
   message EventSubstation       { Substation substation = 1; }
+
+
+  message EventTime { EventTimeDetail eventTimeDetail = 1; }
+  message EventTimeDetail {
+    int64                         blockHeight = 1;
+    google.protobuf.Timestamp     blockTime   = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  }
 
   message EventPermission { PermissionRecord permissionRecord = 1; }
   message EventGrid { GridRecord gridRecord = 1; }
