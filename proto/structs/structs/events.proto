@@ -67,6 +67,9 @@ option go_package = "structs/x/structs/types";
 
   message EventGuildMembershipApplication { GuildMembershipApplication guildMembershipApplication = 1; }
 
+  message EventOreMine { EventOreMineDetail eventOreMineDetail = 1; }
+  message EventOreMineDetail { string playerId = 1; string primaryAddress = 2; uint64 amount = 3;}
+
   message EventAlphaRefine { EventAlphaRefineDetail eventAlphaRefineDetail = 1;}
   message EventAlphaRefineDetail { string playerId = 1; string primaryAddress = 2; uint64 amount = 3;}
 
@@ -75,6 +78,12 @@ option go_package = "structs/x/structs/types";
 
   message EventAlphaDefuse { EventAlphaDefuseDetail eventAlphaDefuseDetail = 1;}
   message EventAlphaDefuseDetail { string primaryAddress = 1; uint64 amount = 2;}
+
+  message EventOreTheft { EventOreTheftDetail eventOreTheftDetail = 1;}
+  message EventOreTheftDetail { string victimPrimaryAddress = 1; string victimPlayerId = 2; string thiefPrimaryAddress = 3; string thiefPlayerId = 4; uint64 amount = 5;}
+
+  message EventOreMigrate { EventOreMigrateDetail eventOreMigrateDetail = 1;}
+  message EventOreMigrateDetail { string playerId = 1; string primaryAddress = 2; string oldPrimaryAddress = 3; uint64 amount = 4;}
 
   message EventAttack { EventAttackDetail eventAttackDetail = 1; }
 

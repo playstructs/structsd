@@ -63,6 +63,8 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
         k.stakingKeeper.SetDelegation(ctx, delegation)
     }
 
+    // Help the indexer along regarding Ore balances
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventOreMigrate{&types.EventOreMigrateDetail{PlayerId: player.GetPlayerId(), PrimaryAddress: msg.PrimaryAddress, OldPrimaryAddress: player.GetPrimaryAddress(), Amount: player.GetStoredOre()}})
 
     // Finish up
     player.SetPrimaryAddress(msg.PrimaryAddress)
