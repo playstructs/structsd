@@ -1986,7 +1986,7 @@ structType = StructType{
  CounterAttackSameAmbit: 0,
 
  PostDestructionDamage: 0,
- GeneratingRate: 10,
+ GeneratingRate: 200,
  PlanetaryShieldContribution: 0,
 
  OreMiningDifficulty: 0,
@@ -2069,7 +2069,7 @@ structType = StructType{
  CounterAttackSameAmbit: 0,
 
  PostDestructionDamage: 0,
- GeneratingRate: 100,
+ GeneratingRate: 500,
  PlanetaryShieldContribution: 0,
 
  OreMiningDifficulty: 0,
@@ -2235,7 +2235,7 @@ structType = StructType{
  CounterAttackSameAmbit: 0,
 
  PostDestructionDamage: 0,
- GeneratingRate: 10,
+ GeneratingRate: 200,
  PlanetaryShieldContribution: 0,
 
  OreMiningDifficulty: 0,
@@ -2318,7 +2318,7 @@ structType = StructType{
  CounterAttackSameAmbit: 0,
 
  PostDestructionDamage: 0,
- GeneratingRate: 100,
+ GeneratingRate: 500,
  PlanetaryShieldContribution: 0,
 
  OreMiningDifficulty: 0,
