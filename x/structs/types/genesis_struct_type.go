@@ -157,7 +157,7 @@ structType = StructType{
  StealthSystems: false,
 
  CounterAttack: 2,
- CounterAttackSameAmbit: 1,
+ CounterAttackSameAmbit: 2,
 
  PostDestructionDamage: 0,
  GeneratingRate: 0,
