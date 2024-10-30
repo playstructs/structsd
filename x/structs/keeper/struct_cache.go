@@ -1101,7 +1101,7 @@ func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (d
 
     if (counterStruct.Defender) {
         fmt.Printf("Generating a defender counter-attack record for the event \n")
-        cache.GetEventAttackShotDetail().AppendDefenderCounter(counterStruct.StructId, damage, cache.IsDestroyed())
+        cache.GetEventAttackShotDetail().AppendDefenderCounter(counterStruct.StructId, damage, cache.IsDestroyed(), counterStruct.GetTypeId(), counterStruct.GetLocationType(), counterStruct.GetLocationId(), counterStruct.GetOperatingAmbit(), counterStruct.GetSlot())
     } else {
         fmt.Printf("Generating a target counter-attack record for the event \n")
         cache.GetEventAttackShotDetail().AppendTargetCounter(damage, cache.IsDestroyed(), counterStruct.GetStructType().GetPassiveWeaponry())
@@ -1144,7 +1144,7 @@ func (cache *StructCache) AttemptBlock(attacker *StructCache, weaponSystem types
         if (cache.GetOperatingAmbit() == target.GetOperatingAmbit()) {
             blocked = true
             cache.Blocker = true
-            cache.GetEventAttackShotDetail().SetBlocker(cache.StructId)
+            cache.GetEventAttackShotDetail().SetBlocker(cache.StructId, cache.GetTypeId(), cache.GetLocationType(), cache.GetLocationId(), cache.GetOperatingAmbit(), cache.GetSlot())
             cache.TakeAttackDamage(attacker, weaponSystem)
         }
     }
