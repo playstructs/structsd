@@ -82,6 +82,7 @@ enum raidStatus {
     ongoing             = 2;
     attackerDefeated    = 1;
     raidSuccessful      = 3;
+    demilitarized       = 4;
 }
 
 enum planetStatus {

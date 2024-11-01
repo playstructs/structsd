@@ -61,5 +61,7 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 
     structure.Commit()
 
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventOreMine{&types.EventOreMineDetail{PlayerId: structure.GetOwnerId(), PrimaryAddress: structure.GetOwner().GetPrimaryAddress(), Amount: 1}})
+
 	return &types.MsgStructOreMinerStatusResponse{Struct: structure.GetStruct()}, nil
 }

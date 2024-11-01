@@ -47,7 +47,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
     var eventAttackDetail *types.EventAttackDetail
     eventAttackDetail = structure.GetEventAttackDetail()
-    eventAttackDetail.SetBaseDetails(structure.GetStructId(), types.TechWeaponSystem_enum[msg.WeaponSystem], structure.GetStructType().GetWeaponControl(types.TechWeaponSystem_enum[msg.WeaponSystem]), structure.GetStructType().GetWeapon(types.TechWeaponSystem_enum[msg.WeaponSystem]))
+    eventAttackDetail.SetBaseDetails(structure.GetOwnerId(), structure.GetStructId(), structure.GetTypeId(), structure.GetLocationType(), structure.GetLocationId(), structure.GetOperatingAmbit(), structure.GetSlot(), types.TechWeaponSystem_enum[msg.WeaponSystem], structure.GetStructType().GetWeaponControl(types.TechWeaponSystem_enum[msg.WeaponSystem]), structure.GetStructType().GetWeapon(types.TechWeaponSystem_enum[msg.WeaponSystem]))
 
     structure.ManualLoadEventAttackDetail(eventAttackDetail)
 
@@ -60,10 +60,13 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
         fmt.Printf("Attack shot %d of %d against %s \n", shot, structure.GetStructType().GetWeaponTargets(types.TechWeaponSystem_enum[msg.WeaponSystem]),  msg.TargetStructId[shot])
         // Load the Target Struct cache object
         targetStructure := k.GetStructCacheFromId(ctx, msg.TargetStructId[shot])
+
         targetStructure.ManualLoadEventAttackDetail(eventAttackDetail)
+        eventAttackDetail.SetTargetPlayerId(targetStructure.GetOwnerId())
 
         eventAttackShotDetail := targetStructure.GetEventAttackShotDetail()
         structure.ManualLoadEventAttackShotDetail(eventAttackShotDetail)
+        structure.GetEventAttackShotDetail().SetTargetDetails(targetStructure.GetStructId(), targetStructure.GetTypeId(), targetStructure.GetLocationType(), targetStructure.GetLocationId(), targetStructure.GetOperatingAmbit(), targetStructure.GetSlot())
 
         /* Can the attacker attack? */
         // Check that the Structs are within attacking range of each other

@@ -11,12 +11,25 @@ func CreateEventAttackDetail() (*EventAttackDetail) {
     return &EventAttackDetail{ }
 }
 
-func (eventAttackDetail *EventAttackDetail) SetBaseDetails(attackerStructId string, weaponSystem TechWeaponSystem, weaponControl TechWeaponControl, activeWeaponry TechActiveWeaponry) {
-  eventAttackDetail.AttackerStructId = attackerStructId
+
+
+func (eventAttackDetail *EventAttackDetail) SetBaseDetails(attackerPlayerId string, attackerStructId string, attackerStructType uint64, attackerStructLocationType ObjectType, attackerStructLocationId string, attackerStructOperatingAmbit Ambit,  attackerStructSlot uint64, weaponSystem TechWeaponSystem, weaponControl TechWeaponControl, activeWeaponry TechActiveWeaponry) {
+
+  eventAttackDetail.AttackerPlayerId                = attackerPlayerId
+  eventAttackDetail.AttackerStructId                = attackerStructId
+  eventAttackDetail.AttackerStructType              = attackerStructType
+  eventAttackDetail.AttackerStructLocationType      = attackerStructLocationType
+  eventAttackDetail.AttackerStructLocationId        = attackerStructLocationId
+  eventAttackDetail.AttackerStructOperatingAmbit    = attackerStructOperatingAmbit
+  eventAttackDetail.AttackerStructSlot              = attackerStructSlot
 
   eventAttackDetail.WeaponSystem    = weaponSystem
   eventAttackDetail.WeaponControl   = weaponControl
   eventAttackDetail.ActiveWeaponry  = activeWeaponry
+}
+
+func (eventAttackDetail *EventAttackDetail) SetTargetPlayerId(targetPlayerId string) {
+  eventAttackDetail.TargetPlayerId = targetPlayerId
 }
 
 func (eventAttackDetail *EventAttackDetail) SetRecoilDamage(recoilDamage uint64, recoilDamageDestroyedAttacker bool) {
@@ -45,6 +58,15 @@ func CreateEventAttackShotDetail(targetStructId string) (*EventAttackShotDetail)
     }
 }
 
+func (eventAttackShotDetail *EventAttackShotDetail)  SetTargetDetails(targetStructId string, targetStructType uint64, targetStructLocationType ObjectType, targetStructLocationId string, targetStructOperatingAmbit Ambit, targetStructSlot uint64) {
+  eventAttackShotDetail.TargetStructId                = targetStructId
+  eventAttackShotDetail.TargetStructType              = targetStructType
+  eventAttackShotDetail.TargetStructLocationType      = targetStructLocationType
+  eventAttackShotDetail.TargetStructLocationId        = targetStructLocationId
+  eventAttackShotDetail.TargetStructOperatingAmbit    = targetStructOperatingAmbit
+  eventAttackShotDetail.TargetStructSlot              = targetStructSlot
+}
+
 func (eventAttackShotDetail *EventAttackShotDetail) SetEvade(evaded bool, evadedCause TechUnitDefenses) {
     eventAttackShotDetail.Evaded = evaded
     eventAttackShotDetail.EvadedCause = evadedCause
@@ -56,9 +78,14 @@ func (eventAttackShotDetail *EventAttackShotDetail) SetEvadeByPlanetaryDefenses(
     eventAttackShotDetail.EvadedByPlanetaryDefensesCause = evadedCause
 }
 
-func (eventAttackShotDetail *EventAttackShotDetail) SetBlocker(blockedByStructId string) {
-    eventAttackShotDetail.BlockedByStructId = blockedByStructId
-    eventAttackShotDetail.Blocked = true
+func (eventAttackShotDetail *EventAttackShotDetail) SetBlocker(blockedByStructId string, blockedByStructType uint64, blockedByStructLocationType ObjectType, blockedByStructLocationId string, blockedByStructOperatingAmbit Ambit, blockedByStructSlot uint64) {
+    eventAttackShotDetail.BlockedByStructId                 = blockedByStructId
+    eventAttackShotDetail.BlockedByStructType               = blockedByStructType
+    eventAttackShotDetail.BlockedByStructLocationType       = blockedByStructLocationType
+    eventAttackShotDetail.BlockedByStructLocationId         = blockedByStructLocationId
+    eventAttackShotDetail.BlockedByStructOperatingAmbit     = blockedByStructOperatingAmbit
+    eventAttackShotDetail.BlockedByStructSlot               = blockedByStructSlot
+    eventAttackShotDetail.Blocked                           = true
 }
 
 func (eventAttackShotDetail *EventAttackShotDetail) SetBlockerDestroyed() {
@@ -89,10 +116,15 @@ func (eventAttackShotDetail *EventAttackShotDetail) SetPostDestructionDamage(pos
     eventAttackShotDetail.PostDestructionDamageCause              = postDestructionDamageCause
 }
 
-func (eventAttackShotDetail *EventAttackShotDetail) AppendDefenderCounter(counterByStructId string, counterDamage uint64, counterDestroyedAttacker bool) {
+func (eventAttackShotDetail *EventAttackShotDetail) AppendDefenderCounter(counterByStructId string, counterDamage uint64, counterDestroyedAttacker bool, counterByStructType uint64, counterByStructLocationType ObjectType, counterByStructLocationId string, counterByStructOperatingAmbit Ambit, counterByStructSlot uint64) {
     fmt.Printf("Recording Defensive Counter Attack %s %d %t \n", counterByStructId, counterDamage, counterDestroyedAttacker)
     eventAttackDefenderCounterDetail := EventAttackDefenderCounterDetail{
         CounterByStructId: counterByStructId,
+        CounterByStructType: counterByStructType,
+        CounterByStructLocationType: counterByStructLocationType,
+        CounterByStructLocationId: counterByStructLocationId,
+        CounterByStructOperatingAmbit: counterByStructOperatingAmbit,
+        CounterByStructSlot: counterByStructSlot,
         CounterDamage: counterDamage,
         CounterDestroyedAttacker: counterDestroyedAttacker,
     }

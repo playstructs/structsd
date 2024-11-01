@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
     "encoding/hex"
+    "math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
@@ -20,11 +21,16 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    // Is the calling account a player?
-    playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
-    if (playerIndex == 0) {
+
+    player, err := k.GetPlayerCacheFromId(ctx, msg.PlayerId)
+    if err != nil {
+       return &types.MsgAddressRegisterResponse{}, err
+    }
+
+    if !player.LoadPlayer() {
         return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Non-player account cannot associate new addresses with themselves")
     }
+
 
 	// Is the address associated with an account yet
     playerFoundForAddress := k.GetPlayerIndexFromAddress(ctx, msg.Address)
@@ -32,13 +38,14 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
         return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not associate an address when already has an account")
     }
 
+     // Check if msg.Creator has PermissionAssociations on the Address and Account
+    err = player.CanBeAdministratedBy(msg.Creator, types.PermissionAssociations)
+    if err != nil {
+       return &types.MsgAddressRegisterResponse{}, err
+    }
 
 	// Does this creator address have the permissions to do this
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-    // Make sure the address calling this has Associate permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssociations)) {
-        return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionAssociation, "Calling address (%s) has no Association permissions ", msg.Creator)
-    }
     // The calling address must have a minimum of the same permission level
     if (!k.PermissionHasAll(ctx, addressPermissionId, types.Permission(msg.Permissions))) {
         return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionAssociation, "Calling address (%s) does not have permissions needed to allow address association of higher functionality ", msg.Creator)
@@ -63,8 +70,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     pubKey.Key = decodedProofPubKey
 
     // We rebuild the message manually here rather than trust the client to provide it
-    playerId  := GetObjectID(types.ObjectType_player, playerIndex)
-    hashInput := fmt.Sprintf("PLAYER%sADDRESS%s", playerId, msg.Address)
+    hashInput := fmt.Sprintf("PLAYER%sADDRESS%s", msg.PlayerId, msg.Address)
     fmt.Println(hashInput)
 
     // Decode the Signature from Hex Encoding
@@ -79,11 +85,35 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     }
 
 	// Add the address and player index to the keeper
-    k.SetPlayerIndexForAddress(ctx, msg.Address, playerIndex)
+    k.SetPlayerIndexForAddress(ctx, msg.Address, player.GetIndex())
 
 	// Add the permission to the new address
     newAddressPermissionId := GetAddressPermissionIDBytes(msg.Address)
     k.PermissionAdd(ctx, newAddressPermissionId, types.Permission(msg.Permissions))
+
+
+    // Move Funds
+    primaryAcc, _   := sdk.AccAddressFromBech32(player.GetPrimaryAddress())
+    newAcc, _   := sdk.AccAddressFromBech32(msg.Address)
+
+    // Get Balance
+    balances := k.bankKeeper.SpendableCoins(ctx, newAcc)
+
+    // Transfer
+    err = k.bankKeeper.SendCoins(ctx, newAcc, primaryAcc, balances)
+    if err != nil {
+        return &types.MsgAddressRegisterResponse{}, err
+    }
+
+    // Move Reactor Infusions over
+    primaryDelegations, _ := k.stakingKeeper.GetDelegatorDelegations(ctx, newAcc, math.MaxUint16)
+    for _, delegation := range primaryDelegations {
+        k.stakingKeeper.RemoveDelegation(ctx, delegation)
+
+        delegation.DelegatorAddress = player.GetPrimaryAddress()
+        k.stakingKeeper.SetDelegation(ctx, delegation)
+    }
+
 
 	return &types.MsgAddressRegisterResponse{}, nil
 }

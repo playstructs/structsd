@@ -3,9 +3,11 @@ syntax = "proto3";
 
 package structs.structs;
 
+import "amino/amino.proto";
 import "gogoproto/gogo.proto";
 import "google/api/annotations.proto";
 import "structs/structs/params.proto";
+import "google/protobuf/timestamp.proto";
 
 import "structs/structs/address.proto";
 import "structs/structs/allocation.proto";
@@ -35,105 +37,151 @@ option go_package = "structs/x/structs/types";
  * the results, such as EventDelete{ string objectId = 1; }
  */
 
-message EventAllocation       { Allocation allocation = 1; }
-message EventFleet            { Fleet fleet = 1; }
-message EventGuild            { Guild guild = 1; }
-message EventInfusion         { Infusion infusion = 1; }
-message EventPlanet           { Planet planet = 1; }
-message EventPlanetAttribute  { PlanetAttributeRecord planetAttributeRecord = 1; }
-message EventPlayer           { Player player = 1; }
-message EventReactor          { Reactor reactor = 1; }
-message EventStruct           { Struct structure = 1; }
-message EventStructAttribute  { StructAttributeRecord structAttributeRecord = 1; }
-message EventStructDefender   { StructDefender structDefender = 1; }
-message EventStructType       { StructType structType = 1; }
-message EventSubstation       { Substation substation = 1; }
-
-message EventPermission { PermissionRecord permissionRecord = 1; }
-message EventGrid { GridRecord gridRecord = 1; }
-
-message EventDelete { string objectId = 1; }
-
-message EventAddressAssociation { AddressAssociation addressAssociation = 1; }
-message EventAddressActivity { AddressActivity addressActivity = 1; }
-
-message EventGuildMembershipApplication { GuildMembershipApplication guildMembershipApplication = 1; }
-
-message EventAlphaRefine { EventAlphaRefineDetail eventAlphaRefineDetail = 1;}
-message EventAlphaRefineDetail { string playerId = 1; string primaryAddress = 2; uint64 amount = 3;}
-
-message EventAlphaInfuse { EventAlphaInfuseDetail eventAlphaInfuseDetail = 1;}
-message EventAlphaInfuseDetail { string playerId = 1; string primaryAddress = 2; uint64 amount = 3;}
-
-message EventAlphaDefuse { EventAlphaDefuseDetail eventAlphaDefuseDetail = 1;}
-message EventAlphaDefuseDetail { string primaryAddress = 1; uint64 amount = 2;}
-
-message EventAttack { EventAttackDetail eventAttackDetail = 1; }
-
-message EventAttackDetail {
-  string attackerStructId = 1;
-
-  techWeaponSystem    weaponSystem    = 2;
-  techWeaponControl   weaponControl   = 3;
-  techActiveWeaponry  activeWeaponry  = 4;
-
-  repeated EventAttackShotDetail eventAttackShotDetail = 5;
-
-  bool recoilDamageToAttacker         = 6;
-  uint64 recoilDamage                 = 7;
-  bool recoilDamageDestroyedAttacker  = 8;
-
-  bool planetaryDefenseCannonDamageToAttacker         = 9;
-  uint64 planetaryDefenseCannonDamage                 = 10;
-  bool planetaryDefenseCannonDamageDestroyedAttacker  = 11;
-
-}
-
-message EventAttackShotDetail {
-  string  targetStructId = 1;
-
-  bool evaded                  = 2;
-  techUnitDefenses evadedCause = 3;
-
-  bool evadedByPlanetaryDefenses  = 4;
-  techPlanetaryDefenses evadedByPlanetaryDefensesCause = 5;
-
-  bool blocked              = 6;
-  string blockedByStructId  = 7;
-  bool blockerDestroyed     = 8;
-
-  repeated EventAttackDefenderCounterDetail eventAttackDefenderCounterDetail = 9;
-
-  uint64 damageDealt                    = 10;
-  uint64 damageReduction                = 11;
-  techUnitDefenses damageReductionCause = 12;
-  uint64 damage                         = 13;
+  message EventAllocation       { Allocation allocation = 1; }
+  message EventFleet            { Fleet fleet = 1; }
+  message EventGuild            { Guild guild = 1; }
+  message EventInfusion         { Infusion infusion = 1; }
+  message EventPlanet           { Planet planet = 1; }
+  message EventPlanetAttribute  { PlanetAttributeRecord planetAttributeRecord = 1; }
+  message EventPlayer           { Player player = 1; }
+  message EventReactor          { Reactor reactor = 1; }
+  message EventStruct           { Struct structure = 1; }
+  message EventStructAttribute  { StructAttributeRecord structAttributeRecord = 1; }
+  message EventStructDefender   { StructDefender structDefender = 1; }
+  message EventStructType       { StructType structType = 1; }
+  message EventSubstation       { Substation substation = 1; }
 
 
-  bool targetCountered                    = 14;
-  uint64 targetCounteredDamage            = 15;
-  bool targetCounterDestroyedAttacker     = 16;
-  techPassiveWeaponry targetCounterCause  = 17;
+  message EventTime { EventTimeDetail eventTimeDetail = 1; }
+  message EventTimeDetail {
+    int64                         blockHeight = 1;
+    google.protobuf.Timestamp     blockTime   = 2 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
+  }
 
-  bool targetDestroyed = 18;
+  message EventPermission { PermissionRecord permissionRecord = 1; }
+  message EventGrid { GridRecord gridRecord = 1; }
 
-  bool postDestructionDamageToAttacker            = 19;
-  uint64 postDestructionDamage                    = 20;
-  bool postDestructionDamageDestroyedAttacker     = 21;
-  techPassiveWeaponry postDestructionDamageCause  = 22;
+  message EventDelete { string objectId = 1; }
 
-}
+  message EventAddressAssociation { AddressAssociation addressAssociation = 1; }
+  message EventAddressActivity { AddressActivity addressActivity = 1; }
 
-message EventAttackDefenderCounterDetail {
-  string  counterByStructId         = 1;
-  uint64  counterDamage             = 2;
-  bool    counterDestroyedAttacker  = 3;
-}
+  message EventGuildMembershipApplication { GuildMembershipApplication guildMembershipApplication = 1; }
 
-message EventRaid { EventRaidDetail eventRaidDetail = 1; }
+  message EventOreMine { EventOreMineDetail eventOreMineDetail = 1; }
+  message EventOreMineDetail { string playerId = 1; string primaryAddress = 2; uint64 amount = 3;}
 
-message EventRaidDetail {
-  string      fleetId    = 1;
-  string      planetId   = 2;
-  raidStatus  status     = 3;
-}
+  message EventAlphaRefine { EventAlphaRefineDetail eventAlphaRefineDetail = 1;}
+  message EventAlphaRefineDetail { string playerId = 1; string primaryAddress = 2; uint64 amount = 3;}
+
+  message EventAlphaInfuse { EventAlphaInfuseDetail eventAlphaInfuseDetail = 1;}
+  message EventAlphaInfuseDetail { string playerId = 1; string primaryAddress = 2; uint64 amount = 3;}
+
+  message EventAlphaDefuse { EventAlphaDefuseDetail eventAlphaDefuseDetail = 1;}
+  message EventAlphaDefuseDetail { string primaryAddress = 1; uint64 amount = 2;}
+
+  message EventOreTheft { EventOreTheftDetail eventOreTheftDetail = 1;}
+  message EventOreTheftDetail { string victimPrimaryAddress = 1; string victimPlayerId = 2; string thiefPrimaryAddress = 3; string thiefPlayerId = 4; uint64 amount = 5;}
+
+  message EventOreMigrate { EventOreMigrateDetail eventOreMigrateDetail = 1;}
+  message EventOreMigrateDetail { string playerId = 1; string primaryAddress = 2; string oldPrimaryAddress = 3; uint64 amount = 4;}
+
+  message EventAttack { EventAttackDetail eventAttackDetail = 1; }
+
+  message EventAttackDetail {
+    string attackerStructId = 1;
+
+    uint64      attackerStructType            = 2;
+    objectType  attackerStructLocationType    = 3 [(amino.dont_omitempty) = true];
+    string      attackerStructLocationId      = 4;
+    ambit       attackerStructOperatingAmbit  = 5 [(amino.dont_omitempty) = true];
+    uint64      attackerStructSlot            = 6;
+
+
+    techWeaponSystem    weaponSystem    = 7;
+    techWeaponControl   weaponControl   = 8;
+    techActiveWeaponry  activeWeaponry  = 9;
+
+    repeated EventAttackShotDetail eventAttackShotDetail = 10;
+
+    bool recoilDamageToAttacker         = 11;
+    uint64 recoilDamage                 = 12;
+    bool recoilDamageDestroyedAttacker  = 13;
+
+    bool planetaryDefenseCannonDamageToAttacker         = 14;
+    uint64 planetaryDefenseCannonDamage                 = 15;
+    bool planetaryDefenseCannonDamageDestroyedAttacker  = 16;
+
+    string attackerPlayerId = 17;
+    string targetPlayerId   = 18;
+
+  }
+
+  message EventAttackShotDetail {
+    string  targetStructId = 1;
+
+    uint64      targetStructType            = 2;
+    objectType  targetStructLocationType    = 3 [(amino.dont_omitempty) = true];
+    string      targetStructLocationId      = 4;
+    ambit       targetStructOperatingAmbit  = 5 [(amino.dont_omitempty) = true];
+    uint64      targetStructSlot            = 6;
+
+
+    bool evaded                  = 7;
+    techUnitDefenses evadedCause = 8;
+
+    bool evadedByPlanetaryDefenses  = 9;
+    techPlanetaryDefenses evadedByPlanetaryDefensesCause = 10;
+
+    bool        blocked                        = 11;
+    string      blockedByStructId              = 12;
+    uint64      blockedByStructType            = 13;
+    objectType  blockedByStructLocationType    = 14 [(amino.dont_omitempty) = true];
+    string      blockedByStructLocationId      = 15;
+    ambit       blockedByStructOperatingAmbit  = 16 [(amino.dont_omitempty) = true];
+    uint64      blockedByStructSlot            = 17;
+
+    bool blockerDestroyed     = 18;
+
+    repeated EventAttackDefenderCounterDetail eventAttackDefenderCounterDetail = 19;
+
+    uint64 damageDealt                    = 20;
+    uint64 damageReduction                = 21;
+    techUnitDefenses damageReductionCause = 22;
+    uint64 damage                         = 23;
+
+
+    bool targetCountered                    = 24;
+    uint64 targetCounteredDamage            = 25;
+    bool targetCounterDestroyedAttacker     = 26;
+    techPassiveWeaponry targetCounterCause  = 27;
+
+    bool targetDestroyed = 28;
+
+    bool postDestructionDamageToAttacker            = 29;
+    uint64 postDestructionDamage                    = 30;
+    bool postDestructionDamageDestroyedAttacker     = 31;
+    techPassiveWeaponry postDestructionDamageCause  = 32;
+
+  }
+
+  message EventAttackDefenderCounterDetail {
+    string  counterByStructId         = 1;
+
+    uint64      counterByStructType            = 2;
+    objectType  counterByStructLocationType    = 3 [(amino.dont_omitempty) = true];
+    string      counterByStructLocationId      = 4;
+    ambit       counterByStructOperatingAmbit  = 5 [(amino.dont_omitempty) = true];
+    uint64      counterByStructSlot            = 6;
+
+    uint64  counterDamage             = 7;
+    bool    counterDestroyedAttacker  = 8;
+  }
+
+  message EventRaid { EventRaidDetail eventRaidDetail = 1; }
+
+  message EventRaidDetail {
+    string      fleetId    = 1;
+    string      planetId   = 2;
+    raidStatus  status     = 3;
+  }

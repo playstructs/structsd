@@ -768,10 +768,33 @@ func (cache *PlanetCache) ClearSlot(ambit types.Ambit, slot uint64) {
 /* Game Logic */
 
 // AttemptComplete
-// TODO This has to do a LOT more than it currently is
 func (cache *PlanetCache) AttemptComplete() (error) {
     if (cache.IsEmptyOfOre()) {
         cache.SetStatus(types.PlanetStatus_complete)
+
+
+        // Destroy Structs
+        structsToDestroy := append(cache.GetPlanet().Space, cache.GetPlanet().Air...)
+        structsToDestroy  = append(structsToDestroy, cache.GetPlanet().Land...)
+        structsToDestroy  = append(structsToDestroy, cache.GetPlanet().Water...)
+
+        // For Space
+        for _, structId := range structsToDestroy {
+            if structId != "" {
+                planetStruct := cache.K.GetStructCacheFromId(cache.Ctx, structId)
+                planetStruct.ManualLoadOwner(cache.GetOwner())
+                planetStruct.ManualLoadPlanet(cache)
+                planetStruct.DestroyAndCommit()
+            }
+        }
+
+        // Send Fleets away
+        for cache.GetLocationListStart() != "" {
+               currentFleet, _ := cache.K.GetFleetCacheFromId(cache.Ctx, cache.GetLocationListStart())
+               currentFleet.ManualLoadPlanet(cache)
+               currentFleet.PeaceDeal()
+        }
+
         cache.Commit()
         return nil
     }

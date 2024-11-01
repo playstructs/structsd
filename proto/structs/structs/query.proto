@@ -57,6 +57,14 @@ service Query {
     option (google.api.http).get = "/structs/allocation";
   }
 
+  rpc AllocationAllBySource (QueryAllAllocationBySourceRequest) returns (QueryAllAllocationResponse) {
+    option (google.api.http).get = "/structs/allocation_by_source/{sourceId}";
+  }
+
+  rpc AllocationAllByDestination (QueryAllAllocationByDestinationRequest) returns (QueryAllAllocationResponse) {
+    option (google.api.http).get = "/structs/allocation_by_destination/{destinationId}";
+  }
+
   // Queries a list of Fleet items.
   rpc Fleet (QueryGetFleetRequest) returns (QueryGetFleetResponse) {
     option (google.api.http).get = "/structs/fleet/{id}";
@@ -106,6 +114,10 @@ service Query {
     option (google.api.http).get = "/structs/infusion";
   }
 
+  rpc InfusionAllByDestination (QueryAllInfusionByDestinationRequest) returns (QueryAllInfusionResponse) {
+    option (google.api.http).get = "/structs/infusion_by_destination/{destinationId}";
+  }
+
   // Queries a specific Permission
   rpc Permission (QueryGetPermissionRequest) returns (QueryGetPermissionResponse) {
     option (google.api.http).get = "/structs/permission/{permissionId}";
@@ -153,6 +165,11 @@ service Query {
     option (google.api.http).get = "/structs/planet_attribute/{planetId}/{attributeType}";
   }
 
+  // Queries a list of all Planet Attributes
+  rpc PlanetAttributeAll (QueryAllPlanetAttributeRequest) returns (QueryAllPlanetAttributeResponse) {
+    option (google.api.http).get = "/structs/planet_attribute";
+  }
+
   // Queries a list of Reactor items.
   rpc Reactor    (QueryGetReactorRequest) returns (QueryGetReactorResponse) {
     option (google.api.http).get = "/structs/reactor/{id}";
@@ -175,6 +192,11 @@ service Query {
     option (google.api.http).get = "/structs/struct_attribute/{structId}/{attributeType}";
   }
 
+  // Queries a list of all Struct Attributes
+  rpc StructAttributeAll (QueryAllStructAttributeRequest) returns (QueryAllStructAttributeResponse) {
+    option (google.api.http).get = "/structs/struct_attribute";
+  }
+
   // Queries a list of Struct Types items.
   rpc StructType    (QueryGetStructTypeRequest) returns (QueryGetStructTypeResponse) {
     option (google.api.http).get = "/structs/struct_type/{id}";
@@ -191,6 +213,10 @@ service Query {
 
   rpc SubstationAll (QueryAllSubstationRequest) returns (QueryAllSubstationResponse) {
     option (google.api.http).get = "/structs/substation";
+  }
+
+  rpc ValidateSignature (QueryValidateSignatureRequest) returns (QueryValidateSignatureResponse) {
+    option (google.api.http).get = "/structs/validate_signature/{address}/{proofPubKey}/{proofSignature}/{message}";
   }
 
 }
@@ -248,6 +274,15 @@ message QueryGetAllocationResponse {
 
 message QueryAllAllocationRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAllocationBySourceRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+  string sourceId = 2;
+}
+message QueryAllAllocationByDestinationRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+  string destinationId = 2;
 }
 
 message QueryAllAllocationResponse {
@@ -345,6 +380,11 @@ message QueryGetInfusionResponse {
   Infusion Infusion = 1 [(gogoproto.nullable) = false];
 }
 
+message QueryAllInfusionByDestinationRequest{
+  string destinationId                              = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination  = 2;
+}
+
 message QueryAllInfusionRequest {
   cosmos.base.query.v1beta1.PageRequest pagination = 1;
 }
@@ -419,6 +459,15 @@ message QueryGetPlanetAttributeResponse {
   uint64 attribute = 1;
 }
 
+message QueryAllPlanetAttributeRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllPlanetAttributeResponse {
+  repeated PlanetAttributeRecord planetAttributeRecords = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
 
 message QueryGetPlayerRequest {
   string id = 1;
@@ -487,6 +536,16 @@ message QueryGetStructAttributeResponse {
   uint64 attribute = 1;
 }
 
+message QueryAllStructAttributeRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllStructAttributeResponse {
+  repeated StructAttributeRecord structAttributeRecords = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+
 message QueryGetStructTypeRequest {
   uint64 id = 1;
 }
@@ -522,3 +581,18 @@ message QueryAllSubstationResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+
+message QueryValidateSignatureRequest {
+  string address        = 1;
+  string message        = 2;
+  string proofPubKey    = 3;
+  string proofSignature = 4;
+}
+
+message QueryValidateSignatureResponse {
+  bool pubkeyFormatError      = 1;
+  bool signatureFormatError   = 2;
+  bool addressPubkeyMismatch  = 3;
+  bool signatureInvalid       = 4;
+  bool valid                  = 5;
+}

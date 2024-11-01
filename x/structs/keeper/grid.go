@@ -144,11 +144,6 @@ func (k Keeper) AppendGridCascadeQueue(ctx context.Context, queueId string) (err
 
 func (k Keeper) GridCascade(ctx context.Context) {
 
-    // Initiate the attributes
-    var allocationPointer       uint64
-    var allocationPointerEnd    uint64
-
-    var allocationDestroyed     bool
 
     // This needs to be able to iterate until the queue is empty
     // If there are no bugs, there should always be an end
@@ -163,29 +158,17 @@ func (k Keeper) GridCascade(ctx context.Context) {
 
         // For each Queue Item
         for _, objectId := range gridQueue {
-            allocationPointer    = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerStart, objectId))
-            allocationPointerEnd = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerEnd, objectId))
+
+            allocationList := k.GetAllAllocationIdBySourceIndex(ctx, objectId)
+            allocationPointer := 0
 
             for (k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)) > k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId))) {
                 fmt.Printf("Grid Queue (Brownout): (%s) Load: %d Capacity: %d \n", objectId, k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)),  k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId)))
-                // Iterate through the allocationPointer until we successfully delete an allocation
-                for {
-                    allocationDestroyed = k.DestroyAllocation(ctx, GetAllocationID(objectId, allocationPointer))
-                    allocationPointer   = allocationPointer + 1
 
-                    if ((allocationDestroyed) || (allocationPointer > allocationPointerEnd)) {
-                        fmt.Printf("Grid Queue (Allocation Destroyed): (%s) \n", GetAllocationID(objectId, allocationPointer))
-                        break
-                    }
-                }
+                k.DestroyAllocation(ctx, allocationList[allocationPointer])
+                fmt.Printf("Grid Queue (Allocation Destroyed): (%s) \n", allocationList[allocationPointer])
 
-                if (allocationPointer > allocationPointerEnd) {
-                    // This is bad. Better than infinite loop
-                    // We've gotten here because we've blown away all the allocations but somehow the capacity is still lower than load
-                    // TODO Write function that forcefully resolves the situation
-                        // This would be a bandaid on a bug though.
-                    break
-                }
+                allocationPointer++
             }
         }
     }
@@ -236,8 +219,6 @@ func (k Keeper) GetGridAttributesByObject(ctx context.Context, objectId string) 
             Power:                  k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, objectId)),
             ConnectionCapacity:     k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, objectId)),
             ConnectionCount:        k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, objectId)),
-            AllocationPointerStart: k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerStart, objectId)),
-            AllocationPointerEnd:   k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerEnd, objectId)),
             ProxyNonce:             k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_proxyNonce, objectId)),
             LastAction:             k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, objectId)),
             Nonce:                  k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_nonce, objectId)),

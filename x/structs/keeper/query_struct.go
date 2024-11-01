@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"context"
+	"encoding/binary"
 
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"cosmossdk.io/store/prefix"
@@ -79,4 +80,24 @@ func (k Keeper) StructAttribute(goCtx context.Context, req *types.QueryGetStruct
 	return &types.QueryGetStructAttributeResponse{Attribute: structureAttribute}, nil
 }
 
+func (k Keeper) StructAttributeAll(goCtx context.Context, req *types.QueryAllStructAttributeRequest) (*types.QueryAllStructAttributeResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
 
+     var structAttributes []*types.StructAttributeRecord
+
+ 	ctx := sdk.UnwrapSDKContext(goCtx)
+
+ 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+ 	gridStore := prefix.NewStore(store, types.KeyPrefix(types.StructAttributeKey))
+
+ 	pageRes, err := query.Paginate(gridStore, req.Pagination, func(key []byte, value []byte) error {
+
+        structAttributes = append(structAttributes, &types.StructAttributeRecord{AttributeId: string(key), Value: binary.BigEndian.Uint64(value)})
+
+         return nil
+ 	})
+
+	return &types.QueryAllStructAttributeResponse{StructAttributeRecords: structAttributes, Pagination: pageRes}, err
+}

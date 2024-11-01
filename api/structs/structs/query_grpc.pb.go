@@ -26,6 +26,8 @@ const (
 	Query_AddressAllByPlayer_FullMethodName            = "/structs.structs.Query/AddressAllByPlayer"
 	Query_Allocation_FullMethodName                    = "/structs.structs.Query/Allocation"
 	Query_AllocationAll_FullMethodName                 = "/structs.structs.Query/AllocationAll"
+	Query_AllocationAllBySource_FullMethodName         = "/structs.structs.Query/AllocationAllBySource"
+	Query_AllocationAllByDestination_FullMethodName    = "/structs.structs.Query/AllocationAllByDestination"
 	Query_Fleet_FullMethodName                         = "/structs.structs.Query/Fleet"
 	Query_FleetByIndex_FullMethodName                  = "/structs.structs.Query/FleetByIndex"
 	Query_FleetAll_FullMethodName                      = "/structs.structs.Query/FleetAll"
@@ -37,6 +39,7 @@ const (
 	Query_GuildMembershipApplicationAll_FullMethodName = "/structs.structs.Query/GuildMembershipApplicationAll"
 	Query_Infusion_FullMethodName                      = "/structs.structs.Query/Infusion"
 	Query_InfusionAll_FullMethodName                   = "/structs.structs.Query/InfusionAll"
+	Query_InfusionAllByDestination_FullMethodName      = "/structs.structs.Query/InfusionAllByDestination"
 	Query_Permission_FullMethodName                    = "/structs.structs.Query/Permission"
 	Query_PermissionByObject_FullMethodName            = "/structs.structs.Query/PermissionByObject"
 	Query_PermissionByPlayer_FullMethodName            = "/structs.structs.Query/PermissionByPlayer"
@@ -47,15 +50,18 @@ const (
 	Query_PlanetAll_FullMethodName                     = "/structs.structs.Query/PlanetAll"
 	Query_PlanetAllByPlayer_FullMethodName             = "/structs.structs.Query/PlanetAllByPlayer"
 	Query_PlanetAttribute_FullMethodName               = "/structs.structs.Query/PlanetAttribute"
+	Query_PlanetAttributeAll_FullMethodName            = "/structs.structs.Query/PlanetAttributeAll"
 	Query_Reactor_FullMethodName                       = "/structs.structs.Query/Reactor"
 	Query_ReactorAll_FullMethodName                    = "/structs.structs.Query/ReactorAll"
 	Query_Struct_FullMethodName                        = "/structs.structs.Query/Struct"
 	Query_StructAll_FullMethodName                     = "/structs.structs.Query/StructAll"
 	Query_StructAttribute_FullMethodName               = "/structs.structs.Query/StructAttribute"
+	Query_StructAttributeAll_FullMethodName            = "/structs.structs.Query/StructAttributeAll"
 	Query_StructType_FullMethodName                    = "/structs.structs.Query/StructType"
 	Query_StructTypeAll_FullMethodName                 = "/structs.structs.Query/StructTypeAll"
 	Query_Substation_FullMethodName                    = "/structs.structs.Query/Substation"
 	Query_SubstationAll_FullMethodName                 = "/structs.structs.Query/SubstationAll"
+	Query_ValidateSignature_FullMethodName             = "/structs.structs.Query/ValidateSignature"
 )
 
 // QueryClient is the client API for Query service.
@@ -72,6 +78,8 @@ type QueryClient interface {
 	// Queries a list of Allocation items.
 	Allocation(ctx context.Context, in *QueryGetAllocationRequest, opts ...grpc.CallOption) (*QueryGetAllocationResponse, error)
 	AllocationAll(ctx context.Context, in *QueryAllAllocationRequest, opts ...grpc.CallOption) (*QueryAllAllocationResponse, error)
+	AllocationAllBySource(ctx context.Context, in *QueryAllAllocationBySourceRequest, opts ...grpc.CallOption) (*QueryAllAllocationResponse, error)
+	AllocationAllByDestination(ctx context.Context, in *QueryAllAllocationByDestinationRequest, opts ...grpc.CallOption) (*QueryAllAllocationResponse, error)
 	// Queries a list of Fleet items.
 	Fleet(ctx context.Context, in *QueryGetFleetRequest, opts ...grpc.CallOption) (*QueryGetFleetResponse, error)
 	FleetByIndex(ctx context.Context, in *QueryGetFleetByIndexRequest, opts ...grpc.CallOption) (*QueryGetFleetResponse, error)
@@ -88,6 +96,7 @@ type QueryClient interface {
 	// Queries a list of Infusions.
 	Infusion(ctx context.Context, in *QueryGetInfusionRequest, opts ...grpc.CallOption) (*QueryGetInfusionResponse, error)
 	InfusionAll(ctx context.Context, in *QueryAllInfusionRequest, opts ...grpc.CallOption) (*QueryAllInfusionResponse, error)
+	InfusionAllByDestination(ctx context.Context, in *QueryAllInfusionByDestinationRequest, opts ...grpc.CallOption) (*QueryAllInfusionResponse, error)
 	// Queries a specific Permission
 	Permission(ctx context.Context, in *QueryGetPermissionRequest, opts ...grpc.CallOption) (*QueryGetPermissionResponse, error)
 	// Queries a list of Permissions based on Object
@@ -104,6 +113,8 @@ type QueryClient interface {
 	PlanetAll(ctx context.Context, in *QueryAllPlanetRequest, opts ...grpc.CallOption) (*QueryAllPlanetResponse, error)
 	PlanetAllByPlayer(ctx context.Context, in *QueryAllPlanetByPlayerRequest, opts ...grpc.CallOption) (*QueryAllPlanetResponse, error)
 	PlanetAttribute(ctx context.Context, in *QueryGetPlanetAttributeRequest, opts ...grpc.CallOption) (*QueryGetPlanetAttributeResponse, error)
+	// Queries a list of all Planet Attributes
+	PlanetAttributeAll(ctx context.Context, in *QueryAllPlanetAttributeRequest, opts ...grpc.CallOption) (*QueryAllPlanetAttributeResponse, error)
 	// Queries a list of Reactor items.
 	Reactor(ctx context.Context, in *QueryGetReactorRequest, opts ...grpc.CallOption) (*QueryGetReactorResponse, error)
 	ReactorAll(ctx context.Context, in *QueryAllReactorRequest, opts ...grpc.CallOption) (*QueryAllReactorResponse, error)
@@ -111,12 +122,15 @@ type QueryClient interface {
 	Struct(ctx context.Context, in *QueryGetStructRequest, opts ...grpc.CallOption) (*QueryGetStructResponse, error)
 	StructAll(ctx context.Context, in *QueryAllStructRequest, opts ...grpc.CallOption) (*QueryAllStructResponse, error)
 	StructAttribute(ctx context.Context, in *QueryGetStructAttributeRequest, opts ...grpc.CallOption) (*QueryGetStructAttributeResponse, error)
+	// Queries a list of all Struct Attributes
+	StructAttributeAll(ctx context.Context, in *QueryAllStructAttributeRequest, opts ...grpc.CallOption) (*QueryAllStructAttributeResponse, error)
 	// Queries a list of Struct Types items.
 	StructType(ctx context.Context, in *QueryGetStructTypeRequest, opts ...grpc.CallOption) (*QueryGetStructTypeResponse, error)
 	StructTypeAll(ctx context.Context, in *QueryAllStructTypeRequest, opts ...grpc.CallOption) (*QueryAllStructTypeResponse, error)
 	// Queries a list of Substation items.
 	Substation(ctx context.Context, in *QueryGetSubstationRequest, opts ...grpc.CallOption) (*QueryGetSubstationResponse, error)
 	SubstationAll(ctx context.Context, in *QueryAllSubstationRequest, opts ...grpc.CallOption) (*QueryAllSubstationResponse, error)
+	ValidateSignature(ctx context.Context, in *QueryValidateSignatureRequest, opts ...grpc.CallOption) (*QueryValidateSignatureResponse, error)
 }
 
 type queryClient struct {
@@ -184,6 +198,24 @@ func (c *queryClient) Allocation(ctx context.Context, in *QueryGetAllocationRequ
 func (c *queryClient) AllocationAll(ctx context.Context, in *QueryAllAllocationRequest, opts ...grpc.CallOption) (*QueryAllAllocationResponse, error) {
 	out := new(QueryAllAllocationResponse)
 	err := c.cc.Invoke(ctx, Query_AllocationAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) AllocationAllBySource(ctx context.Context, in *QueryAllAllocationBySourceRequest, opts ...grpc.CallOption) (*QueryAllAllocationResponse, error) {
+	out := new(QueryAllAllocationResponse)
+	err := c.cc.Invoke(ctx, Query_AllocationAllBySource_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) AllocationAllByDestination(ctx context.Context, in *QueryAllAllocationByDestinationRequest, opts ...grpc.CallOption) (*QueryAllAllocationResponse, error) {
+	out := new(QueryAllAllocationResponse)
+	err := c.cc.Invoke(ctx, Query_AllocationAllByDestination_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -289,6 +321,15 @@ func (c *queryClient) InfusionAll(ctx context.Context, in *QueryAllInfusionReque
 	return out, nil
 }
 
+func (c *queryClient) InfusionAllByDestination(ctx context.Context, in *QueryAllInfusionByDestinationRequest, opts ...grpc.CallOption) (*QueryAllInfusionResponse, error) {
+	out := new(QueryAllInfusionResponse)
+	err := c.cc.Invoke(ctx, Query_InfusionAllByDestination_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) Permission(ctx context.Context, in *QueryGetPermissionRequest, opts ...grpc.CallOption) (*QueryGetPermissionResponse, error) {
 	out := new(QueryGetPermissionResponse)
 	err := c.cc.Invoke(ctx, Query_Permission_FullMethodName, in, out, opts...)
@@ -379,6 +420,15 @@ func (c *queryClient) PlanetAttribute(ctx context.Context, in *QueryGetPlanetAtt
 	return out, nil
 }
 
+func (c *queryClient) PlanetAttributeAll(ctx context.Context, in *QueryAllPlanetAttributeRequest, opts ...grpc.CallOption) (*QueryAllPlanetAttributeResponse, error) {
+	out := new(QueryAllPlanetAttributeResponse)
+	err := c.cc.Invoke(ctx, Query_PlanetAttributeAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) Reactor(ctx context.Context, in *QueryGetReactorRequest, opts ...grpc.CallOption) (*QueryGetReactorResponse, error) {
 	out := new(QueryGetReactorResponse)
 	err := c.cc.Invoke(ctx, Query_Reactor_FullMethodName, in, out, opts...)
@@ -424,6 +474,15 @@ func (c *queryClient) StructAttribute(ctx context.Context, in *QueryGetStructAtt
 	return out, nil
 }
 
+func (c *queryClient) StructAttributeAll(ctx context.Context, in *QueryAllStructAttributeRequest, opts ...grpc.CallOption) (*QueryAllStructAttributeResponse, error) {
+	out := new(QueryAllStructAttributeResponse)
+	err := c.cc.Invoke(ctx, Query_StructAttributeAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) StructType(ctx context.Context, in *QueryGetStructTypeRequest, opts ...grpc.CallOption) (*QueryGetStructTypeResponse, error) {
 	out := new(QueryGetStructTypeResponse)
 	err := c.cc.Invoke(ctx, Query_StructType_FullMethodName, in, out, opts...)
@@ -460,6 +519,15 @@ func (c *queryClient) SubstationAll(ctx context.Context, in *QueryAllSubstationR
 	return out, nil
 }
 
+func (c *queryClient) ValidateSignature(ctx context.Context, in *QueryValidateSignatureRequest, opts ...grpc.CallOption) (*QueryValidateSignatureResponse, error) {
+	out := new(QueryValidateSignatureResponse)
+	err := c.cc.Invoke(ctx, Query_ValidateSignature_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // QueryServer is the server API for Query service.
 // All implementations must embed UnimplementedQueryServer
 // for forward compatibility
@@ -474,6 +542,8 @@ type QueryServer interface {
 	// Queries a list of Allocation items.
 	Allocation(context.Context, *QueryGetAllocationRequest) (*QueryGetAllocationResponse, error)
 	AllocationAll(context.Context, *QueryAllAllocationRequest) (*QueryAllAllocationResponse, error)
+	AllocationAllBySource(context.Context, *QueryAllAllocationBySourceRequest) (*QueryAllAllocationResponse, error)
+	AllocationAllByDestination(context.Context, *QueryAllAllocationByDestinationRequest) (*QueryAllAllocationResponse, error)
 	// Queries a list of Fleet items.
 	Fleet(context.Context, *QueryGetFleetRequest) (*QueryGetFleetResponse, error)
 	FleetByIndex(context.Context, *QueryGetFleetByIndexRequest) (*QueryGetFleetResponse, error)
@@ -490,6 +560,7 @@ type QueryServer interface {
 	// Queries a list of Infusions.
 	Infusion(context.Context, *QueryGetInfusionRequest) (*QueryGetInfusionResponse, error)
 	InfusionAll(context.Context, *QueryAllInfusionRequest) (*QueryAllInfusionResponse, error)
+	InfusionAllByDestination(context.Context, *QueryAllInfusionByDestinationRequest) (*QueryAllInfusionResponse, error)
 	// Queries a specific Permission
 	Permission(context.Context, *QueryGetPermissionRequest) (*QueryGetPermissionResponse, error)
 	// Queries a list of Permissions based on Object
@@ -506,6 +577,8 @@ type QueryServer interface {
 	PlanetAll(context.Context, *QueryAllPlanetRequest) (*QueryAllPlanetResponse, error)
 	PlanetAllByPlayer(context.Context, *QueryAllPlanetByPlayerRequest) (*QueryAllPlanetResponse, error)
 	PlanetAttribute(context.Context, *QueryGetPlanetAttributeRequest) (*QueryGetPlanetAttributeResponse, error)
+	// Queries a list of all Planet Attributes
+	PlanetAttributeAll(context.Context, *QueryAllPlanetAttributeRequest) (*QueryAllPlanetAttributeResponse, error)
 	// Queries a list of Reactor items.
 	Reactor(context.Context, *QueryGetReactorRequest) (*QueryGetReactorResponse, error)
 	ReactorAll(context.Context, *QueryAllReactorRequest) (*QueryAllReactorResponse, error)
@@ -513,12 +586,15 @@ type QueryServer interface {
 	Struct(context.Context, *QueryGetStructRequest) (*QueryGetStructResponse, error)
 	StructAll(context.Context, *QueryAllStructRequest) (*QueryAllStructResponse, error)
 	StructAttribute(context.Context, *QueryGetStructAttributeRequest) (*QueryGetStructAttributeResponse, error)
+	// Queries a list of all Struct Attributes
+	StructAttributeAll(context.Context, *QueryAllStructAttributeRequest) (*QueryAllStructAttributeResponse, error)
 	// Queries a list of Struct Types items.
 	StructType(context.Context, *QueryGetStructTypeRequest) (*QueryGetStructTypeResponse, error)
 	StructTypeAll(context.Context, *QueryAllStructTypeRequest) (*QueryAllStructTypeResponse, error)
 	// Queries a list of Substation items.
 	Substation(context.Context, *QueryGetSubstationRequest) (*QueryGetSubstationResponse, error)
 	SubstationAll(context.Context, *QueryAllSubstationRequest) (*QueryAllSubstationResponse, error)
+	ValidateSignature(context.Context, *QueryValidateSignatureRequest) (*QueryValidateSignatureResponse, error)
 	mustEmbedUnimplementedQueryServer()
 }
 
@@ -546,6 +622,12 @@ func (UnimplementedQueryServer) Allocation(context.Context, *QueryGetAllocationR
 }
 func (UnimplementedQueryServer) AllocationAll(context.Context, *QueryAllAllocationRequest) (*QueryAllAllocationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllocationAll not implemented")
+}
+func (UnimplementedQueryServer) AllocationAllBySource(context.Context, *QueryAllAllocationBySourceRequest) (*QueryAllAllocationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllocationAllBySource not implemented")
+}
+func (UnimplementedQueryServer) AllocationAllByDestination(context.Context, *QueryAllAllocationByDestinationRequest) (*QueryAllAllocationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AllocationAllByDestination not implemented")
 }
 func (UnimplementedQueryServer) Fleet(context.Context, *QueryGetFleetRequest) (*QueryGetFleetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Fleet not implemented")
@@ -580,6 +662,9 @@ func (UnimplementedQueryServer) Infusion(context.Context, *QueryGetInfusionReque
 func (UnimplementedQueryServer) InfusionAll(context.Context, *QueryAllInfusionRequest) (*QueryAllInfusionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method InfusionAll not implemented")
 }
+func (UnimplementedQueryServer) InfusionAllByDestination(context.Context, *QueryAllInfusionByDestinationRequest) (*QueryAllInfusionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method InfusionAllByDestination not implemented")
+}
 func (UnimplementedQueryServer) Permission(context.Context, *QueryGetPermissionRequest) (*QueryGetPermissionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Permission not implemented")
 }
@@ -610,6 +695,9 @@ func (UnimplementedQueryServer) PlanetAllByPlayer(context.Context, *QueryAllPlan
 func (UnimplementedQueryServer) PlanetAttribute(context.Context, *QueryGetPlanetAttributeRequest) (*QueryGetPlanetAttributeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlanetAttribute not implemented")
 }
+func (UnimplementedQueryServer) PlanetAttributeAll(context.Context, *QueryAllPlanetAttributeRequest) (*QueryAllPlanetAttributeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlanetAttributeAll not implemented")
+}
 func (UnimplementedQueryServer) Reactor(context.Context, *QueryGetReactorRequest) (*QueryGetReactorResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Reactor not implemented")
 }
@@ -625,6 +713,9 @@ func (UnimplementedQueryServer) StructAll(context.Context, *QueryAllStructReques
 func (UnimplementedQueryServer) StructAttribute(context.Context, *QueryGetStructAttributeRequest) (*QueryGetStructAttributeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructAttribute not implemented")
 }
+func (UnimplementedQueryServer) StructAttributeAll(context.Context, *QueryAllStructAttributeRequest) (*QueryAllStructAttributeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StructAttributeAll not implemented")
+}
 func (UnimplementedQueryServer) StructType(context.Context, *QueryGetStructTypeRequest) (*QueryGetStructTypeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructType not implemented")
 }
@@ -636,6 +727,9 @@ func (UnimplementedQueryServer) Substation(context.Context, *QueryGetSubstationR
 }
 func (UnimplementedQueryServer) SubstationAll(context.Context, *QueryAllSubstationRequest) (*QueryAllSubstationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SubstationAll not implemented")
+}
+func (UnimplementedQueryServer) ValidateSignature(context.Context, *QueryValidateSignatureRequest) (*QueryValidateSignatureResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ValidateSignature not implemented")
 }
 func (UnimplementedQueryServer) mustEmbedUnimplementedQueryServer() {}
 
@@ -772,6 +866,42 @@ func _Query_AllocationAll_Handler(srv interface{}, ctx context.Context, dec func
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).AllocationAll(ctx, req.(*QueryAllAllocationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_AllocationAllBySource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllAllocationBySourceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).AllocationAllBySource(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_AllocationAllBySource_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).AllocationAllBySource(ctx, req.(*QueryAllAllocationBySourceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_AllocationAllByDestination_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllAllocationByDestinationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).AllocationAllByDestination(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_AllocationAllByDestination_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).AllocationAllByDestination(ctx, req.(*QueryAllAllocationByDestinationRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -974,6 +1104,24 @@ func _Query_InfusionAll_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_InfusionAllByDestination_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllInfusionByDestinationRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).InfusionAllByDestination(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_InfusionAllByDestination_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).InfusionAllByDestination(ctx, req.(*QueryAllInfusionByDestinationRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_Permission_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryGetPermissionRequest)
 	if err := dec(in); err != nil {
@@ -1154,6 +1302,24 @@ func _Query_PlanetAttribute_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_PlanetAttributeAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllPlanetAttributeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).PlanetAttributeAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_PlanetAttributeAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).PlanetAttributeAll(ctx, req.(*QueryAllPlanetAttributeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_Reactor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryGetReactorRequest)
 	if err := dec(in); err != nil {
@@ -1244,6 +1410,24 @@ func _Query_StructAttribute_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_StructAttributeAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllStructAttributeRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).StructAttributeAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_StructAttributeAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).StructAttributeAll(ctx, req.(*QueryAllStructAttributeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_StructType_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryGetStructTypeRequest)
 	if err := dec(in); err != nil {
@@ -1316,6 +1500,24 @@ func _Query_SubstationAll_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_ValidateSignature_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryValidateSignatureRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ValidateSignature(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_ValidateSignature_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ValidateSignature(ctx, req.(*QueryValidateSignatureRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Query_ServiceDesc is the grpc.ServiceDesc for Query service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1350,6 +1552,14 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "AllocationAll",
 			Handler:    _Query_AllocationAll_Handler,
+		},
+		{
+			MethodName: "AllocationAllBySource",
+			Handler:    _Query_AllocationAllBySource_Handler,
+		},
+		{
+			MethodName: "AllocationAllByDestination",
+			Handler:    _Query_AllocationAllByDestination_Handler,
 		},
 		{
 			MethodName: "Fleet",
@@ -1396,6 +1606,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_InfusionAll_Handler,
 		},
 		{
+			MethodName: "InfusionAllByDestination",
+			Handler:    _Query_InfusionAllByDestination_Handler,
+		},
+		{
 			MethodName: "Permission",
 			Handler:    _Query_Permission_Handler,
 		},
@@ -1436,6 +1650,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_PlanetAttribute_Handler,
 		},
 		{
+			MethodName: "PlanetAttributeAll",
+			Handler:    _Query_PlanetAttributeAll_Handler,
+		},
+		{
 			MethodName: "Reactor",
 			Handler:    _Query_Reactor_Handler,
 		},
@@ -1456,6 +1674,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_StructAttribute_Handler,
 		},
 		{
+			MethodName: "StructAttributeAll",
+			Handler:    _Query_StructAttributeAll_Handler,
+		},
+		{
 			MethodName: "StructType",
 			Handler:    _Query_StructType_Handler,
 		},
@@ -1470,6 +1692,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SubstationAll",
 			Handler:    _Query_SubstationAll_Handler,
+		},
+		{
+			MethodName: "ValidateSignature",
+			Handler:    _Query_ValidateSignature_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -46,6 +46,18 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     Use:            "allocation-all",
                     Short:          "Returns all Allocations",
                 },
+                {
+                    RpcMethod:      "AllocationAllByDestination",
+                    Use:            "allocation-all-by-destination [destination id]",
+                    Short:          "Returns all Allocations connected to a specific destination",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "destinationId"}},
+                },
+                {
+                    RpcMethod:      "AllocationAllBySource",
+                    Use:            "allocation-all-by-source [source id]",
+                    Short:          "Returns all Allocations originating from a specific source",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "sourceId"}},
+                },
 				{
                     RpcMethod:      "Fleet",
                     Use:            "fleet [fleet id]",
@@ -106,6 +118,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     RpcMethod:      "InfusionAll",
                     Use:            "infusion-all",
                     Short:          "Returns all Infusions",
+                },
+                {
+                    RpcMethod:      "InfusionAllByDestination",
+                    Use:            "infusion-all-by-destination [destination id]",
+                    Short:          "Returns all Infusions to a specific destination",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "destinationId"}},
                 },
 				{
 					RpcMethod:      "Params",
@@ -405,7 +423,18 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      Short:          "Revoke a set of permissions on from an address",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "address"},{ProtoField: "permissions"}},
                  },
-
+                 {
+                     RpcMethod:      "PermissionSetOnObject",
+                     Use:            "permission-set-on-object [object id] [player id] [permissions]",
+                     Short:          "Clear previous permissions and apply a new full set on an object from a player",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "objectId"},{ProtoField: "playerId"},{ProtoField: "permissions"}},
+                 },
+                 {
+                     RpcMethod:      "PermissionSetOnAddress",
+                     Use:            "permission-set-on-address [address] [permissions]",
+                     Short:          "Clear previous permissions and apply a new full set on from an address",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "address"},{ProtoField: "permissions"}},
+                 },
                  {
                      RpcMethod:      "PlanetExplore",
                      Use:            "planet-explore",

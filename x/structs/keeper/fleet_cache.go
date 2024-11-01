@@ -351,6 +351,16 @@ func (cache *FleetCache) Defeat() (){
 }
 
 
+func (cache *FleetCache) PeaceDeal() (){
+    if (!cache.FleetLoaded) { cache.LoadFleet() }
+
+    uctx := sdk.UnwrapSDKContext(cache.Ctx)
+    _ = uctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: cache.GetFleetId(), PlanetId: cache.GetPlanet().GetPlanetId(), Status: types.RaidStatus_demilitarized}})
+
+    // Send Fleet home
+    cache.SetLocationToPlanet(cache.GetOwner().GetPlanet())
+}
+
 func (cache *FleetCache) BuildInitiateReadiness(structure *types.Struct, structType *types.StructType, ambit types.Ambit, ambitSlot uint64) (error) {
     if structure.GetOwner() != cache.GetOwnerId() {
          sdkerrors.Wrapf(types.ErrStructAction, "Struct owner must match fleet ")

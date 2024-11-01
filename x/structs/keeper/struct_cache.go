@@ -382,6 +382,11 @@ func (cache *StructCache) ManualLoadOwner(owner *PlayerCache) {
     cache.OwnerLoaded = true
 }
 
+func (cache *StructCache) ManualLoadPlanet(planet *PlanetCache) {
+    cache.Planet = planet
+    cache.PlanetLoaded = true
+}
+
 // Set the Event data manually
 // Used to manage the same event across objects
 func (cache *StructCache) ManualLoadEventAttackDetail(eventAttackDetail *types.EventAttackDetail) {
@@ -662,7 +667,7 @@ func (cache *StructCache) GoOffline() {
         cache.GridStatusRemoveReady()
 
         // Remove all allocations
-        allocations := cache.K.GetAllocationsFromSource(cache.Ctx, cache.StructId)
+        allocations := cache.K.GetAllAllocationBySourceIndex(cache.Ctx, cache.StructId)
         cache.K.DestroyAllAllocations(cache.Ctx, allocations)
     }
 
@@ -1096,7 +1101,7 @@ func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (d
 
     if (counterStruct.Defender) {
         fmt.Printf("Generating a defender counter-attack record for the event \n")
-        cache.GetEventAttackShotDetail().AppendDefenderCounter(counterStruct.StructId, damage, cache.IsDestroyed())
+        cache.GetEventAttackShotDetail().AppendDefenderCounter(counterStruct.StructId, damage, cache.IsDestroyed(), counterStruct.GetTypeId(), counterStruct.GetLocationType(), counterStruct.GetLocationId(), counterStruct.GetOperatingAmbit(), counterStruct.GetSlot())
     } else {
         fmt.Printf("Generating a target counter-attack record for the event \n")
         cache.GetEventAttackShotDetail().AppendTargetCounter(damage, cache.IsDestroyed(), counterStruct.GetStructType().GetPassiveWeaponry())
@@ -1139,7 +1144,7 @@ func (cache *StructCache) AttemptBlock(attacker *StructCache, weaponSystem types
         if (cache.GetOperatingAmbit() == target.GetOperatingAmbit()) {
             blocked = true
             cache.Blocker = true
-            cache.GetEventAttackShotDetail().SetBlocker(cache.StructId)
+            cache.GetEventAttackShotDetail().SetBlocker(cache.StructId, cache.GetTypeId(), cache.GetLocationType(), cache.GetLocationId(), cache.GetOperatingAmbit(), cache.GetSlot())
             cache.TakeAttackDamage(attacker, weaponSystem)
         }
     }
@@ -1183,7 +1188,7 @@ func (cache *StructCache) DestroyAndCommit() {
         // Clear out all remaining allocations
         // clearing out all infusions should automatically clear allocations too,
         // but some allocations, such as automated ones may still exist
-        cache.K.DestroyAllAllocations(cache.Ctx, cache.K.GetAllocationsFromSource(cache.Ctx, cache.StructId))
+        cache.K.DestroyAllAllocations(cache.Ctx, cache.K.GetAllAllocationBySourceIndex(cache.Ctx, cache.StructId))
 
         // Clear Load
         cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, cache.StructId ))

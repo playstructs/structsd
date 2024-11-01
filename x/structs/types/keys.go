@@ -86,8 +86,11 @@ const (
 )
 
 const (
-	AllocationKey      = "Allocation/value/"
-	AllocationAutoResizeKey = "Allocation/autoResize/"
+    AllocationKey            = "Allocation/value/"
+    AllocationCountKey       = "Allocation/count/"
+    AllocationAutoResizeKey  = "Allocation/autoResize/"
+    AllocationSourceKey      = "Allocation/source/"
+    AllocationDestinationKey = "Allocation/destination/"
 )
 
 const (

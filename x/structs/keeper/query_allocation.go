@@ -55,3 +55,61 @@ func (k Keeper) Allocation(goCtx context.Context, req *types.QueryGetAllocationR
     gridAttributes := k.GetGridAttributesByObject(ctx, req.Id)
 	return &types.QueryGetAllocationResponse{Allocation: allocation, GridAttributes: &gridAttributes}, nil
 }
+
+func (k Keeper) AllocationAllBySource(goCtx context.Context, req *types.QueryAllAllocationBySourceRequest) (*types.QueryAllAllocationResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	var allocations []types.Allocation
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	allocationStore := prefix.NewStore(store, AllocationSourceKeyPrefix(req.SourceId))
+
+	pageRes, err := query.Paginate(allocationStore, req.Pagination, func(key []byte, value []byte) error {
+		allocation, found := k.GetAllocation(ctx, string(key))
+
+        if found {
+            allocations = append(allocations, allocation)
+        }
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryAllAllocationResponse{Allocation: allocations, Pagination: pageRes}, nil
+}
+
+
+
+func (k Keeper) AllocationAllByDestination(goCtx context.Context, req *types.QueryAllAllocationByDestinationRequest) (*types.QueryAllAllocationResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	var allocations []types.Allocation
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	allocationStore := prefix.NewStore(store, AllocationDestinationKeyPrefix(req.DestinationId))
+
+	pageRes, err := query.Paginate(allocationStore, req.Pagination, func(key []byte, value []byte) error {
+		allocation, found := k.GetAllocation(ctx, string(key))
+
+        if found {
+            allocations = append(allocations, allocation)
+        }
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryAllAllocationResponse{Allocation: allocations, Pagination: pageRes}, nil
+}

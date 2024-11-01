@@ -54,3 +54,34 @@ func (k Keeper) Infusion(goCtx context.Context, req *types.QueryGetInfusionReque
 
 	return &types.QueryGetInfusionResponse{Infusion: infusion}, nil
 }
+
+
+
+func (k Keeper) InfusionAllByDestination(goCtx context.Context, req *types.QueryAllInfusionByDestinationRequest) (*types.QueryAllInfusionResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+	var infusions []types.Infusion
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	infusionStore := prefix.NewStore(store,  InfusionKeyPrefix(req.DestinationId))
+
+	pageRes, err := query.Paginate(infusionStore, req.Pagination, func(key []byte, value []byte) error {
+		var infusion types.Infusion
+		if err := k.cdc.Unmarshal(value, &infusion); err != nil {
+			return err
+		}
+
+		infusions = append(infusions, infusion)
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryAllInfusionResponse{Infusion: infusions, Pagination: pageRes}, nil
+}
+

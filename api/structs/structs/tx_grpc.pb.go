@@ -49,6 +49,8 @@ const (
 	Msg_PermissionGrantOnObject_FullMethodName                       = "/structs.structs.Msg/PermissionGrantOnObject"
 	Msg_PermissionRevokeOnAddress_FullMethodName                     = "/structs.structs.Msg/PermissionRevokeOnAddress"
 	Msg_PermissionRevokeOnObject_FullMethodName                      = "/structs.structs.Msg/PermissionRevokeOnObject"
+	Msg_PermissionSetOnAddress_FullMethodName                        = "/structs.structs.Msg/PermissionSetOnAddress"
+	Msg_PermissionSetOnObject_FullMethodName                         = "/structs.structs.Msg/PermissionSetOnObject"
 	Msg_PlanetExplore_FullMethodName                                 = "/structs.structs.Msg/PlanetExplore"
 	Msg_PlanetRaidComplete_FullMethodName                            = "/structs.structs.Msg/PlanetRaidComplete"
 	Msg_PlayerUpdatePrimaryAddress_FullMethodName                    = "/structs.structs.Msg/PlayerUpdatePrimaryAddress"
@@ -110,6 +112,8 @@ type MsgClient interface {
 	PermissionGrantOnObject(ctx context.Context, in *MsgPermissionGrantOnObject, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
 	PermissionRevokeOnAddress(ctx context.Context, in *MsgPermissionRevokeOnAddress, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
 	PermissionRevokeOnObject(ctx context.Context, in *MsgPermissionRevokeOnObject, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
+	PermissionSetOnAddress(ctx context.Context, in *MsgPermissionSetOnAddress, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
+	PermissionSetOnObject(ctx context.Context, in *MsgPermissionSetOnObject, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
 	PlanetExplore(ctx context.Context, in *MsgPlanetExplore, opts ...grpc.CallOption) (*MsgPlanetExploreResponse, error)
 	PlanetRaidComplete(ctx context.Context, in *MsgPlanetRaidComplete, opts ...grpc.CallOption) (*MsgPlanetRaidCompleteResponse, error)
 	PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlayerUpdatePrimaryAddress, opts ...grpc.CallOption) (*MsgPlayerUpdatePrimaryAddressResponse, error)
@@ -413,6 +417,24 @@ func (c *msgClient) PermissionRevokeOnObject(ctx context.Context, in *MsgPermiss
 	return out, nil
 }
 
+func (c *msgClient) PermissionSetOnAddress(ctx context.Context, in *MsgPermissionSetOnAddress, opts ...grpc.CallOption) (*MsgPermissionResponse, error) {
+	out := new(MsgPermissionResponse)
+	err := c.cc.Invoke(ctx, Msg_PermissionSetOnAddress_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) PermissionSetOnObject(ctx context.Context, in *MsgPermissionSetOnObject, opts ...grpc.CallOption) (*MsgPermissionResponse, error) {
+	out := new(MsgPermissionResponse)
+	err := c.cc.Invoke(ctx, Msg_PermissionSetOnObject_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) PlanetExplore(ctx context.Context, in *MsgPlanetExplore, opts ...grpc.CallOption) (*MsgPlanetExploreResponse, error) {
 	out := new(MsgPlanetExploreResponse)
 	err := c.cc.Invoke(ctx, Msg_PlanetExplore_FullMethodName, in, out, opts...)
@@ -656,6 +678,8 @@ type MsgServer interface {
 	PermissionGrantOnObject(context.Context, *MsgPermissionGrantOnObject) (*MsgPermissionResponse, error)
 	PermissionRevokeOnAddress(context.Context, *MsgPermissionRevokeOnAddress) (*MsgPermissionResponse, error)
 	PermissionRevokeOnObject(context.Context, *MsgPermissionRevokeOnObject) (*MsgPermissionResponse, error)
+	PermissionSetOnAddress(context.Context, *MsgPermissionSetOnAddress) (*MsgPermissionResponse, error)
+	PermissionSetOnObject(context.Context, *MsgPermissionSetOnObject) (*MsgPermissionResponse, error)
 	PlanetExplore(context.Context, *MsgPlanetExplore) (*MsgPlanetExploreResponse, error)
 	PlanetRaidComplete(context.Context, *MsgPlanetRaidComplete) (*MsgPlanetRaidCompleteResponse, error)
 	PlayerUpdatePrimaryAddress(context.Context, *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error)
@@ -775,6 +799,12 @@ func (UnimplementedMsgServer) PermissionRevokeOnAddress(context.Context, *MsgPer
 }
 func (UnimplementedMsgServer) PermissionRevokeOnObject(context.Context, *MsgPermissionRevokeOnObject) (*MsgPermissionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PermissionRevokeOnObject not implemented")
+}
+func (UnimplementedMsgServer) PermissionSetOnAddress(context.Context, *MsgPermissionSetOnAddress) (*MsgPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PermissionSetOnAddress not implemented")
+}
+func (UnimplementedMsgServer) PermissionSetOnObject(context.Context, *MsgPermissionSetOnObject) (*MsgPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PermissionSetOnObject not implemented")
 }
 func (UnimplementedMsgServer) PlanetExplore(context.Context, *MsgPlanetExplore) (*MsgPlanetExploreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlanetExplore not implemented")
@@ -1398,6 +1428,42 @@ func _Msg_PermissionRevokeOnObject_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_PermissionSetOnAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgPermissionSetOnAddress)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).PermissionSetOnAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_PermissionSetOnAddress_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).PermissionSetOnAddress(ctx, req.(*MsgPermissionSetOnAddress))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_PermissionSetOnObject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgPermissionSetOnObject)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).PermissionSetOnObject(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_PermissionSetOnObject_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).PermissionSetOnObject(ctx, req.(*MsgPermissionSetOnObject))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_PlanetExplore_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgPlanetExplore)
 	if err := dec(in); err != nil {
@@ -1938,6 +2004,14 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PermissionRevokeOnObject",
 			Handler:    _Msg_PermissionRevokeOnObject_Handler,
+		},
+		{
+			MethodName: "PermissionSetOnAddress",
+			Handler:    _Msg_PermissionSetOnAddress_Handler,
+		},
+		{
+			MethodName: "PermissionSetOnObject",
+			Handler:    _Msg_PermissionSetOnObject_Handler,
 		},
 		{
 			MethodName: "PlanetExplore",

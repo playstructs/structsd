@@ -5,6 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
+	"math"
 )
 
 func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.MsgPlayerUpdatePrimaryAddress) (*types.MsgPlayerUpdatePrimaryAddressResponse, error) {
@@ -14,19 +15,16 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
-    if (callingPlayerIndex == 0) {
-        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Player Management requires Player account but none associated with %s", msg.Creator)
-    }
-    callingPlayer, _ := k.GetPlayerFromIndex(ctx, callingPlayerIndex)
-
-
-    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
-    // Make sure the address calling this has Manage Player permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets)) {
-        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPermissionManagePlayer, "Calling address (%s) has no Manage Player permissions ", msg.Creator)
+    player, err := k.GetPlayerCacheFromId(ctx, msg.PlayerId)
+    if err != nil {
+       return &types.MsgPlayerUpdatePrimaryAddressResponse{}, err
     }
 
+    // Check if msg.Creator has PermissionDelete on the Address and Account
+    err = player.CanBeAdministratedBy(msg.Creator, types.PermissionAssets)
+    if err != nil {
+       return &types.MsgPlayerUpdatePrimaryAddressResponse{}, err
+    }
 
     _ , addressValidationError := sdk.AccAddressFromBech32(msg.PrimaryAddress)
     if (addressValidationError != nil){
@@ -35,15 +33,42 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
 
     relatedPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.PrimaryAddress)
     if (relatedPlayerIndex == 0) {
-        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPlayerUpdate, "New Primary Address provided (%s) is not associated with a player, register it with the player before setting it as Primary. Update aborted.", msg.PrimaryAddress, relatedPlayerIndex, callingPlayerIndex)
+        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPlayerUpdate, "New Primary Address provided (%s) is not associated with a player, register it with the player before setting it as Primary. Update aborted.", msg.PrimaryAddress, relatedPlayerIndex, player.GetIndex())
     }
 
-    if (relatedPlayerIndex != callingPlayerIndex) {
-        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPlayerUpdate, "New Primary Address provided (%s) is associated with Player %d instead of Player %d. Update aborted.", msg.PrimaryAddress, relatedPlayerIndex, callingPlayerIndex)
+    if relatedPlayerIndex != player.GetIndex() {
+        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPlayerUpdate, "New Primary Address provided (%s) is associated with Player %d instead of Player %d. Update aborted.", msg.PrimaryAddress, relatedPlayerIndex, player.GetIndex())
     }
 
-    callingPlayer.PrimaryAddress = msg.PrimaryAddress
-    k.SetPlayer(ctx, callingPlayer)
+
+    // Move Funds
+    oldAcc, _   := sdk.AccAddressFromBech32(player.GetPrimaryAddress())
+    newAcc, _   := sdk.AccAddressFromBech32(msg.PrimaryAddress)
+
+    // Get Balance
+    balances := k.bankKeeper.SpendableCoins(ctx, oldAcc)
+
+    // Transfer
+    err = k.bankKeeper.SendCoins(ctx, oldAcc, newAcc, balances)
+    if err != nil {
+        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, err
+    }
+
+    // Move Reactor Infusions over
+    primaryDelegations, _ := k.stakingKeeper.GetDelegatorDelegations(ctx, oldAcc, math.MaxUint16)
+    for _, delegation := range primaryDelegations {
+        k.stakingKeeper.RemoveDelegation(ctx, delegation)
+
+        delegation.DelegatorAddress = msg.PrimaryAddress
+        k.stakingKeeper.SetDelegation(ctx, delegation)
+    }
+
+    // Help the indexer along regarding Ore balances
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventOreMigrate{&types.EventOreMigrateDetail{PlayerId: player.GetPlayerId(), PrimaryAddress: msg.PrimaryAddress, OldPrimaryAddress: player.GetPrimaryAddress(), Amount: player.GetStoredOre()}})
+
+    // Finish up
+    player.SetPrimaryAddress(msg.PrimaryAddress)
+    player.Commit()
 
 	return &types.MsgPlayerUpdatePrimaryAddressResponse{}, nil
 }

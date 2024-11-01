@@ -13,16 +13,7 @@ import (
 
 	sdkerrors "cosmossdk.io/errors"
 
-	"fmt"
-
 )
-
-
-func GetAllocationID(sourceObjectId string, index uint64) (id string) {
-    id = fmt.Sprintf("%s-%d", sourceObjectId, index)
-	return
-}
-
 
 // AppendAllocation appends a allocation in the store with a new id
 //
@@ -34,14 +25,17 @@ func (k Keeper) AppendAllocation(
 ) (allocationId string, finalPower uint64, err error) {
     // Set the ID of the appended value
 
-    allocation.Index = k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerEnd, allocation.SourceObjectId))
-    allocation.Id = GetAllocationID(allocation.SourceObjectId, allocation.Index)
+    allocation.Index = k.GetAllocationCount(ctx)
+    k.SetAllocationCount(ctx, allocation.Index + 1)
+
+    allocation.Id = GetObjectID(types.ObjectType_allocation, allocation.Index)
 
     allocationSourceCapacity := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, allocation.SourceObjectId))
 	if (allocation.Type == types.AllocationType_automated) {
 
 	    // Automated Allocations must be the only allocation on a source
-	    sourceAllocations := k.GetAllocationsFromSource(ctx, allocation.SourceObjectId)
+	    // TODO - make a quicker lookup. This is going to get slow as allocation increase
+	    sourceAllocations := k.GetAllAllocationIdBySourceIndex(ctx, allocation.SourceObjectId)
 	    if (len(sourceAllocations) > 0) {
 	        return allocation.Id, power, sdkerrors.Wrapf(types.ErrAllocationAppend, "Allocation Source (%s) cannot have an automated Allocation with other allocations in place", allocation.SourceObjectId)
 	    }
@@ -78,10 +72,12 @@ func (k Keeper) AppendAllocation(
 
         // Update Connection Capacity
         k.UpdateGridConnectionCapacity(ctx, allocation.DestinationId)
+
+        // Update the Destination Index
+        k.SetAllocationDestinationIndex(ctx, allocation.DestinationId, allocation.Id)
     }
 
-    // Increase the Index Pointer
-    k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerEnd, allocation.SourceObjectId), 1)
+    k.SetAllocationSourceIndex(ctx, allocation.SourceObjectId, allocation.Id)
 
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AllocationKey))
 	appendedValue := k.cdc.MustMarshal(&allocation)
@@ -180,6 +176,7 @@ func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation, 
         }
 
     } else {
+        k.RemoveAllocationDestinationIndex(ctx, previousAllocation.DestinationId, allocation.Id)
 
         // Deal with the previous Destination first
         if (previousAllocation.DestinationId != "") {
@@ -204,6 +201,9 @@ func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation, 
             // Deal with the player connection capacity
             k.UpdateGridConnectionCapacity(ctx, allocation.DestinationId)
 
+            // Update the Destination Allocation Index
+            k.SetAllocationDestinationIndex(ctx, allocation.DestinationId, allocation.Id)
+
         }
     }
 
@@ -223,6 +223,9 @@ func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation, 
 // ImportAllocation set a specific allocation in the store
 // Assumes Grid updates happen elsewhere
 func (k Keeper) ImportAllocation(ctx context.Context, allocation types.Allocation){
+    k.SetAllocationSourceIndex(ctx, allocation.SourceObjectId, allocation.Id)
+    k.SetAllocationDestinationIndex(ctx, allocation.DestinationId, allocation.Id)
+
     store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AllocationKey))
     b := k.cdc.MustMarshal(&allocation)
     store.Set([]byte(allocation.Id), b)
@@ -274,6 +277,9 @@ func (k Keeper) DestroyAllocation(ctx context.Context, allocationId string) (des
 
     	k.RemoveAllocation(ctx, allocation.Id)
 
+        k.RemoveAllocationSourceIndex(ctx, allocation.SourceObjectId, allocation.Id)
+        k.RemoveAllocationDestinationIndex(ctx, allocation.DestinationId, allocation.Id)
+
     	destroyed = true
     } else {
         destroyed = false
@@ -320,101 +326,4 @@ func (k Keeper) GetAllAllocation(ctx context.Context) (list []types.Allocation) 
 	return
 }
 
-
-// GetAllocationsFromSource returns all allocation relating to a source
-func (k Keeper) GetAllocationsFromSource(ctx context.Context, sourceObjectId string) (list []types.Allocation) {
-
-    allocationPointer    := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerStart, sourceObjectId))
-    allocationPointerEnd := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerEnd, sourceObjectId))
-
-    // Iterate through the allocationPointer until we successfully delete an allocation
-    for (allocationPointer < allocationPointerEnd) {
-        allocation, allocationFound := k.GetAllocation(ctx, GetAllocationID(sourceObjectId, allocationPointer))
-        allocationPointer           = allocationPointer + 1
-
-        if allocationFound {
-            list = append(list, allocation)
-        }
-    }
-
-    return
-}
-
-
-// GetAllAllocation returns all allocation
-func (k Keeper) GetAllAllocationsFromDestination(ctx context.Context, destinationId string) (list []types.Allocation) {
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AllocationKey))
-	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
-
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
-		var val types.Allocation
-		k.cdc.MustUnmarshal(iterator.Value(), &val)
-
-        if (val.DestinationId == destinationId) {
-
-    		list = append(list, val)
-    	}
-	}
-
-	return
-}
-
-/*
- * Helper functions for the Allocation Auto-Resizing Capabilities
- *
- * This allows for Allocations to be automatically updated when
- * the capacity of the source is updated elsewhere.
- *
- * Some rules:
- * - The Allocation must be defined as automatic during creation.
- * - The Allocation must be the other allocation on the source.
- * - If the source is a Substation, it must not allow player connections.
- *
- */
-
-func (k Keeper) SetAutoResizeAllocationSource(ctx context.Context, allocationId string, sourceObjectId string) {
-  	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AllocationAutoResizeKey))
-
-  	store.Set([]byte(sourceObjectId), []byte(allocationId))
-}
-
-func (k Keeper) GetAutoResizeAllocationBySource(ctx context.Context, sourceObjectId string) (allocationId string, allocationFound bool)  {
-    	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AllocationAutoResizeKey))
-    	allocationId = string(store.Get([]byte(sourceObjectId)))
-    	if allocationId == "" {
-    		return "", false
-    	}
-    	return string(allocationId), true
-}
-
-
-func (k Keeper) ClearAutoResizeAllocationBySource(ctx context.Context, sourceObjectId string) {
-    	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AllocationAutoResizeKey))
-    	store.Delete([]byte(sourceObjectId))
-}
-
-
-func (k Keeper) AutoResizeAllocation(ctx context.Context, allocationId string, sourceId string, oldPower uint64, newPower uint64) {
-    allocation, _ := k.GetAllocation(ctx, allocationId)
-
-    // Update Allocation Power
-    k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocationId), newPower)
-
-    // Update Source Load
-    k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, sourceId), newPower)
-
-    // Update Destination Capacity
-    k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, allocation.DestinationId), oldPower, newPower)
-
-    // Update Connection Capacity
-    k.UpdateGridConnectionCapacity(ctx, allocation.DestinationId)
-
-    // Check to see if we need to check on the Destination
-    if (oldPower > newPower) {
-        k.AppendGridCascadeQueue(ctx, allocation.DestinationId)
-    }
-
-}
 

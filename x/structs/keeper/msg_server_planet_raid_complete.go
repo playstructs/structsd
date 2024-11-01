@@ -76,11 +76,14 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
     fleet.GetOwner().StoredOreIncrement(amountStolen)
     fleet.GetPlanet().GetOwner().StoredOreEmpty()
 
+    _ = ctx.EventManager().EmitTypedEvent(&types.EventOreTheft{&types.EventOreTheftDetail{VictimPlayerId: fleet.GetPlanet().GetOwnerId(), VictimPrimaryAddress: fleet.GetPlanet().GetOwner().GetPrimaryAddress(), ThiefPlayerId: fleet.GetOwnerId(), ThiefPrimaryAddress: fleet.GetOwner().GetPrimaryAddress(), Amount: amountStolen}})
+
     // Move the Fleet back to Station
     fleet.SetLocationToPlanet(fleet.GetOwner().GetPlanet())
     fleet.Commit()
 
     _ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleet.GetFleetId(), PlanetId: raidedPlanet, Status: types.RaidStatus_raidSuccessful}})
+
 
 	return &types.MsgPlanetRaidCompleteResponse{Fleet: fleet.GetFleet(), Planet: fleet.GetPlanet().GetPlanet(), OreStolen: amountStolen}, nil
 }

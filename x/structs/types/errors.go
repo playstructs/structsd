@@ -42,6 +42,7 @@ var (
     ErrGuildMembershipApplication           = sdkerrors.Register(ModuleName,  1583, "invalid application process")
 
 
+    ErrPermission                           = sdkerrors.Register(ModuleName, 1607, "Permission error")
 	ErrPermissionAssociation                = sdkerrors.Register(ModuleName, 1600, "Permission error during address association")
 	ErrPermissionRevoke                     = sdkerrors.Register(ModuleName, 1601, "Permission error during address revocation")
 	ErrPermissionPlay                       = sdkerrors.Register(ModuleName, 1602, "Permission error during play action")

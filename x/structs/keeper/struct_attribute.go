@@ -18,7 +18,7 @@ import (
 
 // GetStructAttributeID returns the string representation of the ID
 func GetStructAttributeID(structAttributeType types.StructAttributeType, objectType types.ObjectType, objectId uint64) string {
-    id := fmt.Sprintf("%d-%d-%d", structAttributeType, objectId)
+    id := fmt.Sprintf("%d-%d-%d", structAttributeType, objectType, objectId)
 	return id
 }
 
@@ -63,6 +63,7 @@ func (k Keeper) SetStructAttribute(ctx context.Context, structAttributeId string
 	binary.BigEndian.PutUint64(bz, amount)
 
 	store.Set([]byte(structAttributeId), bz)
+
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStructAttribute{&types.StructAttributeRecord{AttributeId: structAttributeId, Value: amount}})

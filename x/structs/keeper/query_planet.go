@@ -2,7 +2,7 @@ package keeper
 
 import (
 	"context"
-
+    "encoding/binary"
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"cosmossdk.io/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -100,4 +100,26 @@ func (k Keeper) PlanetAttribute(goCtx context.Context, req *types.QueryGetPlanet
 	planetAttribute := k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_enum[req.AttributeType], req.PlanetId))
 
 	return &types.QueryGetPlanetAttributeResponse{Attribute: planetAttribute}, nil
+}
+
+func (k Keeper) PlanetAttributeAll(goCtx context.Context, req *types.QueryAllPlanetAttributeRequest) (*types.QueryAllPlanetAttributeResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+     var planetAttributes []*types.PlanetAttributeRecord
+
+ 	ctx := sdk.UnwrapSDKContext(goCtx)
+
+ 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+ 	gridStore := prefix.NewStore(store, types.KeyPrefix(types.PlanetAttributeKey))
+
+ 	pageRes, err := query.Paginate(gridStore, req.Pagination, func(key []byte, value []byte) error {
+
+        planetAttributes = append(planetAttributes, &types.PlanetAttributeRecord{AttributeId: string(key), Value: binary.BigEndian.Uint64(value)})
+
+         return nil
+ 	})
+
+	return &types.QueryAllPlanetAttributeResponse{PlanetAttributeRecords: planetAttributes, Pagination: pageRes}, err
 }

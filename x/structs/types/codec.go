@@ -47,6 +47,8 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPermissionGrantOnAddress{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPermissionRevokeOnObject{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPermissionRevokeOnAddress{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPermissionSetOnObject{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPermissionSetOnAddress{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlanetExplore{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlanetRaidComplete{},)

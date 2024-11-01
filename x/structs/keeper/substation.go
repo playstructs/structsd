@@ -147,12 +147,12 @@ func (k Keeper) RemoveSubstation(ctx context.Context, substationId string, migra
      */
 
 	// Destroy allocations out
-    allocationsOut := k.GetAllocationsFromSource(ctx, substationId)
+    allocationsOut := k.GetAllAllocationBySourceIndex(ctx, substationId)
     k.DestroyAllAllocations(ctx, allocationsOut)
 
 	// Disconnect allocations in
     // TODO Need a more efficient way than scan
-     allocationsIn := k.GetAllAllocationsFromDestination(ctx, substationId)
+     allocationsIn := k.GetAllAllocationByDestinationIndex(ctx, substationId)
      k.DestroyAllAllocations(ctx, allocationsIn)
 
 
