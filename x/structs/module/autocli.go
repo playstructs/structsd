@@ -251,9 +251,9 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 				},
                 {
                     RpcMethod:      "AddressRegister",
-                    Use:            "address-register [address] [proof pubkey] [proof signature] [permissions] ",
+                    Use:            "address-register [player id] [address] [proof pubkey] [proof signature] [permissions] ",
                     Short:          "Submit a claim on an address, relating it to a player account",
-                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "address"},{ProtoField: "proofPubKey"},{ProtoField: "proofSignature"},{ProtoField: "permissions"}},
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"},{ProtoField: "address"},{ProtoField: "proofPubKey"},{ProtoField: "proofSignature"},{ProtoField: "permissions"}},
                 },
                 {
                     RpcMethod:      "AddressRevoke",
