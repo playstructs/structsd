@@ -30,8 +30,6 @@ func (k msgServer) SubstationPlayerDisconnect(goCtx context.Context, msg *types.
         return &types.MsgSubstationPlayerDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%d) has no Substation Connect Player permissions ", player.Id)
     }
 
-
-
     if (player.Id != msg.PlayerId) {
         playerObjectPermissionId := GetObjectPermissionIDBytes(msg.PlayerId, player.Id)
         if (!k.PermissionHasOneOf(ctx, playerObjectPermissionId, types.PermissionGrid)) {

@@ -317,7 +317,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                 },
                 {
                     RpcMethod:      "GuildMembershipInviteRevoke",
-                    Use:            "guild-membership [guild id] [player id]",
+                    Use:            "guild-membership-invite-revoke [guild id] [player id]",
                     Short:          "Cancel an invite to a player",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"},{ProtoField: "playerId"}},
                 },

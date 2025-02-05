@@ -25,7 +25,7 @@ var _ = strconv.Itoa(0)
 
 func CmdStructMineCompute() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "struct-mine-compute [struct ID]",
+		Use:   "struct-ore-mine-compute [struct ID]",
 		Short: "Do the work to extract an Ore from the planet",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {

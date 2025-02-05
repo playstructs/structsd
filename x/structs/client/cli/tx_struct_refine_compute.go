@@ -25,7 +25,7 @@ var _ = strconv.Itoa(0)
 
 func CmdStructRefineCompute() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "struct-refine-compute [struct ID]",
+		Use:   "struct-ore-refine-compute [struct ID]",
 		Short: "Do the work to convert Alpha Ore into Alpha Matter",
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) (err error) {
