@@ -437,6 +437,7 @@ message MsgPlanetExplore {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator     = 1;
+  string playerId    = 2;
 }
 
 message MsgPlanetExploreResponse {
@@ -494,9 +495,9 @@ message MsgStructBuildInitiate {
   string creator          = 1;
   string playerId         = 2;
   uint64 structTypeId     = 3;
-  objectType locationType = 4;
-  ambit operatingAmbit    = 5;
-  uint64 slot             = 6;
+  //objectType locationType = 4;
+  ambit operatingAmbit    = 4;
+  uint64 slot             = 5;
 }
 
 

@@ -632,7 +632,19 @@ func (cache *PlanetCache) BuildInitiateReadiness(structure *types.Struct, struct
         sdkerrors.Wrapf(types.ErrStructAction, "Command Structs can only be built directly in the fleet")
     }
 
-    if (structType.Category != types.ObjectType_planet && structType.Category != types.ObjectType_fleet) {
+    if cache.GetOwner().GetFleet().IsAway() {
+        sdkerrors.Wrapf(types.ErrStructAction, "Structs cannot be built unless Fleet is On Station")
+    }
+
+    if !cache.GetOwner().GetFleet().HasCommandStruct() {
+        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet (%s) needs a Command Struct before deploy", cache.GetOwner().GetFleetId())
+    }
+
+    if cache.GetOwner().GetFleet().GetCommandStruct().IsOffline() {
+        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet (%s) needs an Online Command Struct before deploy", cache.GetOwner().GetFleetId())
+    }
+
+    if (structType.Category != types.ObjectType_planet) {
         sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist in this location (%s) ")
     }
 
@@ -682,7 +694,7 @@ func (cache *PlanetCache) MoveReadiness(structure *StructCache, ambit types.Ambi
         sdkerrors.Wrapf(types.ErrStructAction, "Command Structs can only be built directly in the fleet")
     }
 
-    if (structure.GetStructType().Category != types.ObjectType_planet && structure.GetStructType().Category != types.ObjectType_fleet) {
+    if (structure.GetStructType().Category != types.ObjectType_planet) {
         sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist in this location (%s) ")
     }
 
