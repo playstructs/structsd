@@ -370,12 +370,15 @@ func (cache *FleetCache) BuildInitiateReadiness(structure *types.Struct, structT
         sdkerrors.Wrapf(types.ErrStructAction, "Structs cannot be built unless Fleet is On Station")
     }
 
-    if !cache.HasCommandStruct() {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet (%s) needs a Command Struct before deploy", cache.GetFleetId())
-    }
 
-    if cache.GetCommandStruct().IsOffline() {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet (%s) needs an Online Command Struct before deploy", cache.GetFleetId())
+    if structType.Type != types.CommandStruct {
+        if !cache.HasCommandStruct() {
+            return sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet (%s) needs a Command Struct before deploy", cache.GetFleetId())
+        }
+
+        if cache.GetCommandStruct().IsOffline() {
+            return sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet (%s) needs an Online Command Struct before deploy", cache.GetFleetId())
+        }
     }
 
     if (structType.Category != types.ObjectType_fleet) {
