@@ -502,6 +502,19 @@ func (cache *StructCache) IsOnline() bool {
    return cache.GetStatus()&types.StructStateOnline != 0
 }
 
+func (cache *StructCache) IsCommandable() bool {
+    if cache.GetStructType().Category == types.ObjectType_fleet {
+        if !cache.GetFleet().HasCommandStruct() {
+            return false
+        }
+
+        if cache.GetFleet().GetCommandStruct().IsOffline() {
+            return false
+        }
+    }
+    return true
+}
+
 func (cache *StructCache) IsOffline() bool {
     return !cache.IsOnline()
 }

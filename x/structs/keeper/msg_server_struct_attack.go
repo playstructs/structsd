@@ -35,6 +35,10 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
         return &types.MsgStructAttackResponse{}, readinessError
     }
 
+    if !structure.IsCommandable() {
+        k.DischargePlayer(ctx, structure.GetOwnerId())
+        return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Commanding a Fleet Struct (%s) requires a Command Struct be Online", structure.GetStructId())
+    }
 
     playerCharge := k.GetPlayerCharge(ctx, structure.GetOwnerId())
     if (playerCharge < structure.GetStructType().GetWeaponCharge(types.TechWeaponSystem_enum[msg.WeaponSystem])) {

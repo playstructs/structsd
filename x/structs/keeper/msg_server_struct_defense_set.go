@@ -48,6 +48,11 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already built", msg.DefenderStructId)
     }
 
+    if !structure.IsCommandable() {
+        k.DischargePlayer(ctx, structure.GetOwnerId())
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Commanding a Fleet Struct (%s) requires a Command Struct be Online", structure.GetStructId())
+    }
+
     // Check Player Charge
     if (structure.GetOwner().GetCharge() < structure.GetStructType().DefendChangeCharge) {
         err := sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to change defensive stance, but player (%s) only had %d", structure.GetStructType().Id, structure.GetStructType().DefendChangeCharge, structure.GetOwnerId(), structure.GetOwner().GetCharge() )
