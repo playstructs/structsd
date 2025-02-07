@@ -437,8 +437,9 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                  },
                  {
                      RpcMethod:      "PlanetExplore",
-                     Use:            "planet-explore",
+                     Use:            "planet-explore [player id]",
                      Short:          "Explore a new planet",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"}},
                  },
                  {
                     RpcMethod:      "PlanetRaidComplete",

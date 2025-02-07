@@ -437,6 +437,7 @@ message MsgPlanetExplore {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator     = 1;
+  string playerId    = 2;
 }
 
 message MsgPlanetExploreResponse {

@@ -15,7 +15,7 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
 	k.AddressEmitActivity(ctx, msg.Creator)
 
     // Load the Player record
-    player, playerLookupErr := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    player, playerLookupErr := k.GetPlayerCacheFromId(ctx, msg.PlayerId)
     if (playerLookupErr != nil) {
         return &types.MsgPlanetExploreResponse{}, playerLookupErr
     }
