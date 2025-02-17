@@ -145,6 +145,15 @@ const (
 	StructTypeCountKey  = "StructType/count/"
 )
 
+const (
+	ProviderKey      = "Provider/value/"
+	ProviderCountKey  = "Provider/count/"
+)
+
+const (
+	AgreementKey      = "Agreement/value/"
+	AgreementCountKey  = "Agreement/count/"
+)
 
 
 /*
@@ -164,7 +173,10 @@ var ObjectType_enum = map[string]ObjectType{
 	"infusion":   ObjectType_infusion,
 	"address":    ObjectType_address,
     "fleet":      ObjectType_fleet,
+    "provider":   ObjectType_provider,
+    "agreement":  ObjectType_agreement,
 }
+
 
 // Doing the same for GridAttributeType
 var GridAttributeType_enum = map[string]GridAttributeType{
@@ -182,6 +194,7 @@ var GridAttributeType_enum = map[string]GridAttributeType{
 	"lastAction":               GridAttributeType_lastAction,
 	"nonce":                    GridAttributeType_nonce,
 	"ready":                    GridAttributeType_ready,
+	"checkpointBlock":          GridAttributeType_checkpointBlock,
 }
 
 
@@ -372,3 +385,10 @@ var TechPowerGeneration_enum = map[string]TechPowerGeneration {
     "largeGenerator":       TechPowerGeneration_largeGenerator,
 }
 
+
+
+var ProviderAccessPolicy_enum = map[string]ProviderAccessPolicy {
+    "openMarket":       ProviderAccessPolicy_openMarket,
+    "guildMarket":      ProviderAccessPolicy_guildMarket,
+    "closedMarket":     ProviderAccessPolicy_closedMarket,
+}
