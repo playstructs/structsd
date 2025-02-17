@@ -20,6 +20,8 @@ enum objectType {
     infusion       = 7;
     address        = 8;
     fleet          = 9;
+    provider       = 10;
+    agreement      = 11;
 }
 
 enum gridAttributeType {
@@ -37,6 +39,7 @@ enum gridAttributeType {
     lastAction              = 11;
     nonce                   = 12;
     ready                   = 13;
+    checkpointBlock         = 14;
 }
 
 enum allocationType {
@@ -213,4 +216,11 @@ enum techPowerGeneration {
     smallGenerator    = 1;
     mediumGenerator   = 2;
     largeGenerator    = 3;
+}
+
+
+enum providerAccessPolicy {
+    openMarket    = 0;
+    guildMarket   = 1;
+    closedMarket  = 2;
 }
