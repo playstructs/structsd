@@ -19,6 +19,7 @@ import "structs/structs/keys.proto";
 import "structs/structs/permission.proto";
 import "structs/structs/player.proto";
 import "structs/structs/planet.proto";
+import "structs/structs/provider.proto";
 import "structs/structs/reactor.proto";
 import "structs/structs/struct.proto";
 import "structs/structs/substation.proto";
@@ -44,6 +45,7 @@ option go_package = "structs/x/structs/types";
   message EventPlanet           { Planet planet = 1; }
   message EventPlanetAttribute  { PlanetAttributeRecord planetAttributeRecord = 1; }
   message EventPlayer           { Player player = 1; }
+  message EventProvider         { Provider provider = 1; }
   message EventReactor          { Reactor reactor = 1; }
   message EventStruct           { Struct structure = 1; }
   message EventStructAttribute  { StructAttributeRecord structAttributeRecord = 1; }

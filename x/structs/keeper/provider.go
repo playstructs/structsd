@@ -1,60 +1,89 @@
 package keeper
 
 import (
-	//"encoding/binary"
-    "context"
+	"context"
+	"encoding/binary"
 
-    "github.com/cosmos/cosmos-sdk/runtime"
 	"cosmossdk.io/store/prefix"
 	storetypes "cosmossdk.io/store/types"
+	"github.com/cosmos/cosmos-sdk/runtime"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	//sdkerrors "cosmossdk.io/errors"
-
 )
 
+// GetProviderCount get the total number of provider
+func (k Keeper) GetProviderCount(ctx context.Context) uint64 {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
+	byteKey := types.KeyPrefix(types.ProviderCountKey)
+	bz := store.Get(byteKey)
+
+	// Count doesn't exist: no element
+	if bz == nil || binary.BigEndian.Uint64(bz) == 0 {
+		return types.KeeperStartValue
+	}
+
+	// Parse bytes
+	return binary.BigEndian.Uint64(bz)
+}
+
+// SetProviderCount set the total number of provider
+func (k Keeper) SetProviderCount(ctx context.Context, count uint64) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
+	byteKey := types.KeyPrefix(types.ProviderCountKey)
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, count)
+	store.Set(byteKey, bz)
+}
+
 // AppendProvider appends a provider in the store with a new id
-// TODO
-func (k Keeper) AppendProvider(
-	ctx context.Context,
-	provider types.Provider,
-) (err error) {
+func (k Keeper) AppendProvider(ctx context.Context, provider types.Provider) (types.Provider, error) {
 
-	return  nil
+	// Define the provider id
+	count := k.GetProviderCount(ctx)
+
+	// Set the ID of the appended value
+	provider.Id = GetObjectID(types.ObjectType_provider, count)
+	provider.Index = count
+
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.ProviderKey))
+	appendedValue := k.cdc.MustMarshal(&provider)
+	store.Set([]byte(provider.Id), appendedValue)
+
+	k.SetProviderCount(ctx, count+1)
+
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProvider{Provider: &provider})
+
+	return provider, nil
 }
 
-func (k Keeper) SetProviderOnly(ctx context.Context, provider types.Provider) (types.Provider, error){
+func (k Keeper) SetProvider(ctx context.Context, provider types.Provider) (types.Provider, error) {
 
-    store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.ProviderKey))
-    b := k.cdc.MustMarshal(&provider)
-    store.Set([]byte(provider.Id), b)
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.ProviderKey))
+	b := k.cdc.MustMarshal(&provider)
+	store.Set([]byte(provider.Id), b)
 
-	//ctxSDK := sdk.UnwrapSDKContext(ctx)
-    //_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProvider{Provider: &provider})
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProvider{Provider: &provider})
 
-    return provider,  nil
+	return provider, nil
 
 }
-
-
 
 // ImportProvider set a specific provider in the store
 // Assumes Grid updates happen elsewhere
-func (k Keeper) ImportProvider(ctx context.Context, provider types.Provider){
-    //k.SetProviderSourceIndex(ctx, provider.SourceObjectId, provider.Id)
-    //k.SetProviderDestinationIndex(ctx, provider.DestinationId, provider.Id)
+func (k Keeper) ImportProvider(ctx context.Context, provider types.Provider) {
 
-    store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.ProviderKey))
-    b := k.cdc.MustMarshal(&provider)
-    store.Set([]byte(provider.Id), b)
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.ProviderKey))
+	b := k.cdc.MustMarshal(&provider)
+	store.Set([]byte(provider.Id), b)
 
-	//ctxSDK := sdk.UnwrapSDKContext(ctx)
-    //_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProvider{Provider: &provider})
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProvider{Provider: &provider})
 }
-
-
 
 // RemoveProvider removes a provider from the store
 func (k Keeper) RemoveProvider(ctx context.Context, providerId string) {
@@ -62,23 +91,22 @@ func (k Keeper) RemoveProvider(ctx context.Context, providerId string) {
 	store.Delete([]byte(providerId))
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventDelete{ObjectId: providerId})
+	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventDelete{ObjectId: providerId})
 }
 
 // DestroyProvider updates grid attributes before calling RemoveProvider
-func (k Keeper) DestroyProvider(ctx context.Context, providerId string) (destroyed bool){
-    provider, providerFound := k.GetProvider(ctx, providerId)
+func (k Keeper) DestroyProvider(ctx context.Context, providerId string) (destroyed bool) {
+	provider, providerFound := k.GetProvider(ctx, providerId)
 
-    _ = provider
-    if providerFound {
-    	destroyed = true
-    } else {
-        destroyed = false
-    }
+	_ = provider
+	if providerFound {
+		destroyed = true
+	} else {
+		destroyed = false
+	}
 
-    return
+	return
 }
-
 
 // GetProvider returns a provider from its id
 func (k Keeper) GetProvider(ctx context.Context, providerId string) (val types.Provider, found bool) {
@@ -108,5 +136,3 @@ func (k Keeper) GetAllProvider(ctx context.Context) (list []types.Provider) {
 
 	return
 }
-
-
