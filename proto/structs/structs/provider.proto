@@ -44,7 +44,7 @@ message Provider {
     (gogoproto.nullable)   = false
   ];
 
-  string payoutAddress                    = 12 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string payoutAddress                    = 12;
 
   string creator  = 13;
   string owner    = 14; 

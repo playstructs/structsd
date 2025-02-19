@@ -16,11 +16,14 @@ message Agreement {
   string  id          = 1;
 
   string providerId   = 2;
+  string allocationId = 3;
 
-  uint64 capacity     = 3; // This should probably be a grid value instead
+  uint64 capacity     = 4;
 
-  uint64 startBlock   = 4;
-  uint64 endblock     = 5;
+  uint64 startBlock   = 5;
+  uint64 endblock     = 6;
 
+  string creator      = 7;
+  string owner        = 8;
 
 }
