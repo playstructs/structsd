@@ -3,10 +3,10 @@ package keeper
 import (
 	"context"
 
+    sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 
 	"fmt"
-	"cosmossdk.io/math"
 )
 
 type AgreementCache struct {
@@ -105,7 +105,7 @@ func (cache *AgreementCache) ManualLoadOwner(owner *PlayerCache) {
 }
 // Load the Agreements Provider
 func (cache *AgreementCache) LoadProvider() bool {
-	newProvider, _ := cache.K.GetProviderCacheFromId(cache.Ctx, cache.GetProviderId())
+	newProvider := cache.K.GetProviderCacheFromId(cache.Ctx, cache.GetProviderId())
 	cache.Provider = &newProvider
 	cache.ProviderLoaded = true
 	return cache.ProviderLoaded
@@ -156,7 +156,7 @@ func (cache *AgreementCache) GetCreator() string { if !cache.AgreementLoaded { c
 
 func (cache *AgreementCache) ResetStartBlock() {
     uctx := sdk.UnwrapSDKContext(cache.Ctx)
-    startBlock = uint64(uctx.BlockHeight())
+    startBlock := uint64(uctx.BlockHeight())
     cache.SetStartBlock(startBlock)
 }
 

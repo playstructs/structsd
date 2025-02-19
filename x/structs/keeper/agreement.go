@@ -25,7 +25,7 @@ func (k Keeper) AppendAgreement(
 	return  nil
 }
 
-func (k Keeper) SetAgreementOnly(ctx context.Context, agreement types.Agreement) (types.Agreement, error){
+func (k Keeper) SetAgreement(ctx context.Context, agreement types.Agreement) (types.Agreement, error){
 
     store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AgreementKey))
     b := k.cdc.MustMarshal(&agreement)

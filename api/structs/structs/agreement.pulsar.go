@@ -16,12 +16,15 @@ import (
 )
 
 var (
-	md_Agreement            protoreflect.MessageDescriptor
-	fd_Agreement_id         protoreflect.FieldDescriptor
-	fd_Agreement_providerId protoreflect.FieldDescriptor
-	fd_Agreement_capacity   protoreflect.FieldDescriptor
-	fd_Agreement_startBlock protoreflect.FieldDescriptor
-	fd_Agreement_endblock   protoreflect.FieldDescriptor
+	md_Agreement              protoreflect.MessageDescriptor
+	fd_Agreement_id           protoreflect.FieldDescriptor
+	fd_Agreement_providerId   protoreflect.FieldDescriptor
+	fd_Agreement_allocationId protoreflect.FieldDescriptor
+	fd_Agreement_capacity     protoreflect.FieldDescriptor
+	fd_Agreement_startBlock   protoreflect.FieldDescriptor
+	fd_Agreement_endBlock     protoreflect.FieldDescriptor
+	fd_Agreement_creator      protoreflect.FieldDescriptor
+	fd_Agreement_owner        protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -29,9 +32,12 @@ func init() {
 	md_Agreement = File_structs_structs_agreement_proto.Messages().ByName("Agreement")
 	fd_Agreement_id = md_Agreement.Fields().ByName("id")
 	fd_Agreement_providerId = md_Agreement.Fields().ByName("providerId")
+	fd_Agreement_allocationId = md_Agreement.Fields().ByName("allocationId")
 	fd_Agreement_capacity = md_Agreement.Fields().ByName("capacity")
 	fd_Agreement_startBlock = md_Agreement.Fields().ByName("startBlock")
-	fd_Agreement_endblock = md_Agreement.Fields().ByName("endblock")
+	fd_Agreement_endBlock = md_Agreement.Fields().ByName("endBlock")
+	fd_Agreement_creator = md_Agreement.Fields().ByName("creator")
+	fd_Agreement_owner = md_Agreement.Fields().ByName("owner")
 }
 
 var _ protoreflect.Message = (*fastReflection_Agreement)(nil)
@@ -111,6 +117,12 @@ func (x *fastReflection_Agreement) Range(f func(protoreflect.FieldDescriptor, pr
 			return
 		}
 	}
+	if x.AllocationId != "" {
+		value := protoreflect.ValueOfString(x.AllocationId)
+		if !f(fd_Agreement_allocationId, value) {
+			return
+		}
+	}
 	if x.Capacity != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.Capacity)
 		if !f(fd_Agreement_capacity, value) {
@@ -123,9 +135,21 @@ func (x *fastReflection_Agreement) Range(f func(protoreflect.FieldDescriptor, pr
 			return
 		}
 	}
-	if x.Endblock != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.Endblock)
-		if !f(fd_Agreement_endblock, value) {
+	if x.EndBlock != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.EndBlock)
+		if !f(fd_Agreement_endBlock, value) {
+			return
+		}
+	}
+	if x.Creator != "" {
+		value := protoreflect.ValueOfString(x.Creator)
+		if !f(fd_Agreement_creator, value) {
+			return
+		}
+	}
+	if x.Owner != "" {
+		value := protoreflect.ValueOfString(x.Owner)
+		if !f(fd_Agreement_owner, value) {
 			return
 		}
 	}
@@ -148,12 +172,18 @@ func (x *fastReflection_Agreement) Has(fd protoreflect.FieldDescriptor) bool {
 		return x.Id != ""
 	case "structs.structs.Agreement.providerId":
 		return x.ProviderId != ""
+	case "structs.structs.Agreement.allocationId":
+		return x.AllocationId != ""
 	case "structs.structs.Agreement.capacity":
 		return x.Capacity != uint64(0)
 	case "structs.structs.Agreement.startBlock":
 		return x.StartBlock != uint64(0)
-	case "structs.structs.Agreement.endblock":
-		return x.Endblock != uint64(0)
+	case "structs.structs.Agreement.endBlock":
+		return x.EndBlock != uint64(0)
+	case "structs.structs.Agreement.creator":
+		return x.Creator != ""
+	case "structs.structs.Agreement.owner":
+		return x.Owner != ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Agreement"))
@@ -174,12 +204,18 @@ func (x *fastReflection_Agreement) Clear(fd protoreflect.FieldDescriptor) {
 		x.Id = ""
 	case "structs.structs.Agreement.providerId":
 		x.ProviderId = ""
+	case "structs.structs.Agreement.allocationId":
+		x.AllocationId = ""
 	case "structs.structs.Agreement.capacity":
 		x.Capacity = uint64(0)
 	case "structs.structs.Agreement.startBlock":
 		x.StartBlock = uint64(0)
-	case "structs.structs.Agreement.endblock":
-		x.Endblock = uint64(0)
+	case "structs.structs.Agreement.endBlock":
+		x.EndBlock = uint64(0)
+	case "structs.structs.Agreement.creator":
+		x.Creator = ""
+	case "structs.structs.Agreement.owner":
+		x.Owner = ""
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Agreement"))
@@ -202,15 +238,24 @@ func (x *fastReflection_Agreement) Get(descriptor protoreflect.FieldDescriptor) 
 	case "structs.structs.Agreement.providerId":
 		value := x.ProviderId
 		return protoreflect.ValueOfString(value)
+	case "structs.structs.Agreement.allocationId":
+		value := x.AllocationId
+		return protoreflect.ValueOfString(value)
 	case "structs.structs.Agreement.capacity":
 		value := x.Capacity
 		return protoreflect.ValueOfUint64(value)
 	case "structs.structs.Agreement.startBlock":
 		value := x.StartBlock
 		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Agreement.endblock":
-		value := x.Endblock
+	case "structs.structs.Agreement.endBlock":
+		value := x.EndBlock
 		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.Agreement.creator":
+		value := x.Creator
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.Agreement.owner":
+		value := x.Owner
+		return protoreflect.ValueOfString(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Agreement"))
@@ -235,12 +280,18 @@ func (x *fastReflection_Agreement) Set(fd protoreflect.FieldDescriptor, value pr
 		x.Id = value.Interface().(string)
 	case "structs.structs.Agreement.providerId":
 		x.ProviderId = value.Interface().(string)
+	case "structs.structs.Agreement.allocationId":
+		x.AllocationId = value.Interface().(string)
 	case "structs.structs.Agreement.capacity":
 		x.Capacity = value.Uint()
 	case "structs.structs.Agreement.startBlock":
 		x.StartBlock = value.Uint()
-	case "structs.structs.Agreement.endblock":
-		x.Endblock = value.Uint()
+	case "structs.structs.Agreement.endBlock":
+		x.EndBlock = value.Uint()
+	case "structs.structs.Agreement.creator":
+		x.Creator = value.Interface().(string)
+	case "structs.structs.Agreement.owner":
+		x.Owner = value.Interface().(string)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Agreement"))
@@ -265,12 +316,18 @@ func (x *fastReflection_Agreement) Mutable(fd protoreflect.FieldDescriptor) prot
 		panic(fmt.Errorf("field id of message structs.structs.Agreement is not mutable"))
 	case "structs.structs.Agreement.providerId":
 		panic(fmt.Errorf("field providerId of message structs.structs.Agreement is not mutable"))
+	case "structs.structs.Agreement.allocationId":
+		panic(fmt.Errorf("field allocationId of message structs.structs.Agreement is not mutable"))
 	case "structs.structs.Agreement.capacity":
 		panic(fmt.Errorf("field capacity of message structs.structs.Agreement is not mutable"))
 	case "structs.structs.Agreement.startBlock":
 		panic(fmt.Errorf("field startBlock of message structs.structs.Agreement is not mutable"))
-	case "structs.structs.Agreement.endblock":
-		panic(fmt.Errorf("field endblock of message structs.structs.Agreement is not mutable"))
+	case "structs.structs.Agreement.endBlock":
+		panic(fmt.Errorf("field endBlock of message structs.structs.Agreement is not mutable"))
+	case "structs.structs.Agreement.creator":
+		panic(fmt.Errorf("field creator of message structs.structs.Agreement is not mutable"))
+	case "structs.structs.Agreement.owner":
+		panic(fmt.Errorf("field owner of message structs.structs.Agreement is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Agreement"))
@@ -288,12 +345,18 @@ func (x *fastReflection_Agreement) NewField(fd protoreflect.FieldDescriptor) pro
 		return protoreflect.ValueOfString("")
 	case "structs.structs.Agreement.providerId":
 		return protoreflect.ValueOfString("")
+	case "structs.structs.Agreement.allocationId":
+		return protoreflect.ValueOfString("")
 	case "structs.structs.Agreement.capacity":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.Agreement.startBlock":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Agreement.endblock":
+	case "structs.structs.Agreement.endBlock":
 		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.Agreement.creator":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.Agreement.owner":
+		return protoreflect.ValueOfString("")
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.Agreement"))
@@ -371,14 +434,26 @@ func (x *fastReflection_Agreement) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
+		l = len(x.AllocationId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
 		if x.Capacity != 0 {
 			n += 1 + runtime.Sov(uint64(x.Capacity))
 		}
 		if x.StartBlock != 0 {
 			n += 1 + runtime.Sov(uint64(x.StartBlock))
 		}
-		if x.Endblock != 0 {
-			n += 1 + runtime.Sov(uint64(x.Endblock))
+		if x.EndBlock != 0 {
+			n += 1 + runtime.Sov(uint64(x.EndBlock))
+		}
+		l = len(x.Creator)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.Owner)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
@@ -409,20 +484,41 @@ func (x *fastReflection_Agreement) ProtoMethods() *protoiface.Methods {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
 		}
-		if x.Endblock != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.Endblock))
+		if len(x.Owner) > 0 {
+			i -= len(x.Owner)
+			copy(dAtA[i:], x.Owner)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Owner)))
 			i--
-			dAtA[i] = 0x28
+			dAtA[i] = 0x42
+		}
+		if len(x.Creator) > 0 {
+			i -= len(x.Creator)
+			copy(dAtA[i:], x.Creator)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Creator)))
+			i--
+			dAtA[i] = 0x3a
+		}
+		if x.EndBlock != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.EndBlock))
+			i--
+			dAtA[i] = 0x30
 		}
 		if x.StartBlock != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.StartBlock))
 			i--
-			dAtA[i] = 0x20
+			dAtA[i] = 0x28
 		}
 		if x.Capacity != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.Capacity))
 			i--
-			dAtA[i] = 0x18
+			dAtA[i] = 0x20
+		}
+		if len(x.AllocationId) > 0 {
+			i -= len(x.AllocationId)
+			copy(dAtA[i:], x.AllocationId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.AllocationId)))
+			i--
+			dAtA[i] = 0x1a
 		}
 		if len(x.ProviderId) > 0 {
 			i -= len(x.ProviderId)
@@ -552,6 +648,38 @@ func (x *fastReflection_Agreement) ProtoMethods() *protoiface.Methods {
 				x.ProviderId = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
 			case 3:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AllocationId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.AllocationId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 4:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Capacity", wireType)
 				}
@@ -570,7 +698,7 @@ func (x *fastReflection_Agreement) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 4:
+			case 5:
 				if wireType != 0 {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field StartBlock", wireType)
 				}
@@ -589,11 +717,11 @@ func (x *fastReflection_Agreement) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
-			case 5:
+			case 6:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Endblock", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field EndBlock", wireType)
 				}
-				x.Endblock = 0
+				x.EndBlock = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -603,11 +731,75 @@ func (x *fastReflection_Agreement) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.Endblock |= uint64(b&0x7F) << shift
+					x.EndBlock |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
+			case 7:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Creator", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Creator = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 8:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Owner", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Owner = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -661,11 +853,14 @@ type Agreement struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id         string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	ProviderId string `protobuf:"bytes,2,opt,name=providerId,proto3" json:"providerId,omitempty"`
-	Capacity   uint64 `protobuf:"varint,3,opt,name=capacity,proto3" json:"capacity,omitempty"` // This should probably be a grid value instead
-	StartBlock uint64 `protobuf:"varint,4,opt,name=startBlock,proto3" json:"startBlock,omitempty"`
-	Endblock   uint64 `protobuf:"varint,5,opt,name=endblock,proto3" json:"endblock,omitempty"`
+	Id           string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	ProviderId   string `protobuf:"bytes,2,opt,name=providerId,proto3" json:"providerId,omitempty"`
+	AllocationId string `protobuf:"bytes,3,opt,name=allocationId,proto3" json:"allocationId,omitempty"`
+	Capacity     uint64 `protobuf:"varint,4,opt,name=capacity,proto3" json:"capacity,omitempty"`
+	StartBlock   uint64 `protobuf:"varint,5,opt,name=startBlock,proto3" json:"startBlock,omitempty"`
+	EndBlock     uint64 `protobuf:"varint,6,opt,name=endBlock,proto3" json:"endBlock,omitempty"`
+	Creator      string `protobuf:"bytes,7,opt,name=creator,proto3" json:"creator,omitempty"`
+	Owner        string `protobuf:"bytes,8,opt,name=owner,proto3" json:"owner,omitempty"`
 }
 
 func (x *Agreement) Reset() {
@@ -702,6 +897,13 @@ func (x *Agreement) GetProviderId() string {
 	return ""
 }
 
+func (x *Agreement) GetAllocationId() string {
+	if x != nil {
+		return x.AllocationId
+	}
+	return ""
+}
+
 func (x *Agreement) GetCapacity() uint64 {
 	if x != nil {
 		return x.Capacity
@@ -716,11 +918,25 @@ func (x *Agreement) GetStartBlock() uint64 {
 	return 0
 }
 
-func (x *Agreement) GetEndblock() uint64 {
+func (x *Agreement) GetEndBlock() uint64 {
 	if x != nil {
-		return x.Endblock
+		return x.EndBlock
 	}
 	return 0
+}
+
+func (x *Agreement) GetCreator() string {
+	if x != nil {
+		return x.Creator
+	}
+	return ""
+}
+
+func (x *Agreement) GetOwner() string {
+	if x != nil {
+		return x.Owner
+	}
+	return ""
 }
 
 var File_structs_structs_agreement_proto protoreflect.FileDescriptor
@@ -734,27 +950,33 @@ var file_structs_structs_agreement_proto_rawDesc = []byte{
 	0x6f, 0x67, 0x6f, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2f, 0x67, 0x6f, 0x67, 0x6f, 0x2e, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x1a, 0x1e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x62, 0x61, 0x73, 0x65,
 	0x2f, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2f, 0x63, 0x6f, 0x69, 0x6e, 0x2e, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x22, 0x99, 0x01, 0x0a, 0x09, 0x41, 0x67, 0x72, 0x65, 0x65, 0x6d, 0x65, 0x6e,
+	0x6f, 0x74, 0x6f, 0x22, 0xed, 0x01, 0x0a, 0x09, 0x41, 0x67, 0x72, 0x65, 0x65, 0x6d, 0x65, 0x6e,
 	0x74, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69,
 	0x64, 0x12, 0x1e, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x49, 0x64, 0x18,
 	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x49,
-	0x64, 0x12, 0x1a, 0x0a, 0x08, 0x63, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x04, 0x52, 0x08, 0x63, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x12, 0x1e, 0x0a,
-	0x0a, 0x73, 0x74, 0x61, 0x72, 0x74, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x18, 0x04, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x0a, 0x73, 0x74, 0x61, 0x72, 0x74, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x12, 0x1a, 0x0a,
-	0x08, 0x65, 0x6e, 0x64, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x18, 0x05, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x08, 0x65, 0x6e, 0x64, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x3a, 0x04, 0xe8, 0xa0, 0x1f, 0x01, 0x42,
-	0xa4, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0e, 0x41, 0x67, 0x72, 0x65, 0x65, 0x6d, 0x65,
-	0x6e, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f,
-	0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53,
-	0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64,
-	0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x64, 0x12, 0x22, 0x0a, 0x0c, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49,
+	0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x61, 0x6c, 0x6c, 0x6f, 0x63, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x63, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74,
+	0x79, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x08, 0x63, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74,
+	0x79, 0x12, 0x1e, 0x0a, 0x0a, 0x73, 0x74, 0x61, 0x72, 0x74, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x18,
+	0x05, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0a, 0x73, 0x74, 0x61, 0x72, 0x74, 0x42, 0x6c, 0x6f, 0x63,
+	0x6b, 0x12, 0x1a, 0x0a, 0x08, 0x65, 0x6e, 0x64, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x18, 0x06, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x08, 0x65, 0x6e, 0x64, 0x42, 0x6c, 0x6f, 0x63, 0x6b, 0x12, 0x18, 0x0a,
+	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x07, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
+	0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x14, 0x0a, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72,
+	0x18, 0x08, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x77, 0x6e, 0x65, 0x72, 0x3a, 0x04, 0xe8,
+	0xa0, 0x1f, 0x01, 0x42, 0xa4, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0e, 0x41, 0x67, 0x72,
+	0x65, 0x65, 0x6d, 0x65, 0x6e, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63,
+	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2,
+	0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d,
+	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (

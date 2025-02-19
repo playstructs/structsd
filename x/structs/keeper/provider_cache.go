@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"structs/x/structs/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	// Used in Randomness Orb
 
@@ -149,10 +150,10 @@ func (cache *ProviderCache) GetProviderId() string { return cache.ProviderId }
 func (cache *ProviderCache) GetOwnerId() string { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.Owner }
 func (cache *ProviderCache) GetOwner() *PlayerCache { if !cache.OwnerLoaded { cache.LoadOwner() }; return cache.Owner }
 
-func (cache *ProviderCache) GetSubstationID() string { !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.SubstationId }
+func (cache *ProviderCache) GetSubstationID() string { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.SubstationId }
 // TODO func (cache *ProviderCache) GetSubstation() *SubstationCache {}
 
-func (cache *ProviderCache) GetRate() sdk.Coin { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.Rate }
+func (cache *ProviderCache) GetRate() sdk.Coins { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.Rate }
 
 func (cache *ProviderCache) GetAccessPolicy() types.ProviderAccessPolicy { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.AccessPolicy }
 

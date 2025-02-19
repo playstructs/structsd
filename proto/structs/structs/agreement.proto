@@ -21,7 +21,7 @@ message Agreement {
   uint64 capacity     = 4;
 
   uint64 startBlock   = 5;
-  uint64 endblock     = 6;
+  uint64 endBlock     = 6;
 
   string creator      = 7;
   string owner        = 8;
