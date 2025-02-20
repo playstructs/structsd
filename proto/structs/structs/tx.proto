@@ -68,6 +68,18 @@ service Msg {
 
   rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse    );
 
+  rpc ProviderCreate                 (MsgProviderCreate                ) returns (MsgProviderResponse);
+  rpc ProviderWithdrawBalance        (MsgProviderWithdrawBalance       ) returns (MsgProviderResponse);
+  rpc ProviderUpdateMinimumCapacity  (MsgProviderUpdateMinimumCapacity ) returns (MsgProviderResponse);
+  rpc ProviderUpdateMaximumCapacity  (MsgProviderUpdateMaximumCapacity ) returns (MsgProviderResponse);
+  rpc ProviderUpdateMinimumDuration  (MsgProviderUpdateMinimumDuration ) returns (MsgProviderResponse);
+  rpc ProviderUpdateMaximumDuration  (MsgProviderUpdateMaximumDuration ) returns (MsgProviderResponse);
+  rpc ProviderUpdateAccessPolicy     (MsgProviderUpdateAccessPolicy    ) returns (MsgProviderResponse);
+  rpc ProviderGuildGrant             (MsgProviderGuildGrant            ) returns (MsgProviderResponse);
+  rpc ProviderGuildRevoke            (MsgProviderGuildRevoke           ) returns (MsgProviderResponse);
+  rpc ProviderDelete                 (MsgProviderDelete                ) returns (MsgProviderResponse);
+
+
   rpc StructActivate                 (MsgStructActivate                ) returns (MsgStructStatusResponse                  );
   rpc StructDeactivate               (MsgStructDeactivate              ) returns (MsgStructStatusResponse                  );
 
@@ -706,3 +718,64 @@ message MsgSubstationPlayerMigrate {
 message MsgSubstationPlayerMigrateResponse {}
 
 
+message MsgProviderCreate {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+}
+
+message MsgProviderWithdrawBalance {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+}
+
+message MsgProviderUpdateMinimumCapacity {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+}
+
+message MsgProviderUpdateMaximumCapacity {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+}
+
+message MsgProviderUpdateMinimumDuration {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+}
+
+message MsgProviderUpdateMaximumDuration {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+}
+
+message MsgProviderUpdateAccessPolicy {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+}
+
+message MsgProviderGuildGrant {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+}
+
+message MsgProviderGuildRevoke {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+}
+
+message MsgProviderDelete {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+}
+
+message MsgProviderResponse {}
