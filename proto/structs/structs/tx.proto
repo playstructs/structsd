@@ -27,6 +27,12 @@ service Msg {
   rpc AddressRegister                (MsgAddressRegister               ) returns (MsgAddressRegisterResponse );
   rpc AddressRevoke                  (MsgAddressRevoke                 ) returns (MsgAddressRevokeResponse );
 
+  rpc AgreementOpen                 (MsgAgreementOpen                  ) returns (MsgAgreementResponse);
+  rpc AgreementClose                (MsgAgreementClose                 ) returns (MsgAgreementResponse);
+  rpc AgreementCapacityIncrease     (MsgAgreementCapacityIncrease      ) returns (MsgAgreementResponse);
+  rpc AgreementCapacityDecrease     (MsgAgreementCapacityDecrease      ) returns (MsgAgreementResponse);
+  rpc AgreementExtend               (MsgAgreementExtend                ) returns (MsgAgreementResponse);
+
   rpc AllocationCreate               (MsgAllocationCreate              ) returns (MsgAllocationCreateResponse );
   rpc AllocationDelete               (MsgAllocationDelete              ) returns (MsgAllocationDeleteResponse );
   rpc AllocationUpdate               (MsgAllocationUpdate              ) returns (MsgAllocationUpdateResponse );
@@ -716,6 +722,41 @@ message MsgSubstationPlayerMigrate {
   repeated string playerId  = 3;
 }
 message MsgSubstationPlayerMigrateResponse {}
+
+
+
+message MsgAgreementOpen {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+}
+
+message MsgAgreementClose {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+}
+
+message MsgAgreementCapacityIncrease {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+}
+
+message MsgAgreementCapacityDecrease {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+}
+
+message MsgAgreementExtend {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+}
+
+message MsgAgreementResponse {}
+
 
 
 message MsgProviderCreate {
