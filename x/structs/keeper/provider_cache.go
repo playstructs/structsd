@@ -165,10 +165,7 @@ func (cache *ProviderCache) GetMaximumDuration() uint64 { if !cache.ProviderLoad
 func (cache *ProviderCache) GetProviderCancellationPenalty() math.LegacyDec { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.ProviderCancellationPenalty }
 func (cache *ProviderCache) GetConsumerCancellationPenalty() math.LegacyDec { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.ConsumerCancellationPenalty }
 
-func (cache *ProviderCache) GetPayoutAddress() string { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.PayoutAddress }
-
 func (cache *ProviderCache) GetCreator() string { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.Creator }
-
 
 func (cache *ProviderCache) GetAgreementLoad() uint64 { if !cache.AgreementLoadLoaded { cache.LoadAgreementLoad() }; return cache.AgreementLoad }
 func (cache *ProviderCache) GetCheckpointBlock() uint64 { if !cache.CheckpointBlockLoaded { cache.LoadCheckpointBlock() }; return cache.CheckpointBlock }

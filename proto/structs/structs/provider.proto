@@ -44,9 +44,7 @@ message Provider {
     (gogoproto.nullable)   = false
   ];
 
-  string payoutAddress                    = 12;
-
-  string creator  = 13;
-  string owner    = 14; 
+  string creator  = 12;
+  string owner    = 13;
 
 }
