@@ -36,6 +36,22 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    // Load Player
+
+    // Check Permissions of Creator
+
+    // Check Substation Permissions
+
+    // TODO Rate Denom whitelist?
+
+    // Capacity Minimum < Capacity Maximum
+
+    // Duration Minimum < Duration Maximum
+
+    // 1 <= Provider Cancellation Policy => 0
+
+    // 1 <= Consumer Cancellation Policy => 0
+
 
 	return &types.MsgProviderResponse{}, nil
 }
