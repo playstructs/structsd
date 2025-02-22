@@ -153,14 +153,14 @@ func (cache *ProviderCache) GetOwner() *PlayerCache { if !cache.OwnerLoaded { ca
 func (cache *ProviderCache) GetSubstationID() string { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.SubstationId }
 // TODO func (cache *ProviderCache) GetSubstation() *SubstationCache {}
 
-func (cache *ProviderCache) GetRate() sdk.Coins { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.Rate }
+func (cache *ProviderCache) GetRate() sdk.Coin { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.Rate }
 
 func (cache *ProviderCache) GetAccessPolicy() types.ProviderAccessPolicy { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.AccessPolicy }
 
-func (cache *ProviderCache) GetMinimumCapacity() uint64 { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.MinimumCapacity }
-func (cache *ProviderCache) GetMaximumCapacity() uint64 { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.MaximumCapacity }
-func (cache *ProviderCache) GetMinimumDuration() uint64 { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.MinimumDuration }
-func (cache *ProviderCache) GetMaximumDuration() uint64 { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.MaximumDuration }
+func (cache *ProviderCache) GetCapacityMinimum() uint64 { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.CapacityMinimum }
+func (cache *ProviderCache) GetCapacityMaximum() uint64 { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.CapacityMaximum }
+func (cache *ProviderCache) GetDurationMinimum() uint64 { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.DurationMinimum }
+func (cache *ProviderCache) GetDurationMaximum() uint64 { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.DurationMaximum }
 
 func (cache *ProviderCache) GetProviderCancellationPenalty() math.LegacyDec { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.ProviderCancellationPenalty }
 func (cache *ProviderCache) GetConsumerCancellationPenalty() math.LegacyDec { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.ConsumerCancellationPenalty }

@@ -777,7 +777,7 @@ message MsgProviderCreate {
   string creator            = 1;
   string substationId       = 2;
 
-  repeated cosmos.base.v1beta1.Coin rate  = 3 [
+  cosmos.base.v1beta1.Coin rate  = 3 [
     (gogoproto.nullable)     = false,
     (amino.dont_omitempty)   = true,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
@@ -797,10 +797,10 @@ message MsgProviderCreate {
     (gogoproto.nullable)   = false
   ];
 
-  uint64 minimumCapacity                  = 7;
-  uint64 maximumCapacity                  = 8;
-  uint64 minimumDuration                  = 9;
-  uint64 maximumDuration                  = 10;
+  uint64 capacityMinimum                  = 7;
+  uint64 capacityMaximum                  = 8;
+  uint64 durationMinimum                  = 9;
+  uint64 durationMaximum                  = 10;
 }
 
 message MsgProviderWithdrawBalance {

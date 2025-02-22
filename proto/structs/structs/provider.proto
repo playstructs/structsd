@@ -19,7 +19,7 @@ message Provider {
 
   string substationId                     = 3;
 
-  repeated cosmos.base.v1beta1.Coin rate  = 4 [
+  cosmos.base.v1beta1.Coin rate  = 4 [
     (gogoproto.nullable)     = false,
     (amino.dont_omitempty)   = true,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
@@ -27,10 +27,10 @@ message Provider {
 
   providerAccessPolicy accessPolicy       = 5;
 
-  uint64 minimumCapacity                  = 6;
-  uint64 maximumCapacity                  = 7;
-  uint64 minimumDuration                  = 8;
-  uint64 maximumDuration                  = 9;
+  uint64 capacityMinimum                  = 6;
+  uint64 capacityMaximum                  = 7;
+  uint64 durationMinimum                  = 8;
+  uint64 durationMaximum                  = 9;
 
   string  providerCancellationPenalty     = 10 [
     (cosmos_proto.scalar)  = "cosmos.Dec",

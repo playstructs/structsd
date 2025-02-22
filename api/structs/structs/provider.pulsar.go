@@ -16,57 +16,6 @@ import (
 	sync "sync"
 )
 
-var _ protoreflect.List = (*_Provider_4_list)(nil)
-
-type _Provider_4_list struct {
-	list *[]*v1beta1.Coin
-}
-
-func (x *_Provider_4_list) Len() int {
-	if x.list == nil {
-		return 0
-	}
-	return len(*x.list)
-}
-
-func (x *_Provider_4_list) Get(i int) protoreflect.Value {
-	return protoreflect.ValueOfMessage((*x.list)[i].ProtoReflect())
-}
-
-func (x *_Provider_4_list) Set(i int, value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*v1beta1.Coin)
-	(*x.list)[i] = concreteValue
-}
-
-func (x *_Provider_4_list) Append(value protoreflect.Value) {
-	valueUnwrapped := value.Message()
-	concreteValue := valueUnwrapped.Interface().(*v1beta1.Coin)
-	*x.list = append(*x.list, concreteValue)
-}
-
-func (x *_Provider_4_list) AppendMutable() protoreflect.Value {
-	v := new(v1beta1.Coin)
-	*x.list = append(*x.list, v)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_Provider_4_list) Truncate(n int) {
-	for i := n; i < len(*x.list); i++ {
-		(*x.list)[i] = nil
-	}
-	*x.list = (*x.list)[:n]
-}
-
-func (x *_Provider_4_list) NewElement() protoreflect.Value {
-	v := new(v1beta1.Coin)
-	return protoreflect.ValueOfMessage(v.ProtoReflect())
-}
-
-func (x *_Provider_4_list) IsValid() bool {
-	return x.list != nil
-}
-
 var (
 	md_Provider                             protoreflect.MessageDescriptor
 	fd_Provider_id                          protoreflect.FieldDescriptor
@@ -74,10 +23,10 @@ var (
 	fd_Provider_substationId                protoreflect.FieldDescriptor
 	fd_Provider_rate                        protoreflect.FieldDescriptor
 	fd_Provider_accessPolicy                protoreflect.FieldDescriptor
-	fd_Provider_minimumCapacity             protoreflect.FieldDescriptor
-	fd_Provider_maximumCapacity             protoreflect.FieldDescriptor
-	fd_Provider_minimumDuration             protoreflect.FieldDescriptor
-	fd_Provider_maximumDuration             protoreflect.FieldDescriptor
+	fd_Provider_capacityMinimum             protoreflect.FieldDescriptor
+	fd_Provider_capacityMaximum             protoreflect.FieldDescriptor
+	fd_Provider_durationMinimum             protoreflect.FieldDescriptor
+	fd_Provider_durationMaximum             protoreflect.FieldDescriptor
 	fd_Provider_providerCancellationPenalty protoreflect.FieldDescriptor
 	fd_Provider_consumerCancellationPenalty protoreflect.FieldDescriptor
 	fd_Provider_creator                     protoreflect.FieldDescriptor
@@ -92,10 +41,10 @@ func init() {
 	fd_Provider_substationId = md_Provider.Fields().ByName("substationId")
 	fd_Provider_rate = md_Provider.Fields().ByName("rate")
 	fd_Provider_accessPolicy = md_Provider.Fields().ByName("accessPolicy")
-	fd_Provider_minimumCapacity = md_Provider.Fields().ByName("minimumCapacity")
-	fd_Provider_maximumCapacity = md_Provider.Fields().ByName("maximumCapacity")
-	fd_Provider_minimumDuration = md_Provider.Fields().ByName("minimumDuration")
-	fd_Provider_maximumDuration = md_Provider.Fields().ByName("maximumDuration")
+	fd_Provider_capacityMinimum = md_Provider.Fields().ByName("capacityMinimum")
+	fd_Provider_capacityMaximum = md_Provider.Fields().ByName("capacityMaximum")
+	fd_Provider_durationMinimum = md_Provider.Fields().ByName("durationMinimum")
+	fd_Provider_durationMaximum = md_Provider.Fields().ByName("durationMaximum")
 	fd_Provider_providerCancellationPenalty = md_Provider.Fields().ByName("providerCancellationPenalty")
 	fd_Provider_consumerCancellationPenalty = md_Provider.Fields().ByName("consumerCancellationPenalty")
 	fd_Provider_creator = md_Provider.Fields().ByName("creator")
@@ -185,8 +134,8 @@ func (x *fastReflection_Provider) Range(f func(protoreflect.FieldDescriptor, pro
 			return
 		}
 	}
-	if len(x.Rate) != 0 {
-		value := protoreflect.ValueOfList(&_Provider_4_list{list: &x.Rate})
+	if x.Rate != nil {
+		value := protoreflect.ValueOfMessage(x.Rate.ProtoReflect())
 		if !f(fd_Provider_rate, value) {
 			return
 		}
@@ -197,27 +146,27 @@ func (x *fastReflection_Provider) Range(f func(protoreflect.FieldDescriptor, pro
 			return
 		}
 	}
-	if x.MinimumCapacity != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.MinimumCapacity)
-		if !f(fd_Provider_minimumCapacity, value) {
+	if x.CapacityMinimum != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.CapacityMinimum)
+		if !f(fd_Provider_capacityMinimum, value) {
 			return
 		}
 	}
-	if x.MaximumCapacity != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.MaximumCapacity)
-		if !f(fd_Provider_maximumCapacity, value) {
+	if x.CapacityMaximum != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.CapacityMaximum)
+		if !f(fd_Provider_capacityMaximum, value) {
 			return
 		}
 	}
-	if x.MinimumDuration != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.MinimumDuration)
-		if !f(fd_Provider_minimumDuration, value) {
+	if x.DurationMinimum != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.DurationMinimum)
+		if !f(fd_Provider_durationMinimum, value) {
 			return
 		}
 	}
-	if x.MaximumDuration != uint64(0) {
-		value := protoreflect.ValueOfUint64(x.MaximumDuration)
-		if !f(fd_Provider_maximumDuration, value) {
+	if x.DurationMaximum != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.DurationMaximum)
+		if !f(fd_Provider_durationMaximum, value) {
 			return
 		}
 	}
@@ -267,17 +216,17 @@ func (x *fastReflection_Provider) Has(fd protoreflect.FieldDescriptor) bool {
 	case "structs.structs.Provider.substationId":
 		return x.SubstationId != ""
 	case "structs.structs.Provider.rate":
-		return len(x.Rate) != 0
+		return x.Rate != nil
 	case "structs.structs.Provider.accessPolicy":
 		return x.AccessPolicy != 0
-	case "structs.structs.Provider.minimumCapacity":
-		return x.MinimumCapacity != uint64(0)
-	case "structs.structs.Provider.maximumCapacity":
-		return x.MaximumCapacity != uint64(0)
-	case "structs.structs.Provider.minimumDuration":
-		return x.MinimumDuration != uint64(0)
-	case "structs.structs.Provider.maximumDuration":
-		return x.MaximumDuration != uint64(0)
+	case "structs.structs.Provider.capacityMinimum":
+		return x.CapacityMinimum != uint64(0)
+	case "structs.structs.Provider.capacityMaximum":
+		return x.CapacityMaximum != uint64(0)
+	case "structs.structs.Provider.durationMinimum":
+		return x.DurationMinimum != uint64(0)
+	case "structs.structs.Provider.durationMaximum":
+		return x.DurationMaximum != uint64(0)
 	case "structs.structs.Provider.providerCancellationPenalty":
 		return x.ProviderCancellationPenalty != ""
 	case "structs.structs.Provider.consumerCancellationPenalty":
@@ -312,14 +261,14 @@ func (x *fastReflection_Provider) Clear(fd protoreflect.FieldDescriptor) {
 		x.Rate = nil
 	case "structs.structs.Provider.accessPolicy":
 		x.AccessPolicy = 0
-	case "structs.structs.Provider.minimumCapacity":
-		x.MinimumCapacity = uint64(0)
-	case "structs.structs.Provider.maximumCapacity":
-		x.MaximumCapacity = uint64(0)
-	case "structs.structs.Provider.minimumDuration":
-		x.MinimumDuration = uint64(0)
-	case "structs.structs.Provider.maximumDuration":
-		x.MaximumDuration = uint64(0)
+	case "structs.structs.Provider.capacityMinimum":
+		x.CapacityMinimum = uint64(0)
+	case "structs.structs.Provider.capacityMaximum":
+		x.CapacityMaximum = uint64(0)
+	case "structs.structs.Provider.durationMinimum":
+		x.DurationMinimum = uint64(0)
+	case "structs.structs.Provider.durationMaximum":
+		x.DurationMaximum = uint64(0)
 	case "structs.structs.Provider.providerCancellationPenalty":
 		x.ProviderCancellationPenalty = ""
 	case "structs.structs.Provider.consumerCancellationPenalty":
@@ -354,25 +303,22 @@ func (x *fastReflection_Provider) Get(descriptor protoreflect.FieldDescriptor) p
 		value := x.SubstationId
 		return protoreflect.ValueOfString(value)
 	case "structs.structs.Provider.rate":
-		if len(x.Rate) == 0 {
-			return protoreflect.ValueOfList(&_Provider_4_list{})
-		}
-		listValue := &_Provider_4_list{list: &x.Rate}
-		return protoreflect.ValueOfList(listValue)
+		value := x.Rate
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
 	case "structs.structs.Provider.accessPolicy":
 		value := x.AccessPolicy
 		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
-	case "structs.structs.Provider.minimumCapacity":
-		value := x.MinimumCapacity
+	case "structs.structs.Provider.capacityMinimum":
+		value := x.CapacityMinimum
 		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Provider.maximumCapacity":
-		value := x.MaximumCapacity
+	case "structs.structs.Provider.capacityMaximum":
+		value := x.CapacityMaximum
 		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Provider.minimumDuration":
-		value := x.MinimumDuration
+	case "structs.structs.Provider.durationMinimum":
+		value := x.DurationMinimum
 		return protoreflect.ValueOfUint64(value)
-	case "structs.structs.Provider.maximumDuration":
-		value := x.MaximumDuration
+	case "structs.structs.Provider.durationMaximum":
+		value := x.DurationMaximum
 		return protoreflect.ValueOfUint64(value)
 	case "structs.structs.Provider.providerCancellationPenalty":
 		value := x.ProviderCancellationPenalty
@@ -413,19 +359,17 @@ func (x *fastReflection_Provider) Set(fd protoreflect.FieldDescriptor, value pro
 	case "structs.structs.Provider.substationId":
 		x.SubstationId = value.Interface().(string)
 	case "structs.structs.Provider.rate":
-		lv := value.List()
-		clv := lv.(*_Provider_4_list)
-		x.Rate = *clv.list
+		x.Rate = value.Message().Interface().(*v1beta1.Coin)
 	case "structs.structs.Provider.accessPolicy":
 		x.AccessPolicy = (ProviderAccessPolicy)(value.Enum())
-	case "structs.structs.Provider.minimumCapacity":
-		x.MinimumCapacity = value.Uint()
-	case "structs.structs.Provider.maximumCapacity":
-		x.MaximumCapacity = value.Uint()
-	case "structs.structs.Provider.minimumDuration":
-		x.MinimumDuration = value.Uint()
-	case "structs.structs.Provider.maximumDuration":
-		x.MaximumDuration = value.Uint()
+	case "structs.structs.Provider.capacityMinimum":
+		x.CapacityMinimum = value.Uint()
+	case "structs.structs.Provider.capacityMaximum":
+		x.CapacityMaximum = value.Uint()
+	case "structs.structs.Provider.durationMinimum":
+		x.DurationMinimum = value.Uint()
+	case "structs.structs.Provider.durationMaximum":
+		x.DurationMaximum = value.Uint()
 	case "structs.structs.Provider.providerCancellationPenalty":
 		x.ProviderCancellationPenalty = value.Interface().(string)
 	case "structs.structs.Provider.consumerCancellationPenalty":
@@ -456,10 +400,9 @@ func (x *fastReflection_Provider) Mutable(fd protoreflect.FieldDescriptor) proto
 	switch fd.FullName() {
 	case "structs.structs.Provider.rate":
 		if x.Rate == nil {
-			x.Rate = []*v1beta1.Coin{}
+			x.Rate = new(v1beta1.Coin)
 		}
-		value := &_Provider_4_list{list: &x.Rate}
-		return protoreflect.ValueOfList(value)
+		return protoreflect.ValueOfMessage(x.Rate.ProtoReflect())
 	case "structs.structs.Provider.id":
 		panic(fmt.Errorf("field id of message structs.structs.Provider is not mutable"))
 	case "structs.structs.Provider.index":
@@ -468,14 +411,14 @@ func (x *fastReflection_Provider) Mutable(fd protoreflect.FieldDescriptor) proto
 		panic(fmt.Errorf("field substationId of message structs.structs.Provider is not mutable"))
 	case "structs.structs.Provider.accessPolicy":
 		panic(fmt.Errorf("field accessPolicy of message structs.structs.Provider is not mutable"))
-	case "structs.structs.Provider.minimumCapacity":
-		panic(fmt.Errorf("field minimumCapacity of message structs.structs.Provider is not mutable"))
-	case "structs.structs.Provider.maximumCapacity":
-		panic(fmt.Errorf("field maximumCapacity of message structs.structs.Provider is not mutable"))
-	case "structs.structs.Provider.minimumDuration":
-		panic(fmt.Errorf("field minimumDuration of message structs.structs.Provider is not mutable"))
-	case "structs.structs.Provider.maximumDuration":
-		panic(fmt.Errorf("field maximumDuration of message structs.structs.Provider is not mutable"))
+	case "structs.structs.Provider.capacityMinimum":
+		panic(fmt.Errorf("field capacityMinimum of message structs.structs.Provider is not mutable"))
+	case "structs.structs.Provider.capacityMaximum":
+		panic(fmt.Errorf("field capacityMaximum of message structs.structs.Provider is not mutable"))
+	case "structs.structs.Provider.durationMinimum":
+		panic(fmt.Errorf("field durationMinimum of message structs.structs.Provider is not mutable"))
+	case "structs.structs.Provider.durationMaximum":
+		panic(fmt.Errorf("field durationMaximum of message structs.structs.Provider is not mutable"))
 	case "structs.structs.Provider.providerCancellationPenalty":
 		panic(fmt.Errorf("field providerCancellationPenalty of message structs.structs.Provider is not mutable"))
 	case "structs.structs.Provider.consumerCancellationPenalty":
@@ -504,17 +447,17 @@ func (x *fastReflection_Provider) NewField(fd protoreflect.FieldDescriptor) prot
 	case "structs.structs.Provider.substationId":
 		return protoreflect.ValueOfString("")
 	case "structs.structs.Provider.rate":
-		list := []*v1beta1.Coin{}
-		return protoreflect.ValueOfList(&_Provider_4_list{list: &list})
+		m := new(v1beta1.Coin)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
 	case "structs.structs.Provider.accessPolicy":
 		return protoreflect.ValueOfEnum(0)
-	case "structs.structs.Provider.minimumCapacity":
+	case "structs.structs.Provider.capacityMinimum":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Provider.maximumCapacity":
+	case "structs.structs.Provider.capacityMaximum":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Provider.minimumDuration":
+	case "structs.structs.Provider.durationMinimum":
 		return protoreflect.ValueOfUint64(uint64(0))
-	case "structs.structs.Provider.maximumDuration":
+	case "structs.structs.Provider.durationMaximum":
 		return protoreflect.ValueOfUint64(uint64(0))
 	case "structs.structs.Provider.providerCancellationPenalty":
 		return protoreflect.ValueOfString("")
@@ -604,26 +547,24 @@ func (x *fastReflection_Provider) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 1 + l + runtime.Sov(uint64(l))
 		}
-		if len(x.Rate) > 0 {
-			for _, e := range x.Rate {
-				l = options.Size(e)
-				n += 1 + l + runtime.Sov(uint64(l))
-			}
+		if x.Rate != nil {
+			l = options.Size(x.Rate)
+			n += 1 + l + runtime.Sov(uint64(l))
 		}
 		if x.AccessPolicy != 0 {
 			n += 1 + runtime.Sov(uint64(x.AccessPolicy))
 		}
-		if x.MinimumCapacity != 0 {
-			n += 1 + runtime.Sov(uint64(x.MinimumCapacity))
+		if x.CapacityMinimum != 0 {
+			n += 1 + runtime.Sov(uint64(x.CapacityMinimum))
 		}
-		if x.MaximumCapacity != 0 {
-			n += 1 + runtime.Sov(uint64(x.MaximumCapacity))
+		if x.CapacityMaximum != 0 {
+			n += 1 + runtime.Sov(uint64(x.CapacityMaximum))
 		}
-		if x.MinimumDuration != 0 {
-			n += 1 + runtime.Sov(uint64(x.MinimumDuration))
+		if x.DurationMinimum != 0 {
+			n += 1 + runtime.Sov(uint64(x.DurationMinimum))
 		}
-		if x.MaximumDuration != 0 {
-			n += 1 + runtime.Sov(uint64(x.MaximumDuration))
+		if x.DurationMaximum != 0 {
+			n += 1 + runtime.Sov(uint64(x.DurationMaximum))
 		}
 		l = len(x.ProviderCancellationPenalty)
 		if l > 0 {
@@ -698,23 +639,23 @@ func (x *fastReflection_Provider) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x52
 		}
-		if x.MaximumDuration != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.MaximumDuration))
+		if x.DurationMaximum != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.DurationMaximum))
 			i--
 			dAtA[i] = 0x48
 		}
-		if x.MinimumDuration != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.MinimumDuration))
+		if x.DurationMinimum != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.DurationMinimum))
 			i--
 			dAtA[i] = 0x40
 		}
-		if x.MaximumCapacity != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.MaximumCapacity))
+		if x.CapacityMaximum != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.CapacityMaximum))
 			i--
 			dAtA[i] = 0x38
 		}
-		if x.MinimumCapacity != 0 {
-			i = runtime.EncodeVarint(dAtA, i, uint64(x.MinimumCapacity))
+		if x.CapacityMinimum != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.CapacityMinimum))
 			i--
 			dAtA[i] = 0x30
 		}
@@ -723,21 +664,19 @@ func (x *fastReflection_Provider) ProtoMethods() *protoiface.Methods {
 			i--
 			dAtA[i] = 0x28
 		}
-		if len(x.Rate) > 0 {
-			for iNdEx := len(x.Rate) - 1; iNdEx >= 0; iNdEx-- {
-				encoded, err := options.Marshal(x.Rate[iNdEx])
-				if err != nil {
-					return protoiface.MarshalOutput{
-						NoUnkeyedLiterals: input.NoUnkeyedLiterals,
-						Buf:               input.Buf,
-					}, err
-				}
-				i -= len(encoded)
-				copy(dAtA[i:], encoded)
-				i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
-				i--
-				dAtA[i] = 0x22
+		if x.Rate != nil {
+			encoded, err := options.Marshal(x.Rate)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
 			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0x22
 		}
 		if len(x.SubstationId) > 0 {
 			i -= len(x.SubstationId)
@@ -919,8 +858,10 @@ func (x *fastReflection_Provider) ProtoMethods() *protoiface.Methods {
 				if postIndex > l {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
 				}
-				x.Rate = append(x.Rate, &v1beta1.Coin{})
-				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Rate[len(x.Rate)-1]); err != nil {
+				if x.Rate == nil {
+					x.Rate = &v1beta1.Coin{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.Rate); err != nil {
 					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
 				}
 				iNdEx = postIndex
@@ -945,9 +886,9 @@ func (x *fastReflection_Provider) ProtoMethods() *protoiface.Methods {
 				}
 			case 6:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MinimumCapacity", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CapacityMinimum", wireType)
 				}
-				x.MinimumCapacity = 0
+				x.CapacityMinimum = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -957,16 +898,16 @@ func (x *fastReflection_Provider) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.MinimumCapacity |= uint64(b&0x7F) << shift
+					x.CapacityMinimum |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
 			case 7:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MaximumCapacity", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CapacityMaximum", wireType)
 				}
-				x.MaximumCapacity = 0
+				x.CapacityMaximum = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -976,16 +917,16 @@ func (x *fastReflection_Provider) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.MaximumCapacity |= uint64(b&0x7F) << shift
+					x.CapacityMaximum |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
 			case 8:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MinimumDuration", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DurationMinimum", wireType)
 				}
-				x.MinimumDuration = 0
+				x.DurationMinimum = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -995,16 +936,16 @@ func (x *fastReflection_Provider) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.MinimumDuration |= uint64(b&0x7F) << shift
+					x.DurationMinimum |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
 				}
 			case 9:
 				if wireType != 0 {
-					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field MaximumDuration", wireType)
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field DurationMaximum", wireType)
 				}
-				x.MaximumDuration = 0
+				x.DurationMaximum = 0
 				for shift := uint(0); ; shift += 7 {
 					if shift >= 64 {
 						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
@@ -1014,7 +955,7 @@ func (x *fastReflection_Provider) ProtoMethods() *protoiface.Methods {
 					}
 					b := dAtA[iNdEx]
 					iNdEx++
-					x.MaximumDuration |= uint64(b&0x7F) << shift
+					x.DurationMaximum |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
@@ -1203,12 +1144,12 @@ type Provider struct {
 	Id                          string               `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Index                       uint64               `protobuf:"varint,2,opt,name=index,proto3" json:"index,omitempty"`
 	SubstationId                string               `protobuf:"bytes,3,opt,name=substationId,proto3" json:"substationId,omitempty"`
-	Rate                        []*v1beta1.Coin      `protobuf:"bytes,4,rep,name=rate,proto3" json:"rate,omitempty"`
+	Rate                        *v1beta1.Coin        `protobuf:"bytes,4,opt,name=rate,proto3" json:"rate,omitempty"`
 	AccessPolicy                ProviderAccessPolicy `protobuf:"varint,5,opt,name=accessPolicy,proto3,enum=structs.structs.ProviderAccessPolicy" json:"accessPolicy,omitempty"`
-	MinimumCapacity             uint64               `protobuf:"varint,6,opt,name=minimumCapacity,proto3" json:"minimumCapacity,omitempty"`
-	MaximumCapacity             uint64               `protobuf:"varint,7,opt,name=maximumCapacity,proto3" json:"maximumCapacity,omitempty"`
-	MinimumDuration             uint64               `protobuf:"varint,8,opt,name=minimumDuration,proto3" json:"minimumDuration,omitempty"`
-	MaximumDuration             uint64               `protobuf:"varint,9,opt,name=maximumDuration,proto3" json:"maximumDuration,omitempty"`
+	CapacityMinimum             uint64               `protobuf:"varint,6,opt,name=capacityMinimum,proto3" json:"capacityMinimum,omitempty"`
+	CapacityMaximum             uint64               `protobuf:"varint,7,opt,name=capacityMaximum,proto3" json:"capacityMaximum,omitempty"`
+	DurationMinimum             uint64               `protobuf:"varint,8,opt,name=durationMinimum,proto3" json:"durationMinimum,omitempty"`
+	DurationMaximum             uint64               `protobuf:"varint,9,opt,name=durationMaximum,proto3" json:"durationMaximum,omitempty"`
 	ProviderCancellationPenalty string               `protobuf:"bytes,10,opt,name=providerCancellationPenalty,proto3" json:"providerCancellationPenalty,omitempty"`
 	ConsumerCancellationPenalty string               `protobuf:"bytes,11,opt,name=consumerCancellationPenalty,proto3" json:"consumerCancellationPenalty,omitempty"`
 	Creator                     string               `protobuf:"bytes,12,opt,name=creator,proto3" json:"creator,omitempty"`
@@ -1256,7 +1197,7 @@ func (x *Provider) GetSubstationId() string {
 	return ""
 }
 
-func (x *Provider) GetRate() []*v1beta1.Coin {
+func (x *Provider) GetRate() *v1beta1.Coin {
 	if x != nil {
 		return x.Rate
 	}
@@ -1270,30 +1211,30 @@ func (x *Provider) GetAccessPolicy() ProviderAccessPolicy {
 	return ProviderAccessPolicy_openMarket
 }
 
-func (x *Provider) GetMinimumCapacity() uint64 {
+func (x *Provider) GetCapacityMinimum() uint64 {
 	if x != nil {
-		return x.MinimumCapacity
+		return x.CapacityMinimum
 	}
 	return 0
 }
 
-func (x *Provider) GetMaximumCapacity() uint64 {
+func (x *Provider) GetCapacityMaximum() uint64 {
 	if x != nil {
-		return x.MaximumCapacity
+		return x.CapacityMaximum
 	}
 	return 0
 }
 
-func (x *Provider) GetMinimumDuration() uint64 {
+func (x *Provider) GetDurationMinimum() uint64 {
 	if x != nil {
-		return x.MinimumDuration
+		return x.DurationMinimum
 	}
 	return 0
 }
 
-func (x *Provider) GetMaximumDuration() uint64 {
+func (x *Provider) GetDurationMaximum() uint64 {
 	if x != nil {
-		return x.MaximumDuration
+		return x.DurationMaximum
 	}
 	return 0
 }
@@ -1346,7 +1287,7 @@ var file_structs_structs_provider_proto_rawDesc = []byte{
 	0x6e, 0x64, 0x65, 0x78, 0x12, 0x22, 0x0a, 0x0c, 0x73, 0x75, 0x62, 0x73, 0x74, 0x61, 0x74, 0x69,
 	0x6f, 0x6e, 0x49, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x73, 0x75, 0x62, 0x73,
 	0x74, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x64, 0x0a, 0x04, 0x72, 0x61, 0x74, 0x65,
-	0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
+	0x18, 0x04, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2e,
 	0x62, 0x61, 0x73, 0x65, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x43, 0x6f, 0x69,
 	0x6e, 0x42, 0x35, 0xc8, 0xde, 0x1f, 0x00, 0xaa, 0xdf, 0x1f, 0x28, 0x67, 0x69, 0x74, 0x68, 0x75,
 	0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x2f, 0x63, 0x6f, 0x73,
@@ -1356,18 +1297,18 @@ var file_structs_structs_provider_proto_rawDesc = []byte{
 	0x20, 0x01, 0x28, 0x0e, 0x32, 0x25, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x41,
 	0x63, 0x63, 0x65, 0x73, 0x73, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x52, 0x0c, 0x61, 0x63, 0x63,
-	0x65, 0x73, 0x73, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x12, 0x28, 0x0a, 0x0f, 0x6d, 0x69, 0x6e,
-	0x69, 0x6d, 0x75, 0x6d, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x18, 0x06, 0x20, 0x01,
-	0x28, 0x04, 0x52, 0x0f, 0x6d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x43, 0x61, 0x70, 0x61, 0x63,
-	0x69, 0x74, 0x79, 0x12, 0x28, 0x0a, 0x0f, 0x6d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x43, 0x61,
-	0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x6d, 0x61,
-	0x78, 0x69, 0x6d, 0x75, 0x6d, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x12, 0x28, 0x0a,
-	0x0f, 0x6d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x18, 0x08, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x6d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x44,
-	0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x28, 0x0a, 0x0f, 0x6d, 0x61, 0x78, 0x69, 0x6d,
-	0x75, 0x6d, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x09, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x0f, 0x6d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x12, 0x73, 0x0a, 0x1b, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x43, 0x61, 0x6e,
+	0x65, 0x73, 0x73, 0x50, 0x6f, 0x6c, 0x69, 0x63, 0x79, 0x12, 0x28, 0x0a, 0x0f, 0x63, 0x61, 0x70,
+	0x61, 0x63, 0x69, 0x74, 0x79, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x18, 0x06, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x0f, 0x63, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x4d, 0x69, 0x6e, 0x69,
+	0x6d, 0x75, 0x6d, 0x12, 0x28, 0x0a, 0x0f, 0x63, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x4d,
+	0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x63, 0x61,
+	0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x4d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x12, 0x28, 0x0a,
+	0x0f, 0x64, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d,
+	0x18, 0x08, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x64, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x12, 0x28, 0x0a, 0x0f, 0x64, 0x75, 0x72, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x4d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x18, 0x09, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x0f, 0x64, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4d, 0x61, 0x78, 0x69, 0x6d, 0x75,
+	0x6d, 0x12, 0x73, 0x0a, 0x1b, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x43, 0x61, 0x6e,
 	0x63, 0x65, 0x6c, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x50, 0x65, 0x6e, 0x61, 0x6c, 0x74, 0x79,
 	0x18, 0x0a, 0x20, 0x01, 0x28, 0x09, 0x42, 0x31, 0xc8, 0xde, 0x1f, 0x00, 0xda, 0xde, 0x1f, 0x1b,
 	0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x6d, 0x61, 0x74,
