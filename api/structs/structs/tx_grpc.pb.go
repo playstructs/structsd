@@ -61,10 +61,10 @@ const (
 	Msg_PlayerUpdatePrimaryAddress_FullMethodName                    = "/structs.structs.Msg/PlayerUpdatePrimaryAddress"
 	Msg_ProviderCreate_FullMethodName                                = "/structs.structs.Msg/ProviderCreate"
 	Msg_ProviderWithdrawBalance_FullMethodName                       = "/structs.structs.Msg/ProviderWithdrawBalance"
-	Msg_ProviderUpdateMinimumCapacity_FullMethodName                 = "/structs.structs.Msg/ProviderUpdateMinimumCapacity"
-	Msg_ProviderUpdateMaximumCapacity_FullMethodName                 = "/structs.structs.Msg/ProviderUpdateMaximumCapacity"
-	Msg_ProviderUpdateMinimumDuration_FullMethodName                 = "/structs.structs.Msg/ProviderUpdateMinimumDuration"
-	Msg_ProviderUpdateMaximumDuration_FullMethodName                 = "/structs.structs.Msg/ProviderUpdateMaximumDuration"
+	Msg_ProviderUpdateCapacityMinimum_FullMethodName                 = "/structs.structs.Msg/ProviderUpdateCapacityMinimum"
+	Msg_ProviderUpdateCapacityMaximum_FullMethodName                 = "/structs.structs.Msg/ProviderUpdateCapacityMaximum"
+	Msg_ProviderUpdateDurationMinimum_FullMethodName                 = "/structs.structs.Msg/ProviderUpdateDurationMinimum"
+	Msg_ProviderUpdateDurationMaximum_FullMethodName                 = "/structs.structs.Msg/ProviderUpdateDurationMaximum"
 	Msg_ProviderUpdateAccessPolicy_FullMethodName                    = "/structs.structs.Msg/ProviderUpdateAccessPolicy"
 	Msg_ProviderGuildGrant_FullMethodName                            = "/structs.structs.Msg/ProviderGuildGrant"
 	Msg_ProviderGuildRevoke_FullMethodName                           = "/structs.structs.Msg/ProviderGuildRevoke"
@@ -139,10 +139,10 @@ type MsgClient interface {
 	PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlayerUpdatePrimaryAddress, opts ...grpc.CallOption) (*MsgPlayerUpdatePrimaryAddressResponse, error)
 	ProviderCreate(ctx context.Context, in *MsgProviderCreate, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ProviderWithdrawBalance(ctx context.Context, in *MsgProviderWithdrawBalance, opts ...grpc.CallOption) (*MsgProviderResponse, error)
-	ProviderUpdateMinimumCapacity(ctx context.Context, in *MsgProviderUpdateMinimumCapacity, opts ...grpc.CallOption) (*MsgProviderResponse, error)
-	ProviderUpdateMaximumCapacity(ctx context.Context, in *MsgProviderUpdateMaximumCapacity, opts ...grpc.CallOption) (*MsgProviderResponse, error)
-	ProviderUpdateMinimumDuration(ctx context.Context, in *MsgProviderUpdateMinimumDuration, opts ...grpc.CallOption) (*MsgProviderResponse, error)
-	ProviderUpdateMaximumDuration(ctx context.Context, in *MsgProviderUpdateMaximumDuration, opts ...grpc.CallOption) (*MsgProviderResponse, error)
+	ProviderUpdateCapacityMinimum(ctx context.Context, in *MsgProviderUpdateCapacityMinimum, opts ...grpc.CallOption) (*MsgProviderResponse, error)
+	ProviderUpdateCapacityMaximum(ctx context.Context, in *MsgProviderUpdateCapacityMaximum, opts ...grpc.CallOption) (*MsgProviderResponse, error)
+	ProviderUpdateDurationMinimum(ctx context.Context, in *MsgProviderUpdateDurationMinimum, opts ...grpc.CallOption) (*MsgProviderResponse, error)
+	ProviderUpdateDurationMaximum(ctx context.Context, in *MsgProviderUpdateDurationMaximum, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ProviderUpdateAccessPolicy(ctx context.Context, in *MsgProviderUpdateAccessPolicy, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ProviderGuildGrant(ctx context.Context, in *MsgProviderGuildGrant, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ProviderGuildRevoke(ctx context.Context, in *MsgProviderGuildRevoke, opts ...grpc.CallOption) (*MsgProviderResponse, error)
@@ -555,36 +555,36 @@ func (c *msgClient) ProviderWithdrawBalance(ctx context.Context, in *MsgProvider
 	return out, nil
 }
 
-func (c *msgClient) ProviderUpdateMinimumCapacity(ctx context.Context, in *MsgProviderUpdateMinimumCapacity, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
+func (c *msgClient) ProviderUpdateCapacityMinimum(ctx context.Context, in *MsgProviderUpdateCapacityMinimum, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
 	out := new(MsgProviderResponse)
-	err := c.cc.Invoke(ctx, Msg_ProviderUpdateMinimumCapacity_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Msg_ProviderUpdateCapacityMinimum_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) ProviderUpdateMaximumCapacity(ctx context.Context, in *MsgProviderUpdateMaximumCapacity, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
+func (c *msgClient) ProviderUpdateCapacityMaximum(ctx context.Context, in *MsgProviderUpdateCapacityMaximum, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
 	out := new(MsgProviderResponse)
-	err := c.cc.Invoke(ctx, Msg_ProviderUpdateMaximumCapacity_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Msg_ProviderUpdateCapacityMaximum_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) ProviderUpdateMinimumDuration(ctx context.Context, in *MsgProviderUpdateMinimumDuration, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
+func (c *msgClient) ProviderUpdateDurationMinimum(ctx context.Context, in *MsgProviderUpdateDurationMinimum, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
 	out := new(MsgProviderResponse)
-	err := c.cc.Invoke(ctx, Msg_ProviderUpdateMinimumDuration_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Msg_ProviderUpdateDurationMinimum_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *msgClient) ProviderUpdateMaximumDuration(ctx context.Context, in *MsgProviderUpdateMaximumDuration, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
+func (c *msgClient) ProviderUpdateDurationMaximum(ctx context.Context, in *MsgProviderUpdateDurationMaximum, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
 	out := new(MsgProviderResponse)
-	err := c.cc.Invoke(ctx, Msg_ProviderUpdateMaximumDuration_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Msg_ProviderUpdateDurationMaximum_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -855,10 +855,10 @@ type MsgServer interface {
 	PlayerUpdatePrimaryAddress(context.Context, *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error)
 	ProviderCreate(context.Context, *MsgProviderCreate) (*MsgProviderResponse, error)
 	ProviderWithdrawBalance(context.Context, *MsgProviderWithdrawBalance) (*MsgProviderResponse, error)
-	ProviderUpdateMinimumCapacity(context.Context, *MsgProviderUpdateMinimumCapacity) (*MsgProviderResponse, error)
-	ProviderUpdateMaximumCapacity(context.Context, *MsgProviderUpdateMaximumCapacity) (*MsgProviderResponse, error)
-	ProviderUpdateMinimumDuration(context.Context, *MsgProviderUpdateMinimumDuration) (*MsgProviderResponse, error)
-	ProviderUpdateMaximumDuration(context.Context, *MsgProviderUpdateMaximumDuration) (*MsgProviderResponse, error)
+	ProviderUpdateCapacityMinimum(context.Context, *MsgProviderUpdateCapacityMinimum) (*MsgProviderResponse, error)
+	ProviderUpdateCapacityMaximum(context.Context, *MsgProviderUpdateCapacityMaximum) (*MsgProviderResponse, error)
+	ProviderUpdateDurationMinimum(context.Context, *MsgProviderUpdateDurationMinimum) (*MsgProviderResponse, error)
+	ProviderUpdateDurationMaximum(context.Context, *MsgProviderUpdateDurationMaximum) (*MsgProviderResponse, error)
 	ProviderUpdateAccessPolicy(context.Context, *MsgProviderUpdateAccessPolicy) (*MsgProviderResponse, error)
 	ProviderGuildGrant(context.Context, *MsgProviderGuildGrant) (*MsgProviderResponse, error)
 	ProviderGuildRevoke(context.Context, *MsgProviderGuildRevoke) (*MsgProviderResponse, error)
@@ -1016,17 +1016,17 @@ func (UnimplementedMsgServer) ProviderCreate(context.Context, *MsgProviderCreate
 func (UnimplementedMsgServer) ProviderWithdrawBalance(context.Context, *MsgProviderWithdrawBalance) (*MsgProviderResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProviderWithdrawBalance not implemented")
 }
-func (UnimplementedMsgServer) ProviderUpdateMinimumCapacity(context.Context, *MsgProviderUpdateMinimumCapacity) (*MsgProviderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ProviderUpdateMinimumCapacity not implemented")
+func (UnimplementedMsgServer) ProviderUpdateCapacityMinimum(context.Context, *MsgProviderUpdateCapacityMinimum) (*MsgProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderUpdateCapacityMinimum not implemented")
 }
-func (UnimplementedMsgServer) ProviderUpdateMaximumCapacity(context.Context, *MsgProviderUpdateMaximumCapacity) (*MsgProviderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ProviderUpdateMaximumCapacity not implemented")
+func (UnimplementedMsgServer) ProviderUpdateCapacityMaximum(context.Context, *MsgProviderUpdateCapacityMaximum) (*MsgProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderUpdateCapacityMaximum not implemented")
 }
-func (UnimplementedMsgServer) ProviderUpdateMinimumDuration(context.Context, *MsgProviderUpdateMinimumDuration) (*MsgProviderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ProviderUpdateMinimumDuration not implemented")
+func (UnimplementedMsgServer) ProviderUpdateDurationMinimum(context.Context, *MsgProviderUpdateDurationMinimum) (*MsgProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderUpdateDurationMinimum not implemented")
 }
-func (UnimplementedMsgServer) ProviderUpdateMaximumDuration(context.Context, *MsgProviderUpdateMaximumDuration) (*MsgProviderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ProviderUpdateMaximumDuration not implemented")
+func (UnimplementedMsgServer) ProviderUpdateDurationMaximum(context.Context, *MsgProviderUpdateDurationMaximum) (*MsgProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderUpdateDurationMaximum not implemented")
 }
 func (UnimplementedMsgServer) ProviderUpdateAccessPolicy(context.Context, *MsgProviderUpdateAccessPolicy) (*MsgProviderResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProviderUpdateAccessPolicy not implemented")
@@ -1869,74 +1869,74 @@ func _Msg_ProviderWithdrawBalance_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_ProviderUpdateMinimumCapacity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgProviderUpdateMinimumCapacity)
+func _Msg_ProviderUpdateCapacityMinimum_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgProviderUpdateCapacityMinimum)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).ProviderUpdateMinimumCapacity(ctx, in)
+		return srv.(MsgServer).ProviderUpdateCapacityMinimum(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Msg_ProviderUpdateMinimumCapacity_FullMethodName,
+		FullMethod: Msg_ProviderUpdateCapacityMinimum_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).ProviderUpdateMinimumCapacity(ctx, req.(*MsgProviderUpdateMinimumCapacity))
+		return srv.(MsgServer).ProviderUpdateCapacityMinimum(ctx, req.(*MsgProviderUpdateCapacityMinimum))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_ProviderUpdateMaximumCapacity_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgProviderUpdateMaximumCapacity)
+func _Msg_ProviderUpdateCapacityMaximum_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgProviderUpdateCapacityMaximum)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).ProviderUpdateMaximumCapacity(ctx, in)
+		return srv.(MsgServer).ProviderUpdateCapacityMaximum(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Msg_ProviderUpdateMaximumCapacity_FullMethodName,
+		FullMethod: Msg_ProviderUpdateCapacityMaximum_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).ProviderUpdateMaximumCapacity(ctx, req.(*MsgProviderUpdateMaximumCapacity))
+		return srv.(MsgServer).ProviderUpdateCapacityMaximum(ctx, req.(*MsgProviderUpdateCapacityMaximum))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_ProviderUpdateMinimumDuration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgProviderUpdateMinimumDuration)
+func _Msg_ProviderUpdateDurationMinimum_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgProviderUpdateDurationMinimum)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).ProviderUpdateMinimumDuration(ctx, in)
+		return srv.(MsgServer).ProviderUpdateDurationMinimum(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Msg_ProviderUpdateMinimumDuration_FullMethodName,
+		FullMethod: Msg_ProviderUpdateDurationMinimum_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).ProviderUpdateMinimumDuration(ctx, req.(*MsgProviderUpdateMinimumDuration))
+		return srv.(MsgServer).ProviderUpdateDurationMinimum(ctx, req.(*MsgProviderUpdateDurationMinimum))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_ProviderUpdateMaximumDuration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgProviderUpdateMaximumDuration)
+func _Msg_ProviderUpdateDurationMaximum_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgProviderUpdateDurationMaximum)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).ProviderUpdateMaximumDuration(ctx, in)
+		return srv.(MsgServer).ProviderUpdateDurationMaximum(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Msg_ProviderUpdateMaximumDuration_FullMethodName,
+		FullMethod: Msg_ProviderUpdateDurationMaximum_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).ProviderUpdateMaximumDuration(ctx, req.(*MsgProviderUpdateMaximumDuration))
+		return srv.(MsgServer).ProviderUpdateDurationMaximum(ctx, req.(*MsgProviderUpdateDurationMaximum))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2549,20 +2549,20 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_ProviderWithdrawBalance_Handler,
 		},
 		{
-			MethodName: "ProviderUpdateMinimumCapacity",
-			Handler:    _Msg_ProviderUpdateMinimumCapacity_Handler,
+			MethodName: "ProviderUpdateCapacityMinimum",
+			Handler:    _Msg_ProviderUpdateCapacityMinimum_Handler,
 		},
 		{
-			MethodName: "ProviderUpdateMaximumCapacity",
-			Handler:    _Msg_ProviderUpdateMaximumCapacity_Handler,
+			MethodName: "ProviderUpdateCapacityMaximum",
+			Handler:    _Msg_ProviderUpdateCapacityMaximum_Handler,
 		},
 		{
-			MethodName: "ProviderUpdateMinimumDuration",
-			Handler:    _Msg_ProviderUpdateMinimumDuration_Handler,
+			MethodName: "ProviderUpdateDurationMinimum",
+			Handler:    _Msg_ProviderUpdateDurationMinimum_Handler,
 		},
 		{
-			MethodName: "ProviderUpdateMaximumDuration",
-			Handler:    _Msg_ProviderUpdateMaximumDuration_Handler,
+			MethodName: "ProviderUpdateDurationMaximum",
+			Handler:    _Msg_ProviderUpdateDurationMaximum_Handler,
 		},
 		{
 			MethodName: "ProviderUpdateAccessPolicy",

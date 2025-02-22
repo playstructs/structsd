@@ -48353,29 +48353,29 @@ func (x *fastReflection_MsgProviderWithdrawBalance) ProtoMethods() *protoiface.M
 }
 
 var (
-	md_MsgProviderUpdateMinimumCapacity                    protoreflect.MessageDescriptor
-	fd_MsgProviderUpdateMinimumCapacity_creator            protoreflect.FieldDescriptor
-	fd_MsgProviderUpdateMinimumCapacity_providerId         protoreflect.FieldDescriptor
-	fd_MsgProviderUpdateMinimumCapacity_newMinimumCapacity protoreflect.FieldDescriptor
+	md_MsgProviderUpdateCapacityMinimum                    protoreflect.MessageDescriptor
+	fd_MsgProviderUpdateCapacityMinimum_creator            protoreflect.FieldDescriptor
+	fd_MsgProviderUpdateCapacityMinimum_providerId         protoreflect.FieldDescriptor
+	fd_MsgProviderUpdateCapacityMinimum_newMinimumCapacity protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_structs_structs_tx_proto_init()
-	md_MsgProviderUpdateMinimumCapacity = File_structs_structs_tx_proto.Messages().ByName("MsgProviderUpdateMinimumCapacity")
-	fd_MsgProviderUpdateMinimumCapacity_creator = md_MsgProviderUpdateMinimumCapacity.Fields().ByName("creator")
-	fd_MsgProviderUpdateMinimumCapacity_providerId = md_MsgProviderUpdateMinimumCapacity.Fields().ByName("providerId")
-	fd_MsgProviderUpdateMinimumCapacity_newMinimumCapacity = md_MsgProviderUpdateMinimumCapacity.Fields().ByName("newMinimumCapacity")
+	md_MsgProviderUpdateCapacityMinimum = File_structs_structs_tx_proto.Messages().ByName("MsgProviderUpdateCapacityMinimum")
+	fd_MsgProviderUpdateCapacityMinimum_creator = md_MsgProviderUpdateCapacityMinimum.Fields().ByName("creator")
+	fd_MsgProviderUpdateCapacityMinimum_providerId = md_MsgProviderUpdateCapacityMinimum.Fields().ByName("providerId")
+	fd_MsgProviderUpdateCapacityMinimum_newMinimumCapacity = md_MsgProviderUpdateCapacityMinimum.Fields().ByName("newMinimumCapacity")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgProviderUpdateMinimumCapacity)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgProviderUpdateCapacityMinimum)(nil)
 
-type fastReflection_MsgProviderUpdateMinimumCapacity MsgProviderUpdateMinimumCapacity
+type fastReflection_MsgProviderUpdateCapacityMinimum MsgProviderUpdateCapacityMinimum
 
-func (x *MsgProviderUpdateMinimumCapacity) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgProviderUpdateMinimumCapacity)(x)
+func (x *MsgProviderUpdateCapacityMinimum) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgProviderUpdateCapacityMinimum)(x)
 }
 
-func (x *MsgProviderUpdateMinimumCapacity) slowProtoReflect() protoreflect.Message {
+func (x *MsgProviderUpdateCapacityMinimum) slowProtoReflect() protoreflect.Message {
 	mi := &file_structs_structs_tx_proto_msgTypes[93]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -48387,43 +48387,43 @@ func (x *MsgProviderUpdateMinimumCapacity) slowProtoReflect() protoreflect.Messa
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgProviderUpdateMinimumCapacity_messageType fastReflection_MsgProviderUpdateMinimumCapacity_messageType
-var _ protoreflect.MessageType = fastReflection_MsgProviderUpdateMinimumCapacity_messageType{}
+var _fastReflection_MsgProviderUpdateCapacityMinimum_messageType fastReflection_MsgProviderUpdateCapacityMinimum_messageType
+var _ protoreflect.MessageType = fastReflection_MsgProviderUpdateCapacityMinimum_messageType{}
 
-type fastReflection_MsgProviderUpdateMinimumCapacity_messageType struct{}
+type fastReflection_MsgProviderUpdateCapacityMinimum_messageType struct{}
 
-func (x fastReflection_MsgProviderUpdateMinimumCapacity_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgProviderUpdateMinimumCapacity)(nil)
+func (x fastReflection_MsgProviderUpdateCapacityMinimum_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgProviderUpdateCapacityMinimum)(nil)
 }
-func (x fastReflection_MsgProviderUpdateMinimumCapacity_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgProviderUpdateMinimumCapacity)
+func (x fastReflection_MsgProviderUpdateCapacityMinimum_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgProviderUpdateCapacityMinimum)
 }
-func (x fastReflection_MsgProviderUpdateMinimumCapacity_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgProviderUpdateMinimumCapacity
+func (x fastReflection_MsgProviderUpdateCapacityMinimum_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgProviderUpdateCapacityMinimum
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgProviderUpdateMinimumCapacity) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgProviderUpdateMinimumCapacity
+func (x *fastReflection_MsgProviderUpdateCapacityMinimum) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgProviderUpdateCapacityMinimum
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgProviderUpdateMinimumCapacity) Type() protoreflect.MessageType {
-	return _fastReflection_MsgProviderUpdateMinimumCapacity_messageType
+func (x *fastReflection_MsgProviderUpdateCapacityMinimum) Type() protoreflect.MessageType {
+	return _fastReflection_MsgProviderUpdateCapacityMinimum_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgProviderUpdateMinimumCapacity) New() protoreflect.Message {
-	return new(fastReflection_MsgProviderUpdateMinimumCapacity)
+func (x *fastReflection_MsgProviderUpdateCapacityMinimum) New() protoreflect.Message {
+	return new(fastReflection_MsgProviderUpdateCapacityMinimum)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgProviderUpdateMinimumCapacity) Interface() protoreflect.ProtoMessage {
-	return (*MsgProviderUpdateMinimumCapacity)(x)
+func (x *fastReflection_MsgProviderUpdateCapacityMinimum) Interface() protoreflect.ProtoMessage {
+	return (*MsgProviderUpdateCapacityMinimum)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -48431,22 +48431,22 @@ func (x *fastReflection_MsgProviderUpdateMinimumCapacity) Interface() protorefle
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgProviderUpdateMinimumCapacity) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgProviderUpdateCapacityMinimum) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Creator != "" {
 		value := protoreflect.ValueOfString(x.Creator)
-		if !f(fd_MsgProviderUpdateMinimumCapacity_creator, value) {
+		if !f(fd_MsgProviderUpdateCapacityMinimum_creator, value) {
 			return
 		}
 	}
 	if x.ProviderId != "" {
 		value := protoreflect.ValueOfString(x.ProviderId)
-		if !f(fd_MsgProviderUpdateMinimumCapacity_providerId, value) {
+		if !f(fd_MsgProviderUpdateCapacityMinimum_providerId, value) {
 			return
 		}
 	}
 	if x.NewMinimumCapacity != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.NewMinimumCapacity)
-		if !f(fd_MsgProviderUpdateMinimumCapacity_newMinimumCapacity, value) {
+		if !f(fd_MsgProviderUpdateCapacityMinimum_newMinimumCapacity, value) {
 			return
 		}
 	}
@@ -48463,19 +48463,19 @@ func (x *fastReflection_MsgProviderUpdateMinimumCapacity) Range(f func(protorefl
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgProviderUpdateMinimumCapacity) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgProviderUpdateCapacityMinimum) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMinimumCapacity.creator":
+	case "structs.structs.MsgProviderUpdateCapacityMinimum.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgProviderUpdateMinimumCapacity.providerId":
+	case "structs.structs.MsgProviderUpdateCapacityMinimum.providerId":
 		return x.ProviderId != ""
-	case "structs.structs.MsgProviderUpdateMinimumCapacity.newMinimumCapacity":
+	case "structs.structs.MsgProviderUpdateCapacityMinimum.newMinimumCapacity":
 		return x.NewMinimumCapacity != uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMinimumCapacity"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateCapacityMinimum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMinimumCapacity does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateCapacityMinimum does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -48485,19 +48485,19 @@ func (x *fastReflection_MsgProviderUpdateMinimumCapacity) Has(fd protoreflect.Fi
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgProviderUpdateMinimumCapacity) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgProviderUpdateCapacityMinimum) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMinimumCapacity.creator":
+	case "structs.structs.MsgProviderUpdateCapacityMinimum.creator":
 		x.Creator = ""
-	case "structs.structs.MsgProviderUpdateMinimumCapacity.providerId":
+	case "structs.structs.MsgProviderUpdateCapacityMinimum.providerId":
 		x.ProviderId = ""
-	case "structs.structs.MsgProviderUpdateMinimumCapacity.newMinimumCapacity":
+	case "structs.structs.MsgProviderUpdateCapacityMinimum.newMinimumCapacity":
 		x.NewMinimumCapacity = uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMinimumCapacity"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateCapacityMinimum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMinimumCapacity does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateCapacityMinimum does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -48507,22 +48507,22 @@ func (x *fastReflection_MsgProviderUpdateMinimumCapacity) Clear(fd protoreflect.
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgProviderUpdateMinimumCapacity) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgProviderUpdateCapacityMinimum) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgProviderUpdateMinimumCapacity.creator":
+	case "structs.structs.MsgProviderUpdateCapacityMinimum.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgProviderUpdateMinimumCapacity.providerId":
+	case "structs.structs.MsgProviderUpdateCapacityMinimum.providerId":
 		value := x.ProviderId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgProviderUpdateMinimumCapacity.newMinimumCapacity":
+	case "structs.structs.MsgProviderUpdateCapacityMinimum.newMinimumCapacity":
 		value := x.NewMinimumCapacity
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMinimumCapacity"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateCapacityMinimum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMinimumCapacity does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateCapacityMinimum does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -48536,19 +48536,19 @@ func (x *fastReflection_MsgProviderUpdateMinimumCapacity) Get(descriptor protore
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgProviderUpdateMinimumCapacity) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgProviderUpdateCapacityMinimum) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMinimumCapacity.creator":
+	case "structs.structs.MsgProviderUpdateCapacityMinimum.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgProviderUpdateMinimumCapacity.providerId":
+	case "structs.structs.MsgProviderUpdateCapacityMinimum.providerId":
 		x.ProviderId = value.Interface().(string)
-	case "structs.structs.MsgProviderUpdateMinimumCapacity.newMinimumCapacity":
+	case "structs.structs.MsgProviderUpdateCapacityMinimum.newMinimumCapacity":
 		x.NewMinimumCapacity = value.Uint()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMinimumCapacity"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateCapacityMinimum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMinimumCapacity does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateCapacityMinimum does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -48562,48 +48562,48 @@ func (x *fastReflection_MsgProviderUpdateMinimumCapacity) Set(fd protoreflect.Fi
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgProviderUpdateMinimumCapacity) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgProviderUpdateCapacityMinimum) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMinimumCapacity.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgProviderUpdateMinimumCapacity is not mutable"))
-	case "structs.structs.MsgProviderUpdateMinimumCapacity.providerId":
-		panic(fmt.Errorf("field providerId of message structs.structs.MsgProviderUpdateMinimumCapacity is not mutable"))
-	case "structs.structs.MsgProviderUpdateMinimumCapacity.newMinimumCapacity":
-		panic(fmt.Errorf("field newMinimumCapacity of message structs.structs.MsgProviderUpdateMinimumCapacity is not mutable"))
+	case "structs.structs.MsgProviderUpdateCapacityMinimum.creator":
+		panic(fmt.Errorf("field creator of message structs.structs.MsgProviderUpdateCapacityMinimum is not mutable"))
+	case "structs.structs.MsgProviderUpdateCapacityMinimum.providerId":
+		panic(fmt.Errorf("field providerId of message structs.structs.MsgProviderUpdateCapacityMinimum is not mutable"))
+	case "structs.structs.MsgProviderUpdateCapacityMinimum.newMinimumCapacity":
+		panic(fmt.Errorf("field newMinimumCapacity of message structs.structs.MsgProviderUpdateCapacityMinimum is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMinimumCapacity"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateCapacityMinimum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMinimumCapacity does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateCapacityMinimum does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgProviderUpdateMinimumCapacity) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgProviderUpdateCapacityMinimum) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMinimumCapacity.creator":
+	case "structs.structs.MsgProviderUpdateCapacityMinimum.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgProviderUpdateMinimumCapacity.providerId":
+	case "structs.structs.MsgProviderUpdateCapacityMinimum.providerId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgProviderUpdateMinimumCapacity.newMinimumCapacity":
+	case "structs.structs.MsgProviderUpdateCapacityMinimum.newMinimumCapacity":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMinimumCapacity"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateCapacityMinimum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMinimumCapacity does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateCapacityMinimum does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgProviderUpdateMinimumCapacity) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgProviderUpdateCapacityMinimum) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgProviderUpdateMinimumCapacity", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgProviderUpdateCapacityMinimum", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -48611,7 +48611,7 @@ func (x *fastReflection_MsgProviderUpdateMinimumCapacity) WhichOneof(d protorefl
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgProviderUpdateMinimumCapacity) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgProviderUpdateCapacityMinimum) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -48622,7 +48622,7 @@ func (x *fastReflection_MsgProviderUpdateMinimumCapacity) GetUnknown() protorefl
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgProviderUpdateMinimumCapacity) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgProviderUpdateCapacityMinimum) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -48634,7 +48634,7 @@ func (x *fastReflection_MsgProviderUpdateMinimumCapacity) SetUnknown(fields prot
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgProviderUpdateMinimumCapacity) IsValid() bool {
+func (x *fastReflection_MsgProviderUpdateCapacityMinimum) IsValid() bool {
 	return x != nil
 }
 
@@ -48644,9 +48644,9 @@ func (x *fastReflection_MsgProviderUpdateMinimumCapacity) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgProviderUpdateMinimumCapacity) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgProviderUpdateCapacityMinimum) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgProviderUpdateMinimumCapacity)
+		x := input.Message.Interface().(*MsgProviderUpdateCapacityMinimum)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -48679,7 +48679,7 @@ func (x *fastReflection_MsgProviderUpdateMinimumCapacity) ProtoMethods() *protoi
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgProviderUpdateMinimumCapacity)
+		x := input.Message.Interface().(*MsgProviderUpdateCapacityMinimum)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -48728,7 +48728,7 @@ func (x *fastReflection_MsgProviderUpdateMinimumCapacity) ProtoMethods() *protoi
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgProviderUpdateMinimumCapacity)
+		x := input.Message.Interface().(*MsgProviderUpdateCapacityMinimum)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -48760,10 +48760,10 @@ func (x *fastReflection_MsgProviderUpdateMinimumCapacity) ProtoMethods() *protoi
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProviderUpdateMinimumCapacity: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProviderUpdateCapacityMinimum: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProviderUpdateMinimumCapacity: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProviderUpdateCapacityMinimum: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -48885,29 +48885,29 @@ func (x *fastReflection_MsgProviderUpdateMinimumCapacity) ProtoMethods() *protoi
 }
 
 var (
-	md_MsgProviderUpdateMaximumCapacity                    protoreflect.MessageDescriptor
-	fd_MsgProviderUpdateMaximumCapacity_creator            protoreflect.FieldDescriptor
-	fd_MsgProviderUpdateMaximumCapacity_providerId         protoreflect.FieldDescriptor
-	fd_MsgProviderUpdateMaximumCapacity_newMaximumCapacity protoreflect.FieldDescriptor
+	md_MsgProviderUpdateCapacityMaximum                    protoreflect.MessageDescriptor
+	fd_MsgProviderUpdateCapacityMaximum_creator            protoreflect.FieldDescriptor
+	fd_MsgProviderUpdateCapacityMaximum_providerId         protoreflect.FieldDescriptor
+	fd_MsgProviderUpdateCapacityMaximum_newMaximumCapacity protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_structs_structs_tx_proto_init()
-	md_MsgProviderUpdateMaximumCapacity = File_structs_structs_tx_proto.Messages().ByName("MsgProviderUpdateMaximumCapacity")
-	fd_MsgProviderUpdateMaximumCapacity_creator = md_MsgProviderUpdateMaximumCapacity.Fields().ByName("creator")
-	fd_MsgProviderUpdateMaximumCapacity_providerId = md_MsgProviderUpdateMaximumCapacity.Fields().ByName("providerId")
-	fd_MsgProviderUpdateMaximumCapacity_newMaximumCapacity = md_MsgProviderUpdateMaximumCapacity.Fields().ByName("newMaximumCapacity")
+	md_MsgProviderUpdateCapacityMaximum = File_structs_structs_tx_proto.Messages().ByName("MsgProviderUpdateCapacityMaximum")
+	fd_MsgProviderUpdateCapacityMaximum_creator = md_MsgProviderUpdateCapacityMaximum.Fields().ByName("creator")
+	fd_MsgProviderUpdateCapacityMaximum_providerId = md_MsgProviderUpdateCapacityMaximum.Fields().ByName("providerId")
+	fd_MsgProviderUpdateCapacityMaximum_newMaximumCapacity = md_MsgProviderUpdateCapacityMaximum.Fields().ByName("newMaximumCapacity")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgProviderUpdateMaximumCapacity)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgProviderUpdateCapacityMaximum)(nil)
 
-type fastReflection_MsgProviderUpdateMaximumCapacity MsgProviderUpdateMaximumCapacity
+type fastReflection_MsgProviderUpdateCapacityMaximum MsgProviderUpdateCapacityMaximum
 
-func (x *MsgProviderUpdateMaximumCapacity) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgProviderUpdateMaximumCapacity)(x)
+func (x *MsgProviderUpdateCapacityMaximum) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgProviderUpdateCapacityMaximum)(x)
 }
 
-func (x *MsgProviderUpdateMaximumCapacity) slowProtoReflect() protoreflect.Message {
+func (x *MsgProviderUpdateCapacityMaximum) slowProtoReflect() protoreflect.Message {
 	mi := &file_structs_structs_tx_proto_msgTypes[94]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -48919,43 +48919,43 @@ func (x *MsgProviderUpdateMaximumCapacity) slowProtoReflect() protoreflect.Messa
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgProviderUpdateMaximumCapacity_messageType fastReflection_MsgProviderUpdateMaximumCapacity_messageType
-var _ protoreflect.MessageType = fastReflection_MsgProviderUpdateMaximumCapacity_messageType{}
+var _fastReflection_MsgProviderUpdateCapacityMaximum_messageType fastReflection_MsgProviderUpdateCapacityMaximum_messageType
+var _ protoreflect.MessageType = fastReflection_MsgProviderUpdateCapacityMaximum_messageType{}
 
-type fastReflection_MsgProviderUpdateMaximumCapacity_messageType struct{}
+type fastReflection_MsgProviderUpdateCapacityMaximum_messageType struct{}
 
-func (x fastReflection_MsgProviderUpdateMaximumCapacity_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgProviderUpdateMaximumCapacity)(nil)
+func (x fastReflection_MsgProviderUpdateCapacityMaximum_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgProviderUpdateCapacityMaximum)(nil)
 }
-func (x fastReflection_MsgProviderUpdateMaximumCapacity_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgProviderUpdateMaximumCapacity)
+func (x fastReflection_MsgProviderUpdateCapacityMaximum_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgProviderUpdateCapacityMaximum)
 }
-func (x fastReflection_MsgProviderUpdateMaximumCapacity_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgProviderUpdateMaximumCapacity
+func (x fastReflection_MsgProviderUpdateCapacityMaximum_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgProviderUpdateCapacityMaximum
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgProviderUpdateMaximumCapacity) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgProviderUpdateMaximumCapacity
+func (x *fastReflection_MsgProviderUpdateCapacityMaximum) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgProviderUpdateCapacityMaximum
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgProviderUpdateMaximumCapacity) Type() protoreflect.MessageType {
-	return _fastReflection_MsgProviderUpdateMaximumCapacity_messageType
+func (x *fastReflection_MsgProviderUpdateCapacityMaximum) Type() protoreflect.MessageType {
+	return _fastReflection_MsgProviderUpdateCapacityMaximum_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgProviderUpdateMaximumCapacity) New() protoreflect.Message {
-	return new(fastReflection_MsgProviderUpdateMaximumCapacity)
+func (x *fastReflection_MsgProviderUpdateCapacityMaximum) New() protoreflect.Message {
+	return new(fastReflection_MsgProviderUpdateCapacityMaximum)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgProviderUpdateMaximumCapacity) Interface() protoreflect.ProtoMessage {
-	return (*MsgProviderUpdateMaximumCapacity)(x)
+func (x *fastReflection_MsgProviderUpdateCapacityMaximum) Interface() protoreflect.ProtoMessage {
+	return (*MsgProviderUpdateCapacityMaximum)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -48963,22 +48963,22 @@ func (x *fastReflection_MsgProviderUpdateMaximumCapacity) Interface() protorefle
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgProviderUpdateMaximumCapacity) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgProviderUpdateCapacityMaximum) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Creator != "" {
 		value := protoreflect.ValueOfString(x.Creator)
-		if !f(fd_MsgProviderUpdateMaximumCapacity_creator, value) {
+		if !f(fd_MsgProviderUpdateCapacityMaximum_creator, value) {
 			return
 		}
 	}
 	if x.ProviderId != "" {
 		value := protoreflect.ValueOfString(x.ProviderId)
-		if !f(fd_MsgProviderUpdateMaximumCapacity_providerId, value) {
+		if !f(fd_MsgProviderUpdateCapacityMaximum_providerId, value) {
 			return
 		}
 	}
 	if x.NewMaximumCapacity != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.NewMaximumCapacity)
-		if !f(fd_MsgProviderUpdateMaximumCapacity_newMaximumCapacity, value) {
+		if !f(fd_MsgProviderUpdateCapacityMaximum_newMaximumCapacity, value) {
 			return
 		}
 	}
@@ -48995,19 +48995,19 @@ func (x *fastReflection_MsgProviderUpdateMaximumCapacity) Range(f func(protorefl
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgProviderUpdateMaximumCapacity) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgProviderUpdateCapacityMaximum) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMaximumCapacity.creator":
+	case "structs.structs.MsgProviderUpdateCapacityMaximum.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgProviderUpdateMaximumCapacity.providerId":
+	case "structs.structs.MsgProviderUpdateCapacityMaximum.providerId":
 		return x.ProviderId != ""
-	case "structs.structs.MsgProviderUpdateMaximumCapacity.newMaximumCapacity":
+	case "structs.structs.MsgProviderUpdateCapacityMaximum.newMaximumCapacity":
 		return x.NewMaximumCapacity != uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMaximumCapacity"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateCapacityMaximum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMaximumCapacity does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateCapacityMaximum does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -49017,19 +49017,19 @@ func (x *fastReflection_MsgProviderUpdateMaximumCapacity) Has(fd protoreflect.Fi
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgProviderUpdateMaximumCapacity) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgProviderUpdateCapacityMaximum) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMaximumCapacity.creator":
+	case "structs.structs.MsgProviderUpdateCapacityMaximum.creator":
 		x.Creator = ""
-	case "structs.structs.MsgProviderUpdateMaximumCapacity.providerId":
+	case "structs.structs.MsgProviderUpdateCapacityMaximum.providerId":
 		x.ProviderId = ""
-	case "structs.structs.MsgProviderUpdateMaximumCapacity.newMaximumCapacity":
+	case "structs.structs.MsgProviderUpdateCapacityMaximum.newMaximumCapacity":
 		x.NewMaximumCapacity = uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMaximumCapacity"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateCapacityMaximum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMaximumCapacity does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateCapacityMaximum does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -49039,22 +49039,22 @@ func (x *fastReflection_MsgProviderUpdateMaximumCapacity) Clear(fd protoreflect.
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgProviderUpdateMaximumCapacity) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgProviderUpdateCapacityMaximum) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgProviderUpdateMaximumCapacity.creator":
+	case "structs.structs.MsgProviderUpdateCapacityMaximum.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgProviderUpdateMaximumCapacity.providerId":
+	case "structs.structs.MsgProviderUpdateCapacityMaximum.providerId":
 		value := x.ProviderId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgProviderUpdateMaximumCapacity.newMaximumCapacity":
+	case "structs.structs.MsgProviderUpdateCapacityMaximum.newMaximumCapacity":
 		value := x.NewMaximumCapacity
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMaximumCapacity"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateCapacityMaximum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMaximumCapacity does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateCapacityMaximum does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -49068,19 +49068,19 @@ func (x *fastReflection_MsgProviderUpdateMaximumCapacity) Get(descriptor protore
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgProviderUpdateMaximumCapacity) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgProviderUpdateCapacityMaximum) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMaximumCapacity.creator":
+	case "structs.structs.MsgProviderUpdateCapacityMaximum.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgProviderUpdateMaximumCapacity.providerId":
+	case "structs.structs.MsgProviderUpdateCapacityMaximum.providerId":
 		x.ProviderId = value.Interface().(string)
-	case "structs.structs.MsgProviderUpdateMaximumCapacity.newMaximumCapacity":
+	case "structs.structs.MsgProviderUpdateCapacityMaximum.newMaximumCapacity":
 		x.NewMaximumCapacity = value.Uint()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMaximumCapacity"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateCapacityMaximum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMaximumCapacity does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateCapacityMaximum does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -49094,48 +49094,48 @@ func (x *fastReflection_MsgProviderUpdateMaximumCapacity) Set(fd protoreflect.Fi
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgProviderUpdateMaximumCapacity) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgProviderUpdateCapacityMaximum) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMaximumCapacity.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgProviderUpdateMaximumCapacity is not mutable"))
-	case "structs.structs.MsgProviderUpdateMaximumCapacity.providerId":
-		panic(fmt.Errorf("field providerId of message structs.structs.MsgProviderUpdateMaximumCapacity is not mutable"))
-	case "structs.structs.MsgProviderUpdateMaximumCapacity.newMaximumCapacity":
-		panic(fmt.Errorf("field newMaximumCapacity of message structs.structs.MsgProviderUpdateMaximumCapacity is not mutable"))
+	case "structs.structs.MsgProviderUpdateCapacityMaximum.creator":
+		panic(fmt.Errorf("field creator of message structs.structs.MsgProviderUpdateCapacityMaximum is not mutable"))
+	case "structs.structs.MsgProviderUpdateCapacityMaximum.providerId":
+		panic(fmt.Errorf("field providerId of message structs.structs.MsgProviderUpdateCapacityMaximum is not mutable"))
+	case "structs.structs.MsgProviderUpdateCapacityMaximum.newMaximumCapacity":
+		panic(fmt.Errorf("field newMaximumCapacity of message structs.structs.MsgProviderUpdateCapacityMaximum is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMaximumCapacity"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateCapacityMaximum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMaximumCapacity does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateCapacityMaximum does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgProviderUpdateMaximumCapacity) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgProviderUpdateCapacityMaximum) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMaximumCapacity.creator":
+	case "structs.structs.MsgProviderUpdateCapacityMaximum.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgProviderUpdateMaximumCapacity.providerId":
+	case "structs.structs.MsgProviderUpdateCapacityMaximum.providerId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgProviderUpdateMaximumCapacity.newMaximumCapacity":
+	case "structs.structs.MsgProviderUpdateCapacityMaximum.newMaximumCapacity":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMaximumCapacity"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateCapacityMaximum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMaximumCapacity does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateCapacityMaximum does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgProviderUpdateMaximumCapacity) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgProviderUpdateCapacityMaximum) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgProviderUpdateMaximumCapacity", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgProviderUpdateCapacityMaximum", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -49143,7 +49143,7 @@ func (x *fastReflection_MsgProviderUpdateMaximumCapacity) WhichOneof(d protorefl
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgProviderUpdateMaximumCapacity) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgProviderUpdateCapacityMaximum) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -49154,7 +49154,7 @@ func (x *fastReflection_MsgProviderUpdateMaximumCapacity) GetUnknown() protorefl
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgProviderUpdateMaximumCapacity) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgProviderUpdateCapacityMaximum) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -49166,7 +49166,7 @@ func (x *fastReflection_MsgProviderUpdateMaximumCapacity) SetUnknown(fields prot
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgProviderUpdateMaximumCapacity) IsValid() bool {
+func (x *fastReflection_MsgProviderUpdateCapacityMaximum) IsValid() bool {
 	return x != nil
 }
 
@@ -49176,9 +49176,9 @@ func (x *fastReflection_MsgProviderUpdateMaximumCapacity) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgProviderUpdateMaximumCapacity) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgProviderUpdateCapacityMaximum) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgProviderUpdateMaximumCapacity)
+		x := input.Message.Interface().(*MsgProviderUpdateCapacityMaximum)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -49211,7 +49211,7 @@ func (x *fastReflection_MsgProviderUpdateMaximumCapacity) ProtoMethods() *protoi
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgProviderUpdateMaximumCapacity)
+		x := input.Message.Interface().(*MsgProviderUpdateCapacityMaximum)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -49260,7 +49260,7 @@ func (x *fastReflection_MsgProviderUpdateMaximumCapacity) ProtoMethods() *protoi
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgProviderUpdateMaximumCapacity)
+		x := input.Message.Interface().(*MsgProviderUpdateCapacityMaximum)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -49292,10 +49292,10 @@ func (x *fastReflection_MsgProviderUpdateMaximumCapacity) ProtoMethods() *protoi
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProviderUpdateMaximumCapacity: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProviderUpdateCapacityMaximum: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProviderUpdateMaximumCapacity: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProviderUpdateCapacityMaximum: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -49417,29 +49417,29 @@ func (x *fastReflection_MsgProviderUpdateMaximumCapacity) ProtoMethods() *protoi
 }
 
 var (
-	md_MsgProviderUpdateMinimumDuration                    protoreflect.MessageDescriptor
-	fd_MsgProviderUpdateMinimumDuration_creator            protoreflect.FieldDescriptor
-	fd_MsgProviderUpdateMinimumDuration_providerId         protoreflect.FieldDescriptor
-	fd_MsgProviderUpdateMinimumDuration_newMinimumDuration protoreflect.FieldDescriptor
+	md_MsgProviderUpdateDurationMinimum                    protoreflect.MessageDescriptor
+	fd_MsgProviderUpdateDurationMinimum_creator            protoreflect.FieldDescriptor
+	fd_MsgProviderUpdateDurationMinimum_providerId         protoreflect.FieldDescriptor
+	fd_MsgProviderUpdateDurationMinimum_newMinimumDuration protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_structs_structs_tx_proto_init()
-	md_MsgProviderUpdateMinimumDuration = File_structs_structs_tx_proto.Messages().ByName("MsgProviderUpdateMinimumDuration")
-	fd_MsgProviderUpdateMinimumDuration_creator = md_MsgProviderUpdateMinimumDuration.Fields().ByName("creator")
-	fd_MsgProviderUpdateMinimumDuration_providerId = md_MsgProviderUpdateMinimumDuration.Fields().ByName("providerId")
-	fd_MsgProviderUpdateMinimumDuration_newMinimumDuration = md_MsgProviderUpdateMinimumDuration.Fields().ByName("newMinimumDuration")
+	md_MsgProviderUpdateDurationMinimum = File_structs_structs_tx_proto.Messages().ByName("MsgProviderUpdateDurationMinimum")
+	fd_MsgProviderUpdateDurationMinimum_creator = md_MsgProviderUpdateDurationMinimum.Fields().ByName("creator")
+	fd_MsgProviderUpdateDurationMinimum_providerId = md_MsgProviderUpdateDurationMinimum.Fields().ByName("providerId")
+	fd_MsgProviderUpdateDurationMinimum_newMinimumDuration = md_MsgProviderUpdateDurationMinimum.Fields().ByName("newMinimumDuration")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgProviderUpdateMinimumDuration)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgProviderUpdateDurationMinimum)(nil)
 
-type fastReflection_MsgProviderUpdateMinimumDuration MsgProviderUpdateMinimumDuration
+type fastReflection_MsgProviderUpdateDurationMinimum MsgProviderUpdateDurationMinimum
 
-func (x *MsgProviderUpdateMinimumDuration) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgProviderUpdateMinimumDuration)(x)
+func (x *MsgProviderUpdateDurationMinimum) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgProviderUpdateDurationMinimum)(x)
 }
 
-func (x *MsgProviderUpdateMinimumDuration) slowProtoReflect() protoreflect.Message {
+func (x *MsgProviderUpdateDurationMinimum) slowProtoReflect() protoreflect.Message {
 	mi := &file_structs_structs_tx_proto_msgTypes[95]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -49451,43 +49451,43 @@ func (x *MsgProviderUpdateMinimumDuration) slowProtoReflect() protoreflect.Messa
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgProviderUpdateMinimumDuration_messageType fastReflection_MsgProviderUpdateMinimumDuration_messageType
-var _ protoreflect.MessageType = fastReflection_MsgProviderUpdateMinimumDuration_messageType{}
+var _fastReflection_MsgProviderUpdateDurationMinimum_messageType fastReflection_MsgProviderUpdateDurationMinimum_messageType
+var _ protoreflect.MessageType = fastReflection_MsgProviderUpdateDurationMinimum_messageType{}
 
-type fastReflection_MsgProviderUpdateMinimumDuration_messageType struct{}
+type fastReflection_MsgProviderUpdateDurationMinimum_messageType struct{}
 
-func (x fastReflection_MsgProviderUpdateMinimumDuration_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgProviderUpdateMinimumDuration)(nil)
+func (x fastReflection_MsgProviderUpdateDurationMinimum_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgProviderUpdateDurationMinimum)(nil)
 }
-func (x fastReflection_MsgProviderUpdateMinimumDuration_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgProviderUpdateMinimumDuration)
+func (x fastReflection_MsgProviderUpdateDurationMinimum_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgProviderUpdateDurationMinimum)
 }
-func (x fastReflection_MsgProviderUpdateMinimumDuration_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgProviderUpdateMinimumDuration
+func (x fastReflection_MsgProviderUpdateDurationMinimum_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgProviderUpdateDurationMinimum
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgProviderUpdateMinimumDuration) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgProviderUpdateMinimumDuration
+func (x *fastReflection_MsgProviderUpdateDurationMinimum) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgProviderUpdateDurationMinimum
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgProviderUpdateMinimumDuration) Type() protoreflect.MessageType {
-	return _fastReflection_MsgProviderUpdateMinimumDuration_messageType
+func (x *fastReflection_MsgProviderUpdateDurationMinimum) Type() protoreflect.MessageType {
+	return _fastReflection_MsgProviderUpdateDurationMinimum_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgProviderUpdateMinimumDuration) New() protoreflect.Message {
-	return new(fastReflection_MsgProviderUpdateMinimumDuration)
+func (x *fastReflection_MsgProviderUpdateDurationMinimum) New() protoreflect.Message {
+	return new(fastReflection_MsgProviderUpdateDurationMinimum)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgProviderUpdateMinimumDuration) Interface() protoreflect.ProtoMessage {
-	return (*MsgProviderUpdateMinimumDuration)(x)
+func (x *fastReflection_MsgProviderUpdateDurationMinimum) Interface() protoreflect.ProtoMessage {
+	return (*MsgProviderUpdateDurationMinimum)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -49495,22 +49495,22 @@ func (x *fastReflection_MsgProviderUpdateMinimumDuration) Interface() protorefle
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgProviderUpdateMinimumDuration) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgProviderUpdateDurationMinimum) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Creator != "" {
 		value := protoreflect.ValueOfString(x.Creator)
-		if !f(fd_MsgProviderUpdateMinimumDuration_creator, value) {
+		if !f(fd_MsgProviderUpdateDurationMinimum_creator, value) {
 			return
 		}
 	}
 	if x.ProviderId != "" {
 		value := protoreflect.ValueOfString(x.ProviderId)
-		if !f(fd_MsgProviderUpdateMinimumDuration_providerId, value) {
+		if !f(fd_MsgProviderUpdateDurationMinimum_providerId, value) {
 			return
 		}
 	}
 	if x.NewMinimumDuration != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.NewMinimumDuration)
-		if !f(fd_MsgProviderUpdateMinimumDuration_newMinimumDuration, value) {
+		if !f(fd_MsgProviderUpdateDurationMinimum_newMinimumDuration, value) {
 			return
 		}
 	}
@@ -49527,19 +49527,19 @@ func (x *fastReflection_MsgProviderUpdateMinimumDuration) Range(f func(protorefl
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgProviderUpdateMinimumDuration) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgProviderUpdateDurationMinimum) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMinimumDuration.creator":
+	case "structs.structs.MsgProviderUpdateDurationMinimum.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgProviderUpdateMinimumDuration.providerId":
+	case "structs.structs.MsgProviderUpdateDurationMinimum.providerId":
 		return x.ProviderId != ""
-	case "structs.structs.MsgProviderUpdateMinimumDuration.newMinimumDuration":
+	case "structs.structs.MsgProviderUpdateDurationMinimum.newMinimumDuration":
 		return x.NewMinimumDuration != uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMinimumDuration"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateDurationMinimum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMinimumDuration does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateDurationMinimum does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -49549,19 +49549,19 @@ func (x *fastReflection_MsgProviderUpdateMinimumDuration) Has(fd protoreflect.Fi
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgProviderUpdateMinimumDuration) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgProviderUpdateDurationMinimum) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMinimumDuration.creator":
+	case "structs.structs.MsgProviderUpdateDurationMinimum.creator":
 		x.Creator = ""
-	case "structs.structs.MsgProviderUpdateMinimumDuration.providerId":
+	case "structs.structs.MsgProviderUpdateDurationMinimum.providerId":
 		x.ProviderId = ""
-	case "structs.structs.MsgProviderUpdateMinimumDuration.newMinimumDuration":
+	case "structs.structs.MsgProviderUpdateDurationMinimum.newMinimumDuration":
 		x.NewMinimumDuration = uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMinimumDuration"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateDurationMinimum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMinimumDuration does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateDurationMinimum does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -49571,22 +49571,22 @@ func (x *fastReflection_MsgProviderUpdateMinimumDuration) Clear(fd protoreflect.
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgProviderUpdateMinimumDuration) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgProviderUpdateDurationMinimum) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgProviderUpdateMinimumDuration.creator":
+	case "structs.structs.MsgProviderUpdateDurationMinimum.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgProviderUpdateMinimumDuration.providerId":
+	case "structs.structs.MsgProviderUpdateDurationMinimum.providerId":
 		value := x.ProviderId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgProviderUpdateMinimumDuration.newMinimumDuration":
+	case "structs.structs.MsgProviderUpdateDurationMinimum.newMinimumDuration":
 		value := x.NewMinimumDuration
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMinimumDuration"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateDurationMinimum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMinimumDuration does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateDurationMinimum does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -49600,19 +49600,19 @@ func (x *fastReflection_MsgProviderUpdateMinimumDuration) Get(descriptor protore
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgProviderUpdateMinimumDuration) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgProviderUpdateDurationMinimum) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMinimumDuration.creator":
+	case "structs.structs.MsgProviderUpdateDurationMinimum.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgProviderUpdateMinimumDuration.providerId":
+	case "structs.structs.MsgProviderUpdateDurationMinimum.providerId":
 		x.ProviderId = value.Interface().(string)
-	case "structs.structs.MsgProviderUpdateMinimumDuration.newMinimumDuration":
+	case "structs.structs.MsgProviderUpdateDurationMinimum.newMinimumDuration":
 		x.NewMinimumDuration = value.Uint()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMinimumDuration"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateDurationMinimum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMinimumDuration does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateDurationMinimum does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -49626,48 +49626,48 @@ func (x *fastReflection_MsgProviderUpdateMinimumDuration) Set(fd protoreflect.Fi
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgProviderUpdateMinimumDuration) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgProviderUpdateDurationMinimum) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMinimumDuration.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgProviderUpdateMinimumDuration is not mutable"))
-	case "structs.structs.MsgProviderUpdateMinimumDuration.providerId":
-		panic(fmt.Errorf("field providerId of message structs.structs.MsgProviderUpdateMinimumDuration is not mutable"))
-	case "structs.structs.MsgProviderUpdateMinimumDuration.newMinimumDuration":
-		panic(fmt.Errorf("field newMinimumDuration of message structs.structs.MsgProviderUpdateMinimumDuration is not mutable"))
+	case "structs.structs.MsgProviderUpdateDurationMinimum.creator":
+		panic(fmt.Errorf("field creator of message structs.structs.MsgProviderUpdateDurationMinimum is not mutable"))
+	case "structs.structs.MsgProviderUpdateDurationMinimum.providerId":
+		panic(fmt.Errorf("field providerId of message structs.structs.MsgProviderUpdateDurationMinimum is not mutable"))
+	case "structs.structs.MsgProviderUpdateDurationMinimum.newMinimumDuration":
+		panic(fmt.Errorf("field newMinimumDuration of message structs.structs.MsgProviderUpdateDurationMinimum is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMinimumDuration"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateDurationMinimum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMinimumDuration does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateDurationMinimum does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgProviderUpdateMinimumDuration) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgProviderUpdateDurationMinimum) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMinimumDuration.creator":
+	case "structs.structs.MsgProviderUpdateDurationMinimum.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgProviderUpdateMinimumDuration.providerId":
+	case "structs.structs.MsgProviderUpdateDurationMinimum.providerId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgProviderUpdateMinimumDuration.newMinimumDuration":
+	case "structs.structs.MsgProviderUpdateDurationMinimum.newMinimumDuration":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMinimumDuration"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateDurationMinimum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMinimumDuration does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateDurationMinimum does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgProviderUpdateMinimumDuration) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgProviderUpdateDurationMinimum) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgProviderUpdateMinimumDuration", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgProviderUpdateDurationMinimum", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -49675,7 +49675,7 @@ func (x *fastReflection_MsgProviderUpdateMinimumDuration) WhichOneof(d protorefl
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgProviderUpdateMinimumDuration) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgProviderUpdateDurationMinimum) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -49686,7 +49686,7 @@ func (x *fastReflection_MsgProviderUpdateMinimumDuration) GetUnknown() protorefl
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgProviderUpdateMinimumDuration) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgProviderUpdateDurationMinimum) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -49698,7 +49698,7 @@ func (x *fastReflection_MsgProviderUpdateMinimumDuration) SetUnknown(fields prot
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgProviderUpdateMinimumDuration) IsValid() bool {
+func (x *fastReflection_MsgProviderUpdateDurationMinimum) IsValid() bool {
 	return x != nil
 }
 
@@ -49708,9 +49708,9 @@ func (x *fastReflection_MsgProviderUpdateMinimumDuration) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgProviderUpdateMinimumDuration) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgProviderUpdateDurationMinimum) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgProviderUpdateMinimumDuration)
+		x := input.Message.Interface().(*MsgProviderUpdateDurationMinimum)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -49743,7 +49743,7 @@ func (x *fastReflection_MsgProviderUpdateMinimumDuration) ProtoMethods() *protoi
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgProviderUpdateMinimumDuration)
+		x := input.Message.Interface().(*MsgProviderUpdateDurationMinimum)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -49792,7 +49792,7 @@ func (x *fastReflection_MsgProviderUpdateMinimumDuration) ProtoMethods() *protoi
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgProviderUpdateMinimumDuration)
+		x := input.Message.Interface().(*MsgProviderUpdateDurationMinimum)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -49824,10 +49824,10 @@ func (x *fastReflection_MsgProviderUpdateMinimumDuration) ProtoMethods() *protoi
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProviderUpdateMinimumDuration: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProviderUpdateDurationMinimum: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProviderUpdateMinimumDuration: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProviderUpdateDurationMinimum: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -49949,29 +49949,29 @@ func (x *fastReflection_MsgProviderUpdateMinimumDuration) ProtoMethods() *protoi
 }
 
 var (
-	md_MsgProviderUpdateMaximumDuration                    protoreflect.MessageDescriptor
-	fd_MsgProviderUpdateMaximumDuration_creator            protoreflect.FieldDescriptor
-	fd_MsgProviderUpdateMaximumDuration_providerId         protoreflect.FieldDescriptor
-	fd_MsgProviderUpdateMaximumDuration_newMaximumDuration protoreflect.FieldDescriptor
+	md_MsgProviderUpdateDurationMaximum                    protoreflect.MessageDescriptor
+	fd_MsgProviderUpdateDurationMaximum_creator            protoreflect.FieldDescriptor
+	fd_MsgProviderUpdateDurationMaximum_providerId         protoreflect.FieldDescriptor
+	fd_MsgProviderUpdateDurationMaximum_newMaximumDuration protoreflect.FieldDescriptor
 )
 
 func init() {
 	file_structs_structs_tx_proto_init()
-	md_MsgProviderUpdateMaximumDuration = File_structs_structs_tx_proto.Messages().ByName("MsgProviderUpdateMaximumDuration")
-	fd_MsgProviderUpdateMaximumDuration_creator = md_MsgProviderUpdateMaximumDuration.Fields().ByName("creator")
-	fd_MsgProviderUpdateMaximumDuration_providerId = md_MsgProviderUpdateMaximumDuration.Fields().ByName("providerId")
-	fd_MsgProviderUpdateMaximumDuration_newMaximumDuration = md_MsgProviderUpdateMaximumDuration.Fields().ByName("newMaximumDuration")
+	md_MsgProviderUpdateDurationMaximum = File_structs_structs_tx_proto.Messages().ByName("MsgProviderUpdateDurationMaximum")
+	fd_MsgProviderUpdateDurationMaximum_creator = md_MsgProviderUpdateDurationMaximum.Fields().ByName("creator")
+	fd_MsgProviderUpdateDurationMaximum_providerId = md_MsgProviderUpdateDurationMaximum.Fields().ByName("providerId")
+	fd_MsgProviderUpdateDurationMaximum_newMaximumDuration = md_MsgProviderUpdateDurationMaximum.Fields().ByName("newMaximumDuration")
 }
 
-var _ protoreflect.Message = (*fastReflection_MsgProviderUpdateMaximumDuration)(nil)
+var _ protoreflect.Message = (*fastReflection_MsgProviderUpdateDurationMaximum)(nil)
 
-type fastReflection_MsgProviderUpdateMaximumDuration MsgProviderUpdateMaximumDuration
+type fastReflection_MsgProviderUpdateDurationMaximum MsgProviderUpdateDurationMaximum
 
-func (x *MsgProviderUpdateMaximumDuration) ProtoReflect() protoreflect.Message {
-	return (*fastReflection_MsgProviderUpdateMaximumDuration)(x)
+func (x *MsgProviderUpdateDurationMaximum) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_MsgProviderUpdateDurationMaximum)(x)
 }
 
-func (x *MsgProviderUpdateMaximumDuration) slowProtoReflect() protoreflect.Message {
+func (x *MsgProviderUpdateDurationMaximum) slowProtoReflect() protoreflect.Message {
 	mi := &file_structs_structs_tx_proto_msgTypes[96]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -49983,43 +49983,43 @@ func (x *MsgProviderUpdateMaximumDuration) slowProtoReflect() protoreflect.Messa
 	return mi.MessageOf(x)
 }
 
-var _fastReflection_MsgProviderUpdateMaximumDuration_messageType fastReflection_MsgProviderUpdateMaximumDuration_messageType
-var _ protoreflect.MessageType = fastReflection_MsgProviderUpdateMaximumDuration_messageType{}
+var _fastReflection_MsgProviderUpdateDurationMaximum_messageType fastReflection_MsgProviderUpdateDurationMaximum_messageType
+var _ protoreflect.MessageType = fastReflection_MsgProviderUpdateDurationMaximum_messageType{}
 
-type fastReflection_MsgProviderUpdateMaximumDuration_messageType struct{}
+type fastReflection_MsgProviderUpdateDurationMaximum_messageType struct{}
 
-func (x fastReflection_MsgProviderUpdateMaximumDuration_messageType) Zero() protoreflect.Message {
-	return (*fastReflection_MsgProviderUpdateMaximumDuration)(nil)
+func (x fastReflection_MsgProviderUpdateDurationMaximum_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_MsgProviderUpdateDurationMaximum)(nil)
 }
-func (x fastReflection_MsgProviderUpdateMaximumDuration_messageType) New() protoreflect.Message {
-	return new(fastReflection_MsgProviderUpdateMaximumDuration)
+func (x fastReflection_MsgProviderUpdateDurationMaximum_messageType) New() protoreflect.Message {
+	return new(fastReflection_MsgProviderUpdateDurationMaximum)
 }
-func (x fastReflection_MsgProviderUpdateMaximumDuration_messageType) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgProviderUpdateMaximumDuration
+func (x fastReflection_MsgProviderUpdateDurationMaximum_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgProviderUpdateDurationMaximum
 }
 
 // Descriptor returns message descriptor, which contains only the protobuf
 // type information for the message.
-func (x *fastReflection_MsgProviderUpdateMaximumDuration) Descriptor() protoreflect.MessageDescriptor {
-	return md_MsgProviderUpdateMaximumDuration
+func (x *fastReflection_MsgProviderUpdateDurationMaximum) Descriptor() protoreflect.MessageDescriptor {
+	return md_MsgProviderUpdateDurationMaximum
 }
 
 // Type returns the message type, which encapsulates both Go and protobuf
 // type information. If the Go type information is not needed,
 // it is recommended that the message descriptor be used instead.
-func (x *fastReflection_MsgProviderUpdateMaximumDuration) Type() protoreflect.MessageType {
-	return _fastReflection_MsgProviderUpdateMaximumDuration_messageType
+func (x *fastReflection_MsgProviderUpdateDurationMaximum) Type() protoreflect.MessageType {
+	return _fastReflection_MsgProviderUpdateDurationMaximum_messageType
 }
 
 // New returns a newly allocated and mutable empty message.
-func (x *fastReflection_MsgProviderUpdateMaximumDuration) New() protoreflect.Message {
-	return new(fastReflection_MsgProviderUpdateMaximumDuration)
+func (x *fastReflection_MsgProviderUpdateDurationMaximum) New() protoreflect.Message {
+	return new(fastReflection_MsgProviderUpdateDurationMaximum)
 }
 
 // Interface unwraps the message reflection interface and
 // returns the underlying ProtoMessage interface.
-func (x *fastReflection_MsgProviderUpdateMaximumDuration) Interface() protoreflect.ProtoMessage {
-	return (*MsgProviderUpdateMaximumDuration)(x)
+func (x *fastReflection_MsgProviderUpdateDurationMaximum) Interface() protoreflect.ProtoMessage {
+	return (*MsgProviderUpdateDurationMaximum)(x)
 }
 
 // Range iterates over every populated field in an undefined order,
@@ -50027,22 +50027,22 @@ func (x *fastReflection_MsgProviderUpdateMaximumDuration) Interface() protorefle
 // Range returns immediately if f returns false.
 // While iterating, mutating operations may only be performed
 // on the current field descriptor.
-func (x *fastReflection_MsgProviderUpdateMaximumDuration) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+func (x *fastReflection_MsgProviderUpdateDurationMaximum) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
 	if x.Creator != "" {
 		value := protoreflect.ValueOfString(x.Creator)
-		if !f(fd_MsgProviderUpdateMaximumDuration_creator, value) {
+		if !f(fd_MsgProviderUpdateDurationMaximum_creator, value) {
 			return
 		}
 	}
 	if x.ProviderId != "" {
 		value := protoreflect.ValueOfString(x.ProviderId)
-		if !f(fd_MsgProviderUpdateMaximumDuration_providerId, value) {
+		if !f(fd_MsgProviderUpdateDurationMaximum_providerId, value) {
 			return
 		}
 	}
 	if x.NewMaximumDuration != uint64(0) {
 		value := protoreflect.ValueOfUint64(x.NewMaximumDuration)
-		if !f(fd_MsgProviderUpdateMaximumDuration_newMaximumDuration, value) {
+		if !f(fd_MsgProviderUpdateDurationMaximum_newMaximumDuration, value) {
 			return
 		}
 	}
@@ -50059,19 +50059,19 @@ func (x *fastReflection_MsgProviderUpdateMaximumDuration) Range(f func(protorefl
 // In other cases (aside from the nullable cases above),
 // a proto3 scalar field is populated if it contains a non-zero value, and
 // a repeated field is populated if it is non-empty.
-func (x *fastReflection_MsgProviderUpdateMaximumDuration) Has(fd protoreflect.FieldDescriptor) bool {
+func (x *fastReflection_MsgProviderUpdateDurationMaximum) Has(fd protoreflect.FieldDescriptor) bool {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMaximumDuration.creator":
+	case "structs.structs.MsgProviderUpdateDurationMaximum.creator":
 		return x.Creator != ""
-	case "structs.structs.MsgProviderUpdateMaximumDuration.providerId":
+	case "structs.structs.MsgProviderUpdateDurationMaximum.providerId":
 		return x.ProviderId != ""
-	case "structs.structs.MsgProviderUpdateMaximumDuration.newMaximumDuration":
+	case "structs.structs.MsgProviderUpdateDurationMaximum.newMaximumDuration":
 		return x.NewMaximumDuration != uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMaximumDuration"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateDurationMaximum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMaximumDuration does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateDurationMaximum does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -50081,19 +50081,19 @@ func (x *fastReflection_MsgProviderUpdateMaximumDuration) Has(fd protoreflect.Fi
 // associated with the given field number.
 //
 // Clear is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgProviderUpdateMaximumDuration) Clear(fd protoreflect.FieldDescriptor) {
+func (x *fastReflection_MsgProviderUpdateDurationMaximum) Clear(fd protoreflect.FieldDescriptor) {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMaximumDuration.creator":
+	case "structs.structs.MsgProviderUpdateDurationMaximum.creator":
 		x.Creator = ""
-	case "structs.structs.MsgProviderUpdateMaximumDuration.providerId":
+	case "structs.structs.MsgProviderUpdateDurationMaximum.providerId":
 		x.ProviderId = ""
-	case "structs.structs.MsgProviderUpdateMaximumDuration.newMaximumDuration":
+	case "structs.structs.MsgProviderUpdateDurationMaximum.newMaximumDuration":
 		x.NewMaximumDuration = uint64(0)
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMaximumDuration"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateDurationMaximum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMaximumDuration does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateDurationMaximum does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -50103,22 +50103,22 @@ func (x *fastReflection_MsgProviderUpdateMaximumDuration) Clear(fd protoreflect.
 // the default value of a bytes scalar is guaranteed to be a copy.
 // For unpopulated composite types, it returns an empty, read-only view
 // of the value; to obtain a mutable reference, use Mutable.
-func (x *fastReflection_MsgProviderUpdateMaximumDuration) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgProviderUpdateDurationMaximum) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
 	switch descriptor.FullName() {
-	case "structs.structs.MsgProviderUpdateMaximumDuration.creator":
+	case "structs.structs.MsgProviderUpdateDurationMaximum.creator":
 		value := x.Creator
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgProviderUpdateMaximumDuration.providerId":
+	case "structs.structs.MsgProviderUpdateDurationMaximum.providerId":
 		value := x.ProviderId
 		return protoreflect.ValueOfString(value)
-	case "structs.structs.MsgProviderUpdateMaximumDuration.newMaximumDuration":
+	case "structs.structs.MsgProviderUpdateDurationMaximum.newMaximumDuration":
 		value := x.NewMaximumDuration
 		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMaximumDuration"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateDurationMaximum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMaximumDuration does not contain field %s", descriptor.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateDurationMaximum does not contain field %s", descriptor.FullName()))
 	}
 }
 
@@ -50132,19 +50132,19 @@ func (x *fastReflection_MsgProviderUpdateMaximumDuration) Get(descriptor protore
 // empty, read-only value, then it panics.
 //
 // Set is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgProviderUpdateMaximumDuration) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+func (x *fastReflection_MsgProviderUpdateDurationMaximum) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMaximumDuration.creator":
+	case "structs.structs.MsgProviderUpdateDurationMaximum.creator":
 		x.Creator = value.Interface().(string)
-	case "structs.structs.MsgProviderUpdateMaximumDuration.providerId":
+	case "structs.structs.MsgProviderUpdateDurationMaximum.providerId":
 		x.ProviderId = value.Interface().(string)
-	case "structs.structs.MsgProviderUpdateMaximumDuration.newMaximumDuration":
+	case "structs.structs.MsgProviderUpdateDurationMaximum.newMaximumDuration":
 		x.NewMaximumDuration = value.Uint()
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMaximumDuration"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateDurationMaximum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMaximumDuration does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateDurationMaximum does not contain field %s", fd.FullName()))
 	}
 }
 
@@ -50158,48 +50158,48 @@ func (x *fastReflection_MsgProviderUpdateMaximumDuration) Set(fd protoreflect.Fi
 // It panics if the field does not contain a composite type.
 //
 // Mutable is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgProviderUpdateMaximumDuration) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgProviderUpdateDurationMaximum) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMaximumDuration.creator":
-		panic(fmt.Errorf("field creator of message structs.structs.MsgProviderUpdateMaximumDuration is not mutable"))
-	case "structs.structs.MsgProviderUpdateMaximumDuration.providerId":
-		panic(fmt.Errorf("field providerId of message structs.structs.MsgProviderUpdateMaximumDuration is not mutable"))
-	case "structs.structs.MsgProviderUpdateMaximumDuration.newMaximumDuration":
-		panic(fmt.Errorf("field newMaximumDuration of message structs.structs.MsgProviderUpdateMaximumDuration is not mutable"))
+	case "structs.structs.MsgProviderUpdateDurationMaximum.creator":
+		panic(fmt.Errorf("field creator of message structs.structs.MsgProviderUpdateDurationMaximum is not mutable"))
+	case "structs.structs.MsgProviderUpdateDurationMaximum.providerId":
+		panic(fmt.Errorf("field providerId of message structs.structs.MsgProviderUpdateDurationMaximum is not mutable"))
+	case "structs.structs.MsgProviderUpdateDurationMaximum.newMaximumDuration":
+		panic(fmt.Errorf("field newMaximumDuration of message structs.structs.MsgProviderUpdateDurationMaximum is not mutable"))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMaximumDuration"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateDurationMaximum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMaximumDuration does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateDurationMaximum does not contain field %s", fd.FullName()))
 	}
 }
 
 // NewField returns a new value that is assignable to the field
 // for the given descriptor. For scalars, this returns the default value.
 // For lists, maps, and messages, this returns a new, empty, mutable value.
-func (x *fastReflection_MsgProviderUpdateMaximumDuration) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+func (x *fastReflection_MsgProviderUpdateDurationMaximum) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
 	switch fd.FullName() {
-	case "structs.structs.MsgProviderUpdateMaximumDuration.creator":
+	case "structs.structs.MsgProviderUpdateDurationMaximum.creator":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgProviderUpdateMaximumDuration.providerId":
+	case "structs.structs.MsgProviderUpdateDurationMaximum.providerId":
 		return protoreflect.ValueOfString("")
-	case "structs.structs.MsgProviderUpdateMaximumDuration.newMaximumDuration":
+	case "structs.structs.MsgProviderUpdateDurationMaximum.newMaximumDuration":
 		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
-			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateMaximumDuration"))
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.MsgProviderUpdateDurationMaximum"))
 		}
-		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateMaximumDuration does not contain field %s", fd.FullName()))
+		panic(fmt.Errorf("message structs.structs.MsgProviderUpdateDurationMaximum does not contain field %s", fd.FullName()))
 	}
 }
 
 // WhichOneof reports which field within the oneof is populated,
 // returning nil if none are populated.
 // It panics if the oneof descriptor does not belong to this message.
-func (x *fastReflection_MsgProviderUpdateMaximumDuration) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+func (x *fastReflection_MsgProviderUpdateDurationMaximum) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
 	switch d.FullName() {
 	default:
-		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgProviderUpdateMaximumDuration", d.FullName()))
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.MsgProviderUpdateDurationMaximum", d.FullName()))
 	}
 	panic("unreachable")
 }
@@ -50207,7 +50207,7 @@ func (x *fastReflection_MsgProviderUpdateMaximumDuration) WhichOneof(d protorefl
 // GetUnknown retrieves the entire list of unknown fields.
 // The caller may only mutate the contents of the RawFields
 // if the mutated bytes are stored back into the message with SetUnknown.
-func (x *fastReflection_MsgProviderUpdateMaximumDuration) GetUnknown() protoreflect.RawFields {
+func (x *fastReflection_MsgProviderUpdateDurationMaximum) GetUnknown() protoreflect.RawFields {
 	return x.unknownFields
 }
 
@@ -50218,7 +50218,7 @@ func (x *fastReflection_MsgProviderUpdateMaximumDuration) GetUnknown() protorefl
 // An empty RawFields may be passed to clear the fields.
 //
 // SetUnknown is a mutating operation and unsafe for concurrent use.
-func (x *fastReflection_MsgProviderUpdateMaximumDuration) SetUnknown(fields protoreflect.RawFields) {
+func (x *fastReflection_MsgProviderUpdateDurationMaximum) SetUnknown(fields protoreflect.RawFields) {
 	x.unknownFields = fields
 }
 
@@ -50230,7 +50230,7 @@ func (x *fastReflection_MsgProviderUpdateMaximumDuration) SetUnknown(fields prot
 // message type, but the details are implementation dependent.
 // Validity is not part of the protobuf data model, and may not
 // be preserved in marshaling or other operations.
-func (x *fastReflection_MsgProviderUpdateMaximumDuration) IsValid() bool {
+func (x *fastReflection_MsgProviderUpdateDurationMaximum) IsValid() bool {
 	return x != nil
 }
 
@@ -50240,9 +50240,9 @@ func (x *fastReflection_MsgProviderUpdateMaximumDuration) IsValid() bool {
 // The returned methods type is identical to
 // "google.golang.org/protobuf/runtime/protoiface".Methods.
 // Consult the protoiface package documentation for details.
-func (x *fastReflection_MsgProviderUpdateMaximumDuration) ProtoMethods() *protoiface.Methods {
+func (x *fastReflection_MsgProviderUpdateDurationMaximum) ProtoMethods() *protoiface.Methods {
 	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
-		x := input.Message.Interface().(*MsgProviderUpdateMaximumDuration)
+		x := input.Message.Interface().(*MsgProviderUpdateDurationMaximum)
 		if x == nil {
 			return protoiface.SizeOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -50275,7 +50275,7 @@ func (x *fastReflection_MsgProviderUpdateMaximumDuration) ProtoMethods() *protoi
 	}
 
 	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
-		x := input.Message.Interface().(*MsgProviderUpdateMaximumDuration)
+		x := input.Message.Interface().(*MsgProviderUpdateDurationMaximum)
 		if x == nil {
 			return protoiface.MarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -50324,7 +50324,7 @@ func (x *fastReflection_MsgProviderUpdateMaximumDuration) ProtoMethods() *protoi
 		}, nil
 	}
 	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
-		x := input.Message.Interface().(*MsgProviderUpdateMaximumDuration)
+		x := input.Message.Interface().(*MsgProviderUpdateDurationMaximum)
 		if x == nil {
 			return protoiface.UnmarshalOutput{
 				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
@@ -50356,10 +50356,10 @@ func (x *fastReflection_MsgProviderUpdateMaximumDuration) ProtoMethods() *protoi
 			fieldNum := int32(wire >> 3)
 			wireType := int(wire & 0x7)
 			if wireType == 4 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProviderUpdateMaximumDuration: wiretype end group for non-group")
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProviderUpdateDurationMaximum: wiretype end group for non-group")
 			}
 			if fieldNum <= 0 {
-				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProviderUpdateMaximumDuration: illegal tag %d (wire type %d)", fieldNum, wire)
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: MsgProviderUpdateDurationMaximum: illegal tag %d (wire type %d)", fieldNum, wire)
 			}
 			switch fieldNum {
 			case 1:
@@ -57513,7 +57513,7 @@ func (x *MsgProviderWithdrawBalance) GetDestinationAddress() string {
 	return ""
 }
 
-type MsgProviderUpdateMinimumCapacity struct {
+type MsgProviderUpdateCapacityMinimum struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -57523,8 +57523,8 @@ type MsgProviderUpdateMinimumCapacity struct {
 	NewMinimumCapacity uint64 `protobuf:"varint,3,opt,name=newMinimumCapacity,proto3" json:"newMinimumCapacity,omitempty"`
 }
 
-func (x *MsgProviderUpdateMinimumCapacity) Reset() {
-	*x = MsgProviderUpdateMinimumCapacity{}
+func (x *MsgProviderUpdateCapacityMinimum) Reset() {
+	*x = MsgProviderUpdateCapacityMinimum{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_structs_structs_tx_proto_msgTypes[93]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -57532,39 +57532,39 @@ func (x *MsgProviderUpdateMinimumCapacity) Reset() {
 	}
 }
 
-func (x *MsgProviderUpdateMinimumCapacity) String() string {
+func (x *MsgProviderUpdateCapacityMinimum) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgProviderUpdateMinimumCapacity) ProtoMessage() {}
+func (*MsgProviderUpdateCapacityMinimum) ProtoMessage() {}
 
-// Deprecated: Use MsgProviderUpdateMinimumCapacity.ProtoReflect.Descriptor instead.
-func (*MsgProviderUpdateMinimumCapacity) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgProviderUpdateCapacityMinimum.ProtoReflect.Descriptor instead.
+func (*MsgProviderUpdateCapacityMinimum) Descriptor() ([]byte, []int) {
 	return file_structs_structs_tx_proto_rawDescGZIP(), []int{93}
 }
 
-func (x *MsgProviderUpdateMinimumCapacity) GetCreator() string {
+func (x *MsgProviderUpdateCapacityMinimum) GetCreator() string {
 	if x != nil {
 		return x.Creator
 	}
 	return ""
 }
 
-func (x *MsgProviderUpdateMinimumCapacity) GetProviderId() string {
+func (x *MsgProviderUpdateCapacityMinimum) GetProviderId() string {
 	if x != nil {
 		return x.ProviderId
 	}
 	return ""
 }
 
-func (x *MsgProviderUpdateMinimumCapacity) GetNewMinimumCapacity() uint64 {
+func (x *MsgProviderUpdateCapacityMinimum) GetNewMinimumCapacity() uint64 {
 	if x != nil {
 		return x.NewMinimumCapacity
 	}
 	return 0
 }
 
-type MsgProviderUpdateMaximumCapacity struct {
+type MsgProviderUpdateCapacityMaximum struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -57574,8 +57574,8 @@ type MsgProviderUpdateMaximumCapacity struct {
 	NewMaximumCapacity uint64 `protobuf:"varint,3,opt,name=newMaximumCapacity,proto3" json:"newMaximumCapacity,omitempty"`
 }
 
-func (x *MsgProviderUpdateMaximumCapacity) Reset() {
-	*x = MsgProviderUpdateMaximumCapacity{}
+func (x *MsgProviderUpdateCapacityMaximum) Reset() {
+	*x = MsgProviderUpdateCapacityMaximum{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_structs_structs_tx_proto_msgTypes[94]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -57583,39 +57583,39 @@ func (x *MsgProviderUpdateMaximumCapacity) Reset() {
 	}
 }
 
-func (x *MsgProviderUpdateMaximumCapacity) String() string {
+func (x *MsgProviderUpdateCapacityMaximum) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgProviderUpdateMaximumCapacity) ProtoMessage() {}
+func (*MsgProviderUpdateCapacityMaximum) ProtoMessage() {}
 
-// Deprecated: Use MsgProviderUpdateMaximumCapacity.ProtoReflect.Descriptor instead.
-func (*MsgProviderUpdateMaximumCapacity) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgProviderUpdateCapacityMaximum.ProtoReflect.Descriptor instead.
+func (*MsgProviderUpdateCapacityMaximum) Descriptor() ([]byte, []int) {
 	return file_structs_structs_tx_proto_rawDescGZIP(), []int{94}
 }
 
-func (x *MsgProviderUpdateMaximumCapacity) GetCreator() string {
+func (x *MsgProviderUpdateCapacityMaximum) GetCreator() string {
 	if x != nil {
 		return x.Creator
 	}
 	return ""
 }
 
-func (x *MsgProviderUpdateMaximumCapacity) GetProviderId() string {
+func (x *MsgProviderUpdateCapacityMaximum) GetProviderId() string {
 	if x != nil {
 		return x.ProviderId
 	}
 	return ""
 }
 
-func (x *MsgProviderUpdateMaximumCapacity) GetNewMaximumCapacity() uint64 {
+func (x *MsgProviderUpdateCapacityMaximum) GetNewMaximumCapacity() uint64 {
 	if x != nil {
 		return x.NewMaximumCapacity
 	}
 	return 0
 }
 
-type MsgProviderUpdateMinimumDuration struct {
+type MsgProviderUpdateDurationMinimum struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -57625,8 +57625,8 @@ type MsgProviderUpdateMinimumDuration struct {
 	NewMinimumDuration uint64 `protobuf:"varint,3,opt,name=newMinimumDuration,proto3" json:"newMinimumDuration,omitempty"`
 }
 
-func (x *MsgProviderUpdateMinimumDuration) Reset() {
-	*x = MsgProviderUpdateMinimumDuration{}
+func (x *MsgProviderUpdateDurationMinimum) Reset() {
+	*x = MsgProviderUpdateDurationMinimum{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_structs_structs_tx_proto_msgTypes[95]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -57634,39 +57634,39 @@ func (x *MsgProviderUpdateMinimumDuration) Reset() {
 	}
 }
 
-func (x *MsgProviderUpdateMinimumDuration) String() string {
+func (x *MsgProviderUpdateDurationMinimum) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgProviderUpdateMinimumDuration) ProtoMessage() {}
+func (*MsgProviderUpdateDurationMinimum) ProtoMessage() {}
 
-// Deprecated: Use MsgProviderUpdateMinimumDuration.ProtoReflect.Descriptor instead.
-func (*MsgProviderUpdateMinimumDuration) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgProviderUpdateDurationMinimum.ProtoReflect.Descriptor instead.
+func (*MsgProviderUpdateDurationMinimum) Descriptor() ([]byte, []int) {
 	return file_structs_structs_tx_proto_rawDescGZIP(), []int{95}
 }
 
-func (x *MsgProviderUpdateMinimumDuration) GetCreator() string {
+func (x *MsgProviderUpdateDurationMinimum) GetCreator() string {
 	if x != nil {
 		return x.Creator
 	}
 	return ""
 }
 
-func (x *MsgProviderUpdateMinimumDuration) GetProviderId() string {
+func (x *MsgProviderUpdateDurationMinimum) GetProviderId() string {
 	if x != nil {
 		return x.ProviderId
 	}
 	return ""
 }
 
-func (x *MsgProviderUpdateMinimumDuration) GetNewMinimumDuration() uint64 {
+func (x *MsgProviderUpdateDurationMinimum) GetNewMinimumDuration() uint64 {
 	if x != nil {
 		return x.NewMinimumDuration
 	}
 	return 0
 }
 
-type MsgProviderUpdateMaximumDuration struct {
+type MsgProviderUpdateDurationMaximum struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
@@ -57676,8 +57676,8 @@ type MsgProviderUpdateMaximumDuration struct {
 	NewMaximumDuration uint64 `protobuf:"varint,3,opt,name=newMaximumDuration,proto3" json:"newMaximumDuration,omitempty"`
 }
 
-func (x *MsgProviderUpdateMaximumDuration) Reset() {
-	*x = MsgProviderUpdateMaximumDuration{}
+func (x *MsgProviderUpdateDurationMaximum) Reset() {
+	*x = MsgProviderUpdateDurationMaximum{}
 	if protoimpl.UnsafeEnabled {
 		mi := &file_structs_structs_tx_proto_msgTypes[96]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -57685,32 +57685,32 @@ func (x *MsgProviderUpdateMaximumDuration) Reset() {
 	}
 }
 
-func (x *MsgProviderUpdateMaximumDuration) String() string {
+func (x *MsgProviderUpdateDurationMaximum) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*MsgProviderUpdateMaximumDuration) ProtoMessage() {}
+func (*MsgProviderUpdateDurationMaximum) ProtoMessage() {}
 
-// Deprecated: Use MsgProviderUpdateMaximumDuration.ProtoReflect.Descriptor instead.
-func (*MsgProviderUpdateMaximumDuration) Descriptor() ([]byte, []int) {
+// Deprecated: Use MsgProviderUpdateDurationMaximum.ProtoReflect.Descriptor instead.
+func (*MsgProviderUpdateDurationMaximum) Descriptor() ([]byte, []int) {
 	return file_structs_structs_tx_proto_rawDescGZIP(), []int{96}
 }
 
-func (x *MsgProviderUpdateMaximumDuration) GetCreator() string {
+func (x *MsgProviderUpdateDurationMaximum) GetCreator() string {
 	if x != nil {
 		return x.Creator
 	}
 	return ""
 }
 
-func (x *MsgProviderUpdateMaximumDuration) GetProviderId() string {
+func (x *MsgProviderUpdateDurationMaximum) GetProviderId() string {
 	if x != nil {
 		return x.ProviderId
 	}
 	return ""
 }
 
-func (x *MsgProviderUpdateMaximumDuration) GetNewMaximumDuration() uint64 {
+func (x *MsgProviderUpdateDurationMaximum) GetNewMaximumDuration() uint64 {
 	if x != nil {
 		return x.NewMaximumDuration
 	}
@@ -58703,8 +58703,8 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x12, 0x64, 0x65, 0x73, 0x74, 0x69, 0x6e, 0x61,
 	0x74, 0x69, 0x6f, 0x6e, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x3a, 0x0c, 0x82, 0xe7, 0xb0,
 	0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x9a, 0x01, 0x0a, 0x20, 0x4d, 0x73,
-	0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4d,
-	0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x12, 0x18,
+	0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43,
+	0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x12, 0x18,
 	0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
 	0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1e, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x76,
 	0x69, 0x64, 0x65, 0x72, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x70, 0x72,
@@ -58713,8 +58713,8 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x20, 0x01, 0x28, 0x04, 0x52, 0x12, 0x6e, 0x65, 0x77, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d,
 	0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63,
 	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x22, 0x9a, 0x01, 0x0a, 0x20, 0x4d, 0x73, 0x67, 0x50, 0x72,
-	0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4d, 0x61, 0x78, 0x69,
-	0x6d, 0x75, 0x6d, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x12, 0x18, 0x0a, 0x07, 0x63,
+	0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x61, 0x70, 0x61,
+	0x63, 0x69, 0x74, 0x79, 0x4d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x12, 0x18, 0x0a, 0x07, 0x63,
 	0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72,
 	0x65, 0x61, 0x74, 0x6f, 0x72, 0x12, 0x1e, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65,
 	0x72, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x70, 0x72, 0x6f, 0x76, 0x69,
@@ -58723,8 +58723,8 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x04, 0x52, 0x12, 0x6e, 0x65, 0x77, 0x4d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x43, 0x61, 0x70,
 	0x61, 0x63, 0x69, 0x74, 0x79, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61,
 	0x74, 0x6f, 0x72, 0x22, 0x9a, 0x01, 0x0a, 0x20, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69,
-	0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d,
-	0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61,
+	0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61,
 	0x74, 0x6f, 0x72, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74,
 	0x6f, 0x72, 0x12, 0x1e, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x49, 0x64,
 	0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72,
@@ -58733,8 +58733,8 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x6e, 0x65, 0x77, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69,
 	0x6f, 0x6e, 0x3a, 0x0c, 0x82, 0xe7, 0xb0, 0x2a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
 	0x22, 0x9a, 0x01, 0x0a, 0x20, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72,
-	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x44, 0x75, 0x72,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4d, 0x61,
+	0x78, 0x69, 0x6d, 0x75, 0x6d, 0x12, 0x18, 0x0a, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72,
 	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x63, 0x72, 0x65, 0x61, 0x74, 0x6f, 0x72, 0x12,
 	0x1e, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x49, 0x64, 0x18, 0x02, 0x20,
 	0x01, 0x28, 0x09, 0x52, 0x0a, 0x70, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x49, 0x64, 0x12,
@@ -59072,34 +59072,34 @@ var file_structs_structs_tx_proto_rawDesc = []byte{
 	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73,
 	0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73,
 	0x65, 0x12, 0x78, 0x0a, 0x1d, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64,
-	0x61, 0x74, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69,
-	0x74, 0x79, 0x12, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x61, 0x74, 0x65, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x4d, 0x69, 0x6e, 0x69, 0x6d,
+	0x75, 0x6d, 0x12, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
 	0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72,
-	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x43, 0x61, 0x70,
-	0x61, 0x63, 0x69, 0x74, 0x79, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x4d, 0x69,
+	0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69,
 	0x64, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x78, 0x0a, 0x1d, 0x50,
-	0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4d, 0x61, 0x78,
-	0x69, 0x6d, 0x75, 0x6d, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x12, 0x31, 0x2e, 0x73,
+	0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x43, 0x61, 0x70,
+	0x61, 0x63, 0x69, 0x74, 0x79, 0x4d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x12, 0x31, 0x2e, 0x73,
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d,
 	0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65,
-	0x4d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x1a,
+	0x43, 0x61, 0x70, 0x61, 0x63, 0x69, 0x74, 0x79, 0x4d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x1a,
 	0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
 	0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x73,
 	0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x78, 0x0a, 0x1d, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65,
-	0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x44, 0x75,
-	0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4d,
+	0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x12, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76,
-	0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75,
-	0x6d, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69,
+	0x6f, 0x6e, 0x4d, 0x69, 0x6e, 0x69, 0x6d, 0x75, 0x6d, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75,
 	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50,
 	0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12,
 	0x78, 0x0a, 0x1d, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74,
-	0x65, 0x4d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e,
+	0x65, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d,
 	0x12, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
 	0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70,
-	0x64, 0x61, 0x74, 0x65, 0x4d, 0x61, 0x78, 0x69, 0x6d, 0x75, 0x6d, 0x44, 0x75, 0x72, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x64, 0x61, 0x74, 0x65, 0x44, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x4d, 0x61, 0x78, 0x69,
+	0x6d, 0x75, 0x6d, 0x1a, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
 	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x4d, 0x73, 0x67, 0x50, 0x72, 0x6f, 0x76, 0x69, 0x64, 0x65,
 	0x72, 0x52, 0x65, 0x73, 0x70, 0x6f, 0x6e, 0x73, 0x65, 0x12, 0x72, 0x0a, 0x1a, 0x50, 0x72, 0x6f,
 	0x76, 0x69, 0x64, 0x65, 0x72, 0x55, 0x70, 0x64, 0x61, 0x74, 0x65, 0x41, 0x63, 0x63, 0x65, 0x73,
@@ -59389,10 +59389,10 @@ var file_structs_structs_tx_proto_goTypes = []interface{}{
 	(*MsgAgreementResponse)(nil),                             // 90: structs.structs.MsgAgreementResponse
 	(*MsgProviderCreate)(nil),                                // 91: structs.structs.MsgProviderCreate
 	(*MsgProviderWithdrawBalance)(nil),                       // 92: structs.structs.MsgProviderWithdrawBalance
-	(*MsgProviderUpdateMinimumCapacity)(nil),                 // 93: structs.structs.MsgProviderUpdateMinimumCapacity
-	(*MsgProviderUpdateMaximumCapacity)(nil),                 // 94: structs.structs.MsgProviderUpdateMaximumCapacity
-	(*MsgProviderUpdateMinimumDuration)(nil),                 // 95: structs.structs.MsgProviderUpdateMinimumDuration
-	(*MsgProviderUpdateMaximumDuration)(nil),                 // 96: structs.structs.MsgProviderUpdateMaximumDuration
+	(*MsgProviderUpdateCapacityMinimum)(nil),                 // 93: structs.structs.MsgProviderUpdateCapacityMinimum
+	(*MsgProviderUpdateCapacityMaximum)(nil),                 // 94: structs.structs.MsgProviderUpdateCapacityMaximum
+	(*MsgProviderUpdateDurationMinimum)(nil),                 // 95: structs.structs.MsgProviderUpdateDurationMinimum
+	(*MsgProviderUpdateDurationMaximum)(nil),                 // 96: structs.structs.MsgProviderUpdateDurationMaximum
 	(*MsgProviderUpdateAccessPolicy)(nil),                    // 97: structs.structs.MsgProviderUpdateAccessPolicy
 	(*MsgProviderGuildGrant)(nil),                            // 98: structs.structs.MsgProviderGuildGrant
 	(*MsgProviderGuildRevoke)(nil),                           // 99: structs.structs.MsgProviderGuildRevoke
@@ -59474,10 +59474,10 @@ var file_structs_structs_tx_proto_depIdxs = []int32{
 	48,  // 60: structs.structs.Msg.PlayerUpdatePrimaryAddress:input_type -> structs.structs.MsgPlayerUpdatePrimaryAddress
 	91,  // 61: structs.structs.Msg.ProviderCreate:input_type -> structs.structs.MsgProviderCreate
 	92,  // 62: structs.structs.Msg.ProviderWithdrawBalance:input_type -> structs.structs.MsgProviderWithdrawBalance
-	93,  // 63: structs.structs.Msg.ProviderUpdateMinimumCapacity:input_type -> structs.structs.MsgProviderUpdateMinimumCapacity
-	94,  // 64: structs.structs.Msg.ProviderUpdateMaximumCapacity:input_type -> structs.structs.MsgProviderUpdateMaximumCapacity
-	95,  // 65: structs.structs.Msg.ProviderUpdateMinimumDuration:input_type -> structs.structs.MsgProviderUpdateMinimumDuration
-	96,  // 66: structs.structs.Msg.ProviderUpdateMaximumDuration:input_type -> structs.structs.MsgProviderUpdateMaximumDuration
+	93,  // 63: structs.structs.Msg.ProviderUpdateCapacityMinimum:input_type -> structs.structs.MsgProviderUpdateCapacityMinimum
+	94,  // 64: structs.structs.Msg.ProviderUpdateCapacityMaximum:input_type -> structs.structs.MsgProviderUpdateCapacityMaximum
+	95,  // 65: structs.structs.Msg.ProviderUpdateDurationMinimum:input_type -> structs.structs.MsgProviderUpdateDurationMinimum
+	96,  // 66: structs.structs.Msg.ProviderUpdateDurationMaximum:input_type -> structs.structs.MsgProviderUpdateDurationMaximum
 	97,  // 67: structs.structs.Msg.ProviderUpdateAccessPolicy:input_type -> structs.structs.MsgProviderUpdateAccessPolicy
 	98,  // 68: structs.structs.Msg.ProviderGuildGrant:input_type -> structs.structs.MsgProviderGuildGrant
 	99,  // 69: structs.structs.Msg.ProviderGuildRevoke:input_type -> structs.structs.MsgProviderGuildRevoke
@@ -59544,10 +59544,10 @@ var file_structs_structs_tx_proto_depIdxs = []int32{
 	49,  // 130: structs.structs.Msg.PlayerUpdatePrimaryAddress:output_type -> structs.structs.MsgPlayerUpdatePrimaryAddressResponse
 	101, // 131: structs.structs.Msg.ProviderCreate:output_type -> structs.structs.MsgProviderResponse
 	101, // 132: structs.structs.Msg.ProviderWithdrawBalance:output_type -> structs.structs.MsgProviderResponse
-	101, // 133: structs.structs.Msg.ProviderUpdateMinimumCapacity:output_type -> structs.structs.MsgProviderResponse
-	101, // 134: structs.structs.Msg.ProviderUpdateMaximumCapacity:output_type -> structs.structs.MsgProviderResponse
-	101, // 135: structs.structs.Msg.ProviderUpdateMinimumDuration:output_type -> structs.structs.MsgProviderResponse
-	101, // 136: structs.structs.Msg.ProviderUpdateMaximumDuration:output_type -> structs.structs.MsgProviderResponse
+	101, // 133: structs.structs.Msg.ProviderUpdateCapacityMinimum:output_type -> structs.structs.MsgProviderResponse
+	101, // 134: structs.structs.Msg.ProviderUpdateCapacityMaximum:output_type -> structs.structs.MsgProviderResponse
+	101, // 135: structs.structs.Msg.ProviderUpdateDurationMinimum:output_type -> structs.structs.MsgProviderResponse
+	101, // 136: structs.structs.Msg.ProviderUpdateDurationMaximum:output_type -> structs.structs.MsgProviderResponse
 	101, // 137: structs.structs.Msg.ProviderUpdateAccessPolicy:output_type -> structs.structs.MsgProviderResponse
 	101, // 138: structs.structs.Msg.ProviderGuildGrant:output_type -> structs.structs.MsgProviderResponse
 	101, // 139: structs.structs.Msg.ProviderGuildRevoke:output_type -> structs.structs.MsgProviderResponse
@@ -60708,7 +60708,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[93].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgProviderUpdateMinimumCapacity); i {
+			switch v := v.(*MsgProviderUpdateCapacityMinimum); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -60720,7 +60720,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[94].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgProviderUpdateMaximumCapacity); i {
+			switch v := v.(*MsgProviderUpdateCapacityMaximum); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -60732,7 +60732,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[95].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgProviderUpdateMinimumDuration); i {
+			switch v := v.(*MsgProviderUpdateDurationMinimum); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -60744,7 +60744,7 @@ func file_structs_structs_tx_proto_init() {
 			}
 		}
 		file_structs_structs_tx_proto_msgTypes[96].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*MsgProviderUpdateMaximumDuration); i {
+			switch v := v.(*MsgProviderUpdateDurationMaximum); i {
 			case 0:
 				return &v.state
 			case 1:
