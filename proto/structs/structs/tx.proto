@@ -77,10 +77,10 @@ service Msg {
 
   rpc ProviderCreate                 (MsgProviderCreate                ) returns (MsgProviderResponse);
   rpc ProviderWithdrawBalance        (MsgProviderWithdrawBalance       ) returns (MsgProviderResponse);
-  rpc ProviderUpdateMinimumCapacity  (MsgProviderUpdateMinimumCapacity ) returns (MsgProviderResponse);
-  rpc ProviderUpdateMaximumCapacity  (MsgProviderUpdateMaximumCapacity ) returns (MsgProviderResponse);
-  rpc ProviderUpdateMinimumDuration  (MsgProviderUpdateMinimumDuration ) returns (MsgProviderResponse);
-  rpc ProviderUpdateMaximumDuration  (MsgProviderUpdateMaximumDuration ) returns (MsgProviderResponse);
+  rpc ProviderUpdateCapacityMinimum  (MsgProviderUpdateCapacityMinimum ) returns (MsgProviderResponse);
+  rpc ProviderUpdateCapacityMaximum  (MsgProviderUpdateCapacityMaximum ) returns (MsgProviderResponse);
+  rpc ProviderUpdateDurationMinimum  (MsgProviderUpdateDurationMinimum ) returns (MsgProviderResponse);
+  rpc ProviderUpdateDurationMaximum  (MsgProviderUpdateDurationMaximum ) returns (MsgProviderResponse);
   rpc ProviderUpdateAccessPolicy     (MsgProviderUpdateAccessPolicy    ) returns (MsgProviderResponse);
   rpc ProviderGuildGrant             (MsgProviderGuildGrant            ) returns (MsgProviderResponse);
   rpc ProviderGuildRevoke            (MsgProviderGuildRevoke           ) returns (MsgProviderResponse);
@@ -811,7 +811,7 @@ message MsgProviderWithdrawBalance {
   string destinationAddress = 3;
 }
 
-message MsgProviderUpdateMinimumCapacity {
+message MsgProviderUpdateCapacityMinimum {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator            = 1;
@@ -819,7 +819,7 @@ message MsgProviderUpdateMinimumCapacity {
   uint64 newMinimumCapacity = 3;
 }
 
-message MsgProviderUpdateMaximumCapacity {
+message MsgProviderUpdateCapacityMaximum {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator            = 1;
@@ -827,7 +827,7 @@ message MsgProviderUpdateMaximumCapacity {
   uint64 newMaximumCapacity = 3;
 }
 
-message MsgProviderUpdateMinimumDuration {
+message MsgProviderUpdateDurationMinimum {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator            = 1;
@@ -835,7 +835,7 @@ message MsgProviderUpdateMinimumDuration {
   uint64 newMinimumDuration = 3;
 }
 
-message MsgProviderUpdateMaximumDuration {
+message MsgProviderUpdateDurationMaximum {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator            = 1;
