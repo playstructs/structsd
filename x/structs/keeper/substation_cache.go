@@ -4,7 +4,7 @@ import (
 	"context"
 
 	//sdk "github.com/cosmos/cosmos-sdk/types"
-    //sdkerrors "cosmossdk.io/errors"
+    sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 
     "fmt"
@@ -163,3 +163,41 @@ func (cache *SubstationCache) SetOwnerId(owner string) {
 
 
 
+// Delete Permission
+func (cache *SubstationCache) CanBeDeleteDBy(address string) (error) {
+    return cache.PermissionCheck(types.PermissionDelete, address);
+}
+
+// Association Permission
+func (cache *SubstationCache) CanManagePlayerConnections(address string) (error) {
+    return cache.PermissionCheck(types.PermissionAssociations, address)
+}
+
+// Grid Permission
+func (cache *SubstationCache) CanManageAllocationConnections(address string) (error) {
+    return cache.PermissionCheck(types.PermissionGrid, address)
+}
+
+// Asset Permission
+func (cache *SubstationCache) CanCreateAllocations(address string) (error) {
+    return cache.PermissionCheck(types.PermissionAssets, address)
+}
+
+func (cache *SubstationCache) PermissionCheck(permission types.Permission, address string) (err error) {
+    // Make sure the address calling this has Play permissions
+    if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(address), permission)) {
+        err = sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no (%d) permissions ", address, permission)
+
+    }
+
+    callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
+    if (err != nil) {
+        if (callingPlayer.PlayerId != cache.GetOwnerId()) {
+            if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetSubstationId(), callingPlayer.PlayerId), permission)) {
+               err = sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) has no (%d) permissions on target substation (%s)", callingPlayer.PlayerId, permission, cache.GetSubstationId())
+            }
+        }
+    }
+
+    return
+}

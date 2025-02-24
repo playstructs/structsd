@@ -81,6 +81,7 @@ var (
 
     ErrStructAction                             = sdkerrors.Register(ModuleName,  1700, "Struct action failed")
 
+    ErrInvalidParameters                        = sdkerrors.Register(ModuleName,  1800, "Invalid Message Details")
 
     ErrSabotage                                 = sdkerrors.Register(ModuleName,  3800, "Sabotage failed")
 
