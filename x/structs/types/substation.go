@@ -6,3 +6,10 @@ import (
 	//  sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 )
 
+
+func CreateBaseSubstation(creator string, owner string) (Substation) {
+    return Substation{
+        Creator: creator,
+        Owner: owner,
+    }
+}
