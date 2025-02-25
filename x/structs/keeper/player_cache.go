@@ -259,6 +259,9 @@ func (cache *PlayerCache) GetFleetId()  (string)        { if (!cache.PlayerLoade
 func (cache *PlayerCache) GetPlanet()   (*PlanetCache)  { if (!cache.PlanetLoaded) { cache.LoadPlanet() }; return cache.Planet }
 func (cache *PlayerCache) GetPlanetId() (string)        { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.PlanetId }
 
+func (cache *PlayerCache) GetGuildId()  (string)        { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.GuildId }
+
+
 func (cache *PlayerCache) GetStoredOre()            (uint64) { if (!cache.StoredOreLoaded) { cache.LoadStoredOre() }; return cache.StoredOre }
 func (cache *PlayerCache) GetLoad()                 (uint64) { if (!cache.LoadLoaded) { cache.LoadLoad() }; return cache.Load }
 func (cache *PlayerCache) GetStructsLoad()          (uint64) { if (!cache.StructsLoadLoaded) { cache.LoadStructsLoad() }; return cache.StructsLoad }

@@ -63,6 +63,12 @@ option go_package = "structs/x/structs/types";
   message EventPermission { PermissionRecord permissionRecord = 1; }
   message EventGrid { GridRecord gridRecord = 1; }
 
+  message EventProviderGrantGuild { EventProviderGrantGuildDetail eventProviderGrantGuildDetail = 1;}
+  message EventProviderGrantGuildDetail { string providerId = 1; string guildId = 2;}
+
+  message EventProviderRevokeGuild { EventProviderRevokeGuildDetail eventProviderRevokeGuildDetail = 1;}
+  message EventProviderRevokeGuildDetail { string providerId = 1; string guildId = 2;}
+
   message EventDelete { string objectId = 1; }
 
   message EventAddressAssociation { AddressAssociation addressAssociation = 1; }

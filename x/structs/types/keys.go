@@ -150,6 +150,8 @@ const (
 	ProviderKey         = "Provider/value/"
 	ProviderCountKey    = "Provider/count/"
 
+	ProviderGuildAccessKey    = "Provider/guild/"
+
 	ProviderCollateralPool  = "structs/Provider/Collateral/"
 	ProviderEarningsPool    = "structs/Provider/Earnings/"
 )

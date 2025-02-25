@@ -136,3 +136,34 @@ func (k Keeper) GetAllProvider(ctx context.Context) (list []types.Provider) {
 
 	return
 }
+
+
+
+func (k Keeper) ProviderGrantGuild(ctx context.Context, providerId string, guildId string) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
+	byteKey := types.KeyPrefix(types.ProviderGuildAccessKey + providerId + "/" + guildId)
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, 1)
+	store.Set(byteKey, bz)
+
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProviderGrantGuild{&types.EventProviderGrantGuildDetail{ProviderId: providerId, GuildId: guildId}})
+
+}
+
+func (k Keeper) ProviderRevokeGuild(ctx context.Context, providerId string, guildId string) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.ProviderKey))
+	store.Delete(types.KeyPrefix(types.ProviderGuildAccessKey + providerId + "/" + guildId))
+
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProviderRevokeGuild{&types.EventProviderRevokeGuildDetail{ProviderId: providerId, GuildId: guildId}})
+}
+
+func (k Keeper) ProviderGuildAccessAllowed(ctx context.Context, providerId string, guildId string) (bool) {
+    	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
+    	byteKey := types.KeyPrefix(types.ProviderGuildAccessKey + providerId + "/" + guildId)
+    	bz := store.Get(byteKey)
+
+    	// doesn't exist: no element
+    	return bz != nil && binary.BigEndian.Uint64(bz) != 0
+}

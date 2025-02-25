@@ -188,27 +188,45 @@ func (cache *ProviderCache) CanWithdrawBalance(activePlayer *PlayerCache) (error
 }
 
 
-func (cache *ProviderCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) (err error) {
-    // Make sure the address calling this has Play permissions
+func (cache *ProviderCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) (error) {
+    // Make sure the address calling this has permissions
     if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission)) {
-        err = sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no (%d) permissions ", activePlayer.GetActiveAddress(), permission)
-
+        return sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no (%d) permissions ", activePlayer.GetActiveAddress(), permission)
     }
 
     if !activePlayer.HasPlayerAccount() {
-        err = sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no Account", activePlayer.GetActiveAddress())
+        return sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no Account", activePlayer.GetActiveAddress())
     } else {
-        if (err != nil) {
-            if (activePlayer.GetPlayerId() != cache.GetOwnerId()) {
-                if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetProviderId(), activePlayer.GetPlayerId()), permission)) {
-                   err = sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) has no (%d) permissions on target substation (%s)", activePlayer.GetPlayerId(), permission, cache.GetProviderId())
-                }
+        if (activePlayer.GetPlayerId() != cache.GetOwnerId()) {
+            if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetProviderId(), activePlayer.GetPlayerId()), permission)) {
+               return sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) has no (%d) permissions on target substation (%s)", activePlayer.GetPlayerId(), permission, cache.GetProviderId())
             }
         }
     }
-    return
+    return nil
 }
 
+func (cache *ProviderCache) CanCreateAgreement(activePlayer *PlayerCache) (error) {
+
+    if cache.GetAccessPolicy() == types.ProviderAccessPolicy_openMarket {
+        if !activePlayer.HasPlayerAccount() {
+            return sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no Account", activePlayer.GetActiveAddress())
+        }
+
+    } else if cache.GetAccessPolicy() == types.ProviderAccessPolicy_guildMarket {
+        if !cache.K.ProviderGuildAccessAllowed(cache.Ctx, cache.GetProviderId(), activePlayer.GetGuildId()) {
+            return sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) is not a member of an approved guild (%s)", activePlayer.GetPlayerId(), activePlayer.GetGuildId())
+        }
+
+    } else if cache.GetAccessPolicy() == types.ProviderAccessPolicy_closedMarket {
+        return sdkerrors.Wrapf(types.ErrPermission, "Provider (%s) is not accepting new Agreements", cache.GetProviderId())
+
+    } else {
+            return sdkerrors.Wrapf(types.ErrPermission, "We're not really sure why it's not allowed, but it isn't. Pls tell an adult")
+    }
+
+    return nil
+}
 
 /* Committing Setters */
 
@@ -253,6 +271,24 @@ func (cache *ProviderCache) WithdrawBalanceAndCommit(destinationAddress string) 
 
     cache.Commit()
 
+    return nil
+}
+
+func (cache *ProviderCache) GrantGuildsAndCommit(guildIdSet []string) (error) {
+    for _, guildId := range guildIdSet {
+        _, found := cache.K.GetGuild(cache.Ctx, guildId)
+        if !found {
+            return sdkerrors.Wrapf(types.ErrObjectNotFound, "Guild ID (%s) not found ", guildId)
+        }
+        cache.K.ProviderGrantGuild(cache.Ctx, cache.GetProviderId(), guildId)
+    }
+    return nil
+}
+
+func (cache *ProviderCache) RevokeGuildsAndCommit(guildIdSet []string) (error) {
+    for _, guildId := range guildIdSet {
+        cache.K.ProviderRevokeGuild(cache.Ctx, cache.GetProviderId(), guildId)
+    }
     return nil
 }
 
