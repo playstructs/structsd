@@ -54,6 +54,7 @@ type StakingHooks interface {
 type AccountKeeper interface {
 	// Methods imported from account should be defined here
 	GetAccount(context.Context, sdk.AccAddress) sdk.AccountI
+	GetModuleAddress(string) sdk.AccAddress
 	NewAccountWithAddress(context.Context, sdk.AccAddress) sdk.AccountI
 	SetAccount(context.Context, sdk.AccountI)
 }

@@ -8,12 +8,22 @@ import (
 )
 
 func (k msgServer) ProviderUpdateAccessPolicy(goCtx context.Context, msg *types.MsgProviderUpdateAccessPolicy) (*types.MsgProviderResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
+    ctx := sdk.UnwrapSDKContext(goCtx)
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
+    activePlayer, _ := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
 
+    provider := k.GetProviderCacheFromId(ctx, msg.ProviderId)
+
+    permissionError := provider.CanUpdate(&activePlayer)
+    if (permissionError != nil) {
+        return &types.MsgProviderResponse{}, permissionError
+    }
+
+    provider.SetAccessPolicy(msg.AccessPolicy)
+    provider.Commit()
 
 	return &types.MsgProviderResponse{}, nil
 }

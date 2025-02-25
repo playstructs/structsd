@@ -25,6 +25,8 @@ type PlayerCache struct {
     PlayerChanged bool
     Player        types.Player
 
+    ActiveAddress string
+
     PlanetLoaded bool
     Planet *PlanetCache
 
@@ -101,7 +103,7 @@ func (k *Keeper) GetPlayerCacheFromAddress(ctx context.Context, address string) 
     index := k.GetPlayerIndexFromAddress(ctx, address)
 
     if (index == 0) {
-        return PlayerCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player Account Not Found")
+        return PlayerCache{ActiveAddress: address}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player Account Not Found")
     }
 
     return k.GetPlayerCacheFromId(ctx, GetObjectID(types.ObjectType_player, index))
@@ -246,6 +248,7 @@ func (cache *PlayerCache) GetPlayer() (types.Player, error) {
 
 func (cache *PlayerCache) GetPlayerId()         (string) { return cache.PlayerId }
 func (cache *PlayerCache) GetPrimaryAddress()   (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.PrimaryAddress }
+func (cache *PlayerCache) GetActiveAddress()    (string) { return cache.ActiveAddress }
 func (cache *PlayerCache) GetSubstationId()     (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.SubstationId }
 func (cache *PlayerCache) GetIndex()            (uint64) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.Index }
 
@@ -396,6 +399,10 @@ func (cache *PlayerCache) IsOnline() (online bool){
 
 func (cache *PlayerCache) IsOffline() (bool){
     return !cache.IsOnline()
+}
+
+func (cache *PlayerCache) HasPlayerAccount() (bool){
+    return cache.PlayerId != ""
 }
 
 func (cache *PlayerCache) HasPlanet() (bool){

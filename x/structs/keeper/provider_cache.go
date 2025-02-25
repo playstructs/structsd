@@ -5,6 +5,7 @@ import (
 
 	"structs/x/structs/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	sdkerrors "cosmossdk.io/errors"
 
 	// Used in Randomness Orb
 
@@ -170,12 +171,105 @@ func (cache *ProviderCache) GetCreator() string { if !cache.ProviderLoaded { cac
 func (cache *ProviderCache) GetAgreementLoad() uint64 { if !cache.AgreementLoadLoaded { cache.LoadAgreementLoad() }; return cache.AgreementLoad }
 func (cache *ProviderCache) GetCheckpointBlock() uint64 { if !cache.CheckpointBlockLoaded { cache.LoadCheckpointBlock() }; return cache.CheckpointBlock }
 
+func (cache *ProviderCache) GetCollateralPoolLocation() string { return types.ProviderCollateralPool + cache.GetProviderId() }
+func (cache *ProviderCache) GetEarningsPoolLocation() string { return types.ProviderEarningsPool + cache.GetProviderId() }
+
+/* Permissions */
+
+
+// Update Permission
+func (cache *ProviderCache) CanUpdate(activePlayer *PlayerCache) (error) {
+    return cache.PermissionCheck(types.PermissionUpdate, activePlayer)
+}
+
+// Assets Permission
+func (cache *ProviderCache) CanWithdrawBalance(activePlayer *PlayerCache) (error) {
+    return cache.PermissionCheck(types.PermissionAssets, activePlayer)
+}
+
+
+func (cache *ProviderCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) (err error) {
+    // Make sure the address calling this has Play permissions
+    if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission)) {
+        err = sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no (%d) permissions ", activePlayer.GetActiveAddress(), permission)
+
+    }
+
+    if !activePlayer.HasPlayerAccount() {
+        err = sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no Account", activePlayer.GetActiveAddress())
+    } else {
+        if (err != nil) {
+            if (activePlayer.GetPlayerId() != cache.GetOwnerId()) {
+                if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetProviderId(), activePlayer.GetPlayerId()), permission)) {
+                   err = sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) has no (%d) permissions on target substation (%s)", activePlayer.GetPlayerId(), permission, cache.GetProviderId())
+                }
+            }
+        }
+    }
+    return
+}
+
+
+/* Committing Setters */
+
+func (cache *ProviderCache) WithdrawBalanceAndCommit(destinationAddress string) (error) {
+
+    destinationAcc, errParam := sdk.AccAddressFromBech32(destinationAddress)
+    if errParam != nil {
+        return errParam
+    }
+
+    // First handle the balances available via checkpoint
+    uctx := sdk.UnwrapSDKContext(cache.Ctx)
+    currentBlock := uint64(uctx.BlockHeight())
+    blockDifference := currentBlock - cache.GetCheckpointBlock()
+
+    blocks := math.LegacyNewDecFromInt(math.NewIntFromUint64(blockDifference))
+    rate := math.LegacyNewDecFromInt(cache.GetRate().Amount)
+    load := math.LegacyNewDecFromInt(math.NewIntFromUint64(cache.GetAgreementLoad()))
+
+    prePenaltyDeductionAmount := blocks.Mul(rate).Mul(load)
+    penaltyDeductionAmount := prePenaltyDeductionAmount.Mul(cache.GetProviderCancellationPenalty())
+
+    finalWithdrawBalance := prePenaltyDeductionAmount.Sub(penaltyDeductionAmount).TruncateInt()
+
+    withdrawAmountCoin := sdk.NewCoins(sdk.NewCoin(cache.GetRate().Denom, finalWithdrawBalance))
+
+    errSend := cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, cache.GetCollateralPoolLocation(), destinationAcc, withdrawAmountCoin)
+    if errSend != nil {
+        return errSend
+    }
+
+    cache.SetCheckpointBlock(currentBlock)
+
+    // Now handle the value available in the Earnings pool
+    // Get Balance
+    earningsBalances := cache.K.bankKeeper.SpendableCoins(cache.Ctx, cache.K.accountKeeper.GetModuleAddress(cache.GetEarningsPoolLocation()))
+    // Transfer
+    errSend = cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, cache.GetEarningsPoolLocation(), destinationAcc, earningsBalances)
+    if errSend != nil {
+        return errSend
+    }
+
+    cache.Commit()
+
+    return nil
+}
+
 /* Setters - SET DOES NOT COMMIT()
  */
+
 
 func (cache *ProviderCache) ResetCheckpointBlock() {
     uctx := sdk.UnwrapSDKContext(cache.Ctx)
     cache.CheckpointBlock = uint64(uctx.BlockHeight())
+    cache.CheckpointBlockLoaded = true
+    cache.CheckpointBlockChanged = true
+    cache.Changed()
+}
+
+func (cache *ProviderCache) SetCheckpointBlock(block uint64) {
+    cache.CheckpointBlock = block
     cache.CheckpointBlockLoaded = true
     cache.CheckpointBlockChanged = true
     cache.Changed()
@@ -194,3 +288,41 @@ func (cache *ProviderCache) AgreementLoadDecrease(amount uint64) {
     }
     cache.AgreementLoadChanged = true
 }
+
+func (cache *ProviderCache) SetAccessPolicy(accessPolicy types.ProviderAccessPolicy) {
+    cache.Provider.SetAccessPolicy(accessPolicy)
+    cache.Changed()
+}
+
+func (cache *ProviderCache) SetCapacityMaximum(maximum uint64) (error){
+    paramError := cache.Provider.SetCapacityMaximum(maximum)
+    if paramError != nil {
+        cache.Changed()
+    }
+    return paramError
+}
+
+func (cache *ProviderCache) SetCapacityMinimum(minimum uint64) (error){
+    paramError := cache.Provider.SetCapacityMinimum(minimum)
+    if paramError != nil {
+        cache.Changed()
+    }
+    return paramError
+}
+
+func (cache *ProviderCache) SetDurationMaximum(maximum uint64) (error){
+    paramError := cache.Provider.SetDurationMaximum(maximum)
+    if paramError != nil {
+        cache.Changed()
+    }
+    return paramError
+}
+
+func (cache *ProviderCache) SetDurationMinimum(minimum uint64) (error){
+    paramError := cache.Provider.SetDurationMinimum(minimum)
+    if paramError != nil {
+        cache.Changed()
+    }
+    return paramError
+}
+

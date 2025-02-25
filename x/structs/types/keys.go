@@ -46,6 +46,7 @@ const (
 
     // This annoys me but whatever
     CommandStruct = "Command"
+
 )
 
 var (
@@ -146,8 +147,11 @@ const (
 )
 
 const (
-	ProviderKey      = "Provider/value/"
-	ProviderCountKey  = "Provider/count/"
+	ProviderKey         = "Provider/value/"
+	ProviderCountKey    = "Provider/count/"
+
+	ProviderCollateralPool  = "structs/Provider/Collateral/"
+	ProviderEarningsPool    = "structs/Provider/Earnings/"
 )
 
 const (

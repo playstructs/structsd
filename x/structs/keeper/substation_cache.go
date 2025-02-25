@@ -164,40 +164,42 @@ func (cache *SubstationCache) SetOwnerId(owner string) {
 
 
 // Delete Permission
-func (cache *SubstationCache) CanBeDeleteDBy(address string) (error) {
-    return cache.PermissionCheck(types.PermissionDelete, address);
+func (cache *SubstationCache) CanBeDeleteDBy(activePlayer *PlayerCache) (error) {
+    return cache.PermissionCheck(types.PermissionDelete, activePlayer);
 }
 
 // Association Permission
-func (cache *SubstationCache) CanManagePlayerConnections(address string) (error) {
-    return cache.PermissionCheck(types.PermissionAssociations, address)
+func (cache *SubstationCache) CanManagePlayerConnections(activePlayer *PlayerCache) (error) {
+    return cache.PermissionCheck(types.PermissionAssociations, activePlayer)
 }
 
 // Grid Permission
-func (cache *SubstationCache) CanManageAllocationConnections(address string) (error) {
-    return cache.PermissionCheck(types.PermissionGrid, address)
+func (cache *SubstationCache) CanManageAllocationConnections(activePlayer *PlayerCache) (error) {
+    return cache.PermissionCheck(types.PermissionGrid, activePlayer)
 }
 
 // Asset Permission
-func (cache *SubstationCache) CanCreateAllocations(address string) (error) {
-    return cache.PermissionCheck(types.PermissionAssets, address)
+func (cache *SubstationCache) CanCreateAllocations(activePlayer *PlayerCache) (error) {
+    return cache.PermissionCheck(types.PermissionAssets, activePlayer)
 }
 
-func (cache *SubstationCache) PermissionCheck(permission types.Permission, address string) (err error) {
+func (cache *SubstationCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) (err error) {
     // Make sure the address calling this has Play permissions
-    if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(address), permission)) {
-        err = sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no (%d) permissions ", address, permission)
+    if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission)) {
+        err = sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no (%d) permissions ", activePlayer.GetActiveAddress(), permission)
 
     }
 
-    callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
-    if (err != nil) {
-        if (callingPlayer.PlayerId != cache.GetOwnerId()) {
-            if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetSubstationId(), callingPlayer.PlayerId), permission)) {
-               err = sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) has no (%d) permissions on target substation (%s)", callingPlayer.PlayerId, permission, cache.GetSubstationId())
+    if !activePlayer.HasPlayerAccount() {
+        err = sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no Account", activePlayer.GetActiveAddress())
+    } else {
+        if (err != nil) {
+            if (activePlayer.GetPlayerId() != cache.GetOwnerId()) {
+                if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetSubstationId(), activePlayer.GetPlayerId()), permission)) {
+                   err = sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) has no (%d) permissions on target substation (%s)", activePlayer.GetPlayerId(), permission, cache.GetSubstationId())
+                }
             }
         }
     }
-
     return
 }

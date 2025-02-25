@@ -3,9 +3,8 @@ package keeper
 import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
+	//sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
-	"cosmossdk.io/math"
 )
 
 /*
@@ -36,38 +35,50 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
+    activePlayer, _ := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
 
     substation := k.GetSubstationCacheFromId(ctx, msg.SubstationId)
 
-    permissionError := substation.CanCreateAllocations(msg.Creator)
+
+    permissionError := substation.CanCreateAllocations(&activePlayer)
     if (permissionError != nil) {
         return &types.MsgProviderResponse{}, permissionError
     }
 
+    // Create a Provider Object
+    provider := types.CreateBaseProvider(msg.Creator, activePlayer.GetPlayerId())
+
     // TODO Rate Denom whitelist?
 
-    // Capacity Minimum < Capacity Maximum
-    if msg.CapacityMinimum > msg.CapacityMaximum {
-        return &types.MsgProviderResponse{}, sdkerrors.Wrapf(types.ErrInvalidParameters, "Minimum Capacity (%d) cannot be larger than Maximum Capacity (%d)", msg.CapacityMinimum, msg.CapacityMaximum)
+    paramErr := provider.SetCapacityRange(msg.CapacityMinimum, msg.CapacityMaximum)
+    if paramErr != nil {
+        return &types.MsgProviderResponse{}, paramErr
     }
 
-    // Duration Minimum < Duration Maximum
-    if msg.DurationMinimum > msg.DurationMaximum {
-        return &types.MsgProviderResponse{}, sdkerrors.Wrapf(types.ErrInvalidParameters, "Minimum Duration (%d) cannot be larger than Maximum Duration (%d)", msg.DurationMinimum, msg.DurationMaximum)
+    paramErr = provider.SetDurationRange(msg.DurationMinimum, msg.DurationMaximum )
+    if paramErr != nil {
+        return &types.MsgProviderResponse{}, paramErr
     }
 
-    one, _ := math.LegacyNewDecFromStr("1")
-
-    // 1 <= Provider Cancellation Policy => 0
-    if msg.ProviderCancellationPenalty.GTE(math.LegacyZeroDec()) && msg.ProviderCancellationPenalty.LTE(one) {
-        return &types.MsgProviderResponse{}, sdkerrors.Wrapf(types.ErrInvalidParameters, "Provider Cancellation Penalty (%f) must be between 1 and 0", msg.ProviderCancellationPenalty)
+    paramErr = provider.SetProviderCancellationPenalty(msg.ProviderCancellationPenalty)
+    if paramErr != nil {
+        return &types.MsgProviderResponse{}, paramErr
     }
 
-
-    // 1 <= Consumer Cancellation Policy => 0
-    if msg.ConsumerCancellationPenalty.GTE(math.LegacyZeroDec()) && msg.ConsumerCancellationPenalty.LTE(one) {
-        return &types.MsgProviderResponse{}, sdkerrors.Wrapf(types.ErrInvalidParameters, "Provider Cancellation Penalty (%f) must be between 1 and 0", msg.ConsumerCancellationPenalty)
+    paramErr = provider.SetConsumerCancellationPenalty(msg.ConsumerCancellationPenalty)
+    if paramErr != nil {
+        return &types.MsgProviderResponse{}, paramErr
     }
+
+    provider.SetAccessPolicy(msg.AccessPolicy)
+
+
+    // Provider Grid values are OK to leave uninitialized
+        // Unset Load is zero
+        // Unset CheckpointBlock is zero
+
+    // Pass it to the Keeper
+    k.AppendProvider(ctx, provider)
 
 
 	return &types.MsgProviderResponse{}, nil
