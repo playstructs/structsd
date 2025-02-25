@@ -14,6 +14,8 @@ func (k msgServer) ProviderDelete(goCtx context.Context, msg *types.MsgProviderD
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    // TODO Provider Delete
+        // Need to finish Agreements first so we know what all to delete
 
 	return &types.MsgProviderResponse{}, nil
 }

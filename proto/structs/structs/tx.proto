@@ -730,10 +730,9 @@ message MsgAgreementOpen {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator            = 1;
-  string playerId           = 2;
-  string providerId         = 3;
-  uint64 duration           = 4;
-  uint64 capacity           = 5;
+  string providerId         = 2;
+  uint64 duration           = 3;
+  uint64 capacity           = 4;
 }
 
 message MsgAgreementClose {

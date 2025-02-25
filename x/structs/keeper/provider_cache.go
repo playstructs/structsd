@@ -151,7 +151,7 @@ func (cache *ProviderCache) GetProviderId() string { return cache.ProviderId }
 func (cache *ProviderCache) GetOwnerId() string { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.Owner }
 func (cache *ProviderCache) GetOwner() *PlayerCache { if !cache.OwnerLoaded { cache.LoadOwner() }; return cache.Owner }
 
-func (cache *ProviderCache) GetSubstationID() string { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.SubstationId }
+func (cache *ProviderCache) GetSubstationId() string { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.SubstationId }
 // TODO func (cache *ProviderCache) GetSubstation() *SubstationCache {}
 
 func (cache *ProviderCache) GetRate() sdk.Coin { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.Rate }
@@ -173,6 +173,34 @@ func (cache *ProviderCache) GetCheckpointBlock() uint64 { if !cache.CheckpointBl
 
 func (cache *ProviderCache) GetCollateralPoolLocation() string { return types.ProviderCollateralPool + cache.GetProviderId() }
 func (cache *ProviderCache) GetEarningsPoolLocation() string { return types.ProviderEarningsPool + cache.GetProviderId() }
+
+func (cache *ProviderCache) AgreementVerify(capacity uint64, duration uint64) (error) {
+    // min < capacity < max
+    if cache.GetCapacityMinimum() > capacity {
+        return sdkerrors.Wrapf(types.ErrInvalidParameters, "Capacity (%d) cannot be lower than Minimum Capacity (%d)", capacity, cache.GetCapacityMinimum())
+    }
+    if capacity > cache.GetCapacityMaximum() {
+        return sdkerrors.Wrapf(types.ErrInvalidParameters, "Capacity (%d) cannot be greater than Maximum Capacity (%d)", capacity, cache.GetCapacityMaximum())
+    }
+
+    // min < duration < max
+    if cache.GetDurationMinimum() > duration {
+        return sdkerrors.Wrapf(types.ErrInvalidParameters, "Duration (%d) cannot be lower than Minimum Duration (%d)", duration, cache.GetDurationMinimum())
+    }
+    if duration > cache.GetDurationMaximum() {
+        return sdkerrors.Wrapf(types.ErrInvalidParameters, "Duration (%d) cannot be greater than Maximum Duration (%d)", duration, cache.GetDurationMaximum())
+    }
+
+    // Can the Substation support the added capacity
+    substation := cache.K.GetSubstationCacheFromId(cache.Ctx, cache.GetSubstationId())
+    if capacity > substation.GetAvailableCapacity(){
+        return sdkerrors.Wrapf(types.ErrInvalidParameters, "Desired Capacity (%d) is beyond what the Substation (%s) can support (%d) for this Provider (%s)", capacity, substation.GetSubstationId(), substation.GetAvailableCapacity(), cache.GetProviderId())
+    }
+
+    return nil
+
+}
+
 
 /* Permissions */
 
@@ -206,7 +234,7 @@ func (cache *ProviderCache) PermissionCheck(permission types.Permission, activeP
     return nil
 }
 
-func (cache *ProviderCache) CanCreateAgreement(activePlayer *PlayerCache) (error) {
+func (cache *ProviderCache) CanOpenAgreement(activePlayer *PlayerCache) (error) {
 
     if cache.GetAccessPolicy() == types.ProviderAccessPolicy_openMarket {
         if !activePlayer.HasPlayerAccount() {

@@ -145,6 +145,8 @@ func (cache *SubstationCache) GetOwnerId()      (string)            { if (!cache
 
 func (cache *SubstationCache) GetGrid()         (*GridCache)        { if (!cache.GridLoaded) { cache.LoadGrid() }; return cache.Grid }
 
+func (cache *SubstationCache) GetAvailableCapacity() (uint64)       { return cache.GetGrid().GetCapacity() - cache.GetGrid().GetLoad() }
+
 /* Setters - SET DOES NOT COMMIT()
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
  */
@@ -203,3 +205,5 @@ func (cache *SubstationCache) PermissionCheck(permission types.Permission, activ
     }
     return
 }
+
+
