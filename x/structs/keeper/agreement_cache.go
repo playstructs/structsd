@@ -175,6 +175,46 @@ func (cache *AgreementCache) GetEndBlock() uint64 { if !cache.AgreementLoaded { 
 func (cache *AgreementCache) GetCreator() string { if !cache.AgreementLoaded { cache.LoadAgreement() }; return cache.Agreement.Creator }
 
 
+/* Committing Setters */
+
+func (cache *AgreementCache) CloseAndCommit() (sdk.Coins, error){
+    // Pay the Early Cancellation Penalty
+    uctx := sdk.UnwrapSDKContext(cache.Ctx)
+    currentBlock := uint64(uctx.BlockHeight())
+    durationPast := currentBlock - cache.GetStartBlock()
+    durationRemaining := cache.GetEndBlock() - currentBlock
+
+    remainingCollateral  := math.NewIntFromUint64(durationRemaining).Mul(cache.GetProvider().GetRate().Amount).Mul(math.NewIntFromUint64(cache.GetCapacity()))
+
+    // Provider Payout Consumer Cancellation Penalty
+        // start, current block
+        // (current - start) * rate * old capacity * Penalty
+        // Move from Collateral to Earnings
+    penalty     := math.LegacyNewDecFromInt(remainingCollateral).Mul(cache.GetProvider().GetConsumerCancellationPenalty()).TruncateInt()
+    penaltyVoided := math.LegacyNewDecFromInt(math.NewIntFromUint64(durationPast)).Mul(math.LegacyNewDecFromInt(cache.GetProvider().GetRate().Amount)).Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(cache.GetCapacity()))).Mul(cache.GetProvider().GetProviderCancellationPenalty()).TruncateInt()
+
+    penaltyCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, penalty.Add(penaltyVoided)))
+
+    errSend := cache.K.bankKeeper.SendCoinsFromModuleToModule(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetProvider().GetEarningsPoolLocation(), penaltyCoin)
+
+
+    // Return the remaining Collateral
+    remainingCollateralCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, remainingCollateral.Sub(penalty)))
+
+    if errSend != nil {
+        // Destroy the Allocation
+        cache.K.DestroyAllocation(cache.Ctx, cache.GetAllocationId())
+
+        // Decrease the Load on the Provider
+        cache.GetProvider().AgreementLoadDecrease(cache.GetCapacity())
+
+        // Destroy the Agreement
+        cache.K.RemoveAgreement(cache.Ctx, cache.GetAgreementId())
+    }
+
+    return  remainingCollateralCoin, errSend
+
+}
 
 /* Setters - SET DOES NOT COMMIT()
  */
@@ -297,7 +337,6 @@ func (cache *AgreementCache) CapacityDecrease(amount uint64) (error){
         // TODO error handling
         cache.K.SetAllocation(cache.Ctx, allocation, cache.GetCapacity())
     }
-
 
     cache.Changed()
 
