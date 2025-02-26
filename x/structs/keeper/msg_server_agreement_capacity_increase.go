@@ -25,13 +25,12 @@ func (k msgServer) AgreementCapacityIncrease(goCtx context.Context, msg *types.M
     // Checkpoint
     agreement.GetProvider().Checkpoint()
 
-    agreement.CapacityIncrease(msg.CapacityIncrease)
     // increase capacity
         // increase provider load
         // which decreases duration
+    agreement.CapacityIncrease(msg.CapacityIncrease)
 
-    //commit
-
+    agreement.Commit()
 
 	return &types.MsgAgreementResponse{}, nil
 }

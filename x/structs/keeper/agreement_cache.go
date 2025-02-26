@@ -6,7 +6,7 @@ import (
     sdk "github.com/cosmos/cosmos-sdk/types"
     sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
-
+	"cosmossdk.io/math"
 	"fmt"
 )
 
@@ -203,25 +203,117 @@ func (cache *AgreementCache) SetEndBlock(endBlock uint64) {
 }
 
 func (cache *AgreementCache) CapacityIncrease(amount uint64) (error){
-    if cache.GetProvider().GetSubstation().GetAvailableCapacity() < (cache.GetCapacity() + amount){
+    if cache.GetProvider().GetSubstation().GetAvailableCapacity() < amount {
         return sdkerrors.Wrapf(types.ErrGridMalfunction, "Substation (%s) cannot afford the increase", cache.GetProvider().GetSubstationId())
     }
 
-    // original duration length
-    // original capacity
-    // new duration length
+    uctx := sdk.UnwrapSDKContext(cache.Ctx)
+    currentBlock := uint64(uctx.BlockHeight())
+    durationPast := currentBlock - cache.GetStartBlock()
+    durationRemaining := cache.GetEndBlock() - currentBlock
 
-    // start, end = original duration
 
     // Provider Payout Consumer Cancellation Penalty
         // start, current block
-        // (current - start) * rate * capacity * Penalty
+        // (current - start) * rate * old capacity * Penalty
+        // Move from Collateral to Earnings
+    penaltyVoided := math.LegacyNewDecFromInt(math.NewIntFromUint64(durationPast)).Mul(math.LegacyNewDecFromInt(cache.GetProvider().GetRate().Amount)).Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(cache.GetCapacity()))).Mul(cache.GetProvider().GetProviderCancellationPenalty()).TruncateInt()
+    penaltyVoidedCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, penaltyVoided))
+
+    errSend := cache.K.bankKeeper.SendCoinsFromModuleToModule(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetProvider().GetEarningsPoolLocation(), penaltyVoidedCoin)
+    if errSend != nil {
+        return errSend
+    }
+
+
+    // new duration length
+        // remaining duration = end block - current block
+        // new duration = (remaining duration * old capacity) / new capacity .Truncate()
+    newCapacity := cache.GetCapacity() + amount
+    newDuration := (durationRemaining * cache.GetCapacity()) / newCapacity
+
+    cache.SetStartBlock(currentBlock)
+    cache.SetEndBlock(cache.GetStartBlock() + newDuration)
 
     // Provider Load Increase
-
-
+    cache.GetProvider().AgreementLoadIncrease(amount)
 
     cache.Agreement.Capacity = cache.GetCapacity() + amount
+
+    // Increase the Allocation
+    allocation, allocationFound := cache.K.GetAllocation(cache.Ctx, cache.GetAllocationId())
+    if allocationFound {
+        // TODO error handling
+        cache.K.SetAllocation(cache.Ctx, allocation, cache.GetCapacity())
+    }
+
+    cache.Changed()
+
+    return nil
+}
+
+
+func (cache *AgreementCache) CapacityDecrease(amount uint64) (error){
+
+    uctx := sdk.UnwrapSDKContext(cache.Ctx)
+    currentBlock := uint64(uctx.BlockHeight())
+    durationPast := currentBlock - cache.GetStartBlock()
+    durationRemaining := cache.GetEndBlock() - currentBlock
+
+
+    // Provider Payout Consumer Cancellation Penalty
+        // start, current block
+        // (current - start) * rate * old capacity * Penalty
+        // Move from Collateral to Earnings
+    penaltyVoided := math.LegacyNewDecFromInt(math.NewIntFromUint64(durationPast)).Mul(math.LegacyNewDecFromInt(cache.GetProvider().GetRate().Amount)).Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(cache.GetCapacity()))).Mul(cache.GetProvider().GetProviderCancellationPenalty()).TruncateInt()
+    penaltyVoidedCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, penaltyVoided))
+
+    errSend := cache.K.bankKeeper.SendCoinsFromModuleToModule(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetProvider().GetEarningsPoolLocation(), penaltyVoidedCoin)
+    if errSend != nil {
+        return errSend
+    }
+
+    // new duration length
+        // remaining duration = end block - current block
+        // new duration = (remaining duration * old capacity) / new capacity .Truncate()
+    if cache.GetCapacity() < amount {
+        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Cannot decrease passed zero")
+    }
+    newCapacity := cache.GetCapacity() - amount
+
+    newDuration := (durationRemaining * cache.GetCapacity()) / newCapacity
+
+    cache.SetStartBlock(currentBlock)
+    cache.SetEndBlock(cache.GetStartBlock() + newDuration)
+
+    // Provider Load Increase
+    cache.GetProvider().AgreementLoadDecrease(amount)
+
+    cache.Agreement.Capacity = cache.GetCapacity() - amount
+
+    // Decrease the Allocation
+    allocation, allocationFound := cache.K.GetAllocation(cache.Ctx, cache.GetAllocationId())
+    if allocationFound {
+        // TODO error handling
+        cache.K.SetAllocation(cache.Ctx, allocation, cache.GetCapacity())
+    }
+
+
+    cache.Changed()
+
+    return nil
+}
+
+
+func (cache *AgreementCache) DurationIncrease(amount uint64) (error){
+
+    newDuration := (cache.GetEndBlock() - cache.GetStartBlock()) + amount
+    verifyError := cache.GetProvider().AgreementVerify(newDuration, cache.GetCapacity())
+    if verifyError != nil {
+        return verifyError
+    }
+
+    cache.SetEndBlock(cache.GetEndBlock() + amount)
     cache.Changed()
 
     return nil

@@ -5,7 +5,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
-		"cosmossdk.io/math"
+    "cosmossdk.io/math"
 )
 
 /*
