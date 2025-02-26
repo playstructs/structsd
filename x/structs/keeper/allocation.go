@@ -280,6 +280,12 @@ func (k Keeper) DestroyAllocation(ctx context.Context, allocationId string) (des
         k.RemoveAllocationSourceIndex(ctx, allocation.SourceObjectId, allocation.Id)
         k.RemoveAllocationDestinationIndex(ctx, allocation.DestinationId, allocation.Id)
 
+        // Check for a related Agreement and close it
+        agreement := k.GetAgreementCacheFromId(ctx, GetObjectID(types.ObjectType_agreement, allocation.Index))
+        if agreement.LoadAgreement() {
+            agreement.PrematureCloseByAllocation()
+        }
+
     	destroyed = true
     } else {
         destroyed = false

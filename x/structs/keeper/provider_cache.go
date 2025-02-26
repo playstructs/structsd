@@ -215,6 +215,10 @@ func (cache *ProviderCache) AgreementVerify(capacity uint64, duration uint64) (e
 
 /* Permissions */
 
+// Delete Permission
+func (cache *ProviderCache) CanDelete(activePlayer *PlayerCache) (error) {
+    return cache.PermissionCheck(types.PermissionDelete, activePlayer)
+}
 
 // Update Permission
 func (cache *ProviderCache) CanUpdate(activePlayer *PlayerCache) (error) {
@@ -330,6 +334,19 @@ func (cache *ProviderCache) RevokeGuildsAndCommit(guildIdSet []string) (error) {
     for _, guildId := range guildIdSet {
         cache.K.ProviderRevokeGuild(cache.Ctx, cache.GetProviderId(), guildId)
     }
+    return nil
+}
+
+func (cache *ProviderCache) DeleteAndCommit() (error) {
+
+    // Get List of Agreements
+    agreements := cache.K.GetAllAgreementIdByProviderIndex(cache.Ctx, cache.GetProviderId())
+    for _, agreementId := range agreements {
+        agreement := cache.K.GetAgreementCacheFromId(cache.Ctx, agreementId)
+        agreement.ManualLoadProvider(cache)
+        agreement.PrematureCloseByProvider()
+    }
+
     return nil
 }
 

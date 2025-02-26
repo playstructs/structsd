@@ -23,11 +23,26 @@ type AgreementCache struct {
 	AgreementChanged bool
 	Agreement        types.Agreement
 
+	PreviousEndBlock uint64
+	EndBlockChanged bool
+
 	OwnerLoaded bool
 	Owner       *PlayerCache
 
 	ProviderLoaded bool
 	Provider       *ProviderCache
+
+    DurationRemaining uint64
+    DurationRemainingLoaded bool
+
+    DurationPast uint64
+    DurationPastLoaded bool
+
+    Duration uint64
+    DurationLoaded bool
+
+    CurrentBlock uint64
+    CurrentBlockLoaded bool
 
 	// TODO allocationCache
 
@@ -49,6 +64,12 @@ func (k *Keeper) GetAgreementCacheFromId(ctx context.Context, agreementId string
 
 		AgreementLoaded:  false,
 		AgreementChanged: false,
+
+		DurationRemainingLoaded: false,
+		DurationPastLoaded: false,
+		DurationLoaded: false,
+
+		CurrentBlockLoaded: false,
 	}
 }
 
@@ -70,6 +91,13 @@ func (cache *AgreementCache) Commit() {
 		cache.GetProvider().Commit()
 	}
 
+	if cache.EndBlockChanged {
+	    if (cache.PreviousEndBlock > 0) {
+	        cache.K.RemoveAgreementExpirationIndex(cache.Ctx, cache.PreviousEndBlock, cache.GetAgreementId())
+	    }
+	    cache.K.SetAgreementExpirationIndex(cache.Ctx, cache.GetEndBlock(), cache.GetAgreementId())
+	}
+
 }
 
 func (cache *AgreementCache) IsChanged() bool {
@@ -83,13 +111,15 @@ func (cache *AgreementCache) Changed() {
 /* Separate Loading functions for each of the underlying containers */
 
 // Load the Agreement record
-func (cache *AgreementCache) LoadAgreement() {
+func (cache *AgreementCache) LoadAgreement() bool {
 	agreement, agreementFound := cache.K.GetAgreement(cache.Ctx, cache.AgreementId)
 
 	if agreementFound {
 		cache.Agreement = agreement
 		cache.AgreementLoaded = true
 	}
+
+	return agreementFound
 }
 
 // Load the Player data
@@ -100,10 +130,36 @@ func (cache *AgreementCache) LoadOwner() bool {
 	return cache.OwnerLoaded
 }
 
+func (cache *AgreementCache) LoadCurrentBlock() bool {
+    uctx := sdk.UnwrapSDKContext(cache.Ctx)
+    cache.CurrentBlock = uint64(uctx.BlockHeight())
+    cache.CurrentBlockLoaded = true
+    return cache.CurrentBlockLoaded
+}
+
+func (cache *AgreementCache) LoadDurationRemaining() bool {
+    cache.DurationRemaining = cache.GetEndBlock() - cache.GetCurrentBlock()
+    cache.DurationRemainingLoaded = true
+    return cache.DurationRemainingLoaded
+}
+
+func (cache *AgreementCache) LoadDurationPast() bool {
+    cache.DurationPast = cache.GetCurrentBlock() - cache.GetStartBlock()
+    cache.DurationPastLoaded = true
+    return cache.DurationPastLoaded
+}
+
+func (cache *AgreementCache) LoadDuration() bool {
+    cache.Duration = cache.GetEndBlock() - cache.GetStartBlock()
+    cache.DurationLoaded = true
+    return cache.DurationLoaded
+}
+
 func (cache *AgreementCache) ManualLoadOwner(owner *PlayerCache) {
     cache.Owner = owner
     cache.OwnerLoaded = true
 }
+
 // Load the Agreements Provider
 func (cache *AgreementCache) LoadProvider() bool {
 	newProvider := cache.K.GetProviderCacheFromId(cache.Ctx, cache.GetProviderId())
@@ -154,6 +210,7 @@ func (cache *AgreementCache) PermissionCheck(permission types.Permission, active
 func (cache *AgreementCache) GetAgreement() types.Agreement { if !cache.AgreementLoaded { cache.LoadAgreement() }; return cache.Agreement }
 func (cache *AgreementCache) GetAgreementId() string { return cache.AgreementId }
 
+func (cache *AgreementCache) GetCurrentBlock() uint64 { if !cache.CurrentBlockLoaded { cache.LoadCurrentBlock() }; return cache.CurrentBlock }
 
 // Get the Owner data
 func (cache *AgreementCache) GetOwnerId() string { if !cache.AgreementLoaded { cache.LoadAgreement() }; return cache.Agreement.Owner }
@@ -168,51 +225,135 @@ func (cache *AgreementCache) GetAllocationId() string { if !cache.AgreementLoade
 // TODO func GetAllocation()
 
 func (cache *AgreementCache) GetCapacity() uint64 { if !cache.AgreementLoaded { cache.LoadAgreement() }; return cache.Agreement.Capacity }
+func (cache *AgreementCache) GetCapacityInt() math.Int { return math.NewIntFromUint64(cache.GetCapacity()) }
+func (cache *AgreementCache) GetCapacityDec() math.LegacyDec { return math.LegacyNewDecFromInt(cache.GetCapacityInt()) }
 
 func (cache *AgreementCache) GetStartBlock() uint64 { if !cache.AgreementLoaded { cache.LoadAgreement() }; return cache.Agreement.StartBlock }
 func (cache *AgreementCache) GetEndBlock() uint64 { if !cache.AgreementLoaded { cache.LoadAgreement() }; return cache.Agreement.EndBlock }
 
 func (cache *AgreementCache) GetCreator() string { if !cache.AgreementLoaded { cache.LoadAgreement() }; return cache.Agreement.Creator }
 
+func (cache *AgreementCache) GetDuration() uint64 { if !cache.DurationLoaded { cache.LoadDuration() }; return cache.Duration }
+func (cache *AgreementCache) GetDurationInt() math.Int { return math.NewIntFromUint64(cache.GetDuration()) }
+
+func (cache *AgreementCache) GetDurationPast() uint64 { if !cache.DurationPastLoaded { cache.LoadDurationPast() }; return cache.DurationPast }
+func (cache *AgreementCache) GetDurationPastInt() math.Int { return math.NewIntFromUint64(cache.GetDurationPast()) }
+func (cache *AgreementCache) GetDurationPastDec() math.LegacyDec { return math.LegacyNewDecFromInt(cache.GetDurationPastInt()) }
+
+func (cache *AgreementCache) GetDurationRemaining() uint64 { if !cache.DurationRemainingLoaded { cache.LoadDurationRemaining() }; return cache.DurationRemaining }
+func (cache *AgreementCache) GetDurationRemainingInt() math.Int {  return math.NewIntFromUint64(cache.GetDurationRemaining()) }
+func (cache *AgreementCache) GetDurationRemainingDec() math.LegacyDec {  return math.LegacyNewDecFromInt(cache.GetDurationRemainingInt()) }
+
+func (cache *AgreementCache) GetOriginalCollateral() math.Int {
+    return cache.GetDurationInt().Mul(cache.GetProvider().GetRate().Amount).Mul(cache.GetCapacityInt())
+}
+
+func (cache *AgreementCache) GetRemainingCollateral() math.Int {
+    return cache.GetDurationRemainingInt().Mul(cache.GetProvider().GetRate().Amount).Mul(cache.GetCapacityInt())
+}
+func (cache *AgreementCache) GetRemainingCollateralDec() math.LegacyDec { return math.LegacyNewDecFromInt(cache.GetRemainingCollateral()) }
 
 /* Committing Setters */
+func (cache *AgreementCache) PayoutVoidedProviderCancellationPenalty() {
+    rate := math.LegacyNewDecFromInt(cache.GetProvider().GetRate().Amount)
+    penalty := cache.GetDurationPastDec().Mul(rate).Mul(cache.GetCapacityDec()).Mul(cache.GetProvider().GetProviderCancellationPenalty()).TruncateInt()
+    penaltyCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, penalty))
 
-func (cache *AgreementCache) CloseAndCommit() (sdk.Coins, error){
-    // Pay the Early Cancellation Penalty
-    uctx := sdk.UnwrapSDKContext(cache.Ctx)
-    currentBlock := uint64(uctx.BlockHeight())
-    durationPast := currentBlock - cache.GetStartBlock()
-    durationRemaining := cache.GetEndBlock() - currentBlock
+    cache.K.bankKeeper.SendCoinsFromModuleToModule(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetProvider().GetEarningsPoolLocation(), penaltyCoin)
 
-    remainingCollateral  := math.NewIntFromUint64(durationRemaining).Mul(cache.GetProvider().GetRate().Amount).Mul(math.NewIntFromUint64(cache.GetCapacity()))
+}
 
-    // Provider Payout Consumer Cancellation Penalty
-        // start, current block
-        // (current - start) * rate * old capacity * Penalty
-        // Move from Collateral to Earnings
-    penalty     := math.LegacyNewDecFromInt(remainingCollateral).Mul(cache.GetProvider().GetConsumerCancellationPenalty()).TruncateInt()
-    penaltyVoided := math.LegacyNewDecFromInt(math.NewIntFromUint64(durationPast)).Mul(math.LegacyNewDecFromInt(cache.GetProvider().GetRate().Amount)).Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(cache.GetCapacity()))).Mul(cache.GetProvider().GetProviderCancellationPenalty()).TruncateInt()
+func (cache *AgreementCache) PayoutProviderCancellationPenalty() {
+    rate := math.LegacyNewDecFromInt(cache.GetProvider().GetRate().Amount)
+    penalty := cache.GetDurationPastDec().Mul(rate).Mul(cache.GetCapacityDec()).Mul(cache.GetProvider().GetProviderCancellationPenalty()).TruncateInt()
+    penaltyCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, penalty))
 
-    penaltyCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, penalty.Add(penaltyVoided)))
+    cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetOwner().GetPrimaryAccount(), penaltyCoin)
 
-    errSend := cache.K.bankKeeper.SendCoinsFromModuleToModule(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetProvider().GetEarningsPoolLocation(), penaltyCoin)
+}
+
+func (cache *AgreementCache) PayoutConsumerCancellationPenaltyAndReturnCollateral() {
+    penalty := cache.GetRemainingCollateralDec().Mul(cache.GetProvider().GetConsumerCancellationPenalty()).TruncateInt()
+    penaltyCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, penalty))
+
+    cache.K.bankKeeper.SendCoinsFromModuleToModule(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetProvider().GetEarningsPoolLocation(), penaltyCoin)
+
+    remainingCollateral := cache.GetRemainingCollateral().Sub(penalty)
+    remainingCollateralCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, remainingCollateral))
+
+    cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetOwner().GetPrimaryAccount(), remainingCollateralCoin)
+
+}
+
+func (cache *AgreementCache) ReturnRemainingCollateral() {
+    remainingCollateralCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, cache.GetRemainingCollateral()))
+
+    cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetOwner().GetPrimaryAccount(), remainingCollateralCoin)
+}
+
+func (cache *AgreementCache) PrematureCloseByProvider() (error) {
+    // Payout Cancellation Penalty
+    cache.PayoutProviderCancellationPenalty()
+    cache.ReturnRemainingCollateral()
+
+    // Destroy the Allocation
+    cache.K.DestroyAllocation(cache.Ctx, cache.GetAllocationId())
+
+    // Decrease the Load on the Provider
+    cache.GetProvider().AgreementLoadDecrease(cache.GetCapacity())
+
+    // Destroy the Agreement
+    cache.K.RemoveAgreement(cache.Ctx, cache.GetAgreement())
+
+    return nil
+}
+
+func (cache *AgreementCache) PrematureCloseByConsumer() (error){
+
+    cache.PayoutConsumerCancellationPenaltyAndReturnCollateral()
+
+    // Destroy the Allocation
+    cache.K.DestroyAllocation(cache.Ctx, cache.GetAllocationId())
+
+    // Decrease the Load on the Provider
+    cache.GetProvider().AgreementLoadDecrease(cache.GetCapacity())
+
+    // Destroy the Agreement
+    cache.K.RemoveAgreement(cache.Ctx, cache.GetAgreement())
+
+    return  nil
+
+}
+
+func (cache *AgreementCache) PrematureCloseByAllocation() (error){
+    cache.PayoutProviderCancellationPenalty()
+    cache.ReturnRemainingCollateral()
+
+    // Decrease the Load on the Provider
+    cache.GetProvider().AgreementLoadDecrease(cache.GetCapacity())
+    cache.GetProvider().Commit()
+
+    // Destroy the Agreement
+    cache.K.RemoveAgreement(cache.Ctx, cache.GetAgreement())
+
+    return  nil
+
+}
 
 
-    // Return the remaining Collateral
-    remainingCollateralCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, remainingCollateral.Sub(penalty)))
+func (cache *AgreementCache) Expire() (error){
+    cache.PayoutVoidedProviderCancellationPenalty()
 
-    if errSend != nil {
-        // Destroy the Allocation
-        cache.K.DestroyAllocation(cache.Ctx, cache.GetAllocationId())
+    // Decrease the Load on the Provider
+    cache.GetProvider().AgreementLoadDecrease(cache.GetCapacity())
 
-        // Decrease the Load on the Provider
-        cache.GetProvider().AgreementLoadDecrease(cache.GetCapacity())
+    // Destroy the Allocation
+    cache.K.DestroyAllocation(cache.Ctx, cache.GetAllocationId())
 
-        // Destroy the Agreement
-        cache.K.RemoveAgreement(cache.Ctx, cache.GetAgreementId())
-    }
+    // Destroy the Agreement
+    cache.K.RemoveAgreement(cache.Ctx, cache.GetAgreement())
 
-    return  remainingCollateralCoin, errSend
+    return  nil
 
 }
 
@@ -231,6 +372,12 @@ func (cache *AgreementCache) SetStartBlock(startBlock uint64) {
         cache.LoadAgreement()
     }
     cache.Agreement.StartBlock = startBlock
+
+    cache.DurationLoaded = false
+    cache.DurationPastLoaded = false
+    cache.DurationRemainingLoaded = false
+
+
     cache.Changed()
 }
 
@@ -238,7 +385,15 @@ func (cache *AgreementCache) SetEndBlock(endBlock uint64) {
     if !cache.AgreementLoaded {
         cache.LoadAgreement()
     }
+
+    cache.PreviousEndBlock = cache.Agreement.EndBlock
     cache.Agreement.EndBlock = endBlock
+    cache.EndBlockChanged = true
+
+    cache.DurationLoaded = false
+    cache.DurationPastLoaded = false
+    cache.DurationRemainingLoaded = false
+
     cache.Changed()
 }
 
@@ -247,32 +402,15 @@ func (cache *AgreementCache) CapacityIncrease(amount uint64) (error){
         return sdkerrors.Wrapf(types.ErrGridMalfunction, "Substation (%s) cannot afford the increase", cache.GetProvider().GetSubstationId())
     }
 
-    uctx := sdk.UnwrapSDKContext(cache.Ctx)
-    currentBlock := uint64(uctx.BlockHeight())
-    durationPast := currentBlock - cache.GetStartBlock()
-    durationRemaining := cache.GetEndBlock() - currentBlock
-
-
-    // Provider Payout Consumer Cancellation Penalty
-        // start, current block
-        // (current - start) * rate * old capacity * Penalty
-        // Move from Collateral to Earnings
-    penaltyVoided := math.LegacyNewDecFromInt(math.NewIntFromUint64(durationPast)).Mul(math.LegacyNewDecFromInt(cache.GetProvider().GetRate().Amount)).Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(cache.GetCapacity()))).Mul(cache.GetProvider().GetProviderCancellationPenalty()).TruncateInt()
-    penaltyVoidedCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, penaltyVoided))
-
-    errSend := cache.K.bankKeeper.SendCoinsFromModuleToModule(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetProvider().GetEarningsPoolLocation(), penaltyVoidedCoin)
-    if errSend != nil {
-        return errSend
-    }
-
+    cache.PayoutVoidedProviderCancellationPenalty()
 
     // new duration length
         // remaining duration = end block - current block
         // new duration = (remaining duration * old capacity) / new capacity .Truncate()
     newCapacity := cache.GetCapacity() + amount
-    newDuration := (durationRemaining * cache.GetCapacity()) / newCapacity
+    newDuration := (cache.GetDurationRemaining() * cache.GetCapacity()) / newCapacity
 
-    cache.SetStartBlock(currentBlock)
+    cache.SetStartBlock(cache.GetCurrentBlock())
     cache.SetEndBlock(cache.GetStartBlock() + newDuration)
 
     // Provider Load Increase
@@ -294,24 +432,7 @@ func (cache *AgreementCache) CapacityIncrease(amount uint64) (error){
 
 
 func (cache *AgreementCache) CapacityDecrease(amount uint64) (error){
-
-    uctx := sdk.UnwrapSDKContext(cache.Ctx)
-    currentBlock := uint64(uctx.BlockHeight())
-    durationPast := currentBlock - cache.GetStartBlock()
-    durationRemaining := cache.GetEndBlock() - currentBlock
-
-
-    // Provider Payout Consumer Cancellation Penalty
-        // start, current block
-        // (current - start) * rate * old capacity * Penalty
-        // Move from Collateral to Earnings
-    penaltyVoided := math.LegacyNewDecFromInt(math.NewIntFromUint64(durationPast)).Mul(math.LegacyNewDecFromInt(cache.GetProvider().GetRate().Amount)).Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(cache.GetCapacity()))).Mul(cache.GetProvider().GetProviderCancellationPenalty()).TruncateInt()
-    penaltyVoidedCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, penaltyVoided))
-
-    errSend := cache.K.bankKeeper.SendCoinsFromModuleToModule(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetProvider().GetEarningsPoolLocation(), penaltyVoidedCoin)
-    if errSend != nil {
-        return errSend
-    }
+    cache.PayoutVoidedProviderCancellationPenalty()
 
     // new duration length
         // remaining duration = end block - current block
@@ -321,9 +442,9 @@ func (cache *AgreementCache) CapacityDecrease(amount uint64) (error){
     }
     newCapacity := cache.GetCapacity() - amount
 
-    newDuration := (durationRemaining * cache.GetCapacity()) / newCapacity
+    newDuration := (cache.GetDurationRemaining() * cache.GetCapacity()) / newCapacity
 
-    cache.SetStartBlock(currentBlock)
+    cache.SetStartBlock(cache.GetCurrentBlock() )
     cache.SetEndBlock(cache.GetStartBlock() + newDuration)
 
     // Provider Load Increase

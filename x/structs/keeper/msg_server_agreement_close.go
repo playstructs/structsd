@@ -24,17 +24,10 @@ func (k msgServer) AgreementClose(goCtx context.Context, msg *types.MsgAgreement
 
     // Checkpoint
     agreement.GetProvider().Checkpoint()
-    remainingCollateral, errorParam := agreement.CloseAndCommit()
+    errorParam := agreement.PrematureCloseByConsumer()
     if (errorParam != nil) {
         return &types.MsgAgreementResponse{}, errorParam
     }
-
-    sourceAcc, errParam := sdk.AccAddressFromBech32(activePlayer.GetPrimaryAddress())
-    if errParam != nil {
-        return &types.MsgAgreementResponse{}, errParam
-    }
-    k.bankKeeper.SendCoinsFromModuleToAccount(ctx, agreement.GetProvider().GetCollateralPoolLocation(), sourceAcc, remainingCollateral)
-
 
 	return &types.MsgAgreementResponse{}, nil
 }

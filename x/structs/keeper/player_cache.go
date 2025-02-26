@@ -248,6 +248,7 @@ func (cache *PlayerCache) GetPlayer() (types.Player, error) {
 
 func (cache *PlayerCache) GetPlayerId()         (string) { return cache.PlayerId }
 func (cache *PlayerCache) GetPrimaryAddress()   (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.PrimaryAddress }
+func (cache *PlayerCache) GetPrimaryAccount()   (sdk.AccAddress) { acc, _ := sdk.AccAddressFromBech32(cache.GetPrimaryAddress()); return acc }
 func (cache *PlayerCache) GetActiveAddress()    (string) { return cache.ActiveAddress }
 func (cache *PlayerCache) GetSubstationId()     (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.SubstationId }
 func (cache *PlayerCache) GetIndex()            (uint64) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.Index }

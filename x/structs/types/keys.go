@@ -157,8 +157,10 @@ const (
 )
 
 const (
-	AgreementKey      = "Agreement/value/"
-	AgreementCountKey  = "Agreement/count/"
+	AgreementKey            = "Agreement/value/"
+	AgreementCountKey       = "Agreement/count/"
+	AgreementProviderKey    = "Agreement/source/"
+	AgreementExpirationKey  = "Agreement/expiration/"
 )
 
 

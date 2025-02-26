@@ -15,14 +15,21 @@ import (
 
 )
 
-// AppendAgreement appends a agreement in the store with a new id
-// TODO
+// AppendAgreement appends a agreement in the store with the ID of the related Allocation
 func (k Keeper) AppendAgreement(
 	ctx context.Context,
 	agreement types.Agreement,
 ) (err error) {
+    k.SetAgreementProviderIndex(ctx, agreement.ProviderId, agreement.Id)
 
-	return  nil
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AgreementKey))
+	appendedValue := k.cdc.MustMarshal(&agreement)
+	store.Set([]byte(agreement.Id), appendedValue)
+
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAgreement{Agreement: &agreement})
+
+	return nil
 }
 
 func (k Keeper) SetAgreement(ctx context.Context, agreement types.Agreement) (types.Agreement, error){
@@ -42,42 +49,43 @@ func (k Keeper) SetAgreement(ctx context.Context, agreement types.Agreement) (ty
 // ImportAgreement set a specific agreement in the store
 // Assumes Grid updates happen elsewhere
 func (k Keeper) ImportAgreement(ctx context.Context, agreement types.Agreement){
-    //k.SetAgreementSourceIndex(ctx, agreement.SourceObjectId, agreement.Id)
-    //k.SetAgreementDestinationIndex(ctx, agreement.DestinationId, agreement.Id)
+    k.SetAgreementProviderIndex(ctx, agreement.ProviderId, agreement.Id)
 
     store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AgreementKey))
     b := k.cdc.MustMarshal(&agreement)
     store.Set([]byte(agreement.Id), b)
 
-	//ctxSDK := sdk.UnwrapSDKContext(ctx)
-    //_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAgreement{Agreement: &agreement})
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAgreement{Agreement: &agreement})
 }
 
 
 
 // RemoveAgreement removes a agreement from the store
-func (k Keeper) RemoveAgreement(ctx context.Context, agreementId string) {
+func (k Keeper) RemoveAgreement(ctx context.Context, agreement types.Agreement) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AgreementKey))
-	store.Delete([]byte(agreementId))
+	store.Delete([]byte(agreement.Id))
+
+	 k.RemoveAgreementProviderIndex(ctx, agreement.ProviderId, agreement.Id)
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventDelete{ObjectId: agreementId})
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventDelete{ObjectId: agreement.Id})
 }
 
-// DestroyAgreement updates grid attributes before calling RemoveAgreement
-func (k Keeper) DestroyAgreement(ctx context.Context, agreementId string) (destroyed bool){
-    agreement, agreementFound := k.GetAgreement(ctx, agreementId)
+func (k Keeper) AgreementExpirations(ctx context.Context) {
 
-    _ = agreement
-    if agreementFound {
-    	destroyed = true
-    } else {
-        destroyed = false
+    uctx := sdk.UnwrapSDKContext(ctx)
+    currentBlock := uint64(uctx.BlockHeight())
+
+    // Get List of Agreements
+    agreements := k.GetAllAgreementIdByExpirationIndex(ctx, currentBlock)
+    for _, agreementId := range agreements {
+        agreement := k.GetAgreementCacheFromId(ctx, agreementId)
+        agreement.GetProvider().Checkpoint()
+        agreement.Expire()
     }
 
-    return
 }
-
 
 // GetAgreement returns a agreement from its id
 func (k Keeper) GetAgreement(ctx context.Context, agreementId string) (val types.Agreement, found bool) {

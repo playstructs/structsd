@@ -73,7 +73,8 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
     endBlock := startBlock + msg.Duration
 
     agreement := types.CreateBaseAgreement(msg.Creator, activePlayer.GetPlayerId(), msg.Capacity, startBlock, endBlock, allocationId)
-    // Append the Agreement
+    // Append the Agreement using the Allocations Id Index
+    agreement.Id = GetObjectID(types.ObjectType_agreement, allocation.Index)
     k.AppendAgreement(ctx, agreement)
 
     checkpointError := provider.Checkpoint()
