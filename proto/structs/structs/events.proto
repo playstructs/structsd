@@ -10,6 +10,7 @@ import "structs/structs/params.proto";
 import "google/protobuf/timestamp.proto";
 
 import "structs/structs/address.proto";
+import "structs/structs/agreement.proto";
 import "structs/structs/allocation.proto";
 import "structs/structs/fleet.proto";
 import "structs/structs/grid.proto";
@@ -39,6 +40,7 @@ option go_package = "structs/x/structs/types";
  */
 
   message EventAllocation       { Allocation allocation = 1; }
+  message EventAgreement        { Agreement agreement = 1; }
   message EventFleet            { Fleet fleet = 1; }
   message EventGuild            { Guild guild = 1; }
   message EventInfusion         { Infusion infusion = 1; }

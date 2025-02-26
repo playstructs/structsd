@@ -8,7 +8,7 @@ import (
 
 
 
-func CreateBaseProvider(creator string, owner string ) (Provider) {
+func CreateBaseProvider(creator string, owner string) (Provider) {
     return Provider{
         Creator: creator,
         Owner: owner,

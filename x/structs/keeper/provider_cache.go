@@ -302,6 +302,8 @@ func (cache *ProviderCache) WithdrawBalanceAndCommit(destinationAddress string) 
     return nil
 }
 
+
+
 func (cache *ProviderCache) GrantGuildsAndCommit(guildIdSet []string) (error) {
     for _, guildId := range guildIdSet {
         _, found := cache.K.GetGuild(cache.Ctx, guildId)
@@ -390,3 +392,31 @@ func (cache *ProviderCache) SetDurationMinimum(minimum uint64) (error){
     return paramError
 }
 
+
+func (cache *ProviderCache) CheckPoint() (error) {
+
+    // First handle the balances available via checkpoint
+    uctx := sdk.UnwrapSDKContext(cache.Ctx)
+    currentBlock := uint64(uctx.BlockHeight())
+    blockDifference := currentBlock - cache.GetCheckpointBlock()
+
+    blocks := math.LegacyNewDecFromInt(math.NewIntFromUint64(blockDifference))
+    rate := math.LegacyNewDecFromInt(cache.GetRate().Amount)
+    load := math.LegacyNewDecFromInt(math.NewIntFromUint64(cache.GetAgreementLoad()))
+
+    prePenaltyDeductionAmount := blocks.Mul(rate).Mul(load)
+    penaltyDeductionAmount := prePenaltyDeductionAmount.Mul(cache.GetProviderCancellationPenalty())
+
+    finalWithdrawBalance := prePenaltyDeductionAmount.Sub(penaltyDeductionAmount).TruncateInt()
+
+    withdrawAmountCoin := sdk.NewCoins(sdk.NewCoin(cache.GetRate().Denom, finalWithdrawBalance))
+
+    errSend := cache.K.bankKeeper.SendCoinsFromModuleToModule(cache.Ctx, cache.GetCollateralPoolLocation(), cache.GetEarningsPoolLocation(), withdrawAmountCoin)
+    if errSend != nil {
+        return errSend
+    }
+
+    cache.SetCheckpointBlock(currentBlock)
+
+    return nil
+}

@@ -43,9 +43,10 @@ enum gridAttributeType {
 }
 
 enum allocationType {
-    static         = 0;
-    dynamic        = 1;
-    automated      = 2;
+    static              = 0;
+    dynamic             = 1;
+    automated           = 2;
+    providerAgreement   = 3;
 }
 
 

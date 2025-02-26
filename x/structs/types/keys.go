@@ -206,9 +206,10 @@ var GridAttributeType_enum = map[string]GridAttributeType{
 
 // Doing the same for AllocationType
 var AllocationType_enum = map[string]AllocationType{
-	"static":       AllocationType_static,
-	"dynamic":      AllocationType_dynamic,
-	"automated":    AllocationType_automated,
+	"static":               AllocationType_static,
+	"dynamic":              AllocationType_dynamic,
+	"automated":            AllocationType_automated,
+	"providerAgreement":    AllocationType_providerAgreement,
 
 }
 

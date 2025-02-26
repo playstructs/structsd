@@ -66,6 +66,7 @@ type BankKeeper interface {
     SpendableCoins(context.Context, sdk.AccAddress) sdk.Coins
     SpendableCoin(context.Context, sdk.AccAddress, string) sdk.Coin
     SendCoins(context.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) error
+    SendCoinsFromModuleToModule(context.Context, string, string, sdk.Coins) error
     SendCoinsFromAccountToModule(context.Context, sdk.AccAddress, string, sdk.Coins) error
     SendCoinsFromModuleToAccount(context.Context, string, sdk.AccAddress, sdk.Coins) error
     MintCoins(context.Context, string, sdk.Coins) error

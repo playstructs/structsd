@@ -31,11 +31,10 @@ func (k Keeper) SetAgreement(ctx context.Context, agreement types.Agreement) (ty
     b := k.cdc.MustMarshal(&agreement)
     store.Set([]byte(agreement.Id), b)
 
-	//ctxSDK := sdk.UnwrapSDKContext(ctx)
-    //_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAgreement{Agreement: &agreement})
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAgreement{Agreement: &agreement})
 
     return agreement,  nil
-
 }
 
 

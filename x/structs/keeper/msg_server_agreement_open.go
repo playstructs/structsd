@@ -48,7 +48,7 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
     collateralAmount := duration.Mul(capacity).Mul(provider.GetRate().Amount)
     //balanceError := activePlayer.CanAffordAgreement(collateralAmount, provider.GetRate().Denom)
     collateralAmountCoin := sdk.NewCoin(provider.GetRate().Denom, collateralAmount)
-
+    collateralAmountCoins := sdk.NewCoins(collateralAmountCoin)
     sourceAcc, errParam := sdk.AccAddressFromBech32(activePlayer.GetPrimaryAddress())
     if errParam != nil {
         return &types.MsgAgreementResponse{}, errParam
@@ -59,12 +59,26 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
     }
 
     // move the funds from user to provider collateral pool
-
-    // Append the Agreement
+    errSend := k.bankKeeper.SendCoinsFromAccountToModule(ctx, sourceAcc, provider.GetCollateralPoolLocation(), collateralAmountCoins)
+    if errSend != nil {
+        return &types.MsgAgreementResponse{}, errSend
+    }
 
     // Create the allocation
+    allocation := types.CreateAllocationStub(types.AllocationType_providerAgreement, provider.GetSubstationId(), msg.Creator, activePlayer.GetPlayerId())
+    allocationId, _ , _ := k.AppendAllocation(ctx, allocation, msg.Capacity)
 
+    // Build the Agreement range
+    startBlock := uint64(ctx.BlockHeight()) + uint64(1)
+    endBlock := startBlock + msg.Duration
 
+    agreement := types.CreateBaseAgreement(msg.Creator, activePlayer.GetPlayerId(), msg.Capacity, startBlock, endBlock, allocationId)
+    // Append the Agreement
+    k.AppendAgreement(ctx, agreement)
+
+    provider.CheckPoint()
+    provider.AgreementLoadIncrease(msg.Capacity)
+    provider.Commit()
 
 	return &types.MsgAgreementResponse{}, nil
 }
