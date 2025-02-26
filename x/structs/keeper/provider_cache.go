@@ -29,6 +29,9 @@ type ProviderCache struct {
 	OwnerLoaded bool
 	Owner       *PlayerCache
 
+    SubstationLoaded bool
+    Substation       *SubstationCache
+
 	CheckpointBlockAttributeId   string
 	CheckpointBlock              uint64
 	CheckpointBlockLoaded        bool
@@ -73,7 +76,9 @@ func (cache *ProviderCache) Commit() {
 		cache.ProviderChanged = false
 	}
 
-	// TODO Add substation
+	if cache.Substation != nil && cache.GetSubstation().IsChanged() {
+		cache.GetSubstation().Commit()
+	}
 
 	if cache.Owner != nil && cache.GetOwner().IsChanged() {
 		cache.GetOwner().Commit()
@@ -124,7 +129,13 @@ func (cache *ProviderCache) LoadProvider() {
 	}
 }
 
-
+// Load the Substation data
+func (cache *ProviderCache) LoadSubstation() bool {
+	newSubstation := cache.K.GetSubstationCacheFromId(cache.Ctx, cache.GetSubstationId())
+	cache.Substation = &newSubstation
+	cache.SubstationLoaded = true
+	return cache.SubstationLoaded
+}
 
 func (cache *ProviderCache) LoadCheckpointBlock() {
     cache.CheckpointBlock = cache.K.GetGridAttribute(cache.Ctx, cache.CheckpointBlockAttributeId)
@@ -152,7 +163,7 @@ func (cache *ProviderCache) GetOwnerId() string { if !cache.ProviderLoaded { cac
 func (cache *ProviderCache) GetOwner() *PlayerCache { if !cache.OwnerLoaded { cache.LoadOwner() }; return cache.Owner }
 
 func (cache *ProviderCache) GetSubstationId() string { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.SubstationId }
-// TODO func (cache *ProviderCache) GetSubstation() *SubstationCache {}
+func (cache *ProviderCache) GetSubstation() *SubstationCache {if !cache.SubstationLoaded { cache.LoadSubstation() }; return cache.Substation }
 
 func (cache *ProviderCache) GetRate() sdk.Coin { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.Rate }
 
@@ -227,7 +238,7 @@ func (cache *ProviderCache) PermissionCheck(permission types.Permission, activeP
     } else {
         if (activePlayer.GetPlayerId() != cache.GetOwnerId()) {
             if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetProviderId(), activePlayer.GetPlayerId()), permission)) {
-               return sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) has no (%d) permissions on target substation (%s)", activePlayer.GetPlayerId(), permission, cache.GetProviderId())
+               return sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) has no (%d) permissions on target provider (%s)", activePlayer.GetPlayerId(), permission, cache.GetProviderId())
             }
         }
     }
@@ -250,7 +261,7 @@ func (cache *ProviderCache) CanOpenAgreement(activePlayer *PlayerCache) (error) 
         return sdkerrors.Wrapf(types.ErrPermission, "Provider (%s) is not accepting new Agreements", cache.GetProviderId())
 
     } else {
-            return sdkerrors.Wrapf(types.ErrPermission, "We're not really sure why it's not allowed, but it isn't. Pls tell an adult")
+        return sdkerrors.Wrapf(types.ErrPermission, "We're not really sure why it's not allowed, but it isn't. Pls tell an adult")
     }
 
     return nil
@@ -393,7 +404,7 @@ func (cache *ProviderCache) SetDurationMinimum(minimum uint64) (error){
 }
 
 
-func (cache *ProviderCache) CheckPoint() (error) {
+func (cache *ProviderCache) Checkpoint() (error) {
 
     // First handle the balances available via checkpoint
     uctx := sdk.UnwrapSDKContext(cache.Ctx)
@@ -407,11 +418,11 @@ func (cache *ProviderCache) CheckPoint() (error) {
     prePenaltyDeductionAmount := blocks.Mul(rate).Mul(load)
     penaltyDeductionAmount := prePenaltyDeductionAmount.Mul(cache.GetProviderCancellationPenalty())
 
-    finalWithdrawBalance := prePenaltyDeductionAmount.Sub(penaltyDeductionAmount).TruncateInt()
+    checkpointBalance := prePenaltyDeductionAmount.Sub(penaltyDeductionAmount).TruncateInt()
 
-    withdrawAmountCoin := sdk.NewCoins(sdk.NewCoin(cache.GetRate().Denom, finalWithdrawBalance))
+    checkpointBalanceCoin := sdk.NewCoins(sdk.NewCoin(cache.GetRate().Denom, checkpointBalance))
 
-    errSend := cache.K.bankKeeper.SendCoinsFromModuleToModule(cache.Ctx, cache.GetCollateralPoolLocation(), cache.GetEarningsPoolLocation(), withdrawAmountCoin)
+    errSend := cache.K.bankKeeper.SendCoinsFromModuleToModule(cache.Ctx, cache.GetCollateralPoolLocation(), cache.GetEarningsPoolLocation(), checkpointBalanceCoin)
     if errSend != nil {
         return errSend
     }

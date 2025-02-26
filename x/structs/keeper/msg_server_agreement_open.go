@@ -76,7 +76,10 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
     // Append the Agreement
     k.AppendAgreement(ctx, agreement)
 
-    provider.CheckPoint()
+    checkpointError := provider.Checkpoint()
+    if checkpointError != nil {
+        return &types.MsgAgreementResponse{}, checkpointError
+    }
     provider.AgreementLoadIncrease(msg.Capacity)
     provider.Commit()
 

@@ -195,11 +195,9 @@ func (cache *SubstationCache) PermissionCheck(permission types.Permission, activ
     if !activePlayer.HasPlayerAccount() {
         err = sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no Account", activePlayer.GetActiveAddress())
     } else {
-        if (err != nil) {
-            if (activePlayer.GetPlayerId() != cache.GetOwnerId()) {
-                if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetSubstationId(), activePlayer.GetPlayerId()), permission)) {
-                   err = sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) has no (%d) permissions on target substation (%s)", activePlayer.GetPlayerId(), permission, cache.GetSubstationId())
-                }
+        if (activePlayer.GetPlayerId() != cache.GetOwnerId()) {
+            if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetSubstationId(), activePlayer.GetPlayerId()), permission)) {
+               err = sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) has no (%d) permissions on target substation (%s)", activePlayer.GetPlayerId(), permission, cache.GetSubstationId())
             }
         }
     }

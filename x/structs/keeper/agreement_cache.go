@@ -4,6 +4,7 @@ import (
 	"context"
 
     sdk "github.com/cosmos/cosmos-sdk/types"
+    sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 
 	"fmt"
@@ -118,6 +119,30 @@ func (cache *AgreementCache) ManualLoadProvider(provider *ProviderCache) {
 
 
 
+// Update Permission
+func (cache *AgreementCache) CanUpdate(activePlayer *PlayerCache) (error) {
+    return cache.PermissionCheck(types.PermissionUpdate, activePlayer)
+}
+
+
+func (cache *AgreementCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) (error) {
+    // Make sure the address calling this has permissions
+    if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission)) {
+        return sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no (%d) permissions ", activePlayer.GetActiveAddress(), permission)
+    }
+
+    if !activePlayer.HasPlayerAccount() {
+        return sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no Account", activePlayer.GetActiveAddress())
+    } else {
+        if (activePlayer.GetPlayerId() != cache.GetOwnerId()) {
+            if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetAgreementId(), activePlayer.GetPlayerId()), permission)) {
+               return sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) has no (%d) permissions on target agreement (%s)", activePlayer.GetPlayerId(), permission, cache.GetAgreementId())
+            }
+        }
+    }
+    return nil
+}
+
 
 
 
@@ -177,3 +202,27 @@ func (cache *AgreementCache) SetEndBlock(endBlock uint64) {
     cache.Changed()
 }
 
+func (cache *AgreementCache) CapacityIncrease(amount uint64) (error){
+    if cache.GetProvider().GetSubstation().GetAvailableCapacity() < (cache.GetCapacity() + amount){
+        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Substation (%s) cannot afford the increase", cache.GetProvider().GetSubstationId())
+    }
+
+    // original duration length
+    // original capacity
+    // new duration length
+
+    // start, end = original duration
+
+    // Provider Payout Consumer Cancellation Penalty
+        // start, current block
+        // (current - start) * rate * capacity * Penalty
+
+    // Provider Load Increase
+
+
+
+    cache.Agreement.Capacity = cache.GetCapacity() + amount
+    cache.Changed()
+
+    return nil
+}
