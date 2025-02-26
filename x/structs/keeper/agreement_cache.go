@@ -303,6 +303,7 @@ func (cache *AgreementCache) PrematureCloseByProvider() (error) {
     cache.GetProvider().AgreementLoadDecrease(cache.GetCapacity())
 
     // Destroy the Agreement
+    cache.K.RemoveAgreementExpirationIndex(cache.Ctx, cache.GetEndBlock(), cache.GetAgreementId())
     cache.K.RemoveAgreement(cache.Ctx, cache.GetAgreement())
 
     return nil
@@ -319,6 +320,7 @@ func (cache *AgreementCache) PrematureCloseByConsumer() (error){
     cache.GetProvider().AgreementLoadDecrease(cache.GetCapacity())
 
     // Destroy the Agreement
+    cache.K.RemoveAgreementExpirationIndex(cache.Ctx, cache.GetEndBlock(), cache.GetAgreementId())
     cache.K.RemoveAgreement(cache.Ctx, cache.GetAgreement())
 
     return  nil
@@ -334,6 +336,7 @@ func (cache *AgreementCache) PrematureCloseByAllocation() (error){
     cache.GetProvider().Commit()
 
     // Destroy the Agreement
+    cache.K.RemoveAgreementExpirationIndex(cache.Ctx, cache.GetEndBlock(), cache.GetAgreementId())
     cache.K.RemoveAgreement(cache.Ctx, cache.GetAgreement())
 
     return  nil
@@ -351,6 +354,7 @@ func (cache *AgreementCache) Expire() (error){
     cache.K.DestroyAllocation(cache.Ctx, cache.GetAllocationId())
 
     // Destroy the Agreement
+    cache.K.RemoveAgreementExpirationIndex(cache.Ctx, cache.GetEndBlock(), cache.GetAgreementId())
     cache.K.RemoveAgreement(cache.Ctx, cache.GetAgreement())
 
     return  nil
