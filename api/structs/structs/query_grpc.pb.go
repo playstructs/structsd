@@ -24,6 +24,9 @@ const (
 	Query_Address_FullMethodName                       = "/structs.structs.Query/Address"
 	Query_AddressAll_FullMethodName                    = "/structs.structs.Query/AddressAll"
 	Query_AddressAllByPlayer_FullMethodName            = "/structs.structs.Query/AddressAllByPlayer"
+	Query_Agreement_FullMethodName                     = "/structs.structs.Query/Agreement"
+	Query_AgreementAll_FullMethodName                  = "/structs.structs.Query/AgreementAll"
+	Query_AgreementAllByProvider_FullMethodName        = "/structs.structs.Query/AgreementAllByProvider"
 	Query_Allocation_FullMethodName                    = "/structs.structs.Query/Allocation"
 	Query_AllocationAll_FullMethodName                 = "/structs.structs.Query/AllocationAll"
 	Query_AllocationAllBySource_FullMethodName         = "/structs.structs.Query/AllocationAllBySource"
@@ -51,6 +54,8 @@ const (
 	Query_PlanetAllByPlayer_FullMethodName             = "/structs.structs.Query/PlanetAllByPlayer"
 	Query_PlanetAttribute_FullMethodName               = "/structs.structs.Query/PlanetAttribute"
 	Query_PlanetAttributeAll_FullMethodName            = "/structs.structs.Query/PlanetAttributeAll"
+	Query_Provider_FullMethodName                      = "/structs.structs.Query/Provider"
+	Query_ProviderAll_FullMethodName                   = "/structs.structs.Query/ProviderAll"
 	Query_Reactor_FullMethodName                       = "/structs.structs.Query/Reactor"
 	Query_ReactorAll_FullMethodName                    = "/structs.structs.Query/ReactorAll"
 	Query_Struct_FullMethodName                        = "/structs.structs.Query/Struct"
@@ -75,6 +80,10 @@ type QueryClient interface {
 	Address(ctx context.Context, in *QueryGetAddressRequest, opts ...grpc.CallOption) (*QueryAddressResponse, error)
 	AddressAll(ctx context.Context, in *QueryAllAddressRequest, opts ...grpc.CallOption) (*QueryAllAddressResponse, error)
 	AddressAllByPlayer(ctx context.Context, in *QueryAllAddressByPlayerRequest, opts ...grpc.CallOption) (*QueryAllAddressResponse, error)
+	// Queries a list of Agreement items.
+	Agreement(ctx context.Context, in *QueryGetAgreementRequest, opts ...grpc.CallOption) (*QueryGetAgreementResponse, error)
+	AgreementAll(ctx context.Context, in *QueryAllAgreementRequest, opts ...grpc.CallOption) (*QueryAllAgreementResponse, error)
+	AgreementAllByProvider(ctx context.Context, in *QueryAllAgreementByProviderRequest, opts ...grpc.CallOption) (*QueryAllAgreementResponse, error)
 	// Queries a list of Allocation items.
 	Allocation(ctx context.Context, in *QueryGetAllocationRequest, opts ...grpc.CallOption) (*QueryGetAllocationResponse, error)
 	AllocationAll(ctx context.Context, in *QueryAllAllocationRequest, opts ...grpc.CallOption) (*QueryAllAllocationResponse, error)
@@ -115,6 +124,9 @@ type QueryClient interface {
 	PlanetAttribute(ctx context.Context, in *QueryGetPlanetAttributeRequest, opts ...grpc.CallOption) (*QueryGetPlanetAttributeResponse, error)
 	// Queries a list of all Planet Attributes
 	PlanetAttributeAll(ctx context.Context, in *QueryAllPlanetAttributeRequest, opts ...grpc.CallOption) (*QueryAllPlanetAttributeResponse, error)
+	// Queries a list of Allocation items.
+	Provider(ctx context.Context, in *QueryGetProviderRequest, opts ...grpc.CallOption) (*QueryGetProviderResponse, error)
+	ProviderAll(ctx context.Context, in *QueryAllProviderRequest, opts ...grpc.CallOption) (*QueryAllProviderResponse, error)
 	// Queries a list of Reactor items.
 	Reactor(ctx context.Context, in *QueryGetReactorRequest, opts ...grpc.CallOption) (*QueryGetReactorResponse, error)
 	ReactorAll(ctx context.Context, in *QueryAllReactorRequest, opts ...grpc.CallOption) (*QueryAllReactorResponse, error)
@@ -180,6 +192,33 @@ func (c *queryClient) AddressAll(ctx context.Context, in *QueryAllAddressRequest
 func (c *queryClient) AddressAllByPlayer(ctx context.Context, in *QueryAllAddressByPlayerRequest, opts ...grpc.CallOption) (*QueryAllAddressResponse, error) {
 	out := new(QueryAllAddressResponse)
 	err := c.cc.Invoke(ctx, Query_AddressAllByPlayer_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Agreement(ctx context.Context, in *QueryGetAgreementRequest, opts ...grpc.CallOption) (*QueryGetAgreementResponse, error) {
+	out := new(QueryGetAgreementResponse)
+	err := c.cc.Invoke(ctx, Query_Agreement_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) AgreementAll(ctx context.Context, in *QueryAllAgreementRequest, opts ...grpc.CallOption) (*QueryAllAgreementResponse, error) {
+	out := new(QueryAllAgreementResponse)
+	err := c.cc.Invoke(ctx, Query_AgreementAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) AgreementAllByProvider(ctx context.Context, in *QueryAllAgreementByProviderRequest, opts ...grpc.CallOption) (*QueryAllAgreementResponse, error) {
+	out := new(QueryAllAgreementResponse)
+	err := c.cc.Invoke(ctx, Query_AgreementAllByProvider_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -429,6 +468,24 @@ func (c *queryClient) PlanetAttributeAll(ctx context.Context, in *QueryAllPlanet
 	return out, nil
 }
 
+func (c *queryClient) Provider(ctx context.Context, in *QueryGetProviderRequest, opts ...grpc.CallOption) (*QueryGetProviderResponse, error) {
+	out := new(QueryGetProviderResponse)
+	err := c.cc.Invoke(ctx, Query_Provider_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ProviderAll(ctx context.Context, in *QueryAllProviderRequest, opts ...grpc.CallOption) (*QueryAllProviderResponse, error) {
+	out := new(QueryAllProviderResponse)
+	err := c.cc.Invoke(ctx, Query_ProviderAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) Reactor(ctx context.Context, in *QueryGetReactorRequest, opts ...grpc.CallOption) (*QueryGetReactorResponse, error) {
 	out := new(QueryGetReactorResponse)
 	err := c.cc.Invoke(ctx, Query_Reactor_FullMethodName, in, out, opts...)
@@ -539,6 +596,10 @@ type QueryServer interface {
 	Address(context.Context, *QueryGetAddressRequest) (*QueryAddressResponse, error)
 	AddressAll(context.Context, *QueryAllAddressRequest) (*QueryAllAddressResponse, error)
 	AddressAllByPlayer(context.Context, *QueryAllAddressByPlayerRequest) (*QueryAllAddressResponse, error)
+	// Queries a list of Agreement items.
+	Agreement(context.Context, *QueryGetAgreementRequest) (*QueryGetAgreementResponse, error)
+	AgreementAll(context.Context, *QueryAllAgreementRequest) (*QueryAllAgreementResponse, error)
+	AgreementAllByProvider(context.Context, *QueryAllAgreementByProviderRequest) (*QueryAllAgreementResponse, error)
 	// Queries a list of Allocation items.
 	Allocation(context.Context, *QueryGetAllocationRequest) (*QueryGetAllocationResponse, error)
 	AllocationAll(context.Context, *QueryAllAllocationRequest) (*QueryAllAllocationResponse, error)
@@ -579,6 +640,9 @@ type QueryServer interface {
 	PlanetAttribute(context.Context, *QueryGetPlanetAttributeRequest) (*QueryGetPlanetAttributeResponse, error)
 	// Queries a list of all Planet Attributes
 	PlanetAttributeAll(context.Context, *QueryAllPlanetAttributeRequest) (*QueryAllPlanetAttributeResponse, error)
+	// Queries a list of Allocation items.
+	Provider(context.Context, *QueryGetProviderRequest) (*QueryGetProviderResponse, error)
+	ProviderAll(context.Context, *QueryAllProviderRequest) (*QueryAllProviderResponse, error)
 	// Queries a list of Reactor items.
 	Reactor(context.Context, *QueryGetReactorRequest) (*QueryGetReactorResponse, error)
 	ReactorAll(context.Context, *QueryAllReactorRequest) (*QueryAllReactorResponse, error)
@@ -616,6 +680,15 @@ func (UnimplementedQueryServer) AddressAll(context.Context, *QueryAllAddressRequ
 }
 func (UnimplementedQueryServer) AddressAllByPlayer(context.Context, *QueryAllAddressByPlayerRequest) (*QueryAllAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddressAllByPlayer not implemented")
+}
+func (UnimplementedQueryServer) Agreement(context.Context, *QueryGetAgreementRequest) (*QueryGetAgreementResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Agreement not implemented")
+}
+func (UnimplementedQueryServer) AgreementAll(context.Context, *QueryAllAgreementRequest) (*QueryAllAgreementResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AgreementAll not implemented")
+}
+func (UnimplementedQueryServer) AgreementAllByProvider(context.Context, *QueryAllAgreementByProviderRequest) (*QueryAllAgreementResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AgreementAllByProvider not implemented")
 }
 func (UnimplementedQueryServer) Allocation(context.Context, *QueryGetAllocationRequest) (*QueryGetAllocationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Allocation not implemented")
@@ -697,6 +770,12 @@ func (UnimplementedQueryServer) PlanetAttribute(context.Context, *QueryGetPlanet
 }
 func (UnimplementedQueryServer) PlanetAttributeAll(context.Context, *QueryAllPlanetAttributeRequest) (*QueryAllPlanetAttributeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlanetAttributeAll not implemented")
+}
+func (UnimplementedQueryServer) Provider(context.Context, *QueryGetProviderRequest) (*QueryGetProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Provider not implemented")
+}
+func (UnimplementedQueryServer) ProviderAll(context.Context, *QueryAllProviderRequest) (*QueryAllProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderAll not implemented")
 }
 func (UnimplementedQueryServer) Reactor(context.Context, *QueryGetReactorRequest) (*QueryGetReactorResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Reactor not implemented")
@@ -830,6 +909,60 @@ func _Query_AddressAllByPlayer_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).AddressAllByPlayer(ctx, req.(*QueryAllAddressByPlayerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Agreement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetAgreementRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Agreement(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_Agreement_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Agreement(ctx, req.(*QueryGetAgreementRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_AgreementAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllAgreementRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).AgreementAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_AgreementAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).AgreementAll(ctx, req.(*QueryAllAgreementRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_AgreementAllByProvider_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllAgreementByProviderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).AgreementAllByProvider(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_AgreementAllByProvider_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).AgreementAllByProvider(ctx, req.(*QueryAllAgreementByProviderRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1320,6 +1453,42 @@ func _Query_PlanetAttributeAll_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_Provider_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetProviderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Provider(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_Provider_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Provider(ctx, req.(*QueryGetProviderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ProviderAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllProviderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ProviderAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_ProviderAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ProviderAll(ctx, req.(*QueryAllProviderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_Reactor_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryGetReactorRequest)
 	if err := dec(in); err != nil {
@@ -1546,6 +1715,18 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_AddressAllByPlayer_Handler,
 		},
 		{
+			MethodName: "Agreement",
+			Handler:    _Query_Agreement_Handler,
+		},
+		{
+			MethodName: "AgreementAll",
+			Handler:    _Query_AgreementAll_Handler,
+		},
+		{
+			MethodName: "AgreementAllByProvider",
+			Handler:    _Query_AgreementAllByProvider_Handler,
+		},
+		{
 			MethodName: "Allocation",
 			Handler:    _Query_Allocation_Handler,
 		},
@@ -1652,6 +1833,14 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PlanetAttributeAll",
 			Handler:    _Query_PlanetAttributeAll_Handler,
+		},
+		{
+			MethodName: "Provider",
+			Handler:    _Query_Provider_Handler,
+		},
+		{
+			MethodName: "ProviderAll",
+			Handler:    _Query_ProviderAll_Handler,
 		},
 		{
 			MethodName: "Reactor",

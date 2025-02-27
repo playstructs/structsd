@@ -36,6 +36,23 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"}},
                 },
                 {
+                    RpcMethod:      "Agreement",
+                    Use:            "agreement [agreement id]",
+                    Short:          "Show the details of a specific Agreement",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
+                },
+                {
+                    RpcMethod:      "AgreementAll",
+                    Use:            "agreement-all",
+                    Short:          "Returns all Agreements",
+                },
+                {
+                    RpcMethod:      "AgreementAllByProvider",
+                    Use:            "agreement-all-by-provider [provider id]",
+                    Short:          "Returns all Agreements from a specific Provider",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"}},
+                },
+                {
                     RpcMethod:      "Allocation",
                     Use:            "allocation [allocation id]",
                     Short:          "Show the details of a specific Allocation",
@@ -187,6 +204,17 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     RpcMethod:      "PlayerAll",
                     Use:            "player-all",
                     Short:          "Returns all Players",
+                },
+                {
+                    RpcMethod:      "Provider",
+                    Use:            "provider [provider id]",
+                    Short:          "Show the details of a specific Provider",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
+                },
+                {
+                    RpcMethod:      "ProviderAll",
+                    Use:            "provider-all",
+                    Short:          "Returns all Providers",
                 },
 				{
                     RpcMethod:      "Reactor",

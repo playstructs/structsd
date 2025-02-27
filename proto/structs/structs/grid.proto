@@ -28,4 +28,5 @@ message GridAttributes {
   uint64  lastAction              = 12;
   uint64  nonce                   = 13;
   uint64  ready                   = 14;
+  uint64  checkpointBlock         = 15;
 }

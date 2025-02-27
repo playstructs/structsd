@@ -223,5 +223,6 @@ func (k Keeper) GetGridAttributesByObject(ctx context.Context, objectId string) 
             LastAction:             k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, objectId)),
             Nonce:                  k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_nonce, objectId)),
             Ready:                  k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ready, objectId)),
+            CheckpointBlock:        k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_checkpointBlock, objectId)),
     }
 }

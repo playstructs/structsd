@@ -9,6 +9,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "structs/structs/params.proto";
 
 import "structs/structs/address.proto";
+import "structs/structs/agreement.proto";
 import "structs/structs/allocation.proto";
 import "structs/structs/fleet.proto";
 import "structs/structs/grid.proto";
@@ -19,6 +20,7 @@ import "structs/structs/permission.proto";
 import "structs/structs/player.proto";
 import "structs/structs/planet.proto";
 import "structs/structs/reactor.proto";
+import "structs/structs/provider.proto";
 import "structs/structs/struct.proto";
 import "structs/structs/substation.proto";
 
@@ -46,6 +48,19 @@ service Query {
 
   rpc AddressAllByPlayer (QueryAllAddressByPlayerRequest) returns (QueryAllAddressResponse) {
     option (google.api.http).get = "/structs/address_by_player/{playerId}";
+  }
+
+  // Queries a list of Agreement items.
+  rpc Agreement    (QueryGetAgreementRequest) returns (QueryGetAgreementResponse) {
+    option (google.api.http).get = "/structs/agreement/{id}";
+  }
+
+  rpc AgreementAll (QueryAllAgreementRequest) returns (QueryAllAgreementResponse) {
+    option (google.api.http).get = "/structs/agreement";
+  }
+
+  rpc AgreementAllByProvider (QueryAllAgreementByProviderRequest) returns (QueryAllAgreementResponse) {
+    option (google.api.http).get = "/structs/agreement_by_provider/{providerId}";
   }
 
   // Queries a list of Allocation items.
@@ -170,6 +185,15 @@ service Query {
     option (google.api.http).get = "/structs/planet_attribute";
   }
 
+  // Queries a list of Allocation items.
+  rpc Provider    (QueryGetProviderRequest) returns (QueryGetProviderResponse) {
+    option (google.api.http).get = "/structs/provider/{id}";
+  }
+
+  rpc ProviderAll (QueryAllProviderRequest) returns (QueryAllProviderResponse) {
+    option (google.api.http).get = "/structs/provider";
+  }
+
   // Queries a list of Reactor items.
   rpc Reactor    (QueryGetReactorRequest) returns (QueryGetReactorResponse) {
     option (google.api.http).get = "/structs/reactor/{id}";
@@ -260,6 +284,28 @@ message QueryAddressResponse {
 
 message QueryAllAddressResponse {
   repeated QueryAddressResponse address = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetAgreementRequest {
+  string id = 1;
+}
+
+message QueryGetAgreementResponse {
+  Agreement Agreement = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllAgreementRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAgreementByProviderRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+  string providerId = 2;
+}
+
+message QueryAllAgreementResponse {
+  repeated Agreement Agreement = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
@@ -487,6 +533,26 @@ message QueryAllPlayerResponse {
   repeated Player                                 Player     = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
+
+
+message QueryGetProviderRequest {
+  string id = 1;
+}
+
+message QueryGetProviderResponse {
+  Provider Provider = 1 [(gogoproto.nullable) = false];
+  GridAttributes gridAttributes = 2;
+}
+
+message QueryAllProviderRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllProviderResponse {
+  repeated Provider Provider = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
 
 message QueryGetReactorRequest {
   string id = 1;
