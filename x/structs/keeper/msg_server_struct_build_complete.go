@@ -15,7 +15,6 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-
     // load struct
     structure := k.GetStructCacheFromId(ctx, msg.StructId)
 
@@ -27,6 +26,10 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 
     if !structure.LoadStruct(){
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) does not exist", msg.StructId)
+    }
+
+    if structure.GetOwner().IsHalted() {
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Struct (%s) cannot perform actions while Player (%s) is Halted", msg.StructId, structure.GetOwnerId())
     }
 
     if structure.IsBuilt() {
@@ -67,6 +70,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     if (!types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().BuildDifficulty)) {
         structure.GetOwner().StructsLoadIncrement(structure.GetStructType().BuildDraw)
         structure.GetOwner().Discharge()
+        structure.GetOwner().Halt()
         structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrStructBuildComplete, "Work failure for input (%s) when trying to build Struct %s", hashInput, structure.GetStructId())
     }

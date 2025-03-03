@@ -36,8 +36,8 @@ func (k msgServer) StructBuildCancel(goCtx context.Context, msg *types.MsgStruct
     }
 
     // Check Player Charge
-    if (structure.GetOwner().GetCharge() < structure.GetStructType().ActivateCharge) {
-        err := sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to build, but player (%s) only had %d", structure.GetStructType().Id, structure.GetStructType().ActivateCharge, structure.GetOwnerId(), structure.GetOwner().GetCharge() )
+    if (structure.GetOwner().GetCharge() < structure.GetStructType().BuildCharge) {
+        err := sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to build, but player (%s) only had %d", structure.GetStructType().Id, structure.GetStructType().BuildCharge, structure.GetOwnerId(), structure.GetOwner().GetCharge() )
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, err

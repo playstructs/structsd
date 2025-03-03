@@ -27,6 +27,10 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
         return &types.MsgStructOreRefineryStatusResponse{}, permissionError
     }
 
+    if structure.GetOwner().IsHalted() {
+        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Struct (%s) cannot perform actions while Player (%s) is Halted", msg.StructId, structure.GetOwnerId())
+    }
+
     // Is the Struct & Owner online?
     readinessError := structure.ReadinessCheck()
     if (readinessError != nil) {
@@ -52,6 +56,7 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
 
     currentAge := uint64(ctx.BlockHeight()) - structure.GetBlockStartOreRefine()
     if (!types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().GetOreRefiningDifficulty())) {
+        structure.GetOwner().Halt()
        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Work failure for input (%s) when trying to refine on Struct %s", hashInput, structure.StructId)
     }
 

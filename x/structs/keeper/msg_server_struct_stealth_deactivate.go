@@ -24,6 +24,9 @@ func (k msgServer) StructStealthDeactivate(goCtx context.Context, msg *types.Msg
         return &types.MsgStructStatusResponse{}, permissionError
     }
 
+    if structure.GetOwner().IsHalted() {
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Struct (%s) cannot perform actions while Player (%s) is Halted", msg.StructId, structure.GetOwnerId())
+    }
 
     // Is the Struct & Owner online?
     readinessError := structure.ReadinessCheck()

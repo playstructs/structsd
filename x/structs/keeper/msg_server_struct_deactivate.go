@@ -25,6 +25,10 @@ func (k msgServer) StructDeactivate(goCtx context.Context, msg *types.MsgStructD
         return &types.MsgStructStatusResponse{}, permissionError
     }
 
+    if structure.GetOwner().IsHalted() {
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Struct (%s) cannot perform actions while Player (%s) is Halted", msg.StructId, structure.GetOwnerId())
+    }
+
     if !structure.LoadStruct(){
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) does not exist", msg.StructId)
     }

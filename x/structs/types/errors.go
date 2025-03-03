@@ -18,6 +18,7 @@ var (
 var (
     ErrGridMalfunction                      = sdkerrors.Register(ModuleName, 1800, "Grid malfunction")
     ErrInsufficientCharge                   = sdkerrors.Register(ModuleName, 1801, "Insufficient Charge for Action")
+    ErrPlayerHalted                         = sdkerrors.Register(ModuleName, 1802, "Player is currently Halted, must be Resumed before more actions")
 
     ErrObjectNotFound                       = sdkerrors.Register(ModuleName, 1900, "object not found")
 

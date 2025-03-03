@@ -35,6 +35,10 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructStatusResponse{}, permissionError
     }
 
+    if owner.IsHalted() {
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Cannot perform actions while Player (%s) is Halted", msg.PlayerId)
+    }
+
     // Load the Struct Type
     structType, structTypeFound := k.GetStructType(ctx, msg.StructTypeId)
     if !structTypeFound {

@@ -27,6 +27,9 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
         return &types.MsgStructAttackResponse{}, permissionError
     }
 
+    if structure.GetOwner().IsHalted() {
+        return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Struct (%s) cannot perform actions while Player (%s) is Halted", msg.OperatingStructId, structure.GetOwnerId())
+    }
 
     // Is the Struct & Owner online?
     readinessError := structure.ReadinessCheck()
