@@ -21,6 +21,10 @@ type PlayerCache struct {
 
     Ready bool
 
+    Halted      bool
+    HaltLoaded  bool
+    HaltChanged bool
+
     PlayerLoaded  bool
     PlayerChanged bool
     Player        types.Player
@@ -233,6 +237,11 @@ func (cache *PlayerCache) LoadStoredOre() {
     cache.StoredOreLoaded = true
 }
 
+func (cache *PlayerCache) LoadHalted() {
+    cache.Halted = cache.K.IsPlayerHalted(cache.Ctx, cache.GetPlayerId())
+    cache.HaltLoaded = true
+}
+
 
 func (cache *PlayerCache) GetPlayer() (types.Player, error) {
     if (!cache.PlayerLoaded) {
@@ -391,6 +400,11 @@ func (cache *PlayerCache) DepositRefinedAlpha() {
     cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, types.ModuleName, playerAcc, newAlpha)
 }
 
+func (cache *PlayerCache) IsHalted() (bool){
+    if (!cache.HaltLoaded) { cache.LoadHalted() };
+    return cache.Halted
+}
+
 
 func (cache *PlayerCache) IsOnline() (online bool){
     if ((cache.GetLoad() + cache.GetStructsLoad()) <= (cache.GetCapacity() + cache.GetCapacitySecondary())) {
@@ -472,4 +486,25 @@ func (cache *PlayerCache) CanSupportLoadAddition(additionalLoad uint64) (bool) {
     }
 
     return ((totalCapacity - totalLoad) >= additionalLoad)
+}
+
+
+/*
+    Permanent without the need for commit.
+    Would rather it was consistent but should be ok.
+*/
+func (cache *PlayerCache) Halt() () {
+    cache.K.PlayerHalt(cache.Ctx, cache.GetPlayerId())
+    cache.Halted = true
+    cache.HaltLoaded = true
+}
+
+/*
+    Permanent without the need for commit.
+    Would rather it was consistent but should be ok.
+*/
+func (cache *PlayerCache) Resume() {
+    cache.K.PlayerResume(cache.Ctx, cache.GetPlayerId())
+    cache.Halted = false
+    cache.HaltLoaded = true
 }
