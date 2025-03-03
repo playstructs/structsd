@@ -60,6 +60,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlanetRaidComplete{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerUpdatePrimaryAddress{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerResume{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderCreate{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderWithdrawBalance{},)

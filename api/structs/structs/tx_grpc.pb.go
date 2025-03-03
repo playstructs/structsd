@@ -59,6 +59,7 @@ const (
 	Msg_PlanetExplore_FullMethodName                                 = "/structs.structs.Msg/PlanetExplore"
 	Msg_PlanetRaidComplete_FullMethodName                            = "/structs.structs.Msg/PlanetRaidComplete"
 	Msg_PlayerUpdatePrimaryAddress_FullMethodName                    = "/structs.structs.Msg/PlayerUpdatePrimaryAddress"
+	Msg_PlayerResume_FullMethodName                                  = "/structs.structs.Msg/PlayerResume"
 	Msg_ProviderCreate_FullMethodName                                = "/structs.structs.Msg/ProviderCreate"
 	Msg_ProviderWithdrawBalance_FullMethodName                       = "/structs.structs.Msg/ProviderWithdrawBalance"
 	Msg_ProviderUpdateCapacityMinimum_FullMethodName                 = "/structs.structs.Msg/ProviderUpdateCapacityMinimum"
@@ -138,6 +139,7 @@ type MsgClient interface {
 	PlanetExplore(ctx context.Context, in *MsgPlanetExplore, opts ...grpc.CallOption) (*MsgPlanetExploreResponse, error)
 	PlanetRaidComplete(ctx context.Context, in *MsgPlanetRaidComplete, opts ...grpc.CallOption) (*MsgPlanetRaidCompleteResponse, error)
 	PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlayerUpdatePrimaryAddress, opts ...grpc.CallOption) (*MsgPlayerUpdatePrimaryAddressResponse, error)
+	PlayerResume(ctx context.Context, in *MsgPlayerResume, opts ...grpc.CallOption) (*MsgPlayerResumeResponse, error)
 	ProviderCreate(ctx context.Context, in *MsgProviderCreate, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ProviderWithdrawBalance(ctx context.Context, in *MsgProviderWithdrawBalance, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ProviderUpdateCapacityMinimum(ctx context.Context, in *MsgProviderUpdateCapacityMinimum, opts ...grpc.CallOption) (*MsgProviderResponse, error)
@@ -539,6 +541,15 @@ func (c *msgClient) PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlaye
 	return out, nil
 }
 
+func (c *msgClient) PlayerResume(ctx context.Context, in *MsgPlayerResume, opts ...grpc.CallOption) (*MsgPlayerResumeResponse, error) {
+	out := new(MsgPlayerResumeResponse)
+	err := c.cc.Invoke(ctx, Msg_PlayerResume_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) ProviderCreate(ctx context.Context, in *MsgProviderCreate, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
 	out := new(MsgProviderResponse)
 	err := c.cc.Invoke(ctx, Msg_ProviderCreate_FullMethodName, in, out, opts...)
@@ -864,6 +875,7 @@ type MsgServer interface {
 	PlanetExplore(context.Context, *MsgPlanetExplore) (*MsgPlanetExploreResponse, error)
 	PlanetRaidComplete(context.Context, *MsgPlanetRaidComplete) (*MsgPlanetRaidCompleteResponse, error)
 	PlayerUpdatePrimaryAddress(context.Context, *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error)
+	PlayerResume(context.Context, *MsgPlayerResume) (*MsgPlayerResumeResponse, error)
 	ProviderCreate(context.Context, *MsgProviderCreate) (*MsgProviderResponse, error)
 	ProviderWithdrawBalance(context.Context, *MsgProviderWithdrawBalance) (*MsgProviderResponse, error)
 	ProviderUpdateCapacityMinimum(context.Context, *MsgProviderUpdateCapacityMinimum) (*MsgProviderResponse, error)
@@ -1021,6 +1033,9 @@ func (UnimplementedMsgServer) PlanetRaidComplete(context.Context, *MsgPlanetRaid
 }
 func (UnimplementedMsgServer) PlayerUpdatePrimaryAddress(context.Context, *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlayerUpdatePrimaryAddress not implemented")
+}
+func (UnimplementedMsgServer) PlayerResume(context.Context, *MsgPlayerResume) (*MsgPlayerResumeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlayerResume not implemented")
 }
 func (UnimplementedMsgServer) ProviderCreate(context.Context, *MsgProviderCreate) (*MsgProviderResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProviderCreate not implemented")
@@ -1848,6 +1863,24 @@ func _Msg_PlayerUpdatePrimaryAddress_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_PlayerResume_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgPlayerResume)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).PlayerResume(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_PlayerResume_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).PlayerResume(ctx, req.(*MsgPlayerResume))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_ProviderCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgProviderCreate)
 	if err := dec(in); err != nil {
@@ -2572,6 +2605,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PlayerUpdatePrimaryAddress",
 			Handler:    _Msg_PlayerUpdatePrimaryAddress_Handler,
+		},
+		{
+			MethodName: "PlayerResume",
+			Handler:    _Msg_PlayerResume_Handler,
 		},
 		{
 			MethodName: "ProviderCreate",

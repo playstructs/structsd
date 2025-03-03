@@ -8,6 +8,7 @@ import "gogoproto/gogo.proto";
 import "structs/structs/params.proto";
 
 import "structs/structs/address.proto";
+import "structs/structs/agreement.proto";
 import "structs/structs/allocation.proto";
 import "structs/structs/grid.proto";
 import "structs/structs/guild.proto";
@@ -16,6 +17,7 @@ import "structs/structs/keys.proto";
 import "structs/structs/permission.proto";
 import "structs/structs/player.proto";
 import "structs/structs/planet.proto";
+import "structs/structs/provider.proto";
 import "structs/structs/reactor.proto";
 import "structs/structs/struct.proto";
 import "structs/structs/substation.proto";
@@ -31,7 +33,9 @@ message GenesisState {
 
   repeated  Allocation allocationList   =  3 [(gogoproto.nullable) = false];
 
-  repeated  Infusion   infusionList     =  4 [(gogoproto.nullable) = false];
+  repeated  Agreement  agreementList   =  4 [(gogoproto.nullable) = false];
+
+  repeated  Infusion   infusionList     = 5 [(gogoproto.nullable) = false];
 
   repeated  Guild      guildList        = 6 [(gogoproto.nullable) = false];
             uint64     guildCount       = 7;
@@ -40,21 +44,26 @@ message GenesisState {
             uint64     planetCount      = 9;
 
   repeated  Player     playerList       = 10 [(gogoproto.nullable) = false];
-            uint64     playerCount      = 11;
+  repeated  string     playerHalted     = 11;
+            uint64     playerCount      = 12;
 
-  repeated  Reactor    reactorList      =  12 [(gogoproto.nullable) = false];
-            uint64     reactorCount     =  13;
 
-  repeated  Struct     structList       =  14 [(gogoproto.nullable) = false];
-            uint64     structCount      =  15;
+  repeated  Provider   providerList   =  13 [(gogoproto.nullable) = false];
+            uint64     providerCount  =  14;
 
-  repeated  Substation substationList   =  16 [(gogoproto.nullable) = false];
-            uint64     substationCount  =  17;
+  repeated  Reactor    reactorList      =  15 [(gogoproto.nullable) = false];
+            uint64     reactorCount     =  16;
 
-  repeated  PermissionRecord    permissionList  = 18;
-  repeated  GridRecord          gridList        = 19;
+  repeated  Struct     structList       =  17 [(gogoproto.nullable) = false];
+            uint64     structCount      =  18;
 
-  repeated  AddressRecord       addressList     = 20;
+  repeated  Substation substationList   =  19 [(gogoproto.nullable) = false];
+            uint64     substationCount  =  20;
+
+  repeated  PermissionRecord    permissionList  = 21;
+  repeated  GridRecord          gridList        = 22;
+
+  repeated  AddressRecord       addressList     = 23;
 
 }
 

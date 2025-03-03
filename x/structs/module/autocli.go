@@ -482,6 +482,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "primaryAddress"}},
                  },
                  {
+                     RpcMethod:      "PlayerResume",
+                     Use:            "player-resume [player id]",
+                     Short:          "Resume a Halted Player",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"}},
+                 },
+                 {
                      RpcMethod:      "StructActivate",
                      Use:            "struct-activate [struct id]",
                      Short:          "Bring a Struct online",

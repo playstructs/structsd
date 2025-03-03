@@ -49,6 +49,7 @@ const (
 	Query_PermissionAll_FullMethodName                 = "/structs.structs.Query/PermissionAll"
 	Query_Player_FullMethodName                        = "/structs.structs.Query/Player"
 	Query_PlayerAll_FullMethodName                     = "/structs.structs.Query/PlayerAll"
+	Query_PlayerHaltedAll_FullMethodName               = "/structs.structs.Query/PlayerHaltedAll"
 	Query_Planet_FullMethodName                        = "/structs.structs.Query/Planet"
 	Query_PlanetAll_FullMethodName                     = "/structs.structs.Query/PlanetAll"
 	Query_PlanetAllByPlayer_FullMethodName             = "/structs.structs.Query/PlanetAllByPlayer"
@@ -117,6 +118,7 @@ type QueryClient interface {
 	// Queries a list of Player items.
 	Player(ctx context.Context, in *QueryGetPlayerRequest, opts ...grpc.CallOption) (*QueryGetPlayerResponse, error)
 	PlayerAll(ctx context.Context, in *QueryAllPlayerRequest, opts ...grpc.CallOption) (*QueryAllPlayerResponse, error)
+	PlayerHaltedAll(ctx context.Context, in *QueryAllPlayerHaltedRequest, opts ...grpc.CallOption) (*QueryAllPlayerHaltedResponse, error)
 	// Queries a list of Planet items.
 	Planet(ctx context.Context, in *QueryGetPlanetRequest, opts ...grpc.CallOption) (*QueryGetPlanetResponse, error)
 	PlanetAll(ctx context.Context, in *QueryAllPlanetRequest, opts ...grpc.CallOption) (*QueryAllPlanetResponse, error)
@@ -423,6 +425,15 @@ func (c *queryClient) PlayerAll(ctx context.Context, in *QueryAllPlayerRequest, 
 	return out, nil
 }
 
+func (c *queryClient) PlayerHaltedAll(ctx context.Context, in *QueryAllPlayerHaltedRequest, opts ...grpc.CallOption) (*QueryAllPlayerHaltedResponse, error) {
+	out := new(QueryAllPlayerHaltedResponse)
+	err := c.cc.Invoke(ctx, Query_PlayerHaltedAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) Planet(ctx context.Context, in *QueryGetPlanetRequest, opts ...grpc.CallOption) (*QueryGetPlanetResponse, error) {
 	out := new(QueryGetPlanetResponse)
 	err := c.cc.Invoke(ctx, Query_Planet_FullMethodName, in, out, opts...)
@@ -633,6 +644,7 @@ type QueryServer interface {
 	// Queries a list of Player items.
 	Player(context.Context, *QueryGetPlayerRequest) (*QueryGetPlayerResponse, error)
 	PlayerAll(context.Context, *QueryAllPlayerRequest) (*QueryAllPlayerResponse, error)
+	PlayerHaltedAll(context.Context, *QueryAllPlayerHaltedRequest) (*QueryAllPlayerHaltedResponse, error)
 	// Queries a list of Planet items.
 	Planet(context.Context, *QueryGetPlanetRequest) (*QueryGetPlanetResponse, error)
 	PlanetAll(context.Context, *QueryAllPlanetRequest) (*QueryAllPlanetResponse, error)
@@ -755,6 +767,9 @@ func (UnimplementedQueryServer) Player(context.Context, *QueryGetPlayerRequest) 
 }
 func (UnimplementedQueryServer) PlayerAll(context.Context, *QueryAllPlayerRequest) (*QueryAllPlayerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlayerAll not implemented")
+}
+func (UnimplementedQueryServer) PlayerHaltedAll(context.Context, *QueryAllPlayerHaltedRequest) (*QueryAllPlayerHaltedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlayerHaltedAll not implemented")
 }
 func (UnimplementedQueryServer) Planet(context.Context, *QueryGetPlanetRequest) (*QueryGetPlanetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Planet not implemented")
@@ -1363,6 +1378,24 @@ func _Query_PlayerAll_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_PlayerHaltedAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllPlayerHaltedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).PlayerHaltedAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_PlayerHaltedAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).PlayerHaltedAll(ctx, req.(*QueryAllPlayerHaltedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_Planet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryGetPlanetRequest)
 	if err := dec(in); err != nil {
@@ -1813,6 +1846,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PlayerAll",
 			Handler:    _Query_PlayerAll_Handler,
+		},
+		{
+			MethodName: "PlayerHaltedAll",
+			Handler:    _Query_PlayerHaltedAll_Handler,
 		},
 		{
 			MethodName: "Planet",

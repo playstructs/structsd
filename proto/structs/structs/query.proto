@@ -162,6 +162,9 @@ service Query {
     option (google.api.http).get = "/structs/player";
   }
 
+  rpc PlayerHaltedAll (QueryAllPlayerHaltedRequest) returns (QueryAllPlayerHaltedResponse) {
+    option (google.api.http).get = "/structs/player_halted";
+  }
 
   // Queries a list of Planet items.
   rpc Planet    (QueryGetPlanetRequest) returns (QueryGetPlanetResponse) {
@@ -523,6 +526,7 @@ message QueryGetPlayerResponse {
   Player Player = 1 [(gogoproto.nullable) = false];
   GridAttributes gridAttributes = 2;
   PlayerInventory playerInventory = 3;
+  bool halted = 4;
 }
 
 message QueryAllPlayerRequest {
@@ -533,6 +537,10 @@ message QueryAllPlayerResponse {
   repeated Player                                 Player     = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
+
+
+message QueryAllPlayerHaltedRequest {}
+message QueryAllPlayerHaltedResponse { repeated string PlayerId  = 1 [(gogoproto.nullable) = false]; }
 
 
 message QueryGetProviderRequest {

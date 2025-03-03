@@ -47,6 +47,9 @@ const (
     // This annoys me but whatever
     CommandStruct = "Command"
 
+    // Punishment Charge
+    PlayerResumeCharge = 666
+
 )
 
 var (

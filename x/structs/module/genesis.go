@@ -57,6 +57,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
     for _, elem := range genState.PlayerList {
         k.SetPlayer(ctx, elem)
     }
+    k.SetAllHaltedPlayerId(ctx, genState.PlayerHalted)
 
     k.SetReactorCount(ctx, genState.ReactorCount + k.GetReactorCount(ctx))
     for _, elem := range genState.ReactorList {
@@ -81,6 +82,15 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
         k.SetPermissionsByBytes(ctx, []byte(elem.PermissionId), types.Permission(elem.Value))
     }
 
+    k.SetProviderCount(ctx, genState.ProviderCount + k.GetProviderCount(ctx))
+    for _, elem := range genState.ProviderList {
+        k.ImportProvider(ctx, elem)
+    }
+
+    for _, elem := range genState.AgreementList {
+        k.ImportAgreement(ctx, elem)
+    }
+
 }
 
 // ExportGenesis returns the module's exported genesis.
@@ -91,6 +101,8 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.PortId = k.GetPort(ctx)
 
 	genesis.AddressList    = k.GetAllAddressExport(ctx)
+
+	genesis.AgreementList = k.GetAllAgreement(ctx)
 
 	genesis.AllocationList = k.GetAllAllocation(ctx)
 
@@ -104,6 +116,10 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	genesis.PlayerList = k.GetAllPlayer(ctx)
 	genesis.PlayerCount = k.GetPlayerCount(ctx)
+	genesis.PlayerHalted = k.GetAllHaltedPlayerId(ctx)
+
+	genesis.ProviderList = k.GetAllProvider(ctx)
+	genesis.ProviderCount = k.GetProviderCount(ctx)
 
 	genesis.ReactorList = k.GetAllReactor(ctx)
 	genesis.ReactorCount = k.GetReactorCount(ctx)

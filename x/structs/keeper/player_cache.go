@@ -436,6 +436,11 @@ func (cache *PlayerCache) CanBePlayedBy(address string) (err error) {
     return cache.CanBeAdministratedBy(address, types.PermissionPlay)
 }
 
+func (cache *PlayerCache) CanBeUpdatedBy(address string) (err error) {
+    return cache.CanBeAdministratedBy(address, types.PermissionUpdate)
+}
+
+
 func (cache *PlayerCache) CanBeAdministratedBy(address string, permission types.Permission) (err error) {
 
     // Make sure the address calling this has request permissions

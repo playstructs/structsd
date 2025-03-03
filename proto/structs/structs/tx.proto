@@ -70,10 +70,11 @@ service Msg {
   rpc PermissionSetOnObject          (MsgPermissionSetOnObject         ) returns (MsgPermissionResponse);
 
 
-  rpc PlanetExplore                  (MsgPlanetExplore                 ) returns (MsgPlanetExploreResponse                 );
-  rpc PlanetRaidComplete             (MsgPlanetRaidComplete            ) returns (MsgPlanetRaidCompleteResponse                 );
+  rpc PlanetExplore                  (MsgPlanetExplore                 ) returns (MsgPlanetExploreResponse                );
+  rpc PlanetRaidComplete             (MsgPlanetRaidComplete            ) returns (MsgPlanetRaidCompleteResponse           );
 
-  rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse    );
+  rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse   );
+  rpc PlayerResume                   (MsgPlayerResume                  ) returns (MsgPlayerResumeResponse                 );
 
   rpc ProviderCreate                 (MsgProviderCreate                ) returns (MsgProviderResponse);
   rpc ProviderWithdrawBalance        (MsgProviderWithdrawBalance       ) returns (MsgProviderResponse);
@@ -489,6 +490,15 @@ message MsgPlayerUpdatePrimaryAddress {
 }
 
 message MsgPlayerUpdatePrimaryAddressResponse {}
+
+message MsgPlayerResume {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator        = 1;
+  string playerId       = 2;
+}
+
+message MsgPlayerResumeResponse {}
 
 message MsgStructStatusResponse {
   Struct struct = 1 [(gogoproto.nullable) = false];

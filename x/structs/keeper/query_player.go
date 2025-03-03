@@ -58,6 +58,15 @@ func (k Keeper) Player(goCtx context.Context, req *types.QueryGetPlayerRequest) 
 
 	gridAttributes := k.GetGridAttributesByObject(ctx, req.Id)
 	playerInventory := k.GetPlayerInventory(ctx, player.PrimaryAddress)
+	halted := k.IsPlayerHalted(ctx, req.Id)
 
-	return &types.QueryGetPlayerResponse{Player: player, GridAttributes: &gridAttributes, PlayerInventory: &playerInventory}, nil
+	return &types.QueryGetPlayerResponse{Player: player, GridAttributes: &gridAttributes, PlayerInventory: &playerInventory, Halted: halted}, nil
+}
+
+
+func (k Keeper) PlayerHaltedAll(goCtx context.Context, req *types.QueryAllPlayerHaltedRequest) (*types.QueryAllPlayerHaltedResponse, error) {
+	ctx := sdk.UnwrapSDKContext(goCtx)
+    playerIds := k.GetAllHaltedPlayerId(ctx)
+
+	return &types.QueryAllPlayerHaltedResponse{PlayerId: playerIds}, nil
 }

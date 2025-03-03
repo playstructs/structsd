@@ -71,6 +71,9 @@ option go_package = "structs/x/structs/types";
   message EventProviderRevokeGuild { EventProviderRevokeGuildDetail eventProviderRevokeGuildDetail = 1;}
   message EventProviderRevokeGuildDetail { string providerId = 1; string guildId = 2;}
 
+  message EventPlayerHalted { string playerId = 1; }
+  message EventPlayerResumed { string playerId = 1; }
+
   message EventDelete { string objectId = 1; }
 
   message EventAddressAssociation { AddressAssociation addressAssociation = 1; }
