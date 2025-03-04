@@ -42,6 +42,9 @@ service Msg {
   rpc FleetMove                                     (MsgFleetMove                                     ) returns (MsgFleetMoveResponse );
 
   rpc GuildCreate                                   (MsgGuildCreate                                   ) returns (MsgGuildCreateResponse );
+  rpc GuildBankMint                                 (MsgGuildBankMint                                 ) returns (MsgGuildBankMintResponse );
+  rpc GuildBankRedeem                               (MsgGuildBankRedeem                               ) returns (MsgGuildBankRedeemResponse );
+  rpc GuildBankConfiscateAndBurn                    (MsgGuildBankConfiscateAndBurn                    ) returns (MsgGuildBankConfiscateAndBurnResponse );
   rpc GuildUpdateOwnerId                            (MsgGuildUpdateOwnerId                            ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateEntrySubstationId                  (MsgGuildUpdateEntrySubstationId                  ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateEndpoint                           (MsgGuildUpdateEndpoint                           ) returns (MsgGuildUpdateResponse );
@@ -233,6 +236,43 @@ message MsgFleetMove {
 }
 
 message MsgFleetMoveResponse { Fleet fleet = 1; }
+
+
+message MsgGuildBankMint {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator  = 1;
+  uint64 amountAlpha = 2;
+  uint64 amountToken = 3;
+}
+
+message MsgGuildBankMintResponse { }
+
+
+message MsgGuildBankRedeem {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator  = 1;
+  cosmos.base.v1beta1.Coin amountToken  = 2 [
+    (gogoproto.nullable)     = false,
+    (amino.dont_omitempty)   = true,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+message MsgGuildBankRedeemResponse { }
+
+message MsgGuildBankConfiscateAndBurn {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator  = 1;
+  string address = 2;
+  uint64 amountToken = 3;
+}
+
+message MsgGuildBankConfiscateAndBurnResponse { }
+
+
 
 message MsgGuildCreate {
   option (cosmos.msg.v1.signer) = "creator";

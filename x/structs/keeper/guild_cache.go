@@ -113,13 +113,15 @@ func (cache *GuildCache) ManualLoadOwner(owner *PlayerCache) {
 }
 
 // Load the Guild record
-func (cache *GuildCache) LoadGuild() {
+func (cache *GuildCache) LoadGuild() (bool) {
 	guild, guildFound := cache.K.GetGuild(cache.Ctx, cache.GuildId)
 
 	if guildFound {
 		cache.Guild = guild
 		cache.GuildLoaded = true
 	}
+
+	return cache.GuildLoaded
 }
 
 // Load the Substation data

@@ -30,6 +30,9 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil), &MsgAllocationTransfer{}, )
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildCreate{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildBankMint{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildBankRedeem{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildBankConfiscateAndBurn{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateEndpoint{}, )
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateEntrySubstationId{}, )
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateJoinInfusionMinimum{}, )

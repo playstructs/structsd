@@ -33,6 +33,9 @@ const (
 	Msg_AllocationTransfer_FullMethodName                            = "/structs.structs.Msg/AllocationTransfer"
 	Msg_FleetMove_FullMethodName                                     = "/structs.structs.Msg/FleetMove"
 	Msg_GuildCreate_FullMethodName                                   = "/structs.structs.Msg/GuildCreate"
+	Msg_GuildBankMint_FullMethodName                                 = "/structs.structs.Msg/GuildBankMint"
+	Msg_GuildBankRedeem_FullMethodName                               = "/structs.structs.Msg/GuildBankRedeem"
+	Msg_GuildBankConfiscateAndBurn_FullMethodName                    = "/structs.structs.Msg/GuildBankConfiscateAndBurn"
 	Msg_GuildUpdateOwnerId_FullMethodName                            = "/structs.structs.Msg/GuildUpdateOwnerId"
 	Msg_GuildUpdateEntrySubstationId_FullMethodName                  = "/structs.structs.Msg/GuildUpdateEntrySubstationId"
 	Msg_GuildUpdateEndpoint_FullMethodName                           = "/structs.structs.Msg/GuildUpdateEndpoint"
@@ -113,6 +116,9 @@ type MsgClient interface {
 	AllocationTransfer(ctx context.Context, in *MsgAllocationTransfer, opts ...grpc.CallOption) (*MsgAllocationTransferResponse, error)
 	FleetMove(ctx context.Context, in *MsgFleetMove, opts ...grpc.CallOption) (*MsgFleetMoveResponse, error)
 	GuildCreate(ctx context.Context, in *MsgGuildCreate, opts ...grpc.CallOption) (*MsgGuildCreateResponse, error)
+	GuildBankMint(ctx context.Context, in *MsgGuildBankMint, opts ...grpc.CallOption) (*MsgGuildBankMintResponse, error)
+	GuildBankRedeem(ctx context.Context, in *MsgGuildBankRedeem, opts ...grpc.CallOption) (*MsgGuildBankRedeemResponse, error)
+	GuildBankConfiscateAndBurn(ctx context.Context, in *MsgGuildBankConfiscateAndBurn, opts ...grpc.CallOption) (*MsgGuildBankConfiscateAndBurnResponse, error)
 	GuildUpdateOwnerId(ctx context.Context, in *MsgGuildUpdateOwnerId, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEntrySubstationId(ctx context.Context, in *MsgGuildUpdateEntrySubstationId, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEndpoint(ctx context.Context, in *MsgGuildUpdateEndpoint, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
@@ -301,6 +307,33 @@ func (c *msgClient) FleetMove(ctx context.Context, in *MsgFleetMove, opts ...grp
 func (c *msgClient) GuildCreate(ctx context.Context, in *MsgGuildCreate, opts ...grpc.CallOption) (*MsgGuildCreateResponse, error) {
 	out := new(MsgGuildCreateResponse)
 	err := c.cc.Invoke(ctx, Msg_GuildCreate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildBankMint(ctx context.Context, in *MsgGuildBankMint, opts ...grpc.CallOption) (*MsgGuildBankMintResponse, error) {
+	out := new(MsgGuildBankMintResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildBankMint_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildBankRedeem(ctx context.Context, in *MsgGuildBankRedeem, opts ...grpc.CallOption) (*MsgGuildBankRedeemResponse, error) {
+	out := new(MsgGuildBankRedeemResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildBankRedeem_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildBankConfiscateAndBurn(ctx context.Context, in *MsgGuildBankConfiscateAndBurn, opts ...grpc.CallOption) (*MsgGuildBankConfiscateAndBurnResponse, error) {
+	out := new(MsgGuildBankConfiscateAndBurnResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildBankConfiscateAndBurn_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -849,6 +882,9 @@ type MsgServer interface {
 	AllocationTransfer(context.Context, *MsgAllocationTransfer) (*MsgAllocationTransferResponse, error)
 	FleetMove(context.Context, *MsgFleetMove) (*MsgFleetMoveResponse, error)
 	GuildCreate(context.Context, *MsgGuildCreate) (*MsgGuildCreateResponse, error)
+	GuildBankMint(context.Context, *MsgGuildBankMint) (*MsgGuildBankMintResponse, error)
+	GuildBankRedeem(context.Context, *MsgGuildBankRedeem) (*MsgGuildBankRedeemResponse, error)
+	GuildBankConfiscateAndBurn(context.Context, *MsgGuildBankConfiscateAndBurn) (*MsgGuildBankConfiscateAndBurnResponse, error)
 	GuildUpdateOwnerId(context.Context, *MsgGuildUpdateOwnerId) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEntrySubstationId(context.Context, *MsgGuildUpdateEntrySubstationId) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEndpoint(context.Context, *MsgGuildUpdateEndpoint) (*MsgGuildUpdateResponse, error)
@@ -955,6 +991,15 @@ func (UnimplementedMsgServer) FleetMove(context.Context, *MsgFleetMove) (*MsgFle
 }
 func (UnimplementedMsgServer) GuildCreate(context.Context, *MsgGuildCreate) (*MsgGuildCreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildCreate not implemented")
+}
+func (UnimplementedMsgServer) GuildBankMint(context.Context, *MsgGuildBankMint) (*MsgGuildBankMintResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildBankMint not implemented")
+}
+func (UnimplementedMsgServer) GuildBankRedeem(context.Context, *MsgGuildBankRedeem) (*MsgGuildBankRedeemResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildBankRedeem not implemented")
+}
+func (UnimplementedMsgServer) GuildBankConfiscateAndBurn(context.Context, *MsgGuildBankConfiscateAndBurn) (*MsgGuildBankConfiscateAndBurnResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildBankConfiscateAndBurn not implemented")
 }
 func (UnimplementedMsgServer) GuildUpdateOwnerId(context.Context, *MsgGuildUpdateOwnerId) (*MsgGuildUpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildUpdateOwnerId not implemented")
@@ -1391,6 +1436,60 @@ func _Msg_GuildCreate_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).GuildCreate(ctx, req.(*MsgGuildCreate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildBankMint_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildBankMint)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildBankMint(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildBankMint_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildBankMint(ctx, req.(*MsgGuildBankMint))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildBankRedeem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildBankRedeem)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildBankRedeem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildBankRedeem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildBankRedeem(ctx, req.(*MsgGuildBankRedeem))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildBankConfiscateAndBurn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildBankConfiscateAndBurn)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildBankConfiscateAndBurn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildBankConfiscateAndBurn_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildBankConfiscateAndBurn(ctx, req.(*MsgGuildBankConfiscateAndBurn))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2501,6 +2600,18 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GuildCreate",
 			Handler:    _Msg_GuildCreate_Handler,
+		},
+		{
+			MethodName: "GuildBankMint",
+			Handler:    _Msg_GuildBankMint_Handler,
+		},
+		{
+			MethodName: "GuildBankRedeem",
+			Handler:    _Msg_GuildBankRedeem_Handler,
+		},
+		{
+			MethodName: "GuildBankConfiscateAndBurn",
+			Handler:    _Msg_GuildBankConfiscateAndBurn_Handler,
 		},
 		{
 			MethodName: "GuildUpdateOwnerId",
