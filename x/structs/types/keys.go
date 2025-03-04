@@ -110,6 +110,8 @@ const (
 	GuildKey      = "Guild/value/"
 	GuildCountKey = "Guild/count/"
 	GuildMembershipApplicationKey = "Guild/membershipApplication/"
+
+	GuildBankCollateralPool = "structs/Guild/Collateral/"
 )
 
 
