@@ -79,6 +79,15 @@ option go_package = "structs/x/structs/types";
   message EventAddressAssociation { AddressAssociation addressAssociation = 1; }
   message EventAddressActivity { AddressActivity addressActivity = 1; }
 
+  message EventGuildBankMint { EventGuildBankMintDetail eventGuildBankMintDetail = 1;}
+  message EventGuildBankMintDetail { string guildId = 1; uint64 amountAlpha = 2; uint64 amountToken = 3; string playerId = 4;}
+
+  message EventGuildBankRedeem { EventGuildBankRedeemDetail eventGuildBankRedeemDetail = 1;}
+  message EventGuildBankRedeemDetail { string guildId = 1; uint64 amountAlpha = 2; uint64 amountToken = 3; string playerId = 4;}
+
+  message EventGuildBankConfiscateAndBurn { EventGuildBankConfiscateAndBurnDetail eventGuildBankConfiscateAndBurnDetail = 1;}
+  message EventGuildBankConfiscateAndBurnDetail { string guildId = 1; uint64 amountAlpha = 2; uint64 amountToken = 3; string address = 4;}
+
   message EventGuildMembershipApplication { GuildMembershipApplication guildMembershipApplication = 1; }
 
   message EventOreMine { EventOreMineDetail eventOreMineDetail = 1; }

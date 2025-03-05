@@ -19,6 +19,7 @@ var (
     ErrGridMalfunction                      = sdkerrors.Register(ModuleName, 1800, "Grid malfunction")
     ErrInsufficientCharge                   = sdkerrors.Register(ModuleName, 1801, "Insufficient Charge for Action")
     ErrPlayerHalted                         = sdkerrors.Register(ModuleName, 1802, "Player is currently Halted, must be Resumed before more actions")
+    ErrInvalidParameters                    = sdkerrors.Register(ModuleName, 1803, "Invalid Message Details")
 
     ErrObjectNotFound                       = sdkerrors.Register(ModuleName, 1900, "object not found")
 
@@ -82,7 +83,6 @@ var (
 
     ErrStructAction                             = sdkerrors.Register(ModuleName,  1700, "Struct action failed")
 
-    ErrInvalidParameters                        = sdkerrors.Register(ModuleName,  1800, "Invalid Message Details")
 
     ErrSabotage                                 = sdkerrors.Register(ModuleName,  3800, "Sabotage failed")
 

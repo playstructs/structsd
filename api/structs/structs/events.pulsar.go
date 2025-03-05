@@ -12298,6 +12298,3051 @@ func (x *fastReflection_EventAddressActivity) ProtoMethods() *protoiface.Methods
 }
 
 var (
+	md_EventGuildBankMint                          protoreflect.MessageDescriptor
+	fd_EventGuildBankMint_eventGuildBankMintDetail protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventGuildBankMint = File_structs_structs_events_proto.Messages().ByName("EventGuildBankMint")
+	fd_EventGuildBankMint_eventGuildBankMintDetail = md_EventGuildBankMint.Fields().ByName("eventGuildBankMintDetail")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventGuildBankMint)(nil)
+
+type fastReflection_EventGuildBankMint EventGuildBankMint
+
+func (x *EventGuildBankMint) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventGuildBankMint)(x)
+}
+
+func (x *EventGuildBankMint) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[28]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventGuildBankMint_messageType fastReflection_EventGuildBankMint_messageType
+var _ protoreflect.MessageType = fastReflection_EventGuildBankMint_messageType{}
+
+type fastReflection_EventGuildBankMint_messageType struct{}
+
+func (x fastReflection_EventGuildBankMint_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventGuildBankMint)(nil)
+}
+func (x fastReflection_EventGuildBankMint_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventGuildBankMint)
+}
+func (x fastReflection_EventGuildBankMint_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventGuildBankMint
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventGuildBankMint) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventGuildBankMint
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventGuildBankMint) Type() protoreflect.MessageType {
+	return _fastReflection_EventGuildBankMint_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventGuildBankMint) New() protoreflect.Message {
+	return new(fastReflection_EventGuildBankMint)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventGuildBankMint) Interface() protoreflect.ProtoMessage {
+	return (*EventGuildBankMint)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventGuildBankMint) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.EventGuildBankMintDetail != nil {
+		value := protoreflect.ValueOfMessage(x.EventGuildBankMintDetail.ProtoReflect())
+		if !f(fd_EventGuildBankMint_eventGuildBankMintDetail, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventGuildBankMint) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankMint.eventGuildBankMintDetail":
+		return x.EventGuildBankMintDetail != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankMint"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankMint does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankMint) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankMint.eventGuildBankMintDetail":
+		x.EventGuildBankMintDetail = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankMint"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankMint does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventGuildBankMint) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventGuildBankMint.eventGuildBankMintDetail":
+		value := x.EventGuildBankMintDetail
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankMint"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankMint does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankMint) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankMint.eventGuildBankMintDetail":
+		x.EventGuildBankMintDetail = value.Message().Interface().(*EventGuildBankMintDetail)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankMint"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankMint does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankMint) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankMint.eventGuildBankMintDetail":
+		if x.EventGuildBankMintDetail == nil {
+			x.EventGuildBankMintDetail = new(EventGuildBankMintDetail)
+		}
+		return protoreflect.ValueOfMessage(x.EventGuildBankMintDetail.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankMint"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankMint does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventGuildBankMint) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankMint.eventGuildBankMintDetail":
+		m := new(EventGuildBankMintDetail)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankMint"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankMint does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventGuildBankMint) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventGuildBankMint", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventGuildBankMint) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankMint) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventGuildBankMint) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventGuildBankMint) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventGuildBankMint)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.EventGuildBankMintDetail != nil {
+			l = options.Size(x.EventGuildBankMintDetail)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventGuildBankMint)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.EventGuildBankMintDetail != nil {
+			encoded, err := options.Marshal(x.EventGuildBankMintDetail)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventGuildBankMint)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventGuildBankMint: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventGuildBankMint: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field EventGuildBankMintDetail", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.EventGuildBankMintDetail == nil {
+					x.EventGuildBankMintDetail = &EventGuildBankMintDetail{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.EventGuildBankMintDetail); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventGuildBankMintDetail             protoreflect.MessageDescriptor
+	fd_EventGuildBankMintDetail_guildId     protoreflect.FieldDescriptor
+	fd_EventGuildBankMintDetail_amountAlpha protoreflect.FieldDescriptor
+	fd_EventGuildBankMintDetail_amountToken protoreflect.FieldDescriptor
+	fd_EventGuildBankMintDetail_playerId    protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventGuildBankMintDetail = File_structs_structs_events_proto.Messages().ByName("EventGuildBankMintDetail")
+	fd_EventGuildBankMintDetail_guildId = md_EventGuildBankMintDetail.Fields().ByName("guildId")
+	fd_EventGuildBankMintDetail_amountAlpha = md_EventGuildBankMintDetail.Fields().ByName("amountAlpha")
+	fd_EventGuildBankMintDetail_amountToken = md_EventGuildBankMintDetail.Fields().ByName("amountToken")
+	fd_EventGuildBankMintDetail_playerId = md_EventGuildBankMintDetail.Fields().ByName("playerId")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventGuildBankMintDetail)(nil)
+
+type fastReflection_EventGuildBankMintDetail EventGuildBankMintDetail
+
+func (x *EventGuildBankMintDetail) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventGuildBankMintDetail)(x)
+}
+
+func (x *EventGuildBankMintDetail) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[29]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventGuildBankMintDetail_messageType fastReflection_EventGuildBankMintDetail_messageType
+var _ protoreflect.MessageType = fastReflection_EventGuildBankMintDetail_messageType{}
+
+type fastReflection_EventGuildBankMintDetail_messageType struct{}
+
+func (x fastReflection_EventGuildBankMintDetail_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventGuildBankMintDetail)(nil)
+}
+func (x fastReflection_EventGuildBankMintDetail_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventGuildBankMintDetail)
+}
+func (x fastReflection_EventGuildBankMintDetail_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventGuildBankMintDetail
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventGuildBankMintDetail) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventGuildBankMintDetail
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventGuildBankMintDetail) Type() protoreflect.MessageType {
+	return _fastReflection_EventGuildBankMintDetail_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventGuildBankMintDetail) New() protoreflect.Message {
+	return new(fastReflection_EventGuildBankMintDetail)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventGuildBankMintDetail) Interface() protoreflect.ProtoMessage {
+	return (*EventGuildBankMintDetail)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventGuildBankMintDetail) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.GuildId != "" {
+		value := protoreflect.ValueOfString(x.GuildId)
+		if !f(fd_EventGuildBankMintDetail_guildId, value) {
+			return
+		}
+	}
+	if x.AmountAlpha != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.AmountAlpha)
+		if !f(fd_EventGuildBankMintDetail_amountAlpha, value) {
+			return
+		}
+	}
+	if x.AmountToken != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.AmountToken)
+		if !f(fd_EventGuildBankMintDetail_amountToken, value) {
+			return
+		}
+	}
+	if x.PlayerId != "" {
+		value := protoreflect.ValueOfString(x.PlayerId)
+		if !f(fd_EventGuildBankMintDetail_playerId, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventGuildBankMintDetail) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankMintDetail.guildId":
+		return x.GuildId != ""
+	case "structs.structs.EventGuildBankMintDetail.amountAlpha":
+		return x.AmountAlpha != uint64(0)
+	case "structs.structs.EventGuildBankMintDetail.amountToken":
+		return x.AmountToken != uint64(0)
+	case "structs.structs.EventGuildBankMintDetail.playerId":
+		return x.PlayerId != ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankMintDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankMintDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankMintDetail) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankMintDetail.guildId":
+		x.GuildId = ""
+	case "structs.structs.EventGuildBankMintDetail.amountAlpha":
+		x.AmountAlpha = uint64(0)
+	case "structs.structs.EventGuildBankMintDetail.amountToken":
+		x.AmountToken = uint64(0)
+	case "structs.structs.EventGuildBankMintDetail.playerId":
+		x.PlayerId = ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankMintDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankMintDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventGuildBankMintDetail) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventGuildBankMintDetail.guildId":
+		value := x.GuildId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventGuildBankMintDetail.amountAlpha":
+		value := x.AmountAlpha
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventGuildBankMintDetail.amountToken":
+		value := x.AmountToken
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventGuildBankMintDetail.playerId":
+		value := x.PlayerId
+		return protoreflect.ValueOfString(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankMintDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankMintDetail does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankMintDetail) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankMintDetail.guildId":
+		x.GuildId = value.Interface().(string)
+	case "structs.structs.EventGuildBankMintDetail.amountAlpha":
+		x.AmountAlpha = value.Uint()
+	case "structs.structs.EventGuildBankMintDetail.amountToken":
+		x.AmountToken = value.Uint()
+	case "structs.structs.EventGuildBankMintDetail.playerId":
+		x.PlayerId = value.Interface().(string)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankMintDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankMintDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankMintDetail) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankMintDetail.guildId":
+		panic(fmt.Errorf("field guildId of message structs.structs.EventGuildBankMintDetail is not mutable"))
+	case "structs.structs.EventGuildBankMintDetail.amountAlpha":
+		panic(fmt.Errorf("field amountAlpha of message structs.structs.EventGuildBankMintDetail is not mutable"))
+	case "structs.structs.EventGuildBankMintDetail.amountToken":
+		panic(fmt.Errorf("field amountToken of message structs.structs.EventGuildBankMintDetail is not mutable"))
+	case "structs.structs.EventGuildBankMintDetail.playerId":
+		panic(fmt.Errorf("field playerId of message structs.structs.EventGuildBankMintDetail is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankMintDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankMintDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventGuildBankMintDetail) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankMintDetail.guildId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventGuildBankMintDetail.amountAlpha":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventGuildBankMintDetail.amountToken":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventGuildBankMintDetail.playerId":
+		return protoreflect.ValueOfString("")
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankMintDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankMintDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventGuildBankMintDetail) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventGuildBankMintDetail", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventGuildBankMintDetail) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankMintDetail) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventGuildBankMintDetail) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventGuildBankMintDetail) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventGuildBankMintDetail)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.GuildId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.AmountAlpha != 0 {
+			n += 1 + runtime.Sov(uint64(x.AmountAlpha))
+		}
+		if x.AmountToken != 0 {
+			n += 1 + runtime.Sov(uint64(x.AmountToken))
+		}
+		l = len(x.PlayerId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventGuildBankMintDetail)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.PlayerId) > 0 {
+			i -= len(x.PlayerId)
+			copy(dAtA[i:], x.PlayerId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.PlayerId)))
+			i--
+			dAtA[i] = 0x22
+		}
+		if x.AmountToken != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.AmountToken))
+			i--
+			dAtA[i] = 0x18
+		}
+		if x.AmountAlpha != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.AmountAlpha))
+			i--
+			dAtA[i] = 0x10
+		}
+		if len(x.GuildId) > 0 {
+			i -= len(x.GuildId)
+			copy(dAtA[i:], x.GuildId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.GuildId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventGuildBankMintDetail)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventGuildBankMintDetail: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventGuildBankMintDetail: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.GuildId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AmountAlpha", wireType)
+				}
+				x.AmountAlpha = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.AmountAlpha |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AmountToken", wireType)
+				}
+				x.AmountToken = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.AmountToken |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.PlayerId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventGuildBankRedeem                            protoreflect.MessageDescriptor
+	fd_EventGuildBankRedeem_eventGuildBankRedeemDetail protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventGuildBankRedeem = File_structs_structs_events_proto.Messages().ByName("EventGuildBankRedeem")
+	fd_EventGuildBankRedeem_eventGuildBankRedeemDetail = md_EventGuildBankRedeem.Fields().ByName("eventGuildBankRedeemDetail")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventGuildBankRedeem)(nil)
+
+type fastReflection_EventGuildBankRedeem EventGuildBankRedeem
+
+func (x *EventGuildBankRedeem) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventGuildBankRedeem)(x)
+}
+
+func (x *EventGuildBankRedeem) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[30]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventGuildBankRedeem_messageType fastReflection_EventGuildBankRedeem_messageType
+var _ protoreflect.MessageType = fastReflection_EventGuildBankRedeem_messageType{}
+
+type fastReflection_EventGuildBankRedeem_messageType struct{}
+
+func (x fastReflection_EventGuildBankRedeem_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventGuildBankRedeem)(nil)
+}
+func (x fastReflection_EventGuildBankRedeem_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventGuildBankRedeem)
+}
+func (x fastReflection_EventGuildBankRedeem_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventGuildBankRedeem
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventGuildBankRedeem) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventGuildBankRedeem
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventGuildBankRedeem) Type() protoreflect.MessageType {
+	return _fastReflection_EventGuildBankRedeem_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventGuildBankRedeem) New() protoreflect.Message {
+	return new(fastReflection_EventGuildBankRedeem)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventGuildBankRedeem) Interface() protoreflect.ProtoMessage {
+	return (*EventGuildBankRedeem)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventGuildBankRedeem) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.EventGuildBankRedeemDetail != nil {
+		value := protoreflect.ValueOfMessage(x.EventGuildBankRedeemDetail.ProtoReflect())
+		if !f(fd_EventGuildBankRedeem_eventGuildBankRedeemDetail, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventGuildBankRedeem) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankRedeem.eventGuildBankRedeemDetail":
+		return x.EventGuildBankRedeemDetail != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankRedeem"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankRedeem does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankRedeem) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankRedeem.eventGuildBankRedeemDetail":
+		x.EventGuildBankRedeemDetail = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankRedeem"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankRedeem does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventGuildBankRedeem) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventGuildBankRedeem.eventGuildBankRedeemDetail":
+		value := x.EventGuildBankRedeemDetail
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankRedeem"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankRedeem does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankRedeem) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankRedeem.eventGuildBankRedeemDetail":
+		x.EventGuildBankRedeemDetail = value.Message().Interface().(*EventGuildBankRedeemDetail)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankRedeem"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankRedeem does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankRedeem) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankRedeem.eventGuildBankRedeemDetail":
+		if x.EventGuildBankRedeemDetail == nil {
+			x.EventGuildBankRedeemDetail = new(EventGuildBankRedeemDetail)
+		}
+		return protoreflect.ValueOfMessage(x.EventGuildBankRedeemDetail.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankRedeem"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankRedeem does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventGuildBankRedeem) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankRedeem.eventGuildBankRedeemDetail":
+		m := new(EventGuildBankRedeemDetail)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankRedeem"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankRedeem does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventGuildBankRedeem) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventGuildBankRedeem", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventGuildBankRedeem) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankRedeem) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventGuildBankRedeem) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventGuildBankRedeem) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventGuildBankRedeem)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.EventGuildBankRedeemDetail != nil {
+			l = options.Size(x.EventGuildBankRedeemDetail)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventGuildBankRedeem)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.EventGuildBankRedeemDetail != nil {
+			encoded, err := options.Marshal(x.EventGuildBankRedeemDetail)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventGuildBankRedeem)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventGuildBankRedeem: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventGuildBankRedeem: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field EventGuildBankRedeemDetail", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.EventGuildBankRedeemDetail == nil {
+					x.EventGuildBankRedeemDetail = &EventGuildBankRedeemDetail{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.EventGuildBankRedeemDetail); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventGuildBankRedeemDetail             protoreflect.MessageDescriptor
+	fd_EventGuildBankRedeemDetail_guildId     protoreflect.FieldDescriptor
+	fd_EventGuildBankRedeemDetail_amountAlpha protoreflect.FieldDescriptor
+	fd_EventGuildBankRedeemDetail_amountToken protoreflect.FieldDescriptor
+	fd_EventGuildBankRedeemDetail_playerId    protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventGuildBankRedeemDetail = File_structs_structs_events_proto.Messages().ByName("EventGuildBankRedeemDetail")
+	fd_EventGuildBankRedeemDetail_guildId = md_EventGuildBankRedeemDetail.Fields().ByName("guildId")
+	fd_EventGuildBankRedeemDetail_amountAlpha = md_EventGuildBankRedeemDetail.Fields().ByName("amountAlpha")
+	fd_EventGuildBankRedeemDetail_amountToken = md_EventGuildBankRedeemDetail.Fields().ByName("amountToken")
+	fd_EventGuildBankRedeemDetail_playerId = md_EventGuildBankRedeemDetail.Fields().ByName("playerId")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventGuildBankRedeemDetail)(nil)
+
+type fastReflection_EventGuildBankRedeemDetail EventGuildBankRedeemDetail
+
+func (x *EventGuildBankRedeemDetail) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventGuildBankRedeemDetail)(x)
+}
+
+func (x *EventGuildBankRedeemDetail) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[31]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventGuildBankRedeemDetail_messageType fastReflection_EventGuildBankRedeemDetail_messageType
+var _ protoreflect.MessageType = fastReflection_EventGuildBankRedeemDetail_messageType{}
+
+type fastReflection_EventGuildBankRedeemDetail_messageType struct{}
+
+func (x fastReflection_EventGuildBankRedeemDetail_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventGuildBankRedeemDetail)(nil)
+}
+func (x fastReflection_EventGuildBankRedeemDetail_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventGuildBankRedeemDetail)
+}
+func (x fastReflection_EventGuildBankRedeemDetail_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventGuildBankRedeemDetail
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventGuildBankRedeemDetail) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventGuildBankRedeemDetail
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventGuildBankRedeemDetail) Type() protoreflect.MessageType {
+	return _fastReflection_EventGuildBankRedeemDetail_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventGuildBankRedeemDetail) New() protoreflect.Message {
+	return new(fastReflection_EventGuildBankRedeemDetail)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventGuildBankRedeemDetail) Interface() protoreflect.ProtoMessage {
+	return (*EventGuildBankRedeemDetail)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventGuildBankRedeemDetail) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.GuildId != "" {
+		value := protoreflect.ValueOfString(x.GuildId)
+		if !f(fd_EventGuildBankRedeemDetail_guildId, value) {
+			return
+		}
+	}
+	if x.AmountAlpha != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.AmountAlpha)
+		if !f(fd_EventGuildBankRedeemDetail_amountAlpha, value) {
+			return
+		}
+	}
+	if x.AmountToken != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.AmountToken)
+		if !f(fd_EventGuildBankRedeemDetail_amountToken, value) {
+			return
+		}
+	}
+	if x.PlayerId != "" {
+		value := protoreflect.ValueOfString(x.PlayerId)
+		if !f(fd_EventGuildBankRedeemDetail_playerId, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventGuildBankRedeemDetail) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankRedeemDetail.guildId":
+		return x.GuildId != ""
+	case "structs.structs.EventGuildBankRedeemDetail.amountAlpha":
+		return x.AmountAlpha != uint64(0)
+	case "structs.structs.EventGuildBankRedeemDetail.amountToken":
+		return x.AmountToken != uint64(0)
+	case "structs.structs.EventGuildBankRedeemDetail.playerId":
+		return x.PlayerId != ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankRedeemDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankRedeemDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankRedeemDetail) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankRedeemDetail.guildId":
+		x.GuildId = ""
+	case "structs.structs.EventGuildBankRedeemDetail.amountAlpha":
+		x.AmountAlpha = uint64(0)
+	case "structs.structs.EventGuildBankRedeemDetail.amountToken":
+		x.AmountToken = uint64(0)
+	case "structs.structs.EventGuildBankRedeemDetail.playerId":
+		x.PlayerId = ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankRedeemDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankRedeemDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventGuildBankRedeemDetail) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventGuildBankRedeemDetail.guildId":
+		value := x.GuildId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventGuildBankRedeemDetail.amountAlpha":
+		value := x.AmountAlpha
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventGuildBankRedeemDetail.amountToken":
+		value := x.AmountToken
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventGuildBankRedeemDetail.playerId":
+		value := x.PlayerId
+		return protoreflect.ValueOfString(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankRedeemDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankRedeemDetail does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankRedeemDetail) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankRedeemDetail.guildId":
+		x.GuildId = value.Interface().(string)
+	case "structs.structs.EventGuildBankRedeemDetail.amountAlpha":
+		x.AmountAlpha = value.Uint()
+	case "structs.structs.EventGuildBankRedeemDetail.amountToken":
+		x.AmountToken = value.Uint()
+	case "structs.structs.EventGuildBankRedeemDetail.playerId":
+		x.PlayerId = value.Interface().(string)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankRedeemDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankRedeemDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankRedeemDetail) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankRedeemDetail.guildId":
+		panic(fmt.Errorf("field guildId of message structs.structs.EventGuildBankRedeemDetail is not mutable"))
+	case "structs.structs.EventGuildBankRedeemDetail.amountAlpha":
+		panic(fmt.Errorf("field amountAlpha of message structs.structs.EventGuildBankRedeemDetail is not mutable"))
+	case "structs.structs.EventGuildBankRedeemDetail.amountToken":
+		panic(fmt.Errorf("field amountToken of message structs.structs.EventGuildBankRedeemDetail is not mutable"))
+	case "structs.structs.EventGuildBankRedeemDetail.playerId":
+		panic(fmt.Errorf("field playerId of message structs.structs.EventGuildBankRedeemDetail is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankRedeemDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankRedeemDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventGuildBankRedeemDetail) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankRedeemDetail.guildId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventGuildBankRedeemDetail.amountAlpha":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventGuildBankRedeemDetail.amountToken":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventGuildBankRedeemDetail.playerId":
+		return protoreflect.ValueOfString("")
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankRedeemDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankRedeemDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventGuildBankRedeemDetail) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventGuildBankRedeemDetail", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventGuildBankRedeemDetail) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankRedeemDetail) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventGuildBankRedeemDetail) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventGuildBankRedeemDetail) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventGuildBankRedeemDetail)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.GuildId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.AmountAlpha != 0 {
+			n += 1 + runtime.Sov(uint64(x.AmountAlpha))
+		}
+		if x.AmountToken != 0 {
+			n += 1 + runtime.Sov(uint64(x.AmountToken))
+		}
+		l = len(x.PlayerId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventGuildBankRedeemDetail)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.PlayerId) > 0 {
+			i -= len(x.PlayerId)
+			copy(dAtA[i:], x.PlayerId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.PlayerId)))
+			i--
+			dAtA[i] = 0x22
+		}
+		if x.AmountToken != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.AmountToken))
+			i--
+			dAtA[i] = 0x18
+		}
+		if x.AmountAlpha != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.AmountAlpha))
+			i--
+			dAtA[i] = 0x10
+		}
+		if len(x.GuildId) > 0 {
+			i -= len(x.GuildId)
+			copy(dAtA[i:], x.GuildId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.GuildId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventGuildBankRedeemDetail)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventGuildBankRedeemDetail: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventGuildBankRedeemDetail: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.GuildId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AmountAlpha", wireType)
+				}
+				x.AmountAlpha = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.AmountAlpha |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AmountToken", wireType)
+				}
+				x.AmountToken = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.AmountToken |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlayerId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.PlayerId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventGuildBankConfiscateAndBurn                                       protoreflect.MessageDescriptor
+	fd_EventGuildBankConfiscateAndBurn_eventGuildBankConfiscateAndBurnDetail protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventGuildBankConfiscateAndBurn = File_structs_structs_events_proto.Messages().ByName("EventGuildBankConfiscateAndBurn")
+	fd_EventGuildBankConfiscateAndBurn_eventGuildBankConfiscateAndBurnDetail = md_EventGuildBankConfiscateAndBurn.Fields().ByName("eventGuildBankConfiscateAndBurnDetail")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventGuildBankConfiscateAndBurn)(nil)
+
+type fastReflection_EventGuildBankConfiscateAndBurn EventGuildBankConfiscateAndBurn
+
+func (x *EventGuildBankConfiscateAndBurn) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventGuildBankConfiscateAndBurn)(x)
+}
+
+func (x *EventGuildBankConfiscateAndBurn) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[32]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventGuildBankConfiscateAndBurn_messageType fastReflection_EventGuildBankConfiscateAndBurn_messageType
+var _ protoreflect.MessageType = fastReflection_EventGuildBankConfiscateAndBurn_messageType{}
+
+type fastReflection_EventGuildBankConfiscateAndBurn_messageType struct{}
+
+func (x fastReflection_EventGuildBankConfiscateAndBurn_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventGuildBankConfiscateAndBurn)(nil)
+}
+func (x fastReflection_EventGuildBankConfiscateAndBurn_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventGuildBankConfiscateAndBurn)
+}
+func (x fastReflection_EventGuildBankConfiscateAndBurn_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventGuildBankConfiscateAndBurn
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventGuildBankConfiscateAndBurn) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventGuildBankConfiscateAndBurn
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventGuildBankConfiscateAndBurn) Type() protoreflect.MessageType {
+	return _fastReflection_EventGuildBankConfiscateAndBurn_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventGuildBankConfiscateAndBurn) New() protoreflect.Message {
+	return new(fastReflection_EventGuildBankConfiscateAndBurn)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventGuildBankConfiscateAndBurn) Interface() protoreflect.ProtoMessage {
+	return (*EventGuildBankConfiscateAndBurn)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventGuildBankConfiscateAndBurn) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.EventGuildBankConfiscateAndBurnDetail != nil {
+		value := protoreflect.ValueOfMessage(x.EventGuildBankConfiscateAndBurnDetail.ProtoReflect())
+		if !f(fd_EventGuildBankConfiscateAndBurn_eventGuildBankConfiscateAndBurnDetail, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventGuildBankConfiscateAndBurn) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankConfiscateAndBurn.eventGuildBankConfiscateAndBurnDetail":
+		return x.EventGuildBankConfiscateAndBurnDetail != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankConfiscateAndBurn"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankConfiscateAndBurn does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankConfiscateAndBurn) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankConfiscateAndBurn.eventGuildBankConfiscateAndBurnDetail":
+		x.EventGuildBankConfiscateAndBurnDetail = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankConfiscateAndBurn"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankConfiscateAndBurn does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventGuildBankConfiscateAndBurn) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventGuildBankConfiscateAndBurn.eventGuildBankConfiscateAndBurnDetail":
+		value := x.EventGuildBankConfiscateAndBurnDetail
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankConfiscateAndBurn"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankConfiscateAndBurn does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankConfiscateAndBurn) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankConfiscateAndBurn.eventGuildBankConfiscateAndBurnDetail":
+		x.EventGuildBankConfiscateAndBurnDetail = value.Message().Interface().(*EventGuildBankConfiscateAndBurnDetail)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankConfiscateAndBurn"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankConfiscateAndBurn does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankConfiscateAndBurn) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankConfiscateAndBurn.eventGuildBankConfiscateAndBurnDetail":
+		if x.EventGuildBankConfiscateAndBurnDetail == nil {
+			x.EventGuildBankConfiscateAndBurnDetail = new(EventGuildBankConfiscateAndBurnDetail)
+		}
+		return protoreflect.ValueOfMessage(x.EventGuildBankConfiscateAndBurnDetail.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankConfiscateAndBurn"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankConfiscateAndBurn does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventGuildBankConfiscateAndBurn) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankConfiscateAndBurn.eventGuildBankConfiscateAndBurnDetail":
+		m := new(EventGuildBankConfiscateAndBurnDetail)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankConfiscateAndBurn"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankConfiscateAndBurn does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventGuildBankConfiscateAndBurn) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventGuildBankConfiscateAndBurn", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventGuildBankConfiscateAndBurn) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankConfiscateAndBurn) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventGuildBankConfiscateAndBurn) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventGuildBankConfiscateAndBurn) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventGuildBankConfiscateAndBurn)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.EventGuildBankConfiscateAndBurnDetail != nil {
+			l = options.Size(x.EventGuildBankConfiscateAndBurnDetail)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventGuildBankConfiscateAndBurn)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.EventGuildBankConfiscateAndBurnDetail != nil {
+			encoded, err := options.Marshal(x.EventGuildBankConfiscateAndBurnDetail)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventGuildBankConfiscateAndBurn)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventGuildBankConfiscateAndBurn: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventGuildBankConfiscateAndBurn: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field EventGuildBankConfiscateAndBurnDetail", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.EventGuildBankConfiscateAndBurnDetail == nil {
+					x.EventGuildBankConfiscateAndBurnDetail = &EventGuildBankConfiscateAndBurnDetail{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.EventGuildBankConfiscateAndBurnDetail); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventGuildBankConfiscateAndBurnDetail             protoreflect.MessageDescriptor
+	fd_EventGuildBankConfiscateAndBurnDetail_guildId     protoreflect.FieldDescriptor
+	fd_EventGuildBankConfiscateAndBurnDetail_amountAlpha protoreflect.FieldDescriptor
+	fd_EventGuildBankConfiscateAndBurnDetail_amountToken protoreflect.FieldDescriptor
+	fd_EventGuildBankConfiscateAndBurnDetail_address     protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventGuildBankConfiscateAndBurnDetail = File_structs_structs_events_proto.Messages().ByName("EventGuildBankConfiscateAndBurnDetail")
+	fd_EventGuildBankConfiscateAndBurnDetail_guildId = md_EventGuildBankConfiscateAndBurnDetail.Fields().ByName("guildId")
+	fd_EventGuildBankConfiscateAndBurnDetail_amountAlpha = md_EventGuildBankConfiscateAndBurnDetail.Fields().ByName("amountAlpha")
+	fd_EventGuildBankConfiscateAndBurnDetail_amountToken = md_EventGuildBankConfiscateAndBurnDetail.Fields().ByName("amountToken")
+	fd_EventGuildBankConfiscateAndBurnDetail_address = md_EventGuildBankConfiscateAndBurnDetail.Fields().ByName("address")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventGuildBankConfiscateAndBurnDetail)(nil)
+
+type fastReflection_EventGuildBankConfiscateAndBurnDetail EventGuildBankConfiscateAndBurnDetail
+
+func (x *EventGuildBankConfiscateAndBurnDetail) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventGuildBankConfiscateAndBurnDetail)(x)
+}
+
+func (x *EventGuildBankConfiscateAndBurnDetail) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[33]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventGuildBankConfiscateAndBurnDetail_messageType fastReflection_EventGuildBankConfiscateAndBurnDetail_messageType
+var _ protoreflect.MessageType = fastReflection_EventGuildBankConfiscateAndBurnDetail_messageType{}
+
+type fastReflection_EventGuildBankConfiscateAndBurnDetail_messageType struct{}
+
+func (x fastReflection_EventGuildBankConfiscateAndBurnDetail_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventGuildBankConfiscateAndBurnDetail)(nil)
+}
+func (x fastReflection_EventGuildBankConfiscateAndBurnDetail_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventGuildBankConfiscateAndBurnDetail)
+}
+func (x fastReflection_EventGuildBankConfiscateAndBurnDetail_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventGuildBankConfiscateAndBurnDetail
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventGuildBankConfiscateAndBurnDetail) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventGuildBankConfiscateAndBurnDetail
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventGuildBankConfiscateAndBurnDetail) Type() protoreflect.MessageType {
+	return _fastReflection_EventGuildBankConfiscateAndBurnDetail_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventGuildBankConfiscateAndBurnDetail) New() protoreflect.Message {
+	return new(fastReflection_EventGuildBankConfiscateAndBurnDetail)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventGuildBankConfiscateAndBurnDetail) Interface() protoreflect.ProtoMessage {
+	return (*EventGuildBankConfiscateAndBurnDetail)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventGuildBankConfiscateAndBurnDetail) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.GuildId != "" {
+		value := protoreflect.ValueOfString(x.GuildId)
+		if !f(fd_EventGuildBankConfiscateAndBurnDetail_guildId, value) {
+			return
+		}
+	}
+	if x.AmountAlpha != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.AmountAlpha)
+		if !f(fd_EventGuildBankConfiscateAndBurnDetail_amountAlpha, value) {
+			return
+		}
+	}
+	if x.AmountToken != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.AmountToken)
+		if !f(fd_EventGuildBankConfiscateAndBurnDetail_amountToken, value) {
+			return
+		}
+	}
+	if x.Address != "" {
+		value := protoreflect.ValueOfString(x.Address)
+		if !f(fd_EventGuildBankConfiscateAndBurnDetail_address, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventGuildBankConfiscateAndBurnDetail) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.guildId":
+		return x.GuildId != ""
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.amountAlpha":
+		return x.AmountAlpha != uint64(0)
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.amountToken":
+		return x.AmountToken != uint64(0)
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.address":
+		return x.Address != ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankConfiscateAndBurnDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankConfiscateAndBurnDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankConfiscateAndBurnDetail) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.guildId":
+		x.GuildId = ""
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.amountAlpha":
+		x.AmountAlpha = uint64(0)
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.amountToken":
+		x.AmountToken = uint64(0)
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.address":
+		x.Address = ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankConfiscateAndBurnDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankConfiscateAndBurnDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventGuildBankConfiscateAndBurnDetail) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.guildId":
+		value := x.GuildId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.amountAlpha":
+		value := x.AmountAlpha
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.amountToken":
+		value := x.AmountToken
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.address":
+		value := x.Address
+		return protoreflect.ValueOfString(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankConfiscateAndBurnDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankConfiscateAndBurnDetail does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankConfiscateAndBurnDetail) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.guildId":
+		x.GuildId = value.Interface().(string)
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.amountAlpha":
+		x.AmountAlpha = value.Uint()
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.amountToken":
+		x.AmountToken = value.Uint()
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.address":
+		x.Address = value.Interface().(string)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankConfiscateAndBurnDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankConfiscateAndBurnDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankConfiscateAndBurnDetail) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.guildId":
+		panic(fmt.Errorf("field guildId of message structs.structs.EventGuildBankConfiscateAndBurnDetail is not mutable"))
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.amountAlpha":
+		panic(fmt.Errorf("field amountAlpha of message structs.structs.EventGuildBankConfiscateAndBurnDetail is not mutable"))
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.amountToken":
+		panic(fmt.Errorf("field amountToken of message structs.structs.EventGuildBankConfiscateAndBurnDetail is not mutable"))
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.address":
+		panic(fmt.Errorf("field address of message structs.structs.EventGuildBankConfiscateAndBurnDetail is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankConfiscateAndBurnDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankConfiscateAndBurnDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventGuildBankConfiscateAndBurnDetail) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.guildId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.amountAlpha":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.amountToken":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventGuildBankConfiscateAndBurnDetail.address":
+		return protoreflect.ValueOfString("")
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventGuildBankConfiscateAndBurnDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventGuildBankConfiscateAndBurnDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventGuildBankConfiscateAndBurnDetail) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventGuildBankConfiscateAndBurnDetail", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventGuildBankConfiscateAndBurnDetail) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventGuildBankConfiscateAndBurnDetail) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventGuildBankConfiscateAndBurnDetail) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventGuildBankConfiscateAndBurnDetail) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventGuildBankConfiscateAndBurnDetail)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.GuildId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.AmountAlpha != 0 {
+			n += 1 + runtime.Sov(uint64(x.AmountAlpha))
+		}
+		if x.AmountToken != 0 {
+			n += 1 + runtime.Sov(uint64(x.AmountToken))
+		}
+		l = len(x.Address)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventGuildBankConfiscateAndBurnDetail)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.Address) > 0 {
+			i -= len(x.Address)
+			copy(dAtA[i:], x.Address)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Address)))
+			i--
+			dAtA[i] = 0x22
+		}
+		if x.AmountToken != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.AmountToken))
+			i--
+			dAtA[i] = 0x18
+		}
+		if x.AmountAlpha != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.AmountAlpha))
+			i--
+			dAtA[i] = 0x10
+		}
+		if len(x.GuildId) > 0 {
+			i -= len(x.GuildId)
+			copy(dAtA[i:], x.GuildId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.GuildId)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventGuildBankConfiscateAndBurnDetail)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventGuildBankConfiscateAndBurnDetail: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventGuildBankConfiscateAndBurnDetail: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field GuildId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.GuildId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AmountAlpha", wireType)
+				}
+				x.AmountAlpha = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.AmountAlpha |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AmountToken", wireType)
+				}
+				x.AmountToken = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.AmountToken |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Address", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Address = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
 	md_EventGuildMembershipApplication                            protoreflect.MessageDescriptor
 	fd_EventGuildMembershipApplication_guildMembershipApplication protoreflect.FieldDescriptor
 )
@@ -12317,7 +15362,7 @@ func (x *EventGuildMembershipApplication) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventGuildMembershipApplication) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[28]
+	mi := &file_structs_structs_events_proto_msgTypes[34]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -12752,7 +15797,7 @@ func (x *EventOreMine) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventOreMine) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[29]
+	mi := &file_structs_structs_events_proto_msgTypes[35]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13191,7 +16236,7 @@ func (x *EventOreMineDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventOreMineDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[30]
+	mi := &file_structs_structs_events_proto_msgTypes[36]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -13719,7 +16764,7 @@ func (x *EventAlphaRefine) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAlphaRefine) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[31]
+	mi := &file_structs_structs_events_proto_msgTypes[37]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14158,7 +17203,7 @@ func (x *EventAlphaRefineDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAlphaRefineDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[32]
+	mi := &file_structs_structs_events_proto_msgTypes[38]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -14686,7 +17731,7 @@ func (x *EventAlphaInfuse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAlphaInfuse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[33]
+	mi := &file_structs_structs_events_proto_msgTypes[39]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15125,7 +18170,7 @@ func (x *EventAlphaInfuseDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAlphaInfuseDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[34]
+	mi := &file_structs_structs_events_proto_msgTypes[40]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -15653,7 +18698,7 @@ func (x *EventAlphaDefuse) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAlphaDefuse) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[35]
+	mi := &file_structs_structs_events_proto_msgTypes[41]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16090,7 +19135,7 @@ func (x *EventAlphaDefuseDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAlphaDefuseDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[36]
+	mi := &file_structs_structs_events_proto_msgTypes[42]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16556,7 +19601,7 @@ func (x *EventOreTheft) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventOreTheft) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[37]
+	mi := &file_structs_structs_events_proto_msgTypes[43]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -16999,7 +20044,7 @@ func (x *EventOreTheftDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventOreTheftDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[38]
+	mi := &file_structs_structs_events_proto_msgTypes[44]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -17651,7 +20696,7 @@ func (x *EventOreMigrate) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventOreMigrate) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[39]
+	mi := &file_structs_structs_events_proto_msgTypes[45]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18092,7 +21137,7 @@ func (x *EventOreMigrateDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventOreMigrateDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[40]
+	mi := &file_structs_structs_events_proto_msgTypes[46]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -18682,7 +21727,7 @@ func (x *EventAttack) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAttack) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[41]
+	mi := &file_structs_structs_events_proto_msgTypes[47]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -19202,7 +22247,7 @@ func (x *EventAttackDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAttackDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[42]
+	mi := &file_structs_structs_events_proto_msgTypes[48]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -20634,7 +23679,7 @@ func (x *EventAttackShotDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAttackShotDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[43]
+	mi := &file_structs_structs_events_proto_msgTypes[49]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -22669,7 +25714,7 @@ func (x *EventAttackDefenderCounterDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventAttackDefenderCounterDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[44]
+	mi := &file_structs_structs_events_proto_msgTypes[50]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23433,7 +26478,7 @@ func (x *EventRaid) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventRaid) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[45]
+	mi := &file_structs_structs_events_proto_msgTypes[51]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -23872,7 +26917,7 @@ func (x *EventRaidDetail) ProtoReflect() protoreflect.Message {
 }
 
 func (x *EventRaidDetail) slowProtoReflect() protoreflect.Message {
-	mi := &file_structs_structs_events_proto_msgTypes[46]
+	mi := &file_structs_structs_events_proto_msgTypes[52]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -25397,6 +28442,288 @@ func (x *EventAddressActivity) GetAddressActivity() *AddressActivity {
 	return nil
 }
 
+type EventGuildBankMint struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	EventGuildBankMintDetail *EventGuildBankMintDetail `protobuf:"bytes,1,opt,name=eventGuildBankMintDetail,proto3" json:"eventGuildBankMintDetail,omitempty"`
+}
+
+func (x *EventGuildBankMint) Reset() {
+	*x = EventGuildBankMint{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[28]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventGuildBankMint) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventGuildBankMint) ProtoMessage() {}
+
+// Deprecated: Use EventGuildBankMint.ProtoReflect.Descriptor instead.
+func (*EventGuildBankMint) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *EventGuildBankMint) GetEventGuildBankMintDetail() *EventGuildBankMintDetail {
+	if x != nil {
+		return x.EventGuildBankMintDetail
+	}
+	return nil
+}
+
+type EventGuildBankMintDetail struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	GuildId     string `protobuf:"bytes,1,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	AmountAlpha uint64 `protobuf:"varint,2,opt,name=amountAlpha,proto3" json:"amountAlpha,omitempty"`
+	AmountToken uint64 `protobuf:"varint,3,opt,name=amountToken,proto3" json:"amountToken,omitempty"`
+	PlayerId    string `protobuf:"bytes,4,opt,name=playerId,proto3" json:"playerId,omitempty"`
+}
+
+func (x *EventGuildBankMintDetail) Reset() {
+	*x = EventGuildBankMintDetail{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[29]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventGuildBankMintDetail) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventGuildBankMintDetail) ProtoMessage() {}
+
+// Deprecated: Use EventGuildBankMintDetail.ProtoReflect.Descriptor instead.
+func (*EventGuildBankMintDetail) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *EventGuildBankMintDetail) GetGuildId() string {
+	if x != nil {
+		return x.GuildId
+	}
+	return ""
+}
+
+func (x *EventGuildBankMintDetail) GetAmountAlpha() uint64 {
+	if x != nil {
+		return x.AmountAlpha
+	}
+	return 0
+}
+
+func (x *EventGuildBankMintDetail) GetAmountToken() uint64 {
+	if x != nil {
+		return x.AmountToken
+	}
+	return 0
+}
+
+func (x *EventGuildBankMintDetail) GetPlayerId() string {
+	if x != nil {
+		return x.PlayerId
+	}
+	return ""
+}
+
+type EventGuildBankRedeem struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	EventGuildBankRedeemDetail *EventGuildBankRedeemDetail `protobuf:"bytes,1,opt,name=eventGuildBankRedeemDetail,proto3" json:"eventGuildBankRedeemDetail,omitempty"`
+}
+
+func (x *EventGuildBankRedeem) Reset() {
+	*x = EventGuildBankRedeem{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[30]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventGuildBankRedeem) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventGuildBankRedeem) ProtoMessage() {}
+
+// Deprecated: Use EventGuildBankRedeem.ProtoReflect.Descriptor instead.
+func (*EventGuildBankRedeem) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *EventGuildBankRedeem) GetEventGuildBankRedeemDetail() *EventGuildBankRedeemDetail {
+	if x != nil {
+		return x.EventGuildBankRedeemDetail
+	}
+	return nil
+}
+
+type EventGuildBankRedeemDetail struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	GuildId     string `protobuf:"bytes,1,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	AmountAlpha uint64 `protobuf:"varint,2,opt,name=amountAlpha,proto3" json:"amountAlpha,omitempty"`
+	AmountToken uint64 `protobuf:"varint,3,opt,name=amountToken,proto3" json:"amountToken,omitempty"`
+	PlayerId    string `protobuf:"bytes,4,opt,name=playerId,proto3" json:"playerId,omitempty"`
+}
+
+func (x *EventGuildBankRedeemDetail) Reset() {
+	*x = EventGuildBankRedeemDetail{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[31]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventGuildBankRedeemDetail) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventGuildBankRedeemDetail) ProtoMessage() {}
+
+// Deprecated: Use EventGuildBankRedeemDetail.ProtoReflect.Descriptor instead.
+func (*EventGuildBankRedeemDetail) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *EventGuildBankRedeemDetail) GetGuildId() string {
+	if x != nil {
+		return x.GuildId
+	}
+	return ""
+}
+
+func (x *EventGuildBankRedeemDetail) GetAmountAlpha() uint64 {
+	if x != nil {
+		return x.AmountAlpha
+	}
+	return 0
+}
+
+func (x *EventGuildBankRedeemDetail) GetAmountToken() uint64 {
+	if x != nil {
+		return x.AmountToken
+	}
+	return 0
+}
+
+func (x *EventGuildBankRedeemDetail) GetPlayerId() string {
+	if x != nil {
+		return x.PlayerId
+	}
+	return ""
+}
+
+type EventGuildBankConfiscateAndBurn struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	EventGuildBankConfiscateAndBurnDetail *EventGuildBankConfiscateAndBurnDetail `protobuf:"bytes,1,opt,name=eventGuildBankConfiscateAndBurnDetail,proto3" json:"eventGuildBankConfiscateAndBurnDetail,omitempty"`
+}
+
+func (x *EventGuildBankConfiscateAndBurn) Reset() {
+	*x = EventGuildBankConfiscateAndBurn{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[32]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventGuildBankConfiscateAndBurn) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventGuildBankConfiscateAndBurn) ProtoMessage() {}
+
+// Deprecated: Use EventGuildBankConfiscateAndBurn.ProtoReflect.Descriptor instead.
+func (*EventGuildBankConfiscateAndBurn) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *EventGuildBankConfiscateAndBurn) GetEventGuildBankConfiscateAndBurnDetail() *EventGuildBankConfiscateAndBurnDetail {
+	if x != nil {
+		return x.EventGuildBankConfiscateAndBurnDetail
+	}
+	return nil
+}
+
+type EventGuildBankConfiscateAndBurnDetail struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	GuildId     string `protobuf:"bytes,1,opt,name=guildId,proto3" json:"guildId,omitempty"`
+	AmountAlpha uint64 `protobuf:"varint,2,opt,name=amountAlpha,proto3" json:"amountAlpha,omitempty"`
+	AmountToken uint64 `protobuf:"varint,3,opt,name=amountToken,proto3" json:"amountToken,omitempty"`
+	Address     string `protobuf:"bytes,4,opt,name=address,proto3" json:"address,omitempty"`
+}
+
+func (x *EventGuildBankConfiscateAndBurnDetail) Reset() {
+	*x = EventGuildBankConfiscateAndBurnDetail{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[33]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventGuildBankConfiscateAndBurnDetail) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventGuildBankConfiscateAndBurnDetail) ProtoMessage() {}
+
+// Deprecated: Use EventGuildBankConfiscateAndBurnDetail.ProtoReflect.Descriptor instead.
+func (*EventGuildBankConfiscateAndBurnDetail) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *EventGuildBankConfiscateAndBurnDetail) GetGuildId() string {
+	if x != nil {
+		return x.GuildId
+	}
+	return ""
+}
+
+func (x *EventGuildBankConfiscateAndBurnDetail) GetAmountAlpha() uint64 {
+	if x != nil {
+		return x.AmountAlpha
+	}
+	return 0
+}
+
+func (x *EventGuildBankConfiscateAndBurnDetail) GetAmountToken() uint64 {
+	if x != nil {
+		return x.AmountToken
+	}
+	return 0
+}
+
+func (x *EventGuildBankConfiscateAndBurnDetail) GetAddress() string {
+	if x != nil {
+		return x.Address
+	}
+	return ""
+}
+
 type EventGuildMembershipApplication struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -25408,7 +28735,7 @@ type EventGuildMembershipApplication struct {
 func (x *EventGuildMembershipApplication) Reset() {
 	*x = EventGuildMembershipApplication{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[28]
+		mi := &file_structs_structs_events_proto_msgTypes[34]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -25422,7 +28749,7 @@ func (*EventGuildMembershipApplication) ProtoMessage() {}
 
 // Deprecated: Use EventGuildMembershipApplication.ProtoReflect.Descriptor instead.
 func (*EventGuildMembershipApplication) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{28}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *EventGuildMembershipApplication) GetGuildMembershipApplication() *GuildMembershipApplication {
@@ -25443,7 +28770,7 @@ type EventOreMine struct {
 func (x *EventOreMine) Reset() {
 	*x = EventOreMine{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[29]
+		mi := &file_structs_structs_events_proto_msgTypes[35]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -25457,7 +28784,7 @@ func (*EventOreMine) ProtoMessage() {}
 
 // Deprecated: Use EventOreMine.ProtoReflect.Descriptor instead.
 func (*EventOreMine) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{29}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *EventOreMine) GetEventOreMineDetail() *EventOreMineDetail {
@@ -25480,7 +28807,7 @@ type EventOreMineDetail struct {
 func (x *EventOreMineDetail) Reset() {
 	*x = EventOreMineDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[30]
+		mi := &file_structs_structs_events_proto_msgTypes[36]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -25494,7 +28821,7 @@ func (*EventOreMineDetail) ProtoMessage() {}
 
 // Deprecated: Use EventOreMineDetail.ProtoReflect.Descriptor instead.
 func (*EventOreMineDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{30}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *EventOreMineDetail) GetPlayerId() string {
@@ -25529,7 +28856,7 @@ type EventAlphaRefine struct {
 func (x *EventAlphaRefine) Reset() {
 	*x = EventAlphaRefine{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[31]
+		mi := &file_structs_structs_events_proto_msgTypes[37]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -25543,7 +28870,7 @@ func (*EventAlphaRefine) ProtoMessage() {}
 
 // Deprecated: Use EventAlphaRefine.ProtoReflect.Descriptor instead.
 func (*EventAlphaRefine) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{31}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *EventAlphaRefine) GetEventAlphaRefineDetail() *EventAlphaRefineDetail {
@@ -25566,7 +28893,7 @@ type EventAlphaRefineDetail struct {
 func (x *EventAlphaRefineDetail) Reset() {
 	*x = EventAlphaRefineDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[32]
+		mi := &file_structs_structs_events_proto_msgTypes[38]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -25580,7 +28907,7 @@ func (*EventAlphaRefineDetail) ProtoMessage() {}
 
 // Deprecated: Use EventAlphaRefineDetail.ProtoReflect.Descriptor instead.
 func (*EventAlphaRefineDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{32}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *EventAlphaRefineDetail) GetPlayerId() string {
@@ -25615,7 +28942,7 @@ type EventAlphaInfuse struct {
 func (x *EventAlphaInfuse) Reset() {
 	*x = EventAlphaInfuse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[33]
+		mi := &file_structs_structs_events_proto_msgTypes[39]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -25629,7 +28956,7 @@ func (*EventAlphaInfuse) ProtoMessage() {}
 
 // Deprecated: Use EventAlphaInfuse.ProtoReflect.Descriptor instead.
 func (*EventAlphaInfuse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{33}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *EventAlphaInfuse) GetEventAlphaInfuseDetail() *EventAlphaInfuseDetail {
@@ -25652,7 +28979,7 @@ type EventAlphaInfuseDetail struct {
 func (x *EventAlphaInfuseDetail) Reset() {
 	*x = EventAlphaInfuseDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[34]
+		mi := &file_structs_structs_events_proto_msgTypes[40]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -25666,7 +28993,7 @@ func (*EventAlphaInfuseDetail) ProtoMessage() {}
 
 // Deprecated: Use EventAlphaInfuseDetail.ProtoReflect.Descriptor instead.
 func (*EventAlphaInfuseDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{34}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *EventAlphaInfuseDetail) GetPlayerId() string {
@@ -25701,7 +29028,7 @@ type EventAlphaDefuse struct {
 func (x *EventAlphaDefuse) Reset() {
 	*x = EventAlphaDefuse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[35]
+		mi := &file_structs_structs_events_proto_msgTypes[41]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -25715,7 +29042,7 @@ func (*EventAlphaDefuse) ProtoMessage() {}
 
 // Deprecated: Use EventAlphaDefuse.ProtoReflect.Descriptor instead.
 func (*EventAlphaDefuse) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{35}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *EventAlphaDefuse) GetEventAlphaDefuseDetail() *EventAlphaDefuseDetail {
@@ -25737,7 +29064,7 @@ type EventAlphaDefuseDetail struct {
 func (x *EventAlphaDefuseDetail) Reset() {
 	*x = EventAlphaDefuseDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[36]
+		mi := &file_structs_structs_events_proto_msgTypes[42]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -25751,7 +29078,7 @@ func (*EventAlphaDefuseDetail) ProtoMessage() {}
 
 // Deprecated: Use EventAlphaDefuseDetail.ProtoReflect.Descriptor instead.
 func (*EventAlphaDefuseDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{36}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *EventAlphaDefuseDetail) GetPrimaryAddress() string {
@@ -25779,7 +29106,7 @@ type EventOreTheft struct {
 func (x *EventOreTheft) Reset() {
 	*x = EventOreTheft{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[37]
+		mi := &file_structs_structs_events_proto_msgTypes[43]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -25793,7 +29120,7 @@ func (*EventOreTheft) ProtoMessage() {}
 
 // Deprecated: Use EventOreTheft.ProtoReflect.Descriptor instead.
 func (*EventOreTheft) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{37}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *EventOreTheft) GetEventOreTheftDetail() *EventOreTheftDetail {
@@ -25818,7 +29145,7 @@ type EventOreTheftDetail struct {
 func (x *EventOreTheftDetail) Reset() {
 	*x = EventOreTheftDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[38]
+		mi := &file_structs_structs_events_proto_msgTypes[44]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -25832,7 +29159,7 @@ func (*EventOreTheftDetail) ProtoMessage() {}
 
 // Deprecated: Use EventOreTheftDetail.ProtoReflect.Descriptor instead.
 func (*EventOreTheftDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{38}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *EventOreTheftDetail) GetVictimPrimaryAddress() string {
@@ -25881,7 +29208,7 @@ type EventOreMigrate struct {
 func (x *EventOreMigrate) Reset() {
 	*x = EventOreMigrate{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[39]
+		mi := &file_structs_structs_events_proto_msgTypes[45]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -25895,7 +29222,7 @@ func (*EventOreMigrate) ProtoMessage() {}
 
 // Deprecated: Use EventOreMigrate.ProtoReflect.Descriptor instead.
 func (*EventOreMigrate) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{39}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *EventOreMigrate) GetEventOreMigrateDetail() *EventOreMigrateDetail {
@@ -25919,7 +29246,7 @@ type EventOreMigrateDetail struct {
 func (x *EventOreMigrateDetail) Reset() {
 	*x = EventOreMigrateDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[40]
+		mi := &file_structs_structs_events_proto_msgTypes[46]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -25933,7 +29260,7 @@ func (*EventOreMigrateDetail) ProtoMessage() {}
 
 // Deprecated: Use EventOreMigrateDetail.ProtoReflect.Descriptor instead.
 func (*EventOreMigrateDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{40}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *EventOreMigrateDetail) GetPlayerId() string {
@@ -25975,7 +29302,7 @@ type EventAttack struct {
 func (x *EventAttack) Reset() {
 	*x = EventAttack{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[41]
+		mi := &file_structs_structs_events_proto_msgTypes[47]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -25989,7 +29316,7 @@ func (*EventAttack) ProtoMessage() {}
 
 // Deprecated: Use EventAttack.ProtoReflect.Descriptor instead.
 func (*EventAttack) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{41}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *EventAttack) GetEventAttackDetail() *EventAttackDetail {
@@ -26027,7 +29354,7 @@ type EventAttackDetail struct {
 func (x *EventAttackDetail) Reset() {
 	*x = EventAttackDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[42]
+		mi := &file_structs_structs_events_proto_msgTypes[48]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -26041,7 +29368,7 @@ func (*EventAttackDetail) ProtoMessage() {}
 
 // Deprecated: Use EventAttackDetail.ProtoReflect.Descriptor instead.
 func (*EventAttackDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{42}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *EventAttackDetail) GetAttackerStructId() string {
@@ -26212,7 +29539,7 @@ type EventAttackShotDetail struct {
 func (x *EventAttackShotDetail) Reset() {
 	*x = EventAttackShotDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[43]
+		mi := &file_structs_structs_events_proto_msgTypes[49]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -26226,7 +29553,7 @@ func (*EventAttackShotDetail) ProtoMessage() {}
 
 // Deprecated: Use EventAttackShotDetail.ProtoReflect.Descriptor instead.
 func (*EventAttackShotDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{43}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *EventAttackShotDetail) GetTargetStructId() string {
@@ -26471,7 +29798,7 @@ type EventAttackDefenderCounterDetail struct {
 func (x *EventAttackDefenderCounterDetail) Reset() {
 	*x = EventAttackDefenderCounterDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[44]
+		mi := &file_structs_structs_events_proto_msgTypes[50]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -26485,7 +29812,7 @@ func (*EventAttackDefenderCounterDetail) ProtoMessage() {}
 
 // Deprecated: Use EventAttackDefenderCounterDetail.ProtoReflect.Descriptor instead.
 func (*EventAttackDefenderCounterDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{44}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *EventAttackDefenderCounterDetail) GetCounterByStructId() string {
@@ -26555,7 +29882,7 @@ type EventRaid struct {
 func (x *EventRaid) Reset() {
 	*x = EventRaid{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[45]
+		mi := &file_structs_structs_events_proto_msgTypes[51]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -26569,7 +29896,7 @@ func (*EventRaid) ProtoMessage() {}
 
 // Deprecated: Use EventRaid.ProtoReflect.Descriptor instead.
 func (*EventRaid) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{45}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *EventRaid) GetEventRaidDetail() *EventRaidDetail {
@@ -26592,7 +29919,7 @@ type EventRaidDetail struct {
 func (x *EventRaidDetail) Reset() {
 	*x = EventRaidDetail{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_structs_structs_events_proto_msgTypes[46]
+		mi := &file_structs_structs_events_proto_msgTypes[52]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -26606,7 +29933,7 @@ func (*EventRaidDetail) ProtoMessage() {}
 
 // Deprecated: Use EventRaidDetail.ProtoReflect.Descriptor instead.
 func (*EventRaidDetail) Descriptor() ([]byte, []int) {
-	return file_structs_structs_events_proto_rawDescGZIP(), []int{46}
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *EventRaidDetail) GetFleetId() string {
@@ -26823,381 +30150,438 @@ var file_structs_structs_events_proto_rawDesc = []byte{
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x41,
 	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x52, 0x0f,
 	0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x41, 0x63, 0x74, 0x69, 0x76, 0x69, 0x74, 0x79, 0x22,
-	0x8e, 0x01, 0x0a, 0x1f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65,
-	0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x41, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74,
-	0x69, 0x6f, 0x6e, 0x12, 0x6b, 0x0a, 0x1a, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62,
-	0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x41, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d,
-	0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x41, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x52, 0x1a, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65,
-	0x72, 0x73, 0x68, 0x69, 0x70, 0x41, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x22, 0x63, 0x0a, 0x0c, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65,
-	0x12, 0x53, 0x0a, 0x12, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65,
-	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x23, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69,
-	0x6c, 0x52, 0x12, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x44,
-	0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x70, 0x0a, 0x12, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72,
-	0x65, 0x4d, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x1a, 0x0a, 0x08, 0x70,
-	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70,
-	0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x26, 0x0a, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61,
-	0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12,
-	0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x73, 0x0a, 0x10, 0x45, 0x76, 0x65, 0x6e, 0x74,
-	0x41, 0x6c, 0x70, 0x68, 0x61, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x12, 0x5f, 0x0a, 0x16, 0x65,
-	0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x44,
-	0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76,
+	0x7b, 0x0a, 0x12, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e,
+	0x6b, 0x4d, 0x69, 0x6e, 0x74, 0x12, 0x65, 0x0a, 0x18, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75,
+	0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x4d, 0x69, 0x6e, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69,
+	0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x29, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47,
+	0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x4d, 0x69, 0x6e, 0x74, 0x44, 0x65, 0x74, 0x61,
+	0x69, 0x6c, 0x52, 0x18, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61,
+	0x6e, 0x6b, 0x4d, 0x69, 0x6e, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x94, 0x01, 0x0a,
+	0x18, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x4d,
+	0x69, 0x6e, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69,
+	0x6c, 0x64, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c,
+	0x64, 0x49, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x41, 0x6c, 0x70,
+	0x68, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74,
+	0x41, 0x6c, 0x70, 0x68, 0x61, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54,
+	0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x61, 0x6d, 0x6f, 0x75,
+	0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65,
+	0x72, 0x49, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65,
+	0x72, 0x49, 0x64, 0x22, 0x83, 0x01, 0x0a, 0x14, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69,
+	0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x52, 0x65, 0x64, 0x65, 0x65, 0x6d, 0x12, 0x6b, 0x0a, 0x1a,
+	0x65, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x52, 0x65,
+	0x64, 0x65, 0x65, 0x6d, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e,
+	0x6b, 0x52, 0x65, 0x64, 0x65, 0x65, 0x6d, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x1a, 0x65,
+	0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x52, 0x65, 0x64,
+	0x65, 0x65, 0x6d, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x96, 0x01, 0x0a, 0x1a, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x52, 0x65, 0x64, 0x65,
+	0x65, 0x6d, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c,
+	0x64, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64,
+	0x49, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68,
+	0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x41,
+	0x6c, 0x70, 0x68, 0x61, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f,
+	0x6b, 0x65, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e,
+	0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72,
+	0x49, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72,
+	0x49, 0x64, 0x22, 0xb0, 0x01, 0x0a, 0x1f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c,
+	0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x73, 0x63, 0x61, 0x74, 0x65, 0x41,
+	0x6e, 0x64, 0x42, 0x75, 0x72, 0x6e, 0x12, 0x8c, 0x01, 0x0a, 0x25, 0x65, 0x76, 0x65, 0x6e, 0x74,
+	0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x73, 0x63,
+	0x61, 0x74, 0x65, 0x41, 0x6e, 0x64, 0x42, 0x75, 0x72, 0x6e, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
+	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x36, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75,
+	0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x73, 0x63, 0x61, 0x74,
+	0x65, 0x41, 0x6e, 0x64, 0x42, 0x75, 0x72, 0x6e, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x25,
+	0x65, 0x76, 0x65, 0x6e, 0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f,
+	0x6e, 0x66, 0x69, 0x73, 0x63, 0x61, 0x74, 0x65, 0x41, 0x6e, 0x64, 0x42, 0x75, 0x72, 0x6e, 0x44,
+	0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x9f, 0x01, 0x0a, 0x25, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x47,
+	0x75, 0x69, 0x6c, 0x64, 0x42, 0x61, 0x6e, 0x6b, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x73, 0x63, 0x61,
+	0x74, 0x65, 0x41, 0x6e, 0x64, 0x42, 0x75, 0x72, 0x6e, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12,
+	0x18, 0x0a, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x07, 0x67, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x61, 0x6d, 0x6f,
+	0x75, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b,
+	0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x12, 0x20, 0x0a, 0x0b, 0x61,
+	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x0b, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x54, 0x6f, 0x6b, 0x65, 0x6e, 0x12, 0x18, 0x0a,
+	0x07, 0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07,
+	0x61, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x22, 0x8e, 0x01, 0x0a, 0x1f, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70,
+	0x41, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x6b, 0x0a, 0x1a, 0x67,
+	0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x41, 0x70,
+	0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x2b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x47, 0x75, 0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69,
+	0x70, 0x41, 0x70, 0x70, 0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x52, 0x1a, 0x67, 0x75,
+	0x69, 0x6c, 0x64, 0x4d, 0x65, 0x6d, 0x62, 0x65, 0x72, 0x73, 0x68, 0x69, 0x70, 0x41, 0x70, 0x70,
+	0x6c, 0x69, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x22, 0x63, 0x0a, 0x0c, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x12, 0x53, 0x0a, 0x12, 0x65, 0x76, 0x65, 0x6e,
+	0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01,
+	0x20, 0x01, 0x28, 0x0b, 0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d,
+	0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x12, 0x65, 0x76, 0x65, 0x6e, 0x74,
+	0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x70, 0x0a,
+	0x12, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12,
+	0x26, 0x0a, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
+	0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79,
+	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e,
+	0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22,
+	0x73, 0x0a, 0x10, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x52, 0x65, 0x66,
+	0x69, 0x6e, 0x65, 0x12, 0x5f, 0x0a, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68,
+	0x61, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61,
+	0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x16, 0x65, 0x76,
 	0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x44, 0x65,
-	0x74, 0x61, 0x69, 0x6c, 0x52, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61,
-	0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x74, 0x0a, 0x16,
-	0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65,
-	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72,
-	0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72,
-	0x49, 0x64, 0x12, 0x26, 0x0a, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64,
-	0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x70, 0x72, 0x69, 0x6d,
-	0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d,
-	0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75,
-	0x6e, 0x74, 0x22, 0x73, 0x0a, 0x10, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61,
-	0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x12, 0x5f, 0x0a, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41,
-	0x6c, 0x70, 0x68, 0x61, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c,
-	0x70, 0x68, 0x61, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52,
-	0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x49, 0x6e, 0x66, 0x75, 0x73,
-	0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x74, 0x0a, 0x16, 0x45, 0x76, 0x65, 0x6e, 0x74,
-	0x41, 0x6c, 0x70, 0x68, 0x61, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69,
-	0x6c, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x26, 0x0a,
-	0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64,
-	0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x73, 0x0a,
-	0x10, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x44, 0x65, 0x66, 0x75, 0x73,
-	0x65, 0x12, 0x5f, 0x0a, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x44,
-	0x65, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x0b, 0x32, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x44, 0x65,
-	0x66, 0x75, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x16, 0x65, 0x76, 0x65, 0x6e,
+	0x74, 0x61, 0x69, 0x6c, 0x22, 0x74, 0x0a, 0x16, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70,
+	0x68, 0x61, 0x52, 0x65, 0x66, 0x69, 0x6e, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x1a,
+	0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x26, 0x0a, 0x0e, 0x70, 0x72,
+	0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65,
+	0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x73, 0x0a, 0x10, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x12, 0x5f,
+	0x0a, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x49, 0x6e, 0x66, 0x75,
+	0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x49, 0x6e, 0x66, 0x75, 0x73,
+	0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c,
+	0x70, 0x68, 0x61, 0x49, 0x6e, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22,
+	0x74, 0x0a, 0x16, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x49, 0x6e, 0x66,
+	0x75, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61,
+	0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61,
+	0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x26, 0x0a, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79,
+	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x70,
+	0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a,
+	0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x03, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x61,
+	0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x73, 0x0a, 0x10, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c,
+	0x70, 0x68, 0x61, 0x44, 0x65, 0x66, 0x75, 0x73, 0x65, 0x12, 0x5f, 0x0a, 0x16, 0x65, 0x76, 0x65,
+	0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x44, 0x65, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x27, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e,
 	0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x44, 0x65, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61,
-	0x69, 0x6c, 0x22, 0x58, 0x0a, 0x16, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61,
-	0x44, 0x65, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x26, 0x0a, 0x0e,
-	0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64,
-	0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x67, 0x0a, 0x0d,
-	0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x54, 0x68, 0x65, 0x66, 0x74, 0x12, 0x56, 0x0a,
-	0x13, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x54, 0x68, 0x65, 0x66, 0x74, 0x44, 0x65,
-	0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x24, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65,
-	0x6e, 0x74, 0x4f, 0x72, 0x65, 0x54, 0x68, 0x65, 0x66, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
-	0x52, 0x13, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x54, 0x68, 0x65, 0x66, 0x74, 0x44,
-	0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0xe1, 0x01, 0x0a, 0x13, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f,
-	0x72, 0x65, 0x54, 0x68, 0x65, 0x66, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x32, 0x0a,
-	0x14, 0x76, 0x69, 0x63, 0x74, 0x69, 0x6d, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64,
-	0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x14, 0x76, 0x69, 0x63,
-	0x74, 0x69, 0x6d, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
-	0x73, 0x12, 0x26, 0x0a, 0x0e, 0x76, 0x69, 0x63, 0x74, 0x69, 0x6d, 0x50, 0x6c, 0x61, 0x79, 0x65,
-	0x72, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x76, 0x69, 0x63, 0x74, 0x69,
-	0x6d, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x30, 0x0a, 0x13, 0x74, 0x68, 0x69,
-	0x65, 0x66, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x13, 0x74, 0x68, 0x69, 0x65, 0x66, 0x50, 0x72, 0x69,
-	0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x24, 0x0a, 0x0d, 0x74,
-	0x68, 0x69, 0x65, 0x66, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x04, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x0d, 0x74, 0x68, 0x69, 0x65, 0x66, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49,
-	0x64, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x6f, 0x0a, 0x0f, 0x45, 0x76, 0x65,
-	0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x12, 0x5c, 0x0a, 0x15,
-	0x65, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x44,
-	0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76,
-	0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x44, 0x65, 0x74,
-	0x61, 0x69, 0x6c, 0x52, 0x15, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x67,
-	0x72, 0x61, 0x74, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0xa1, 0x01, 0x0a, 0x15, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x44, 0x65,
-	0x74, 0x61, 0x69, 0x6c, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64,
-	0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64,
-	0x12, 0x26, 0x0a, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65,
-	0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72,
-	0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x2c, 0x0a, 0x11, 0x6f, 0x6c, 0x64, 0x50,
-	0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x03, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x11, 0x6f, 0x6c, 0x64, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74,
-	0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x5f,
-	0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x12, 0x50, 0x0a,
-	0x11, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x74, 0x61,
-	0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74,
-	0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x11, 0x65, 0x76,
-	0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22,
-	0xd6, 0x09, 0x0a, 0x11, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44,
-	0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x2a, 0x0a, 0x10, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65,
-	0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x69, 0x6c, 0x52, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x44, 0x65,
+	0x66, 0x75, 0x73, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x58, 0x0a, 0x16, 0x45, 0x76,
+	0x65, 0x6e, 0x74, 0x41, 0x6c, 0x70, 0x68, 0x61, 0x44, 0x65, 0x66, 0x75, 0x73, 0x65, 0x44, 0x65,
+	0x74, 0x61, 0x69, 0x6c, 0x12, 0x26, 0x0a, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41,
+	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x70, 0x72,
+	0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06,
+	0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x61, 0x6d,
+	0x6f, 0x75, 0x6e, 0x74, 0x22, 0x67, 0x0a, 0x0d, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65,
+	0x54, 0x68, 0x65, 0x66, 0x74, 0x12, 0x56, 0x0a, 0x13, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72,
+	0x65, 0x54, 0x68, 0x65, 0x66, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x54, 0x68, 0x65,
+	0x66, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x13, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x4f,
+	0x72, 0x65, 0x54, 0x68, 0x65, 0x66, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0xe1, 0x01,
+	0x0a, 0x13, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x54, 0x68, 0x65, 0x66, 0x74, 0x44,
+	0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x32, 0x0a, 0x14, 0x76, 0x69, 0x63, 0x74, 0x69, 0x6d, 0x50,
+	0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x14, 0x76, 0x69, 0x63, 0x74, 0x69, 0x6d, 0x50, 0x72, 0x69, 0x6d, 0x61,
+	0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x26, 0x0a, 0x0e, 0x76, 0x69, 0x63,
+	0x74, 0x69, 0x6d, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x0e, 0x76, 0x69, 0x63, 0x74, 0x69, 0x6d, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49,
+	0x64, 0x12, 0x30, 0x0a, 0x13, 0x74, 0x68, 0x69, 0x65, 0x66, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72,
+	0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x13,
+	0x74, 0x68, 0x69, 0x65, 0x66, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72,
+	0x65, 0x73, 0x73, 0x12, 0x24, 0x0a, 0x0d, 0x74, 0x68, 0x69, 0x65, 0x66, 0x50, 0x6c, 0x61, 0x79,
+	0x65, 0x72, 0x49, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0d, 0x74, 0x68, 0x69, 0x65,
+	0x66, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x16, 0x0a, 0x06, 0x61, 0x6d, 0x6f,
+	0x75, 0x6e, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e,
+	0x74, 0x22, 0x6f, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x67,
+	0x72, 0x61, 0x74, 0x65, 0x12, 0x5c, 0x0a, 0x15, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65,
+	0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20,
+	0x01, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69,
+	0x67, 0x72, 0x61, 0x74, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x15, 0x65, 0x76, 0x65,
+	0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d, 0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x44, 0x65, 0x74, 0x61,
+	0x69, 0x6c, 0x22, 0xa1, 0x01, 0x0a, 0x15, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x4f, 0x72, 0x65, 0x4d,
+	0x69, 0x67, 0x72, 0x61, 0x74, 0x65, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x1a, 0x0a, 0x08,
+	0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
+	0x70, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x26, 0x0a, 0x0e, 0x70, 0x72, 0x69, 0x6d,
+	0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0e, 0x70, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73,
+	0x12, 0x2c, 0x0a, 0x11, 0x6f, 0x6c, 0x64, 0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64,
+	0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x6f, 0x6c, 0x64,
+	0x50, 0x72, 0x69, 0x6d, 0x61, 0x72, 0x79, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16,
+	0x0a, 0x06, 0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06,
+	0x61, 0x6d, 0x6f, 0x75, 0x6e, 0x74, 0x22, 0x5f, 0x0a, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41,
+	0x74, 0x74, 0x61, 0x63, 0x6b, 0x12, 0x50, 0x0a, 0x11, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74,
+	0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b,
+	0x32, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65,
+	0x74, 0x61, 0x69, 0x6c, 0x52, 0x11, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63,
+	0x6b, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0xd6, 0x09, 0x0a, 0x11, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x2a, 0x0a,
 	0x10, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49,
-	0x64, 0x12, 0x2e, 0x0a, 0x12, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12, 0x61,
-	0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70,
-	0x65, 0x12, 0x62, 0x0a, 0x1a, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54, 0x79,
-	0x70, 0x65, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1a, 0x61, 0x74, 0x74, 0x61, 0x63,
-	0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f,
-	0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x3a, 0x0a, 0x18, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65,
-	0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49,
-	0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x18, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65,
-	0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49,
-	0x64, 0x12, 0x61, 0x0a, 0x1c, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69,
-	0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69, 0x74, 0x42,
-	0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1c, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41,
-	0x6d, 0x62, 0x69, 0x74, 0x12, 0x2e, 0x0a, 0x12, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x12, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x53, 0x6c, 0x6f, 0x74, 0x12, 0x45, 0x0a, 0x0c, 0x77, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x79,
-	0x73, 0x74, 0x65, 0x6d, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63,
-	0x68, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x52, 0x0c, 0x77,
-	0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x12, 0x48, 0x0a, 0x0d, 0x77,
-	0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x18, 0x08, 0x20, 0x01,
-	0x28, 0x0e, 0x32, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43,
-	0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x52, 0x0d, 0x77, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f,
-	0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x12, 0x4b, 0x0a, 0x0e, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x57,
-	0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x18, 0x09, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x23, 0x2e,
+	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x10, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65,
+	0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x2e, 0x0a, 0x12, 0x61, 0x74, 0x74,
+	0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18,
+	0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x62, 0x0a, 0x1a, 0x61, 0x74, 0x74,
+	0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x74, 0x65, 0x63, 0x68, 0x41, 0x63, 0x74, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e,
-	0x72, 0x79, 0x52, 0x0e, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e,
-	0x72, 0x79, 0x12, 0x5c, 0x0a, 0x15, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63,
-	0x6b, 0x53, 0x68, 0x6f, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x0a, 0x20, 0x03, 0x28,
-	0x0b, 0x32, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53,
-	0x68, 0x6f, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x15, 0x65, 0x76, 0x65, 0x6e, 0x74,
-	0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x68, 0x6f, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
-	0x12, 0x36, 0x0a, 0x16, 0x72, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65,
-	0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x08,
-	0x52, 0x16, 0x72, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f,
-	0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x22, 0x0a, 0x0c, 0x72, 0x65, 0x63, 0x6f,
-	0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0c,
-	0x72, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x44, 0x0a, 0x1d,
-	0x72, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73, 0x74,
-	0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x0d, 0x20,
-	0x01, 0x28, 0x08, 0x52, 0x1d, 0x72, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67,
-	0x65, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b,
-	0x65, 0x72, 0x12, 0x56, 0x0a, 0x26, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44,
-	0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x6e, 0x6e, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61,
-	0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x0e, 0x20, 0x01,
-	0x28, 0x08, 0x52, 0x26, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66,
-	0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x6e, 0x6e, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65,
-	0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x42, 0x0a, 0x1c, 0x70, 0x6c,
+	0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a,
+	0x01, 0x52, 0x1a, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x3a, 0x0a,
+	0x18, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c,
+	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x18, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c,
+	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x61, 0x0a, 0x1c, 0x61, 0x74, 0x74,
+	0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61,
+	0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0e, 0x32,
+	0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69, 0x74, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1c,
+	0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70,
+	0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x2e, 0x0a, 0x12,
+	0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c,
+	0x6f, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b,
+	0x65, 0x72, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x12, 0x45, 0x0a, 0x0c,
+	0x77, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x79, 0x73, 0x74, 0x65, 0x6d, 0x18, 0x07, 0x20, 0x01,
+	0x28, 0x0e, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53,
+	0x79, 0x73, 0x74, 0x65, 0x6d, 0x52, 0x0c, 0x77, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x53, 0x79, 0x73,
+	0x74, 0x65, 0x6d, 0x12, 0x48, 0x0a, 0x0d, 0x77, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e,
+	0x74, 0x72, 0x6f, 0x6c, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x22, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63,
+	0x68, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x52, 0x0d,
+	0x77, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x43, 0x6f, 0x6e, 0x74, 0x72, 0x6f, 0x6c, 0x12, 0x4b, 0x0a,
+	0x0e, 0x61, 0x63, 0x74, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x18,
+	0x09, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x23, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x41, 0x63, 0x74, 0x69,
+	0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x52, 0x0e, 0x61, 0x63, 0x74, 0x69,
+	0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x12, 0x5c, 0x0a, 0x15, 0x65, 0x76,
+	0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x68, 0x6f, 0x74, 0x44, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x18, 0x0a, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x68, 0x6f, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69,
+	0x6c, 0x52, 0x15, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x68,
+	0x6f, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x36, 0x0a, 0x16, 0x72, 0x65, 0x63, 0x6f,
+	0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b,
+	0x65, 0x72, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x08, 0x52, 0x16, 0x72, 0x65, 0x63, 0x6f, 0x69, 0x6c,
+	0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72,
+	0x12, 0x22, 0x0a, 0x0c, 0x72, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65,
+	0x18, 0x0c, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0c, 0x72, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61,
+	0x6d, 0x61, 0x67, 0x65, 0x12, 0x44, 0x0a, 0x1d, 0x72, 0x65, 0x63, 0x6f, 0x69, 0x6c, 0x44, 0x61,
+	0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74,
+	0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x0d, 0x20, 0x01, 0x28, 0x08, 0x52, 0x1d, 0x72, 0x65, 0x63,
+	0x6f, 0x69, 0x6c, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79,
+	0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x56, 0x0a, 0x26, 0x70, 0x6c,
 	0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61,
-	0x6e, 0x6e, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x1c, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e,
-	0x73, 0x65, 0x43, 0x61, 0x6e, 0x6e, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x64,
-	0x0a, 0x2d, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e,
-	0x73, 0x65, 0x43, 0x61, 0x6e, 0x6e, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65,
-	0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18,
-	0x10, 0x20, 0x01, 0x28, 0x08, 0x52, 0x2d, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79,
-	0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x6e, 0x6e, 0x6f, 0x6e, 0x44, 0x61, 0x6d,
-	0x61, 0x67, 0x65, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61,
-	0x63, 0x6b, 0x65, 0x72, 0x12, 0x2a, 0x0a, 0x10, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72,
-	0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x11, 0x20, 0x01, 0x28, 0x09, 0x52, 0x10,
+	0x6e, 0x6e, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74, 0x61,
+	0x63, 0x6b, 0x65, 0x72, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x08, 0x52, 0x26, 0x70, 0x6c, 0x61, 0x6e,
+	0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x6e, 0x6e,
+	0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b,
+	0x65, 0x72, 0x12, 0x42, 0x0a, 0x1c, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44,
+	0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x6e, 0x6e, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61,
+	0x67, 0x65, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x04, 0x52, 0x1c, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74,
+	0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x6e, 0x6e, 0x6f, 0x6e,
+	0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x64, 0x0a, 0x2d, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74,
+	0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43, 0x61, 0x6e, 0x6e, 0x6f, 0x6e,
+	0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41,
+	0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x10, 0x20, 0x01, 0x28, 0x08, 0x52, 0x2d, 0x70,
+	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x43,
+	0x61, 0x6e, 0x6e, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73, 0x74, 0x72,
+	0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x2a, 0x0a, 0x10,
 	0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64,
-	0x12, 0x26, 0x0a, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72,
-	0x49, 0x64, 0x18, 0x12, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
-	0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x22, 0x9a, 0x10, 0x0a, 0x15, 0x45, 0x76, 0x65,
-	0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x68, 0x6f, 0x74, 0x44, 0x65, 0x74, 0x61,
-	0x69, 0x6c, 0x12, 0x26, 0x0a, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x74, 0x61, 0x72, 0x67,
-	0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x2a, 0x0a, 0x10, 0x74, 0x61,
-	0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18, 0x02,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x10, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x5e, 0x0a, 0x18, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79,
-	0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63,
-	0x74, 0x54, 0x79, 0x70, 0x65, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x18, 0x74, 0x61,
-	0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69,
-	0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x36, 0x0a, 0x16, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64,
-	0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x16, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x5d,
-	0x0a, 0x1a, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70,
-	0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x05, 0x20, 0x01,
-	0x28, 0x0e, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69, 0x74, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a,
-	0x01, 0x52, 0x1a, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f,
-	0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x2a, 0x0a,
+	0x18, 0x11, 0x20, 0x01, 0x28, 0x09, 0x52, 0x10, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72,
+	0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x26, 0x0a, 0x0e, 0x74, 0x61, 0x72, 0x67,
+	0x65, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18, 0x12, 0x20, 0x01, 0x28, 0x09,
+	0x52, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64,
+	0x22, 0x9a, 0x10, 0x0a, 0x15, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b,
+	0x53, 0x68, 0x6f, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x26, 0x0a, 0x0e, 0x74, 0x61,
+	0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x49, 0x64, 0x12, 0x2a, 0x0a, 0x10, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x10, 0x74, 0x61,
+	0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x5e,
+	0x0a, 0x18, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f,
+	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e,
+	0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x42, 0x05, 0xa8,
+	0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x18, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x36,
+	0x0a, 0x16, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f,
+	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x16,
+	0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x5d, 0x0a, 0x1a, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41,
+	0x6d, 0x62, 0x69, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62,
+	0x69, 0x74, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1a, 0x74, 0x61, 0x72, 0x67, 0x65,
+	0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67,
+	0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x2a, 0x0a, 0x10, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x04, 0x52,
 	0x10, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f,
-	0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x04, 0x52, 0x10, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x65, 0x76, 0x61,
-	0x64, 0x65, 0x64, 0x18, 0x07, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x65, 0x76, 0x61, 0x64, 0x65,
-	0x64, 0x12, 0x43, 0x0a, 0x0b, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x43, 0x61, 0x75, 0x73, 0x65,
-	0x18, 0x08, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x55, 0x6e, 0x69,
-	0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x52, 0x0b, 0x65, 0x76, 0x61, 0x64, 0x65,
-	0x64, 0x43, 0x61, 0x75, 0x73, 0x65, 0x12, 0x3c, 0x0a, 0x19, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64,
-	0x42, 0x79, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e,
-	0x73, 0x65, 0x73, 0x18, 0x09, 0x20, 0x01, 0x28, 0x08, 0x52, 0x19, 0x65, 0x76, 0x61, 0x64, 0x65,
-	0x64, 0x42, 0x79, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65,
-	0x6e, 0x73, 0x65, 0x73, 0x12, 0x6e, 0x0a, 0x1e, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79,
-	0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65,
-	0x73, 0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x26, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74,
-	0x65, 0x63, 0x68, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65,
-	0x6e, 0x73, 0x65, 0x73, 0x52, 0x1e, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79, 0x50, 0x6c,
-	0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x43,
-	0x61, 0x75, 0x73, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x18,
-	0x0b, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x12, 0x2c,
-	0x0a, 0x11, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x49, 0x64, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x62, 0x6c, 0x6f, 0x63, 0x6b,
-	0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x30, 0x0a, 0x13,
-	0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54,
-	0x79, 0x70, 0x65, 0x18, 0x0d, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b,
-	0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x64,
-	0x0a, 0x1b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x18, 0x0e, 0x20,
-	0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65,
-	0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64,
-	0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x54, 0x79, 0x70, 0x65, 0x12, 0x3c, 0x0a, 0x19, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42,
-	0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49,
-	0x64, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x09, 0x52, 0x19, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64,
-	0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e,
-	0x49, 0x64, 0x12, 0x63, 0x0a, 0x1d, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d,
-	0x62, 0x69, 0x74, 0x18, 0x10, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69,
-	0x74, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1d, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65,
-	0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69,
-	0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x30, 0x0a, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b,
-	0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x18, 0x11,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x12, 0x2a, 0x0a, 0x10, 0x62, 0x6c, 0x6f,
-	0x63, 0x6b, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x18, 0x12, 0x20,
-	0x01, 0x28, 0x08, 0x52, 0x10, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74,
-	0x72, 0x6f, 0x79, 0x65, 0x64, 0x12, 0x7d, 0x0a, 0x20, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74,
-	0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e,
-	0x74, 0x65, 0x72, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x13, 0x20, 0x03, 0x28, 0x0b, 0x32,
-	0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x66,
-	0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x74, 0x61,
-	0x69, 0x6c, 0x52, 0x20, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44,
-	0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65,
-	0x74, 0x61, 0x69, 0x6c, 0x12, 0x20, 0x0a, 0x0b, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65,
-	0x61, 0x6c, 0x74, 0x18, 0x14, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x64, 0x61, 0x6d, 0x61, 0x67,
-	0x65, 0x44, 0x65, 0x61, 0x6c, 0x74, 0x12, 0x28, 0x0a, 0x0f, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65,
-	0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x15, 0x20, 0x01, 0x28, 0x04, 0x52,
-	0x0f, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e,
-	0x12, 0x55, 0x0a, 0x14, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74,
-	0x69, 0x6f, 0x6e, 0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x16, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21,
+	0x74, 0x12, 0x16, 0x0a, 0x06, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x18, 0x07, 0x20, 0x01, 0x28,
+	0x08, 0x52, 0x06, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x12, 0x43, 0x0a, 0x0b, 0x65, 0x76, 0x61,
+	0x64, 0x65, 0x64, 0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x08, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
 	0x2e, 0x74, 0x65, 0x63, 0x68, 0x55, 0x6e, 0x69, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65,
-	0x73, 0x52, 0x14, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69,
-	0x6f, 0x6e, 0x43, 0x61, 0x75, 0x73, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x64, 0x61, 0x6d, 0x61, 0x67,
-	0x65, 0x18, 0x17, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12,
-	0x28, 0x0a, 0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72,
-	0x65, 0x64, 0x18, 0x18, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
-	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x64, 0x12, 0x34, 0x0a, 0x15, 0x74, 0x61, 0x72,
-	0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x64, 0x44, 0x61, 0x6d, 0x61,
-	0x67, 0x65, 0x18, 0x19, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
-	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x64, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12,
-	0x46, 0x0a, 0x1e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72,
-	0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65,
-	0x72, 0x18, 0x1a, 0x20, 0x01, 0x28, 0x08, 0x52, 0x1e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43,
-	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41,
-	0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x54, 0x0a, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65,
-	0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x1b, 0x20,
-	0x01, 0x28, 0x0e, 0x32, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x61, 0x73, 0x73, 0x69, 0x76,
-	0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x52, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65,
-	0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x43, 0x61, 0x75, 0x73, 0x65, 0x12, 0x28, 0x0a,
-	0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64,
-	0x18, 0x1c, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x44, 0x65,
-	0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x12, 0x48, 0x0a, 0x1f, 0x70, 0x6f, 0x73, 0x74, 0x44,
-	0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65,
-	0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x1d, 0x20, 0x01, 0x28, 0x08,
-	0x52, 0x1f, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f,
-	0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65,
-	0x72, 0x12, 0x34, 0x0a, 0x15, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x1e, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x15, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f,
-	0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x56, 0x0a, 0x26, 0x70, 0x6f, 0x73, 0x74, 0x44,
-	0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65,
-	0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65,
-	0x72, 0x18, 0x1f, 0x20, 0x01, 0x28, 0x08, 0x52, 0x26, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65,
-	0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12,
-	0x64, 0x0a, 0x1a, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69,
-	0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x20, 0x20,
-	0x01, 0x28, 0x0e, 0x32, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x61, 0x73, 0x73, 0x69, 0x76,
-	0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x52, 0x1a, 0x70, 0x6f, 0x73, 0x74, 0x44,
-	0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65,
-	0x43, 0x61, 0x75, 0x73, 0x65, 0x22, 0x9f, 0x04, 0x0a, 0x20, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41,
+	0x73, 0x52, 0x0b, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x43, 0x61, 0x75, 0x73, 0x65, 0x12, 0x3c,
+	0x0a, 0x19, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74,
+	0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x18, 0x09, 0x20, 0x01, 0x28,
+	0x08, 0x52, 0x19, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79, 0x50, 0x6c, 0x61, 0x6e, 0x65,
+	0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x12, 0x6e, 0x0a, 0x1e,
+	0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72,
+	0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x0a,
+	0x20, 0x01, 0x28, 0x0e, 0x32, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x6c, 0x61, 0x6e, 0x65,
+	0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x52, 0x1e, 0x65, 0x76,
+	0x61, 0x64, 0x65, 0x64, 0x42, 0x79, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44,
+	0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x43, 0x61, 0x75, 0x73, 0x65, 0x12, 0x18, 0x0a, 0x07,
+	0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x18, 0x0b, 0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x62,
+	0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x12, 0x2c, 0x0a, 0x11, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65,
+	0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x0c, 0x20, 0x01, 0x28,
+	0x09, 0x52, 0x11, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x49, 0x64, 0x12, 0x30, 0x0a, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42,
+	0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18, 0x0d, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x64, 0x0a, 0x1b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65,
+	0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x54, 0x79, 0x70, 0x65, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62,
+	0x6a, 0x65, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52,
+	0x1b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x3c, 0x0a, 0x19,
+	0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c,
+	0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x0f, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x19, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x63, 0x0a, 0x1d, 0x62, 0x6c,
+	0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65,
+	0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x10, 0x20, 0x01, 0x28,
+	0x0e, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69, 0x74, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01,
+	0x52, 0x1d, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12,
+	0x30, 0x0a, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x18, 0x11, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x62, 0x6c,
+	0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f,
+	0x74, 0x12, 0x2a, 0x0a, 0x10, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74,
+	0x72, 0x6f, 0x79, 0x65, 0x64, 0x18, 0x12, 0x20, 0x01, 0x28, 0x08, 0x52, 0x10, 0x62, 0x6c, 0x6f,
+	0x63, 0x6b, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x12, 0x7d, 0x0a,
+	0x20, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x66, 0x65,
+	0x6e, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x74, 0x61, 0x69,
+	0x6c, 0x18, 0x13, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x31, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41,
 	0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75,
-	0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x2c, 0x0a, 0x11, 0x63, 0x6f,
-	0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18,
-	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x30, 0x0a, 0x13, 0x63, 0x6f, 0x75, 0x6e,
-	0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18,
-	0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x64, 0x0a, 0x1b, 0x63, 0x6f,
-	0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63,
-	0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32,
-	0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x42, 0x05, 0xa8, 0xe7,
-	0xb0, 0x2a, 0x01, 0x52, 0x1b, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65,
-	0x12, 0x3c, 0x0a, 0x19, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x04, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x19, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x63,
-	0x0a, 0x1d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18,
-	0x05, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69, 0x74, 0x42, 0x05, 0xa8,
-	0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d,
-	0x62, 0x69, 0x74, 0x12, 0x30, 0x0a, 0x13, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x04,
-	0x52, 0x13, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x53, 0x6c, 0x6f, 0x74, 0x12, 0x24, 0x0a, 0x0d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72,
-	0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x07, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x63, 0x6f,
-	0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x3a, 0x0a, 0x18, 0x63,
-	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41,
-	0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x08, 0x20, 0x01, 0x28, 0x08, 0x52, 0x18, 0x63,
-	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41,
-	0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x22, 0x57, 0x0a, 0x09, 0x45, 0x76, 0x65, 0x6e, 0x74,
-	0x52, 0x61, 0x69, 0x64, 0x12, 0x4a, 0x0a, 0x0f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61, 0x69,
-	0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e,
+	0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x20, 0x65, 0x76, 0x65, 0x6e,
+	0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43,
+	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x20, 0x0a, 0x0b,
+	0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x61, 0x6c, 0x74, 0x18, 0x14, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x0b, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x61, 0x6c, 0x74, 0x12, 0x28,
+	0x0a, 0x0f, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x18, 0x15, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x52,
+	0x65, 0x64, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x55, 0x0a, 0x14, 0x64, 0x61, 0x6d, 0x61,
+	0x67, 0x65, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x61, 0x75, 0x73, 0x65,
+	0x18, 0x16, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x55, 0x6e, 0x69,
+	0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x52, 0x14, 0x64, 0x61, 0x6d, 0x61, 0x67,
+	0x65, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x61, 0x75, 0x73, 0x65, 0x12,
+	0x16, 0x0a, 0x06, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x17, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x06, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x28, 0x0a, 0x0f, 0x74, 0x61, 0x72, 0x67, 0x65,
+	0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x64, 0x18, 0x18, 0x20, 0x01, 0x28, 0x08,
+	0x52, 0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x65,
+	0x64, 0x12, 0x34, 0x0a, 0x15, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74,
+	0x65, 0x72, 0x65, 0x64, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x19, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x15, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x65,
+	0x64, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x46, 0x0a, 0x1e, 0x74, 0x61, 0x72, 0x67, 0x65,
+	0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65,
+	0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x1a, 0x20, 0x01, 0x28, 0x08, 0x52,
+	0x1e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65,
+	0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12,
+	0x54, 0x0a, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72,
+	0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x1b, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x24, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65,
+	0x63, 0x68, 0x50, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72,
+	0x79, 0x52, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72,
+	0x43, 0x61, 0x75, 0x73, 0x65, 0x12, 0x28, 0x0a, 0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x44,
+	0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x18, 0x1c, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0f,
+	0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x12,
+	0x48, 0x0a, 0x1f, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69,
+	0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b,
+	0x65, 0x72, 0x18, 0x1d, 0x20, 0x01, 0x28, 0x08, 0x52, 0x1f, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54,
+	0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x34, 0x0a, 0x15, 0x70, 0x6f, 0x73,
+	0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61,
+	0x67, 0x65, 0x18, 0x1e, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12,
+	0x56, 0x0a, 0x26, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69,
+	0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65,
+	0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x1f, 0x20, 0x01, 0x28, 0x08, 0x52,
+	0x26, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41,
+	0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x64, 0x0a, 0x1a, 0x70, 0x6f, 0x73, 0x74, 0x44,
+	0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65,
+	0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x20, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x24, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65,
+	0x63, 0x68, 0x50, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65, 0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72,
+	0x79, 0x52, 0x1a, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69,
+	0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x43, 0x61, 0x75, 0x73, 0x65, 0x22, 0x9f, 0x04,
+	0x0a, 0x20, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x66,
+	0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x74, 0x61,
+	0x69, 0x6c, 0x12, 0x2c, 0x0a, 0x11, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x63,
+	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64,
+	0x12, 0x30, 0x0a, 0x13, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x63,
+	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79,
+	0x70, 0x65, 0x12, 0x64, 0x0a, 0x1b, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70,
+	0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74,
+	0x54, 0x79, 0x70, 0x65, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1b, 0x63, 0x6f, 0x75,
+	0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x3c, 0x0a, 0x19, 0x63, 0x6f, 0x75, 0x6e,
+	0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74,
+	0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x19, 0x63, 0x6f, 0x75,
+	0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61,
+	0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x63, 0x0a, 0x1d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65,
+	0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69,
+	0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52,
-	0x0f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
-	0x22, 0x7c, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x44, 0x65, 0x74,
-	0x61, 0x69, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x49, 0x64, 0x18, 0x01,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x49, 0x64, 0x12, 0x1a, 0x0a,
-	0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52,
-	0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x12, 0x33, 0x0a, 0x06, 0x73, 0x74, 0x61,
-	0x74, 0x75, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x72, 0x61, 0x69, 0x64,
-	0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x42, 0xa1,
-	0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72,
-	0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b,
-	0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca,
-	0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea,
-	0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x61, 0x6d, 0x62, 0x69, 0x74, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1d, 0x63, 0x6f,
+	0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65,
+	0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x30, 0x0a, 0x13, 0x63,
+	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c,
+	0x6f, 0x74, 0x18, 0x06, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65,
+	0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x12, 0x24, 0x0a,
+	0x0d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x07,
+	0x20, 0x01, 0x28, 0x04, 0x52, 0x0d, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x61, 0x6d,
+	0x61, 0x67, 0x65, 0x12, 0x3a, 0x0a, 0x18, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65,
+	0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18,
+	0x08, 0x20, 0x01, 0x28, 0x08, 0x52, 0x18, 0x63, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65,
+	0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x22,
+	0x57, 0x0a, 0x09, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x12, 0x4a, 0x0a, 0x0f,
+	0x65, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18,
+	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61, 0x69,
+	0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x0f, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61,
+	0x69, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x7c, 0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x52, 0x61, 0x69, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x18, 0x0a, 0x07, 0x66,
+	0x6c, 0x65, 0x65, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x66, 0x6c,
+	0x65, 0x65, 0x74, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49,
+	0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49,
+	0x64, 0x12, 0x33, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x72, 0x61, 0x69, 0x64, 0x53, 0x74, 0x61, 0x74, 0x75, 0x73, 0x52, 0x06,
+	0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b,
+	0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63,
+	0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2,
+	0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d,
+	0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74,
+	0x6f, 0x33,
 }
 
 var (
@@ -27212,143 +30596,152 @@ func file_structs_structs_events_proto_rawDescGZIP() []byte {
 	return file_structs_structs_events_proto_rawDescData
 }
 
-var file_structs_structs_events_proto_msgTypes = make([]protoimpl.MessageInfo, 47)
+var file_structs_structs_events_proto_msgTypes = make([]protoimpl.MessageInfo, 53)
 var file_structs_structs_events_proto_goTypes = []interface{}{
-	(*EventAllocation)(nil),                  // 0: structs.structs.EventAllocation
-	(*EventAgreement)(nil),                   // 1: structs.structs.EventAgreement
-	(*EventFleet)(nil),                       // 2: structs.structs.EventFleet
-	(*EventGuild)(nil),                       // 3: structs.structs.EventGuild
-	(*EventInfusion)(nil),                    // 4: structs.structs.EventInfusion
-	(*EventPlanet)(nil),                      // 5: structs.structs.EventPlanet
-	(*EventPlanetAttribute)(nil),             // 6: structs.structs.EventPlanetAttribute
-	(*EventPlayer)(nil),                      // 7: structs.structs.EventPlayer
-	(*EventProvider)(nil),                    // 8: structs.structs.EventProvider
-	(*EventReactor)(nil),                     // 9: structs.structs.EventReactor
-	(*EventStruct)(nil),                      // 10: structs.structs.EventStruct
-	(*EventStructAttribute)(nil),             // 11: structs.structs.EventStructAttribute
-	(*EventStructDefender)(nil),              // 12: structs.structs.EventStructDefender
-	(*EventStructType)(nil),                  // 13: structs.structs.EventStructType
-	(*EventSubstation)(nil),                  // 14: structs.structs.EventSubstation
-	(*EventTime)(nil),                        // 15: structs.structs.EventTime
-	(*EventTimeDetail)(nil),                  // 16: structs.structs.EventTimeDetail
-	(*EventPermission)(nil),                  // 17: structs.structs.EventPermission
-	(*EventGrid)(nil),                        // 18: structs.structs.EventGrid
-	(*EventProviderGrantGuild)(nil),          // 19: structs.structs.EventProviderGrantGuild
-	(*EventProviderGrantGuildDetail)(nil),    // 20: structs.structs.EventProviderGrantGuildDetail
-	(*EventProviderRevokeGuild)(nil),         // 21: structs.structs.EventProviderRevokeGuild
-	(*EventProviderRevokeGuildDetail)(nil),   // 22: structs.structs.EventProviderRevokeGuildDetail
-	(*EventPlayerHalted)(nil),                // 23: structs.structs.EventPlayerHalted
-	(*EventPlayerResumed)(nil),               // 24: structs.structs.EventPlayerResumed
-	(*EventDelete)(nil),                      // 25: structs.structs.EventDelete
-	(*EventAddressAssociation)(nil),          // 26: structs.structs.EventAddressAssociation
-	(*EventAddressActivity)(nil),             // 27: structs.structs.EventAddressActivity
-	(*EventGuildMembershipApplication)(nil),  // 28: structs.structs.EventGuildMembershipApplication
-	(*EventOreMine)(nil),                     // 29: structs.structs.EventOreMine
-	(*EventOreMineDetail)(nil),               // 30: structs.structs.EventOreMineDetail
-	(*EventAlphaRefine)(nil),                 // 31: structs.structs.EventAlphaRefine
-	(*EventAlphaRefineDetail)(nil),           // 32: structs.structs.EventAlphaRefineDetail
-	(*EventAlphaInfuse)(nil),                 // 33: structs.structs.EventAlphaInfuse
-	(*EventAlphaInfuseDetail)(nil),           // 34: structs.structs.EventAlphaInfuseDetail
-	(*EventAlphaDefuse)(nil),                 // 35: structs.structs.EventAlphaDefuse
-	(*EventAlphaDefuseDetail)(nil),           // 36: structs.structs.EventAlphaDefuseDetail
-	(*EventOreTheft)(nil),                    // 37: structs.structs.EventOreTheft
-	(*EventOreTheftDetail)(nil),              // 38: structs.structs.EventOreTheftDetail
-	(*EventOreMigrate)(nil),                  // 39: structs.structs.EventOreMigrate
-	(*EventOreMigrateDetail)(nil),            // 40: structs.structs.EventOreMigrateDetail
-	(*EventAttack)(nil),                      // 41: structs.structs.EventAttack
-	(*EventAttackDetail)(nil),                // 42: structs.structs.EventAttackDetail
-	(*EventAttackShotDetail)(nil),            // 43: structs.structs.EventAttackShotDetail
-	(*EventAttackDefenderCounterDetail)(nil), // 44: structs.structs.EventAttackDefenderCounterDetail
-	(*EventRaid)(nil),                        // 45: structs.structs.EventRaid
-	(*EventRaidDetail)(nil),                  // 46: structs.structs.EventRaidDetail
-	(*Allocation)(nil),                       // 47: structs.structs.Allocation
-	(*Agreement)(nil),                        // 48: structs.structs.Agreement
-	(*Fleet)(nil),                            // 49: structs.structs.Fleet
-	(*Guild)(nil),                            // 50: structs.structs.Guild
-	(*Infusion)(nil),                         // 51: structs.structs.Infusion
-	(*Planet)(nil),                           // 52: structs.structs.Planet
-	(*PlanetAttributeRecord)(nil),            // 53: structs.structs.PlanetAttributeRecord
-	(*Player)(nil),                           // 54: structs.structs.Player
-	(*Provider)(nil),                         // 55: structs.structs.Provider
-	(*Reactor)(nil),                          // 56: structs.structs.Reactor
-	(*Struct)(nil),                           // 57: structs.structs.Struct
-	(*StructAttributeRecord)(nil),            // 58: structs.structs.StructAttributeRecord
-	(*StructDefender)(nil),                   // 59: structs.structs.StructDefender
-	(*StructType)(nil),                       // 60: structs.structs.StructType
-	(*Substation)(nil),                       // 61: structs.structs.Substation
-	(*timestamppb.Timestamp)(nil),            // 62: google.protobuf.Timestamp
-	(*PermissionRecord)(nil),                 // 63: structs.structs.PermissionRecord
-	(*GridRecord)(nil),                       // 64: structs.structs.GridRecord
-	(*AddressAssociation)(nil),               // 65: structs.structs.AddressAssociation
-	(*AddressActivity)(nil),                  // 66: structs.structs.AddressActivity
-	(*GuildMembershipApplication)(nil),       // 67: structs.structs.GuildMembershipApplication
-	(ObjectType)(0),                          // 68: structs.structs.objectType
-	(Ambit)(0),                               // 69: structs.structs.ambit
-	(TechWeaponSystem)(0),                    // 70: structs.structs.techWeaponSystem
-	(TechWeaponControl)(0),                   // 71: structs.structs.techWeaponControl
-	(TechActiveWeaponry)(0),                  // 72: structs.structs.techActiveWeaponry
-	(TechUnitDefenses)(0),                    // 73: structs.structs.techUnitDefenses
-	(TechPlanetaryDefenses)(0),               // 74: structs.structs.techPlanetaryDefenses
-	(TechPassiveWeaponry)(0),                 // 75: structs.structs.techPassiveWeaponry
-	(RaidStatus)(0),                          // 76: structs.structs.raidStatus
+	(*EventAllocation)(nil),                       // 0: structs.structs.EventAllocation
+	(*EventAgreement)(nil),                        // 1: structs.structs.EventAgreement
+	(*EventFleet)(nil),                            // 2: structs.structs.EventFleet
+	(*EventGuild)(nil),                            // 3: structs.structs.EventGuild
+	(*EventInfusion)(nil),                         // 4: structs.structs.EventInfusion
+	(*EventPlanet)(nil),                           // 5: structs.structs.EventPlanet
+	(*EventPlanetAttribute)(nil),                  // 6: structs.structs.EventPlanetAttribute
+	(*EventPlayer)(nil),                           // 7: structs.structs.EventPlayer
+	(*EventProvider)(nil),                         // 8: structs.structs.EventProvider
+	(*EventReactor)(nil),                          // 9: structs.structs.EventReactor
+	(*EventStruct)(nil),                           // 10: structs.structs.EventStruct
+	(*EventStructAttribute)(nil),                  // 11: structs.structs.EventStructAttribute
+	(*EventStructDefender)(nil),                   // 12: structs.structs.EventStructDefender
+	(*EventStructType)(nil),                       // 13: structs.structs.EventStructType
+	(*EventSubstation)(nil),                       // 14: structs.structs.EventSubstation
+	(*EventTime)(nil),                             // 15: structs.structs.EventTime
+	(*EventTimeDetail)(nil),                       // 16: structs.structs.EventTimeDetail
+	(*EventPermission)(nil),                       // 17: structs.structs.EventPermission
+	(*EventGrid)(nil),                             // 18: structs.structs.EventGrid
+	(*EventProviderGrantGuild)(nil),               // 19: structs.structs.EventProviderGrantGuild
+	(*EventProviderGrantGuildDetail)(nil),         // 20: structs.structs.EventProviderGrantGuildDetail
+	(*EventProviderRevokeGuild)(nil),              // 21: structs.structs.EventProviderRevokeGuild
+	(*EventProviderRevokeGuildDetail)(nil),        // 22: structs.structs.EventProviderRevokeGuildDetail
+	(*EventPlayerHalted)(nil),                     // 23: structs.structs.EventPlayerHalted
+	(*EventPlayerResumed)(nil),                    // 24: structs.structs.EventPlayerResumed
+	(*EventDelete)(nil),                           // 25: structs.structs.EventDelete
+	(*EventAddressAssociation)(nil),               // 26: structs.structs.EventAddressAssociation
+	(*EventAddressActivity)(nil),                  // 27: structs.structs.EventAddressActivity
+	(*EventGuildBankMint)(nil),                    // 28: structs.structs.EventGuildBankMint
+	(*EventGuildBankMintDetail)(nil),              // 29: structs.structs.EventGuildBankMintDetail
+	(*EventGuildBankRedeem)(nil),                  // 30: structs.structs.EventGuildBankRedeem
+	(*EventGuildBankRedeemDetail)(nil),            // 31: structs.structs.EventGuildBankRedeemDetail
+	(*EventGuildBankConfiscateAndBurn)(nil),       // 32: structs.structs.EventGuildBankConfiscateAndBurn
+	(*EventGuildBankConfiscateAndBurnDetail)(nil), // 33: structs.structs.EventGuildBankConfiscateAndBurnDetail
+	(*EventGuildMembershipApplication)(nil),       // 34: structs.structs.EventGuildMembershipApplication
+	(*EventOreMine)(nil),                          // 35: structs.structs.EventOreMine
+	(*EventOreMineDetail)(nil),                    // 36: structs.structs.EventOreMineDetail
+	(*EventAlphaRefine)(nil),                      // 37: structs.structs.EventAlphaRefine
+	(*EventAlphaRefineDetail)(nil),                // 38: structs.structs.EventAlphaRefineDetail
+	(*EventAlphaInfuse)(nil),                      // 39: structs.structs.EventAlphaInfuse
+	(*EventAlphaInfuseDetail)(nil),                // 40: structs.structs.EventAlphaInfuseDetail
+	(*EventAlphaDefuse)(nil),                      // 41: structs.structs.EventAlphaDefuse
+	(*EventAlphaDefuseDetail)(nil),                // 42: structs.structs.EventAlphaDefuseDetail
+	(*EventOreTheft)(nil),                         // 43: structs.structs.EventOreTheft
+	(*EventOreTheftDetail)(nil),                   // 44: structs.structs.EventOreTheftDetail
+	(*EventOreMigrate)(nil),                       // 45: structs.structs.EventOreMigrate
+	(*EventOreMigrateDetail)(nil),                 // 46: structs.structs.EventOreMigrateDetail
+	(*EventAttack)(nil),                           // 47: structs.structs.EventAttack
+	(*EventAttackDetail)(nil),                     // 48: structs.structs.EventAttackDetail
+	(*EventAttackShotDetail)(nil),                 // 49: structs.structs.EventAttackShotDetail
+	(*EventAttackDefenderCounterDetail)(nil),      // 50: structs.structs.EventAttackDefenderCounterDetail
+	(*EventRaid)(nil),                             // 51: structs.structs.EventRaid
+	(*EventRaidDetail)(nil),                       // 52: structs.structs.EventRaidDetail
+	(*Allocation)(nil),                            // 53: structs.structs.Allocation
+	(*Agreement)(nil),                             // 54: structs.structs.Agreement
+	(*Fleet)(nil),                                 // 55: structs.structs.Fleet
+	(*Guild)(nil),                                 // 56: structs.structs.Guild
+	(*Infusion)(nil),                              // 57: structs.structs.Infusion
+	(*Planet)(nil),                                // 58: structs.structs.Planet
+	(*PlanetAttributeRecord)(nil),                 // 59: structs.structs.PlanetAttributeRecord
+	(*Player)(nil),                                // 60: structs.structs.Player
+	(*Provider)(nil),                              // 61: structs.structs.Provider
+	(*Reactor)(nil),                               // 62: structs.structs.Reactor
+	(*Struct)(nil),                                // 63: structs.structs.Struct
+	(*StructAttributeRecord)(nil),                 // 64: structs.structs.StructAttributeRecord
+	(*StructDefender)(nil),                        // 65: structs.structs.StructDefender
+	(*StructType)(nil),                            // 66: structs.structs.StructType
+	(*Substation)(nil),                            // 67: structs.structs.Substation
+	(*timestamppb.Timestamp)(nil),                 // 68: google.protobuf.Timestamp
+	(*PermissionRecord)(nil),                      // 69: structs.structs.PermissionRecord
+	(*GridRecord)(nil),                            // 70: structs.structs.GridRecord
+	(*AddressAssociation)(nil),                    // 71: structs.structs.AddressAssociation
+	(*AddressActivity)(nil),                       // 72: structs.structs.AddressActivity
+	(*GuildMembershipApplication)(nil),            // 73: structs.structs.GuildMembershipApplication
+	(ObjectType)(0),                               // 74: structs.structs.objectType
+	(Ambit)(0),                                    // 75: structs.structs.ambit
+	(TechWeaponSystem)(0),                         // 76: structs.structs.techWeaponSystem
+	(TechWeaponControl)(0),                        // 77: structs.structs.techWeaponControl
+	(TechActiveWeaponry)(0),                       // 78: structs.structs.techActiveWeaponry
+	(TechUnitDefenses)(0),                         // 79: structs.structs.techUnitDefenses
+	(TechPlanetaryDefenses)(0),                    // 80: structs.structs.techPlanetaryDefenses
+	(TechPassiveWeaponry)(0),                      // 81: structs.structs.techPassiveWeaponry
+	(RaidStatus)(0),                               // 82: structs.structs.raidStatus
 }
 var file_structs_structs_events_proto_depIdxs = []int32{
-	47, // 0: structs.structs.EventAllocation.allocation:type_name -> structs.structs.Allocation
-	48, // 1: structs.structs.EventAgreement.agreement:type_name -> structs.structs.Agreement
-	49, // 2: structs.structs.EventFleet.fleet:type_name -> structs.structs.Fleet
-	50, // 3: structs.structs.EventGuild.guild:type_name -> structs.structs.Guild
-	51, // 4: structs.structs.EventInfusion.infusion:type_name -> structs.structs.Infusion
-	52, // 5: structs.structs.EventPlanet.planet:type_name -> structs.structs.Planet
-	53, // 6: structs.structs.EventPlanetAttribute.planetAttributeRecord:type_name -> structs.structs.PlanetAttributeRecord
-	54, // 7: structs.structs.EventPlayer.player:type_name -> structs.structs.Player
-	55, // 8: structs.structs.EventProvider.provider:type_name -> structs.structs.Provider
-	56, // 9: structs.structs.EventReactor.reactor:type_name -> structs.structs.Reactor
-	57, // 10: structs.structs.EventStruct.structure:type_name -> structs.structs.Struct
-	58, // 11: structs.structs.EventStructAttribute.structAttributeRecord:type_name -> structs.structs.StructAttributeRecord
-	59, // 12: structs.structs.EventStructDefender.structDefender:type_name -> structs.structs.StructDefender
-	60, // 13: structs.structs.EventStructType.structType:type_name -> structs.structs.StructType
-	61, // 14: structs.structs.EventSubstation.substation:type_name -> structs.structs.Substation
+	53, // 0: structs.structs.EventAllocation.allocation:type_name -> structs.structs.Allocation
+	54, // 1: structs.structs.EventAgreement.agreement:type_name -> structs.structs.Agreement
+	55, // 2: structs.structs.EventFleet.fleet:type_name -> structs.structs.Fleet
+	56, // 3: structs.structs.EventGuild.guild:type_name -> structs.structs.Guild
+	57, // 4: structs.structs.EventInfusion.infusion:type_name -> structs.structs.Infusion
+	58, // 5: structs.structs.EventPlanet.planet:type_name -> structs.structs.Planet
+	59, // 6: structs.structs.EventPlanetAttribute.planetAttributeRecord:type_name -> structs.structs.PlanetAttributeRecord
+	60, // 7: structs.structs.EventPlayer.player:type_name -> structs.structs.Player
+	61, // 8: structs.structs.EventProvider.provider:type_name -> structs.structs.Provider
+	62, // 9: structs.structs.EventReactor.reactor:type_name -> structs.structs.Reactor
+	63, // 10: structs.structs.EventStruct.structure:type_name -> structs.structs.Struct
+	64, // 11: structs.structs.EventStructAttribute.structAttributeRecord:type_name -> structs.structs.StructAttributeRecord
+	65, // 12: structs.structs.EventStructDefender.structDefender:type_name -> structs.structs.StructDefender
+	66, // 13: structs.structs.EventStructType.structType:type_name -> structs.structs.StructType
+	67, // 14: structs.structs.EventSubstation.substation:type_name -> structs.structs.Substation
 	16, // 15: structs.structs.EventTime.eventTimeDetail:type_name -> structs.structs.EventTimeDetail
-	62, // 16: structs.structs.EventTimeDetail.blockTime:type_name -> google.protobuf.Timestamp
-	63, // 17: structs.structs.EventPermission.permissionRecord:type_name -> structs.structs.PermissionRecord
-	64, // 18: structs.structs.EventGrid.gridRecord:type_name -> structs.structs.GridRecord
+	68, // 16: structs.structs.EventTimeDetail.blockTime:type_name -> google.protobuf.Timestamp
+	69, // 17: structs.structs.EventPermission.permissionRecord:type_name -> structs.structs.PermissionRecord
+	70, // 18: structs.structs.EventGrid.gridRecord:type_name -> structs.structs.GridRecord
 	20, // 19: structs.structs.EventProviderGrantGuild.eventProviderGrantGuildDetail:type_name -> structs.structs.EventProviderGrantGuildDetail
 	22, // 20: structs.structs.EventProviderRevokeGuild.eventProviderRevokeGuildDetail:type_name -> structs.structs.EventProviderRevokeGuildDetail
-	65, // 21: structs.structs.EventAddressAssociation.addressAssociation:type_name -> structs.structs.AddressAssociation
-	66, // 22: structs.structs.EventAddressActivity.addressActivity:type_name -> structs.structs.AddressActivity
-	67, // 23: structs.structs.EventGuildMembershipApplication.guildMembershipApplication:type_name -> structs.structs.GuildMembershipApplication
-	30, // 24: structs.structs.EventOreMine.eventOreMineDetail:type_name -> structs.structs.EventOreMineDetail
-	32, // 25: structs.structs.EventAlphaRefine.eventAlphaRefineDetail:type_name -> structs.structs.EventAlphaRefineDetail
-	34, // 26: structs.structs.EventAlphaInfuse.eventAlphaInfuseDetail:type_name -> structs.structs.EventAlphaInfuseDetail
-	36, // 27: structs.structs.EventAlphaDefuse.eventAlphaDefuseDetail:type_name -> structs.structs.EventAlphaDefuseDetail
-	38, // 28: structs.structs.EventOreTheft.eventOreTheftDetail:type_name -> structs.structs.EventOreTheftDetail
-	40, // 29: structs.structs.EventOreMigrate.eventOreMigrateDetail:type_name -> structs.structs.EventOreMigrateDetail
-	42, // 30: structs.structs.EventAttack.eventAttackDetail:type_name -> structs.structs.EventAttackDetail
-	68, // 31: structs.structs.EventAttackDetail.attackerStructLocationType:type_name -> structs.structs.objectType
-	69, // 32: structs.structs.EventAttackDetail.attackerStructOperatingAmbit:type_name -> structs.structs.ambit
-	70, // 33: structs.structs.EventAttackDetail.weaponSystem:type_name -> structs.structs.techWeaponSystem
-	71, // 34: structs.structs.EventAttackDetail.weaponControl:type_name -> structs.structs.techWeaponControl
-	72, // 35: structs.structs.EventAttackDetail.activeWeaponry:type_name -> structs.structs.techActiveWeaponry
-	43, // 36: structs.structs.EventAttackDetail.eventAttackShotDetail:type_name -> structs.structs.EventAttackShotDetail
-	68, // 37: structs.structs.EventAttackShotDetail.targetStructLocationType:type_name -> structs.structs.objectType
-	69, // 38: structs.structs.EventAttackShotDetail.targetStructOperatingAmbit:type_name -> structs.structs.ambit
-	73, // 39: structs.structs.EventAttackShotDetail.evadedCause:type_name -> structs.structs.techUnitDefenses
-	74, // 40: structs.structs.EventAttackShotDetail.evadedByPlanetaryDefensesCause:type_name -> structs.structs.techPlanetaryDefenses
-	68, // 41: structs.structs.EventAttackShotDetail.blockedByStructLocationType:type_name -> structs.structs.objectType
-	69, // 42: structs.structs.EventAttackShotDetail.blockedByStructOperatingAmbit:type_name -> structs.structs.ambit
-	44, // 43: structs.structs.EventAttackShotDetail.eventAttackDefenderCounterDetail:type_name -> structs.structs.EventAttackDefenderCounterDetail
-	73, // 44: structs.structs.EventAttackShotDetail.damageReductionCause:type_name -> structs.structs.techUnitDefenses
-	75, // 45: structs.structs.EventAttackShotDetail.targetCounterCause:type_name -> structs.structs.techPassiveWeaponry
-	75, // 46: structs.structs.EventAttackShotDetail.postDestructionDamageCause:type_name -> structs.structs.techPassiveWeaponry
-	68, // 47: structs.structs.EventAttackDefenderCounterDetail.counterByStructLocationType:type_name -> structs.structs.objectType
-	69, // 48: structs.structs.EventAttackDefenderCounterDetail.counterByStructOperatingAmbit:type_name -> structs.structs.ambit
-	46, // 49: structs.structs.EventRaid.eventRaidDetail:type_name -> structs.structs.EventRaidDetail
-	76, // 50: structs.structs.EventRaidDetail.status:type_name -> structs.structs.raidStatus
-	51, // [51:51] is the sub-list for method output_type
-	51, // [51:51] is the sub-list for method input_type
-	51, // [51:51] is the sub-list for extension type_name
-	51, // [51:51] is the sub-list for extension extendee
-	0,  // [0:51] is the sub-list for field type_name
+	71, // 21: structs.structs.EventAddressAssociation.addressAssociation:type_name -> structs.structs.AddressAssociation
+	72, // 22: structs.structs.EventAddressActivity.addressActivity:type_name -> structs.structs.AddressActivity
+	29, // 23: structs.structs.EventGuildBankMint.eventGuildBankMintDetail:type_name -> structs.structs.EventGuildBankMintDetail
+	31, // 24: structs.structs.EventGuildBankRedeem.eventGuildBankRedeemDetail:type_name -> structs.structs.EventGuildBankRedeemDetail
+	33, // 25: structs.structs.EventGuildBankConfiscateAndBurn.eventGuildBankConfiscateAndBurnDetail:type_name -> structs.structs.EventGuildBankConfiscateAndBurnDetail
+	73, // 26: structs.structs.EventGuildMembershipApplication.guildMembershipApplication:type_name -> structs.structs.GuildMembershipApplication
+	36, // 27: structs.structs.EventOreMine.eventOreMineDetail:type_name -> structs.structs.EventOreMineDetail
+	38, // 28: structs.structs.EventAlphaRefine.eventAlphaRefineDetail:type_name -> structs.structs.EventAlphaRefineDetail
+	40, // 29: structs.structs.EventAlphaInfuse.eventAlphaInfuseDetail:type_name -> structs.structs.EventAlphaInfuseDetail
+	42, // 30: structs.structs.EventAlphaDefuse.eventAlphaDefuseDetail:type_name -> structs.structs.EventAlphaDefuseDetail
+	44, // 31: structs.structs.EventOreTheft.eventOreTheftDetail:type_name -> structs.structs.EventOreTheftDetail
+	46, // 32: structs.structs.EventOreMigrate.eventOreMigrateDetail:type_name -> structs.structs.EventOreMigrateDetail
+	48, // 33: structs.structs.EventAttack.eventAttackDetail:type_name -> structs.structs.EventAttackDetail
+	74, // 34: structs.structs.EventAttackDetail.attackerStructLocationType:type_name -> structs.structs.objectType
+	75, // 35: structs.structs.EventAttackDetail.attackerStructOperatingAmbit:type_name -> structs.structs.ambit
+	76, // 36: structs.structs.EventAttackDetail.weaponSystem:type_name -> structs.structs.techWeaponSystem
+	77, // 37: structs.structs.EventAttackDetail.weaponControl:type_name -> structs.structs.techWeaponControl
+	78, // 38: structs.structs.EventAttackDetail.activeWeaponry:type_name -> structs.structs.techActiveWeaponry
+	49, // 39: structs.structs.EventAttackDetail.eventAttackShotDetail:type_name -> structs.structs.EventAttackShotDetail
+	74, // 40: structs.structs.EventAttackShotDetail.targetStructLocationType:type_name -> structs.structs.objectType
+	75, // 41: structs.structs.EventAttackShotDetail.targetStructOperatingAmbit:type_name -> structs.structs.ambit
+	79, // 42: structs.structs.EventAttackShotDetail.evadedCause:type_name -> structs.structs.techUnitDefenses
+	80, // 43: structs.structs.EventAttackShotDetail.evadedByPlanetaryDefensesCause:type_name -> structs.structs.techPlanetaryDefenses
+	74, // 44: structs.structs.EventAttackShotDetail.blockedByStructLocationType:type_name -> structs.structs.objectType
+	75, // 45: structs.structs.EventAttackShotDetail.blockedByStructOperatingAmbit:type_name -> structs.structs.ambit
+	50, // 46: structs.structs.EventAttackShotDetail.eventAttackDefenderCounterDetail:type_name -> structs.structs.EventAttackDefenderCounterDetail
+	79, // 47: structs.structs.EventAttackShotDetail.damageReductionCause:type_name -> structs.structs.techUnitDefenses
+	81, // 48: structs.structs.EventAttackShotDetail.targetCounterCause:type_name -> structs.structs.techPassiveWeaponry
+	81, // 49: structs.structs.EventAttackShotDetail.postDestructionDamageCause:type_name -> structs.structs.techPassiveWeaponry
+	74, // 50: structs.structs.EventAttackDefenderCounterDetail.counterByStructLocationType:type_name -> structs.structs.objectType
+	75, // 51: structs.structs.EventAttackDefenderCounterDetail.counterByStructOperatingAmbit:type_name -> structs.structs.ambit
+	52, // 52: structs.structs.EventRaid.eventRaidDetail:type_name -> structs.structs.EventRaidDetail
+	82, // 53: structs.structs.EventRaidDetail.status:type_name -> structs.structs.raidStatus
+	54, // [54:54] is the sub-list for method output_type
+	54, // [54:54] is the sub-list for method input_type
+	54, // [54:54] is the sub-list for extension type_name
+	54, // [54:54] is the sub-list for extension extendee
+	0,  // [0:54] is the sub-list for field type_name
 }
 
 func init() { file_structs_structs_events_proto_init() }
@@ -27710,7 +31103,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[28].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventGuildMembershipApplication); i {
+			switch v := v.(*EventGuildBankMint); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -27722,7 +31115,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[29].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventOreMine); i {
+			switch v := v.(*EventGuildBankMintDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -27734,7 +31127,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[30].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventOreMineDetail); i {
+			switch v := v.(*EventGuildBankRedeem); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -27746,7 +31139,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[31].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAlphaRefine); i {
+			switch v := v.(*EventGuildBankRedeemDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -27758,7 +31151,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[32].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAlphaRefineDetail); i {
+			switch v := v.(*EventGuildBankConfiscateAndBurn); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -27770,7 +31163,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[33].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAlphaInfuse); i {
+			switch v := v.(*EventGuildBankConfiscateAndBurnDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -27782,7 +31175,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[34].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAlphaInfuseDetail); i {
+			switch v := v.(*EventGuildMembershipApplication); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -27794,7 +31187,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[35].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAlphaDefuse); i {
+			switch v := v.(*EventOreMine); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -27806,7 +31199,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[36].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAlphaDefuseDetail); i {
+			switch v := v.(*EventOreMineDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -27818,7 +31211,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[37].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventOreTheft); i {
+			switch v := v.(*EventAlphaRefine); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -27830,7 +31223,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[38].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventOreTheftDetail); i {
+			switch v := v.(*EventAlphaRefineDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -27842,7 +31235,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[39].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventOreMigrate); i {
+			switch v := v.(*EventAlphaInfuse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -27854,7 +31247,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[40].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventOreMigrateDetail); i {
+			switch v := v.(*EventAlphaInfuseDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -27866,7 +31259,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[41].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAttack); i {
+			switch v := v.(*EventAlphaDefuse); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -27878,7 +31271,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[42].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAttackDetail); i {
+			switch v := v.(*EventAlphaDefuseDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -27890,7 +31283,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[43].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAttackShotDetail); i {
+			switch v := v.(*EventOreTheft); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -27902,7 +31295,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[44].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventAttackDefenderCounterDetail); i {
+			switch v := v.(*EventOreTheftDetail); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -27914,7 +31307,7 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[45].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*EventRaid); i {
+			switch v := v.(*EventOreMigrate); i {
 			case 0:
 				return &v.state
 			case 1:
@@ -27926,6 +31319,78 @@ func file_structs_structs_events_proto_init() {
 			}
 		}
 		file_structs_structs_events_proto_msgTypes[46].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventOreMigrateDetail); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[47].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventAttack); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[48].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventAttackDetail); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[49].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventAttackShotDetail); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[50].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventAttackDefenderCounterDetail); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[51].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventRaid); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[52].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*EventRaidDetail); i {
 			case 0:
 				return &v.state
@@ -27944,7 +31409,7 @@ func file_structs_structs_events_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_structs_structs_events_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   47,
+			NumMessages:   53,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

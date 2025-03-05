@@ -16,7 +16,11 @@ func (k msgServer) GuildBankRedeem(goCtx context.Context, msg *types.MsgGuildBan
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    activePlayer, _ := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    activePlayer, lookupErr := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    if lookupErr != nil {
+        return &types.MsgGuildBankRedeemResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player not found ")
+    }
+
     // TODO permission check on the address to look for Asset permissions
 
     guild := k.GetGuildCacheFromId(ctx, msg.AmountToken.Denom)
@@ -26,5 +30,7 @@ func (k msgServer) GuildBankRedeem(goCtx context.Context, msg *types.MsgGuildBan
 
     err := guild.BankRedeem(msg.AmountToken.Amount, &activePlayer);
 
+
 	return &types.MsgGuildBankRedeemResponse{}, err
 }
+

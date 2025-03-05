@@ -320,6 +320,24 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "fleetId"}, {ProtoField: "destinationLocationId"}},
                 },
                 {
+                    RpcMethod:      "GuildBankMint",
+                    Use:            "guild-bank-mint [alpha amount] [token amount]",
+                    Short:          "Mint new Alpha-backed token for a guild",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "amountAlpha"},{ProtoField: "amountToken"}},
+                },
+                {
+                    RpcMethod:      "GuildBankRedeem",
+                    Use:            "guild-bank-redeem [token]",
+                    Short:          "Redeem a Guild Token for the underlying Alpha asset",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "amountToken"}},
+                },
+                {
+                    RpcMethod:      "GuildBankConfiscateAndBurn",
+                    Use:            "guild-bank-confiscate-and-burn [token amount] [address]",
+                    Short:          "Confiscate a Guild Token from an address and burn it",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "amountToken"},{ProtoField: "address"}},
+                },
+                {
                     RpcMethod:      "GuildCreate",
                     Use:            "guild-create [endpoint] [substation id]",
                     Short:          "Create a guild from an account with an associated Reactor",

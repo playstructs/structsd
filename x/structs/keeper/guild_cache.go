@@ -217,6 +217,9 @@ func (cache *GuildCache) BankMint(amountAlpha math.Int, amountToken math.Int, pl
     // Move the new Guild Token to Player
     cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, cache.GetBankCollateralPool(), player.GetPrimaryAccount(), guildTokenCoins)
 
+	ctxSDK := sdk.UnwrapSDKContext(cache.Ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildBankMint{&types.EventGuildBankMintDetail{GuildId: cache.GetGuildId(), AmountAlpha: amountAlpha.Uint64(), AmountToken: amountToken.Uint64(), PlayerId: player.GetPlayerId()}})
+
     return nil
 }
 
@@ -257,6 +260,10 @@ func (cache *GuildCache) BankRedeem(amountToken math.Int, player *PlayerCache) (
     alphaAmountCoins := sdk.NewCoins(alphaAmountCoin)
     cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, cache.GetBankCollateralPool(), player.GetPrimaryAccount(), alphaAmountCoins)
 
+
+	ctxSDK := sdk.UnwrapSDKContext(cache.Ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildBankRedeem{&types.EventGuildBankRedeemDetail{GuildId: cache.GetGuildId(), AmountAlpha: alphaAmount.Uint64(), AmountToken: amountToken.Uint64(), PlayerId: player.GetPlayerId()}})
+
     return nil
 }
 
@@ -279,5 +286,10 @@ func (cache *GuildCache) BankConfiscateAndBurn(amountToken math.Int, address str
         return errBurn
     }
 
+	ctxSDK := sdk.UnwrapSDKContext(cache.Ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildBankConfiscateAndBurn{&types.EventGuildBankConfiscateAndBurnDetail{GuildId: cache.GetGuildId(), AmountToken: amountToken.Uint64(), Address: address}})
+
     return nil
 }
+
+
