@@ -2,14 +2,14 @@ version: 1
 accounts:
 - name: alice
   coins:
-  - 200alpha
+  - 200000000ualpha
 - name: bob
   coins:
-  - 100alpha
+  - 100000000ualpha
 faucet:
   name: bob
   coins:
-  - 100alpha
+  - 100000000ualpha
 client:
   typescript:
     path: ../structs-client-ts
@@ -21,20 +21,38 @@ genesis:
   app_state:
     crisis:
       constant_fee:
-        denom: alpha
+        denom: ualpha
     gov:
       deposit_params:
         min_deposit:
-        - amount: "100"
-          denom: alpha
+        - amount: "100000000"
+          denom: ualpha
     staking:
       params:
-        bond_denom: alpha
+        bond_denom: ualpha
     slashing:
       params:
         signed_blocks_window: "35000"
         min_signed_per_window: "0.05"
-  chain_id: structstestnet-00
+    bank:
+      denom_metadata:
+      - "name": "alpha"
+        "description": "Alpha Matter, the most powerful material in the Structs universe."
+        "denom_units":
+        - "denom": "ualpha"
+          "exponent": 0
+        - "denom": "malpha"
+          "exponent": 3
+        - "denom": "alpha"
+          "exponent": 6
+        - "denom": "kalpha"
+          "exponent": 9
+        - "denom": "talpha"
+          "exponent": 18
+        "base": "ualpha"
+        "display": "alpha"
+        "symbol": "ALPHA"
+    chain_id: structstestnet-00
 validators:
 - name: alice
-  bonded: 100alpha
+  bonded: 100000000ualpha
