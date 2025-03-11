@@ -393,7 +393,7 @@ func (cache *PlayerCache) SetPrimaryAddress(address string) {
 func (cache *PlayerCache) DepositRefinedAlpha() {
     // Got this far, let's reward the player with some fresh Alpha
     // Mint the new Alpha to the module
-    newAlpha, _ := sdk.ParseCoinsNormalized("1alpha")
+    newAlpha, _ := sdk.ParseCoinsNormalized("1000000ualpha")
     cache.K.bankKeeper.MintCoins(cache.Ctx, types.ModuleName, newAlpha)
     // Transfer the refined Alpha to the player
     playerAcc, _ := sdk.AccAddressFromBech32(cache.GetPrimaryAddress())

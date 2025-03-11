@@ -80,7 +80,8 @@ const (
 	ReactorCountKey     = "Reactor/count/"
 	ReactorValidatorKey = "Reactor/validator/"
 
-	ReactorFuelToEnergyConversion = 100
+    // 1 gram of alpha (1,000,000 microgams) = 1,000 watts of energy (1,000,000 milliwatts)
+	ReactorFuelToEnergyConversion = 1
 )
 
 const (
@@ -120,7 +121,8 @@ const (
 	PlayerCountKey = "Player/count/"
 	PlayerHaltKey  = "Player/halt/"
 
-	PlayerPassiveDraw = 25
+    // 25,000 milliwatts
+	PlayerPassiveDraw = 25000
 )
 
 const (
@@ -144,7 +146,8 @@ const (
     StructAttributeKey  = "Struct/attribute/"
     StructDestroyedQueueKey = "Struct/destroyed/"
 
-	StructFuelToEnergyConversion = 200
+    // No longer needed. Part of Struct Type Def
+	//StructFuelToEnergyConversion = 200
 )
 
 const (

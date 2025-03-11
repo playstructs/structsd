@@ -194,7 +194,7 @@ func (cache *GuildCache) PermissionCheck(permission types.Permission, activePlay
 
 func (cache *GuildCache) BankMint(amountAlpha math.Int, amountToken math.Int, player *PlayerCache) (error) {
 
-    alphaCollateralCoin := sdk.NewCoin("alpha", amountAlpha)
+    alphaCollateralCoin := sdk.NewCoin("ualpha", amountAlpha)
     alphaCollateralCoins := sdk.NewCoins(alphaCollateralCoin)
 
 
@@ -226,7 +226,7 @@ func (cache *GuildCache) BankMint(amountAlpha math.Int, amountToken math.Int, pl
 
 func (cache *GuildCache) BankRedeem(amountToken math.Int, player *PlayerCache) (error) {
 
-    alphaCollateralBalance := cache.K.bankKeeper.SpendableCoin(cache.Ctx, cache.K.accountKeeper.GetModuleAddress(cache.GetBankCollateralPool()), "alpha")
+    alphaCollateralBalance := cache.K.bankKeeper.SpendableCoin(cache.Ctx, cache.K.accountKeeper.GetModuleAddress(cache.GetBankCollateralPool()), "ualpha")
     guildTokenSupply := cache.K.bankKeeper.GetSupply(cache.Ctx, cache.GetBankDenom())
 
     guildTokenCoin := sdk.NewCoin(cache.GetBankDenom(), amountToken)
@@ -256,7 +256,7 @@ func (cache *GuildCache) BankRedeem(amountToken math.Int, player *PlayerCache) (
     }
 
     // Move the Alpha to Player
-    alphaAmountCoin := sdk.NewCoin("alpha", alphaAmount)
+    alphaAmountCoin := sdk.NewCoin("ualpha", alphaAmount)
     alphaAmountCoins := sdk.NewCoins(alphaAmountCoin)
     cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, cache.GetBankCollateralPool(), player.GetPrimaryAccount(), alphaAmountCoins)
 

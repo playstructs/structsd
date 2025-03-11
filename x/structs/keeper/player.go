@@ -218,7 +218,7 @@ func (k Keeper) DischargePlayer(ctx context.Context, playerId string) {
 func (k Keeper) GetPlayerInventory(ctx context.Context, primaryAddress string) (types.PlayerInventory){
 
      playerAcc, _ := sdk.AccAddressFromBech32(primaryAddress)
-     storage := k.bankKeeper.SpendableCoin(ctx, playerAcc, "alpha")
+     storage := k.bankKeeper.SpendableCoin(ctx, playerAcc, "ualpha")
 
      return types.PlayerInventory{Rocks: storage}
 
