@@ -99,6 +99,7 @@ structType = StructType{
  Type: "Command",
  Category: ObjectType_fleet,
 
+ TriggerRaidDefeatByDestruction: true,
  BuildLimit: 1,
  BuildDifficulty: 200,
  BuildDraw: 50000,
