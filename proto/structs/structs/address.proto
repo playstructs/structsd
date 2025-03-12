@@ -28,4 +28,7 @@ message AddressActivity {
   google.protobuf.Timestamp     blockTime   = 3 [(gogoproto.nullable) = false, (gogoproto.stdtime) = true];
 }
 
-
+message InternalAddressAssociation {
+  string address = 1;
+  string objectId = 2;
+}

@@ -115,6 +115,17 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     Short:          "Returns all Guilds",
                 },
                 {
+                    RpcMethod:      "GuildBankCollateralAddress",
+                    Use:            "guild-bank-collateral-address [guild id]",
+                    Short:          "Lookup a Guild Bank Collateral Address",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"}},
+                },
+                {
+                    RpcMethod:      "GuildBankCollateralAddressAll",
+                    Use:            "guild-bank-collateral-address-all",
+                    Short:          "Show all Guild Bank Collateral Addresses",
+                },
+                {
                     RpcMethod:      "GuildMembershipApplication",
                     Use:            "guild-membership-application [guild id] [player id]",
                     Short:          "Show the details of a specific Membership Application",
@@ -215,6 +226,28 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     RpcMethod:      "ProviderAll",
                     Use:            "provider-all",
                     Short:          "Returns all Providers",
+                },
+                {
+                    RpcMethod:      "ProviderCollateralAddress",
+                    Use:            "provider-collateral-address [provider id]",
+                    Short:          "Lookup a Provider Collateral Address",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"}},
+                },
+                {
+                    RpcMethod:      "ProviderCollateralAddressAll",
+                    Use:            "provider-collateral-address-all",
+                    Short:          "Show All Provider Collateral Addresses",
+                },
+                {
+                    RpcMethod:      "ProviderEarningsAddress",
+                    Use:            "provider-earnings-address [provider id]",
+                    Short:          "Lookup a Provider Earnings Address",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"}},
+                },
+                {
+                    RpcMethod:      "ProviderEarningsAddressAll",
+                    Use:            "provider-earnings-address-all",
+                    Short:          "Show all Provider Earnings Addresses",
                 },
 				{
                     RpcMethod:      "Reactor",

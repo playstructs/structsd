@@ -15,6 +15,7 @@ import (
     //"encoding/binary"
     //"strings"
     //"strconv"
+    authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 func (k Keeper) GuildAll(goCtx context.Context, req *types.QueryAllGuildRequest) (*types.QueryAllGuildResponse, error) {
@@ -104,3 +105,50 @@ func (k Keeper) GuildMembershipApplicationAll(goCtx context.Context, req *types.
 
 	return &types.QueryAllGuildMembershipApplicationResponse{GuildMembershipApplication: guildMembershipApplications, Pagination: pageRes}, nil
 }
+
+func (k Keeper) GuildBankCollateralAddress(goCtx context.Context, req *types.QueryGetGuildBankCollateralAddressRequest) (*types.QueryAllGuildBankCollateralAddressResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+    var addresses []*types.InternalAddressAssociation
+    address := authtypes.NewModuleAddress(types.GuildBankCollateralPool + req.GuildId).String()
+    addressAssociation := types.InternalAddressAssociation{Address: address, ObjectId: req.GuildId}
+    addresses = append(addresses, &addressAssociation)
+
+    return &types.QueryAllGuildBankCollateralAddressResponse{InternalAddressAssociation: addresses}, nil
+}
+
+
+func (k Keeper) GuildBankCollateralAddressAll(goCtx context.Context, req *types.QueryAllGuildBankCollateralAddressRequest) (*types.QueryAllGuildBankCollateralAddressResponse, error) {
+	if req == nil {
+		return nil, status.Error(codes.InvalidArgument, "invalid request")
+	}
+
+    var addresses []*types.InternalAddressAssociation
+	ctx := sdk.UnwrapSDKContext(goCtx)
+
+	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
+	guildStore := prefix.NewStore(store, types.KeyPrefix(types.GuildKey))
+
+	pageRes, err := query.Paginate(guildStore, req.Pagination, func(key []byte, value []byte) error {
+		var guild types.Guild
+		if err := k.cdc.Unmarshal(value, &guild); err != nil {
+			return err
+		}
+
+        address := authtypes.NewModuleAddress(types.GuildBankCollateralPool + guild.Id).String()
+        addressAssociation := types.InternalAddressAssociation{Address: address, ObjectId: guild.Id}
+        addresses = append(addresses, &addressAssociation)
+
+		return nil
+	})
+
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &types.QueryAllGuildBankCollateralAddressResponse{InternalAddressAssociation: addresses, Pagination: pageRes}, nil
+}
+
+
