@@ -5,12 +5,13 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
+	"fmt"
 )
 
 // BeginBlocker will persist the current header and validator set as a historical entry
 // and prune the oldest entry based on the HistoricalEntries parameter
 func (k *Keeper) BeginBlocker(ctx context.Context) {
-
+    fmt.Printf("\n Begin Block \n")
     k.EmitEventTime(ctx)
 
     k.EventAllGenesis(ctx)
@@ -20,6 +21,7 @@ func (k *Keeper) BeginBlocker(ctx context.Context) {
 
 // Called every block, update validator set
 func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error) {
+	fmt.Printf("\n End Block \n")
 	k.AgreementExpirations(sdk.UnwrapSDKContext(ctx))
 
 	/* Cascade all the possible failures across the grid

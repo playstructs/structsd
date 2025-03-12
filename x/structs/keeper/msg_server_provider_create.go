@@ -48,6 +48,11 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
     // Create a Provider Object
     provider := types.CreateBaseProvider(msg.Creator, activePlayer.GetPlayerId())
 
+    provider.SetSubstationId(msg.SubstationId)
+
+    // TODO Check Denom exists
+    provider.SetRate(msg.Rate)
+
     // TODO Rate Denom whitelist?
 
     paramErr := provider.SetCapacityRange(msg.CapacityMinimum, msg.CapacityMaximum)

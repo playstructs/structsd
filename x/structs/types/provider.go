@@ -1,7 +1,7 @@
 package types
 
 import (
-	//sdk "github.com/cosmos/cosmos-sdk/types"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
 	"cosmossdk.io/math"
 )
@@ -14,6 +14,16 @@ func CreateBaseProvider(creator string, owner string) (Provider) {
         Owner: owner,
 
     }
+}
+
+func (provider *Provider) SetSubstationId(substationId string) error {
+    provider.SubstationId = substationId
+	return nil
+}
+
+func (provider *Provider) SetRate(rate sdk.Coin) error {
+    provider.Rate = rate
+	return nil
 }
 
 func (provider *Provider) SetCapacityRange(minimum uint64, maximum uint64) error {
@@ -71,10 +81,10 @@ func (provider *Provider) SetDurationMinimum(minimum uint64) error {
 
 
 func (provider *Provider) SetProviderCancellationPenalty(penalty math.LegacyDec) error {
-    one, _ := math.LegacyNewDecFromStr("1")
+    one, _ := math.LegacyNewDecFromStr("1.0")
 
     // 1 <= Provider Cancellation Policy => 0
-    if penalty.GTE(math.LegacyZeroDec()) && penalty.LTE(one) {
+    if (!penalty.GTE(math.LegacyZeroDec())) || (!penalty.LTE(one)) {
         return sdkerrors.Wrapf(ErrInvalidParameters, "Provider Cancellation Penalty (%f) must be between 1 and 0", penalty)
     }
 
@@ -84,10 +94,10 @@ func (provider *Provider) SetProviderCancellationPenalty(penalty math.LegacyDec)
 
 
 func (provider *Provider) SetConsumerCancellationPenalty(penalty math.LegacyDec) error {
-    one, _ := math.LegacyNewDecFromStr("1")
+    one, _ := math.LegacyNewDecFromStr("1.0")
 
     // 1 <= Provider Cancellation Policy => 0
-    if penalty.GTE(math.LegacyZeroDec()) && penalty.LTE(one) {
+    if (!penalty.GTE(math.LegacyZeroDec())) || (!penalty.LTE(one)) {
         return sdkerrors.Wrapf(ErrInvalidParameters, "Consumer Cancellation Penalty (%f) must be between 1 and 0", penalty)
     }
 

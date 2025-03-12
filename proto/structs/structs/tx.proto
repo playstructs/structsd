@@ -828,7 +828,6 @@ message MsgAgreementDurationIncrease {
 message MsgAgreementResponse {}
 
 
-
 message MsgProviderCreate {
   option (cosmos.msg.v1.signer) = "creator";
 
@@ -844,15 +843,15 @@ message MsgProviderCreate {
   providerAccessPolicy accessPolicy = 4;
 
   string  providerCancellationPenalty     = 5 [
-    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (cosmos_proto.scalar) = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
-    (gogoproto.nullable)   = false
+    (gogoproto.nullable) = false
   ];
 
   string  consumerCancellationPenalty     = 6 [
-    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (cosmos_proto.scalar) = "cosmos.Dec",
     (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
-    (gogoproto.nullable)   = false
+    (gogoproto.nullable) = false
   ];
 
   uint64 capacityMinimum                  = 7;
