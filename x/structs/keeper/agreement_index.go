@@ -10,6 +10,7 @@ import (
 
 	"structs/x/structs/types"
     "strconv"
+    "fmt"
 
 )
 
@@ -72,6 +73,8 @@ func (k Keeper) GetAllAgreementByProviderIndex(ctx context.Context, providerId s
 
 func (k Keeper) SetAgreementExpirationIndex(ctx context.Context, block uint64, agreementId string) (err error) {
     providerIndexStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), AgreementExpirationKeyPrefix(block))
+
+    fmt.Printf("New Agreement %s will expire on %d \n", agreementId, block)
 
 	bz := make([]byte, 8)
 	binary.BigEndian.PutUint64(bz, 1)

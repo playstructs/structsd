@@ -12,6 +12,7 @@ import (
 	"structs/x/structs/types"
 
 	//sdkerrors "cosmossdk.io/errors"
+	"fmt"
 
 )
 
@@ -21,6 +22,7 @@ func (k Keeper) AppendAgreement(
 	agreement types.Agreement,
 ) (err error) {
     k.SetAgreementProviderIndex(ctx, agreement.ProviderId, agreement.Id)
+    k.SetAgreementExpirationIndex(ctx, agreement.EndBlock, agreement.Id)
 
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AgreementKey))
 	appendedValue := k.cdc.MustMarshal(&agreement)
@@ -73,6 +75,7 @@ func (k Keeper) RemoveAgreement(ctx context.Context, agreement types.Agreement) 
 }
 
 func (k Keeper) AgreementExpirations(ctx context.Context) {
+    fmt.Printf("Checking for Expired Agreements \n")
 
     uctx := sdk.UnwrapSDKContext(ctx)
     currentBlock := uint64(uctx.BlockHeight())
@@ -80,6 +83,7 @@ func (k Keeper) AgreementExpirations(ctx context.Context) {
     // Get List of Agreements
     agreements := k.GetAllAgreementIdByExpirationIndex(ctx, currentBlock)
     for _, agreementId := range agreements {
+        fmt.Printf("Expired Agreement %s \n", agreementId)
         agreement := k.GetAgreementCacheFromId(ctx, agreementId)
         agreement.GetProvider().Checkpoint()
         agreement.Expire()
