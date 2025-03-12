@@ -259,7 +259,7 @@ func (cache *AgreementCache) PayoutVoidedProviderCancellationPenalty() {
     penalty := cache.GetDurationPastDec().Mul(rate).Mul(cache.GetCapacityDec()).Mul(cache.GetProvider().GetProviderCancellationPenalty()).TruncateInt()
     penaltyCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, penalty))
 
-    cache.K.bankKeeper.SendCoinsFromModuleToModule(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetProvider().GetEarningsPoolLocation(), penaltyCoin)
+    cache.K.bankKeeper.SendCoins(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetProvider().GetEarningsPoolLocation(), penaltyCoin)
 
 }
 
@@ -268,7 +268,7 @@ func (cache *AgreementCache) PayoutProviderCancellationPenalty() {
     penalty := cache.GetDurationPastDec().Mul(rate).Mul(cache.GetCapacityDec()).Mul(cache.GetProvider().GetProviderCancellationPenalty()).TruncateInt()
     penaltyCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, penalty))
 
-    cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetOwner().GetPrimaryAccount(), penaltyCoin)
+    cache.K.bankKeeper.SendCoins(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetOwner().GetPrimaryAccount(), penaltyCoin)
 
 }
 
@@ -276,19 +276,19 @@ func (cache *AgreementCache) PayoutConsumerCancellationPenaltyAndReturnCollatera
     penalty := cache.GetRemainingCollateralDec().Mul(cache.GetProvider().GetConsumerCancellationPenalty()).TruncateInt()
     penaltyCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, penalty))
 
-    cache.K.bankKeeper.SendCoinsFromModuleToModule(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetProvider().GetEarningsPoolLocation(), penaltyCoin)
+    cache.K.bankKeeper.SendCoins(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetProvider().GetEarningsPoolLocation(), penaltyCoin)
 
     remainingCollateral := cache.GetRemainingCollateral().Sub(penalty)
     remainingCollateralCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, remainingCollateral))
 
-    cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetOwner().GetPrimaryAccount(), remainingCollateralCoin)
+    cache.K.bankKeeper.SendCoins(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetOwner().GetPrimaryAccount(), remainingCollateralCoin)
 
 }
 
 func (cache *AgreementCache) ReturnRemainingCollateral() {
     remainingCollateralCoin := sdk.NewCoins(sdk.NewCoin(cache.GetProvider().GetRate().Denom, cache.GetRemainingCollateral()))
 
-    cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetOwner().GetPrimaryAccount(), remainingCollateralCoin)
+    cache.K.bankKeeper.SendCoins(cache.Ctx, cache.GetProvider().GetCollateralPoolLocation(), cache.GetOwner().GetPrimaryAccount(), remainingCollateralCoin)
 }
 
 func (cache *AgreementCache) PrematureCloseByProvider() (error) {

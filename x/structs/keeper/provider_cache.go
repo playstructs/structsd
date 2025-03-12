@@ -11,6 +11,7 @@ import (
 
 	"fmt"
 	"cosmossdk.io/math"
+    authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 type ProviderCache struct {
@@ -182,8 +183,8 @@ func (cache *ProviderCache) GetCreator() string { if !cache.ProviderLoaded { cac
 func (cache *ProviderCache) GetAgreementLoad() uint64 { if !cache.AgreementLoadLoaded { cache.LoadAgreementLoad() }; return cache.AgreementLoad }
 func (cache *ProviderCache) GetCheckpointBlock() uint64 { if !cache.CheckpointBlockLoaded { cache.LoadCheckpointBlock() }; return cache.CheckpointBlock }
 
-func (cache *ProviderCache) GetCollateralPoolLocation() string { return types.ProviderCollateralPool + cache.GetProviderId() }
-func (cache *ProviderCache) GetEarningsPoolLocation() string { return types.ProviderEarningsPool + cache.GetProviderId() }
+func (cache *ProviderCache) GetCollateralPoolLocation() sdk.AccAddress { return authtypes.NewModuleAddress(types.ProviderCollateralPool + cache.GetProviderId()) }
+func (cache *ProviderCache) GetEarningsPoolLocation() sdk.AccAddress { return authtypes.NewModuleAddress(types.ProviderEarningsPool + cache.GetProviderId()) }
 
 func (cache *ProviderCache) AgreementVerify(capacity uint64, duration uint64) (error) {
     // min < capacity < max
@@ -296,7 +297,7 @@ func (cache *ProviderCache) WithdrawBalanceAndCommit(destinationAddress string) 
 
     withdrawAmountCoin := sdk.NewCoins(sdk.NewCoin(cache.GetRate().Denom, finalWithdrawBalance))
 
-    errSend := cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, cache.GetCollateralPoolLocation(), destinationAcc, withdrawAmountCoin)
+    errSend := cache.K.bankKeeper.SendCoins(cache.Ctx, cache.GetCollateralPoolLocation(), destinationAcc, withdrawAmountCoin)
     if errSend != nil {
         return errSend
     }
@@ -305,9 +306,9 @@ func (cache *ProviderCache) WithdrawBalanceAndCommit(destinationAddress string) 
 
     // Now handle the value available in the Earnings pool
     // Get Balance
-    earningsBalances := cache.K.bankKeeper.SpendableCoins(cache.Ctx, cache.K.accountKeeper.GetModuleAddress(cache.GetEarningsPoolLocation()))
+    earningsBalances := cache.K.bankKeeper.SpendableCoins(cache.Ctx, cache.GetEarningsPoolLocation())
     // Transfer
-    errSend = cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, cache.GetEarningsPoolLocation(), destinationAcc, earningsBalances)
+    errSend = cache.K.bankKeeper.SendCoins(cache.Ctx, cache.GetEarningsPoolLocation(), destinationAcc, earningsBalances)
     if errSend != nil {
         return errSend
     }
@@ -439,7 +440,7 @@ func (cache *ProviderCache) Checkpoint() (error) {
 
     checkpointBalanceCoin := sdk.NewCoins(sdk.NewCoin(cache.GetRate().Denom, checkpointBalance))
 
-    errSend := cache.K.bankKeeper.SendCoinsFromModuleToModule(cache.Ctx, cache.GetCollateralPoolLocation(), cache.GetEarningsPoolLocation(), checkpointBalanceCoin)
+    errSend := cache.K.bankKeeper.SendCoins(cache.Ctx, cache.GetCollateralPoolLocation(), cache.GetEarningsPoolLocation(), checkpointBalanceCoin)
     if errSend != nil {
         return errSend
     }

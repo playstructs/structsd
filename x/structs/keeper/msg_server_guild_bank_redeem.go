@@ -6,6 +6,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
+	"strings"
 
 )
 
@@ -23,7 +24,7 @@ func (k msgServer) GuildBankRedeem(goCtx context.Context, msg *types.MsgGuildBan
 
     // TODO permission check on the address to look for Asset permissions
 
-    guild := k.GetGuildCacheFromId(ctx, msg.AmountToken.Denom)
+    guild := k.GetGuildCacheFromId(ctx, strings.Split(msg.AmountToken.Denom,".")[1])
     if !guild.LoadGuild() {
         return &types.MsgGuildBankRedeemResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Guild ID (%s) not found ", guild.GetGuildId())
     }

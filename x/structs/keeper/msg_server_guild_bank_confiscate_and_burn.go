@@ -7,6 +7,7 @@ import (
 	//sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	"cosmossdk.io/math"
+
 )
 
 func (k msgServer) GuildBankConfiscateAndBurn(goCtx context.Context, msg *types.MsgGuildBankConfiscateAndBurn) (*types.MsgGuildBankConfiscateAndBurnResponse, error) {

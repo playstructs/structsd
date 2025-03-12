@@ -11,10 +11,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 
-   banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
-
+    banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	//"strconv"
 	//"strings"
+	"fmt"
 )
 
 // GetGuildCount get the total number of guild
@@ -88,6 +89,13 @@ func (k Keeper) AppendGuild(
                         }
 
     k.bankKeeper.SetDenomMetaData(ctx, guildDenomMetadata)
+
+    fmt.Printf("Guild Collateral Pool: %s", types.GuildBankCollateralPool + guild.Id)
+    fmt.Printf("Guild Collateral Pool: %s", authtypes.NewModuleAddress(types.GuildBankCollateralPool + guild.Id))
+
+    guildCollateralAddress := authtypes.NewModuleAddress(types.GuildBankCollateralPool + guild.Id)
+    guildCollateralAccount := k.accountKeeper.NewAccountWithAddress(ctx, guildCollateralAddress)
+    k.accountKeeper.SetAccount(ctx, guildCollateralAccount)
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuild{Guild: &guild})

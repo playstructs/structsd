@@ -110,7 +110,10 @@ func (k *Keeper) GetPlayerCacheFromAddress(ctx context.Context, address string) 
         return PlayerCache{ActiveAddress: address}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player Account Not Found")
     }
 
-    return k.GetPlayerCacheFromId(ctx, GetObjectID(types.ObjectType_player, index))
+    player, err := k.GetPlayerCacheFromId(ctx, GetObjectID(types.ObjectType_player, index))
+    player.SetActiveAddress(address)
+
+    return player, err
 }
 
 func (cache *PlayerCache) Commit() () {
@@ -363,6 +366,12 @@ func (cache *PlayerCache) Discharge() {
     cache.LastActionLoaded = true
     cache.Changed()
 }
+
+
+func (cache *PlayerCache) SetActiveAddress(address string) {
+    cache.ActiveAddress = address
+}
+
 
 func (cache *PlayerCache) SetPlanetId(planetId string) {
     if (!cache.PlayerLoaded) { cache.LoadPlayer() }

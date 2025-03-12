@@ -44,7 +44,7 @@ func (k msgServer) AgreementDurationIncrease(goCtx context.Context, msg *types.M
     }
 
     // move the funds from user to provider collateral pool
-    errSend := k.bankKeeper.SendCoinsFromAccountToModule(ctx, sourceAcc, agreement.GetProvider().GetCollateralPoolLocation(), collateralAmountCoins)
+    errSend := k.bankKeeper.SendCoins(ctx, sourceAcc, agreement.GetProvider().GetCollateralPoolLocation(), collateralAmountCoins)
     if errSend != nil {
         return &types.MsgAgreementResponse{}, errSend
     }

@@ -6,12 +6,14 @@ import (
 
 	"cosmossdk.io/store/prefix"
 	storetypes "cosmossdk.io/store/types"
+    authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
 
 	"structs/x/structs/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	//sdkerrors "cosmossdk.io/errors"
+	"fmt"
 )
 
 // GetProviderCount get the total number of provider
@@ -53,6 +55,21 @@ func (k Keeper) AppendProvider(ctx context.Context, provider types.Provider) (ty
 	store.Set([]byte(provider.Id), appendedValue)
 
 	k.SetProviderCount(ctx, count+1)
+
+    fmt.Printf("Provider Collateral Pool: %s", types.ProviderCollateralPool + provider.Id)
+    fmt.Printf("Provider Collateral Pool: %s", authtypes.NewModuleAddress(types.ProviderCollateralPool + provider.Id))
+
+    providerCollateralAddress := authtypes.NewModuleAddress(types.ProviderCollateralPool + provider.Id)
+    providerCollateralAccount := k.accountKeeper.NewAccountWithAddress(ctx, providerCollateralAddress)
+    k.accountKeeper.SetAccount(ctx, providerCollateralAccount)
+
+
+    fmt.Printf("Provider Earnings Pool: %s", types.ProviderEarningsPool + provider.Id)
+    fmt.Printf("Provider Earnings Pool: %s", authtypes.NewModuleAddress(types.ProviderEarningsPool + provider.Id))
+
+    providerEarningsAddress := authtypes.NewModuleAddress(types.ProviderEarningsPool + provider.Id)
+    providerEarningsAccount := k.accountKeeper.NewAccountWithAddress(ctx, providerEarningsAddress)
+    k.accountKeeper.SetAccount(ctx, providerEarningsAccount)
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProvider{Provider: &provider})

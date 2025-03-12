@@ -11,6 +11,7 @@ import (
 
 	"fmt"
 	"cosmossdk.io/math"
+    authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 /*
@@ -149,8 +150,8 @@ func (cache *GuildCache) GetSubstation() *SubstationCache {if !cache.SubstationL
 
 func (cache *GuildCache) GetCreator() string { if !cache.GuildLoaded { cache.LoadGuild() }; return cache.Guild.Creator }
 
-func (cache *GuildCache) GetBankCollateralPool() string { return types.GuildBankCollateralPool + cache.GetGuildId() }
-func (cache *GuildCache) GetBankDenom() string { return cache.GetGuildId() }
+func (cache *GuildCache) GetBankCollateralPool() sdk.AccAddress { return authtypes.NewModuleAddress(types.GuildBankCollateralPool + cache.GetGuildId()) }
+func (cache *GuildCache) GetBankDenom() string { return "uguild." + cache.GetGuildId() }
 
 
 /* Permissions */
@@ -206,16 +207,16 @@ func (cache *GuildCache) BankMint(amountAlpha math.Int, amountToken math.Int, pl
         return sdkerrors.Wrapf(types.ErrGridMalfunction, "Player cannot afford the mint")
     }
 
-    errSend := cache.K.bankKeeper.SendCoinsFromAccountToModule(cache.Ctx, player.GetPrimaryAccount(), cache.GetBankCollateralPool(), alphaCollateralCoins)
+    errSend := cache.K.bankKeeper.SendCoins(cache.Ctx, player.GetPrimaryAccount(), cache.GetBankCollateralPool(), alphaCollateralCoins)
     if errSend != nil {
         return errSend
     }
 
     // Mint new Guild Token
-    cache.K.bankKeeper.MintCoins(cache.Ctx, cache.GetBankCollateralPool(), guildTokenCoins)
+    cache.K.bankKeeper.MintCoins(cache.Ctx, types.ModuleName, guildTokenCoins)
 
     // Move the new Guild Token to Player
-    cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, cache.GetBankCollateralPool(), player.GetPrimaryAccount(), guildTokenCoins)
+    cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, types.ModuleName, player.GetPrimaryAccount(), guildTokenCoins)
 
 	ctxSDK := sdk.UnwrapSDKContext(cache.Ctx)
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildBankMint{&types.EventGuildBankMintDetail{GuildId: cache.GetGuildId(), AmountAlpha: amountAlpha.Uint64(), AmountToken: amountToken.Uint64(), PlayerId: player.GetPlayerId()}})
@@ -226,7 +227,7 @@ func (cache *GuildCache) BankMint(amountAlpha math.Int, amountToken math.Int, pl
 
 func (cache *GuildCache) BankRedeem(amountToken math.Int, player *PlayerCache) (error) {
 
-    alphaCollateralBalance := cache.K.bankKeeper.SpendableCoin(cache.Ctx, cache.K.accountKeeper.GetModuleAddress(cache.GetBankCollateralPool()), "ualpha")
+    alphaCollateralBalance := cache.K.bankKeeper.SpendableCoin(cache.Ctx, cache.GetBankCollateralPool(), "ualpha")
     guildTokenSupply := cache.K.bankKeeper.GetSupply(cache.Ctx, cache.GetBankDenom())
 
     guildTokenCoin := sdk.NewCoin(cache.GetBankDenom(), amountToken)
@@ -244,13 +245,11 @@ func (cache *GuildCache) BankRedeem(amountToken math.Int, player *PlayerCache) (
 
     alphaAmount := amountTokenDec.Quo(guildTokenSupplyDec).Mul(alphaCollateralBalanceDec).TruncateInt()
 
-    sendError := cache.K.bankKeeper.SendCoinsFromAccountToModule(cache.Ctx, player.GetPrimaryAccount(), cache.GetBankCollateralPool(), guildTokenCoins)
-    if (sendError != nil){
-       return sendError
-    }
 
+    // Move the new coins back to the module
+    cache.K.bankKeeper.SendCoinsFromAccountToModule(cache.Ctx, player.GetPrimaryAccount(), types.ModuleName, guildTokenCoins)
     // Burn the Guild Token
-    errBurn := cache.K.bankKeeper.BurnCoins(cache.Ctx, player.GetPrimaryAddress(), guildTokenCoins)
+    errBurn := cache.K.bankKeeper.BurnCoins(cache.Ctx, types.ModuleName, guildTokenCoins)
     if errBurn != nil {
         return errBurn
     }
@@ -258,7 +257,7 @@ func (cache *GuildCache) BankRedeem(amountToken math.Int, player *PlayerCache) (
     // Move the Alpha to Player
     alphaAmountCoin := sdk.NewCoin("ualpha", alphaAmount)
     alphaAmountCoins := sdk.NewCoins(alphaAmountCoin)
-    cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, cache.GetBankCollateralPool(), player.GetPrimaryAccount(), alphaAmountCoins)
+    cache.K.bankKeeper.SendCoins(cache.Ctx, cache.GetBankCollateralPool(), player.GetPrimaryAccount(), alphaAmountCoins)
 
 
 	ctxSDK := sdk.UnwrapSDKContext(cache.Ctx)
@@ -274,14 +273,11 @@ func (cache *GuildCache) BankConfiscateAndBurn(amountToken math.Int, address str
     guildTokenCoins := sdk.NewCoins(guildTokenCoin)
 
     // Confiscate
-    account, _ := sdk.AccAddressFromBech32(address)
-    sendError := cache.K.bankKeeper.SendCoinsFromAccountToModule(cache.Ctx, account, cache.GetBankCollateralPool(), guildTokenCoins)
-    if (sendError != nil){
-       return sendError
-    }
+    playerAcc, _ := sdk.AccAddressFromBech32(address)
+    cache.K.bankKeeper.SendCoinsFromAccountToModule(cache.Ctx, playerAcc, types.ModuleName, guildTokenCoins)
 
     // Burn the Guild Token
-    errBurn := cache.K.bankKeeper.BurnCoins(cache.Ctx, cache.GetBankCollateralPool(), guildTokenCoins)
+    errBurn := cache.K.bankKeeper.BurnCoins(cache.Ctx, types.ModuleName, guildTokenCoins)
     if errBurn != nil {
         return errBurn
     }
