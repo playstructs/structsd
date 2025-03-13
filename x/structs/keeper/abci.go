@@ -5,24 +5,34 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
-	"fmt"
+
 )
 
 // BeginBlocker will persist the current header and validator set as a historical entry
 // and prune the oldest entry based on the HistoricalEntries parameter
 func (k *Keeper) BeginBlocker(ctx context.Context) {
-    fmt.Printf("\n Begin Block \n")
+
+    ctxSDK := sdk.UnwrapSDKContext(ctx)
+
+    ctxSDK.Logger().Debug("Begin Block Processes")
+
     k.EmitEventTime(ctx)
 
     k.EventAllGenesis(ctx)
 
     k.StructSweepDestroyed(ctx)
+
+    ctxSDK.Logger().Debug("Begin Block Complete")
 }
 
 // Called every block, update validator set
 func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error) {
-	fmt.Printf("\n End Block \n")
-	k.AgreementExpirations(sdk.UnwrapSDKContext(ctx))
+
+    ctxSDK := sdk.UnwrapSDKContext(ctx)
+
+	ctxSDK.Logger().Debug("End Block Processes")
+
+	k.AgreementExpirations(ctx)
 
 	/* Cascade all the possible failures across the grid
 	 *
@@ -30,14 +40,16 @@ func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error)
 	 * devices have one last block of power before shutting down
 	 * but I think that's ok. We'll see how it goes in practice.
 	 */
-	k.GridCascade(sdk.UnwrapSDKContext(ctx))
+	k.GridCascade(ctx)
+
+    ctxSDK.Logger().Debug("End Block Complete")
 
 	return []abci.ValidatorUpdate{}, nil
 }
 
-
 func (k Keeper) EmitEventTime(ctx context.Context) {
     ctxSDK := sdk.UnwrapSDKContext(ctx)
+    ctxSDK.Logger().Debug("Emit Event Time")
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventTime{&types.EventTimeDetail{BlockHeight: ctxSDK.BlockHeight(), BlockTime: ctxSDK.HeaderInfo().Time }})
 }
 
@@ -45,6 +57,8 @@ func (k *Keeper) EventAllGenesis(ctx context.Context) {
     ctxSDK := sdk.UnwrapSDKContext(ctx)
 
     if ctxSDK.BlockHeight() > 1 { return }
+
+    ctxSDK.Logger().Info("Spewing Genesis Events")
 
 	// Player
     players := k.GetAllPlayer(ctx)

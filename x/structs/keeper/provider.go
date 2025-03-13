@@ -56,6 +56,12 @@ func (k Keeper) AppendProvider(ctx context.Context, provider types.Provider) (ty
 
 	k.SetProviderCount(ctx, count+1)
 
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+
+	// Set the Checkpoint to current block
+    k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_checkpointBlock, provider.Id), uint64(ctxSDK.BlockHeight()))
+
+    // Create the Collateral Pool
     fmt.Printf("Provider Collateral Pool: %s", types.ProviderCollateralPool + provider.Id)
     fmt.Printf("Provider Collateral Pool: %s", authtypes.NewModuleAddress(types.ProviderCollateralPool + provider.Id))
 
@@ -63,7 +69,7 @@ func (k Keeper) AppendProvider(ctx context.Context, provider types.Provider) (ty
     providerCollateralAccount := k.accountKeeper.NewAccountWithAddress(ctx, providerCollateralAddress)
     k.accountKeeper.SetAccount(ctx, providerCollateralAccount)
 
-
+    // Create the Earnings Pool
     fmt.Printf("Provider Earnings Pool: %s", types.ProviderEarningsPool + provider.Id)
     fmt.Printf("Provider Earnings Pool: %s", authtypes.NewModuleAddress(types.ProviderEarningsPool + provider.Id))
 
@@ -71,7 +77,6 @@ func (k Keeper) AppendProvider(ctx context.Context, provider types.Provider) (ty
     providerEarningsAccount := k.accountKeeper.NewAccountWithAddress(ctx, providerEarningsAddress)
     k.accountKeeper.SetAccount(ctx, providerEarningsAccount)
 
-	ctxSDK := sdk.UnwrapSDKContext(ctx)
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProvider{Provider: &provider})
 
 	return provider, nil
