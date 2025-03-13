@@ -22,7 +22,7 @@ func (k Keeper) AppendAllocation(
 	ctx context.Context,
 	allocation types.Allocation,
 	power uint64,
-) (allocationId string, finalPower uint64, err error) {
+) (types.Allocation, uint64, error) {
     // Set the ID of the appended value
 
     allocation.Index = k.GetAllocationCount(ctx)
@@ -37,7 +37,7 @@ func (k Keeper) AppendAllocation(
 	    // TODO - make a quicker lookup. This is going to get slow as allocation increase
 	    sourceAllocations := k.GetAllAllocationIdBySourceIndex(ctx, allocation.SourceObjectId)
 	    if (len(sourceAllocations) > 0) {
-	        return allocation.Id, power, sdkerrors.Wrapf(types.ErrAllocationAppend, "Allocation Source (%s) cannot have an automated Allocation with other allocations in place", allocation.SourceObjectId)
+	        return allocation, power, sdkerrors.Wrapf(types.ErrAllocationAppend, "Allocation Source (%s) cannot have an automated Allocation with other allocations in place", allocation.SourceObjectId)
 	    }
 
 	    // Update the Power definition to be the capacity of the source
@@ -50,7 +50,7 @@ func (k Keeper) AppendAllocation(
         sourceLoad := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, allocation.SourceObjectId))
         availableCapacity := allocationSourceCapacity - sourceLoad
         if (availableCapacity < power) {
-            return allocation.Id, power, sdkerrors.Wrapf(types.ErrAllocationAppend, "Allocation Source (%s) does not have the capacity (%d) for the power (%d) defined in this allocation",  allocation.SourceObjectId, availableCapacity, power)
+            return allocation, power, sdkerrors.Wrapf(types.ErrAllocationAppend, "Allocation Source (%s) does not have the capacity (%d) for the power (%d) defined in this allocation",  allocation.SourceObjectId, availableCapacity, power)
         }
     }
 
@@ -86,7 +86,7 @@ func (k Keeper) AppendAllocation(
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAllocation{Allocation: &allocation})
 
-	return allocation.Id, power, nil
+	return allocation, power, nil
 }
 
 func (k Keeper) SetAllocationOnly(ctx context.Context, allocation types.Allocation) (types.Allocation, error){

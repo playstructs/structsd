@@ -8,10 +8,12 @@ import (
 
 
 
-func CreateBaseAgreement(creator string, owner string, capacity uint64, startBlock uint64, endBlock uint64, allocationId string) (Agreement) {
+func CreateBaseAgreement(creator string, owner string, providerId string, capacity uint64, startBlock uint64, endBlock uint64, allocationId string) (Agreement) {
     return Agreement{
         Creator: creator,
         Owner: owner,
+
+        ProviderId: providerId,
 
         Capacity: capacity,
 

@@ -66,13 +66,13 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
 
     // Create the allocation
     allocation := types.CreateAllocationStub(types.AllocationType_providerAgreement, provider.GetSubstationId(), msg.Creator, activePlayer.GetPlayerId())
-    allocationId, _ , _ := k.AppendAllocation(ctx, allocation, msg.Capacity)
+    allocation, _ , _ = k.AppendAllocation(ctx, allocation, msg.Capacity)
 
     // Build the Agreement range
     startBlock := uint64(ctx.BlockHeight()) + uint64(1)
     endBlock := startBlock + msg.Duration
 
-    agreement := types.CreateBaseAgreement(msg.Creator, activePlayer.GetPlayerId(), msg.Capacity, startBlock, endBlock, allocationId)
+    agreement := types.CreateBaseAgreement(msg.Creator, activePlayer.GetPlayerId(), msg.ProviderId, msg.Capacity, startBlock, endBlock, allocation.Id)
     // Append the Agreement using the Allocations Id Index
     agreement.Id = GetObjectID(types.ObjectType_agreement, allocation.Index)
     k.AppendAgreement(ctx, agreement)

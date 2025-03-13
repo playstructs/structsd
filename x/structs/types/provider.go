@@ -31,25 +31,47 @@ func (provider *Provider) SetCapacityRange(minimum uint64, maximum uint64) error
         return sdkerrors.Wrapf(ErrInvalidParameters, "Minimum Capacity (%d) cannot be larger than Maximum Capacity (%d)", minimum, maximum)
     }
 
-    provider.CapacityMinimum = minimum
-    provider.CapacityMaximum = maximum
-	return nil
+    if minimum == 0 {
+        provider.CapacityMinimum = 1
+    } else {
+        provider.CapacityMinimum = minimum
+    }
+
+    if maximum == 0 {
+        provider.CapacityMaximum = 1
+    } else {
+        provider.CapacityMaximum = maximum
+    }
+
+    return nil
 }
 
 func (provider *Provider) SetCapacityMaximum(maximum uint64) error {
     if provider.CapacityMinimum > maximum {
         return sdkerrors.Wrapf(ErrInvalidParameters, "Minimum Capacity (%d) cannot be larger than Maximum Capacity (%d)", provider.CapacityMinimum, maximum)
     }
-    provider.CapacityMaximum = maximum
-	return nil
+
+    if maximum == 0 {
+        provider.CapacityMaximum = 1
+    } else {
+        provider.CapacityMaximum = maximum
+    }
+
+    return nil
 }
 
 func (provider *Provider) SetCapacityMinimum(minimum uint64) error {
     if minimum > provider.CapacityMaximum {
         return sdkerrors.Wrapf(ErrInvalidParameters, "Minimum Capacity (%d) cannot be larger than Maximum Capacity (%d)", minimum, provider.CapacityMaximum)
     }
-    provider.CapacityMinimum = minimum
-	return nil
+
+    if minimum == 0 {
+        provider.CapacityMinimum = 1
+    } else {
+        provider.CapacityMinimum = minimum
+    }
+
+    return nil
 }
 
 
@@ -58,25 +80,45 @@ func (provider *Provider) SetDurationRange(minimum uint64, maximum uint64) error
         return sdkerrors.Wrapf(ErrInvalidParameters, "Minimum Duration (%d) cannot be larger than Maximum Duration (%d)", minimum, maximum)
     }
 
-    provider.DurationMinimum = minimum
-    provider.DurationMaximum = maximum
-	return nil
+    if minimum == 0 {
+        provider.DurationMinimum = 1
+    } else {
+        provider.DurationMinimum = minimum
+    }
+
+    if maximum == 0 {
+        provider.DurationMaximum = 1
+    } else {
+        provider.DurationMaximum = maximum
+    }
+
+    return nil
 }
 
 func (provider *Provider) SetDurationMaximum(maximum uint64) error {
     if provider.DurationMinimum > maximum {
         return sdkerrors.Wrapf(ErrInvalidParameters, "Minimum Duration (%d) cannot be larger than Maximum Duration (%d)", provider.DurationMinimum, maximum)
     }
-    provider.DurationMaximum = maximum
-	return nil
+
+    if maximum == 0 {
+        provider.DurationMaximum = 1
+    } else {
+        provider.DurationMaximum = maximum
+    }
+    return nil
 }
 
 func (provider *Provider) SetDurationMinimum(minimum uint64) error {
     if minimum > provider.DurationMaximum {
         return sdkerrors.Wrapf(ErrInvalidParameters, "Minimum Duration (%d) cannot be larger than Maximum Duration (%d)", minimum, provider.DurationMaximum)
     }
-    provider.DurationMinimum = minimum
-	return nil
+
+    if minimum == 0 {
+        provider.DurationMinimum = 1
+    } else {
+        provider.DurationMinimum = minimum
+    }
+    return nil
 }
 
 
