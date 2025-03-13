@@ -347,6 +347,36 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "allocationId"}, {ProtoField: "power"}},
                 },
                 {
+                     RpcMethod:      "AgreementOpen",
+                     Use:            "agreement-open [provider id] [duration] [capacity]",
+                     Short:          "Open an Agreement with an Energy Provider",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"}, {ProtoField: "duration"}, {ProtoField: "capacity"}},
+                },
+                {
+                     RpcMethod:      "AgreementClose",
+                     Use:            "agreement-close [agreement id]",
+                     Short:          "Close an Agreement with an Energy Provider",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "agreementId"}},
+                },
+                {
+                     RpcMethod:      "AgreementCapacityIncrease",
+                     Use:            "agreement-capacity-increase [agreement id] [capacity increase]",
+                     Short:          "Increase the Capacity of an established Agreement",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "agreementId"}, {ProtoField: "capacityIncrease"}},
+                },
+                {
+                     RpcMethod:      "AgreementCapacityDecrease",
+                     Use:            "agreement-capacity-decrease [agreement id] [capacity decrease]",
+                     Short:          "Decrease the Capacity of an established Agreement",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "agreementId"}, {ProtoField: "capacityDecrease"}},
+                },
+                {
+                     RpcMethod:      "AgreementDurationIncrease",
+                     Use:            "agreement-duration-increase [agreement id] [duration increase]",
+                     Short:          "Increase the Duration of an established Agreement",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "agreementId"}, {ProtoField: "durationIncrease"}},
+                },
+                {
                     RpcMethod:      "FleetMove",
                     Use:            "fleet-move [fleet id] [destination location id]",
                     Short:          "Move a fleet from one planet to another",
