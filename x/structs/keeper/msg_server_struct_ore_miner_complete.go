@@ -26,6 +26,10 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
         return &types.MsgStructOreMinerStatusResponse{}, permissionError
     }
 
+    if structure.GetOwner().IsHalted() {
+        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Struct (%s) cannot perform actions while Player (%s) is Halted", msg.StructId, structure.GetOwnerId())
+    }
+
     // Is the Struct & Owner online?
     readinessError := structure.ReadinessCheck()
     if (readinessError != nil) {
@@ -51,6 +55,7 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 
     currentAge := uint64(ctx.BlockHeight()) - structure.GetBlockStartOreMine()
     if (!types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().GetOreMiningDifficulty())) {
+       structure.GetOwner().Halt()
        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Work failure for input (%s) when trying to mine on Struct %s", hashInput, structure.StructId)
     }
 

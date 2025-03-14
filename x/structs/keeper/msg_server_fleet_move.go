@@ -27,6 +27,10 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
         return &types.MsgFleetMoveResponse{}, permissionError
     }
 
+    if fleet.GetOwner().IsHalted() {
+        return &types.MsgFleetMoveResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Cannot perform actions while Player (%s) is Halted", fleet.GetOwnerId())
+    }
+
     destination := k.GetPlanetCacheFromId(ctx, msg.DestinationLocationId)
     if (!destination.LoadPlanet()) {
         return &types.MsgFleetMoveResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Planet (%s) wasn't found", msg.DestinationLocationId)

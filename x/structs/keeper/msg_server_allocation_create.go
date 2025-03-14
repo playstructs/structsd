@@ -44,10 +44,10 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
         return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
     }
 
-	allocationId, _ , err := k.AppendAllocation(ctx, allocation, msg.Power)
+	allocation, _ , err := k.AppendAllocation(ctx, allocation, msg.Power)
 
 	return &types.MsgAllocationCreateResponse{
-		AllocationId: allocationId,
+		AllocationId: allocation.Id,
 	}, err
 
 }

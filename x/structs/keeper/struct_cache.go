@@ -115,11 +115,11 @@ func (k *Keeper) GetStructCacheFromId(ctx context.Context, structId string) (Str
 
 // Build this initial Struct Cache object
 // This does no validation on the provided structId
-func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owner *PlayerCache, structType *types.StructType, destinationType types.ObjectType, ambit types.Ambit, slot uint64) (StructCache, error) {
+func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owner *PlayerCache, structType *types.StructType, ambit types.Ambit, slot uint64) (StructCache, error) {
 
-    structure := types.CreateBaseStruct(structType, creatorAddress, owner.GetPlayerId(), destinationType, ambit)
+    structure := types.CreateBaseStruct(structType, creatorAddress, owner.GetPlayerId(), structType.Category, ambit)
 
-    switch destinationType {
+    switch structType.Category {
         case types.ObjectType_planet:
 
             err := owner.GetPlanet().BuildInitiateReadiness(&structure, structType, ambit, slot)
@@ -155,7 +155,7 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
     owner.BuildQuantityIncrement(structType.GetId())
 
 
-   switch destinationType {
+   switch structType.Category {
         case types.ObjectType_planet:
 
             // Update the cross reference on the planet
@@ -500,6 +500,19 @@ func (cache *StructCache) IsBuilt() bool {
 
 func (cache *StructCache) IsOnline() bool {
    return cache.GetStatus()&types.StructStateOnline != 0
+}
+
+func (cache *StructCache) IsCommandable() bool {
+    if cache.GetStructType().Category == types.ObjectType_fleet {
+        if !cache.GetFleet().HasCommandStruct() {
+            return false
+        }
+
+        if cache.GetFleet().GetCommandStruct().IsOffline() {
+            return false
+        }
+    }
+    return true
 }
 
 func (cache *StructCache) IsOffline() bool {

@@ -35,6 +35,10 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructStatusResponse{}, permissionError
     }
 
+    if owner.IsHalted() {
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Cannot perform actions while Player (%s) is Halted", msg.PlayerId)
+    }
+
     // Load the Struct Type
     structType, structTypeFound := k.GetStructType(ctx, msg.StructTypeId)
     if !structTypeFound {
@@ -70,12 +74,12 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during build, but player (%s) has %d available", msg.StructTypeId, structType.BuildDraw, owner.GetPlayerId(),owner.GetAvailableCapacity())
     }
 
-    // todo actually verify the darn location
+
 
     fmt.Printf("Trying to materialized a Struct \n")
     fmt.Printf("Struct Type: %s ", structType.Type)
-    fmt.Printf("Destination: %s %d", msg.LocationType, msg.Slot)
-    structure, err := k.InitiateStruct(ctx, msg.Creator, &owner, &structType, msg.LocationType, msg.OperatingAmbit, msg.Slot)
+    fmt.Printf("Destination: %d", msg.Slot)
+    structure, err := k.InitiateStruct(ctx, msg.Creator, &owner, &structType, msg.OperatingAmbit, msg.Slot)
     if (err != nil) {
         return &types.MsgStructStatusResponse{}, err
     }

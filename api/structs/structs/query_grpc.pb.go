@@ -24,6 +24,9 @@ const (
 	Query_Address_FullMethodName                       = "/structs.structs.Query/Address"
 	Query_AddressAll_FullMethodName                    = "/structs.structs.Query/AddressAll"
 	Query_AddressAllByPlayer_FullMethodName            = "/structs.structs.Query/AddressAllByPlayer"
+	Query_Agreement_FullMethodName                     = "/structs.structs.Query/Agreement"
+	Query_AgreementAll_FullMethodName                  = "/structs.structs.Query/AgreementAll"
+	Query_AgreementAllByProvider_FullMethodName        = "/structs.structs.Query/AgreementAllByProvider"
 	Query_Allocation_FullMethodName                    = "/structs.structs.Query/Allocation"
 	Query_AllocationAll_FullMethodName                 = "/structs.structs.Query/AllocationAll"
 	Query_AllocationAllBySource_FullMethodName         = "/structs.structs.Query/AllocationAllBySource"
@@ -35,6 +38,8 @@ const (
 	Query_GridAll_FullMethodName                       = "/structs.structs.Query/GridAll"
 	Query_Guild_FullMethodName                         = "/structs.structs.Query/Guild"
 	Query_GuildAll_FullMethodName                      = "/structs.structs.Query/GuildAll"
+	Query_GuildBankCollateralAddress_FullMethodName    = "/structs.structs.Query/GuildBankCollateralAddress"
+	Query_GuildBankCollateralAddressAll_FullMethodName = "/structs.structs.Query/GuildBankCollateralAddressAll"
 	Query_GuildMembershipApplication_FullMethodName    = "/structs.structs.Query/GuildMembershipApplication"
 	Query_GuildMembershipApplicationAll_FullMethodName = "/structs.structs.Query/GuildMembershipApplicationAll"
 	Query_Infusion_FullMethodName                      = "/structs.structs.Query/Infusion"
@@ -46,11 +51,18 @@ const (
 	Query_PermissionAll_FullMethodName                 = "/structs.structs.Query/PermissionAll"
 	Query_Player_FullMethodName                        = "/structs.structs.Query/Player"
 	Query_PlayerAll_FullMethodName                     = "/structs.structs.Query/PlayerAll"
+	Query_PlayerHaltedAll_FullMethodName               = "/structs.structs.Query/PlayerHaltedAll"
 	Query_Planet_FullMethodName                        = "/structs.structs.Query/Planet"
 	Query_PlanetAll_FullMethodName                     = "/structs.structs.Query/PlanetAll"
 	Query_PlanetAllByPlayer_FullMethodName             = "/structs.structs.Query/PlanetAllByPlayer"
 	Query_PlanetAttribute_FullMethodName               = "/structs.structs.Query/PlanetAttribute"
 	Query_PlanetAttributeAll_FullMethodName            = "/structs.structs.Query/PlanetAttributeAll"
+	Query_Provider_FullMethodName                      = "/structs.structs.Query/Provider"
+	Query_ProviderAll_FullMethodName                   = "/structs.structs.Query/ProviderAll"
+	Query_ProviderCollateralAddress_FullMethodName     = "/structs.structs.Query/ProviderCollateralAddress"
+	Query_ProviderCollateralAddressAll_FullMethodName  = "/structs.structs.Query/ProviderCollateralAddressAll"
+	Query_ProviderEarningsAddress_FullMethodName       = "/structs.structs.Query/ProviderEarningsAddress"
+	Query_ProviderEarningsAddressAll_FullMethodName    = "/structs.structs.Query/ProviderEarningsAddressAll"
 	Query_Reactor_FullMethodName                       = "/structs.structs.Query/Reactor"
 	Query_ReactorAll_FullMethodName                    = "/structs.structs.Query/ReactorAll"
 	Query_Struct_FullMethodName                        = "/structs.structs.Query/Struct"
@@ -75,6 +87,10 @@ type QueryClient interface {
 	Address(ctx context.Context, in *QueryGetAddressRequest, opts ...grpc.CallOption) (*QueryAddressResponse, error)
 	AddressAll(ctx context.Context, in *QueryAllAddressRequest, opts ...grpc.CallOption) (*QueryAllAddressResponse, error)
 	AddressAllByPlayer(ctx context.Context, in *QueryAllAddressByPlayerRequest, opts ...grpc.CallOption) (*QueryAllAddressResponse, error)
+	// Queries a list of Agreement items.
+	Agreement(ctx context.Context, in *QueryGetAgreementRequest, opts ...grpc.CallOption) (*QueryGetAgreementResponse, error)
+	AgreementAll(ctx context.Context, in *QueryAllAgreementRequest, opts ...grpc.CallOption) (*QueryAllAgreementResponse, error)
+	AgreementAllByProvider(ctx context.Context, in *QueryAllAgreementByProviderRequest, opts ...grpc.CallOption) (*QueryAllAgreementResponse, error)
 	// Queries a list of Allocation items.
 	Allocation(ctx context.Context, in *QueryGetAllocationRequest, opts ...grpc.CallOption) (*QueryGetAllocationResponse, error)
 	AllocationAll(ctx context.Context, in *QueryAllAllocationRequest, opts ...grpc.CallOption) (*QueryAllAllocationResponse, error)
@@ -91,6 +107,8 @@ type QueryClient interface {
 	// Queries a list of Guild items.
 	Guild(ctx context.Context, in *QueryGetGuildRequest, opts ...grpc.CallOption) (*QueryGetGuildResponse, error)
 	GuildAll(ctx context.Context, in *QueryAllGuildRequest, opts ...grpc.CallOption) (*QueryAllGuildResponse, error)
+	GuildBankCollateralAddress(ctx context.Context, in *QueryGetGuildBankCollateralAddressRequest, opts ...grpc.CallOption) (*QueryAllGuildBankCollateralAddressResponse, error)
+	GuildBankCollateralAddressAll(ctx context.Context, in *QueryAllGuildBankCollateralAddressRequest, opts ...grpc.CallOption) (*QueryAllGuildBankCollateralAddressResponse, error)
 	GuildMembershipApplication(ctx context.Context, in *QueryGetGuildMembershipApplicationRequest, opts ...grpc.CallOption) (*QueryGetGuildMembershipApplicationResponse, error)
 	GuildMembershipApplicationAll(ctx context.Context, in *QueryAllGuildMembershipApplicationRequest, opts ...grpc.CallOption) (*QueryAllGuildMembershipApplicationResponse, error)
 	// Queries a list of Infusions.
@@ -108,6 +126,7 @@ type QueryClient interface {
 	// Queries a list of Player items.
 	Player(ctx context.Context, in *QueryGetPlayerRequest, opts ...grpc.CallOption) (*QueryGetPlayerResponse, error)
 	PlayerAll(ctx context.Context, in *QueryAllPlayerRequest, opts ...grpc.CallOption) (*QueryAllPlayerResponse, error)
+	PlayerHaltedAll(ctx context.Context, in *QueryAllPlayerHaltedRequest, opts ...grpc.CallOption) (*QueryAllPlayerHaltedResponse, error)
 	// Queries a list of Planet items.
 	Planet(ctx context.Context, in *QueryGetPlanetRequest, opts ...grpc.CallOption) (*QueryGetPlanetResponse, error)
 	PlanetAll(ctx context.Context, in *QueryAllPlanetRequest, opts ...grpc.CallOption) (*QueryAllPlanetResponse, error)
@@ -115,6 +134,17 @@ type QueryClient interface {
 	PlanetAttribute(ctx context.Context, in *QueryGetPlanetAttributeRequest, opts ...grpc.CallOption) (*QueryGetPlanetAttributeResponse, error)
 	// Queries a list of all Planet Attributes
 	PlanetAttributeAll(ctx context.Context, in *QueryAllPlanetAttributeRequest, opts ...grpc.CallOption) (*QueryAllPlanetAttributeResponse, error)
+	// Queries a list of Allocation items.
+	Provider(ctx context.Context, in *QueryGetProviderRequest, opts ...grpc.CallOption) (*QueryGetProviderResponse, error)
+	ProviderAll(ctx context.Context, in *QueryAllProviderRequest, opts ...grpc.CallOption) (*QueryAllProviderResponse, error)
+	ProviderCollateralAddress(ctx context.Context, in *QueryGetProviderCollateralAddressRequest, opts ...grpc.CallOption) (*QueryAllProviderCollateralAddressResponse, error)
+	ProviderCollateralAddressAll(ctx context.Context, in *QueryAllProviderCollateralAddressRequest, opts ...grpc.CallOption) (*QueryAllProviderCollateralAddressResponse, error)
+	// TODO Requires a lookup table that I don't know if we care about
+	// rpc ProviderByCollateralAddress (QueryGetProviderByCollateralAddressRequest) returns (QueryGetProviderResponse) {
+	// option (google.api.http).get = "/structs/provider_by_collateral_address/{address}";
+	// }
+	ProviderEarningsAddress(ctx context.Context, in *QueryGetProviderEarningsAddressRequest, opts ...grpc.CallOption) (*QueryAllProviderEarningsAddressResponse, error)
+	ProviderEarningsAddressAll(ctx context.Context, in *QueryAllProviderEarningsAddressRequest, opts ...grpc.CallOption) (*QueryAllProviderEarningsAddressResponse, error)
 	// Queries a list of Reactor items.
 	Reactor(ctx context.Context, in *QueryGetReactorRequest, opts ...grpc.CallOption) (*QueryGetReactorResponse, error)
 	ReactorAll(ctx context.Context, in *QueryAllReactorRequest, opts ...grpc.CallOption) (*QueryAllReactorResponse, error)
@@ -180,6 +210,33 @@ func (c *queryClient) AddressAll(ctx context.Context, in *QueryAllAddressRequest
 func (c *queryClient) AddressAllByPlayer(ctx context.Context, in *QueryAllAddressByPlayerRequest, opts ...grpc.CallOption) (*QueryAllAddressResponse, error) {
 	out := new(QueryAllAddressResponse)
 	err := c.cc.Invoke(ctx, Query_AddressAllByPlayer_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Agreement(ctx context.Context, in *QueryGetAgreementRequest, opts ...grpc.CallOption) (*QueryGetAgreementResponse, error) {
+	out := new(QueryGetAgreementResponse)
+	err := c.cc.Invoke(ctx, Query_Agreement_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) AgreementAll(ctx context.Context, in *QueryAllAgreementRequest, opts ...grpc.CallOption) (*QueryAllAgreementResponse, error) {
+	out := new(QueryAllAgreementResponse)
+	err := c.cc.Invoke(ctx, Query_AgreementAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) AgreementAllByProvider(ctx context.Context, in *QueryAllAgreementByProviderRequest, opts ...grpc.CallOption) (*QueryAllAgreementResponse, error) {
+	out := new(QueryAllAgreementResponse)
+	err := c.cc.Invoke(ctx, Query_AgreementAllByProvider_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -285,6 +342,24 @@ func (c *queryClient) GuildAll(ctx context.Context, in *QueryAllGuildRequest, op
 	return out, nil
 }
 
+func (c *queryClient) GuildBankCollateralAddress(ctx context.Context, in *QueryGetGuildBankCollateralAddressRequest, opts ...grpc.CallOption) (*QueryAllGuildBankCollateralAddressResponse, error) {
+	out := new(QueryAllGuildBankCollateralAddressResponse)
+	err := c.cc.Invoke(ctx, Query_GuildBankCollateralAddress_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GuildBankCollateralAddressAll(ctx context.Context, in *QueryAllGuildBankCollateralAddressRequest, opts ...grpc.CallOption) (*QueryAllGuildBankCollateralAddressResponse, error) {
+	out := new(QueryAllGuildBankCollateralAddressResponse)
+	err := c.cc.Invoke(ctx, Query_GuildBankCollateralAddressAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) GuildMembershipApplication(ctx context.Context, in *QueryGetGuildMembershipApplicationRequest, opts ...grpc.CallOption) (*QueryGetGuildMembershipApplicationResponse, error) {
 	out := new(QueryGetGuildMembershipApplicationResponse)
 	err := c.cc.Invoke(ctx, Query_GuildMembershipApplication_FullMethodName, in, out, opts...)
@@ -384,6 +459,15 @@ func (c *queryClient) PlayerAll(ctx context.Context, in *QueryAllPlayerRequest, 
 	return out, nil
 }
 
+func (c *queryClient) PlayerHaltedAll(ctx context.Context, in *QueryAllPlayerHaltedRequest, opts ...grpc.CallOption) (*QueryAllPlayerHaltedResponse, error) {
+	out := new(QueryAllPlayerHaltedResponse)
+	err := c.cc.Invoke(ctx, Query_PlayerHaltedAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) Planet(ctx context.Context, in *QueryGetPlanetRequest, opts ...grpc.CallOption) (*QueryGetPlanetResponse, error) {
 	out := new(QueryGetPlanetResponse)
 	err := c.cc.Invoke(ctx, Query_Planet_FullMethodName, in, out, opts...)
@@ -423,6 +507,60 @@ func (c *queryClient) PlanetAttribute(ctx context.Context, in *QueryGetPlanetAtt
 func (c *queryClient) PlanetAttributeAll(ctx context.Context, in *QueryAllPlanetAttributeRequest, opts ...grpc.CallOption) (*QueryAllPlanetAttributeResponse, error) {
 	out := new(QueryAllPlanetAttributeResponse)
 	err := c.cc.Invoke(ctx, Query_PlanetAttributeAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) Provider(ctx context.Context, in *QueryGetProviderRequest, opts ...grpc.CallOption) (*QueryGetProviderResponse, error) {
+	out := new(QueryGetProviderResponse)
+	err := c.cc.Invoke(ctx, Query_Provider_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ProviderAll(ctx context.Context, in *QueryAllProviderRequest, opts ...grpc.CallOption) (*QueryAllProviderResponse, error) {
+	out := new(QueryAllProviderResponse)
+	err := c.cc.Invoke(ctx, Query_ProviderAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ProviderCollateralAddress(ctx context.Context, in *QueryGetProviderCollateralAddressRequest, opts ...grpc.CallOption) (*QueryAllProviderCollateralAddressResponse, error) {
+	out := new(QueryAllProviderCollateralAddressResponse)
+	err := c.cc.Invoke(ctx, Query_ProviderCollateralAddress_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ProviderCollateralAddressAll(ctx context.Context, in *QueryAllProviderCollateralAddressRequest, opts ...grpc.CallOption) (*QueryAllProviderCollateralAddressResponse, error) {
+	out := new(QueryAllProviderCollateralAddressResponse)
+	err := c.cc.Invoke(ctx, Query_ProviderCollateralAddressAll_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ProviderEarningsAddress(ctx context.Context, in *QueryGetProviderEarningsAddressRequest, opts ...grpc.CallOption) (*QueryAllProviderEarningsAddressResponse, error) {
+	out := new(QueryAllProviderEarningsAddressResponse)
+	err := c.cc.Invoke(ctx, Query_ProviderEarningsAddress_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) ProviderEarningsAddressAll(ctx context.Context, in *QueryAllProviderEarningsAddressRequest, opts ...grpc.CallOption) (*QueryAllProviderEarningsAddressResponse, error) {
+	out := new(QueryAllProviderEarningsAddressResponse)
+	err := c.cc.Invoke(ctx, Query_ProviderEarningsAddressAll_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -539,6 +677,10 @@ type QueryServer interface {
 	Address(context.Context, *QueryGetAddressRequest) (*QueryAddressResponse, error)
 	AddressAll(context.Context, *QueryAllAddressRequest) (*QueryAllAddressResponse, error)
 	AddressAllByPlayer(context.Context, *QueryAllAddressByPlayerRequest) (*QueryAllAddressResponse, error)
+	// Queries a list of Agreement items.
+	Agreement(context.Context, *QueryGetAgreementRequest) (*QueryGetAgreementResponse, error)
+	AgreementAll(context.Context, *QueryAllAgreementRequest) (*QueryAllAgreementResponse, error)
+	AgreementAllByProvider(context.Context, *QueryAllAgreementByProviderRequest) (*QueryAllAgreementResponse, error)
 	// Queries a list of Allocation items.
 	Allocation(context.Context, *QueryGetAllocationRequest) (*QueryGetAllocationResponse, error)
 	AllocationAll(context.Context, *QueryAllAllocationRequest) (*QueryAllAllocationResponse, error)
@@ -555,6 +697,8 @@ type QueryServer interface {
 	// Queries a list of Guild items.
 	Guild(context.Context, *QueryGetGuildRequest) (*QueryGetGuildResponse, error)
 	GuildAll(context.Context, *QueryAllGuildRequest) (*QueryAllGuildResponse, error)
+	GuildBankCollateralAddress(context.Context, *QueryGetGuildBankCollateralAddressRequest) (*QueryAllGuildBankCollateralAddressResponse, error)
+	GuildBankCollateralAddressAll(context.Context, *QueryAllGuildBankCollateralAddressRequest) (*QueryAllGuildBankCollateralAddressResponse, error)
 	GuildMembershipApplication(context.Context, *QueryGetGuildMembershipApplicationRequest) (*QueryGetGuildMembershipApplicationResponse, error)
 	GuildMembershipApplicationAll(context.Context, *QueryAllGuildMembershipApplicationRequest) (*QueryAllGuildMembershipApplicationResponse, error)
 	// Queries a list of Infusions.
@@ -572,6 +716,7 @@ type QueryServer interface {
 	// Queries a list of Player items.
 	Player(context.Context, *QueryGetPlayerRequest) (*QueryGetPlayerResponse, error)
 	PlayerAll(context.Context, *QueryAllPlayerRequest) (*QueryAllPlayerResponse, error)
+	PlayerHaltedAll(context.Context, *QueryAllPlayerHaltedRequest) (*QueryAllPlayerHaltedResponse, error)
 	// Queries a list of Planet items.
 	Planet(context.Context, *QueryGetPlanetRequest) (*QueryGetPlanetResponse, error)
 	PlanetAll(context.Context, *QueryAllPlanetRequest) (*QueryAllPlanetResponse, error)
@@ -579,6 +724,17 @@ type QueryServer interface {
 	PlanetAttribute(context.Context, *QueryGetPlanetAttributeRequest) (*QueryGetPlanetAttributeResponse, error)
 	// Queries a list of all Planet Attributes
 	PlanetAttributeAll(context.Context, *QueryAllPlanetAttributeRequest) (*QueryAllPlanetAttributeResponse, error)
+	// Queries a list of Allocation items.
+	Provider(context.Context, *QueryGetProviderRequest) (*QueryGetProviderResponse, error)
+	ProviderAll(context.Context, *QueryAllProviderRequest) (*QueryAllProviderResponse, error)
+	ProviderCollateralAddress(context.Context, *QueryGetProviderCollateralAddressRequest) (*QueryAllProviderCollateralAddressResponse, error)
+	ProviderCollateralAddressAll(context.Context, *QueryAllProviderCollateralAddressRequest) (*QueryAllProviderCollateralAddressResponse, error)
+	// TODO Requires a lookup table that I don't know if we care about
+	// rpc ProviderByCollateralAddress (QueryGetProviderByCollateralAddressRequest) returns (QueryGetProviderResponse) {
+	// option (google.api.http).get = "/structs/provider_by_collateral_address/{address}";
+	// }
+	ProviderEarningsAddress(context.Context, *QueryGetProviderEarningsAddressRequest) (*QueryAllProviderEarningsAddressResponse, error)
+	ProviderEarningsAddressAll(context.Context, *QueryAllProviderEarningsAddressRequest) (*QueryAllProviderEarningsAddressResponse, error)
 	// Queries a list of Reactor items.
 	Reactor(context.Context, *QueryGetReactorRequest) (*QueryGetReactorResponse, error)
 	ReactorAll(context.Context, *QueryAllReactorRequest) (*QueryAllReactorResponse, error)
@@ -617,6 +773,15 @@ func (UnimplementedQueryServer) AddressAll(context.Context, *QueryAllAddressRequ
 func (UnimplementedQueryServer) AddressAllByPlayer(context.Context, *QueryAllAddressByPlayerRequest) (*QueryAllAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddressAllByPlayer not implemented")
 }
+func (UnimplementedQueryServer) Agreement(context.Context, *QueryGetAgreementRequest) (*QueryGetAgreementResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Agreement not implemented")
+}
+func (UnimplementedQueryServer) AgreementAll(context.Context, *QueryAllAgreementRequest) (*QueryAllAgreementResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AgreementAll not implemented")
+}
+func (UnimplementedQueryServer) AgreementAllByProvider(context.Context, *QueryAllAgreementByProviderRequest) (*QueryAllAgreementResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AgreementAllByProvider not implemented")
+}
 func (UnimplementedQueryServer) Allocation(context.Context, *QueryGetAllocationRequest) (*QueryGetAllocationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Allocation not implemented")
 }
@@ -649,6 +814,12 @@ func (UnimplementedQueryServer) Guild(context.Context, *QueryGetGuildRequest) (*
 }
 func (UnimplementedQueryServer) GuildAll(context.Context, *QueryAllGuildRequest) (*QueryAllGuildResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildAll not implemented")
+}
+func (UnimplementedQueryServer) GuildBankCollateralAddress(context.Context, *QueryGetGuildBankCollateralAddressRequest) (*QueryAllGuildBankCollateralAddressResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildBankCollateralAddress not implemented")
+}
+func (UnimplementedQueryServer) GuildBankCollateralAddressAll(context.Context, *QueryAllGuildBankCollateralAddressRequest) (*QueryAllGuildBankCollateralAddressResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildBankCollateralAddressAll not implemented")
 }
 func (UnimplementedQueryServer) GuildMembershipApplication(context.Context, *QueryGetGuildMembershipApplicationRequest) (*QueryGetGuildMembershipApplicationResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildMembershipApplication not implemented")
@@ -683,6 +854,9 @@ func (UnimplementedQueryServer) Player(context.Context, *QueryGetPlayerRequest) 
 func (UnimplementedQueryServer) PlayerAll(context.Context, *QueryAllPlayerRequest) (*QueryAllPlayerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlayerAll not implemented")
 }
+func (UnimplementedQueryServer) PlayerHaltedAll(context.Context, *QueryAllPlayerHaltedRequest) (*QueryAllPlayerHaltedResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlayerHaltedAll not implemented")
+}
 func (UnimplementedQueryServer) Planet(context.Context, *QueryGetPlanetRequest) (*QueryGetPlanetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Planet not implemented")
 }
@@ -697,6 +871,24 @@ func (UnimplementedQueryServer) PlanetAttribute(context.Context, *QueryGetPlanet
 }
 func (UnimplementedQueryServer) PlanetAttributeAll(context.Context, *QueryAllPlanetAttributeRequest) (*QueryAllPlanetAttributeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlanetAttributeAll not implemented")
+}
+func (UnimplementedQueryServer) Provider(context.Context, *QueryGetProviderRequest) (*QueryGetProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Provider not implemented")
+}
+func (UnimplementedQueryServer) ProviderAll(context.Context, *QueryAllProviderRequest) (*QueryAllProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderAll not implemented")
+}
+func (UnimplementedQueryServer) ProviderCollateralAddress(context.Context, *QueryGetProviderCollateralAddressRequest) (*QueryAllProviderCollateralAddressResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderCollateralAddress not implemented")
+}
+func (UnimplementedQueryServer) ProviderCollateralAddressAll(context.Context, *QueryAllProviderCollateralAddressRequest) (*QueryAllProviderCollateralAddressResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderCollateralAddressAll not implemented")
+}
+func (UnimplementedQueryServer) ProviderEarningsAddress(context.Context, *QueryGetProviderEarningsAddressRequest) (*QueryAllProviderEarningsAddressResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderEarningsAddress not implemented")
+}
+func (UnimplementedQueryServer) ProviderEarningsAddressAll(context.Context, *QueryAllProviderEarningsAddressRequest) (*QueryAllProviderEarningsAddressResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderEarningsAddressAll not implemented")
 }
 func (UnimplementedQueryServer) Reactor(context.Context, *QueryGetReactorRequest) (*QueryGetReactorResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Reactor not implemented")
@@ -830,6 +1022,60 @@ func _Query_AddressAllByPlayer_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).AddressAllByPlayer(ctx, req.(*QueryAllAddressByPlayerRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Agreement_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetAgreementRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Agreement(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_Agreement_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Agreement(ctx, req.(*QueryGetAgreementRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_AgreementAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllAgreementRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).AgreementAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_AgreementAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).AgreementAll(ctx, req.(*QueryAllAgreementRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_AgreementAllByProvider_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllAgreementByProviderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).AgreementAllByProvider(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_AgreementAllByProvider_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).AgreementAllByProvider(ctx, req.(*QueryAllAgreementByProviderRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1032,6 +1278,42 @@ func _Query_GuildAll_Handler(srv interface{}, ctx context.Context, dec func(inte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_GuildBankCollateralAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetGuildBankCollateralAddressRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GuildBankCollateralAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_GuildBankCollateralAddress_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GuildBankCollateralAddress(ctx, req.(*QueryGetGuildBankCollateralAddressRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GuildBankCollateralAddressAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllGuildBankCollateralAddressRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GuildBankCollateralAddressAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_GuildBankCollateralAddressAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GuildBankCollateralAddressAll(ctx, req.(*QueryAllGuildBankCollateralAddressRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_GuildMembershipApplication_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryGetGuildMembershipApplicationRequest)
 	if err := dec(in); err != nil {
@@ -1230,6 +1512,24 @@ func _Query_PlayerAll_Handler(srv interface{}, ctx context.Context, dec func(int
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_PlayerHaltedAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllPlayerHaltedRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).PlayerHaltedAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_PlayerHaltedAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).PlayerHaltedAll(ctx, req.(*QueryAllPlayerHaltedRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_Planet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryGetPlanetRequest)
 	if err := dec(in); err != nil {
@@ -1316,6 +1616,114 @@ func _Query_PlanetAttributeAll_Handler(srv interface{}, ctx context.Context, dec
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(QueryServer).PlanetAttributeAll(ctx, req.(*QueryAllPlanetAttributeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_Provider_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetProviderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).Provider(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_Provider_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).Provider(ctx, req.(*QueryGetProviderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ProviderAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllProviderRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ProviderAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_ProviderAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ProviderAll(ctx, req.(*QueryAllProviderRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ProviderCollateralAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetProviderCollateralAddressRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ProviderCollateralAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_ProviderCollateralAddress_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ProviderCollateralAddress(ctx, req.(*QueryGetProviderCollateralAddressRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ProviderCollateralAddressAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllProviderCollateralAddressRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ProviderCollateralAddressAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_ProviderCollateralAddressAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ProviderCollateralAddressAll(ctx, req.(*QueryAllProviderCollateralAddressRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ProviderEarningsAddress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGetProviderEarningsAddressRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ProviderEarningsAddress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_ProviderEarningsAddress_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ProviderEarningsAddress(ctx, req.(*QueryGetProviderEarningsAddressRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_ProviderEarningsAddressAll_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryAllProviderEarningsAddressRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).ProviderEarningsAddressAll(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_ProviderEarningsAddressAll_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).ProviderEarningsAddressAll(ctx, req.(*QueryAllProviderEarningsAddressRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1546,6 +1954,18 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_AddressAllByPlayer_Handler,
 		},
 		{
+			MethodName: "Agreement",
+			Handler:    _Query_Agreement_Handler,
+		},
+		{
+			MethodName: "AgreementAll",
+			Handler:    _Query_AgreementAll_Handler,
+		},
+		{
+			MethodName: "AgreementAllByProvider",
+			Handler:    _Query_AgreementAllByProvider_Handler,
+		},
+		{
 			MethodName: "Allocation",
 			Handler:    _Query_Allocation_Handler,
 		},
@@ -1588,6 +2008,14 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GuildAll",
 			Handler:    _Query_GuildAll_Handler,
+		},
+		{
+			MethodName: "GuildBankCollateralAddress",
+			Handler:    _Query_GuildBankCollateralAddress_Handler,
+		},
+		{
+			MethodName: "GuildBankCollateralAddressAll",
+			Handler:    _Query_GuildBankCollateralAddressAll_Handler,
 		},
 		{
 			MethodName: "GuildMembershipApplication",
@@ -1634,6 +2062,10 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Query_PlayerAll_Handler,
 		},
 		{
+			MethodName: "PlayerHaltedAll",
+			Handler:    _Query_PlayerHaltedAll_Handler,
+		},
+		{
 			MethodName: "Planet",
 			Handler:    _Query_Planet_Handler,
 		},
@@ -1652,6 +2084,30 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PlanetAttributeAll",
 			Handler:    _Query_PlanetAttributeAll_Handler,
+		},
+		{
+			MethodName: "Provider",
+			Handler:    _Query_Provider_Handler,
+		},
+		{
+			MethodName: "ProviderAll",
+			Handler:    _Query_ProviderAll_Handler,
+		},
+		{
+			MethodName: "ProviderCollateralAddress",
+			Handler:    _Query_ProviderCollateralAddress_Handler,
+		},
+		{
+			MethodName: "ProviderCollateralAddressAll",
+			Handler:    _Query_ProviderCollateralAddressAll_Handler,
+		},
+		{
+			MethodName: "ProviderEarningsAddress",
+			Handler:    _Query_ProviderEarningsAddress_Handler,
+		},
+		{
+			MethodName: "ProviderEarningsAddressAll",
+			Handler:    _Query_ProviderEarningsAddressAll_Handler,
 		},
 		{
 			MethodName: "Reactor",

@@ -15,7 +15,6 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-
     // load struct
     structure := k.GetStructCacheFromId(ctx, msg.StructId)
 
@@ -29,6 +28,10 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) does not exist", msg.StructId)
     }
 
+    if structure.GetOwner().IsHalted() {
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Struct (%s) cannot perform actions while Player (%s) is Halted", msg.StructId, structure.GetOwnerId())
+    }
+
     if structure.IsBuilt() {
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
@@ -37,12 +40,14 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 
 
     // Check Player Charge
+    /*
     if (structure.GetOwner().GetCharge() < structure.GetStructType().ActivateCharge) {
         err := sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to build, but player (%s) only had %d", structure.GetStructType().Id, structure.GetStructType().ActivateCharge, structure.GetOwnerId(), structure.GetOwner().GetCharge() )
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, err
     }
+    */
 
     if structure.GetOwner().IsOffline(){
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",structure.GetOwnerId())
@@ -67,6 +72,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     if (!types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().BuildDifficulty)) {
         structure.GetOwner().StructsLoadIncrement(structure.GetStructType().BuildDraw)
         structure.GetOwner().Discharge()
+        structure.GetOwner().Halt()
         structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrStructBuildComplete, "Work failure for input (%s) when trying to build Struct %s", hashInput, structure.GetStructId())
     }

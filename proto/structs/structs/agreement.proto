@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package structs.structs;
+
+option go_package = "structs/x/structs/types";
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+
+
+message Agreement {
+
+  option (gogoproto.equal) = true;
+
+  string  id          = 1;
+
+  string providerId   = 2;
+  string allocationId = 3;
+
+  uint64 capacity     = 4;
+
+  uint64 startBlock   = 5;
+  uint64 endBlock     = 6;
+
+  string creator      = 7;
+  string owner        = 8;
+
+}

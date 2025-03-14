@@ -24,6 +24,10 @@ func (structType *StructType) VerifyWeaponSystem(weaponSystem TechWeaponSystem) 
     return
 }
 
+func (structType *StructType) HasStealthSystem() (bool) {
+    return (structType.UnitDefenses == TechUnitDefenses_stealthMode)
+}
+
 func (structType *StructType) HasOreMiningSystem() (bool) {
     return (structType.PlanetaryMining != TechPlanetaryMining_noPlanetaryMining)
 }

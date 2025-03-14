@@ -33,10 +33,20 @@ func (k msgServer) StructDefenseClear(goCtx context.Context, msg *types.MsgStruc
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) does not exist", msg.DefenderStructId)
     }
 
+    if structure.GetOwner().IsHalted() {
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Struct (%s) cannot perform actions while Player (%s) is Halted", msg.DefenderStructId, structure.GetOwnerId())
+    }
+
     if structure.IsOffline() {
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already built", msg.DefenderStructId)
+    }
+
+    if !structure.IsCommandable() {
+        structure.GetOwner().Discharge()
+        structure.GetOwner().Commit()
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Commanding a Fleet Struct (%s) requires a Command Struct be Online", structure.GetStructId())
     }
 
     // Check Player Charge

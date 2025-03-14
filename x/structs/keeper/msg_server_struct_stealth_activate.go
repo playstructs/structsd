@@ -16,65 +16,60 @@ func (k msgServer) StructStealthActivate(goCtx context.Context, msg *types.MsgSt
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
-    if (callingPlayerIndex == 0) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct actions requires Player account but none associated with %s", msg.Creator)
-    }
-    callingPlayerId := GetObjectID(types.ObjectType_player, callingPlayerIndex)
 
-    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-    // Make sure the address calling this has Play permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionPlay)) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", msg.Creator)
+    structure := k.GetStructCacheFromId(ctx, msg.StructId)
+
+    permissionError := structure.CanBePlayedBy(msg.Creator)
+    if (permissionError != nil) {
+        return &types.MsgStructStatusResponse{}, permissionError
     }
 
-    structStatusAttributeId := GetStructAttributeIDByObjectId(types.StructAttributeType_status, msg.StructId)
+    if structure.GetOwner().IsHalted() {
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Struct (%s) cannot perform actions while Player (%s) is Halted", msg.StructId, structure.GetOwnerId())
+    }
 
-    // Is the Struct online?
-    if (!k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateOnline))) {
-        k.DischargePlayer(ctx, callingPlayerId)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is not Online", msg.StructId)
+    // Is the Struct & Owner online?
+    readinessError := structure.ReadinessCheck()
+    if (readinessError != nil) {
+        structure.GetOwner().Discharge()
+        structure.GetOwner().Commit()
+        return &types.MsgStructStatusResponse{}, readinessError
+    }
+
+    if !structure.IsCommandable() {
+        structure.GetOwner().Discharge()
+        structure.GetOwner().Commit()
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Commanding a Fleet Struct (%s) requires a Command Struct be Online", structure.GetStructId())
     }
 
     // Is Struct Stealth Mode already activated?
-    if (k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateHidden))) {
-        k.DischargePlayer(ctx, callingPlayerId)
+    if structure.IsHidden() {
+        structure.GetOwner().Discharge()
+        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already in stealth", msg.StructId)
     }
 
-    structure, structureFound := k.GetStruct(ctx, msg.StructId)
-    if (!structureFound) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) not found", msg.StructId)
-    }
 
-    if (callingPlayerId != structure.Owner) {
-        // Check permissions on Creator on Planet
-        playerPermissionId := GetObjectPermissionIDBytes(structure.Owner, callingPlayerId)
-        if (!k.PermissionHasOneOf(ctx, playerPermissionId, types.PermissionPlay)) {
-            return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayerId, structure.Owner)
-        }
-    }
-
-    // Load Struct Type
-    structType, structTypeFound := k.GetStructType(ctx, structure.Type)
-    if (!structTypeFound) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct Type (%d) was not found. No idea how this struct is missing its schematics. Pls tell an adult", structure.Type)
-    }
-
-    if (!structType.StealthSystems) {
-        k.DischargePlayer(ctx, callingPlayerId)
+    if (!structure.GetStructType().HasStealthSystem()) {
+        structure.GetOwner().Discharge()
+        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) has no stealth system", msg.StructId)
     }
 
+
     // Check Sudo Player Charge
-    playerCharge := k.GetPlayerCharge(ctx, structure.Owner)
-    if (playerCharge < structType.StealthActivateCharge) {
-        k.DischargePlayer(ctx, structure.Owner)
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for stealth mode, but player (%s) only had %d", structure.Type, structType.ActivateCharge, structure.Owner, playerCharge)
+    playerCharge := k.GetPlayerCharge(ctx, structure.GetOwnerId())
+    if (playerCharge < structure.GetStructType().GetStealthActivateCharge()) {
+        structure.GetOwner().Discharge()
+        structure.GetOwner().Commit()
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for stealth mode, but player (%s) only had %d",  structure.GetTypeId(),  structure.GetStructType().GetStealthActivateCharge(), structure.GetOwnerId(), playerCharge)
     }
 
-    // Set the struct status flag to include built
-    k.SetStructAttributeFlagAdd(ctx, structStatusAttributeId, uint64(types.StructStateHidden))
+    structure.GetOwner().Discharge()
 
-	return &types.MsgStructStatusResponse{Struct: structure}, nil
+    // Set the struct status flag to include hidden
+    structure.StatusAddHidden()
+    structure.Commit()
+
+	return &types.MsgStructStatusResponse{Struct: structure.GetStruct() }, nil
 }

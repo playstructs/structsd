@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package structs.structs;
+
+option go_package = "structs/x/structs/types";
+
+import "cosmos_proto/cosmos.proto";
+import "gogoproto/gogo.proto";
+import "cosmos/base/v1beta1/coin.proto";
+import "amino/amino.proto";
+import "structs/structs/keys.proto";
+
+message Provider {
+
+  option (gogoproto.equal) = true;
+
+  string  id                              = 1;
+  uint64  index                           = 2;
+
+  string substationId                     = 3;
+
+  cosmos.base.v1beta1.Coin rate  = 4 [
+    (gogoproto.nullable)     = false,
+    (amino.dont_omitempty)   = true,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+
+  providerAccessPolicy accessPolicy       = 5;
+
+  uint64 capacityMinimum                  = 6;
+  uint64 capacityMaximum                  = 7;
+  uint64 durationMinimum                  = 8;
+  uint64 durationMaximum                  = 9;
+
+  string  providerCancellationPenalty     = 10 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+
+  string  consumerCancellationPenalty     = 11 [
+    (cosmos_proto.scalar)  = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable)   = false
+  ];
+
+  string creator  = 12;
+  string owner    = 13;
+
+}

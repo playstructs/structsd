@@ -11,8 +11,11 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 
+    banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	//"strconv"
 	//"strings"
+	"fmt"
 )
 
 // GetGuildCount get the total number of guild
@@ -71,6 +74,28 @@ func (k Keeper) AppendGuild(
 
 	permissionId := GetObjectPermissionIDBytes(guild.Id, player.Id)
     k.PermissionAdd(ctx, permissionId, types.PermissionAll)
+
+    // Setup the Guild Token
+    guildDenomMetadata := banktypes.Metadata{
+                            Name:        "guild." + guild.Id,
+                            Symbol:      "guild." + guild.Id,
+                            Description: "The currency of Guild " + guild.Id,
+                            DenomUnits: []*banktypes.DenomUnit{
+                                {"uguild." + guild.Id, uint32(0), nil},
+                                {"guild." + guild.Id, uint32(6), nil},
+                            },
+                            Base:    "uguild." + guild.Id,
+                            Display: "uguild." + guild.Id,
+                        }
+
+    k.bankKeeper.SetDenomMetaData(ctx, guildDenomMetadata)
+
+    fmt.Printf("Guild Collateral Pool: %s", types.GuildBankCollateralPool + guild.Id)
+    fmt.Printf("Guild Collateral Pool: %s", authtypes.NewModuleAddress(types.GuildBankCollateralPool + guild.Id))
+
+    guildCollateralAddress := authtypes.NewModuleAddress(types.GuildBankCollateralPool + guild.Id)
+    guildCollateralAccount := k.accountKeeper.NewAccountWithAddress(ctx, guildCollateralAddress)
+    k.accountKeeper.SetAccount(ctx, guildCollateralAccount)
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuild{Guild: &guild})

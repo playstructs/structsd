@@ -21,9 +21,15 @@ type PlayerCache struct {
 
     Ready bool
 
+    Halted      bool
+    HaltLoaded  bool
+    HaltChanged bool
+
     PlayerLoaded  bool
     PlayerChanged bool
     Player        types.Player
+
+    ActiveAddress string
 
     PlanetLoaded bool
     Planet *PlanetCache
@@ -101,10 +107,13 @@ func (k *Keeper) GetPlayerCacheFromAddress(ctx context.Context, address string) 
     index := k.GetPlayerIndexFromAddress(ctx, address)
 
     if (index == 0) {
-        return PlayerCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player Account Not Found")
+        return PlayerCache{ActiveAddress: address}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player Account Not Found")
     }
 
-    return k.GetPlayerCacheFromId(ctx, GetObjectID(types.ObjectType_player, index))
+    player, err := k.GetPlayerCacheFromId(ctx, GetObjectID(types.ObjectType_player, index))
+    player.SetActiveAddress(address)
+
+    return player, err
 }
 
 func (cache *PlayerCache) Commit() () {
@@ -231,6 +240,11 @@ func (cache *PlayerCache) LoadStoredOre() {
     cache.StoredOreLoaded = true
 }
 
+func (cache *PlayerCache) LoadHalted() {
+    cache.Halted = cache.K.IsPlayerHalted(cache.Ctx, cache.GetPlayerId())
+    cache.HaltLoaded = true
+}
+
 
 func (cache *PlayerCache) GetPlayer() (types.Player, error) {
     if (!cache.PlayerLoaded) {
@@ -246,6 +260,8 @@ func (cache *PlayerCache) GetPlayer() (types.Player, error) {
 
 func (cache *PlayerCache) GetPlayerId()         (string) { return cache.PlayerId }
 func (cache *PlayerCache) GetPrimaryAddress()   (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.PrimaryAddress }
+func (cache *PlayerCache) GetPrimaryAccount()   (sdk.AccAddress) { acc, _ := sdk.AccAddressFromBech32(cache.GetPrimaryAddress()); return acc }
+func (cache *PlayerCache) GetActiveAddress()    (string) { return cache.ActiveAddress }
 func (cache *PlayerCache) GetSubstationId()     (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.SubstationId }
 func (cache *PlayerCache) GetIndex()            (uint64) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.Index }
 
@@ -255,6 +271,9 @@ func (cache *PlayerCache) GetFleetId()  (string)        { if (!cache.PlayerLoade
 
 func (cache *PlayerCache) GetPlanet()   (*PlanetCache)  { if (!cache.PlanetLoaded) { cache.LoadPlanet() }; return cache.Planet }
 func (cache *PlayerCache) GetPlanetId() (string)        { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.PlanetId }
+
+func (cache *PlayerCache) GetGuildId()  (string)        { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.GuildId }
+
 
 func (cache *PlayerCache) GetStoredOre()            (uint64) { if (!cache.StoredOreLoaded) { cache.LoadStoredOre() }; return cache.StoredOre }
 func (cache *PlayerCache) GetLoad()                 (uint64) { if (!cache.LoadLoaded) { cache.LoadLoad() }; return cache.Load }
@@ -348,6 +367,12 @@ func (cache *PlayerCache) Discharge() {
     cache.Changed()
 }
 
+
+func (cache *PlayerCache) SetActiveAddress(address string) {
+    cache.ActiveAddress = address
+}
+
+
 func (cache *PlayerCache) SetPlanetId(planetId string) {
     if (!cache.PlayerLoaded) { cache.LoadPlayer() }
 
@@ -377,11 +402,16 @@ func (cache *PlayerCache) SetPrimaryAddress(address string) {
 func (cache *PlayerCache) DepositRefinedAlpha() {
     // Got this far, let's reward the player with some fresh Alpha
     // Mint the new Alpha to the module
-    newAlpha, _ := sdk.ParseCoinsNormalized("1alpha")
+    newAlpha, _ := sdk.ParseCoinsNormalized("1000000ualpha")
     cache.K.bankKeeper.MintCoins(cache.Ctx, types.ModuleName, newAlpha)
     // Transfer the refined Alpha to the player
     playerAcc, _ := sdk.AccAddressFromBech32(cache.GetPrimaryAddress())
     cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, types.ModuleName, playerAcc, newAlpha)
+}
+
+func (cache *PlayerCache) IsHalted() (bool){
+    if (!cache.HaltLoaded) { cache.LoadHalted() };
+    return cache.Halted
 }
 
 
@@ -398,6 +428,10 @@ func (cache *PlayerCache) IsOffline() (bool){
     return !cache.IsOnline()
 }
 
+func (cache *PlayerCache) HasPlayerAccount() (bool){
+    return cache.PlayerId != ""
+}
+
 func (cache *PlayerCache) HasPlanet() (bool){
     return (cache.GetPlanetId() != "")
 }
@@ -410,6 +444,11 @@ func (cache *PlayerCache) HasStoredOre() (bool) {
 func (cache *PlayerCache) CanBePlayedBy(address string) (err error) {
     return cache.CanBeAdministratedBy(address, types.PermissionPlay)
 }
+
+func (cache *PlayerCache) CanBeUpdatedBy(address string) (err error) {
+    return cache.CanBeAdministratedBy(address, types.PermissionUpdate)
+}
+
 
 func (cache *PlayerCache) CanBeAdministratedBy(address string, permission types.Permission) (err error) {
 
@@ -461,4 +500,25 @@ func (cache *PlayerCache) CanSupportLoadAddition(additionalLoad uint64) (bool) {
     }
 
     return ((totalCapacity - totalLoad) >= additionalLoad)
+}
+
+
+/*
+    Permanent without the need for commit.
+    Would rather it was consistent but should be ok.
+*/
+func (cache *PlayerCache) Halt() () {
+    cache.K.PlayerHalt(cache.Ctx, cache.GetPlayerId())
+    cache.Halted = true
+    cache.HaltLoaded = true
+}
+
+/*
+    Permanent without the need for commit.
+    Would rather it was consistent but should be ok.
+*/
+func (cache *PlayerCache) Resume() {
+    cache.K.PlayerResume(cache.Ctx, cache.GetPlayerId())
+    cache.Halted = false
+    cache.HaltLoaded = true
 }

@@ -8,6 +8,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
     //auth "github.com/cosmos/cosmos-sdk/x/auth/types"
     staking "github.com/cosmos/cosmos-sdk/x/staking/types"
+    banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 )
 
 // StakingKeeper defines the expected interface for the Staking module.
@@ -54,6 +55,7 @@ type StakingHooks interface {
 type AccountKeeper interface {
 	// Methods imported from account should be defined here
 	GetAccount(context.Context, sdk.AccAddress) sdk.AccountI
+	GetModuleAddress(string) sdk.AccAddress
 	NewAccountWithAddress(context.Context, sdk.AccAddress) sdk.AccountI
 	SetAccount(context.Context, sdk.AccountI)
 }
@@ -61,9 +63,14 @@ type AccountKeeper interface {
 // BankKeeper defines the expected interface for the Bank module.
 type BankKeeper interface {
 	// Methods imported from bank should be defined here
+	SetDenomMetaData(context.Context, banktypes.Metadata)
+	GetDenomMetaData(context.Context, string) (banktypes.Metadata, bool)
+	GetSupply(context.Context, string) sdk.Coin
+	HasBalance(context.Context, sdk.AccAddress, sdk.Coin) bool
     SpendableCoins(context.Context, sdk.AccAddress) sdk.Coins
     SpendableCoin(context.Context, sdk.AccAddress, string) sdk.Coin
     SendCoins(context.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) error
+    SendCoinsFromModuleToModule(context.Context, string, string, sdk.Coins) error
     SendCoinsFromAccountToModule(context.Context, sdk.AccAddress, string, sdk.Coins) error
     SendCoinsFromModuleToAccount(context.Context, string, sdk.AccAddress, sdk.Coins) error
     MintCoins(context.Context, string, sdk.Coins) error

@@ -102,8 +102,8 @@ structType = StructType{
  TriggerRaidDefeatByDestruction: true,
  BuildLimit: 1,
  BuildDifficulty: 200,
- BuildDraw: 100,
- PassiveDraw: 50,
+ BuildDraw: 50000,
+ PassiveDraw: 50000,
  MaxHealth: 6,
 
  PossibleAmbit: 30,
@@ -145,7 +145,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 8,
  OreMiningCharge: 0,
@@ -176,7 +176,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: Galactic Battleship
 structType = StructType{
  Id: 2,
@@ -185,8 +184,8 @@ structType = StructType{
 
  BuildLimit: 0,
  BuildDifficulty: 765,
- BuildDraw: 375,
- PassiveDraw: 225,
+ BuildDraw: 135000,
+ PassiveDraw: 135000,
  MaxHealth: 3,
 
  PossibleAmbit: 16,
@@ -228,7 +227,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -259,7 +258,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: Star Fighter
 structType = StructType{
  Id: 3,
@@ -268,8 +266,8 @@ structType = StructType{
 
  BuildLimit: 0,
  BuildDifficulty: 250,
- BuildDraw: 200,
- PassiveDraw: 100,
+ BuildDraw: 100000,
+ PassiveDraw: 100000,
  MaxHealth: 3,
 
  PossibleAmbit: 16,
@@ -311,7 +309,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -342,7 +340,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: Space Frigate
 structType = StructType{
  Id: 4,
@@ -351,8 +348,8 @@ structType = StructType{
 
  BuildLimit: 0,
  BuildDifficulty: 450,
- BuildDraw: 150,
- PassiveDraw: 75,
+ BuildDraw: 75000,
+ PassiveDraw: 75000,
  MaxHealth: 3,
 
  PossibleAmbit: 16,
@@ -394,7 +391,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -425,7 +422,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: Fighter Jet
 structType = StructType{
  Id: 5,
@@ -434,8 +430,8 @@ structType = StructType{
 
  BuildLimit: 0,
  BuildDifficulty: 215,
- BuildDraw: 225,
- PassiveDraw: 150,
+ BuildDraw: 60000,
+ PassiveDraw: 60000,
  MaxHealth: 3,
 
  PossibleAmbit: 8,
@@ -477,7 +473,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -508,7 +504,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: Stealth Bomber
 structType = StructType{
  Id: 6,
@@ -517,8 +512,8 @@ structType = StructType{
 
  BuildLimit: 0,
  BuildDifficulty: 455,
- BuildDraw: 200,
- PassiveDraw: 125,
+ BuildDraw: 125000,
+ PassiveDraw: 125000,
  MaxHealth: 3,
 
  PossibleAmbit: 8,
@@ -560,7 +555,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -591,7 +586,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: High Altitude Interceptor
 structType = StructType{
  Id: 7,
@@ -600,8 +594,8 @@ structType = StructType{
 
  BuildLimit: 0,
  BuildDifficulty: 460,
- BuildDraw: 225,
- PassiveDraw: 125,
+ BuildDraw: 125000,
+ PassiveDraw: 125000,
  MaxHealth: 3,
 
  PossibleAmbit: 8,
@@ -643,7 +637,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -674,7 +668,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: Artillery
 structType = StructType{
  Id: 8,
@@ -683,8 +676,8 @@ structType = StructType{
 
  BuildLimit: 0,
  BuildDifficulty: 305,
- BuildDraw: 125,
- PassiveDraw: 75,
+ BuildDraw: 75000,
+ PassiveDraw: 75000,
  MaxHealth: 3,
 
  PossibleAmbit: 4,
@@ -726,7 +719,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -757,7 +750,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: Tank
 structType = StructType{
  Id: 9,
@@ -766,8 +758,8 @@ structType = StructType{
 
  BuildLimit: 0,
  BuildDifficulty: 220,
- BuildDraw: 200,
- PassiveDraw: 75,
+ BuildDraw: 75000,
+ PassiveDraw: 75000,
  MaxHealth: 3,
 
  PossibleAmbit: 4,
@@ -809,7 +801,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -840,7 +832,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: SAM Launcher
 structType = StructType{
  Id: 10,
@@ -849,8 +840,8 @@ structType = StructType{
 
  BuildLimit: 0,
  BuildDifficulty: 450,
- BuildDraw: 150,
- PassiveDraw: 75,
+ BuildDraw: 75000,
+ PassiveDraw: 75000,
  MaxHealth: 3,
 
  PossibleAmbit: 4,
@@ -892,7 +883,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -923,7 +914,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: Cruiser
 structType = StructType{
  Id: 11,
@@ -932,8 +922,8 @@ structType = StructType{
 
  BuildLimit: 0,
  BuildDifficulty: 515,
- BuildDraw: 325,
- PassiveDraw: 200,
+ BuildDraw: 110000,
+ PassiveDraw: 110000,
  MaxHealth: 3,
 
  PossibleAmbit: 2,
@@ -975,7 +965,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -1006,7 +996,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: Destroyer
 structType = StructType{
  Id: 12,
@@ -1015,8 +1004,8 @@ structType = StructType{
 
  BuildLimit: 0,
  BuildDifficulty: 600,
- BuildDraw: 200,
- PassiveDraw: 100,
+ BuildDraw: 100000,
+ PassiveDraw: 100000,
  MaxHealth: 3,
 
  PossibleAmbit: 2,
@@ -1058,7 +1047,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -1089,7 +1078,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: Sub
 structType = StructType{
  Id: 13,
@@ -1098,8 +1086,8 @@ structType = StructType{
 
  BuildLimit: 0,
  BuildDifficulty: 455,
- BuildDraw: 200,
- PassiveDraw: 125,
+ BuildDraw: 125000,
+ PassiveDraw: 125000,
  MaxHealth: 3,
 
  PossibleAmbit: 2,
@@ -1141,7 +1129,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -1172,7 +1160,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: Mine Shaft
 structType = StructType{
  Id: 14,
@@ -1181,8 +1168,8 @@ structType = StructType{
 
  BuildLimit: 1,
  BuildDifficulty: 700,
- BuildDraw: 100,
- PassiveDraw: 500,
+ BuildDraw: 500000,
+ PassiveDraw: 500000,
  MaxHealth: 3,
 
  PossibleAmbit: 4,
@@ -1224,7 +1211,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 20,
@@ -1255,17 +1242,16 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
-// Struct Type: Deep Ocean Minig Rig
+// Struct Type: Deep Ocean Mining Rig
 structType = StructType{
  Id: 15,
- Type: "Deep Ocean Minig Rig",
+ Type: "Deep Ocean Mining Rig",
  Category: ObjectType_planet,
 
  BuildLimit: 1,
  BuildDifficulty: 700,
- BuildDraw: 100,
- PassiveDraw: 500,
+ BuildDraw: 500000,
+ PassiveDraw: 500000,
  MaxHealth: 3,
 
  PossibleAmbit: 2,
@@ -1307,7 +1293,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 20,
@@ -1336,7 +1322,6 @@ structType = StructType{
 
  }
 genesisStructTypes = append(genesisStructTypes, structType)
-
 
 
 // Struct Type: Ore Refinery
@@ -1347,8 +1332,8 @@ structType = StructType{
 
  BuildLimit: 1,
  BuildDifficulty: 700,
- BuildDraw: 100,
- PassiveDraw: 500,
+ BuildDraw: 500000,
+ PassiveDraw: 500000,
  MaxHealth: 3,
 
  PossibleAmbit: 4,
@@ -1390,7 +1375,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -1421,7 +1406,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: Water Cooled Ore Refinery
 structType = StructType{
  Id: 17,
@@ -1430,8 +1414,8 @@ structType = StructType{
 
  BuildLimit: 1,
  BuildDifficulty: 700,
- BuildDraw: 100,
- PassiveDraw: 500,
+ BuildDraw: 500000,
+ PassiveDraw: 500000,
  MaxHealth: 3,
 
  PossibleAmbit: 2,
@@ -1473,7 +1457,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -1503,9 +1487,7 @@ structType = StructType{
  }
 genesisStructTypes = append(genesisStructTypes, structType)
 
-
-
-// Struct Type: Orbital Shield Generator
+  // Struct Type: Orbital Shield Generator
 structType = StructType{
  Id: 18,
  Type: "Orbital Shield Generator",
@@ -1513,8 +1495,8 @@ structType = StructType{
 
  BuildLimit: 1,
  BuildDifficulty: 720,
- BuildDraw: 100,
- PassiveDraw: 200,
+ BuildDraw: 200000,
+ PassiveDraw: 200000,
  MaxHealth: 3,
 
  PossibleAmbit: 16,
@@ -1556,7 +1538,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -1586,8 +1568,6 @@ structType = StructType{
  }
 genesisStructTypes = append(genesisStructTypes, structType)
 
-
-
 // Struct Type: Jamming Satellite
 structType = StructType{
  Id: 19,
@@ -1596,8 +1576,8 @@ structType = StructType{
 
  BuildLimit: 1,
  BuildDifficulty: 2880,
- BuildDraw: 450,
- PassiveDraw: 600,
+ BuildDraw: 600000,
+ PassiveDraw: 600000,
  MaxHealth: 3,
 
  PossibleAmbit: 16,
@@ -1639,7 +1619,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -1670,7 +1650,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: Ore Bunker
 structType = StructType{
  Id: 20,
@@ -1679,8 +1658,8 @@ structType = StructType{
 
  BuildLimit: 1,
  BuildDifficulty: 3600,
- BuildDraw: 200,
- PassiveDraw: 750,
+ BuildDraw: 750000,
+ PassiveDraw: 750000,
  MaxHealth: 3,
 
  PossibleAmbit: 4,
@@ -1722,7 +1701,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -1753,7 +1732,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: Defense Cannon
 structType = StructType{
  Id: 21,
@@ -1762,8 +1740,8 @@ structType = StructType{
 
  BuildLimit: 1,
  BuildDifficulty: 2880,
- BuildDraw: 450,
- PassiveDraw: 600,
+ BuildDraw: 600000,
+ PassiveDraw: 600000,
  MaxHealth: 3,
 
  PossibleAmbit: 4,
@@ -1805,7 +1783,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -1834,7 +1812,6 @@ structType = StructType{
 
  }
 genesisStructTypes = append(genesisStructTypes, structType)
-
 
 
 // Struct Type: Offshore Defensive Turret
@@ -1845,8 +1822,8 @@ structType = StructType{
 
  BuildLimit: 1,
  BuildDifficulty: 2880,
- BuildDraw: 450,
- PassiveDraw: 600,
+ BuildDraw: 600000,
+ PassiveDraw: 600000,
  MaxHealth: 3,
 
  PossibleAmbit: 2,
@@ -1888,7 +1865,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -1919,7 +1896,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: Small Generator
 structType = StructType{
  Id: 23,
@@ -1928,8 +1904,8 @@ structType = StructType{
 
  BuildLimit: 1,
  BuildDifficulty: 700,
- BuildDraw: 500,
- PassiveDraw: 500,
+ BuildDraw: 500000,
+ PassiveDraw: 500000,
  MaxHealth: 3,
 
  PossibleAmbit: 4,
@@ -1971,7 +1947,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_smallGenerator,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -1986,7 +1962,7 @@ structType = StructType{
  CounterAttackSameAmbit: 0,
 
  PostDestructionDamage: 0,
- GeneratingRate: 200,
+ GeneratingRate: 2,
  PlanetaryShieldContribution: 0,
 
  OreMiningDifficulty: 0,
@@ -2000,7 +1976,6 @@ structType = StructType{
 
  }
 genesisStructTypes = append(genesisStructTypes, structType)
-
 
 
 // Struct Type: Grid Booster
@@ -2011,8 +1986,8 @@ structType = StructType{
 
  BuildLimit: 1,
  BuildDifficulty: 1440,
- BuildDraw: 50000,
- PassiveDraw: 5000,
+ BuildDraw: 10000000,
+ PassiveDraw: 10000000,
  MaxHealth: 3,
 
  PossibleAmbit: 4,
@@ -2054,7 +2029,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_mediumGenerator,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -2069,7 +2044,7 @@ structType = StructType{
  CounterAttackSameAmbit: 0,
 
  PostDestructionDamage: 0,
- GeneratingRate: 500,
+ GeneratingRate: 5,
  PlanetaryShieldContribution: 0,
 
  OreMiningDifficulty: 0,
@@ -2085,7 +2060,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: Full-Scale Power Plant
 structType = StructType{
  Id: 25,
@@ -2094,8 +2068,8 @@ structType = StructType{
 
  BuildLimit: 1,
  BuildDifficulty: 5000,
- BuildDraw: 500000,
- PassiveDraw: 50000,
+ BuildDraw: 100000000,
+ PassiveDraw: 100000000,
  MaxHealth: 3,
 
  PossibleAmbit: 4,
@@ -2137,7 +2111,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_largeGenerator,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -2152,7 +2126,7 @@ structType = StructType{
  CounterAttackSameAmbit: 0,
 
  PostDestructionDamage: 0,
- GeneratingRate: 1000,
+ GeneratingRate: 10,
  PlanetaryShieldContribution: 0,
 
  OreMiningDifficulty: 0,
@@ -2168,7 +2142,6 @@ structType = StructType{
 genesisStructTypes = append(genesisStructTypes, structType)
 
 
-
 // Struct Type: Deep Sea Generator
 structType = StructType{
  Id: 26,
@@ -2177,8 +2150,8 @@ structType = StructType{
 
  BuildLimit: 1,
  BuildDifficulty: 700,
- BuildDraw: 500,
- PassiveDraw: 500,
+ BuildDraw: 500000,
+ PassiveDraw: 500000,
  MaxHealth: 3,
 
  PossibleAmbit: 2,
@@ -2220,7 +2193,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_smallGenerator,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -2235,7 +2208,7 @@ structType = StructType{
  CounterAttackSameAmbit: 0,
 
  PostDestructionDamage: 0,
- GeneratingRate: 200,
+ GeneratingRate: 2,
  PlanetaryShieldContribution: 0,
 
  OreMiningDifficulty: 0,
@@ -2250,8 +2223,6 @@ structType = StructType{
  }
 genesisStructTypes = append(genesisStructTypes, structType)
 
-
-
 // Struct Type: Off-Shore Power Plant
 structType = StructType{
  Id: 27,
@@ -2260,8 +2231,8 @@ structType = StructType{
 
  BuildLimit: 1,
  BuildDifficulty: 1440,
- BuildDraw: 50000,
- PassiveDraw: 5000,
+ BuildDraw: 10000000,
+ PassiveDraw: 10000000,
  MaxHealth: 3,
 
  PossibleAmbit: 2,
@@ -2303,7 +2274,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_mediumGenerator,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -2318,7 +2289,7 @@ structType = StructType{
  CounterAttackSameAmbit: 0,
 
  PostDestructionDamage: 0,
- GeneratingRate: 500,
+ GeneratingRate: 5,
  PlanetaryShieldContribution: 0,
 
  OreMiningDifficulty: 0,
@@ -2333,8 +2304,6 @@ structType = StructType{
  }
 genesisStructTypes = append(genesisStructTypes, structType)
 
-
-
 // Struct Type: Heavy Water Power Generator
 structType = StructType{
  Id: 28,
@@ -2343,8 +2312,8 @@ structType = StructType{
 
  BuildLimit: 1,
  BuildDifficulty: 5000,
- BuildDraw: 500000,
- PassiveDraw: 50000,
+ BuildDraw: 100000000,
+ PassiveDraw: 100000000,
  MaxHealth: 3,
 
  PossibleAmbit: 2,
@@ -2386,7 +2355,7 @@ structType = StructType{
  PowerGeneration: TechPowerGeneration_largeGenerator,
 
  ActivateCharge: 20,
- BuildCharge: 1,
+ BuildCharge: 8,
  DefendChangeCharge: 1,
  MoveCharge: 0,
  OreMiningCharge: 0,
@@ -2401,7 +2370,7 @@ structType = StructType{
  CounterAttackSameAmbit: 0,
 
  PostDestructionDamage: 0,
- GeneratingRate: 1000,
+ GeneratingRate: 10,
  PlanetaryShieldContribution: 0,
 
  OreMiningDifficulty: 0,
@@ -2415,9 +2384,6 @@ structType = StructType{
 
  }
 genesisStructTypes = append(genesisStructTypes, structType)
-
-
-
 
 
     return

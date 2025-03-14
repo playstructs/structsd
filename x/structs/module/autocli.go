@@ -36,6 +36,23 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"}},
                 },
                 {
+                    RpcMethod:      "Agreement",
+                    Use:            "agreement [agreement id]",
+                    Short:          "Show the details of a specific Agreement",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
+                },
+                {
+                    RpcMethod:      "AgreementAll",
+                    Use:            "agreement-all",
+                    Short:          "Returns all Agreements",
+                },
+                {
+                    RpcMethod:      "AgreementAllByProvider",
+                    Use:            "agreement-all-by-provider [provider id]",
+                    Short:          "Returns all Agreements from a specific Provider",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"}},
+                },
+                {
                     RpcMethod:      "Allocation",
                     Use:            "allocation [allocation id]",
                     Short:          "Show the details of a specific Allocation",
@@ -96,6 +113,17 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     RpcMethod:      "GuildAll",
                     Use:            "guild-all",
                     Short:          "Returns all Guilds",
+                },
+                {
+                    RpcMethod:      "GuildBankCollateralAddress",
+                    Use:            "guild-bank-collateral-address [guild id]",
+                    Short:          "Lookup a Guild Bank Collateral Address",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"}},
+                },
+                {
+                    RpcMethod:      "GuildBankCollateralAddressAll",
+                    Use:            "guild-bank-collateral-address-all",
+                    Short:          "Show all Guild Bank Collateral Addresses",
                 },
                 {
                     RpcMethod:      "GuildMembershipApplication",
@@ -187,6 +215,39 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     RpcMethod:      "PlayerAll",
                     Use:            "player-all",
                     Short:          "Returns all Players",
+                },
+                {
+                    RpcMethod:      "Provider",
+                    Use:            "provider [provider id]",
+                    Short:          "Show the details of a specific Provider",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
+                },
+                {
+                    RpcMethod:      "ProviderAll",
+                    Use:            "provider-all",
+                    Short:          "Returns all Providers",
+                },
+                {
+                    RpcMethod:      "ProviderCollateralAddress",
+                    Use:            "provider-collateral-address [provider id]",
+                    Short:          "Lookup a Provider Collateral Address",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"}},
+                },
+                {
+                    RpcMethod:      "ProviderCollateralAddressAll",
+                    Use:            "provider-collateral-address-all",
+                    Short:          "Show All Provider Collateral Addresses",
+                },
+                {
+                    RpcMethod:      "ProviderEarningsAddress",
+                    Use:            "provider-earnings-address [provider id]",
+                    Short:          "Lookup a Provider Earnings Address",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"}},
+                },
+                {
+                    RpcMethod:      "ProviderEarningsAddressAll",
+                    Use:            "provider-earnings-address-all",
+                    Short:          "Show all Provider Earnings Addresses",
                 },
 				{
                     RpcMethod:      "Reactor",
@@ -286,10 +347,58 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "allocationId"}, {ProtoField: "power"}},
                 },
                 {
+                     RpcMethod:      "AgreementOpen",
+                     Use:            "agreement-open [provider id] [duration] [capacity]",
+                     Short:          "Open an Agreement with an Energy Provider",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"}, {ProtoField: "duration"}, {ProtoField: "capacity"}},
+                },
+                {
+                     RpcMethod:      "AgreementClose",
+                     Use:            "agreement-close [agreement id]",
+                     Short:          "Close an Agreement with an Energy Provider",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "agreementId"}},
+                },
+                {
+                     RpcMethod:      "AgreementCapacityIncrease",
+                     Use:            "agreement-capacity-increase [agreement id] [capacity increase]",
+                     Short:          "Increase the Capacity of an established Agreement",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "agreementId"}, {ProtoField: "capacityIncrease"}},
+                },
+                {
+                     RpcMethod:      "AgreementCapacityDecrease",
+                     Use:            "agreement-capacity-decrease [agreement id] [capacity decrease]",
+                     Short:          "Decrease the Capacity of an established Agreement",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "agreementId"}, {ProtoField: "capacityDecrease"}},
+                },
+                {
+                     RpcMethod:      "AgreementDurationIncrease",
+                     Use:            "agreement-duration-increase [agreement id] [duration increase]",
+                     Short:          "Increase the Duration of an established Agreement",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "agreementId"}, {ProtoField: "durationIncrease"}},
+                },
+                {
                     RpcMethod:      "FleetMove",
                     Use:            "fleet-move [fleet id] [destination location id]",
                     Short:          "Move a fleet from one planet to another",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "fleetId"}, {ProtoField: "destinationLocationId"}},
+                },
+                {
+                    RpcMethod:      "GuildBankMint",
+                    Use:            "guild-bank-mint [alpha amount] [token amount]",
+                    Short:          "Mint new Alpha-backed token for a guild",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "amountAlpha"},{ProtoField: "amountToken"}},
+                },
+                {
+                    RpcMethod:      "GuildBankRedeem",
+                    Use:            "guild-bank-redeem [token]",
+                    Short:          "Redeem a Guild Token for the underlying Alpha asset",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "amountToken"}},
+                },
+                {
+                    RpcMethod:      "GuildBankConfiscateAndBurn",
+                    Use:            "guild-bank-confiscate-and-burn [token amount] [address]",
+                    Short:          "Confiscate a Guild Token from an address and burn it",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "amountToken"},{ProtoField: "address"}},
                 },
                 {
                     RpcMethod:      "GuildCreate",
@@ -437,8 +546,9 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                  },
                  {
                      RpcMethod:      "PlanetExplore",
-                     Use:            "planet-explore",
+                     Use:            "planet-explore [player id]",
                      Short:          "Explore a new planet",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"}},
                  },
                  {
                     RpcMethod:      "PlanetRaidComplete",
@@ -451,6 +561,72 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      Use:            "player-update-primary-address [address]",
                      Short:          "Revoke a set of permissions on from an address",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "primaryAddress"}},
+                 },
+                 {
+                     RpcMethod:      "PlayerResume",
+                     Use:            "player-resume [player id]",
+                     Short:          "Resume a Halted Player",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"}},
+                 },
+                 {
+                    RpcMethod:      "ProviderCreate",
+                    Use:            "provider-create [substation id] [rate] [access policy] [provider cancellation penalty] [consumer cancellation penalty] [capacity min] [capacity max] [duration min] [duration max]",
+                    Short:          "Create a new Energy Provider offering",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "substationId"},{ProtoField: "rate"},{ProtoField: "accessPolicy"},{ProtoField: "providerCancellationPenalty"},{ProtoField: "consumerCancellationPenalty"},{ProtoField: "capacityMinimum"},{ProtoField: "capacityMaximum"},{ProtoField: "durationMinimum"},{ProtoField: "durationMaximum"}},
+                 },
+                 {
+                    RpcMethod:      "ProviderDelete",
+                    Use:            "provider-delete [provider id]",
+                    Short:          "Delete an Energy Provider and Cancel all Agreements",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"}},
+                 },
+                 {
+                    RpcMethod:      "ProviderGuildGrant",
+                    Use:            "provider-guild-grant [provider id] [guild Id, guild Id 2,...]",
+                    Short:          "Grant a list of Guilds access to open Agreements with a Provider",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"},{ProtoField: "guildId"}},
+                 },
+                 {
+                    RpcMethod:      "ProviderGuildRevoke",
+                    Use:            "provider-guild-revoke [provider id] [guild Id, guild Id 2,...]",
+                    Short:          "Revoke a list of Guilds from being able to open Agreements with a Provider",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"},{ProtoField: "guildId"}},
+                 },
+                 {
+                    RpcMethod:      "ProviderUpdateAccessPolicy",
+                    Use:            "provider-update-access-policy [provider id] [access policy]",
+                    Short:          "Update the Access Policy of a Provider",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"},{ProtoField: "accessPolicy"}},
+                 },
+                 {
+                    RpcMethod:      "ProviderUpdateCapacityMaximum",
+                    Use:            "provider-update-capacity-maximum [provider id] [new maximum capacity]",
+                    Short:          "Update the Maximum Capacity of a Provider",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"},{ProtoField: "newMaximumCapacity"}},
+                 },
+                 {
+                    RpcMethod:      "ProviderUpdateCapacityMinimum",
+                    Use:            "provider-update-capacity-minimum [provider id] [new minimum capacity]",
+                    Short:          "Update the Minimum Capacity of a Provider",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"},{ProtoField: "newMinimumCapacity"}},
+                 },
+                 {
+                    RpcMethod:      "ProviderUpdateDurationMaximum",
+                    Use:            "provider-update-duration-maximum [provider id] [new maximum duration]",
+                    Short:          "Update the Maximum Duration of a Provider",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"},{ProtoField: "newMaximumDuration"}},
+                 },
+                 {
+                    RpcMethod:      "ProviderUpdateDurationMinimum",
+                    Use:            "provider-update-duration-minimum [provider id] [new minimum duration]",
+                    Short:          "Update the Minimum Duration of a Provider",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"},{ProtoField: "newMinimumDuration"}},
+                 },
+                 {
+                    RpcMethod:      "ProviderWithdrawBalance",
+                    Use:            "provider-withdraw-balance [provider id] [destination address]",
+                    Short:          "Withdraw the pending earnings from a Provider",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"},{ProtoField: "destinationAddress"}},
                  },
                  {
                      RpcMethod:      "StructActivate",
@@ -477,10 +653,16 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"},{ProtoField: "proof"},{ProtoField: "nonce"}},
                  },
                  {
+                     RpcMethod:      "StructBuildCancel",
+                     Use:            "struct-build-cancel [struct id]",
+                     Short:          "Cancel an unfinished Struct",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "structId"}},
+                 },
+                 {
                      RpcMethod:      "StructBuildInitiate",
-                     Use:            "struct-build-initiate [player id] [struct type id] [location type] [operating ambit] [slot]",
+                     Use:            "struct-build-initiate [player id] [struct type id] [operating ambit] [slot]",
                      Short:          "Initiate the construction of a Struct",
-                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"},{ProtoField: "structTypeId"},{ProtoField: "locationType"},{ProtoField: "operatingAmbit"},{ProtoField: "slot", Optional: true }},
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"},{ProtoField: "structTypeId"},{ProtoField: "operatingAmbit"},{ProtoField: "slot", Optional: true }},
                  },
                  {
                      RpcMethod:      "StructDefenseClear",

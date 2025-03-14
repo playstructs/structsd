@@ -17,6 +17,8 @@ func (a *Infusion) SetCommission(newCommission math.LegacyDec) (
 
     oldRatio               = a.Ratio
     oldInfusionPower       = a.Power
+
+
     oldCommissionPower     = a.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(oldInfusionPower))).RoundInt().Uint64()
     oldPlayerPower         = a.Power - oldCommissionPower
 

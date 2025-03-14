@@ -46,6 +46,10 @@ const (
 
     // This annoys me but whatever
     CommandStruct = "Command"
+
+    // Punishment Charge
+    PlayerResumeCharge = 666
+
 )
 
 var (
@@ -76,7 +80,8 @@ const (
 	ReactorCountKey     = "Reactor/count/"
 	ReactorValidatorKey = "Reactor/validator/"
 
-	ReactorFuelToEnergyConversion = 100
+    // 1 gram of alpha (1,000,000 microgams) = 1,000 watts of energy (1,000,000 milliwatts)
+	ReactorFuelToEnergyConversion = 1
 )
 
 const (
@@ -106,14 +111,18 @@ const (
 	GuildKey      = "Guild/value/"
 	GuildCountKey = "Guild/count/"
 	GuildMembershipApplicationKey = "Guild/membershipApplication/"
+
+	GuildBankCollateralPool = "structs/Guild/Collateral/"
 )
 
 
 const (
 	PlayerKey      = "Player/value/"
 	PlayerCountKey = "Player/count/"
+	PlayerHaltKey  = "Player/halt/"
 
-	PlayerPassiveDraw = 25
+    // 25,000 milliwatts
+	PlayerPassiveDraw = 25000
 )
 
 const (
@@ -137,7 +146,8 @@ const (
     StructAttributeKey  = "Struct/attribute/"
     StructDestroyedQueueKey = "Struct/destroyed/"
 
-	StructFuelToEnergyConversion = 200
+    // No longer needed. Part of Struct Type Def
+	//StructFuelToEnergyConversion = 200
 )
 
 const (
@@ -145,6 +155,22 @@ const (
 	StructTypeCountKey  = "StructType/count/"
 )
 
+const (
+	ProviderKey         = "Provider/value/"
+	ProviderCountKey    = "Provider/count/"
+
+	ProviderGuildAccessKey    = "Provider/guild/"
+
+	ProviderCollateralPool  = "structs/Provider/Collateral/"
+	ProviderEarningsPool    = "structs/Provider/Earnings/"
+)
+
+const (
+	AgreementKey            = "Agreement/value/"
+	AgreementCountKey       = "Agreement/count/"
+	AgreementProviderKey    = "Agreement/source/"
+	AgreementExpirationKey  = "Agreement/expiration/"
+)
 
 
 /*
@@ -164,7 +190,10 @@ var ObjectType_enum = map[string]ObjectType{
 	"infusion":   ObjectType_infusion,
 	"address":    ObjectType_address,
     "fleet":      ObjectType_fleet,
+    "provider":   ObjectType_provider,
+    "agreement":  ObjectType_agreement,
 }
+
 
 // Doing the same for GridAttributeType
 var GridAttributeType_enum = map[string]GridAttributeType{
@@ -182,14 +211,16 @@ var GridAttributeType_enum = map[string]GridAttributeType{
 	"lastAction":               GridAttributeType_lastAction,
 	"nonce":                    GridAttributeType_nonce,
 	"ready":                    GridAttributeType_ready,
+	"checkpointBlock":          GridAttributeType_checkpointBlock,
 }
 
 
 // Doing the same for AllocationType
 var AllocationType_enum = map[string]AllocationType{
-	"static":       AllocationType_static,
-	"dynamic":      AllocationType_dynamic,
-	"automated":    AllocationType_automated,
+	"static":               AllocationType_static,
+	"dynamic":              AllocationType_dynamic,
+	"automated":            AllocationType_automated,
+	"providerAgreement":    AllocationType_providerAgreement,
 
 }
 
@@ -372,3 +403,10 @@ var TechPowerGeneration_enum = map[string]TechPowerGeneration {
     "largeGenerator":       TechPowerGeneration_largeGenerator,
 }
 
+
+
+var ProviderAccessPolicy_enum = map[string]ProviderAccessPolicy {
+    "openMarket":       ProviderAccessPolicy_openMarket,
+    "guildMarket":      ProviderAccessPolicy_guildMarket,
+    "closedMarket":     ProviderAccessPolicy_closedMarket,
+}

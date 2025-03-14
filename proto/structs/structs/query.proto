@@ -9,6 +9,7 @@ import "cosmos/base/query/v1beta1/pagination.proto";
 import "structs/structs/params.proto";
 
 import "structs/structs/address.proto";
+import "structs/structs/agreement.proto";
 import "structs/structs/allocation.proto";
 import "structs/structs/fleet.proto";
 import "structs/structs/grid.proto";
@@ -19,6 +20,7 @@ import "structs/structs/permission.proto";
 import "structs/structs/player.proto";
 import "structs/structs/planet.proto";
 import "structs/structs/reactor.proto";
+import "structs/structs/provider.proto";
 import "structs/structs/struct.proto";
 import "structs/structs/substation.proto";
 
@@ -46,6 +48,19 @@ service Query {
 
   rpc AddressAllByPlayer (QueryAllAddressByPlayerRequest) returns (QueryAllAddressResponse) {
     option (google.api.http).get = "/structs/address_by_player/{playerId}";
+  }
+
+  // Queries a list of Agreement items.
+  rpc Agreement    (QueryGetAgreementRequest) returns (QueryGetAgreementResponse) {
+    option (google.api.http).get = "/structs/agreement/{id}";
+  }
+
+  rpc AgreementAll (QueryAllAgreementRequest) returns (QueryAllAgreementResponse) {
+    option (google.api.http).get = "/structs/agreement";
+  }
+
+  rpc AgreementAllByProvider (QueryAllAgreementByProviderRequest) returns (QueryAllAgreementResponse) {
+    option (google.api.http).get = "/structs/agreement_by_provider/{providerId}";
   }
 
   // Queries a list of Allocation items.
@@ -97,6 +112,20 @@ service Query {
     option (google.api.http).get = "/structs/guild";
   }
 
+  rpc GuildBankCollateralAddress (QueryGetGuildBankCollateralAddressRequest) returns (QueryAllGuildBankCollateralAddressResponse) {
+    option (google.api.http).get = "/structs/guild_bank_collateral_address/{guildId}";
+  }
+
+  rpc GuildBankCollateralAddressAll (QueryAllGuildBankCollateralAddressRequest) returns (QueryAllGuildBankCollateralAddressResponse) {
+    option (google.api.http).get = "/structs/guild_bank_collateral_address";
+  }
+
+  /* TODO Requires a lookup table that I don't know if we care about
+  rpc GuildByBankCollateralAddress (QueryGetGuildByBankCollateralAddressRequest) returns (QueryGetGuildResponse) {
+    option (google.api.http).get = "/structs/guild_by_bank_collateral_address/{address}";
+  }
+  */
+
   rpc GuildMembershipApplication (QueryGetGuildMembershipApplicationRequest) returns (QueryGetGuildMembershipApplicationResponse) {
     option (google.api.http).get = "/structs/guild_membership_application/{guildId}/{playerId}";
   }
@@ -147,6 +176,9 @@ service Query {
     option (google.api.http).get = "/structs/player";
   }
 
+  rpc PlayerHaltedAll (QueryAllPlayerHaltedRequest) returns (QueryAllPlayerHaltedResponse) {
+    option (google.api.http).get = "/structs/player_halted";
+  }
 
   // Queries a list of Planet items.
   rpc Planet    (QueryGetPlanetRequest) returns (QueryGetPlanetResponse) {
@@ -170,6 +202,42 @@ service Query {
     option (google.api.http).get = "/structs/planet_attribute";
   }
 
+  // Queries a list of Allocation items.
+  rpc Provider    (QueryGetProviderRequest) returns (QueryGetProviderResponse) {
+    option (google.api.http).get = "/structs/provider/{id}";
+  }
+
+  rpc ProviderAll (QueryAllProviderRequest) returns (QueryAllProviderResponse) {
+    option (google.api.http).get = "/structs/provider";
+  }
+
+  rpc ProviderCollateralAddress (QueryGetProviderCollateralAddressRequest) returns (QueryAllProviderCollateralAddressResponse) {
+    option (google.api.http).get = "/structs/provider_collateral_address/{providerId}";
+  }
+
+  rpc ProviderCollateralAddressAll (QueryAllProviderCollateralAddressRequest) returns (QueryAllProviderCollateralAddressResponse) {
+    option (google.api.http).get = "/structs/provider_collateral_address";
+  }
+
+
+  /* TODO Requires a lookup table that I don't know if we care about
+  rpc ProviderByCollateralAddress (QueryGetProviderByCollateralAddressRequest) returns (QueryGetProviderResponse) {
+    option (google.api.http).get = "/structs/provider_by_collateral_address/{address}";
+  }
+  */
+  rpc ProviderEarningsAddress (QueryGetProviderEarningsAddressRequest) returns (QueryAllProviderEarningsAddressResponse) {
+    option (google.api.http).get = "/structs/provider_earnings_address/{providerId}";
+  }
+
+  rpc ProviderEarningsAddressAll (QueryAllProviderEarningsAddressRequest) returns (QueryAllProviderEarningsAddressResponse) {
+    option (google.api.http).get = "/structs/provider_earnings_address";
+  }
+
+  /* TODO Requires a lookup table that I don't know if we care about
+  rpc ProviderByEarningsAddress (QueryGetProviderByEarningsAddressRequest) returns (QueryGetProviderResponse) {
+    option (google.api.http).get = "/structs/provider_by_earnings_address/{address}";
+  }
+  */
   // Queries a list of Reactor items.
   rpc Reactor    (QueryGetReactorRequest) returns (QueryGetReactorResponse) {
     option (google.api.http).get = "/structs/reactor/{id}";
@@ -263,6 +331,28 @@ message QueryAllAddressResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+message QueryGetAgreementRequest {
+  string id = 1;
+}
+
+message QueryGetAgreementResponse {
+  Agreement Agreement = 1 [(gogoproto.nullable) = false];
+}
+
+message QueryAllAgreementRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllAgreementByProviderRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+  string providerId = 2;
+}
+
+message QueryAllAgreementResponse {
+  repeated Agreement Agreement = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
 message QueryGetAllocationRequest {
   string id = 1;
 }
@@ -349,6 +439,24 @@ message QueryAllGuildRequest {
 message QueryAllGuildResponse {
   repeated Guild                                  Guild      = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetGuildBankCollateralAddressRequest {
+  string guildId  = 1;
+}
+
+message QueryAllGuildBankCollateralAddressRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+
+message QueryAllGuildBankCollateralAddressResponse {
+  repeated InternalAddressAssociation internalAddressAssociation = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetGuildByBankCollateralAddressRequest {
+  string address  = 1;
 }
 
 
@@ -477,6 +585,7 @@ message QueryGetPlayerResponse {
   Player Player = 1 [(gogoproto.nullable) = false];
   GridAttributes gridAttributes = 2;
   PlayerInventory playerInventory = 3;
+  bool halted = 4;
 }
 
 message QueryAllPlayerRequest {
@@ -486,6 +595,68 @@ message QueryAllPlayerRequest {
 message QueryAllPlayerResponse {
   repeated Player                                 Player     = 1 [(gogoproto.nullable) = false];
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+
+message QueryAllPlayerHaltedRequest {}
+message QueryAllPlayerHaltedResponse { repeated string PlayerId  = 1 [(gogoproto.nullable) = false]; }
+
+
+message QueryGetProviderRequest {
+  string id = 1;
+}
+
+message QueryGetProviderResponse {
+  Provider Provider = 1 [(gogoproto.nullable) = false];
+  GridAttributes gridAttributes = 2;
+}
+
+message QueryAllProviderRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+message QueryAllProviderResponse {
+  repeated Provider Provider = 1 [(gogoproto.nullable) = false];
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+
+message QueryGetProviderCollateralAddressRequest {
+  string providerId  = 1;
+}
+
+message QueryAllProviderCollateralAddressRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+
+message QueryAllProviderCollateralAddressResponse {
+  repeated InternalAddressAssociation internalAddressAssociation = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetProviderByCollateralAddressRequest {
+  string address  = 1;
+}
+
+
+
+message QueryGetProviderEarningsAddressRequest {
+  string providerId  = 1;
+}
+
+message QueryAllProviderEarningsAddressRequest {
+  cosmos.base.query.v1beta1.PageRequest pagination = 1;
+}
+
+
+message QueryAllProviderEarningsAddressResponse {
+  repeated InternalAddressAssociation internalAddressAssociation = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGetProviderByEarningsAddressRequest {
+  string address = 1;
 }
 
 message QueryGetReactorRequest {

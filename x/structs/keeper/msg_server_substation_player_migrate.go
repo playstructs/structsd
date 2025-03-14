@@ -22,7 +22,7 @@ func (k msgServer) SubstationPlayerMigrate(goCtx context.Context, msg *types.Msg
     substationObjectPermissionId := GetObjectPermissionIDBytes(msg.SubstationId, player.Id)
     // check that the calling player has substation permissions
     if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.PermissionGrid)) {
-        return &types.MsgSubstationPlayerMigrateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%d) has no Substation Connect Player permissions ", player.Id)
+        return &types.MsgSubstationPlayerMigrateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%s) has no Energy Management permissions on Substation (%s)", player.Id, msg.SubstationId)
     }
 
     // check that the account has energy management permissions
@@ -45,7 +45,7 @@ func (k msgServer) SubstationPlayerMigrate(goCtx context.Context, msg *types.Msg
             // check that the calling player has target player permissions
             playerObjectPermissionId := GetObjectPermissionIDBytes(targetPlayerId, player.Id)
             if (!k.PermissionHasOneOf(ctx, playerObjectPermissionId, types.PermissionGrid)) {
-                return &types.MsgSubstationPlayerMigrateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%s) has no Grid permissions on target (%s) ", player.Id, targetPlayerId)
+                return &types.MsgSubstationPlayerMigrateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%s) has no Energy Management permissions on target (%s) ", player.Id, targetPlayerId)
             }
         }
 

@@ -7,6 +7,7 @@ import "cosmos/msg/v1/msg.proto";
 import "cosmos_proto/cosmos.proto";
 import "gogoproto/gogo.proto";
 import "structs/structs/params.proto";
+import "cosmos/base/v1beta1/coin.proto";
 
 import "structs/structs/keys.proto";
 import "structs/structs/fleet.proto";
@@ -27,6 +28,12 @@ service Msg {
   rpc AddressRegister                (MsgAddressRegister               ) returns (MsgAddressRegisterResponse );
   rpc AddressRevoke                  (MsgAddressRevoke                 ) returns (MsgAddressRevokeResponse );
 
+  rpc AgreementOpen                 (MsgAgreementOpen                  ) returns (MsgAgreementResponse);
+  rpc AgreementClose                (MsgAgreementClose                 ) returns (MsgAgreementResponse);
+  rpc AgreementCapacityIncrease     (MsgAgreementCapacityIncrease      ) returns (MsgAgreementResponse);
+  rpc AgreementCapacityDecrease     (MsgAgreementCapacityDecrease      ) returns (MsgAgreementResponse);
+  rpc AgreementDurationIncrease     (MsgAgreementDurationIncrease      ) returns (MsgAgreementResponse);
+
   rpc AllocationCreate               (MsgAllocationCreate              ) returns (MsgAllocationCreateResponse );
   rpc AllocationDelete               (MsgAllocationDelete              ) returns (MsgAllocationDeleteResponse );
   rpc AllocationUpdate               (MsgAllocationUpdate              ) returns (MsgAllocationUpdateResponse );
@@ -35,6 +42,9 @@ service Msg {
   rpc FleetMove                                     (MsgFleetMove                                     ) returns (MsgFleetMoveResponse );
 
   rpc GuildCreate                                   (MsgGuildCreate                                   ) returns (MsgGuildCreateResponse );
+  rpc GuildBankMint                                 (MsgGuildBankMint                                 ) returns (MsgGuildBankMintResponse );
+  rpc GuildBankRedeem                               (MsgGuildBankRedeem                               ) returns (MsgGuildBankRedeemResponse );
+  rpc GuildBankConfiscateAndBurn                    (MsgGuildBankConfiscateAndBurn                    ) returns (MsgGuildBankConfiscateAndBurnResponse );
   rpc GuildUpdateOwnerId                            (MsgGuildUpdateOwnerId                            ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateEntrySubstationId                  (MsgGuildUpdateEntrySubstationId                  ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateEndpoint                           (MsgGuildUpdateEndpoint                           ) returns (MsgGuildUpdateResponse );
@@ -63,16 +73,31 @@ service Msg {
   rpc PermissionSetOnObject          (MsgPermissionSetOnObject         ) returns (MsgPermissionResponse);
 
 
-  rpc PlanetExplore                  (MsgPlanetExplore                 ) returns (MsgPlanetExploreResponse                 );
-  rpc PlanetRaidComplete             (MsgPlanetRaidComplete            ) returns (MsgPlanetRaidCompleteResponse                 );
+  rpc PlanetExplore                  (MsgPlanetExplore                 ) returns (MsgPlanetExploreResponse                );
+  rpc PlanetRaidComplete             (MsgPlanetRaidComplete            ) returns (MsgPlanetRaidCompleteResponse           );
 
-  rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse    );
+  rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse   );
+  rpc PlayerResume                   (MsgPlayerResume                  ) returns (MsgPlayerResumeResponse                 );
+
+  rpc ProviderCreate                 (MsgProviderCreate                ) returns (MsgProviderResponse);
+  rpc ProviderWithdrawBalance        (MsgProviderWithdrawBalance       ) returns (MsgProviderResponse);
+  rpc ProviderUpdateCapacityMinimum  (MsgProviderUpdateCapacityMinimum ) returns (MsgProviderResponse);
+  rpc ProviderUpdateCapacityMaximum  (MsgProviderUpdateCapacityMaximum ) returns (MsgProviderResponse);
+  rpc ProviderUpdateDurationMinimum  (MsgProviderUpdateDurationMinimum ) returns (MsgProviderResponse);
+  rpc ProviderUpdateDurationMaximum  (MsgProviderUpdateDurationMaximum ) returns (MsgProviderResponse);
+  rpc ProviderUpdateAccessPolicy     (MsgProviderUpdateAccessPolicy    ) returns (MsgProviderResponse);
+  rpc ProviderGuildGrant             (MsgProviderGuildGrant            ) returns (MsgProviderResponse);
+  rpc ProviderGuildRevoke            (MsgProviderGuildRevoke           ) returns (MsgProviderResponse);
+  rpc ProviderDelete                 (MsgProviderDelete                ) returns (MsgProviderResponse);
+
 
   rpc StructActivate                 (MsgStructActivate                ) returns (MsgStructStatusResponse                  );
   rpc StructDeactivate               (MsgStructDeactivate              ) returns (MsgStructStatusResponse                  );
 
   rpc StructBuildInitiate            (MsgStructBuildInitiate           ) returns (MsgStructStatusResponse                  );
   rpc StructBuildComplete            (MsgStructBuildComplete           ) returns (MsgStructStatusResponse                  );
+  rpc StructBuildCancel              (MsgStructBuildCancel             ) returns (MsgStructStatusResponse                  );
+
   // Not MVP
   // rpc StructBuildCompleteAndStash    (MsgStructBuildCompleteAndStash   ) returns (MsgStructStatusResponse                  );
 
@@ -211,6 +236,43 @@ message MsgFleetMove {
 }
 
 message MsgFleetMoveResponse { Fleet fleet = 1; }
+
+
+message MsgGuildBankMint {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator  = 1;
+  uint64 amountAlpha = 2;
+  uint64 amountToken = 3;
+}
+
+message MsgGuildBankMintResponse { }
+
+
+message MsgGuildBankRedeem {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator  = 1;
+  cosmos.base.v1beta1.Coin amountToken  = 2 [
+    (gogoproto.nullable)     = false,
+    (amino.dont_omitempty)   = true,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+}
+
+message MsgGuildBankRedeemResponse { }
+
+message MsgGuildBankConfiscateAndBurn {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator  = 1;
+  string address = 2;
+  uint64 amountToken = 3;
+}
+
+message MsgGuildBankConfiscateAndBurnResponse { }
+
+
 
 message MsgGuildCreate {
   option (cosmos.msg.v1.signer) = "creator";
@@ -437,6 +499,7 @@ message MsgPlanetExplore {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator     = 1;
+  string playerId    = 2;
 }
 
 message MsgPlanetExploreResponse {
@@ -468,6 +531,15 @@ message MsgPlayerUpdatePrimaryAddress {
 
 message MsgPlayerUpdatePrimaryAddressResponse {}
 
+message MsgPlayerResume {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator        = 1;
+  string playerId       = 2;
+}
+
+message MsgPlayerResumeResponse {}
+
 message MsgStructStatusResponse {
   Struct struct = 1 [(gogoproto.nullable) = false];
 }
@@ -494,9 +566,9 @@ message MsgStructBuildInitiate {
   string creator          = 1;
   string playerId         = 2;
   uint64 structTypeId     = 3;
-  objectType locationType = 4;
-  ambit operatingAmbit    = 5;
-  uint64 slot             = 6;
+  //objectType locationType = 4;
+  ambit operatingAmbit    = 4;
+  uint64 slot             = 5;
 }
 
 
@@ -507,6 +579,13 @@ message MsgStructBuildComplete {
   string structId     = 2;
   string proof        = 3;
   string nonce        = 4;
+}
+
+message MsgStructBuildCancel {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator      = 1;
+  string structId     = 2;
 }
 
 message MsgStructBuildCompleteAndStash {
@@ -705,3 +784,151 @@ message MsgSubstationPlayerMigrate {
 message MsgSubstationPlayerMigrateResponse {}
 
 
+
+message MsgAgreementOpen {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string providerId         = 2;
+  uint64 duration           = 3;
+  uint64 capacity           = 4;
+}
+
+message MsgAgreementClose {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string agreementId        = 2;
+}
+
+message MsgAgreementCapacityIncrease {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string agreementId        = 2;
+  uint64 capacityIncrease   = 3;
+}
+
+message MsgAgreementCapacityDecrease {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string agreementId        = 2;
+  uint64 capacityDecrease   = 3;
+}
+
+message MsgAgreementDurationIncrease {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string agreementId        = 2;
+  uint64 durationIncrease   = 3;
+}
+
+message MsgAgreementResponse {}
+
+
+message MsgProviderCreate {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string substationId       = 2;
+
+  cosmos.base.v1beta1.Coin rate  = 3 [
+    (gogoproto.nullable)     = false,
+    (amino.dont_omitempty)   = true,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins"
+  ];
+
+  providerAccessPolicy accessPolicy = 4;
+
+  string  providerCancellationPenalty     = 5 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+
+  string  consumerCancellationPenalty     = 6 [
+    (cosmos_proto.scalar) = "cosmos.Dec",
+    (gogoproto.customtype) = "cosmossdk.io/math.LegacyDec",
+    (gogoproto.nullable) = false
+  ];
+
+  uint64 capacityMinimum                  = 7;
+  uint64 capacityMaximum                  = 8;
+  uint64 durationMinimum                  = 9;
+  uint64 durationMaximum                  = 10;
+}
+
+message MsgProviderWithdrawBalance {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string providerId         = 2;
+  string destinationAddress = 3;
+}
+
+message MsgProviderUpdateCapacityMinimum {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string providerId         = 2;
+  uint64 newMinimumCapacity = 3;
+}
+
+message MsgProviderUpdateCapacityMaximum {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string providerId         = 2;
+  uint64 newMaximumCapacity = 3;
+}
+
+message MsgProviderUpdateDurationMinimum {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string providerId         = 2;
+  uint64 newMinimumDuration = 3;
+}
+
+message MsgProviderUpdateDurationMaximum {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string providerId         = 2;
+  uint64 newMaximumDuration = 3;
+}
+
+message MsgProviderUpdateAccessPolicy {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator                    = 1;
+  string providerId                 = 2;
+  providerAccessPolicy accessPolicy = 3;
+}
+
+message MsgProviderGuildGrant {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string providerId         = 2;
+  repeated string guildId   = 3;
+}
+
+message MsgProviderGuildRevoke {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string providerId         = 2;
+  repeated string guildId   = 3;
+}
+
+message MsgProviderDelete {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator            = 1;
+  string providerId         = 2;
+}
+
+message MsgProviderResponse {}

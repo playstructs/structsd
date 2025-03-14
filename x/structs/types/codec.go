@@ -18,12 +18,21 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
 	registry.RegisterImplementations((*sdk.Msg)(nil), &MsgAddressRegister{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgAddressRevoke{},)
 
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgAgreementOpen{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgAgreementClose{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgAgreementCapacityIncrease{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgAgreementCapacityDecrease{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgAgreementDurationIncrease{},)
+
 	registry.RegisterImplementations((*sdk.Msg)(nil), &MsgAllocationCreate{}, )
 	registry.RegisterImplementations((*sdk.Msg)(nil), &MsgAllocationDelete{}, )
 	registry.RegisterImplementations((*sdk.Msg)(nil), &MsgAllocationUpdate{}, )
 	registry.RegisterImplementations((*sdk.Msg)(nil), &MsgAllocationTransfer{}, )
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildCreate{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildBankMint{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildBankRedeem{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildBankConfiscateAndBurn{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateEndpoint{}, )
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateEntrySubstationId{}, )
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateJoinInfusionMinimum{}, )
@@ -54,12 +63,26 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlanetRaidComplete{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerUpdatePrimaryAddress{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerResume{},)
+
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderCreate{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderWithdrawBalance{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderUpdateCapacityMinimum{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderUpdateCapacityMaximum{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderUpdateDurationMinimum{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderUpdateDurationMaximum{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderUpdateAccessPolicy{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderGuildGrant{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderGuildRevoke{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderDelete{},)
+
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructActivate{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructDeactivate{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructBuildInitiate{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructBuildComplete{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructBuildCancel{},)
     // Not MVP
     //registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructBuildCompleteAndStash{},)
 

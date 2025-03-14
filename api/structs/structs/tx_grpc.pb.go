@@ -22,12 +22,20 @@ const (
 	Msg_UpdateParams_FullMethodName                                  = "/structs.structs.Msg/UpdateParams"
 	Msg_AddressRegister_FullMethodName                               = "/structs.structs.Msg/AddressRegister"
 	Msg_AddressRevoke_FullMethodName                                 = "/structs.structs.Msg/AddressRevoke"
+	Msg_AgreementOpen_FullMethodName                                 = "/structs.structs.Msg/AgreementOpen"
+	Msg_AgreementClose_FullMethodName                                = "/structs.structs.Msg/AgreementClose"
+	Msg_AgreementCapacityIncrease_FullMethodName                     = "/structs.structs.Msg/AgreementCapacityIncrease"
+	Msg_AgreementCapacityDecrease_FullMethodName                     = "/structs.structs.Msg/AgreementCapacityDecrease"
+	Msg_AgreementDurationIncrease_FullMethodName                     = "/structs.structs.Msg/AgreementDurationIncrease"
 	Msg_AllocationCreate_FullMethodName                              = "/structs.structs.Msg/AllocationCreate"
 	Msg_AllocationDelete_FullMethodName                              = "/structs.structs.Msg/AllocationDelete"
 	Msg_AllocationUpdate_FullMethodName                              = "/structs.structs.Msg/AllocationUpdate"
 	Msg_AllocationTransfer_FullMethodName                            = "/structs.structs.Msg/AllocationTransfer"
 	Msg_FleetMove_FullMethodName                                     = "/structs.structs.Msg/FleetMove"
 	Msg_GuildCreate_FullMethodName                                   = "/structs.structs.Msg/GuildCreate"
+	Msg_GuildBankMint_FullMethodName                                 = "/structs.structs.Msg/GuildBankMint"
+	Msg_GuildBankRedeem_FullMethodName                               = "/structs.structs.Msg/GuildBankRedeem"
+	Msg_GuildBankConfiscateAndBurn_FullMethodName                    = "/structs.structs.Msg/GuildBankConfiscateAndBurn"
 	Msg_GuildUpdateOwnerId_FullMethodName                            = "/structs.structs.Msg/GuildUpdateOwnerId"
 	Msg_GuildUpdateEntrySubstationId_FullMethodName                  = "/structs.structs.Msg/GuildUpdateEntrySubstationId"
 	Msg_GuildUpdateEndpoint_FullMethodName                           = "/structs.structs.Msg/GuildUpdateEndpoint"
@@ -54,10 +62,22 @@ const (
 	Msg_PlanetExplore_FullMethodName                                 = "/structs.structs.Msg/PlanetExplore"
 	Msg_PlanetRaidComplete_FullMethodName                            = "/structs.structs.Msg/PlanetRaidComplete"
 	Msg_PlayerUpdatePrimaryAddress_FullMethodName                    = "/structs.structs.Msg/PlayerUpdatePrimaryAddress"
+	Msg_PlayerResume_FullMethodName                                  = "/structs.structs.Msg/PlayerResume"
+	Msg_ProviderCreate_FullMethodName                                = "/structs.structs.Msg/ProviderCreate"
+	Msg_ProviderWithdrawBalance_FullMethodName                       = "/structs.structs.Msg/ProviderWithdrawBalance"
+	Msg_ProviderUpdateCapacityMinimum_FullMethodName                 = "/structs.structs.Msg/ProviderUpdateCapacityMinimum"
+	Msg_ProviderUpdateCapacityMaximum_FullMethodName                 = "/structs.structs.Msg/ProviderUpdateCapacityMaximum"
+	Msg_ProviderUpdateDurationMinimum_FullMethodName                 = "/structs.structs.Msg/ProviderUpdateDurationMinimum"
+	Msg_ProviderUpdateDurationMaximum_FullMethodName                 = "/structs.structs.Msg/ProviderUpdateDurationMaximum"
+	Msg_ProviderUpdateAccessPolicy_FullMethodName                    = "/structs.structs.Msg/ProviderUpdateAccessPolicy"
+	Msg_ProviderGuildGrant_FullMethodName                            = "/structs.structs.Msg/ProviderGuildGrant"
+	Msg_ProviderGuildRevoke_FullMethodName                           = "/structs.structs.Msg/ProviderGuildRevoke"
+	Msg_ProviderDelete_FullMethodName                                = "/structs.structs.Msg/ProviderDelete"
 	Msg_StructActivate_FullMethodName                                = "/structs.structs.Msg/StructActivate"
 	Msg_StructDeactivate_FullMethodName                              = "/structs.structs.Msg/StructDeactivate"
 	Msg_StructBuildInitiate_FullMethodName                           = "/structs.structs.Msg/StructBuildInitiate"
 	Msg_StructBuildComplete_FullMethodName                           = "/structs.structs.Msg/StructBuildComplete"
+	Msg_StructBuildCancel_FullMethodName                             = "/structs.structs.Msg/StructBuildCancel"
 	Msg_StructDefenseSet_FullMethodName                              = "/structs.structs.Msg/StructDefenseSet"
 	Msg_StructDefenseClear_FullMethodName                            = "/structs.structs.Msg/StructDefenseClear"
 	Msg_StructMove_FullMethodName                                    = "/structs.structs.Msg/StructMove"
@@ -85,12 +105,20 @@ type MsgClient interface {
 	UpdateParams(ctx context.Context, in *MsgUpdateParams, opts ...grpc.CallOption) (*MsgUpdateParamsResponse, error)
 	AddressRegister(ctx context.Context, in *MsgAddressRegister, opts ...grpc.CallOption) (*MsgAddressRegisterResponse, error)
 	AddressRevoke(ctx context.Context, in *MsgAddressRevoke, opts ...grpc.CallOption) (*MsgAddressRevokeResponse, error)
+	AgreementOpen(ctx context.Context, in *MsgAgreementOpen, opts ...grpc.CallOption) (*MsgAgreementResponse, error)
+	AgreementClose(ctx context.Context, in *MsgAgreementClose, opts ...grpc.CallOption) (*MsgAgreementResponse, error)
+	AgreementCapacityIncrease(ctx context.Context, in *MsgAgreementCapacityIncrease, opts ...grpc.CallOption) (*MsgAgreementResponse, error)
+	AgreementCapacityDecrease(ctx context.Context, in *MsgAgreementCapacityDecrease, opts ...grpc.CallOption) (*MsgAgreementResponse, error)
+	AgreementDurationIncrease(ctx context.Context, in *MsgAgreementDurationIncrease, opts ...grpc.CallOption) (*MsgAgreementResponse, error)
 	AllocationCreate(ctx context.Context, in *MsgAllocationCreate, opts ...grpc.CallOption) (*MsgAllocationCreateResponse, error)
 	AllocationDelete(ctx context.Context, in *MsgAllocationDelete, opts ...grpc.CallOption) (*MsgAllocationDeleteResponse, error)
 	AllocationUpdate(ctx context.Context, in *MsgAllocationUpdate, opts ...grpc.CallOption) (*MsgAllocationUpdateResponse, error)
 	AllocationTransfer(ctx context.Context, in *MsgAllocationTransfer, opts ...grpc.CallOption) (*MsgAllocationTransferResponse, error)
 	FleetMove(ctx context.Context, in *MsgFleetMove, opts ...grpc.CallOption) (*MsgFleetMoveResponse, error)
 	GuildCreate(ctx context.Context, in *MsgGuildCreate, opts ...grpc.CallOption) (*MsgGuildCreateResponse, error)
+	GuildBankMint(ctx context.Context, in *MsgGuildBankMint, opts ...grpc.CallOption) (*MsgGuildBankMintResponse, error)
+	GuildBankRedeem(ctx context.Context, in *MsgGuildBankRedeem, opts ...grpc.CallOption) (*MsgGuildBankRedeemResponse, error)
+	GuildBankConfiscateAndBurn(ctx context.Context, in *MsgGuildBankConfiscateAndBurn, opts ...grpc.CallOption) (*MsgGuildBankConfiscateAndBurnResponse, error)
 	GuildUpdateOwnerId(ctx context.Context, in *MsgGuildUpdateOwnerId, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEntrySubstationId(ctx context.Context, in *MsgGuildUpdateEntrySubstationId, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEndpoint(ctx context.Context, in *MsgGuildUpdateEndpoint, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
@@ -117,10 +145,22 @@ type MsgClient interface {
 	PlanetExplore(ctx context.Context, in *MsgPlanetExplore, opts ...grpc.CallOption) (*MsgPlanetExploreResponse, error)
 	PlanetRaidComplete(ctx context.Context, in *MsgPlanetRaidComplete, opts ...grpc.CallOption) (*MsgPlanetRaidCompleteResponse, error)
 	PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlayerUpdatePrimaryAddress, opts ...grpc.CallOption) (*MsgPlayerUpdatePrimaryAddressResponse, error)
+	PlayerResume(ctx context.Context, in *MsgPlayerResume, opts ...grpc.CallOption) (*MsgPlayerResumeResponse, error)
+	ProviderCreate(ctx context.Context, in *MsgProviderCreate, opts ...grpc.CallOption) (*MsgProviderResponse, error)
+	ProviderWithdrawBalance(ctx context.Context, in *MsgProviderWithdrawBalance, opts ...grpc.CallOption) (*MsgProviderResponse, error)
+	ProviderUpdateCapacityMinimum(ctx context.Context, in *MsgProviderUpdateCapacityMinimum, opts ...grpc.CallOption) (*MsgProviderResponse, error)
+	ProviderUpdateCapacityMaximum(ctx context.Context, in *MsgProviderUpdateCapacityMaximum, opts ...grpc.CallOption) (*MsgProviderResponse, error)
+	ProviderUpdateDurationMinimum(ctx context.Context, in *MsgProviderUpdateDurationMinimum, opts ...grpc.CallOption) (*MsgProviderResponse, error)
+	ProviderUpdateDurationMaximum(ctx context.Context, in *MsgProviderUpdateDurationMaximum, opts ...grpc.CallOption) (*MsgProviderResponse, error)
+	ProviderUpdateAccessPolicy(ctx context.Context, in *MsgProviderUpdateAccessPolicy, opts ...grpc.CallOption) (*MsgProviderResponse, error)
+	ProviderGuildGrant(ctx context.Context, in *MsgProviderGuildGrant, opts ...grpc.CallOption) (*MsgProviderResponse, error)
+	ProviderGuildRevoke(ctx context.Context, in *MsgProviderGuildRevoke, opts ...grpc.CallOption) (*MsgProviderResponse, error)
+	ProviderDelete(ctx context.Context, in *MsgProviderDelete, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	StructActivate(ctx context.Context, in *MsgStructActivate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructDeactivate(ctx context.Context, in *MsgStructDeactivate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructBuildInitiate(ctx context.Context, in *MsgStructBuildInitiate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructBuildComplete(ctx context.Context, in *MsgStructBuildComplete, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
+	StructBuildCancel(ctx context.Context, in *MsgStructBuildCancel, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructDefenseSet(ctx context.Context, in *MsgStructDefenseSet, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructDefenseClear(ctx context.Context, in *MsgStructDefenseClear, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructMove(ctx context.Context, in *MsgStructMove, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
@@ -168,6 +208,51 @@ func (c *msgClient) AddressRegister(ctx context.Context, in *MsgAddressRegister,
 func (c *msgClient) AddressRevoke(ctx context.Context, in *MsgAddressRevoke, opts ...grpc.CallOption) (*MsgAddressRevokeResponse, error) {
 	out := new(MsgAddressRevokeResponse)
 	err := c.cc.Invoke(ctx, Msg_AddressRevoke_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) AgreementOpen(ctx context.Context, in *MsgAgreementOpen, opts ...grpc.CallOption) (*MsgAgreementResponse, error) {
+	out := new(MsgAgreementResponse)
+	err := c.cc.Invoke(ctx, Msg_AgreementOpen_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) AgreementClose(ctx context.Context, in *MsgAgreementClose, opts ...grpc.CallOption) (*MsgAgreementResponse, error) {
+	out := new(MsgAgreementResponse)
+	err := c.cc.Invoke(ctx, Msg_AgreementClose_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) AgreementCapacityIncrease(ctx context.Context, in *MsgAgreementCapacityIncrease, opts ...grpc.CallOption) (*MsgAgreementResponse, error) {
+	out := new(MsgAgreementResponse)
+	err := c.cc.Invoke(ctx, Msg_AgreementCapacityIncrease_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) AgreementCapacityDecrease(ctx context.Context, in *MsgAgreementCapacityDecrease, opts ...grpc.CallOption) (*MsgAgreementResponse, error) {
+	out := new(MsgAgreementResponse)
+	err := c.cc.Invoke(ctx, Msg_AgreementCapacityDecrease_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) AgreementDurationIncrease(ctx context.Context, in *MsgAgreementDurationIncrease, opts ...grpc.CallOption) (*MsgAgreementResponse, error) {
+	out := new(MsgAgreementResponse)
+	err := c.cc.Invoke(ctx, Msg_AgreementDurationIncrease_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -222,6 +307,33 @@ func (c *msgClient) FleetMove(ctx context.Context, in *MsgFleetMove, opts ...grp
 func (c *msgClient) GuildCreate(ctx context.Context, in *MsgGuildCreate, opts ...grpc.CallOption) (*MsgGuildCreateResponse, error) {
 	out := new(MsgGuildCreateResponse)
 	err := c.cc.Invoke(ctx, Msg_GuildCreate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildBankMint(ctx context.Context, in *MsgGuildBankMint, opts ...grpc.CallOption) (*MsgGuildBankMintResponse, error) {
+	out := new(MsgGuildBankMintResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildBankMint_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildBankRedeem(ctx context.Context, in *MsgGuildBankRedeem, opts ...grpc.CallOption) (*MsgGuildBankRedeemResponse, error) {
+	out := new(MsgGuildBankRedeemResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildBankRedeem_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildBankConfiscateAndBurn(ctx context.Context, in *MsgGuildBankConfiscateAndBurn, opts ...grpc.CallOption) (*MsgGuildBankConfiscateAndBurnResponse, error) {
+	out := new(MsgGuildBankConfiscateAndBurnResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildBankConfiscateAndBurn_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -462,6 +574,105 @@ func (c *msgClient) PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlaye
 	return out, nil
 }
 
+func (c *msgClient) PlayerResume(ctx context.Context, in *MsgPlayerResume, opts ...grpc.CallOption) (*MsgPlayerResumeResponse, error) {
+	out := new(MsgPlayerResumeResponse)
+	err := c.cc.Invoke(ctx, Msg_PlayerResume_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) ProviderCreate(ctx context.Context, in *MsgProviderCreate, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
+	out := new(MsgProviderResponse)
+	err := c.cc.Invoke(ctx, Msg_ProviderCreate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) ProviderWithdrawBalance(ctx context.Context, in *MsgProviderWithdrawBalance, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
+	out := new(MsgProviderResponse)
+	err := c.cc.Invoke(ctx, Msg_ProviderWithdrawBalance_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) ProviderUpdateCapacityMinimum(ctx context.Context, in *MsgProviderUpdateCapacityMinimum, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
+	out := new(MsgProviderResponse)
+	err := c.cc.Invoke(ctx, Msg_ProviderUpdateCapacityMinimum_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) ProviderUpdateCapacityMaximum(ctx context.Context, in *MsgProviderUpdateCapacityMaximum, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
+	out := new(MsgProviderResponse)
+	err := c.cc.Invoke(ctx, Msg_ProviderUpdateCapacityMaximum_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) ProviderUpdateDurationMinimum(ctx context.Context, in *MsgProviderUpdateDurationMinimum, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
+	out := new(MsgProviderResponse)
+	err := c.cc.Invoke(ctx, Msg_ProviderUpdateDurationMinimum_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) ProviderUpdateDurationMaximum(ctx context.Context, in *MsgProviderUpdateDurationMaximum, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
+	out := new(MsgProviderResponse)
+	err := c.cc.Invoke(ctx, Msg_ProviderUpdateDurationMaximum_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) ProviderUpdateAccessPolicy(ctx context.Context, in *MsgProviderUpdateAccessPolicy, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
+	out := new(MsgProviderResponse)
+	err := c.cc.Invoke(ctx, Msg_ProviderUpdateAccessPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) ProviderGuildGrant(ctx context.Context, in *MsgProviderGuildGrant, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
+	out := new(MsgProviderResponse)
+	err := c.cc.Invoke(ctx, Msg_ProviderGuildGrant_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) ProviderGuildRevoke(ctx context.Context, in *MsgProviderGuildRevoke, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
+	out := new(MsgProviderResponse)
+	err := c.cc.Invoke(ctx, Msg_ProviderGuildRevoke_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) ProviderDelete(ctx context.Context, in *MsgProviderDelete, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
+	out := new(MsgProviderResponse)
+	err := c.cc.Invoke(ctx, Msg_ProviderDelete_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) StructActivate(ctx context.Context, in *MsgStructActivate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error) {
 	out := new(MsgStructStatusResponse)
 	err := c.cc.Invoke(ctx, Msg_StructActivate_FullMethodName, in, out, opts...)
@@ -492,6 +703,15 @@ func (c *msgClient) StructBuildInitiate(ctx context.Context, in *MsgStructBuildI
 func (c *msgClient) StructBuildComplete(ctx context.Context, in *MsgStructBuildComplete, opts ...grpc.CallOption) (*MsgStructStatusResponse, error) {
 	out := new(MsgStructStatusResponse)
 	err := c.cc.Invoke(ctx, Msg_StructBuildComplete_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) StructBuildCancel(ctx context.Context, in *MsgStructBuildCancel, opts ...grpc.CallOption) (*MsgStructStatusResponse, error) {
+	out := new(MsgStructStatusResponse)
+	err := c.cc.Invoke(ctx, Msg_StructBuildCancel_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -651,12 +871,20 @@ type MsgServer interface {
 	UpdateParams(context.Context, *MsgUpdateParams) (*MsgUpdateParamsResponse, error)
 	AddressRegister(context.Context, *MsgAddressRegister) (*MsgAddressRegisterResponse, error)
 	AddressRevoke(context.Context, *MsgAddressRevoke) (*MsgAddressRevokeResponse, error)
+	AgreementOpen(context.Context, *MsgAgreementOpen) (*MsgAgreementResponse, error)
+	AgreementClose(context.Context, *MsgAgreementClose) (*MsgAgreementResponse, error)
+	AgreementCapacityIncrease(context.Context, *MsgAgreementCapacityIncrease) (*MsgAgreementResponse, error)
+	AgreementCapacityDecrease(context.Context, *MsgAgreementCapacityDecrease) (*MsgAgreementResponse, error)
+	AgreementDurationIncrease(context.Context, *MsgAgreementDurationIncrease) (*MsgAgreementResponse, error)
 	AllocationCreate(context.Context, *MsgAllocationCreate) (*MsgAllocationCreateResponse, error)
 	AllocationDelete(context.Context, *MsgAllocationDelete) (*MsgAllocationDeleteResponse, error)
 	AllocationUpdate(context.Context, *MsgAllocationUpdate) (*MsgAllocationUpdateResponse, error)
 	AllocationTransfer(context.Context, *MsgAllocationTransfer) (*MsgAllocationTransferResponse, error)
 	FleetMove(context.Context, *MsgFleetMove) (*MsgFleetMoveResponse, error)
 	GuildCreate(context.Context, *MsgGuildCreate) (*MsgGuildCreateResponse, error)
+	GuildBankMint(context.Context, *MsgGuildBankMint) (*MsgGuildBankMintResponse, error)
+	GuildBankRedeem(context.Context, *MsgGuildBankRedeem) (*MsgGuildBankRedeemResponse, error)
+	GuildBankConfiscateAndBurn(context.Context, *MsgGuildBankConfiscateAndBurn) (*MsgGuildBankConfiscateAndBurnResponse, error)
 	GuildUpdateOwnerId(context.Context, *MsgGuildUpdateOwnerId) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEntrySubstationId(context.Context, *MsgGuildUpdateEntrySubstationId) (*MsgGuildUpdateResponse, error)
 	GuildUpdateEndpoint(context.Context, *MsgGuildUpdateEndpoint) (*MsgGuildUpdateResponse, error)
@@ -683,10 +911,22 @@ type MsgServer interface {
 	PlanetExplore(context.Context, *MsgPlanetExplore) (*MsgPlanetExploreResponse, error)
 	PlanetRaidComplete(context.Context, *MsgPlanetRaidComplete) (*MsgPlanetRaidCompleteResponse, error)
 	PlayerUpdatePrimaryAddress(context.Context, *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error)
+	PlayerResume(context.Context, *MsgPlayerResume) (*MsgPlayerResumeResponse, error)
+	ProviderCreate(context.Context, *MsgProviderCreate) (*MsgProviderResponse, error)
+	ProviderWithdrawBalance(context.Context, *MsgProviderWithdrawBalance) (*MsgProviderResponse, error)
+	ProviderUpdateCapacityMinimum(context.Context, *MsgProviderUpdateCapacityMinimum) (*MsgProviderResponse, error)
+	ProviderUpdateCapacityMaximum(context.Context, *MsgProviderUpdateCapacityMaximum) (*MsgProviderResponse, error)
+	ProviderUpdateDurationMinimum(context.Context, *MsgProviderUpdateDurationMinimum) (*MsgProviderResponse, error)
+	ProviderUpdateDurationMaximum(context.Context, *MsgProviderUpdateDurationMaximum) (*MsgProviderResponse, error)
+	ProviderUpdateAccessPolicy(context.Context, *MsgProviderUpdateAccessPolicy) (*MsgProviderResponse, error)
+	ProviderGuildGrant(context.Context, *MsgProviderGuildGrant) (*MsgProviderResponse, error)
+	ProviderGuildRevoke(context.Context, *MsgProviderGuildRevoke) (*MsgProviderResponse, error)
+	ProviderDelete(context.Context, *MsgProviderDelete) (*MsgProviderResponse, error)
 	StructActivate(context.Context, *MsgStructActivate) (*MsgStructStatusResponse, error)
 	StructDeactivate(context.Context, *MsgStructDeactivate) (*MsgStructStatusResponse, error)
 	StructBuildInitiate(context.Context, *MsgStructBuildInitiate) (*MsgStructStatusResponse, error)
 	StructBuildComplete(context.Context, *MsgStructBuildComplete) (*MsgStructStatusResponse, error)
+	StructBuildCancel(context.Context, *MsgStructBuildCancel) (*MsgStructStatusResponse, error)
 	StructDefenseSet(context.Context, *MsgStructDefenseSet) (*MsgStructStatusResponse, error)
 	StructDefenseClear(context.Context, *MsgStructDefenseClear) (*MsgStructStatusResponse, error)
 	StructMove(context.Context, *MsgStructMove) (*MsgStructStatusResponse, error)
@@ -719,6 +959,21 @@ func (UnimplementedMsgServer) AddressRegister(context.Context, *MsgAddressRegist
 func (UnimplementedMsgServer) AddressRevoke(context.Context, *MsgAddressRevoke) (*MsgAddressRevokeResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AddressRevoke not implemented")
 }
+func (UnimplementedMsgServer) AgreementOpen(context.Context, *MsgAgreementOpen) (*MsgAgreementResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AgreementOpen not implemented")
+}
+func (UnimplementedMsgServer) AgreementClose(context.Context, *MsgAgreementClose) (*MsgAgreementResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AgreementClose not implemented")
+}
+func (UnimplementedMsgServer) AgreementCapacityIncrease(context.Context, *MsgAgreementCapacityIncrease) (*MsgAgreementResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AgreementCapacityIncrease not implemented")
+}
+func (UnimplementedMsgServer) AgreementCapacityDecrease(context.Context, *MsgAgreementCapacityDecrease) (*MsgAgreementResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AgreementCapacityDecrease not implemented")
+}
+func (UnimplementedMsgServer) AgreementDurationIncrease(context.Context, *MsgAgreementDurationIncrease) (*MsgAgreementResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AgreementDurationIncrease not implemented")
+}
 func (UnimplementedMsgServer) AllocationCreate(context.Context, *MsgAllocationCreate) (*MsgAllocationCreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method AllocationCreate not implemented")
 }
@@ -736,6 +991,15 @@ func (UnimplementedMsgServer) FleetMove(context.Context, *MsgFleetMove) (*MsgFle
 }
 func (UnimplementedMsgServer) GuildCreate(context.Context, *MsgGuildCreate) (*MsgGuildCreateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildCreate not implemented")
+}
+func (UnimplementedMsgServer) GuildBankMint(context.Context, *MsgGuildBankMint) (*MsgGuildBankMintResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildBankMint not implemented")
+}
+func (UnimplementedMsgServer) GuildBankRedeem(context.Context, *MsgGuildBankRedeem) (*MsgGuildBankRedeemResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildBankRedeem not implemented")
+}
+func (UnimplementedMsgServer) GuildBankConfiscateAndBurn(context.Context, *MsgGuildBankConfiscateAndBurn) (*MsgGuildBankConfiscateAndBurnResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildBankConfiscateAndBurn not implemented")
 }
 func (UnimplementedMsgServer) GuildUpdateOwnerId(context.Context, *MsgGuildUpdateOwnerId) (*MsgGuildUpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildUpdateOwnerId not implemented")
@@ -815,6 +1079,39 @@ func (UnimplementedMsgServer) PlanetRaidComplete(context.Context, *MsgPlanetRaid
 func (UnimplementedMsgServer) PlayerUpdatePrimaryAddress(context.Context, *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlayerUpdatePrimaryAddress not implemented")
 }
+func (UnimplementedMsgServer) PlayerResume(context.Context, *MsgPlayerResume) (*MsgPlayerResumeResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlayerResume not implemented")
+}
+func (UnimplementedMsgServer) ProviderCreate(context.Context, *MsgProviderCreate) (*MsgProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderCreate not implemented")
+}
+func (UnimplementedMsgServer) ProviderWithdrawBalance(context.Context, *MsgProviderWithdrawBalance) (*MsgProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderWithdrawBalance not implemented")
+}
+func (UnimplementedMsgServer) ProviderUpdateCapacityMinimum(context.Context, *MsgProviderUpdateCapacityMinimum) (*MsgProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderUpdateCapacityMinimum not implemented")
+}
+func (UnimplementedMsgServer) ProviderUpdateCapacityMaximum(context.Context, *MsgProviderUpdateCapacityMaximum) (*MsgProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderUpdateCapacityMaximum not implemented")
+}
+func (UnimplementedMsgServer) ProviderUpdateDurationMinimum(context.Context, *MsgProviderUpdateDurationMinimum) (*MsgProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderUpdateDurationMinimum not implemented")
+}
+func (UnimplementedMsgServer) ProviderUpdateDurationMaximum(context.Context, *MsgProviderUpdateDurationMaximum) (*MsgProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderUpdateDurationMaximum not implemented")
+}
+func (UnimplementedMsgServer) ProviderUpdateAccessPolicy(context.Context, *MsgProviderUpdateAccessPolicy) (*MsgProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderUpdateAccessPolicy not implemented")
+}
+func (UnimplementedMsgServer) ProviderGuildGrant(context.Context, *MsgProviderGuildGrant) (*MsgProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderGuildGrant not implemented")
+}
+func (UnimplementedMsgServer) ProviderGuildRevoke(context.Context, *MsgProviderGuildRevoke) (*MsgProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderGuildRevoke not implemented")
+}
+func (UnimplementedMsgServer) ProviderDelete(context.Context, *MsgProviderDelete) (*MsgProviderResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ProviderDelete not implemented")
+}
 func (UnimplementedMsgServer) StructActivate(context.Context, *MsgStructActivate) (*MsgStructStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructActivate not implemented")
 }
@@ -826,6 +1123,9 @@ func (UnimplementedMsgServer) StructBuildInitiate(context.Context, *MsgStructBui
 }
 func (UnimplementedMsgServer) StructBuildComplete(context.Context, *MsgStructBuildComplete) (*MsgStructStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructBuildComplete not implemented")
+}
+func (UnimplementedMsgServer) StructBuildCancel(context.Context, *MsgStructBuildCancel) (*MsgStructStatusResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method StructBuildCancel not implemented")
 }
 func (UnimplementedMsgServer) StructDefenseSet(context.Context, *MsgStructDefenseSet) (*MsgStructStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructDefenseSet not implemented")
@@ -942,6 +1242,96 @@ func _Msg_AddressRevoke_Handler(srv interface{}, ctx context.Context, dec func(i
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_AgreementOpen_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAgreementOpen)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).AgreementOpen(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_AgreementOpen_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).AgreementOpen(ctx, req.(*MsgAgreementOpen))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_AgreementClose_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAgreementClose)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).AgreementClose(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_AgreementClose_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).AgreementClose(ctx, req.(*MsgAgreementClose))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_AgreementCapacityIncrease_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAgreementCapacityIncrease)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).AgreementCapacityIncrease(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_AgreementCapacityIncrease_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).AgreementCapacityIncrease(ctx, req.(*MsgAgreementCapacityIncrease))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_AgreementCapacityDecrease_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAgreementCapacityDecrease)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).AgreementCapacityDecrease(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_AgreementCapacityDecrease_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).AgreementCapacityDecrease(ctx, req.(*MsgAgreementCapacityDecrease))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_AgreementDurationIncrease_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgAgreementDurationIncrease)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).AgreementDurationIncrease(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_AgreementDurationIncrease_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).AgreementDurationIncrease(ctx, req.(*MsgAgreementDurationIncrease))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_AllocationCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgAllocationCreate)
 	if err := dec(in); err != nil {
@@ -1046,6 +1436,60 @@ func _Msg_GuildCreate_Handler(srv interface{}, ctx context.Context, dec func(int
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).GuildCreate(ctx, req.(*MsgGuildCreate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildBankMint_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildBankMint)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildBankMint(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildBankMint_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildBankMint(ctx, req.(*MsgGuildBankMint))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildBankRedeem_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildBankRedeem)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildBankRedeem(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildBankRedeem_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildBankRedeem(ctx, req.(*MsgGuildBankRedeem))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildBankConfiscateAndBurn_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildBankConfiscateAndBurn)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildBankConfiscateAndBurn(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildBankConfiscateAndBurn_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildBankConfiscateAndBurn(ctx, req.(*MsgGuildBankConfiscateAndBurn))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1518,6 +1962,204 @@ func _Msg_PlayerUpdatePrimaryAddress_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_PlayerResume_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgPlayerResume)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).PlayerResume(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_PlayerResume_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).PlayerResume(ctx, req.(*MsgPlayerResume))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_ProviderCreate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgProviderCreate)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ProviderCreate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_ProviderCreate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ProviderCreate(ctx, req.(*MsgProviderCreate))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_ProviderWithdrawBalance_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgProviderWithdrawBalance)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ProviderWithdrawBalance(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_ProviderWithdrawBalance_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ProviderWithdrawBalance(ctx, req.(*MsgProviderWithdrawBalance))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_ProviderUpdateCapacityMinimum_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgProviderUpdateCapacityMinimum)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ProviderUpdateCapacityMinimum(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_ProviderUpdateCapacityMinimum_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ProviderUpdateCapacityMinimum(ctx, req.(*MsgProviderUpdateCapacityMinimum))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_ProviderUpdateCapacityMaximum_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgProviderUpdateCapacityMaximum)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ProviderUpdateCapacityMaximum(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_ProviderUpdateCapacityMaximum_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ProviderUpdateCapacityMaximum(ctx, req.(*MsgProviderUpdateCapacityMaximum))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_ProviderUpdateDurationMinimum_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgProviderUpdateDurationMinimum)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ProviderUpdateDurationMinimum(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_ProviderUpdateDurationMinimum_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ProviderUpdateDurationMinimum(ctx, req.(*MsgProviderUpdateDurationMinimum))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_ProviderUpdateDurationMaximum_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgProviderUpdateDurationMaximum)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ProviderUpdateDurationMaximum(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_ProviderUpdateDurationMaximum_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ProviderUpdateDurationMaximum(ctx, req.(*MsgProviderUpdateDurationMaximum))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_ProviderUpdateAccessPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgProviderUpdateAccessPolicy)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ProviderUpdateAccessPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_ProviderUpdateAccessPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ProviderUpdateAccessPolicy(ctx, req.(*MsgProviderUpdateAccessPolicy))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_ProviderGuildGrant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgProviderGuildGrant)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ProviderGuildGrant(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_ProviderGuildGrant_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ProviderGuildGrant(ctx, req.(*MsgProviderGuildGrant))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_ProviderGuildRevoke_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgProviderGuildRevoke)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ProviderGuildRevoke(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_ProviderGuildRevoke_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ProviderGuildRevoke(ctx, req.(*MsgProviderGuildRevoke))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_ProviderDelete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgProviderDelete)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ProviderDelete(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_ProviderDelete_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ProviderDelete(ctx, req.(*MsgProviderDelete))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_StructActivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgStructActivate)
 	if err := dec(in); err != nil {
@@ -1586,6 +2228,24 @@ func _Msg_StructBuildComplete_Handler(srv interface{}, ctx context.Context, dec 
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).StructBuildComplete(ctx, req.(*MsgStructBuildComplete))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_StructBuildCancel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgStructBuildCancel)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).StructBuildCancel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_StructBuildCancel_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).StructBuildCancel(ctx, req.(*MsgStructBuildCancel))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -1898,6 +2558,26 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_AddressRevoke_Handler,
 		},
 		{
+			MethodName: "AgreementOpen",
+			Handler:    _Msg_AgreementOpen_Handler,
+		},
+		{
+			MethodName: "AgreementClose",
+			Handler:    _Msg_AgreementClose_Handler,
+		},
+		{
+			MethodName: "AgreementCapacityIncrease",
+			Handler:    _Msg_AgreementCapacityIncrease_Handler,
+		},
+		{
+			MethodName: "AgreementCapacityDecrease",
+			Handler:    _Msg_AgreementCapacityDecrease_Handler,
+		},
+		{
+			MethodName: "AgreementDurationIncrease",
+			Handler:    _Msg_AgreementDurationIncrease_Handler,
+		},
+		{
 			MethodName: "AllocationCreate",
 			Handler:    _Msg_AllocationCreate_Handler,
 		},
@@ -1920,6 +2600,18 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GuildCreate",
 			Handler:    _Msg_GuildCreate_Handler,
+		},
+		{
+			MethodName: "GuildBankMint",
+			Handler:    _Msg_GuildBankMint_Handler,
+		},
+		{
+			MethodName: "GuildBankRedeem",
+			Handler:    _Msg_GuildBankRedeem_Handler,
+		},
+		{
+			MethodName: "GuildBankConfiscateAndBurn",
+			Handler:    _Msg_GuildBankConfiscateAndBurn_Handler,
 		},
 		{
 			MethodName: "GuildUpdateOwnerId",
@@ -2026,6 +2718,50 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_PlayerUpdatePrimaryAddress_Handler,
 		},
 		{
+			MethodName: "PlayerResume",
+			Handler:    _Msg_PlayerResume_Handler,
+		},
+		{
+			MethodName: "ProviderCreate",
+			Handler:    _Msg_ProviderCreate_Handler,
+		},
+		{
+			MethodName: "ProviderWithdrawBalance",
+			Handler:    _Msg_ProviderWithdrawBalance_Handler,
+		},
+		{
+			MethodName: "ProviderUpdateCapacityMinimum",
+			Handler:    _Msg_ProviderUpdateCapacityMinimum_Handler,
+		},
+		{
+			MethodName: "ProviderUpdateCapacityMaximum",
+			Handler:    _Msg_ProviderUpdateCapacityMaximum_Handler,
+		},
+		{
+			MethodName: "ProviderUpdateDurationMinimum",
+			Handler:    _Msg_ProviderUpdateDurationMinimum_Handler,
+		},
+		{
+			MethodName: "ProviderUpdateDurationMaximum",
+			Handler:    _Msg_ProviderUpdateDurationMaximum_Handler,
+		},
+		{
+			MethodName: "ProviderUpdateAccessPolicy",
+			Handler:    _Msg_ProviderUpdateAccessPolicy_Handler,
+		},
+		{
+			MethodName: "ProviderGuildGrant",
+			Handler:    _Msg_ProviderGuildGrant_Handler,
+		},
+		{
+			MethodName: "ProviderGuildRevoke",
+			Handler:    _Msg_ProviderGuildRevoke_Handler,
+		},
+		{
+			MethodName: "ProviderDelete",
+			Handler:    _Msg_ProviderDelete_Handler,
+		},
+		{
 			MethodName: "StructActivate",
 			Handler:    _Msg_StructActivate_Handler,
 		},
@@ -2040,6 +2776,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "StructBuildComplete",
 			Handler:    _Msg_StructBuildComplete_Handler,
+		},
+		{
+			MethodName: "StructBuildCancel",
+			Handler:    _Msg_StructBuildCancel_Handler,
 		},
 		{
 			MethodName: "StructDefenseSet",
