@@ -30,7 +30,7 @@ message Infusion {
     (cosmos_proto.scalar)  = "cosmos.Int",
     (gogoproto.customtype) = "cosmossdk.io/math.Int",
     (gogoproto.nullable)   = false
-  ];;
+  ];
 }
 
 
