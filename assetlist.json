@@ -1,0 +1,43 @@
+{
+  "chain_name": "structs",
+  "assets": [
+    {
+      "description": "Alpha Matter, the most powerful material in the Structs universe.",
+      "denom_units": [
+        {
+          "denom": "ualpha",
+          "exponent": 0
+        },
+        {
+          "denom": "malpha",
+          "exponent": 3
+        },
+        {
+          "denom": "alpha",
+          "exponent": 6
+        },
+        {
+          "denom": "kalpha",
+          "exponent": 9
+        },
+        {
+          "denom": "talpha",
+          "exponent": 18
+        }
+      ],
+      "base": "ualpha",
+      "name": "alpha",
+      "display": "alpha",
+      "symbol": "ALPHA",
+      "logo_URIs": {
+        "png": "https://cdn.prod.website-files.com/63f67bd50091ab4b957b8055/6408dd7ae7c9a75c665c182d_Favicon.png",
+        "svg": "https://cdn.prod.website-files.com/63f67bd50091ab4b957b8055/6408dd7ae7c9a75c665c182d_Favicon.png"
+      },
+      "socials": {
+        "website": "https://playstructs.com",
+        "twitter": "https://x.com/playstructs"
+      },
+      "type_asset": "sdk.coin"
+    }
+  ]
+}

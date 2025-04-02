@@ -1,0 +1,80 @@
+{
+  "chain_name": "structs",
+  "status": "upcoming",
+  "network_type": "devnet",
+  "website": "https://playstructs.com",
+  "pretty_name": "structs",
+  "chain_type": "cosmos",
+  "chain_id": "structs",
+  "bech32_prefix": "structs",
+  "daemon_name": "structsd",
+  "node_home": "/Users/abstract/.structs",
+  "key_algos": [
+    "secp256k1"
+  ],
+  "slip44": 118,
+  "fees": {
+    "fee_tokens": [
+      {
+        "denom": "ualpha",
+        "fixed_min_gas_price": 0,
+        "low_gas_price": 0,
+        "average_gas_price": 0,
+        "high_gas_price": 1
+      }
+    ]
+  },
+  "staking": {
+    "staking_tokens": [
+      {
+        "denom": "ualpha"
+      }
+    ]
+  },
+  "codebase": {
+    "git_repo": "",
+    "genesis": {
+      "genesis_url": ""
+    },
+    "recommended_version": "v0.6.0",
+    "compatible_versions": [
+      "v0.6.0"
+    ],
+    "consensus": {
+      "type": "cometbft",
+      "version": "v0.38.5"
+    },
+    "sdk": {
+      "type": "cosmos",
+      "version": "v0.50.3"
+    },
+    "ibc": {
+      "type": "go",
+      "version": "v1.0.0"
+    },
+    "cosmwasm": {
+      "enabled": false
+    }
+  },
+  "description": "",
+  "apis": {
+    "rpc": [
+      {
+        "address": "http://reactor.oh.energy:26657",
+        "provider": "oh.energy"
+      }
+    ],
+    "rest": [
+      {
+        "address": "http://reactor.oh.energy:1317",
+        "provider": "oh.energy"
+      }
+    ],
+    "grpc": [
+      {
+        "address": "reactor.oh.energy:9090",
+        "provider": "oh.energy"
+      }
+    ]
+  }
+}
