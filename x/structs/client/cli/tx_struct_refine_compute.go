@@ -59,7 +59,7 @@ func CmdStructRefineCompute() *cobra.Command {
 			var performingStructure types.Struct
 			performingStructure = performing_structure_res.Struct
 
-            fmt.Printf("Loaded Struct (%s) for mining process \n", performingStructure.Id)
+            fmt.Printf("Loaded Struct (%s) for refining process \n", performingStructure.Id)
 
             struct_attribute_block_start_params := &types.QueryGetStructAttributeRequest{
                 StructId: argStructId,
