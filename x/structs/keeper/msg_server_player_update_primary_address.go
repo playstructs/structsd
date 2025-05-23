@@ -33,7 +33,7 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
 
     relatedPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.PrimaryAddress)
     if (relatedPlayerIndex == 0) {
-        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPlayerUpdate, "New Primary Address provided (%s) is not associated with a player, register it with the player before setting it as Primary. Update aborted.", msg.PrimaryAddress, relatedPlayerIndex, player.GetIndex())
+        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPlayerUpdate, "New Primary Address provided (%s) is not associated with a player, register it with the player before setting it as Primary. Update aborted.", msg.PrimaryAddress)
     }
 
     if relatedPlayerIndex != player.GetIndex() {

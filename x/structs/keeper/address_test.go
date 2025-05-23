@@ -3,57 +3,77 @@ package keeper_test
 import (
 	"testing"
 
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
 	keepertest "structs/testutil/keeper"
-	"structs/testutil/nullify"
-	"structs/x/structs/keeper"
-	"structs/x/structs/types"
+
+	"github.com/stretchr/testify/require"
 )
 
-func createNAddress(keeper *keeper.Keeper, ctx sdk.Context, n int) []types.Address {
-	items := make([]types.Address, n)
-	for i := range items {
-		items[i].Id = keeper.AppendAddress(ctx, items[i])
+func TestGetPlayerIndexFromAddress(t *testing.T) {
+	keeper, ctx := keepertest.StructsKeeper(t)
+
+	// Test non-existent address
+	playerIndex := keeper.GetPlayerIndexFromAddress(ctx, "structs1qmhyqk")
+	require.Equal(t, uint64(0), playerIndex)
+
+	// Test setting and getting an address
+	testAddress := "structs1qmhyqk"
+	testPlayerIndex := uint64(42)
+	keeper.SetPlayerIndexForAddress(ctx, testAddress, testPlayerIndex)
+
+	playerIndex = keeper.GetPlayerIndexFromAddress(ctx, testAddress)
+	require.Equal(t, testPlayerIndex, playerIndex)
+}
+
+func TestSetAndRevokePlayerIndexForAddress(t *testing.T) {
+	keeper, ctx := keepertest.StructsKeeper(t)
+
+	testAddress := "structs1qmhyqk"
+	testPlayerIndex := uint64(42)
+
+	// Test setting player index
+	keeper.SetPlayerIndexForAddress(ctx, testAddress, testPlayerIndex)
+	playerIndex := keeper.GetPlayerIndexFromAddress(ctx, testAddress)
+	require.Equal(t, testPlayerIndex, playerIndex)
+
+	// Test revoking player index
+	keeper.RevokePlayerIndexForAddress(ctx, testAddress, testPlayerIndex)
+	playerIndex = keeper.GetPlayerIndexFromAddress(ctx, testAddress)
+	require.Equal(t, uint64(0), playerIndex)
+}
+
+func TestGetAllAddressExport(t *testing.T) {
+	keeper, ctx := keepertest.StructsKeeper(t)
+
+	// Add multiple addresses
+	addresses := []string{
+		"structs1qmhyqk",
+		"structs2t23sqk",
+		"structs32hhlqk",
 	}
-	return items
-}
 
-func TestAddressGet(t *testing.T) {
-	keeper, ctx := keepertest.StructsKeeper(t)
-	items := createNAddress(keeper, ctx, 10)
-	for _, item := range items {
-		got, found := keeper.GetAddress(ctx, item.Id)
-		require.True(t, found)
-		require.Equal(t,
-			nullify.Fill(&item),
-			nullify.Fill(&got),
-		)
+	for i, addr := range addresses {
+		keeper.SetPlayerIndexForAddress(ctx, addr, uint64(i+1))
+	}
+
+	// Get all addresses
+	addressRecords := keeper.GetAllAddressExport(ctx)
+	require.Len(t, addressRecords, len(addresses))
+
+	// Verify each address is present with correct player index
+	for i, record := range addressRecords {
+		require.Equal(t, addresses[i], record.Address)
+		require.Equal(t, uint64(i+1), record.PlayerIndex)
 	}
 }
 
-func TestAddressRemove(t *testing.T) {
+func TestAddressEmitActivity(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
-	items := createNAddress(keeper, ctx, 10)
-	for _, item := range items {
-		keeper.RemoveAddress(ctx, item.Id)
-		_, found := keeper.GetAddress(ctx, item.Id)
-		require.False(t, found)
-	}
-}
 
-func TestAddressGetAll(t *testing.T) {
-	keeper, ctx := keepertest.StructsKeeper(t)
-	items := createNAddress(keeper, ctx, 10)
-	require.ElementsMatch(t,
-		nullify.Fill(items),
-		nullify.Fill(keeper.GetAllAddress(ctx)),
-	)
-}
+	testAddress := "structs1qmhyqk"
 
-func TestAddressCount(t *testing.T) {
-	keeper, ctx := keepertest.StructsKeeper(t)
-	items := createNAddress(keeper, ctx, 10)
-	count := uint64(len(items))
-	require.Equal(t, count, keeper.GetAddressCount(ctx))
+	// This test is mainly to ensure the function doesn't panic
+	// The actual event emission would need to be verified through the event manager
+	require.NotPanics(t, func() {
+		keeper.AddressEmitActivity(ctx, testAddress)
+	})
 }

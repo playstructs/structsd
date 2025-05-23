@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 	"github.com/cosmos/cosmos-sdk/types/query"
 	"github.com/stretchr/testify/require"
 	"google.golang.org/grpc/codes"
@@ -18,7 +17,7 @@ import (
 func TestSubstationQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNSubstation(keeper, ctx, 2)
+	msgs := createNSubstation(t, keeper, ctx, 2)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryGetSubstationRequest
@@ -26,19 +25,25 @@ func TestSubstationQuerySingle(t *testing.T) {
 		err      error
 	}{
 		{
-			desc:     "First",
-			request:  &types.QueryGetSubstationRequest{Id: msgs[0].Id},
-			response: &types.QueryGetSubstationResponse{Substation: msgs[0]},
+			desc:    "First",
+			request: &types.QueryGetSubstationRequest{Id: msgs[0].Id},
+			response: &types.QueryGetSubstationResponse{
+				Substation:     msgs[0],
+				GridAttributes: &types.GridAttributes{},
+			},
 		},
 		{
-			desc:     "Second",
-			request:  &types.QueryGetSubstationRequest{Id: msgs[1].Id},
-			response: &types.QueryGetSubstationResponse{Substation: msgs[1]},
+			desc:    "Second",
+			request: &types.QueryGetSubstationRequest{Id: msgs[1].Id},
+			response: &types.QueryGetSubstationResponse{
+				Substation:     msgs[1],
+				GridAttributes: &types.GridAttributes{},
+			},
 		},
 		{
 			desc:    "KeyNotFound",
-			request: &types.QueryGetSubstationRequest{Id: uint64(len(msgs))},
-			err:     sdkerrors.ErrKeyNotFound,
+			request: &types.QueryGetSubstationRequest{Id: "non-existent"},
+			err:     types.ErrObjectNotFound,
 		},
 		{
 			desc: "InvalidRequest",
@@ -63,7 +68,7 @@ func TestSubstationQuerySingle(t *testing.T) {
 func TestSubstationQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNSubstation(keeper, ctx, 5)
+	msgs := createNSubstation(t, keeper, ctx, 5)
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllSubstationRequest {
 		return &types.QueryAllSubstationRequest{

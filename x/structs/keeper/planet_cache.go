@@ -645,7 +645,7 @@ func (cache *PlanetCache) BuildInitiateReadiness(structure *types.Struct, struct
     }
 
     if (structType.Category != types.ObjectType_planet) {
-        sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist in this location (%s) ")
+        sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist outside a Planet")
     }
 
     // Check that the Struct can exist in the specified ambit
@@ -695,7 +695,7 @@ func (cache *PlanetCache) MoveReadiness(structure *StructCache, ambit types.Ambi
     }
 
     if (structure.GetStructType().Category != types.ObjectType_planet) {
-        sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist in this location (%s) ")
+        sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist outside a Planet" )
     }
 
     // Check that the Struct can exist in the specified ambit

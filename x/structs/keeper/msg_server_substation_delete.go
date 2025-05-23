@@ -24,7 +24,7 @@ func (k msgServer) SubstationDelete(goCtx context.Context, msg *types.MsgSubstat
     substationObjectPermissionId := GetObjectPermissionIDBytes(msg.SubstationId, player.Id)
 	// check that the player has reactor permissions
     if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.PermissionDelete)) {
-        return &types.MsgSubstationDeleteResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationDelete, "Calling player (%d) has no Substation Delete permissions ", player.Id)
+        return &types.MsgSubstationDeleteResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationDelete, "Calling player (%s) has no Substation Delete permissions ", player.Id)
     }
 
 

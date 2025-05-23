@@ -37,7 +37,7 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
         return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not perform substation action with non-player address (%s)", allocation.Controller)
     }
     if (allocationPlayer.Id != player.Id) {
-        return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation not controlled by player ", player.Id)
+        return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation not controlled by player (%s)", player.Id)
     }
 
 
@@ -46,7 +46,7 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
 
 	// check that the player has reactor permissions
     if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.PermissionGrid)) {
-        return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Calling player (%d) has no Substation Connect Allocation permissions ", player.Id)
+        return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Calling player (%s) has no Substation Connect Allocation permissions ", player.Id)
     }
 
 

@@ -93,7 +93,7 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 
     if (sendError != nil){
         k.DischargePlayer(ctx, callingPlayerId)
-        return &types.MsgStructGeneratorStatusResponse{}, sdkerrors.Wrapf(types.ErrStructInfuse, "Infuse failed", sendError )
+        return &types.MsgStructGeneratorStatusResponse{}, sdkerrors.Wrapf(types.ErrStructInfuse, "Infuse failed %s", sendError )
     }
     k.bankKeeper.BurnCoins(ctx, types.ModuleName, infusionAmount)
 

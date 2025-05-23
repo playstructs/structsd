@@ -143,3 +143,8 @@ func (k *Keeper) ScopedKeeper() exported.ScopedKeeper {
 	}
 	return k.scopedKeeper
 }
+
+// BankKeeper returns the bank keeper
+func (k Keeper) BankKeeper() types.BankKeeper {
+	return k.bankKeeper
+}

@@ -21,7 +21,7 @@ func (k msgServer) SubstationPlayerConnect(goCtx context.Context, msg *types.Msg
 
 	targetPlayer, targetPlayerFound := k.GetPlayer(ctx, msg.PlayerId)
     if (!targetPlayerFound) {
-        return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Target player (%d) could be be found", player.Id)
+        return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Target player (%s) could be be found", player.Id)
     }
 
     substationObjectPermissionId := GetObjectPermissionIDBytes(msg.SubstationId, player.Id)
@@ -46,7 +46,7 @@ func (k msgServer) SubstationPlayerConnect(goCtx context.Context, msg *types.Msg
 
     substation, sourceSubstationFound := k.GetSubstation(ctx, msg.SubstationId)
     if (!sourceSubstationFound) {
-        return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "substation (%d) used for player connection not found", msg.SubstationId)
+        return &types.MsgSubstationPlayerConnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "substation (%s) used for player connection not found", msg.SubstationId)
     }
 
 	// connect to new substation
