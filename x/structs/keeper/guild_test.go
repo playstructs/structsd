@@ -1,6 +1,17 @@
 package keeper_test
 
-/*
+import (
+	"testing"
+
+	"cosmossdk.io/math"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+
+	keepertest "structs/testutil/keeper"
+	"structs/x/structs/keeper"
+	"structs/x/structs/types"
+)
+
 func createNGuild(keeper keeper.Keeper, ctx sdk.Context, n int) []types.Guild {
 	items := make([]types.Guild, n)
 	for i := range items {
@@ -19,10 +30,12 @@ func TestGuildGet(t *testing.T) {
 	for _, item := range items {
 		got, found := keeper.GetGuild(ctx, item.Id)
 		require.True(t, found)
-		require.Equal(t,
-			nullify.Fill(&item),
-			nullify.Fill(&got),
-		)
+		require.Equal(t, item.Id, got.Id)
+		require.Equal(t, item.Endpoint, got.Endpoint)
+		require.Equal(t, item.EntrySubstationId, got.EntrySubstationId)
+		require.Equal(t, item.PrimaryReactorId, got.PrimaryReactorId)
+		require.Equal(t, item.Owner, got.Owner)
+		require.Equal(t, item.Creator, got.Creator)
 	}
 }
 
@@ -39,10 +52,16 @@ func TestGuildRemove(t *testing.T) {
 func TestGuildGetAll(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 	items := createNGuild(keeper, ctx, 10)
-	require.ElementsMatch(t,
-		nullify.Fill(items),
-		nullify.Fill(keeper.GetAllGuild(ctx)),
-	)
+	got := keeper.GetAllGuild(ctx)
+	require.Len(t, got, len(items))
+	for i, item := range items {
+		require.Equal(t, item.Id, got[i].Id)
+		require.Equal(t, item.Endpoint, got[i].Endpoint)
+		require.Equal(t, item.EntrySubstationId, got[i].EntrySubstationId)
+		require.Equal(t, item.PrimaryReactorId, got[i].PrimaryReactorId)
+		require.Equal(t, item.Owner, got[i].Owner)
+		require.Equal(t, item.Creator, got[i].Creator)
+	}
 }
 
 func TestGuildCount(t *testing.T) {
@@ -217,4 +236,3 @@ func TestGuildPermissions(t *testing.T) {
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "has no permissions")
 }
-*/

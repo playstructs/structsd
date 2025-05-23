@@ -1,6 +1,17 @@
 package keeper_test
 
-/* Cannot perform test because account keeper is not implemented
+import (
+	"testing"
+
+	"cosmossdk.io/math"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+
+	keepertest "structs/testutil/keeper"
+	kpr "structs/x/structs/keeper"
+	"structs/x/structs/types"
+)
+
 func createNProvider(keeper kpr.Keeper, ctx sdk.Context, n int) []types.Provider {
 	items := make([]types.Provider, n)
 	for i := range items {
@@ -217,4 +228,3 @@ func TestProviderAccessPolicy(t *testing.T) {
 	updatedProvider, _ := keeper.GetProvider(ctx, provider.Id)
 	require.Equal(t, types.ProviderAccessPolicy_guildMarket, updatedProvider.AccessPolicy)
 }
-*/

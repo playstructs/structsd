@@ -1,9 +1,23 @@
 package keeper_test
 
-/*
+import (
+	"testing"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+
+	keepertest "structs/testutil/keeper"
+	"structs/testutil/nullify"
+	"structs/x/structs/keeper"
+	"structs/x/structs/types"
+)
+
 func createNReactor(keeper keeper.Keeper, ctx sdk.Context, n int) []types.Reactor {
 	items := make([]types.Reactor, n)
 	for i := range items {
+		items[i] = types.Reactor{
+			RawAddress: []byte("validator" + string(rune(i))),
+		}
 		items[i] = keeper.AppendReactor(ctx, items[i])
 	}
 	return items
@@ -87,4 +101,3 @@ func TestReactorValidatorOperations(t *testing.T) {
 	_, found = keeper.GetReactorBytesFromValidator(ctx, nil)
 	require.False(t, found)
 }
-*/

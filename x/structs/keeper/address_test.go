@@ -1,6 +1,13 @@
 package keeper_test
 
-/* Cannot perform test because account keeper is not implemented
+import (
+	"testing"
+
+	"github.com/stretchr/testify/require"
+
+	keepertest "structs/testutil/keeper"
+)
+
 func TestGetPlayerIndexFromAddress(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 
@@ -18,30 +25,23 @@ func TestGetPlayerIndexFromAddress(t *testing.T) {
 	playerIndex = keeper.GetPlayerIndexFromAddress(ctx, testAddress)
 	require.Equal(t, testPlayerIndex, playerIndex)
 }
-*/
 
-/*
-Cannot perform test because account keeper is not implemented
+func TestSetAndRevokePlayerIndexForAddress(t *testing.T) {
+	keeper, ctx := keepertest.StructsKeeper(t)
 
-	func TestSetAndRevokePlayerIndexForAddress(t *testing.T) {
-		keeper, ctx := keepertest.StructsKeeper(t)
+	testAddress := "structs1svmyn4g7h9nutyc2mhtrtmlpndjr2vld2k3t6u"
+	testPlayerIndex := uint64(42)
 
-		testAddress := "structs1svmyn4g7h9nutyc2mhtrtmlpndjr2vld2k3t6u"
-		testPlayerIndex := uint64(42)
+	// Test setting player index
+	keeper.SetPlayerIndexForAddress(ctx, testAddress, testPlayerIndex)
+	playerIndex := keeper.GetPlayerIndexFromAddress(ctx, testAddress)
+	require.Equal(t, testPlayerIndex, playerIndex)
 
-		// Test setting player index
-		keeper.SetPlayerIndexForAddress(ctx, testAddress, testPlayerIndex)
-		playerIndex := keeper.GetPlayerIndexFromAddress(ctx, testAddress)
-		require.Equal(t, testPlayerIndex, playerIndex)
-
-		// Test revoking player index
-		keeper.RevokePlayerIndexForAddress(ctx, testAddress, testPlayerIndex)
-		playerIndex = keeper.GetPlayerIndexFromAddress(ctx, testAddress)
-		require.Equal(t, uint64(0), playerIndex)
-	}
-*/
-
-/* Cannot perform test because account keeper is not implemented
+	// Test revoking player index
+	keeper.RevokePlayerIndexForAddress(ctx, testAddress, testPlayerIndex)
+	playerIndex = keeper.GetPlayerIndexFromAddress(ctx, testAddress)
+	require.Equal(t, uint64(0), playerIndex)
+}
 func TestGetAllAddressExport(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 
@@ -66,9 +66,6 @@ func TestGetAllAddressExport(t *testing.T) {
 		require.Equal(t, uint64(i+1), record.PlayerIndex)
 	}
 }
-*/
-
-/* Cannot perform test because account keeper is not implemented
 func TestAddressEmitActivity(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 
@@ -80,4 +77,3 @@ func TestAddressEmitActivity(t *testing.T) {
 		keeper.AddressEmitActivity(ctx, testAddress)
 	})
 }
-*/

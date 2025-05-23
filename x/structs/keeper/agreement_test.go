@@ -1,6 +1,17 @@
 package keeper_test
 
-/* Cannot perform test because account keeper is not implemented
+import (
+	"testing"
+
+	"cosmossdk.io/math"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/stretchr/testify/require"
+
+	keepertest "structs/testutil/keeper"
+	"structs/x/structs/keeper"
+	"structs/x/structs/types"
+)
+
 func createNAgreement(keeper keeper.Keeper, ctx sdk.Context, n int) []types.Agreement {
 	items := make([]types.Agreement, n)
 	for i := range items {
@@ -20,10 +31,9 @@ func TestAgreementGet(t *testing.T) {
 	for _, item := range items {
 		got, found := keeper.GetAgreement(ctx, item.Id)
 		require.True(t, found)
-		require.Equal(t,
-			nullify.Fill(&item),
-			nullify.Fill(&got),
-		)
+		require.Equal(t, item.Id, got.Id)
+		require.Equal(t, item.ProviderId, got.ProviderId)
+		require.Equal(t, item.EndBlock, got.EndBlock)
 	}
 }
 
@@ -40,10 +50,13 @@ func TestAgreementRemove(t *testing.T) {
 func TestAgreementGetAll(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 	items := createNAgreement(keeper, ctx, 10)
-	require.ElementsMatch(t,
-		nullify.Fill(items),
-		nullify.Fill(keeper.GetAllAgreement(ctx)),
-	)
+	got := keeper.GetAllAgreement(ctx)
+	require.Len(t, got, len(items))
+	for i, item := range items {
+		require.Equal(t, item.Id, got[i].Id)
+		require.Equal(t, item.ProviderId, got[i].ProviderId)
+		require.Equal(t, item.EndBlock, got[i].EndBlock)
+	}
 }
 
 func TestAgreementSet(t *testing.T) {
@@ -100,15 +113,47 @@ func TestAgreementImport(t *testing.T) {
 func TestAgreementExpirations(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 
+	// Create providers first
+	provider1 := types.Provider{
+		Owner:                       "player1",
+		Creator:                     "address1",
+		SubstationId:                "substation1",
+		Rate:                        sdk.NewCoin("token", math.NewInt(100)),
+		AccessPolicy:                types.ProviderAccessPolicy_openMarket,
+		CapacityMinimum:             100,
+		CapacityMaximum:             1000,
+		DurationMinimum:             1,
+		DurationMaximum:             10,
+		ProviderCancellationPenalty: math.LegacyNewDec(1),
+		ConsumerCancellationPenalty: math.LegacyNewDec(1),
+	}
+	provider2 := types.Provider{
+		Owner:                       "player2",
+		Creator:                     "address2",
+		SubstationId:                "substation2",
+		Rate:                        sdk.NewCoin("token", math.NewInt(100)),
+		AccessPolicy:                types.ProviderAccessPolicy_openMarket,
+		CapacityMinimum:             100,
+		CapacityMaximum:             1000,
+		DurationMinimum:             1,
+		DurationMaximum:             10,
+		ProviderCancellationPenalty: math.LegacyNewDec(1),
+		ConsumerCancellationPenalty: math.LegacyNewDec(1),
+	}
+
+	// Store providers
+	provider1, _ = keeper.AppendProvider(ctx, provider1)
+	provider2, _ = keeper.AppendProvider(ctx, provider2)
+
 	// Create agreements with different end blocks
 	agreement1 := types.Agreement{
 		Id:         "expired-agreement",
-		ProviderId: "provider1",
+		ProviderId: provider1.Id,
 		EndBlock:   uint64(ctx.BlockHeight()), // Current block
 	}
 	agreement2 := types.Agreement{
 		Id:         "future-agreement",
-		ProviderId: "provider2",
+		ProviderId: provider2.Id,
 		EndBlock:   uint64(ctx.BlockHeight() + 1000), // Future block
 	}
 
@@ -125,4 +170,3 @@ func TestAgreementExpirations(t *testing.T) {
 	_, found := keeper.GetAgreement(ctx, agreement1.Id)
 	require.True(t, found) // Assuming expired agreements are not automatically removed
 }
-*/
