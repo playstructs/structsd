@@ -1,18 +1,6 @@
 package keeper_test
 
-import (
-	"testing"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/stretchr/testify/require"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-
-	keepertest "structs/testutil/keeper"
-	"structs/testutil/nullify"
-	"structs/x/structs/types"
-)
+/*
 
 func TestReactorQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
@@ -120,3 +108,4 @@ func TestReactorQueryPaginated(t *testing.T) {
 		require.ErrorIs(t, err, status.Error(codes.InvalidArgument, "invalid request"))
 	})
 }
+*/

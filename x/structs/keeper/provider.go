@@ -6,8 +6,8 @@ import (
 
 	"cosmossdk.io/store/prefix"
 	storetypes "cosmossdk.io/store/types"
-    authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 
 	"structs/x/structs/types"
 
@@ -59,23 +59,23 @@ func (k Keeper) AppendProvider(ctx context.Context, provider types.Provider) (ty
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
 
 	// Set the Checkpoint to current block
-    k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_checkpointBlock, provider.Id), uint64(ctxSDK.BlockHeight()))
+	k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_checkpointBlock, provider.Id), uint64(ctxSDK.BlockHeight()))
 
-    // Create the Collateral Pool
-    fmt.Printf("Provider Collateral Pool: %s", types.ProviderCollateralPool + provider.Id)
-    fmt.Printf("Provider Collateral Pool: %s", authtypes.NewModuleAddress(types.ProviderCollateralPool + provider.Id))
+	// Create the Collateral Pool
+	fmt.Printf("Provider Collateral Pool: %s", types.ProviderCollateralPool+provider.Id)
+	fmt.Printf("Provider Collateral Pool: %s", authtypes.NewModuleAddress(types.ProviderCollateralPool+provider.Id))
 
-    providerCollateralAddress := authtypes.NewModuleAddress(types.ProviderCollateralPool + provider.Id)
-    providerCollateralAccount := k.accountKeeper.NewAccountWithAddress(ctx, providerCollateralAddress)
-    k.accountKeeper.SetAccount(ctx, providerCollateralAccount)
+	providerCollateralAddress := authtypes.NewModuleAddress(types.ProviderCollateralPool + provider.Id)
+	providerCollateralAccount := k.accountKeeper.NewAccountWithAddress(ctx, providerCollateralAddress)
+	k.accountKeeper.SetAccount(ctx, providerCollateralAccount)
 
-    // Create the Earnings Pool
-    fmt.Printf("Provider Earnings Pool: %s", types.ProviderEarningsPool + provider.Id)
-    fmt.Printf("Provider Earnings Pool: %s", authtypes.NewModuleAddress(types.ProviderEarningsPool + provider.Id))
+	// Create the Earnings Pool
+	fmt.Printf("Provider Earnings Pool: %s", types.ProviderEarningsPool+provider.Id)
+	fmt.Printf("Provider Earnings Pool: %s", authtypes.NewModuleAddress(types.ProviderEarningsPool+provider.Id))
 
-    providerEarningsAddress := authtypes.NewModuleAddress(types.ProviderEarningsPool + provider.Id)
-    providerEarningsAccount := k.accountKeeper.NewAccountWithAddress(ctx, providerEarningsAddress)
-    k.accountKeeper.SetAccount(ctx, providerEarningsAccount)
+	providerEarningsAddress := authtypes.NewModuleAddress(types.ProviderEarningsPool + provider.Id)
+	providerEarningsAccount := k.accountKeeper.NewAccountWithAddress(ctx, providerEarningsAddress)
+	k.accountKeeper.SetAccount(ctx, providerEarningsAccount)
 
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProvider{Provider: &provider})
 
@@ -159,8 +159,6 @@ func (k Keeper) GetAllProvider(ctx context.Context) (list []types.Provider) {
 	return
 }
 
-
-
 func (k Keeper) ProviderGrantGuild(ctx context.Context, providerId string, guildId string) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
 	byteKey := types.KeyPrefix(types.ProviderGuildAccessKey + providerId + "/" + guildId)
@@ -169,7 +167,7 @@ func (k Keeper) ProviderGrantGuild(ctx context.Context, providerId string, guild
 	store.Set(byteKey, bz)
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
-     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProviderGrantGuild{&types.EventProviderGrantGuildDetail{ProviderId: providerId, GuildId: guildId}})
+	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProviderGrantGuild{&types.EventProviderGrantGuildDetail{ProviderId: providerId, GuildId: guildId}})
 
 }
 
@@ -178,14 +176,14 @@ func (k Keeper) ProviderRevokeGuild(ctx context.Context, providerId string, guil
 	store.Delete(types.KeyPrefix(types.ProviderGuildAccessKey + providerId + "/" + guildId))
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProviderRevokeGuild{&types.EventProviderRevokeGuildDetail{ProviderId: providerId, GuildId: guildId}})
+	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProviderRevokeGuild{&types.EventProviderRevokeGuildDetail{ProviderId: providerId, GuildId: guildId}})
 }
 
-func (k Keeper) ProviderGuildAccessAllowed(ctx context.Context, providerId string, guildId string) (bool) {
-    	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
-    	byteKey := types.KeyPrefix(types.ProviderGuildAccessKey + providerId + "/" + guildId)
-    	bz := store.Get(byteKey)
+func (k Keeper) ProviderGuildAccessAllowed(ctx context.Context, providerId string, guildId string) bool {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), []byte{})
+	byteKey := types.KeyPrefix(types.ProviderGuildAccessKey + providerId + "/" + guildId)
+	bz := store.Get(byteKey)
 
-    	// doesn't exist: no element
-    	return bz != nil && binary.BigEndian.Uint64(bz) != 0
+	// doesn't exist: no element
+	return bz != nil && binary.BigEndian.Uint64(bz) != 0
 }

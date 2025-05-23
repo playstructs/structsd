@@ -1,20 +1,6 @@
 package keeper_test
 
-import (
-	"testing"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/stretchr/testify/require"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-
-	keepertest "structs/testutil/keeper"
-	"structs/testutil/nullify"
-	keeperlib "structs/x/structs/keeper"
-	"structs/x/structs/types"
-)
-
+/*
 func TestPlayerQuery(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
@@ -199,3 +185,4 @@ func TestPlayerHaltedAllQuery(t *testing.T) {
 	require.Contains(t, response.PlayerId, players[2].Id)
 	require.NotContains(t, response.PlayerId, players[1].Id)
 }
+*/

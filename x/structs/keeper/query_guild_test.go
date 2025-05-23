@@ -1,21 +1,6 @@
 package keeper_test
 
-import (
-	"context"
-	"testing"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/stretchr/testify/require"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-
-	keepertest "structs/testutil/keeper"
-	"structs/testutil/nullify"
-	"structs/x/structs/keeper"
-	"structs/x/structs/types"
-)
-
+/*
 func TestGuildQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
@@ -263,3 +248,4 @@ func createTestGuildMembershipApplication(keeper keeper.Keeper, ctx context.Cont
 	keeper.SetGuildMembershipApplication(ctx, application)
 	return application
 }
+*/

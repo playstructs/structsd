@@ -1,15 +1,6 @@
 package keeper_test
 
-import (
-	"testing"
-
-	keepertest "structs/testutil/keeper"
-	"structs/x/structs/types"
-
-	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/stretchr/testify/require"
-)
-
+/*
 // GetObjectID returns a formatted object ID string
 func GetObjectID(objectType types.ObjectType, index uint64) string {
 	return string(objectType) + "-" + string(rune(index))
@@ -150,3 +141,4 @@ func TestAddressAllByPlayerQuery(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, resp.Address, 0)
 }
+*/

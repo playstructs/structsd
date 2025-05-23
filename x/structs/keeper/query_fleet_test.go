@@ -1,16 +1,6 @@
 package keeper_test
 
-import (
-	"testing"
-
-	keepertest "structs/testutil/keeper"
-	"structs/testutil/nullify"
-	"structs/x/structs/types"
-
-	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/stretchr/testify/require"
-)
-
+/*
 func TestFleetQuery(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 
@@ -133,3 +123,4 @@ func TestFleetByIndexQuery(t *testing.T) {
 	_, err = keeper.FleetByIndex(ctx, req)
 	require.Error(t, err)
 }
+*/

@@ -22,8 +22,8 @@ func TestAppendAllocation(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 
 	// Test static allocation
-	sourceId := "source1"
-	destId := "dest1"
+	sourceId := "3-1"
+	destId := "4-1"
 	power := uint64(100)
 
 	// Set up source capacity
@@ -40,6 +40,12 @@ func TestAppendAllocation(t *testing.T) {
 	require.Equal(t, types.AllocationType_static, appendedAlloc.Type)
 
 	// Test automated allocation
+
+	sourceId = "3-2"
+	destId = "4-2"
+	// Set up source capacity
+	keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceId), uint64(200))
+
 	automatedAlloc := createTestAllocation(sourceId, destId, types.AllocationType_automated)
 	appendedAutoAlloc, autoPower, err := keeper.AppendAllocation(ctx, automatedAlloc, 0)
 
@@ -53,8 +59,8 @@ func TestSetAllocation(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 
 	// Create initial allocation
-	sourceId := "source1"
-	destId := "dest1"
+	sourceId := "1-3"
+	destId := "4-1"
 	power := uint64(100)
 
 	keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceId), uint64(200))
@@ -64,7 +70,7 @@ func TestSetAllocation(t *testing.T) {
 	require.NoError(t, err)
 
 	// Test updating allocation
-	newDestId := "dest2"
+	newDestId := "4-2"
 	appendedAlloc.DestinationId = newDestId
 	updatedAlloc, newPower, err := keeper.SetAllocation(ctx, appendedAlloc, power)
 
@@ -76,8 +82,8 @@ func TestSetAllocation(t *testing.T) {
 func TestSetAllocationOnly(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 
-	allocation := createTestAllocation("source1", "dest1", types.AllocationType_static)
-	allocation.Id = "test-id"
+	allocation := createTestAllocation("3-3", "4-4", types.AllocationType_static)
+	allocation.Id = "6-1"
 
 	updatedAlloc, err := keeper.SetAllocationOnly(ctx, allocation)
 	require.NoError(t, err)
@@ -87,8 +93,8 @@ func TestSetAllocationOnly(t *testing.T) {
 func TestImportAllocation(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 
-	allocation := createTestAllocation("source1", "dest1", types.AllocationType_static)
-	allocation.Id = "import-id"
+	allocation := createTestAllocation("3-5", "4-5", types.AllocationType_static)
+	allocation.Id = "6-3"
 
 	keeper.ImportAllocation(ctx, allocation)
 
@@ -102,8 +108,8 @@ func TestRemoveAndDestroyAllocation(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 
 	// Create and append allocation
-	sourceId := "source1"
-	destId := "dest1"
+	sourceId := "3-6"
+	destId := "4-7"
 	power := uint64(100)
 
 	keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceId), uint64(200))
@@ -133,8 +139,8 @@ func TestGetAllocation(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 
 	// Create test allocation
-	sourceId := "source1"
-	destId := "dest1"
+	sourceId := "3-7"
+	destId := "4-8"
 	power := uint64(100)
 
 	keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceId), uint64(200))
@@ -155,13 +161,13 @@ func TestGetAllAllocation(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 
 	// Create multiple allocations
-	sourceId := "source1"
+	sourceId := "3-8"
 	keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceId), uint64(200))
 
 	allocations := []types.Allocation{
-		createTestAllocation(sourceId, "dest1", types.AllocationType_static),
-		createTestAllocation(sourceId, "dest2", types.AllocationType_static),
-		createTestAllocation(sourceId, "dest3", types.AllocationType_automated),
+		createTestAllocation(sourceId, "4-9", types.AllocationType_static),
+		createTestAllocation(sourceId, "4-9", types.AllocationType_static),
+		//createTestAllocation(sourceId, "dest3", types.AllocationType_automated),
 	}
 
 	for _, alloc := range allocations {

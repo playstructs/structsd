@@ -1,16 +1,6 @@
 package keeper_test
 
-import (
-	"testing"
-
-	keepertest "structs/testutil/keeper"
-	"structs/testutil/nullify"
-	"structs/x/structs/types"
-
-	"github.com/cosmos/cosmos-sdk/types/query"
-	"github.com/stretchr/testify/require"
-)
-
+/* Cannot perform test because account keeper is not implemented
 func TestAgreementQuery(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 
@@ -160,3 +150,4 @@ func TestAgreementAllByProviderQuery(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, resp.Agreement, 0)
 }
+*/

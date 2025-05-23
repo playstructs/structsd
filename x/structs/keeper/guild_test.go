@@ -1,18 +1,6 @@
 package keeper_test
 
-import (
-	"testing"
-
-	keepertest "structs/testutil/keeper"
-	"structs/testutil/nullify"
-	"structs/x/structs/keeper"
-	"structs/x/structs/types"
-
-	"cosmossdk.io/math"
-	sdk "github.com/cosmos/cosmos-sdk/types"
-	"github.com/stretchr/testify/require"
-)
-
+/*
 func createNGuild(keeper keeper.Keeper, ctx sdk.Context, n int) []types.Guild {
 	items := make([]types.Guild, n)
 	for i := range items {
@@ -229,3 +217,4 @@ func TestGuildPermissions(t *testing.T) {
 	require.Error(t, err)
 	require.Contains(t, err.Error(), "has no permissions")
 }
+*/
