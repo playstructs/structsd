@@ -11,7 +11,6 @@ import (
 	"structs/x/structs/types"
 
     crypto "github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
-
 )
 
 func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressRegister) (*types.MsgAddressRegisterResponse, error) {

@@ -23,7 +23,9 @@ var (
 )
 
 const (
-// this line is used by starport scaffolding # simapp/module/const
+	OpWeightMsgCreateStruct = "op_weight_msg_create_struct"
+	OpWeightMsgUpdateStruct = "op_weight_msg_update_struct"
+	OpWeightMsgDeleteStruct = "op_weight_msg_delete_struct"
 )
 
 // GenerateGenesisState creates a randomized GenState of the module.
@@ -52,7 +54,41 @@ func (AppModule) ProposalContents(_ module.SimulationState) []simtypes.WeightedP
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
-	// this line is used by starport scaffolding # simapp/module/operation
+	var weightMsgCreateStruct int
+	simState.AppParams.GetOrGenerate(OpWeightMsgCreateStruct, &weightMsgCreateStruct, nil,
+		func(_ *rand.Rand) {
+			weightMsgCreateStruct = 100
+		},
+	)
+
+	var weightMsgUpdateStruct int
+	simState.AppParams.GetOrGenerate(OpWeightMsgUpdateStruct, &weightMsgUpdateStruct, nil,
+		func(_ *rand.Rand) {
+			weightMsgUpdateStruct = 50
+		},
+	)
+
+	var weightMsgDeleteStruct int
+	simState.AppParams.GetOrGenerate(OpWeightMsgDeleteStruct, &weightMsgDeleteStruct, nil,
+		func(_ *rand.Rand) {
+			weightMsgDeleteStruct = 30
+		},
+	)
+
+	operations = append(operations,
+		simulation.NewWeightedOperation(
+			weightMsgCreateStruct,
+			structssimulation.SimulateMsgCreateStruct(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgUpdateStruct,
+			structssimulation.SimulateMsgUpdateStruct(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgDeleteStruct,
+			structssimulation.SimulateMsgDeleteStruct(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+	)
 
 	return operations
 }
