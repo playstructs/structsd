@@ -74,7 +74,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 			weightMsgDeleteStruct = 30
 		},
 	)
-
+/*
 	operations = append(operations,
 		simulation.NewWeightedOperation(
 			weightMsgCreateStruct,
@@ -89,7 +89,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 			structssimulation.SimulateMsgDeleteStruct(am.keeper, am.accountKeeper, am.bankKeeper),
 		),
 	)
-
+*/
 	return operations
 }
 
