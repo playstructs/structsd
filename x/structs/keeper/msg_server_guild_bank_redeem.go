@@ -23,8 +23,12 @@ func (k msgServer) GuildBankRedeem(goCtx context.Context, msg *types.MsgGuildBan
     }
 
     // TODO permission check on the address to look for Asset permissions
+    denomSlice := strings.Split(msg.AmountToken.Denom,".")
+    if len(denomSlice) != 2 {
+        return &types.MsgGuildBankRedeemResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Guild ID (%s) not found ", msg.AmountToken.Denom)
+    }
 
-    guild := k.GetGuildCacheFromId(ctx, strings.Split(msg.AmountToken.Denom,".")[1])
+    guild := k.GetGuildCacheFromId(ctx, denomSlice[1])
     if !guild.LoadGuild() {
         return &types.MsgGuildBankRedeemResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Guild ID (%s) not found ", guild.GetGuildId())
     }
