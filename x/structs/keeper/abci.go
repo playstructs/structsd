@@ -50,7 +50,7 @@ func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error)
 func (k Keeper) EmitEventTime(ctx context.Context) {
     ctxSDK := sdk.UnwrapSDKContext(ctx)
     ctxSDK.Logger().Debug("Emit Event Time")
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventTime{&types.EventTimeDetail{BlockHeight: ctxSDK.BlockHeight(), BlockTime: ctxSDK.HeaderInfo().Time }})
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventTime{&types.EventTimeDetail{BlockHeight: ctxSDK.BlockHeight(), BlockTime: ctxSDK.HeaderInfo().Time.UTC() }})
 }
 
 func (k *Keeper) EventAllGenesis(ctx context.Context) {

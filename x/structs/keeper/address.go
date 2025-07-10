@@ -72,5 +72,5 @@ func (k Keeper) GetAllAddressExport(ctx context.Context) (list []*types.AddressR
 
 func (k Keeper) AddressEmitActivity(ctx context.Context, address string) {
     ctxSDK := sdk.UnwrapSDKContext(ctx)
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAddressActivity{&types.AddressActivity{Address: address, BlockHeight: ctxSDK.BlockHeight(), BlockTime: ctxSDK.HeaderInfo().Time }})
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAddressActivity{&types.AddressActivity{Address: address, BlockHeight: ctxSDK.BlockHeight(), BlockTime: ctxSDK.HeaderInfo().Time.UTC() }})
 }
