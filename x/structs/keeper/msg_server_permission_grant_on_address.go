@@ -17,6 +17,10 @@ func (k msgServer) PermissionGrantOnAddress(goCtx context.Context, msg *types.Ms
 
     var err error
 
+    if msg.Permissions == 0 {
+        return &types.MsgPermissionResponse{}, sdkerrors.Wrapf(types.ErrPermission, "Cannot Grant 0")
+    }
+
     player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
     if (!playerFound) {
         return nil, err
@@ -35,7 +39,7 @@ func (k msgServer) PermissionGrantOnAddress(goCtx context.Context, msg *types.Ms
     // Make sure the calling address has enough permissions to apply to another address
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     if (!k.PermissionHasAll(ctx, addressPermissionId, types.Permission(msg.Permissions) | types.Permissions)) {
-        return &types.MsgPermissionResponse{}, sdkerrors.Wrapf(types.ErrGuildUpdate, "Calling address (%s) does not have the permissions needed to grant this level", msg.Creator)
+        return &types.MsgPermissionResponse{}, sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) does not have the permissions needed to grant this level", msg.Creator)
     }
 
     targetAddressPermissionId := GetAddressPermissionIDBytes(msg.Address)

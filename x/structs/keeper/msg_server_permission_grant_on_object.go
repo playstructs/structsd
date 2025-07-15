@@ -17,6 +17,10 @@ func (k msgServer) PermissionGrantOnObject(goCtx context.Context, msg *types.Msg
 
    var err error
 
+    if msg.Permissions == 0 {
+        return &types.MsgPermissionResponse{}, sdkerrors.Wrapf(types.ErrPermission, "Cannot Grant 0")
+    }
+
     player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
     if (!playerFound) {
         return nil, err
