@@ -92,6 +92,7 @@ func (k Keeper) AppendGuild(
 
     fmt.Printf("Guild Collateral Pool: %s", types.GuildBankCollateralPool + guild.Id)
     fmt.Printf("Guild Collateral Pool: %s", authtypes.NewModuleAddress(types.GuildBankCollateralPool + guild.Id))
+    // types.ModuleName Guild Bank Mint
 
     guildCollateralAddress := authtypes.NewModuleAddress(types.GuildBankCollateralPool + guild.Id)
     guildCollateralAccount := k.accountKeeper.NewAccountWithAddress(ctx, guildCollateralAddress)
@@ -99,6 +100,7 @@ func (k Keeper) AppendGuild(
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuild{Guild: &guild})
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildBankAddress{&types.EventGuildBankAddressDetail{GuildId: guild.Id, BankCollateralPool: string(guildCollateralAddress),BankTokenPool: types.ModuleName}})
 
 	return guild
 }

@@ -78,6 +78,7 @@ func (k Keeper) AppendProvider(ctx context.Context, provider types.Provider) (ty
 	k.accountKeeper.SetAccount(ctx, providerEarningsAccount)
 
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProvider{Provider: &provider})
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProviderAddress{&types.EventProviderAddressDetail{ProviderId: provider.Id, CollateralPool: string(providerCollateralAddress), EarningPool: string(providerEarningsAddress)}})
 
 	return provider, nil
 }

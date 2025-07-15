@@ -65,6 +65,9 @@ option go_package = "structs/x/structs/types";
   message EventPermission { PermissionRecord permissionRecord = 1; }
   message EventGrid { GridRecord gridRecord = 1; }
 
+  message EventProviderAddress { EventProviderAddressDetail eventProviderAddressDetail = 1;}
+  message EventProviderAddressDetail { string providerId = 1; string collateralPool = 2; string earningPool = 3;}
+
   message EventProviderGrantGuild { EventProviderGrantGuildDetail eventProviderGrantGuildDetail = 1;}
   message EventProviderGrantGuildDetail { string providerId = 1; string guildId = 2;}
 
@@ -78,6 +81,9 @@ option go_package = "structs/x/structs/types";
 
   message EventAddressAssociation { AddressAssociation addressAssociation = 1; }
   message EventAddressActivity { AddressActivity addressActivity = 1; }
+
+  message EventGuildBankAddress { EventGuildBankAddressDetail eventGuildBankAddressDetail = 1;}
+  message EventGuildBankAddressDetail { string guildId = 1; string bankCollateralPool = 2; string bankTokenPool = 3;}
 
   message EventGuildBankMint { EventGuildBankMintDetail eventGuildBankMintDetail = 1;}
   message EventGuildBankMintDetail { string guildId = 1; uint64 amountAlpha = 2; uint64 amountToken = 3; string playerId = 4;}
