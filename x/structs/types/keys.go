@@ -45,7 +45,7 @@ const (
     //Charge_Capacitance = 10.0
 
     // This annoys me but whatever
-    CommandStruct = "Command"
+    CommandStruct = "Command Ship"
 
     // Punishment Charge
     PlayerResumeCharge = 666

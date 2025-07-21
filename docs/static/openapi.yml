@@ -29379,6 +29379,15 @@ paths:
                       format: uint64
                     type:
                       type: string
+                    class:
+                      type: string
+                      title: New Struct Type Identity Details
+                    classAbbreviation:
+                      type: string
+                    defaultCosmeticModelNumber:
+                      type: string
+                    defaultCosmeticName:
+                      type: string
                     category:
                       type: string
                       enum:
@@ -29796,6 +29805,15 @@ paths:
                     type: string
                     format: uint64
                   type:
+                    type: string
+                  class:
+                    type: string
+                    title: New Struct Type Identity Details
+                  classAbbreviation:
+                    type: string
+                  defaultCosmeticModelNumber:
+                    type: string
+                  defaultCosmeticName:
                     type: string
                   category:
                     type: string
@@ -41311,6 +41329,15 @@ definitions:
               format: uint64
             type:
               type: string
+            class:
+              type: string
+              title: New Struct Type Identity Details
+            classAbbreviation:
+              type: string
+            defaultCosmeticModelNumber:
+              type: string
+            defaultCosmeticName:
+              type: string
             category:
               type: string
               enum:
@@ -42554,6 +42581,15 @@ definitions:
             format: uint64
           type:
             type: string
+          class:
+            type: string
+            title: New Struct Type Identity Details
+          classAbbreviation:
+            type: string
+          defaultCosmeticModelNumber:
+            type: string
+          defaultCosmeticName:
+            type: string
           category:
             type: string
             enum:
@@ -42990,6 +43026,15 @@ definitions:
         type: string
         format: uint64
       type:
+        type: string
+      class:
+        type: string
+        title: New Struct Type Identity Details
+      classAbbreviation:
+        type: string
+      defaultCosmeticModelNumber:
+        type: string
+      defaultCosmeticName:
         type: string
       category:
         type: string

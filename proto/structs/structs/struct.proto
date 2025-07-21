@@ -25,7 +25,13 @@ message Struct {
 
 message StructType {
   uint64  id    = 1;
-  string  type  = 2;
+  string  type  = 2; // TODO Deprecating... Will match with Class for now.
+
+  // New Struct Type Identity Details
+  string  class = 65;
+  string  classAbbreviation = 66;
+  string  defaultCosmeticModelNumber = 67;
+  string  defaultCosmeticName = 68;
 
   // Fundamental attributes
   objectType      category        = 3 [(amino.dont_omitempty) = true]; // Planet or Fleet
