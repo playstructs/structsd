@@ -7308,7 +7308,7 @@ type StructType struct {
 	unknownFields protoimpl.UnknownFields
 
 	Id    uint64 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Type_ string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
+	Type_ string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"` // TODO Deprecating... Will match with Class for now.
 	// New Struct Type Identity Details
 	Class                      string `protobuf:"bytes,65,opt,name=class,proto3" json:"class,omitempty"`
 	ClassAbbreviation          string `protobuf:"bytes,66,opt,name=classAbbreviation,proto3" json:"classAbbreviation,omitempty"`
