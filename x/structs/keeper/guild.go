@@ -100,7 +100,7 @@ func (k Keeper) AppendGuild(
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuild{Guild: &guild})
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildBankAddress{&types.EventGuildBankAddressDetail{GuildId: guild.Id, BankCollateralPool: string(guildCollateralAddress),BankTokenPool: types.ModuleName}})
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildBankAddress{&types.EventGuildBankAddressDetail{GuildId: guild.Id, BankCollateralPool: guildCollateralAddress.String(),BankTokenPool: types.ModuleName}})
 
 	return guild
 }
