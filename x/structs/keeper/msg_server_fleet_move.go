@@ -43,9 +43,9 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
         return &types.MsgFleetMoveResponse{}, readinessError
     }
 
-    if fleet.GetPlanetId() != msg.DestinationLocationId {
-        if fleet.GetPlanet().GetLocationListStart() = msg.FleetId {
-            _ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: msg.FleetId, PlanetId: fleet.GetPlanetId(), Status: types.RaidStatus_attackerRetreated}})
+    if fleet.GetLocationId() != msg.DestinationLocationId {
+        if fleet.GetPlanet().GetLocationListStart() == msg.FleetId {
+            _ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: msg.FleetId, PlanetId: fleet.GetLocationId(), Status: types.RaidStatus_attackerRetreated}})
         }
     }
 

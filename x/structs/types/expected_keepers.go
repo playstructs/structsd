@@ -2,7 +2,7 @@ package types
 
 import (
 	"context"
-
+    "time"
     "cosmossdk.io/math"
 	"cosmossdk.io/core/address"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -32,6 +32,9 @@ type StakingKeeper interface {
 	SetDelegation(ctx context.Context, delegation staking.Delegation) error
 	RemoveDelegation(ctx context.Context, delegation staking.Delegation) error
 
+    // Needed for the Join Migration
+    ValidateUnbondAmount(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress, amt math.Int) (shares math.LegacyDec, err error)
+    BeginRedelegation(ctx context.Context, delAddr sdk.AccAddress, valSrcAddr, valDstAddr sdk.ValAddress, sharesAmount math.LegacyDec) (completionTime time.Time, err error)
 
 }
 

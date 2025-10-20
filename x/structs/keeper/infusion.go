@@ -145,6 +145,7 @@ func (k Keeper) RemoveInfusion(ctx context.Context, destinationId string, addres
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventDelete{ ObjectId: infusionId})
 }
 
+
 // GetAllInfusion returns all infusion
 func (k Keeper) GetAllInfusion(ctx context.Context) (list []types.Infusion) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionKey))
