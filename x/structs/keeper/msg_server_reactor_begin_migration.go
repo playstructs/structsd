@@ -16,6 +16,19 @@ func (k msgServer) ReactorBeginMigration(goCtx context.Context, msg *types.MsgRe
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    // Load the player related to the specified address
+    // Normally the address specified should be the PrimaryAddress
+    player, err := k.GetPlayerCacheFromAddress(ctx, msg.DelegatorAddress)
+    if err != nil {
+       return &types.MsgReactorBeginMigrationResponse{}, err
+    }
+
+    // Check if msg.Creator has PermissionAssets on the Address and Account
+    err = player.CanBeAdministratedBy(msg.Creator, types.PermissionAssets)
+    if err != nil {
+       return &types.MsgReactorBeginMigrationResponse{}, err
+    }
+
     valSrcAddr, valSrcErr := sdk.ValAddressFromBech32(msg.ValidatorSrcAddress)
 	if valSrcErr != nil {
 		return &types.MsgReactorBeginMigrationResponse{}, sdkerrors.Wrapf(types.ErrReactorBeginMigration, "invalid validator address: %s", valSrcErr)
