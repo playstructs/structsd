@@ -36,6 +36,8 @@ type StakingKeeper interface {
     ValidateUnbondAmount(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress, amt math.Int) (shares math.LegacyDec, err error)
     BeginRedelegation(ctx context.Context, delAddr sdk.AccAddress, valSrcAddr, valDstAddr sdk.ValAddress, sharesAmount math.LegacyDec) (completionTime time.Time, err error)
 
+    BondDenom(ctx context.Context) (string, error)
+    Delegate(ctx context.Context, delAddr sdk.AccAddress, bondAmt math.Int, tokenSrc staking.BondStatus, validator staking.Validator, subtractAccount bool) (newShares math.LegacyDec, err error)
 }
 
 // StakingHooks event hooks for staking validator object (noalias)
