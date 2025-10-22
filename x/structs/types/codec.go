@@ -76,6 +76,11 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderGuildRevoke{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderDelete{},)
 
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgReactorInfuse{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgReactorDefuse{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgReactorBeginMigration{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgReactorCancelDefusion{},)
+
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructActivate{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgStructDeactivate{},)
