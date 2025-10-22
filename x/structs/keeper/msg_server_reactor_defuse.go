@@ -76,7 +76,6 @@ func (k msgServer) ReactorDefuse(goCtx context.Context, msg *types.MsgReactorDef
 		),
 	})
 
-
 	return &types.MsgReactorDefuseResponse{
 			CompletionTime: completionTime,
     		Amount:         undelegatedCoin,
