@@ -1257,19 +1257,6 @@ func (cache *StructCache) DestroyAndCommit() {
         cache.FleetChanged = true
     }
 
-    switch cache.GetLocationType() {
-        case types.ObjectType_planet:
-            cache.GetPlanet().ClearSlot(cache.GetOperatingAmbit(), cache.GetSlot())
-            cache.PlanetChanged = true
-        case types.ObjectType_fleet:
-            if (cache.GetStructType().Type == types.CommandStruct) {
-                cache.GetFleet().ClearCommandStruct()
-            } else {
-                cache.GetFleet().ClearSlot(cache.GetOperatingAmbit(), cache.GetSlot())
-            }
-            cache.FleetChanged = true
-    }
-
     cache.K.AppendStructDestructionQueue(cache.Ctx, cache.StructId)
 
     cache.Commit()

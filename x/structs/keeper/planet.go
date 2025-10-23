@@ -119,4 +119,3 @@ func (k Keeper) GetAllPlanet(ctx context.Context) (list []types.Planet) {
 	return
 }
 
-

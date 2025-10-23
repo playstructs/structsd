@@ -45,10 +45,14 @@ const (
     //Charge_Capacitance = 10.0
 
     // This annoys me but whatever
+    CommandStructTypeId = 1
     CommandStruct = "Command Ship"
 
     // Punishment Charge
     PlayerResumeCharge = 666
+
+    // Rubble Length (blocks)
+    StructSweepDelay = 5
 
 )
 
