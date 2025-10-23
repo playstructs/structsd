@@ -7,8 +7,6 @@ import (
     //sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 
-    "fmt"
-
 )
 
 
@@ -120,7 +118,7 @@ func (k *Keeper) GetGridCacheFromId(ctx context.Context, objectId string) (GridC
 func (cache *GridCache) Commit() () {
     cache.AnyChange = false
 
-    fmt.Printf("\n Updating Grid From Cache (%s) \n", cache.ObjectId)
+    cache.K.logger.Debug("Updating Grid From Cache","objectId",cache.ObjectId)
 
     if (cache.OreChanged) {
         cache.K.SetGridAttribute(cache.Ctx, cache.OreAttributeId, cache.Ore)

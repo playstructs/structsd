@@ -165,7 +165,7 @@ func (k *Keeper) GetPlanetCacheFromId(ctx context.Context, planetId string) (Pla
 func (cache *PlanetCache) Commit() () {
     cache.AnyChange = false
 
-    fmt.Printf("\n Updating Planet From Cache (%s) \n", cache.PlanetId)
+    cache.K.logger.Debug("Updating Planet From Cache","planetId",cache.PlanetId)
 
     if (cache.PlanetChanged) {
         cache.K.SetPlanet(cache.Ctx, cache.Planet)

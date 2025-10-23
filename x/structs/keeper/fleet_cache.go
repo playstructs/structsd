@@ -4,7 +4,6 @@ import (
 
 	"context"
     //"math"
-    "fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
@@ -72,7 +71,7 @@ func (k *Keeper) GetFleetCacheFromId(ctx context.Context, fleetId string) (Fleet
 func (cache *FleetCache) Commit() () {
     cache.AnyChange = false
 
-    fmt.Printf("\n Updating Fleet From Cache (%s) \n", cache.FleetId)
+    cache.K.logger.Debug("Updating Fleet From Cache","fleetId",cache.FleetId)
 
     if (cache.FleetChanged) { cache.K.SetFleet(cache.Ctx, cache.Fleet) }
 

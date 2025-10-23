@@ -61,7 +61,7 @@ func (k Keeper) SetPlanetAttribute(ctx context.Context, planetAttributeId string
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPlanetAttribute{&types.PlanetAttributeRecord{AttributeId: planetAttributeId, Value: amount}})
-    fmt.Printf("Planet Change (Set): (%s) %d \n", planetAttributeId, amount)
+    k.logger.Info("Planet Change (Set)", "planetAttributeId", planetAttributeId, "amount", amount)
 }
 
 func (k Keeper) SetPlanetAttributeDelta(ctx context.Context, planetAttributeId string, oldAmount uint64, newAmount uint64) (amount uint64, err error) {
@@ -74,7 +74,7 @@ func (k Keeper) SetPlanetAttributeDelta(ctx context.Context, planetAttributeId s
 
     amount = resetAmount + newAmount
 
-    fmt.Printf("Planet Change (Delta): (%s) %d to %d \n", planetAttributeId, oldAmount, newAmount)
+    k.logger.Info("Planet Change (Delta)", "planetAttributeId", planetAttributeId, "oldAmount", oldAmount, "newAmount", newAmount)
     k.SetPlanetAttribute(ctx, planetAttributeId, amount)
 
     return
@@ -87,7 +87,7 @@ func (k Keeper) SetPlanetAttributeDecrement(ctx context.Context, planetAttribute
         amount = currentAmount - decrementAmount
     }
 
-    fmt.Printf("Planet Change (Decrement): (%s) %d \n", planetAttributeId, decrementAmount)
+    k.logger.Info("Planet Change (Decrement)", "planetAttributeId", planetAttributeId, "decrementAmount", decrementAmount)
     k.SetPlanetAttribute(ctx, planetAttributeId, amount)
 
     return
@@ -98,7 +98,7 @@ func (k Keeper) SetPlanetAttributeIncrement(ctx context.Context, planetAttribute
 
     amount = currentAmount + incrementAmount
 
-    fmt.Printf("Planet Change (Increment): (%s) %d \n", planetAttributeId, incrementAmount)
+    k.logger.Info("Planet Change (Increment)", "planetAttributeId", planetAttributeId, "incrementAmount", incrementAmount)
     k.SetPlanetAttribute(ctx, planetAttributeId, amount)
 
     return

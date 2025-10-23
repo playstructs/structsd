@@ -7,7 +7,6 @@ import (
     sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	"cosmossdk.io/math"
-	"fmt"
 )
 
 type AgreementCache struct {
@@ -76,7 +75,7 @@ func (k *Keeper) GetAgreementCacheFromId(ctx context.Context, agreementId string
 func (cache *AgreementCache) Commit() {
 	cache.AnyChange = false
 
-	fmt.Printf("\n Updating Agreement From Cache (%s) \n", cache.AgreementId)
+	cache.K.logger.Debug("Updating Agreement From Cache","agreementId",cache.AgreementId)
 
 	if cache.AgreementChanged {
 		cache.K.SetAgreement(cache.Ctx, cache.Agreement)
