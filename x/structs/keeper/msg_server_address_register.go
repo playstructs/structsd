@@ -69,7 +69,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
 
     // We rebuild the message manually here rather than trust the client to provide it
     hashInput := fmt.Sprintf("PLAYER%sADDRESS%s", msg.PlayerId, msg.Address)
-    fmt.Println(hashInput)
+    k.logger.Info("Address Register", "hashInput", hashInput)
 
     // Decode the Signature from Hex Encoding
     decodedProofSignature, decodeErr := hex.DecodeString(msg.ProofSignature)
