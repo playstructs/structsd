@@ -3,8 +3,6 @@ package keeper
 import (
 	"context"
 
-    "fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
 
@@ -176,12 +174,11 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
     k.DischargePlayer(ctx, structure.GetOwnerId())
 
-    fmt.Println(ctx.ExecMode())
-    if (ctx.ExecMode()== sdk.ExecModeCheck) {
+    if (ctx.ExecMode() == sdk.ExecModeCheck) {
         //ctx.GasMeter().RefundGas(ctx.GasMeter().GasConsumed(), "Walkin it back")
         ctx.GasMeter().ConsumeGas(uint64(200000), "Messin' with the estimator")
     }
-    fmt.Println(ctx.GasMeter().String())
+    k.logger.Info("Attack Transaction Gas", "gasMeter", ctx.GasMeter().String(), "execMode", ctx.ExecMode())
 
 	return &types.MsgStructAttackResponse{}, nil
 }
