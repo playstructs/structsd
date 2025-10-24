@@ -9,7 +9,6 @@ import (
 
 	"cosmossdk.io/math"
 
-	"fmt"
 )
 
 /* Setup Reactor (when a validator is created)
@@ -141,11 +140,10 @@ func (k Keeper) ReactorUpdateFromValidator(ctx context.Context, validatorAddress
 }
 
 func (k Keeper) ReactorInfusionUnbonding(ctx context.Context, unbondingId uint64) {
-	fmt.Printf("New Unbonding Request %d \n", unbondingId)
+
 	unbondingDelegation, err := k.stakingKeeper.GetUnbondingDelegationByUnbondingID(ctx, unbondingId)
 
-	fmt.Printf("Delegator Address: %s \n", unbondingDelegation.DelegatorAddress)
-	fmt.Printf("Validator Address: %s \n", unbondingDelegation.ValidatorAddress)
+    k.logger.Info("Unbonding Request", "unbondingId", unbondingId, "delegator", unbondingDelegation.DelegatorAddress, "validator", unbondingDelegation.ValidatorAddress)
 
 	if err == nil {
 		var playerAddress sdk.AccAddress

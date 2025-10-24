@@ -6,9 +6,6 @@ import (
 	//sdk "github.com/cosmos/cosmos-sdk/types"
     sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
-
-    "fmt"
-
 )
 
 
@@ -79,7 +76,7 @@ func (k *Keeper) InitiateSubstation(ctx context.Context, creatorAddress string, 
 func (cache *SubstationCache) Commit() () {
     cache.AnyChange = false
 
-    fmt.Printf("\n Updating Substation From Cache (%s) \n", cache.SubstationId)
+    cache.K.logger.Info("Updating Substation From Cache","substationId", cache.SubstationId)
 
     if (cache.SubstationChanged) {
         cache.K.SetSubstation(cache.Ctx, cache.Substation)

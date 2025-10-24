@@ -121,7 +121,6 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
 
     switch structType.Category {
         case types.ObjectType_planet:
-
             err := owner.GetPlanet().BuildInitiateReadiness(&structure, structType, ambit, slot)
             if (err != nil) {
                 return StructCache{}, err
@@ -129,19 +128,17 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
 
             structure.LocationId = owner.GetPlanetId()
             structure.Slot = slot
-            fmt.Printf("\n Setting Location Slot for Planet: %d \n", structure.Slot)
         case types.ObjectType_fleet:
+            err := owner.GetFleet().BuildInitiateReadiness(&structure, structType, ambit, slot)
+            if (err != nil) {
+                return StructCache{}, err
+            }
 
-                err := owner.GetFleet().BuildInitiateReadiness(&structure, structType, ambit, slot)
-                if (err != nil) {
-                    return StructCache{}, err
-                }
+            if (structType.Type != types.CommandStruct) {
+                structure.Slot = slot
+            }
 
-                if (structType.Type != types.CommandStruct) {
-                    structure.Slot = slot
-                }
-
-                structure.LocationId = owner.GetFleetId()
+            structure.LocationId = owner.GetFleetId()
         default:
             return StructCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "We're not building these yet")
     }
@@ -157,9 +154,8 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
 
    switch structType.Category {
         case types.ObjectType_planet:
-
             // Update the cross reference on the planet
-            fmt.Printf("\n About to Set Slot %d on %s \n", structure.Slot, owner.GetPlanet().GetPlanetId())
+            k.logger.Info("Struct Set Slot", "slot", structure.Slot, "planetId", owner.GetPlanet().GetPlanetId())
             err := owner.GetPlanet().SetSlot(structure)
             if (err != nil) {
                 return StructCache{}, err
@@ -227,7 +223,7 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
 func (cache *StructCache) Commit() () {
     cache.AnyChange = false
 
-    fmt.Printf("\n Updating Struct From Cache (%s) \n", cache.StructId)
+    cache.K.logger.Info("Updating Struct From Cache","structId",cache.StructId)
 
     if (cache.StructureChanged) {
         cache.K.SetStruct(cache.Ctx, cache.Structure)
@@ -710,17 +706,16 @@ func (cache *StructCache) IsSuccessful(successRate fraction.Fraction) bool {
 	buf := bytes.NewBuffer(uctx.BlockHeader().AppHash)
 	binary.Read(buf, binary.BigEndian, &seed)
 
-    fmt.Printf("Checking randomness using seed %d \n", seed)
-    seed = seed + cache.GetOwner().GetNextNonce()
-    fmt.Printf("Offsetting seed with nonce to %d \n", seed)
-    fmt.Printf("Odds of %d in %d \n", successRate.Numerator(), successRate.Denominator())
-	randomnessOrb := rand.New(rand.NewSource(seed))
+    seedOffset := seed + cache.GetOwner().GetNextNonce()
+
+	randomnessOrb := rand.New(rand.NewSource(seedOffset))
 	min := 1
 	max := int(successRate.Denominator())
 
-    fmt.Printf("Result: %t \n", (int(successRate.Numerator()) <= (randomnessOrb.Intn(max-min+1) + min)))
+    randomnessCheck := (int(successRate.Numerator()) <= (randomnessOrb.Intn(max-min+1) + min))
+    cache.K.logger.Info("Struct Success-Check Randomness", "structId", cache.GetStructId(), "seed", seed, "offset", cache.GetOwner().GetNextNonce(), "seedOffset", seedOffset, "numerator", successRate.Numerator(), "denominator", successRate.Denominator(), "success", randomnessCheck)
 
-	return (int(successRate.Numerator()) <= (randomnessOrb.Intn(max-min+1) + min))
+	return randomnessCheck
 }
 
 /* Permissions */
@@ -729,7 +724,6 @@ func (cache *StructCache) CanBePlayedBy(address string) (err error) {
     // Make sure the address calling this has Play permissions
     if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(address), types.PermissionPlay)) {
         err = sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", address)
-
     }
 
     callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
@@ -1087,7 +1081,8 @@ func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (d
     if (cache.IsDestroyed()) { return 0 }
 
     damage = counterStruct.GetStructType().GetCounterAttackDamage(cache.GetOperatingAmbit() == counterStruct.GetOperatingAmbit())
-    fmt.Printf("Performing %d of counter-attack damage by %s on %s \n", damage, counterStruct.GetStructId(), cache.GetStructId())
+    cache.K.logger.Info("Struct Counter-Attack","damage", damage, "counterAttacker", counterStruct.GetStructId(), "target", cache.GetStructId())
+
     if (damage != 0) {
 
         if (damage > cache.GetHealth()) {
@@ -1103,7 +1098,7 @@ func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (d
 
         if (cache.Health == 0) {
             // destruction damage from the grave
-            fmt.Printf("Struct %s died during counter-attack", cache.GetStructId())
+            cache.K.logger.Info("Struct Destroyed During Counter-Attack", "counterAttacker", counterStruct.GetStructId(), "target", cache.GetStructId())
             if (cache.GetStructType().GetPostDestructionDamage() > 0) {
                 counterStruct.TakePostDestructionDamage(cache)
             }
@@ -1113,10 +1108,10 @@ func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (d
     }
 
     if (counterStruct.Defender) {
-        fmt.Printf("Generating a defender counter-attack record for the event \n")
+        cache.K.logger.Info("Generating a Defender Counter-Attack Record for the event")
         cache.GetEventAttackShotDetail().AppendDefenderCounter(counterStruct.StructId, damage, cache.IsDestroyed(), counterStruct.GetTypeId(), counterStruct.GetLocationType(), counterStruct.GetLocationId(), counterStruct.GetOperatingAmbit(), counterStruct.GetSlot())
     } else {
-        fmt.Printf("Generating a target counter-attack record for the event \n")
+        cache.K.logger.Info("Generating a Target Counter-Attack Record for the event")
         cache.GetEventAttackShotDetail().AppendTargetCounter(damage, cache.IsDestroyed(), counterStruct.GetStructType().GetPassiveWeaponry())
     }
 

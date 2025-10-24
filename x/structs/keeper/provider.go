@@ -13,7 +13,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	//sdkerrors "cosmossdk.io/errors"
-	"fmt"
+
 )
 
 // GetProviderCount get the total number of provider
@@ -61,24 +61,28 @@ func (k Keeper) AppendProvider(ctx context.Context, provider types.Provider) (ty
 	// Set the Checkpoint to current block
 	k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_checkpointBlock, provider.Id), uint64(ctxSDK.BlockHeight()))
 
-	// Create the Collateral Pool
-	fmt.Printf("Provider Collateral Pool: %s", types.ProviderCollateralPool+provider.Id)
-	fmt.Printf("Provider Collateral Pool: %s", authtypes.NewModuleAddress(types.ProviderCollateralPool+provider.Id))
 
-	providerCollateralAddress := authtypes.NewModuleAddress(types.ProviderCollateralPool + provider.Id)
+	// Create the Collateral Pool
+	providerCollateralDetails := types.ProviderCollateralPool+provider.Id
+	providerCollateralAddress := authtypes.NewModuleAddress(providerCollateralDetails)
 	providerCollateralAccount := k.accountKeeper.NewAccountWithAddress(ctx, providerCollateralAddress)
 	k.accountKeeper.SetAccount(ctx, providerCollateralAccount)
 
 	// Create the Earnings Pool
-	fmt.Printf("Provider Earnings Pool: %s", types.ProviderEarningsPool+provider.Id)
-	fmt.Printf("Provider Earnings Pool: %s", authtypes.NewModuleAddress(types.ProviderEarningsPool+provider.Id))
-
-	providerEarningsAddress := authtypes.NewModuleAddress(types.ProviderEarningsPool + provider.Id)
+	providerEarningsDetails := types.ProviderEarningsPool+provider.Id
+	providerEarningsAddress := authtypes.NewModuleAddress(providerEarningsDetails)
 	providerEarningsAccount := k.accountKeeper.NewAccountWithAddress(ctx, providerEarningsAddress)
 	k.accountKeeper.SetAccount(ctx, providerEarningsAccount)
 
+    k.logger.Info("Provider Created",
+	                "providerId", provider.Id,
+	                "collateralPoolDetails", providerCollateralDetails,
+	                "collateralPoolAddress", providerCollateralAddress.String(),
+	                "earningsPoolDetails", providerEarningsDetails,
+	                "earningsPoolAddress", providerEarningsAddress.String())
+
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProvider{Provider: &provider})
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProviderAddress{&types.EventProviderAddressDetail{ProviderId: provider.Id, CollateralPool: string(providerCollateralAddress), EarningPool: string(providerEarningsAddress)}})
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProviderAddress{&types.EventProviderAddressDetail{ProviderId: provider.Id, CollateralPool: providerCollateralAddress.String(), EarningPool: providerEarningsAddress.String()}})
 
 	return provider, nil
 }

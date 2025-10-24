@@ -118,7 +118,7 @@ func (k *Keeper) GetGridCacheFromId(ctx context.Context, objectId string) (GridC
 func (cache *GridCache) Commit() () {
     cache.AnyChange = false
 
-    cache.K.logger.Debug("Updating Grid From Cache","objectId",cache.ObjectId)
+    cache.K.logger.Info("Updating Grid From Cache","objectId",cache.ObjectId)
 
     if (cache.OreChanged) {
         cache.K.SetGridAttribute(cache.Ctx, cache.OreAttributeId, cache.Ore)

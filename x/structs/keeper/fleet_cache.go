@@ -71,7 +71,7 @@ func (k *Keeper) GetFleetCacheFromId(ctx context.Context, fleetId string) (Fleet
 func (cache *FleetCache) Commit() () {
     cache.AnyChange = false
 
-    cache.K.logger.Debug("Updating Fleet From Cache","fleetId",cache.FleetId)
+    cache.K.logger.Info("Updating Fleet From Cache","fleetId",cache.FleetId)
 
     if (cache.FleetChanged) { cache.K.SetFleet(cache.Ctx, cache.Fleet) }
 

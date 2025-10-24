@@ -71,7 +71,7 @@ func (k *Keeper) GetGuildCacheFromId(ctx context.Context, guildId string) GuildC
 func (cache *GuildCache) Commit() {
 	cache.AnyChange = false
 
-    cache.K.logger.Debug("Updating Guild From Cache", "guildId", cache.GuildId)
+    cache.K.logger.Info("Updating Guild From Cache", "guildId", cache.GuildId)
 
 	if cache.GuildChanged {
 		cache.K.SetGuild(cache.Ctx, cache.Guild)

@@ -67,7 +67,7 @@ func (k Keeper) SetStructAttribute(ctx context.Context, structAttributeId string
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStructAttribute{&types.StructAttributeRecord{AttributeId: structAttributeId, Value: amount}})
-    fmt.Printf("Struct Change (Set): (%s) %d \n", structAttributeId, amount)
+    k.logger.Info("Struct Change (Set)", "structAttributeId", structAttributeId, "amonunt", amount)
 }
 
 func (k Keeper) SetStructAttributeDelta(ctx context.Context, structAttributeId string, oldAmount uint64, newAmount uint64) (amount uint64, err error) {
@@ -80,7 +80,7 @@ func (k Keeper) SetStructAttributeDelta(ctx context.Context, structAttributeId s
 
     amount = resetAmount + newAmount
 
-    fmt.Printf("Struct Change (Delta): (%s) %d to %d \n", structAttributeId, oldAmount, newAmount)
+    k.logger.Info("Struct Change (Delta)", "structAttributeId", structAttributeId, "oldAmount", oldAmount, "newAmount", newAmount)
     k.SetStructAttribute(ctx, structAttributeId, amount)
 
     return
@@ -93,7 +93,7 @@ func (k Keeper) SetStructAttributeDecrement(ctx context.Context, structAttribute
         amount = currentAmount - decrementAmount
     }
 
-    fmt.Printf("Struct Change (Decrement): (%s) %d \n", structAttributeId, decrementAmount)
+    k.logger.Info("Struct Change (Decrement)", "structAttributeId", structAttributeId, "decrementAmount", decrementAmount)
     k.SetStructAttribute(ctx, structAttributeId, amount)
 
     return
@@ -104,7 +104,7 @@ func (k Keeper) SetStructAttributeIncrement(ctx context.Context, structAttribute
 
     amount = currentAmount + incrementAmount
 
-    fmt.Printf("Struct Change (Increment): (%s) %d \n", structAttributeId, incrementAmount)
+    k.logger.Info("Struct Change (Increment)", "structAttributeId", structAttributeId, "incrementAmount", incrementAmount)
     k.SetStructAttribute(ctx, structAttributeId, amount)
 
     return
@@ -135,8 +135,6 @@ func (k Keeper) StructAttributeFlagHasOneOf(ctx context.Context, structAttribute
     currentFlags := k.GetStructAttribute(ctx, structAttributeId)
 	return currentFlags&flag != 0
 }
-
-
 
 func (k Keeper) GetStructAttributesByObject(ctx context.Context, objectId string) (types.StructAttributes) {
     status := k.GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_status, objectId))

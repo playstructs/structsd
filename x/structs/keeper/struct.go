@@ -14,7 +14,6 @@ import (
 	"structs/x/structs/types"
 	"strconv"
 
-	"fmt"
 
 )
 
@@ -151,7 +150,7 @@ func StructDestructionQueueAddKeyPrefix(blockHeight int64) []byte {
 
 
 func (k Keeper) AppendStructDestructionQueue(ctx context.Context, structId string) {
-    fmt.Printf("\n Sweep %s later", structId)
+    k.logger.Info("Struct Sweep Queue Add", "structId", structId)
 
     unwrapCtx := sdk.UnwrapSDKContext(ctx)
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), StructDestructionQueueAddKeyPrefix(unwrapCtx.BlockHeight()))
@@ -168,7 +167,8 @@ func (k Keeper) StructSweepDestroyed(ctx context.Context) {
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-	    fmt.Printf("\n Sweeping... %s \n", string(iterator.Key()))
+        k.logger.Info("Struct Sweep", "structId", iterator.Key())
+
         // Attributes
         // "health":               StructAttributeType_health,
         k.ClearStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_health, string(iterator.Key()) ))

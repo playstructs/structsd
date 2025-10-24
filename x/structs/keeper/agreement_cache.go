@@ -75,7 +75,7 @@ func (k *Keeper) GetAgreementCacheFromId(ctx context.Context, agreementId string
 func (cache *AgreementCache) Commit() {
 	cache.AnyChange = false
 
-	cache.K.logger.Debug("Updating Agreement From Cache","agreementId",cache.AgreementId)
+	cache.K.logger.Info("Updating Agreement From Cache","agreementId",cache.AgreementId)
 
 	if cache.AgreementChanged {
 		cache.K.SetAgreement(cache.Ctx, cache.Agreement)
