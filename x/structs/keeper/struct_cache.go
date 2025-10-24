@@ -13,9 +13,6 @@ import (
 	"math/rand"
     "bytes"
     "encoding/binary"
-
-    "fmt"
-
 )
 
 
@@ -860,11 +857,11 @@ func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem type
 func (cache *StructCache) CanCounterAttack(attackerStruct *StructCache) (err error) {
 
      if (attackerStruct.IsDestroyed() || cache.IsDestroyed()) {
-        fmt.Printf("Counter Struct (%s) or Attacker Struct (%s) is already destroyed", cache.StructId, attackerStruct.StructId)
+        cache.K.logger.Info("Counter Struct or Attacker Struct is already destroyed", "counterStruct", cache.StructId, "target", attackerStruct.StructId)
         err = sdkerrors.Wrapf(types.ErrStructAction, "Counter Struct (%s) or Attacker Struct (%s) is already destroyed", cache.StructId, attackerStruct.StructId)
      } else {
         if (!cache.GetStructType().CanCounterTargetAmbit(cache.GetOperatingAmbit(), attackerStruct.GetOperatingAmbit())) {
-            fmt.Printf("Attacker Struct (%s) cannot be hit from Counter Struct (%s) using this weapon system", attackerStruct.StructId, cache.StructId)
+            cache.K.logger.Info("Attacker Struct cannot be hit from Counter Struct using this weapon system", "target", attackerStruct.StructId, "counterStruct", cache.StructId)
             err = sdkerrors.Wrapf(types.ErrStructAction, "Attacker Struct (%s) cannot be hit from Counter Struct (%s) using this weapon system", attackerStruct.StructId, cache.StructId)
         }
      }

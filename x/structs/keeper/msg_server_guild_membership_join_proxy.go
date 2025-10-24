@@ -31,11 +31,11 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	}
 
 	// Decode the PubKey from hex Encoding
-	fmt.Println("Encoding string:", msg.ProofPubKey)
+	k.logger.Info("Guild Join Proxy", "encodingString", msg.ProofPubKey)
 
 	decodedProofPubKey, decodeErr := hex.DecodeString(msg.ProofPubKey)
 	if decodeErr != nil {
-		fmt.Println("Error decoding string:", decodeErr)
+	    k.logger.Error("Guild Join Proxy Public Key", "decodingError", decodeErr)
 	}
 
 	// Convert provided pub key into a bech32 string (i.e., an address)
@@ -73,7 +73,7 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	// Decode the Signature from Hex Encoding
 	decodedProofSignature, decodeErr := hex.DecodeString(msg.ProofSignature)
 	if decodeErr != nil {
-		fmt.Println("Error decoding string:", decodeErr)
+	    k.logger.Error("Guild Join Proxy Signature", "decodingError", decodeErr)
 	}
 
 	// Proof needs to only be 64 characters. Some systems provide a checksum bit on the end that ruins it all

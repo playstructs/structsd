@@ -50,14 +50,13 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
         return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionAssociation, "Calling address (%s) does not have permissions needed to allow address association of higher functionality ", msg.Creator)
     }
 
-
 	// Does the signature verify in the proof
 	// Decode the PubKey from hex Encoding
-    fmt.Println("Encoding string:", msg.ProofPubKey)
+    k.logger.Info("Address Register", "encodingString", msg.ProofPubKey)
 
     decodedProofPubKey, decodeErr := hex.DecodeString(msg.ProofPubKey)
     if decodeErr != nil {
-        fmt.Println("Error decoding string:", decodeErr)
+        k.logger.Error("Address Register Public Key", "decodingError", decodeErr)
     }
     // Convert provided pub key into a bech32 string (i.e., an address)
 	address := types.PubKeyToBech32(decodedProofPubKey)
@@ -75,7 +74,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     // Decode the Signature from Hex Encoding
     decodedProofSignature, decodeErr := hex.DecodeString(msg.ProofSignature)
     if decodeErr != nil {
-        fmt.Println("Error decoding string:", decodeErr)
+        k.logger.Error("Address Register Signature", "decodingError", decodeErr)
     }
 
     // Proof needs to only be 64 characters. Some systems provide a checksum bit on the end that ruins it all

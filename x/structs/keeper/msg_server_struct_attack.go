@@ -20,7 +20,8 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 	k.AddressEmitActivity(ctx, msg.Creator)
 
     structure := k.GetStructCacheFromId(ctx, msg.OperatingStructId)
-    fmt.Printf("\n Starting attack from %s \n", msg.OperatingStructId)
+
+    k.logger.Info("Attack Action", "structId", msg.OperatingStructId)
     // Check to see if the caller has permissions to proceed
     permissionError := structure.CanBePlayedBy(msg.Creator)
     if (permissionError != nil) {
@@ -61,10 +62,9 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     var targetWasPlanetary bool
     var targetWasOnPlanet *PlanetCache
 
-    fmt.Printf("Attack will include %d shots \n", structure.GetStructType().GetWeaponTargets(types.TechWeaponSystem_enum[msg.WeaponSystem]))
     // Begin taking shots. Most weapons only use a single shot but some perform multiple.
     for shot := uint64(0); shot < (structure.GetStructType().GetWeaponTargets(types.TechWeaponSystem_enum[msg.WeaponSystem])); shot++ {
-        fmt.Printf("Attack shot %d of %d against %s \n", shot, structure.GetStructType().GetWeaponTargets(types.TechWeaponSystem_enum[msg.WeaponSystem]),  msg.TargetStructId[shot])
+        k.logger.Info("Attack Action", "structId", msg.OperatingStructId, "shot", shot, "shots", structure.GetStructType().GetWeaponTargets(types.TechWeaponSystem_enum[msg.WeaponSystem]), "target", msg.TargetStructId[shot] )
         // Load the Target Struct cache object
         targetStructure := k.GetStructCacheFromId(ctx, msg.TargetStructId[shot])
 
@@ -84,10 +84,10 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
             return &types.MsgStructAttackResponse{}, targetingError
         }
 
-        fmt.Printf("Struct %s was targetable \n", msg.TargetStructId[shot])
+        k.logger.Info("Struct Targetable", "target", msg.TargetStructId[shot])
 
         if (targetStructure.CanEvade(&structure, types.TechWeaponSystem_enum[msg.WeaponSystem])) {
-            fmt.Printf("Struct %s evaded \n", msg.TargetStructId[shot])
+            k.logger.Info("Struct Evaded", "target", msg.TargetStructId[shot])
             structure.GetEventAttackDetail().AppendShot(targetStructure.FlushEventAttackShotDetail())
             continue
         }
@@ -95,8 +95,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
         attackBlocked := false
 
         // Check to make sure the attack is either counterable, blockable, or both. Otherwise skip this section
-        fmt.Printf("Struct Blockable? %t \n", (structure.GetStructType().GetWeaponBlockable(types.TechWeaponSystem_enum[msg.WeaponSystem])))
-        fmt.Printf("Struct Counterable? %t \n", (structure.GetStructType().GetWeaponCounterable(types.TechWeaponSystem_enum[msg.WeaponSystem])))
+        k.logger.Info("Struct Attacker Status", "structId", structure.GetStructId(), "blockable", (structure.GetStructType().GetWeaponBlockable(types.TechWeaponSystem_enum[msg.WeaponSystem])), "counterable",(structure.GetStructType().GetWeaponCounterable(types.TechWeaponSystem_enum[msg.WeaponSystem])))
         if ((structure.GetStructType().GetWeaponBlockable(types.TechWeaponSystem_enum[msg.WeaponSystem])) || (structure.GetStructType().GetWeaponCounterable(types.TechWeaponSystem_enum[msg.WeaponSystem]))) {
 
             // Check the Defenders
