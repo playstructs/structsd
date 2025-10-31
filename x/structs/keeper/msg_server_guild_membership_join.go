@@ -2,15 +2,16 @@ package keeper
 
 import (
 	"context"
-
+    "time"
+    "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
+	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuildMembershipJoin) (*types.MsgGuildMembershipResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
-
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
@@ -46,6 +47,17 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
         return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Membership Application already pending. Deny request or invitation first")
     }
 
+    var infusionMigrationList []types.Infusion
+    var infusionMigrationShares []math.LegacyDec
+    var infusionMigrationReactor []sdk.ValAddress
+    var infusionMigrationAmount []math.Int
+
+    destinationReactor, destinationReactorFound := k.GetReactor(ctx, guild.PrimaryReactorId)
+    if (!destinationReactorFound) {
+        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Somehow this reactor (%s) doesn't exist, you should tell an adult",guild.PrimaryReactorId)
+    }
+    destinationValidatorAccount, _ := sdk.ValAddressFromBech32(destinationReactor.Validator)
+
     if (guild.JoinInfusionMinimum != 0) {
         var currentFuel uint64
 
@@ -59,6 +71,7 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
          * - Owned by the player
          * - Points to a Reactor
          * - The Destination Reactor is part of the Guild
+         * - If the destination reactor is not part of the guild, we need to migrate the assets over.
          */
         for _, infusionId := range msg.InfusionId {
 
@@ -75,24 +88,52 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
                 return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Only Reactor infusions allowed, Infusion (%s) unacceptable", infusionId)
             }
 
-            reactor, reactorFound := k.GetReactor(ctx, infusion.DestinationId)
-            if (!reactorFound) {
+            sourceReactor, sourceReactorFound := k.GetReactor(ctx, infusion.DestinationId)
+            if (!sourceReactorFound) {
                 return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Somehow this reactor (%s) doesn't exist, you should tell an adult",infusion.DestinationId)
             }
 
-            if (reactor.GuildId != msg.GuildId) {
-                return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Infusion (%s) is for a Reactor (%s) of a different Guild (%s)", infusionId, reactor.Id, reactor.GuildId)
+            if (sourceReactor.GuildId != msg.GuildId) {
+                /*
+                    Previously, this would fail at this point but now we'll be migrating the infusion
+                    over to the new guilds reactor.
+
+                    Before migrating the infusions, we need to...
+                    [] confirm they can be migrated (and are not stuck in a redelegation)
+                    [] confirm the total amount of infusions migrating will meet the minimum
+
+                */
+
+                // The amount available to move over is the amount of Fuel minus the Defusing quantity (as it's already moving)
+                redelegateAmountFuel := math.NewIntFromUint64(infusion.Fuel)
+                if redelegateAmountFuel.LT(infusion.Defusing) {
+                    return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Infusion (%s) unacceptable because Fuel less the defusing", infusionId)
+                }
+                redelegateAmount := redelegateAmountFuel.Sub(infusion.Defusing)
+                infusionMigrationAmount = append(infusionMigrationAmount, redelegateAmount)
+
+                // The validation should never fail assuming there isn't a bug in the Infusion system
+                // but we can use this function to reliably calculate the shares
+                infusionAccount, _ := sdk.AccAddressFromBech32(infusion.Address)
+                sourceValidatorAccount, _ := sdk.ValAddressFromBech32(sourceReactor.Validator)
+                shares, validationErr := k.stakingKeeper.ValidateUnbondAmount(
+                    ctx, infusionAccount, sourceValidatorAccount, redelegateAmount,
+                )
+                if validationErr != nil {
+                    return &types.MsgGuildMembershipResponse{}, validationErr
+                }
+
+                // The actual redelegation process will only start after all values are checked
+                // Save the validation results for later in the function
+                infusionMigrationReactor = append(infusionMigrationReactor, sourceValidatorAccount)
+                infusionMigrationShares = append(infusionMigrationShares, shares)
+                infusionMigrationList = append(infusionMigrationList, infusion)
+
+                currentFuel = currentFuel + redelegateAmount.Uint64()
+            } else {
+                currentFuel = currentFuel + infusion.Fuel
             }
 
-            currentFuel = currentFuel + infusion.Fuel
-
-            /* This is an expensive process, so fail fast.
-             *
-             * This could mean an infusion is provided in the message that doesn't
-             * meet these requirements but at this point, we've met the infusion
-             * minimum of the guild so that doesn't actually matter.
-             */
-            if (currentFuel > guild.JoinInfusionMinimum) { break }
         }
 
         if (currentFuel < guild.JoinInfusionMinimum) {
@@ -136,6 +177,40 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
     guildMembershipApplication.GuildId              = guild.Id
     guildMembershipApplication.JoinType             = types.GuildJoinType_direct
     guildMembershipApplication.RegistrationStatus   = types.RegistrationStatus_approved
+
+    // This seems like a safe place for this.
+    // We either need to do this basically last, or undo any changes if errors occur.
+    for migrationInfusionIndex, migrationInfusion := range infusionMigrationList {
+        // Handle the migration of Infusions from previous reactor to new
+
+        infusionAccount, _ := sdk.AccAddressFromBech32(migrationInfusion.Address)
+        completionTime, redelegationErr := k.stakingKeeper.BeginRedelegation(
+            ctx,
+            infusionAccount,
+            infusionMigrationReactor[migrationInfusionIndex],
+            destinationValidatorAccount,
+            infusionMigrationShares[migrationInfusionIndex],
+        )
+
+        // This is kinda a problem by now tbh
+        // Maybe tell an adult if this happens
+        if redelegationErr != nil {
+            return &types.MsgGuildMembershipResponse{}, redelegationErr
+        }
+
+        ctx.EventManager().EmitEvents(sdk.Events{
+            sdk.NewEvent(
+                staking.EventTypeRedelegate,
+                sdk.NewAttribute(staking.AttributeKeySrcValidator, infusionMigrationReactor[migrationInfusionIndex].String()),
+                sdk.NewAttribute(staking.AttributeKeyDstValidator, destinationReactor.Validator),
+                sdk.NewAttribute(staking.AttributeKeyDelegator, migrationInfusion.Address),
+                sdk.NewAttribute(sdk.AttributeKeyAmount, infusionMigrationAmount[migrationInfusionIndex].String()),
+                sdk.NewAttribute(staking.AttributeKeyCompletionTime, completionTime.Format(time.RFC3339)),
+            ),
+        })
+
+    }
+
 
     // Look up joining account
     targetPlayer := k.UpsertPlayer(ctx, msg.Creator)

@@ -9,7 +9,6 @@ import (
 
 	// Used in Randomness Orb
 
-	"fmt"
 	"cosmossdk.io/math"
     authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
@@ -72,7 +71,7 @@ func (k *Keeper) GetGuildCacheFromId(ctx context.Context, guildId string) GuildC
 func (cache *GuildCache) Commit() {
 	cache.AnyChange = false
 
-	fmt.Printf("\n Updating Guild From Cache (%s) \n", cache.GuildId)
+    cache.K.logger.Info("Updating Guild From Cache", "guildId", cache.GuildId)
 
 	if cache.GuildChanged {
 		cache.K.SetGuild(cache.Ctx, cache.Guild)

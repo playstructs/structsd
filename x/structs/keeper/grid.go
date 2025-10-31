@@ -10,7 +10,6 @@ import (
 	"structs/x/structs/types"
 
 	//sdkerrors "cosmossdk.io/errors"
-
 	"fmt"
 )
 
@@ -68,7 +67,7 @@ func (k Keeper) SetGridAttribute(ctx context.Context, gridAttributeId string, am
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGrid{&types.GridRecord{AttributeId: gridAttributeId, Value: amount}})
-    fmt.Printf("Grid Change (Set): (%s) %d \n", gridAttributeId, amount)
+    k.logger.Info("Grid Change (Set)", "gridAttributeId", gridAttributeId, "amount", amount)
 }
 
 func (k Keeper) SetGridAttributeDelta(ctx context.Context, gridAttributeId string, oldAmount uint64, newAmount uint64) (amount uint64, err error) {
@@ -81,7 +80,7 @@ func (k Keeper) SetGridAttributeDelta(ctx context.Context, gridAttributeId strin
 
     amount = resetAmount + newAmount
 
-    fmt.Printf("Grid Change (Delta): (%s) %d to %d \n", gridAttributeId, oldAmount, newAmount)
+    k.logger.Info("Grid Change (Delta)", "gridAttributeId", gridAttributeId, "oldAmount", oldAmount, "newAmount", newAmount)
     k.SetGridAttribute(ctx, gridAttributeId, amount)
 
     return
@@ -94,8 +93,7 @@ func (k Keeper) SetGridAttributeDecrement(ctx context.Context, gridAttributeId s
        amount = currentAmount - decrementAmount
     }
 
-
-    fmt.Printf("Grid Change (Decrement): (%s) %d \n", gridAttributeId, decrementAmount)
+    k.logger.Info("Grid Change (Decrement)","gridAttributeId", gridAttributeId, "decrementAmount", decrementAmount)
     k.SetGridAttribute(ctx, gridAttributeId, amount)
 
     return
@@ -106,7 +104,7 @@ func (k Keeper) SetGridAttributeIncrement(ctx context.Context, gridAttributeId s
 
     amount = currentAmount + incrementAmount
 
-    fmt.Printf("Grid Change (Increment): (%s) %d \n", gridAttributeId, incrementAmount)
+    k.logger.Info("Grid Change (Increment)", "gridAttributeId", gridAttributeId, "incrementAmount", incrementAmount)
     k.SetGridAttribute(ctx, gridAttributeId, amount)
 
     return
@@ -137,7 +135,7 @@ func (k Keeper) AppendGridCascadeQueue(ctx context.Context, queueId string) (err
 
 	gridCascadeQueueStore.Set([]byte(queueId), bz)
 
-    fmt.Printf("Grid Queue (Add): (%s) \n", queueId)
+    k.logger.Info("Grid Queue (Add)", "queueId", queueId)
 
 	return err
 }
@@ -163,10 +161,10 @@ func (k Keeper) GridCascade(ctx context.Context) {
             allocationPointer := 0
 
             for (k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)) > k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId))) {
-                fmt.Printf("Grid Queue (Brownout): (%s) Load: %d Capacity: %d \n", objectId, k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)),  k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId)))
+                k.logger.Info("Grid Queue (Brownout)", "objectId", objectId, "load", k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)), "capacity", k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId)))
 
                 k.DestroyAllocation(ctx, allocationList[allocationPointer])
-                fmt.Printf("Grid Queue (Allocation Destroyed): (%s) \n", allocationList[allocationPointer])
+                k.logger.Info("Grid Queue (Allocation Destroyed)","allocationId", allocationList[allocationPointer])
 
                 allocationPointer++
             }

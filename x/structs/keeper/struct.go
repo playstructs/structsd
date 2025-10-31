@@ -12,8 +12,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
     //sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
+	"strconv"
 
-	"fmt"
 
 )
 
@@ -139,28 +139,82 @@ func (k Keeper) GetAllStruct(ctx context.Context) (list []types.Struct) {
 	return
 }
 
+func StructDestructionQueueReadKeyPrefix(blockHeight int64) []byte {
+	return []byte(types.StructDestroyedQueueKey + strconv.FormatInt(blockHeight, 10) + "/")
+}
+
+func StructDestructionQueueAddKeyPrefix(blockHeight int64) []byte {
+    sweepHeight := blockHeight + types.StructSweepDelay
+	return []byte(types.StructDestroyedQueueKey + strconv.FormatInt(sweepHeight, 10) + "/")
+}
 
 
 func (k Keeper) AppendStructDestructionQueue(ctx context.Context, structId string) {
-    fmt.Printf("\n Sweep %s later", structId)
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructDestroyedQueueKey))
+    k.logger.Info("Struct Sweep Queue Add", "structId", structId)
+
+    unwrapCtx := sdk.UnwrapSDKContext(ctx)
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), StructDestructionQueueAddKeyPrefix(unwrapCtx.BlockHeight()))
+
 	store.Set([]byte(structId), []byte{})
 }
 
 
 func (k Keeper) StructSweepDestroyed(ctx context.Context) {
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructDestroyedQueueKey))
+    unwrapCtx := sdk.UnwrapSDKContext(ctx)
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), StructDestructionQueueReadKeyPrefix(unwrapCtx.BlockHeight()))
 	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
 	defer iterator.Close()
 
 	for ; iterator.Valid(); iterator.Next() {
-	    fmt.Printf("\n Sweeping... %s \n", string(iterator.Key()))
+        k.logger.Info("Struct Sweep", "structId", iterator.Key())
+
         // Attributes
         // "health":               StructAttributeType_health,
         k.ClearStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_health, string(iterator.Key()) ))
         // "status":               StructAttributeType_status,
         k.ClearStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_status, string(iterator.Key()) ))
+
+        structure, structFound := k.GetStruct(ctx, string(iterator.Key()))
+        if structFound {
+            // Location Back-Reference
+            switch structure.LocationType {
+                case types.ObjectType_planet:
+                    planet, planetFound := k.GetPlanet(ctx, structure.LocationId)
+                    if planetFound {
+                        switch structure.OperatingAmbit {
+                            case types.Ambit_water:
+                                planet.Water[structure.Slot] = ""
+                            case types.Ambit_land:
+                                planet.Land[structure.Slot]  = ""
+                            case types.Ambit_air:
+                                planet.Air[structure.Slot]   = ""
+                            case types.Ambit_space:
+                                planet.Space[structure.Slot] = ""
+                        }
+                        k.SetPlanet(ctx, planet)
+                    }
+                case types.ObjectType_fleet:
+                    fleet, fleetFound := k.GetFleet(ctx, structure.LocationId)
+                    if fleetFound {
+                        if structure.Type == types.CommandStructTypeId {
+                            fleet.CommandStruct = ""
+                        } else {
+                            switch structure.OperatingAmbit {
+                                case types.Ambit_water:
+                                    fleet.Water[structure.Slot] = ""
+                                case types.Ambit_land:
+                                    fleet.Land[structure.Slot]  = ""
+                                case types.Ambit_air:
+                                    fleet.Air[structure.Slot]   = ""
+                                case types.Ambit_space:
+                                    fleet.Space[structure.Slot] = ""
+                            }
+                        }
+                        k.SetFleet(ctx, fleet)
+                    }
+            }
+        }
 
         // Object
         k.RemoveStruct(ctx, string(iterator.Key()))

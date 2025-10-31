@@ -3,8 +3,6 @@ package keeper
 import (
 	"context"
 
-    "fmt"
-
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
 
@@ -20,7 +18,8 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 	k.AddressEmitActivity(ctx, msg.Creator)
 
     structure := k.GetStructCacheFromId(ctx, msg.OperatingStructId)
-    fmt.Printf("\n Starting attack from %s \n", msg.OperatingStructId)
+
+    k.logger.Info("Attack Action", "structId", msg.OperatingStructId)
     // Check to see if the caller has permissions to proceed
     permissionError := structure.CanBePlayedBy(msg.Creator)
     if (permissionError != nil) {
@@ -61,10 +60,9 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     var targetWasPlanetary bool
     var targetWasOnPlanet *PlanetCache
 
-    fmt.Printf("Attack will include %d shots \n", structure.GetStructType().GetWeaponTargets(types.TechWeaponSystem_enum[msg.WeaponSystem]))
     // Begin taking shots. Most weapons only use a single shot but some perform multiple.
     for shot := uint64(0); shot < (structure.GetStructType().GetWeaponTargets(types.TechWeaponSystem_enum[msg.WeaponSystem])); shot++ {
-        fmt.Printf("Attack shot %d of %d against %s \n", shot, structure.GetStructType().GetWeaponTargets(types.TechWeaponSystem_enum[msg.WeaponSystem]),  msg.TargetStructId[shot])
+        k.logger.Info("Attack Action", "structId", msg.OperatingStructId, "shot", shot, "shots", structure.GetStructType().GetWeaponTargets(types.TechWeaponSystem_enum[msg.WeaponSystem]), "target", msg.TargetStructId[shot] )
         // Load the Target Struct cache object
         targetStructure := k.GetStructCacheFromId(ctx, msg.TargetStructId[shot])
 
@@ -84,10 +82,10 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
             return &types.MsgStructAttackResponse{}, targetingError
         }
 
-        fmt.Printf("Struct %s was targetable \n", msg.TargetStructId[shot])
+        k.logger.Info("Struct Targetable", "target", msg.TargetStructId[shot])
 
         if (targetStructure.CanEvade(&structure, types.TechWeaponSystem_enum[msg.WeaponSystem])) {
-            fmt.Printf("Struct %s evaded \n", msg.TargetStructId[shot])
+            k.logger.Info("Struct Evaded", "target", msg.TargetStructId[shot])
             structure.GetEventAttackDetail().AppendShot(targetStructure.FlushEventAttackShotDetail())
             continue
         }
@@ -95,15 +93,14 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
         attackBlocked := false
 
         // Check to make sure the attack is either counterable, blockable, or both. Otherwise skip this section
-        fmt.Printf("Struct Blockable? %t \n", (structure.GetStructType().GetWeaponBlockable(types.TechWeaponSystem_enum[msg.WeaponSystem])))
-        fmt.Printf("Struct Counterable? %t \n", (structure.GetStructType().GetWeaponCounterable(types.TechWeaponSystem_enum[msg.WeaponSystem])))
+        k.logger.Info("Struct Attacker Status", "structId", structure.GetStructId(), "blockable", (structure.GetStructType().GetWeaponBlockable(types.TechWeaponSystem_enum[msg.WeaponSystem])), "counterable",(structure.GetStructType().GetWeaponCounterable(types.TechWeaponSystem_enum[msg.WeaponSystem])))
         if ((structure.GetStructType().GetWeaponBlockable(types.TechWeaponSystem_enum[msg.WeaponSystem])) || (structure.GetStructType().GetWeaponCounterable(types.TechWeaponSystem_enum[msg.WeaponSystem]))) {
 
             // Check the Defenders
             defenderPlayer := targetStructure.GetOwner()
             defenders := targetStructure.GetDefenders()
             for _, defender := range defenders {
-                fmt.Printf("Defender (%s) at Location (%s) \n", defender.GetStructId(), defender.GetLocationId())
+                k.logger.Info("Defender at Location", "defender", defender.GetStructId(), "locationId", defender.GetLocationId())
 
                 defender.Defender = true
                 defender.ManualLoadOwner(defenderPlayer)
@@ -112,19 +109,19 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
                 defenderReadinessError := defender.ReadinessCheck()
                 if (defenderReadinessError == nil) {
-                    fmt.Printf("Defender seems ready to defend.. \n")
+                    k.logger.Info("Defender seems ready to defend")
                     if (!attackBlocked && (structure.GetStructType().GetWeaponBlockable(types.TechWeaponSystem_enum[msg.WeaponSystem]))) {
-                        fmt.Printf("Defender to attempt a block!.. \n")
+                        k.logger.Info("Defender to attempt a block!")
                         attackBlocked = defender.AttemptBlock(&structure, types.TechWeaponSystem_enum[msg.WeaponSystem], &targetStructure)
                     }
 
                 }
 
                 if (structure.GetStructType().GetWeaponCounterable(types.TechWeaponSystem_enum[msg.WeaponSystem])) {
-                    fmt.Printf("Defender trying to counter!.. \n")
+                    k.logger.Info("Defender trying to counter!.. ")
                     counterErrors := defender.CanCounterAttack(&structure)
                     if (counterErrors == nil) {
-                        fmt.Printf("Defender counter-attacking!.. \n")
+                        k.logger.Info("Defender counter-attacking!")
                         structure.TakeCounterAttackDamage(defender)
                     }
                 }
@@ -136,18 +133,18 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
         // Fun story, I'd actually forgotten this code block after writing all the other function
         // Turns out, my Struct wasn't attacking because I forgot the part of Attack that attacks.
         if (!attackBlocked && structure.IsOnline()) {
-            fmt.Printf("Moving forward with the attack on %s \n", msg.TargetStructId[shot])
+            k.logger.Info("Moving forward with the attack", "target", msg.TargetStructId[shot])
             targetStructure.TakeAttackDamage(&structure, types.TechWeaponSystem_enum[msg.WeaponSystem])
         } else {
-            fmt.Printf("Attack against %s was blocked \n", msg.TargetStructId[shot])
+            k.logger.Info("Attack against target was blocked", "target", msg.TargetStructId[shot])
         }
 
 
         if (structure.GetStructType().GetWeaponCounterable(types.TechWeaponSystem_enum[msg.WeaponSystem])) {
-            fmt.Printf("Target trying to Counter now!.. \n")
+            k.logger.Info("Target trying to Counter now!")
             counterErrors := targetStructure.CanCounterAttack(&structure)
             if (counterErrors == nil) {
-                fmt.Printf("Target Countering!.. \n")
+                k.logger.Info("Target Countering!")
                 structure.TakeCounterAttackDamage(&targetStructure)
             }
         }
@@ -177,12 +174,11 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
     k.DischargePlayer(ctx, structure.GetOwnerId())
 
-    fmt.Println(ctx.ExecMode())
-    if (ctx.ExecMode()== sdk.ExecModeCheck) {
+    if (ctx.ExecMode() == sdk.ExecModeCheck) {
         //ctx.GasMeter().RefundGas(ctx.GasMeter().GasConsumed(), "Walkin it back")
         ctx.GasMeter().ConsumeGas(uint64(200000), "Messin' with the estimator")
     }
-    fmt.Println(ctx.GasMeter().String())
+    k.logger.Info("Attack Transaction Gas", "gasMeter", ctx.GasMeter().String(), "execMode", ctx.ExecMode())
 
 	return &types.MsgStructAttackResponse{}, nil
 }

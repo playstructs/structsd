@@ -6,10 +6,6 @@ import (
 	"structs/x/structs/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
-
-	// Used in Randomness Orb
-
-	"fmt"
 	"cosmossdk.io/math"
     authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
@@ -70,7 +66,7 @@ func (k *Keeper) GetProviderCacheFromId(ctx context.Context, providerId string) 
 func (cache *ProviderCache) Commit() {
 	cache.AnyChange = false
 
-	fmt.Printf("\n Updating Provider From Cache (%s) \n", cache.ProviderId)
+    cache.K.logger.Info("Updating Provider From Cache", "providerId", cache.ProviderId)
 
 	if cache.ProviderChanged {
 		cache.K.SetProvider(cache.Ctx, cache.Provider)

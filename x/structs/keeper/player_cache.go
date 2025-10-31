@@ -4,7 +4,6 @@ import (
 
 	"context"
     //"math"
-    "fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	sdkerrors "cosmossdk.io/errors"
@@ -119,7 +118,7 @@ func (k *Keeper) GetPlayerCacheFromAddress(ctx context.Context, address string) 
 func (cache *PlayerCache) Commit() () {
     cache.AnyChange = false
 
-    fmt.Printf("\n Updating Player From Cache (%s) \n", cache.PlayerId)
+    cache.K.logger.Info("Updating Player From Cache","playerId",cache.PlayerId)
 
     if (cache.PlayerChanged) { cache.K.SetPlayer(cache.Ctx, cache.Player) }
 

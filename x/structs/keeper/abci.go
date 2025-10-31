@@ -12,9 +12,7 @@ import (
 // and prune the oldest entry based on the HistoricalEntries parameter
 func (k *Keeper) BeginBlocker(ctx context.Context) {
 
-    ctxSDK := sdk.UnwrapSDKContext(ctx)
-
-    ctxSDK.Logger().Debug("Begin Block Processes")
+    k.logger.Debug("Begin Block Processes")
 
     k.EmitEventTime(ctx)
 
@@ -22,15 +20,12 @@ func (k *Keeper) BeginBlocker(ctx context.Context) {
 
     k.StructSweepDestroyed(ctx)
 
-    ctxSDK.Logger().Debug("Begin Block Complete")
+    k.logger.Debug("Begin Block Complete")
 }
 
 // Called every block, update validator set
 func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error) {
-
-    ctxSDK := sdk.UnwrapSDKContext(ctx)
-
-	ctxSDK.Logger().Debug("End Block Processes")
+	k.logger.Debug("End Block Processes")
 
 	k.AgreementExpirations(ctx)
 
@@ -42,14 +37,13 @@ func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error)
 	 */
 	k.GridCascade(ctx)
 
-    ctxSDK.Logger().Debug("End Block Complete")
+    k.logger.Debug("End Block Complete")
 
 	return []abci.ValidatorUpdate{}, nil
 }
 
 func (k Keeper) EmitEventTime(ctx context.Context) {
     ctxSDK := sdk.UnwrapSDKContext(ctx)
-    ctxSDK.Logger().Debug("Emit Event Time")
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventTime{&types.EventTimeDetail{BlockHeight: ctxSDK.BlockHeight(), BlockTime: ctxSDK.HeaderInfo().Time.UTC() }})
 }
 
@@ -58,7 +52,7 @@ func (k *Keeper) EventAllGenesis(ctx context.Context) {
 
     if ctxSDK.BlockHeight() > 1 { return }
 
-    ctxSDK.Logger().Info("Spewing Genesis Events")
+    k.logger.Info("Spewing Genesis Events into the Indexer")
 
 	// Player
     players := k.GetAllPlayer(ctx)

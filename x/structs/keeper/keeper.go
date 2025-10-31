@@ -60,7 +60,7 @@ func NewKeeper(
 		cdc:                cdc,
 		storeService:       storeService,
 		authority:          authority,
-		logger:             logger,
+		logger:             logger.With("module", "structs"),
 		ibcKeeperFn:        ibcKeeperFn,
 		capabilityScopedFn: capabilityScopedFn,
 

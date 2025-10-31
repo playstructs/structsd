@@ -68,6 +68,10 @@ var (
 
     ErrPlanetExploration                        = sdkerrors.Register(ModuleName,  1711, "planet exploration failed")
 
+    ErrReactorInfusion                          =  sdkerrors.Register(ModuleName, 2001, "Reactor Infusion Failed")
+    ErrReactorDefusion                          =  sdkerrors.Register(ModuleName, 2002, "Reactor Defusion Failed")
+    ErrReactorBeginMigration                    =  sdkerrors.Register(ModuleName, 2003, "Reactor Beginning Migration Failed")
+    ErrReactorCancelDefusion                    =  sdkerrors.Register(ModuleName, 2004, "Reactor Canceling Defusion Failed")
 
     ErrStructBuildInitiate                      = sdkerrors.Register(ModuleName,  1721, "Struct build initialization failed")
     ErrStructBuildComplete                      = sdkerrors.Register(ModuleName,  1722, "Struct build completion failed")

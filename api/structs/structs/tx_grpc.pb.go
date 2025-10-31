@@ -73,6 +73,10 @@ const (
 	Msg_ProviderGuildGrant_FullMethodName                            = "/structs.structs.Msg/ProviderGuildGrant"
 	Msg_ProviderGuildRevoke_FullMethodName                           = "/structs.structs.Msg/ProviderGuildRevoke"
 	Msg_ProviderDelete_FullMethodName                                = "/structs.structs.Msg/ProviderDelete"
+	Msg_ReactorInfuse_FullMethodName                                 = "/structs.structs.Msg/ReactorInfuse"
+	Msg_ReactorDefuse_FullMethodName                                 = "/structs.structs.Msg/ReactorDefuse"
+	Msg_ReactorBeginMigration_FullMethodName                         = "/structs.structs.Msg/ReactorBeginMigration"
+	Msg_ReactorCancelDefusion_FullMethodName                         = "/structs.structs.Msg/ReactorCancelDefusion"
 	Msg_StructActivate_FullMethodName                                = "/structs.structs.Msg/StructActivate"
 	Msg_StructDeactivate_FullMethodName                              = "/structs.structs.Msg/StructDeactivate"
 	Msg_StructBuildInitiate_FullMethodName                           = "/structs.structs.Msg/StructBuildInitiate"
@@ -156,6 +160,10 @@ type MsgClient interface {
 	ProviderGuildGrant(ctx context.Context, in *MsgProviderGuildGrant, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ProviderGuildRevoke(ctx context.Context, in *MsgProviderGuildRevoke, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ProviderDelete(ctx context.Context, in *MsgProviderDelete, opts ...grpc.CallOption) (*MsgProviderResponse, error)
+	ReactorInfuse(ctx context.Context, in *MsgReactorInfuse, opts ...grpc.CallOption) (*MsgReactorInfuseResponse, error)
+	ReactorDefuse(ctx context.Context, in *MsgReactorDefuse, opts ...grpc.CallOption) (*MsgReactorDefuseResponse, error)
+	ReactorBeginMigration(ctx context.Context, in *MsgReactorBeginMigration, opts ...grpc.CallOption) (*MsgReactorBeginMigrationResponse, error)
+	ReactorCancelDefusion(ctx context.Context, in *MsgReactorCancelDefusion, opts ...grpc.CallOption) (*MsgReactorCancelDefusionResponse, error)
 	StructActivate(ctx context.Context, in *MsgStructActivate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructDeactivate(ctx context.Context, in *MsgStructDeactivate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
 	StructBuildInitiate(ctx context.Context, in *MsgStructBuildInitiate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error)
@@ -673,6 +681,42 @@ func (c *msgClient) ProviderDelete(ctx context.Context, in *MsgProviderDelete, o
 	return out, nil
 }
 
+func (c *msgClient) ReactorInfuse(ctx context.Context, in *MsgReactorInfuse, opts ...grpc.CallOption) (*MsgReactorInfuseResponse, error) {
+	out := new(MsgReactorInfuseResponse)
+	err := c.cc.Invoke(ctx, Msg_ReactorInfuse_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) ReactorDefuse(ctx context.Context, in *MsgReactorDefuse, opts ...grpc.CallOption) (*MsgReactorDefuseResponse, error) {
+	out := new(MsgReactorDefuseResponse)
+	err := c.cc.Invoke(ctx, Msg_ReactorDefuse_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) ReactorBeginMigration(ctx context.Context, in *MsgReactorBeginMigration, opts ...grpc.CallOption) (*MsgReactorBeginMigrationResponse, error) {
+	out := new(MsgReactorBeginMigrationResponse)
+	err := c.cc.Invoke(ctx, Msg_ReactorBeginMigration_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) ReactorCancelDefusion(ctx context.Context, in *MsgReactorCancelDefusion, opts ...grpc.CallOption) (*MsgReactorCancelDefusionResponse, error) {
+	out := new(MsgReactorCancelDefusionResponse)
+	err := c.cc.Invoke(ctx, Msg_ReactorCancelDefusion_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) StructActivate(ctx context.Context, in *MsgStructActivate, opts ...grpc.CallOption) (*MsgStructStatusResponse, error) {
 	out := new(MsgStructStatusResponse)
 	err := c.cc.Invoke(ctx, Msg_StructActivate_FullMethodName, in, out, opts...)
@@ -922,6 +966,10 @@ type MsgServer interface {
 	ProviderGuildGrant(context.Context, *MsgProviderGuildGrant) (*MsgProviderResponse, error)
 	ProviderGuildRevoke(context.Context, *MsgProviderGuildRevoke) (*MsgProviderResponse, error)
 	ProviderDelete(context.Context, *MsgProviderDelete) (*MsgProviderResponse, error)
+	ReactorInfuse(context.Context, *MsgReactorInfuse) (*MsgReactorInfuseResponse, error)
+	ReactorDefuse(context.Context, *MsgReactorDefuse) (*MsgReactorDefuseResponse, error)
+	ReactorBeginMigration(context.Context, *MsgReactorBeginMigration) (*MsgReactorBeginMigrationResponse, error)
+	ReactorCancelDefusion(context.Context, *MsgReactorCancelDefusion) (*MsgReactorCancelDefusionResponse, error)
 	StructActivate(context.Context, *MsgStructActivate) (*MsgStructStatusResponse, error)
 	StructDeactivate(context.Context, *MsgStructDeactivate) (*MsgStructStatusResponse, error)
 	StructBuildInitiate(context.Context, *MsgStructBuildInitiate) (*MsgStructStatusResponse, error)
@@ -1111,6 +1159,18 @@ func (UnimplementedMsgServer) ProviderGuildRevoke(context.Context, *MsgProviderG
 }
 func (UnimplementedMsgServer) ProviderDelete(context.Context, *MsgProviderDelete) (*MsgProviderResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProviderDelete not implemented")
+}
+func (UnimplementedMsgServer) ReactorInfuse(context.Context, *MsgReactorInfuse) (*MsgReactorInfuseResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReactorInfuse not implemented")
+}
+func (UnimplementedMsgServer) ReactorDefuse(context.Context, *MsgReactorDefuse) (*MsgReactorDefuseResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReactorDefuse not implemented")
+}
+func (UnimplementedMsgServer) ReactorBeginMigration(context.Context, *MsgReactorBeginMigration) (*MsgReactorBeginMigrationResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReactorBeginMigration not implemented")
+}
+func (UnimplementedMsgServer) ReactorCancelDefusion(context.Context, *MsgReactorCancelDefusion) (*MsgReactorCancelDefusionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ReactorCancelDefusion not implemented")
 }
 func (UnimplementedMsgServer) StructActivate(context.Context, *MsgStructActivate) (*MsgStructStatusResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StructActivate not implemented")
@@ -2160,6 +2220,78 @@ func _Msg_ProviderDelete_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Msg_ReactorInfuse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgReactorInfuse)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ReactorInfuse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_ReactorInfuse_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ReactorInfuse(ctx, req.(*MsgReactorInfuse))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_ReactorDefuse_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgReactorDefuse)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ReactorDefuse(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_ReactorDefuse_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ReactorDefuse(ctx, req.(*MsgReactorDefuse))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_ReactorBeginMigration_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgReactorBeginMigration)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ReactorBeginMigration(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_ReactorBeginMigration_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ReactorBeginMigration(ctx, req.(*MsgReactorBeginMigration))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_ReactorCancelDefusion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgReactorCancelDefusion)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).ReactorCancelDefusion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_ReactorCancelDefusion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).ReactorCancelDefusion(ctx, req.(*MsgReactorCancelDefusion))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Msg_StructActivate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgStructActivate)
 	if err := dec(in); err != nil {
@@ -2760,6 +2892,22 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ProviderDelete",
 			Handler:    _Msg_ProviderDelete_Handler,
+		},
+		{
+			MethodName: "ReactorInfuse",
+			Handler:    _Msg_ReactorInfuse_Handler,
+		},
+		{
+			MethodName: "ReactorDefuse",
+			Handler:    _Msg_ReactorDefuse_Handler,
+		},
+		{
+			MethodName: "ReactorBeginMigration",
+			Handler:    _Msg_ReactorBeginMigration_Handler,
+		},
+		{
+			MethodName: "ReactorCancelDefusion",
+			Handler:    _Msg_ReactorCancelDefusion_Handler,
 		},
 		{
 			MethodName: "StructActivate",

@@ -85,6 +85,7 @@ enum raidStatus {
     initiated           = 0;
     ongoing             = 2;
     attackerDefeated    = 1;
+    attackerRetreated   = 5;
     raidSuccessful      = 3;
     demilitarized       = 4;
 }

@@ -8,12 +8,11 @@ import (
 	"structs/x/structs/types"
 	"github.com/nethruster/go-fraction"
 
-
     // Used in Randomness Orb
 	"math/rand"
     "bytes"
     "encoding/binary"
-    "fmt"
+
 
 )
 
@@ -165,7 +164,7 @@ func (k *Keeper) GetPlanetCacheFromId(ctx context.Context, planetId string) (Pla
 func (cache *PlanetCache) Commit() () {
     cache.AnyChange = false
 
-    fmt.Printf("\n Updating Planet From Cache (%s) \n", cache.PlanetId)
+    cache.K.logger.Info("Updating Planet From Cache","planetId",cache.PlanetId)
 
     if (cache.PlanetChanged) {
         cache.K.SetPlanet(cache.Ctx, cache.Planet)
@@ -610,17 +609,16 @@ func (cache *PlanetCache) IsSuccessful(successRate fraction.Fraction) bool {
 
 	buf := bytes.NewBuffer(uctx.BlockHeader().AppHash)
 	binary.Read(buf, binary.BigEndian, &seed)
-    fmt.Printf("Checking randomness using seed %d \n", seed)
-    seed = seed + cache.GetOwner().GetNextNonce()
-    fmt.Printf("Offsetting seed with nonce to %d \n", seed)
-    fmt.Printf("Odds of %d in %d \n", successRate.Numerator(), successRate.Denominator())
 
-	randomnessOrb := rand.New(rand.NewSource(seed))
+    seedOffset := seed + cache.GetOwner().GetNextNonce()
+	randomnessOrb := rand.New(rand.NewSource(seedOffset))
 	min := 1
 	max := int(successRate.Denominator())
 
-    fmt.Printf("Result: %t \n", (int(successRate.Numerator()) <= (randomnessOrb.Intn(max-min+1) + min)))
-	return (int(successRate.Numerator()) <= (randomnessOrb.Intn(max-min+1) + min))
+    randomnessCheck := (int(successRate.Numerator()) <= (randomnessOrb.Intn(max-min+1) + min))
+
+    cache.K.logger.Info("Planetary Success-Check Randomness", "planetId", cache.GetPlanetId(), "seed", seed, "offset", cache.GetOwner().GetNextNonce(), "seedOffset", seedOffset, "numerator", successRate.Numerator(), "denominator", successRate.Denominator(), "success", randomnessCheck)
+	return randomnessCheck
 }
 
 func (cache *PlanetCache) BuildInitiateReadiness(structure *types.Struct, structType *types.StructType, ambit types.Ambit, ambitSlot uint64) (error) {
@@ -736,8 +734,7 @@ func (cache *PlanetCache) MoveReadiness(structure *StructCache, ambit types.Ambi
 
 func (cache *PlanetCache) SetSlot(structure types.Struct) (err error) {
 
-    fmt.Printf(" Planet %s", cache.GetPlanetId())
-    fmt.Printf(" Setting Slot: %d", structure.Slot)
+    cache.K.logger.Info("Planet Slot Update","planetId", cache.GetPlanetId(), "slot", structure.Slot, "ambit", structure.OperatingAmbit)
 
     if (!cache.PlanetLoaded) { cache.LoadPlanet() }
 
