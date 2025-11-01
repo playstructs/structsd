@@ -5,7 +5,6 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
-
 )
 
 // BeginBlocker will persist the current header and validator set as a historical entry

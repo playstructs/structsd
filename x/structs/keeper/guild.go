@@ -3,16 +3,17 @@ package keeper
 import (
 	"encoding/binary"
 
-    "context"
+	"context"
 
-	"github.com/cosmos/cosmos-sdk/runtime"
-	"cosmossdk.io/store/prefix"
-	storetypes "cosmossdk.io/store/types"
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 
-    banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	"cosmossdk.io/store/prefix"
+	storetypes "cosmossdk.io/store/types"
+	"github.com/cosmos/cosmos-sdk/runtime"
+	sdk "github.com/cosmos/cosmos-sdk/types"
+
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	//"strconv"
 	//"strings"
 	//"fmt"
@@ -25,7 +26,7 @@ func (k Keeper) GetGuildCount(ctx context.Context) uint64 {
 	bz := store.Get(byteKey)
 
 	// Count doesn't exist: no element
-	if bz == nil || binary.BigEndian.Uint64(bz) == 0  {
+	if bz == nil || binary.BigEndian.Uint64(bz) == 0 {
 		return types.KeeperStartValue
 	}
 
@@ -51,18 +52,18 @@ func (k Keeper) AppendGuild(
 	reactor types.Reactor,
 	player types.Player,
 ) (guild types.Guild) {
-    guild = types.CreateEmptyGuild()
+	guild = types.CreateEmptyGuild()
 
 	// Create the guild
 	count := k.GetGuildCount(ctx)
 
 	// Set the ID of the appended value
-	guild.Id                = GetObjectID(types.ObjectType_guild, count)
-	guild.Index             = count
-	guild.Endpoint          = endpoint
-	guild.Creator           = player.Creator
-	guild.Owner             = player.Id
-	guild.PrimaryReactorId  = reactor.Id
+	guild.Id = GetObjectID(types.ObjectType_guild, count)
+	guild.Index = count
+	guild.Endpoint = endpoint
+	guild.Creator = player.Creator
+	guild.Owner = player.Id
+	guild.PrimaryReactorId = reactor.Id
 	guild.EntrySubstationId = substationId
 
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GuildKey))
@@ -73,33 +74,36 @@ func (k Keeper) AppendGuild(
 	k.SetGuildCount(ctx, count+1)
 
 	permissionId := GetObjectPermissionIDBytes(guild.Id, player.Id)
-    k.PermissionAdd(ctx, permissionId, types.PermissionAll)
+	k.PermissionAdd(ctx, permissionId, types.PermissionAll)
 
-    // Setup the Guild Token
-    guildDenomMetadata := banktypes.Metadata{
-                            Name:        "guild." + guild.Id,
-                            Symbol:      "guild." + guild.Id,
-                            Description: "The currency of Guild " + guild.Id,
-                            DenomUnits: []*banktypes.DenomUnit{
-                                {"uguild." + guild.Id, uint32(0), nil},
-                                {"guild." + guild.Id, uint32(6), nil},
-                            },
-                            Base:    "uguild." + guild.Id,
-                            Display: "uguild." + guild.Id,
-                        }
+	// Setup the Guild Token
+	guildDenomMetadata := banktypes.Metadata{
+		Name:        "guild." + guild.Id,
+		Symbol:      "guild." + guild.Id,
+		Description: "The currency of Guild " + guild.Id,
+		DenomUnits: []*banktypes.DenomUnit{
+			{"uguild." + guild.Id, uint32(0), nil},
+			{"guild." + guild.Id, uint32(6), nil},
+		},
+		Base:    "uguild." + guild.Id,
+		Display: "uguild." + guild.Id,
+	}
 
-    k.bankKeeper.SetDenomMetaData(ctx, guildDenomMetadata)
+	k.bankKeeper.SetDenomMetaData(ctx, guildDenomMetadata)
 
-    k.logger.Info("Guild Collateral Pool Address","raw", types.GuildBankCollateralPool + guild.Id,"address",authtypes.NewModuleAddress(types.GuildBankCollateralPool + guild.Id).String())
-    // types.ModuleName Guild Bank Mint
+	guildCollateralAddressRaw := types.GuildBankCollateralPool+guild.Id
+	guildCollateralAddress := authtypes.NewModuleAddress(guildCollateralAddressRaw)
+	guildCollateralAccount := k.accountKeeper.NewAccountWithAddress(ctx, guildCollateralAddress)
+	guildCollateralAddressStr := guildCollateralAddress.String()
 
-    guildCollateralAddress := authtypes.NewModuleAddress(types.GuildBankCollateralPool + guild.Id)
-    guildCollateralAccount := k.accountKeeper.NewAccountWithAddress(ctx, guildCollateralAddress)
-    k.accountKeeper.SetAccount(ctx, guildCollateralAccount)
+	k.logger.Info("Guild Collateral Pool Address", "raw", guildCollateralAddressRaw, "address", guildCollateralAddressStr)
+    	// types.ModuleName Guild Bank Mint
+
+	k.accountKeeper.SetAccount(ctx, guildCollateralAccount)
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuild{Guild: &guild})
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildBankAddress{&types.EventGuildBankAddressDetail{GuildId: guild.Id, BankCollateralPool: guildCollateralAddress.String(), BankTokenPool: types.ModuleName}})
+	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuild{Guild: &guild})
+	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildBankAddress{&types.EventGuildBankAddressDetail{GuildId: guild.Id, BankCollateralPool: guildCollateralAddressStr, BankTokenPool: types.ModuleName}})
 
 	return guild
 }
@@ -111,7 +115,7 @@ func (k Keeper) SetGuild(ctx context.Context, guild types.Guild) {
 	store.Set([]byte(guild.Id), b)
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuild{Guild: &guild})
+	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuild{Guild: &guild})
 }
 
 // GetGuild returns a guild from its id
@@ -131,7 +135,7 @@ func (k Keeper) RemoveGuild(ctx context.Context, guildId string) {
 	store.Delete([]byte(guildId))
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventDelete{ObjectId: guildId})
+	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventDelete{ObjectId: guildId})
 }
 
 // GetAllGuild returns all guild
@@ -149,4 +153,3 @@ func (k Keeper) GetAllGuild(ctx context.Context) (list []types.Guild) {
 
 	return
 }
-
