@@ -57,7 +57,12 @@ func (k Keeper) ReactorInitialize(ctx context.Context, validatorAddress sdk.ValA
 			validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
 			delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
 
-			k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, identity.String(), player, delegationShare.Uint64(), reactor.DefaultCommission, types.ReactorFuelToEnergyConversion)
+            infusion := k.GetInfusionCache(ctx, types.ObjectType_reactor, reactor.Id, identity.String())
+
+            infusion.SetRatio(types.ReactorFuelToEnergyConversion)
+            infusion.SetFuelAndCommission(delegationShare.Uint64(), reactor.DefaultCommission)
+            infusion.Commit()
+
 		}
 	}
 
@@ -84,23 +89,13 @@ func (k Keeper) ReactorUpdatePlayerInfusion(ctx context.Context, playerAddress s
 	if err == nil {
 
 		delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
-		player := k.UpsertPlayer(ctx, playerAddress.String())
+		k.UpsertPlayer(ctx, playerAddress.String())
 
-		/*
-		   * Returns if needed (
-		         infusion types.Infusion,
-		         newInfusionFuel uint64,
-		         oldInfusionFuel uint64,
-		         newInfusionPower uint64,
-		         oldInfusionPower uint64,
-		         newCommissionPower uint64,
-		         oldCommissionPower uint64,
-		         newPlayerPower uint64,
-		         oldPlayerPower uint64,
-		         err error
-		     )
-		*/
-		k.UpsertInfusion(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String(), player, delegationShare.Uint64(), reactor.DefaultCommission, types.ReactorFuelToEnergyConversion)
+        infusion := k.GetInfusionCache(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String())
+
+        infusion.SetRatio(types.ReactorFuelToEnergyConversion)
+        infusion.SetFuelAndCommission(delegationShare.Uint64(), reactor.DefaultCommission)
+        infusion.Commit()
 	}
 
 }
@@ -155,25 +150,27 @@ func (k Keeper) ReactorInfusionUnbonding(ctx context.Context, unbondingId uint64
 		reactorBytes, _ := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
 		reactor, _ := k.GetReactorByBytes(ctx, reactorBytes)
 
-		unbondingInfusion, _ := k.GetInfusion(ctx, reactor.Id, playerAddress.String())
+        infusion := k.GetInfusionCache(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String())
+
+        infusion.SetRatio(types.ReactorFuelToEnergyConversion)
+        infusion.SetCommission(reactor.DefaultCommission)
 
 		amount := math.ZeroInt()
 		for _, entry := range unbondingDelegation.Entries {
 			amount = amount.Add(entry.Balance) // should this be entry.Balance?
 		}
-		unbondingInfusion.Defusing = amount
+		infusion.SetDefusing(amount.Uint64())
 
         delegation, err := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
         if err == nil {
             validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
             delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
-            unbondingInfusion.Fuel = delegationShare.Uint64()
+            infusion.SetFuel(delegationShare.Uint64())
         } else {
-            unbondingInfusion.Fuel = uint64(0)
+            infusion.SetFuel(uint64(0))
         }
 
-        // TODO FIX THIS, it'll need its own shit
-		k.SetInfusion(ctx, unbondingInfusion)
+        infusion.Commit()
 
 		uctx := sdk.UnwrapSDKContext(ctx)
 		_ = uctx.EventManager().EmitTypedEvent(&types.EventAlphaInfuse{&types.EventAlphaInfuseDetail{PrimaryAddress: unbondingDelegation.DelegatorAddress, Amount: amount.Uint64()}})

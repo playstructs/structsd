@@ -144,6 +144,7 @@ func (cache *InfusionCache) LoadInfusion() (bool) {
 
     // Replacing the old Upsert methodology with this Load-or-Create
     if !cache.InfusionLoaded {
+
         cache.Infusion = types.Infusion{
             DestinationType: cache.DestinationType,
             DestinationId: cache.DestinationId,
@@ -155,6 +156,7 @@ func (cache *InfusionCache) LoadInfusion() (bool) {
             Ratio: 0,
             Defusing: 0,
         }
+
         cache.InfusionLoaded = true
     }
 
@@ -301,11 +303,24 @@ func (cache *InfusionCache) SetCalculatedPlayerCapacity() {
     }
 }
 
+func (cache *InfusionCache) SetRatio(ratio uint64) {
+    if (!cache.InfusionLoaded) { cache.LoadInfusion() }
+
+    cache.Infusion.Ratio = ratio
+
+    cache.SetCalculatedPower()
+    cache.SetCalculatedDestinationCapacity()
+    cache.SetCalculatedPlayerCapacity()
+
+    cache.InfusionChanged = true
+    cache.Changed()
+
+}
+
 func (cache *InfusionCache) SetCommission(commission math.LegacyDec) {
     if (!cache.InfusionLoaded) { cache.LoadInfusion() }
 
     cache.Infusion.Commission = commission
-    cache.SetCalculatedPower() // Shouldn't actually have changed
 
     cache.SetCalculatedDestinationCapacity()
     cache.SetCalculatedPlayerCapacity()
@@ -318,6 +333,20 @@ func (cache *InfusionCache) SetFuel(fuel uint64) () {
     if (!cache.InfusionLoaded) { cache.LoadInfusion() }
 
     cache.Infusion.Fuel = fuel
+
+    cache.SetCalculatedPower()
+    cache.SetCalculatedDestinationCapacity()
+    cache.SetCalculatedPlayerCapacity()
+
+    cache.InfusionChanged = true
+    cache.Changed()
+}
+
+
+func (cache *InfusionCache) AddFuel(additionalFuel uint64) () {
+    if (!cache.InfusionLoaded) { cache.LoadInfusion() }
+
+    cache.Infusion.Fuel = cache.Infusion.Fuel + additionalFuel
 
     cache.SetCalculatedPower()
     cache.SetCalculatedDestinationCapacity()

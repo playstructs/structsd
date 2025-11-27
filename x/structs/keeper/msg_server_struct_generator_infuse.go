@@ -97,32 +97,12 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
     }
     k.bankKeeper.BurnCoins(ctx, types.ModuleName, infusionAmount)
 
-    var newInfusionAmount uint64
+    infusion := k.GetInfusionCache(ctx, types.ObjectType_struct, structure.Id, callingPlayer.PrimaryAddress)
 
-    infusion, infusionFound := k.GetInfusion(ctx, structure.Id, callingPlayer.PrimaryAddress)
-    if (infusionFound) {
-        newInfusionAmount = infusionAmount[0].Amount.Uint64() + infusion.Fuel
-    } else {
-        newInfusionAmount = infusionAmount[0].Amount.Uint64()
-    }
-
-
-    /*
-     * Returns if needed (
-           infusion types.Infusion,
-           newInfusionFuel uint64,
-           oldInfusionFuel uint64,
-           newInfusionPower uint64,
-           oldInfusionPower uint64,
-           newCommissionPower uint64,
-           oldCommissionPower uint64,
-           newPlayerPower uint64,
-           oldPlayerPower uint64,
-           err error
-       )
-    */
-
-    k.UpsertInfusion(ctx, types.ObjectType_struct, structure.Id, callingPlayer.PrimaryAddress, callingPlayer, newInfusionAmount, math.LegacyZeroDec(), structType.GeneratingRate )
+    infusion.SetRatio(structType.GeneratingRate)
+    infusion.SetCommission(math.LegacyZeroDec())
+    infusion.AddFuel(infusionAmount[0].Amount.Uint64())
+    infusion.Commit()
 
     _ = ctx.EventManager().EmitTypedEvent(&types.EventAlphaInfuse{&types.EventAlphaInfuseDetail{PlayerId: callingPlayer.Id, PrimaryAddress: callingPlayer.PrimaryAddress, Amount: infusionAmount[0].Amount.Uint64()}})
 

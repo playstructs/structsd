@@ -104,12 +104,7 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 
                 */
 
-                // The amount available to move over is the amount of Fuel minus the Defusing quantity (as it's already moving)
-                redelegateAmountFuel := math.NewIntFromUint64(infusion.Fuel)
-                if redelegateAmountFuel.LT(infusion.Defusing) {
-                    return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Infusion (%s) unacceptable because Fuel less the defusing", infusionId)
-                }
-                redelegateAmount := redelegateAmountFuel.Sub(infusion.Defusing)
+                redelegateAmount := math.NewIntFromUint64(infusion.Fuel)
                 infusionMigrationAmount = append(infusionMigrationAmount, redelegateAmount)
 
                 // The validation should never fail assuming there isn't a bug in the Infusion system

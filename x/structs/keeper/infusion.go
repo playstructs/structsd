@@ -11,7 +11,6 @@ import (
 	"structs/x/structs/types"
 
 	//"strconv"
-	"cosmossdk.io/math"
 	"strings"
 
 )
@@ -72,68 +71,6 @@ func (k Keeper) GetInfusionByID(ctx context.Context, infusionId string) (val typ
 	}
 	return k.GetInfusion(ctx, infusionIdSplit[0], infusionIdSplit[1])
 }
-
-
-func (k Keeper) UpsertInfusion(ctx context.Context, destinationType types.ObjectType, destinationId string, address string, player types.Player, fuel uint64, commission math.LegacyDec, ratio uint64) (infusion types.Infusion, newInfusionFuel uint64, oldInfusionFuel uint64, newInfusionPower uint64, oldInfusionPower uint64, newCommissionPower uint64, oldCommissionPower uint64, newPlayerPower uint64, oldPlayerPower uint64, err error) {
-
-    infusion, infusionFound := k.GetInfusion(ctx, destinationId, address)
-    if (infusionFound) {
-         newInfusionFuel, oldInfusionFuel, newInfusionPower, oldInfusionPower, newCommissionPower, oldCommissionPower, newPlayerPower, oldPlayerPower, _, _, err = infusion.SetFuelAndCommission(fuel, commission)
-    } else {
-
-        infusion = types.CreateNewInfusion(destinationType, destinationId, address, player.Id, fuel, commission, ratio)
-
-        // Should already be the value, but let's be safe
-        oldInfusionFuel = 0
-        oldPlayerPower = 0
-        oldCommissionPower = 0
-        oldInfusionPower = 0
-
-        newInfusionFuel = fuel
-        newInfusionPower, newCommissionPower, newPlayerPower = infusion.GetPowerDistribution()
-    }
-
-    k.SetInfusion(ctx, infusion)
-
-    // Update the Fuel record on the Destination
-    if (oldInfusionFuel != newInfusionFuel) {
-        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, destinationId), oldInfusionFuel, newInfusionFuel)
-    }
-
-    // Update the Commissioned Power on the Destination
-    if (oldCommissionPower != newCommissionPower) {
-        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, destinationId), oldCommissionPower, newCommissionPower)
-
-        // Check for an automated allocation
-        destinationAllocationId, destinationAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(ctx, destinationId)
-        if (destinationAutoResizeAllocationFound) {
-            k.AutoResizeAllocation(ctx, destinationAllocationId, destinationId, oldCommissionPower, newCommissionPower)
-        } else {
-            if (oldCommissionPower > newCommissionPower) {
-                k.AppendGridCascadeQueue(ctx, destinationId)
-            }
-        }
-    }
-
-    // Update the Player's Power Capacity
-    if (oldPlayerPower != newPlayerPower) {
-        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id), oldPlayerPower, newPlayerPower)
-
-        // Check for an automated allocation
-        playerAllocationId, playerAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(ctx, player.Id)
-        if (playerAutoResizeAllocationFound) {
-            k.AutoResizeAllocation(ctx, playerAllocationId, player.Id, oldPlayerPower, newPlayerPower)
-        } else {
-            // This might be able to be an else from the above statement, but I need more coffee before committing
-            if (oldPlayerPower > newPlayerPower) {
-                k.AppendGridCascadeQueue(ctx, player.Id)
-            }
-        }
-    }
-
-     return
-}
-
 
 
 // RemoveInfusion removes a infusion from the store
