@@ -159,10 +159,20 @@ func (k Keeper) ReactorInfusionUnbonding(ctx context.Context, unbondingId uint64
 
 		amount := math.ZeroInt()
 		for _, entry := range unbondingDelegation.Entries {
-			amount = amount.Add(entry.InitialBalance)
+			amount = amount.Add(entry.Balance) // should this be entry.Balance?
 		}
-
 		unbondingInfusion.Defusing = amount
+
+        delegation, err := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
+        if err == nil {
+            validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
+            delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
+            unbondingInfusion.Fuel = delegationShare.Uint64()
+        } else {
+            unbondingInfusion.Fuel = uint64(0)
+        }
+
+        // TODO FIX THIS, it'll need its own shit
 		k.SetInfusion(ctx, unbondingInfusion)
 
 		uctx := sdk.UnwrapSDKContext(ctx)
