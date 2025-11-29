@@ -62,8 +62,6 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
     // Got this far, let's reward the player with some Ore
     structure.OreMinePlanet()
 
-    k.DischargePlayer(ctx, structure.GetOwnerId())
-
     structure.Commit()
 
     _ = ctx.EventManager().EmitTypedEvent(&types.EventOreMine{&types.EventOreMineDetail{PlayerId: structure.GetOwnerId(), PrimaryAddress: structure.GetOwner().GetPrimaryAddress(), Amount: 1}})

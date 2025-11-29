@@ -62,8 +62,6 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
 
     structure.OreRefine()
 
-    k.DischargePlayer(ctx, structure.GetOwnerId())
-
     structure.Commit()
 
     _ = ctx.EventManager().EmitTypedEvent(&types.EventAlphaRefine{&types.EventAlphaRefineDetail{PlayerId: structure.GetOwnerId(), PrimaryAddress: structure.GetOwner().GetPrimaryAddress(), Amount: 1}})
