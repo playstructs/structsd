@@ -38,13 +38,6 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
         return &types.MsgStructOreRefineryStatusResponse{}, readinessError
     }
 
-
-    playerCharge := k.GetPlayerCharge(ctx, structure.GetOwnerId())
-    if (playerCharge < structure.GetStructType().GetOreRefiningCharge()) {
-        k.DischargePlayer(ctx, structure.GetOwnerId())
-        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for this refinement, but player (%s) only had %d", structure.GetTypeId() , structure.GetStructType().GetOreRefiningCharge(), structure.GetOwnerId(), playerCharge)
-    }
-
     refiningReadinessError := structure.CanOreRefine()
     if (refiningReadinessError != nil) {
         k.DischargePlayer(ctx, structure.GetOwnerId())

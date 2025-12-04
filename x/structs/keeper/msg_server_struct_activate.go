@@ -43,7 +43,7 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
     playerCharge := k.GetPlayerCharge(ctx, structure.GetOwnerId())
     if (playerCharge < structure.GetStructType().GetActivateCharge()) {
         k.DischargePlayer(ctx, structure.GetOwnerId())
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for this mining operation, but player (%s) only had %d", structure.GetTypeId() , structure.GetStructType().GetOreMiningCharge(), structure.GetOwnerId(), playerCharge)
+        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for this mining operation, but player (%s) only had %d", structure.GetTypeId() , structure.GetStructType().GetActivateCharge(), structure.GetOwnerId(), playerCharge)
     }
 
 

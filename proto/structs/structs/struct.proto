@@ -28,10 +28,10 @@ message StructType {
   string  type  = 2; // TODO Deprecating... Will match with Class for now.
 
   // New Struct Type Identity Details
-  string  class = 65;
-  string  classAbbreviation = 66;
-  string  defaultCosmeticModelNumber = 67;
-  string  defaultCosmeticName = 68;
+  string  class = 63;
+  string  classAbbreviation = 64;
+  string  defaultCosmeticModelNumber = 65;
+  string  defaultCosmeticName = 66;
 
   // Fundamental attributes
   objectType      category        = 3 [(amino.dont_omitempty) = true]; // Planet or Fleet
@@ -93,27 +93,25 @@ message StructType {
   uint64 buildCharge            = 44;
   uint64 defendChangeCharge     = 45;
   uint64 moveCharge             = 46;
-  uint64 oreMiningCharge        = 47;
-  uint64 oreRefiningCharge      = 48;
-  uint64 stealthActivateCharge  = 49;
+  uint64 stealthActivateCharge  = 47;
 
 
   // Tech Tree Attributes
-  uint64 attackReduction              = 50; // For Defensive Cannon
-  bool   attackCounterable            = 51; // For Indirect Combat Module
-  bool   stealthSystems               = 52; // For Stealth Mode
+  uint64 attackReduction              = 48; // For Defensive Cannon
+  bool   attackCounterable            = 49; // For Indirect Combat Module
+  bool   stealthSystems               = 50; // For Stealth Mode
 
-  uint64 counterAttack                = 53; // Counter
-  uint64 counterAttackSameAmbit       = 54; // Advanced Counter
+  uint64 counterAttack                = 51; // Counter
+  uint64 counterAttackSameAmbit       = 52; // Advanced Counter
 
-  uint64 postDestructionDamage        = 55;
+  uint64 postDestructionDamage        = 53;
 
-  uint64 generatingRate               = 56; // Power Generation
+  uint64 generatingRate               = 54; // Power Generation
 
-  uint64 planetaryShieldContribution  = 57; // The shield that is added to the Planet
+  uint64 planetaryShieldContribution  = 55; // The shield that is added to the Planet
 
-  uint64 oreMiningDifficulty          = 58;
-  uint64 oreRefiningDifficulty        = 59;
+  uint64 oreMiningDifficulty          = 56;
+  uint64 oreRefiningDifficulty        = 57;
 
   /*  Storage Not in MVP
 
@@ -126,15 +124,15 @@ message StructType {
   uint64 storageWater                 = x;
   */
 
-  uint64 unguidedDefensiveSuccessRateNumerator    = 60;
-  uint64 unguidedDefensiveSuccessRateDenominator  = 61;
+  uint64 unguidedDefensiveSuccessRateNumerator    = 58;
+  uint64 unguidedDefensiveSuccessRateDenominator  = 59;
 
-  uint64 guidedDefensiveSuccessRateNumerator      = 62;
-  uint64 guidedDefensiveSuccessRateDenominator    = 63;
+  uint64 guidedDefensiveSuccessRateNumerator      = 60;
+  uint64 guidedDefensiveSuccessRateDenominator    = 61;
 
   // I wish this was higher up in a different area of the definition
   // but I really don't feel like renumbering this entire thing again.
-  bool triggerRaidDefeatByDestruction = 64;
+  bool triggerRaidDefeatByDestruction = 62;
 }
 
 message StructDefender {

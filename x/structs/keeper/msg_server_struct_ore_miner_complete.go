@@ -37,13 +37,6 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
         return &types.MsgStructOreMinerStatusResponse{}, readinessError
     }
 
-
-    playerCharge := k.GetPlayerCharge(ctx, structure.GetOwnerId())
-    if (playerCharge < structure.GetStructType().GetOreMiningCharge()) {
-        k.DischargePlayer(ctx, structure.GetOwnerId())
-        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for this mining operation, but player (%s) only had %d", structure.GetTypeId() , structure.GetStructType().GetOreMiningCharge(), structure.GetOwnerId(), playerCharge)
-    }
-
     miningReadinessError := structure.CanOreMinePlanet()
     if (miningReadinessError != nil) {
         k.DischargePlayer(ctx, structure.GetOwnerId())
@@ -61,7 +54,6 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 
     // Got this far, let's reward the player with some Ore
     structure.OreMinePlanet()
-
     structure.Commit()
 
     _ = ctx.EventManager().EmitTypedEvent(&types.EventOreMine{&types.EventOreMineDetail{PlayerId: structure.GetOwnerId(), PrimaryAddress: structure.GetOwner().GetPrimaryAddress(), Amount: 1}})
