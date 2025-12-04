@@ -67,12 +67,6 @@ func (h Hooks) BeforeDelegationRemoved(_ context.Context, _ sdk.AccAddress, _ sd
 	return nil
 }
 
-/* This doesn't actually exist yet, but I'd like it to */
-func (h Hooks) AfterDelegationRemoved(ctx context.Context, playerAddress sdk.AccAddress, valAddr sdk.ValAddress) error {
-	h.k.ReactorRemoveInfusion(ctx, playerAddress, valAddr)
-	return nil
-}
-
 func (h Hooks) AfterDelegationModified(ctx context.Context, playerAddress sdk.AccAddress, valAddr sdk.ValAddress) error {
 	h.k.ReactorUpdatePlayerInfusion(ctx, playerAddress, valAddr)
 

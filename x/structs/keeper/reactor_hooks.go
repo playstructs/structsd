@@ -100,26 +100,6 @@ func (k Keeper) ReactorUpdatePlayerInfusion(ctx context.Context, playerAddress s
 
 }
 
-/* Change Reactor Allocations for Player Delegations
- *
- * Triggered during Staking Hooks:
- *   AfterDelegationRemoved
- *
- */
-func (k Keeper) ReactorRemoveInfusion(ctx context.Context, playerAddress sdk.AccAddress, validatorAddress sdk.ValAddress) {
-
-	/* Does this Reactor exist? */
-	reactorBytes, reactorBytesFound := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
-	if !reactorBytesFound {
-		return
-	}
-	reactor, _ := k.GetReactorByBytes(ctx, reactorBytes)
-
-	infusion, found := k.GetInfusion(ctx, reactor.Id, playerAddress.String())
-	if found {
-		k.DestroyInfusion(ctx, infusion)
-	}
-}
 
 /* Update Reactor Details (Primarily In-Game Permissions/Ownership)
  *
@@ -157,7 +137,7 @@ func (k Keeper) ReactorInfusionUnbonding(ctx context.Context, unbondingId uint64
 
 		amount := math.ZeroInt()
 		for _, entry := range unbondingDelegation.Entries {
-			amount = amount.Add(entry.Balance) // should this be entry.Balance?
+			amount = amount.Add(entry.Balance) // should this be entry.InitialBalance?
 		}
 		infusion.SetDefusing(amount.Uint64())
 
