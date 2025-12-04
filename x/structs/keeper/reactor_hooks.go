@@ -84,19 +84,38 @@ func (k Keeper) ReactorUpdatePlayerInfusion(ctx context.Context, playerAddress s
 	reactor, _ := k.GetReactorByBytes(ctx, reactorBytes)
 	validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
 
+    commit := false
+
+	k.UpsertPlayer(ctx, playerAddress.String())
+    infusion := k.GetInfusionCache(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String())
+
 	delegation, err := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
 
 	if err == nil {
 
 		delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
-		k.UpsertPlayer(ctx, playerAddress.String())
-
-        infusion := k.GetInfusionCache(ctx, types.ObjectType_reactor, reactor.Id, playerAddress.String())
 
         infusion.SetRatio(types.ReactorFuelToEnergyConversion)
         infusion.SetFuelAndCommission(delegationShare.Uint64(), reactor.DefaultCommission)
-        infusion.Commit()
+
+        commit = true
 	}
+
+    unbondingDelegation, err := k.stakingKeeper.GetUnbondingDelegation(ctx, playerAddress, validatorAddress)
+	amount := math.ZeroInt()
+    if err == nil {
+		for _, entry := range unbondingDelegation.Entries {
+			amount = amount.Add(entry.Balance)
+		}
+	}
+	if (infusion.GetDefusing() != amount.Uint64()) {
+    	infusion.SetDefusing(amount.Uint64())
+    	commit = true
+	}
+
+    if commit {
+        infusion.Commit()
+    }
 
 }
 

@@ -215,6 +215,7 @@ func (cache *InfusionCache) GetDestinationFuel()        (uint64) { if (!cache.De
 func (cache *InfusionCache) GetDestinationCapacity()    (uint64) { if (!cache.DestinationCapacityLoaded) { cache.LoadDestinationCapacity() }; return cache.DestinationCapacity }
 func (cache *InfusionCache) GetPlayerCapacity()         (uint64) { if (!cache.PlayerCapacityLoaded) { cache.LoadPlayerCapacity() }; return cache.PlayerCapacity }
 
+func (cache *InfusionCache) GetDefusing()               (uint64) { if (!cache.InfusionLoaded) { cache.LoadInfusion() }; return cache.Infusion.Defusing }
 func (cache *InfusionCache) GetFuel()                   (uint64) { if (!cache.InfusionLoaded) { cache.LoadInfusion() }; return cache.Infusion.Fuel }
 func (cache *InfusionCache) GetPower()                  (uint64) { if (!cache.InfusionLoaded) { cache.LoadInfusion() }; return cache.Infusion.Power }
 func (cache *InfusionCache) GetSnapshotFuel()           (uint64) { if (!cache.InfusionLoaded) { cache.LoadInfusion() }; return cache.InfusionSnapshot.Fuel }
