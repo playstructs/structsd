@@ -46,7 +46,6 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for this mining operation, but player (%s) only had %d", structure.GetTypeId() , structure.GetStructType().GetActivateCharge(), structure.GetOwnerId(), playerCharge)
     }
 
-
     structure.GoOnline()
     structure.Commit()
 

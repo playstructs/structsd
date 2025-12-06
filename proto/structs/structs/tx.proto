@@ -80,6 +80,8 @@ service Msg {
   rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse   );
   rpc PlayerResume                   (MsgPlayerResume                  ) returns (MsgPlayerResumeResponse                 );
 
+  rpc PlayerSend                     (MsgPlayerSend                    ) returns (MsgPlayerSendResponse);
+
   rpc ProviderCreate                 (MsgProviderCreate                ) returns (MsgProviderResponse);
   rpc ProviderWithdrawBalance        (MsgProviderWithdrawBalance       ) returns (MsgProviderResponse);
   rpc ProviderUpdateCapacityMinimum  (MsgProviderUpdateCapacityMinimum ) returns (MsgProviderResponse);
@@ -1029,3 +1031,23 @@ message MsgProviderDelete {
 }
 
 message MsgProviderResponse {}
+
+message MsgPlayerSend {
+  option (gogoproto.goproto_getters) = false;
+  option (gogoproto.equal) = false;
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator        = 1;
+  string player_id      = 2;
+  string from_address   = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string to_address     = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  repeated cosmos.base.v1beta1.Coin amount = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (amino.encoding) = "legacy_coins",
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgPlayerSendResponse {
+  // This message has no fields.
+}
