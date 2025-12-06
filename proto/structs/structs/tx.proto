@@ -553,7 +553,6 @@ message MsgPlayerResumeResponse {}
 // from a delegator to a validator.
 message MsgReactorInfuse {
   option (cosmos.msg.v1.signer) = "creator";
-  option (amino.name)           = "cosmos-sdk/MsgReactorInfuse";
 
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
@@ -571,7 +570,6 @@ message MsgReactorInfuseResponse {}
 // of coins from a delegator and source validator to a destination validator.
 message MsgReactorBeginMigration {
   option (cosmos.msg.v1.signer) = "creator";
-  option (amino.name)           = "cosmos-sdk/MsgReactorBeginMigration";
 
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
@@ -593,7 +591,6 @@ message MsgReactorBeginMigrationResponse {
 // delegate and a validator.
 message MsgReactorDefuse {
   option (cosmos.msg.v1.signer) = "creator";
-  option (amino.name)           = "cosmos-sdk/MsgReactorDefuse";
 
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
@@ -620,7 +617,6 @@ message MsgReactorDefuseResponse {
 // Since: cosmos-sdk 0.46
 message MsgReactorCancelDefusion {
   option (cosmos.msg.v1.signer)      = "creator";
-  option (amino.name)                = "cosmos-sdk/MsgReactorCancelDefusion";
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
