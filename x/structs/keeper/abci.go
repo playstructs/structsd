@@ -35,6 +35,7 @@ func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error)
 	 * but I think that's ok. We'll see how it goes in practice.
 	 */
 	k.GridCascade(ctx)
+	k.ProcessInfusionDestructionQueue(ctx)
 
     k.logger.Debug("End Block Complete")
 

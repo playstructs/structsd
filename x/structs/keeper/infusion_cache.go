@@ -127,6 +127,10 @@ func (cache *InfusionCache) Commit() () {
         cache.PlayerCapacityChanged = false
     }
 
+    if cache.IsEmpty() {
+        cache.K.AppendInfusionDestructionQueue(cache.Ctx, cache.GetInfusionId())
+    }
+
     cache.Snapshot()
 }
 
@@ -210,6 +214,8 @@ func (cache *InfusionCache) GetOwnerId() (string) {
 
 func (cache *InfusionCache) GetOwner()          (*PlayerCache) { if (!cache.OwnerLoaded) { cache.LoadOwner() }; return cache.Owner }
 func (cache *InfusionCache) GetInfusion()       (types.Infusion) { if (!cache.InfusionLoaded) { cache.LoadInfusion() }; return cache.Infusion }
+func (cache *InfusionCache) GetInfusionId()     (string) { if (!cache.InfusionLoaded) { cache.LoadInfusion() }; return cache.Infusion.DestinationId + "-" + cache.Infusion.Address }
+
 
 func (cache *InfusionCache) GetDestinationFuel()        (uint64) { if (!cache.DestinationFuelLoaded) { cache.LoadDestinationFuel() }; return cache.DestinationFuel }
 func (cache *InfusionCache) GetDestinationCapacity()    (uint64) { if (!cache.DestinationCapacityLoaded) { cache.LoadDestinationCapacity() }; return cache.DestinationCapacity }
@@ -245,6 +251,15 @@ func (cache *InfusionCache) GetSnapshotDestinationCapacity() uint64 {
     if (!cache.InfusionLoaded) { cache.LoadInfusion() }
     return cache.InfusionSnapshot.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(cache.GetSnapshotPower()))).RoundInt().Uint64()
 }
+
+
+func (cache *InfusionCache) IsEmpty() (bool) {
+    if (!cache.InfusionLoaded) {
+        cache.LoadInfusion()
+    }
+    return (cache.GetPower() == uint64(0) && cache.GetDefusing() == uint64(0))
+}
+
 
 
 

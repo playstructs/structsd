@@ -10,6 +10,7 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 
+    "encoding/binary"
 	//"strconv"
 	"strings"
 
@@ -128,6 +129,58 @@ func (k Keeper) GetAllInfusionsByDestination(ctx context.Context, objectId strin
 }
 
 
+func (k Keeper) GetInfusionDestructionQueue(ctx context.Context, clear bool) (queue []string) {
+	infusionDestructionQueueStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionDestructionQueue))
+	iterator := storetypes.KVStorePrefixIterator(infusionDestructionQueueStore, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		queue = append(queue, string(iterator.Key()))
+		if clear {
+		    infusionDestructionQueueStore.Delete(iterator.Key())
+		}
+	}
+
+    return
+}
+
+
+func (k Keeper) AppendInfusionDestructionQueue(ctx context.Context, infusionId string) (err error) {
+    infusionDestructionQueueStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionDestructionQueue))
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, 1)
+
+	infusionDestructionQueueStore.Set([]byte(infusionId), bz)
+
+    k.logger.Info("Infusion Destruction Queue (Add)", "queueId", infusionId)
+
+	return err
+}
+
+
+func (k Keeper) ProcessInfusionDestructionQueue(ctx context.Context) {
+
+    for {
+        // Get Queue (and clear it in the process)
+        infusionDestructionQueue := k.GetInfusionDestructionQueue(ctx, true)
+
+        if (len(infusionDestructionQueue) == 0) {
+            break
+        }
+
+        // For each Queue Item
+        for _, objectId := range infusionDestructionQueue {
+            infusion, infusionFound := k.GetInfusionByID(ctx, objectId)
+            if infusionFound {
+                if infusion.Power == 0 && infusion.Defusing == 0 {
+                    k.DestroyInfusion(ctx, infusion)
+                }
+            }
+        }
+    }
+}
 
 func (k Keeper) DestroyInfusion(ctx context.Context, infusion types.Infusion) {
 

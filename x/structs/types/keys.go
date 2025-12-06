@@ -105,6 +105,7 @@ const (
 const (
 	InfusionKey      = "Infusion/value/"
 	InfusionCountKey = "Infusion/count/"
+	InfusionDestructionQueue = "Infusion/destructionQueue/"
 )
 
 const (
