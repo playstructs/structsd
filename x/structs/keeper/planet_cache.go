@@ -414,7 +414,7 @@ func (cache *PlanetCache) GetLocationListStart() string {
 }
 
 func (cache *PlanetCache) GetLocationListLast() string {
-    return cache.GetPlanet().LocationListStart
+    return cache.GetPlanet().LocationListLast
 }
 
 func (cache *PlanetCache) GetEventAttackDetail() (*types.EventAttackDetail) {
@@ -462,7 +462,7 @@ func (cache *PlanetCache) SetLocationListStart(fleetId string) {
 func (cache *PlanetCache) SetLocationListLast(fleetId string) {
     if (!cache.PlanetLoaded) { cache.LoadPlanet() }
 
-    cache.Planet.LocationListStart = fleetId
+    cache.Planet.LocationListLast = fleetId
     cache.PlanetChanged = true
     cache.Changed()
 }

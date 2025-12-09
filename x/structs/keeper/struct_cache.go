@@ -573,17 +573,17 @@ func (cache *StructCache) GridStatusRemoveReady() {
 
 func (cache *StructCache) ActivationReadinessCheck() (err error) {
     // Check Struct is Built
-    if (!cache.IsBuilt()){
+    if !cache.IsBuilt(){
         return sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) isn't finished being built yet", cache.StructId)
     }
 
-    // Check Struct is Offline
-    if (cache.IsOffline()){
+    // Check Struct is Online
+    if cache.IsOnline(){
         return sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is already online", cache.StructId)
     }
 
     // Check Player is Online
-    if (cache.GetOwner().IsOffline()) {
+    if cache.GetOwner().IsOffline() {
         return sdkerrors.Wrapf(types.ErrGridMalfunction, "Player (%s) is offline due to power", cache.GetOwnerId())
     }
 
@@ -839,7 +839,7 @@ func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem type
                         // Target has reached the planetary raid
                         // Proceed with the intended action for the Fleet attacking the target
                     // Otherwise check if the target is adjacent (either forward or backward)
-                    } else if cache.GetFleet().GetLocationListForward() == targetStruct.GetLocationId() && cache.GetFleet().GetLocationListBackward() == targetStruct.GetLocationId() {
+                    } else if cache.GetFleet().GetLocationListForward() == targetStruct.GetLocationId() || cache.GetFleet().GetLocationListBackward() == targetStruct.GetLocationId() {
                         // The target is to either side of the Fleet
                         // Proceed with the intended action for the Fleet attacking the target
                     } else {
@@ -1205,7 +1205,7 @@ func (cache *StructCache) DestroyAndCommit() {
         cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, cache.StructId ))
 
         // Clear Power
-        cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, cache.StructId ))
+        cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, cache.StructId ))
 
         // Clear Allocation Pointer Start + End
         cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerStart, cache.StructId ))
