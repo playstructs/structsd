@@ -155,6 +155,8 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	if player.SubstationId == "" {
 		// Connect Player to Substation
 		k.SubstationConnectPlayer(ctx, substation, player)
+	} else {
+	    k.SetPlayer(ctx, player)
 	}
 
 	// The proxy join has completely mostly successfully at this point

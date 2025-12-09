@@ -50,7 +50,7 @@ func (k msgServer) GuildMembershipKick(goCtx context.Context, msg *types.MsgGuil
     }
 
     // Look up requesting account
-    targetPlayer := k.UpsertPlayer(ctx, msg.Creator)
+    targetPlayer := k.UpsertPlayer(ctx, msg.PlayerId)
     targetPlayer.GuildId = ""
 
     targetPlayerUpdated := false

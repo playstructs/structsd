@@ -29,6 +29,17 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
         return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
     }
 
+    if (player.Id != msg.PlayerId) {
+        if (!k.PermissionHasOneOf(ctx, GetObjectPermissionIDBytes(msg.PlayerId, player.Id), types.PermissionAssociations)) {
+            return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%s) has no Player Association permissions with the Player (%s) ", msg.PlayerId, player.Id)
+        }
+    }
+
+    targetPlayer, targetPlayerFound := k.GetPlayer(ctx, msg.PlayerId)
+    if !targetPlayerFound {
+        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player (%s) not found", msg.PlayerId)
+    }
+
 	// look up destination guild
 	guild, guildFound := k.GetGuild(ctx, msg.GuildId)
 
@@ -36,11 +47,6 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
         return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Guild (%s) not found", msg.GuildId)
     }
 
-    if (player.Id != msg.PlayerId) {
-        if (!k.PermissionHasOneOf(ctx, GetObjectPermissionIDBytes(msg.PlayerId, player.Id), types.PermissionAssociations)) {
-            return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%s) has no Player Association permissions with the Guild (%s) ", player.Id, guild.Id)
-        }
-    }
 
     guildMembershipApplication, guildMembershipApplicationFound := k.GetGuildMembershipApplication(ctx, msg.GuildId, msg.PlayerId)
     if (guildMembershipApplicationFound) {
@@ -206,9 +212,7 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 
     }
 
-
-    // Look up joining account
-    targetPlayer := k.UpsertPlayer(ctx, msg.Creator)
+    // Guild Variable gets committed in the SubstationConnectPlayer function
     targetPlayer.GuildId = msg.GuildId
     k.SubstationConnectPlayer(ctx, substation, targetPlayer)
 

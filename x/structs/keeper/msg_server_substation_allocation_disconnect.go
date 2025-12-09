@@ -37,7 +37,7 @@ func (k msgServer) SubstationAllocationDisconnect(goCtx context.Context, msg *ty
         if (!k.PermissionHasOneOf(ctx, sourceObjectPermissionId, types.PermissionGrid)) {
             // technically both correct. Refactor this to be clearer
             return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationDisconnect, "Calling player (%s) has no Substation Disconnect Allocation permissions ", player.Id)
-            return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation not controlled by player (%s)", player.Id)
+            //return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation not controlled by player (%s)", player.Id)
         }
 
     }

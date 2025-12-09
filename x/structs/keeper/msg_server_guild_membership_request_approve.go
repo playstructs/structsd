@@ -63,6 +63,13 @@ func (k msgServer) GuildMembershipRequestApprove(goCtx context.Context, msg *typ
         return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Membership Application not found")
     }
 
+    targetPlayer, targetPlayerFound := k.GetPlayer(ctx, msg.PlayerId)
+    if !targetPlayerFound {
+        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player (%s) not found", msg.PlayerId)
+    }
+
+
+
     /*
      * We're either going to load up the substation provided as an
      * override, or we're going to default to using the guild entry substation
@@ -104,7 +111,6 @@ func (k msgServer) GuildMembershipRequestApprove(goCtx context.Context, msg *typ
     guildMembershipApplication.RegistrationStatus   = types.RegistrationStatus_approved
 
     // Look up requesting account
-    targetPlayer := k.UpsertPlayer(ctx, msg.Creator)
     targetPlayer.GuildId = msg.GuildId
     k.SubstationConnectPlayer(ctx, substation, targetPlayer)
 

@@ -42,6 +42,11 @@ func (k msgServer) GuildMembershipInviteApprove(goCtx context.Context, msg *type
         }
     }
 
+    targetPlayer, targetPlayerFound := k.GetPlayer(ctx, msg.PlayerId)
+    if !targetPlayerFound {
+        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player (%s) not found", msg.PlayerId)
+    }
+
     guildMembershipApplication, guildMembershipApplicationFound := k.GetGuildMembershipApplication(ctx, msg.GuildId, msg.PlayerId)
     if (!guildMembershipApplicationFound) {
         return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Membership Application not found")
@@ -86,7 +91,6 @@ func (k msgServer) GuildMembershipInviteApprove(goCtx context.Context, msg *type
     }
 
     // Look up requesting account
-    targetPlayer := k.UpsertPlayer(ctx, msg.Creator)
     targetPlayer.GuildId = msg.GuildId
     k.SubstationConnectPlayer(ctx, substation, targetPlayer)
 
