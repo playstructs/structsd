@@ -724,7 +724,7 @@ func (cache *StructCache) CanBePlayedBy(address string) (err error) {
     }
 
     callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
-    if (err != nil) {
+    if (err == nil) {
         if (callingPlayer.PlayerId != cache.GetOwnerId()) {
             if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.PlayerId), types.PermissionPlay)) {
                err = sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayer.PlayerId, cache.GetOwnerId())
@@ -893,7 +893,7 @@ func (cache *StructCache) CanCounterAttack(attackerStruct *StructCache) (err err
                         // Target has reached the planetary raid
                         // Proceed with the intended action for the Fleet attacking the target
                     // Otherwise check if the target is adjacent (either forward or backward)
-                    } else if cache.GetFleet().GetLocationListForward() == attackerStruct.GetLocationId() && cache.GetFleet().GetLocationListBackward() == attackerStruct.GetLocationId() {
+                    } else if cache.GetFleet().GetLocationListForward() == attackerStruct.GetLocationId() || cache.GetFleet().GetLocationListBackward() == attackerStruct.GetLocationId() {
                         // The target is to either side of the Fleet
                         // Proceed with the intended action for the Fleet attacking the target
                     } else {

@@ -458,7 +458,7 @@ func (cache *PlayerCache) CanBeAdministratedBy(address string, permission types.
 
     if (cache.GetPrimaryAddress() != address) {
         callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
-        if (err != nil) {
+        if (err == nil) {
             if (callingPlayer.GetPlayerId() != cache.GetPlayerId()) {
                 if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetPlayerId(), callingPlayer.GetPlayerId()), permission)) {
                    err = sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) doesn't have the required permissions on target player (%s)", callingPlayer.GetPlayerId(), cache.GetPlayerId())
