@@ -33,7 +33,7 @@ func (k Keeper) ReactorInitialize(ctx context.Context, validatorAddress sdk.ValA
 		 * Commit Reactor to the Keeper
 		 */
 		reactor.DefaultCommission, _ = math.LegacyNewDecFromStr("0.04")
-		reactor := k.AppendReactor(ctx, reactor)
+		reactor = k.AppendReactor(ctx, reactor)
 
 		k.SetReactorValidatorBytes(ctx, reactor.Id, validatorAddress.Bytes())
 

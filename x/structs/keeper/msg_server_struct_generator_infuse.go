@@ -77,6 +77,10 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
         return &types.MsgStructGeneratorStatusResponse{}, sdkerrors.Wrapf(types.ErrStructInfuse, "Infuse amount (%s) is invalid", msg.InfuseAmount)
     }
 
+    if len(infusionAmount) < 1 {
+        return &types.MsgStructGeneratorStatusResponse{}, sdkerrors.Wrapf(types.ErrStructInfuse, "Infuse amount (%s) is invalid", msg.InfuseAmount)
+    }
+
     if (infusionAmount[0].Denom == "ualpha") {
         // All good
     } else if (infusionAmount[0].Denom == "alpha") {

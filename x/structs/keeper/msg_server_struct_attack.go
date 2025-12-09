@@ -60,6 +60,14 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     var targetWasPlanetary bool
     var targetWasOnPlanet *PlanetCache
 
+    // TODO REVIEW THIS TODAY BLAH
+    // AI TOLD ME TO LOOK HERE
+    // SERIOUSLY JOSH REVIEW THIS
+    if uint64(len(msg.TargetStructId)) != structure.GetStructType().GetWeaponTargets(types.TechWeaponSystem_enum[msg.WeaponSystem]) {
+        k.DischargePlayer(ctx, structure.GetOwnerId())
+        // TODO FIX THE ERROR MESSAGE
+        return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "")
+    }
     // Begin taking shots. Most weapons only use a single shot but some perform multiple.
     for shot := uint64(0); shot < (structure.GetStructType().GetWeaponTargets(types.TechWeaponSystem_enum[msg.WeaponSystem])); shot++ {
         k.logger.Info("Attack Action", "structId", msg.OperatingStructId, "shot", shot, "shots", structure.GetStructType().GetWeaponTargets(types.TechWeaponSystem_enum[msg.WeaponSystem]), "target", msg.TargetStructId[shot] )
