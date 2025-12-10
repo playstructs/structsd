@@ -5,7 +5,7 @@ import (
 
 	"structs/x/structs/types"
 	//sdk "github.com/cosmos/cosmos-sdk/types"
-	//sdkerrors "cosmossdk.io/errors"
+	sdkerrors "cosmossdk.io/errors"
 
 	// Used in Randomness Orb
 
@@ -14,26 +14,21 @@ import (
 )
 
 
-type GuildMembershipApplicationCache struct {
-    ProposerId string
-	GuildId string
-	PlayerId string
+// TODO Proposer is actually different than calling
 
+type GuildMembershipApplicationCache struct {
 	K          *Keeper
 	Ctx        context.Context
 
 	AnyChange bool
 	Ready bool
 
-	GuildMembershipApplicationLoaded  bool
-	GuildMembershipApplicationFound   bool
 	GuildMembershipApplicationChanged bool
 	GuildMembershipApplication        types.GuildMembershipApplication
 
-	GuildLoaded  bool
-	Guild        *GuildCache
+	CallingPlayer       *PlayerCache
 
-	PlayerLoaded bool
+	Guild        *GuildCache
 	Player       *PlayerCache
 
 	ProposerLoaded bool
@@ -44,33 +39,91 @@ type GuildMembershipApplicationCache struct {
 }
 
 // Build this initial Guild Membership Application Cache object
-func (k *Keeper) GetGuildMembershipApplicationCache(ctx context.Context, proposerId string, guildId string, playerId string) GuildMembershipApplicationCache {
+func (k *Keeper) GetGuildMembershipApplicationCache(ctx context.Context, callingPlayer *PlayerCache, joinType types.GuildJoinType, guildId string, playerId string) (GuildMembershipApplicationCache, error) {
+
+    targetPlayer, err := k.GetPlayerCacheFromId(ctx, playerId)
+    if err != nil {
+        return GuildMembershipApplicationCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player (%s) not found", playerId)
+    }
+
+    if targetPlayer.GetGuildId() == guildId {
+        return GuildMembershipApplicationCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player (%s) already a member of Guild (%s)", playerId, guildId)
+    }
+
+    guild := k.GetGuildCacheFromId(ctx, guildId)
+    if !guild.LoadGuild() {
+        return GuildMembershipApplicationCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Guild (%s) not found", guildId)
+    }
+
+    guildMembershipApplication, guildMembershipApplicationFound := k.GetGuildMembershipApplication(ctx, guildId, playerId)
+
+    guildMembershipApplicationChanged := false
+    proposerLoaded := false
+    var proposer *PlayerCache
+
+    if guildMembershipApplicationFound {
+
+        if guildMembershipApplication.JoinType != joinType {
+            return GuildMembershipApplicationCache{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Application cannot change join type")
+        }
+
+    } else {
+
+        var guildPermissionError error
+        switch guildMembershipApplication.JoinType {
+            case types.GuildJoinType_invite:
+                guildPermissionError = guild.CanInviteMembers(callingPlayer)
+            case types.GuildJoinType_request:
+                guildPermissionError = guild.CanRequestMembership()
+            case types.GuildJoinType_proxy:
+                guildPermissionError = guild.CanAddMembersByProxy(callingPlayer)
+            case types.GuildJoinType_direct:
+                // Check on Infusion
+        }
+        if guildPermissionError != nil {
+            return GuildMembershipApplicationCache{}, guildPermissionError
+        }
+
+        guildMembershipApplication.Proposer   = callingPlayer.GetPlayerId()
+        proposer = callingPlayer
+        proposerLoaded = true
+
+        guildMembershipApplication.PlayerId   = playerId
+        guildMembershipApplication.GuildId    = guildId
+        guildMembershipApplication.JoinType   = joinType
+        guildMembershipApplication.RegistrationStatus = types.RegistrationStatus_proposed
+
+        guildMembershipApplicationChanged = true
+    }
+
+
 	return GuildMembershipApplicationCache{
-		ProposerId: proposerId,
-		GuildId: guildId,
-		PlayerId: playerId,
+		CallingPlayer: callingPlayer,
 
 		K:          k,
 		Ctx:        ctx,
 
 		AnyChange: false,
 
-        GuildMembershipApplicationLoaded: false,
-        GuildMembershipApplicationFound: false,
-        GuildMembershipApplicationChanged: false,
+        GuildMembershipApplication: guildMembershipApplication,
+        GuildMembershipApplicationChanged: guildMembershipApplicationChanged,
 
-		PlayerLoaded: false,
-        ProposerLoaded: false,
-		GuildLoaded:  false,
+        Player: &targetPlayer,
+
+        Proposer: proposer,
+        ProposerLoaded: proposerLoaded,
+
+		Guild:  &guild,
+
 		SubstationLoaded: false,
 
-	}
+	}, nil
 }
 
 func (cache *GuildMembershipApplicationCache) Commit() {
 	cache.AnyChange = false
 
-    cache.K.logger.Info("Updating Guild Membership Application From Cache", "guildId", cache.GuildId)
+    cache.K.logger.Info("Updating Guild Membership Application From Cache", "guildId", cache.GetGuildMembershipApplication().GuildId, "playerId", cache.GetGuildMembershipApplication().PlayerId)
 
 	if cache.Substation != nil && cache.GetSubstation().IsChanged() {
 		cache.GetSubstation().Commit()
@@ -80,16 +133,6 @@ func (cache *GuildMembershipApplicationCache) Commit() {
 		cache.GetPlayer().Commit()
 	}
 
-    /* These two should never change during this process...
-        if cache.Guild != nil && cache.GetGuild().IsChanged() {
-            cache.Guild.Commit()
-        }
-
-        if cache.Proposer != nil && cache.GetProposer().IsChanged() {
-            cache.GetProposer().Commit()
-        }
-    */
-
     if cache.GuildMembershipApplicationChanged {
         cache.K.EventGuildMembershipApplication(cache.Ctx, cache.GuildMembershipApplication)
 
@@ -97,9 +140,7 @@ func (cache *GuildMembershipApplicationCache) Commit() {
             case types.RegistrationStatus_proposed:
                 cache.K.SetGuildMembershipApplication(cache.Ctx, cache.GuildMembershipApplication)
             case types.RegistrationStatus_approved:
-                if cache.GuildMembershipApplicationFound {
-                    cache.K.ClearGuildMembershipApplication(cache.Ctx, cache.GuildMembershipApplication)
-                }
+                cache.K.ClearGuildMembershipApplication(cache.Ctx, cache.GuildMembershipApplication)
             case types.RegistrationStatus_denied:
                 cache.K.ClearGuildMembershipApplication(cache.Ctx, cache.GuildMembershipApplication)
             case types.RegistrationStatus_revoked:
@@ -119,41 +160,6 @@ func (cache *GuildMembershipApplicationCache) Changed() {
 
 /* Separate Loading functions for each of the underlying containers */
 
-func (cache *GuildMembershipApplicationCache) LoadGuildMembershipApplication() (bool) {
-	guildMembershipApplication, guildMembershipApplicationFound := cache.K.GetGuildMembershipApplication(cache.Ctx, cache.GuildId, cache.PlayerId)
-
-    cache.GuildMembershipApplication = guildMembershipApplication
-    cache.GuildMembershipApplicationFound = guildMembershipApplicationFound
-
-	if !cache.GuildMembershipApplicationFound {
-        cache.GuildMembershipApplication.Proposer   = cache.GetProposerId()
-        cache.GuildMembershipApplication.PlayerId   = cache.GetPlayerId()
-        cache.GuildMembershipApplication.GuildId    = cache.GetGuildId()
-        cache.GuildMembershipApplication.JoinType   = types.GuildJoinType_unspecified
-        cache.GuildMembershipApplication.RegistrationStatus = types.RegistrationStatus_proposed
-
-        cache.GuildMembershipApplicationChanged = true
-        cache.Changed()
-	}
-
-	cache.GuildMembershipApplicationLoaded = true
-
-	return cache.GuildMembershipApplicationLoaded
-}
-
-// Load the Player data
-func (cache *GuildMembershipApplicationCache) LoadPlayer() bool {
-	newPlayer, _ := cache.K.GetPlayerCacheFromId(cache.Ctx, cache.GetPlayerId())
-	cache.Player = &newPlayer
-	cache.PlayerLoaded = true
-	return cache.PlayerLoaded
-}
-
-func (cache *GuildMembershipApplicationCache) ManualLoadPlayer(player *PlayerCache) {
-    cache.Player = player
-    cache.PlayerLoaded = true
-}
-
 // Load the Proposer Player data
 func (cache *GuildMembershipApplicationCache) LoadProposer() bool {
 	newProposer, _ := cache.K.GetPlayerCacheFromId(cache.Ctx, cache.GetProposerId())
@@ -165,24 +171,6 @@ func (cache *GuildMembershipApplicationCache) LoadProposer() bool {
 func (cache *GuildMembershipApplicationCache) ManualLoadProposer(player *PlayerCache) {
     cache.Proposer = player
     cache.ProposerLoaded = true
-}
-
-
-// Load the Guild record
-func (cache *GuildMembershipApplicationCache) LoadGuild() (bool) {
-	newGuild := cache.K.GetGuildCacheFromId(cache.Ctx, cache.GuildId)
-
-	if newGuild.LoadGuild() {
-		cache.Guild = &newGuild
-		cache.GuildLoaded = true
-	}
-
-	return cache.GuildLoaded
-}
-
-func (cache *GuildMembershipApplicationCache) ManualLoadGuild(guild *GuildCache) {
-    cache.Guild = guild
-    cache.GuildLoaded = true
 }
 
 // Load the Substation data
@@ -208,64 +196,47 @@ func (cache *GuildMembershipApplicationCache) ManualLoadSubstation(substation *S
 /* Getters
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
  */
-func (cache *GuildMembershipApplicationCache) GetGuildMembershipApplication() types.GuildMembershipApplication { if !cache.GuildMembershipApplicationLoaded { cache.LoadGuildMembershipApplication() }; return cache.GuildMembershipApplication }
+func (cache *GuildMembershipApplicationCache) GetGuildMembershipApplication() types.GuildMembershipApplication { return cache.GuildMembershipApplication }
 func (cache *GuildMembershipApplicationCache) GetRegistrationStatus() types.RegistrationStatus { return cache.GetGuildMembershipApplication().RegistrationStatus }
 func (cache *GuildMembershipApplicationCache) GetJoinType() types.GuildJoinType { return cache.GetGuildMembershipApplication().JoinType }
 
-func (cache *GuildMembershipApplicationCache) IsGuildMembershipApplicationFound() bool { if !cache.GuildMembershipApplicationLoaded { cache.LoadGuildMembershipApplication() }; return cache.GuildMembershipApplicationFound }
-
-func (cache *GuildMembershipApplicationCache) GetGuildId() string { return cache.GuildId }
-func (cache *GuildMembershipApplicationCache) GetGuild() *GuildCache { if !cache.GuildLoaded { cache.LoadGuild() }; return cache.Guild }
+func (cache *GuildMembershipApplicationCache) GetGuildId() string { return cache.GetGuildMembershipApplication().GuildId }
+func (cache *GuildMembershipApplicationCache) GetGuild() *GuildCache { return cache.Guild }
 
 // Get the Player data
-func (cache *GuildMembershipApplicationCache) GetPlayerId() string { return cache.PlayerId }
-func (cache *GuildMembershipApplicationCache) GetPlayer() *PlayerCache { if !cache.PlayerLoaded { cache.LoadPlayer() }; return cache.Player }
+func (cache *GuildMembershipApplicationCache) GetPlayerId() string { return cache.GetGuildMembershipApplication().PlayerId }
+func (cache *GuildMembershipApplicationCache) GetPlayer() *PlayerCache { return cache.Player }
 
 // Get the Proposer data
-func (cache *GuildMembershipApplicationCache) GetProposerId() string { return cache.ProposerId }
+func (cache *GuildMembershipApplicationCache) GetProposerId() string { return cache.GetGuildMembershipApplication().Proposer }
 func (cache *GuildMembershipApplicationCache) GetProposer() *PlayerCache { if !cache.ProposerLoaded { cache.LoadProposer() }; return cache.Proposer }
 
 // Get the Proposer data
-func (cache *GuildMembershipApplicationCache) GetSubstationId() string { if !cache.GuildMembershipApplicationLoaded { cache.LoadGuildMembershipApplication() }; return cache.GuildMembershipApplication.SubstationId }
+func (cache *GuildMembershipApplicationCache) GetSubstationId() string { return cache.GetGuildMembershipApplication().SubstationId }
 func (cache *GuildMembershipApplicationCache) GetSubstation() *SubstationCache { if !cache.SubstationLoaded { cache.LoadSubstation() }; return cache.Substation }
 
 
-func (cache *GuildMembershipApplicationCache) SetRegistrationStatus(registrationStatus types.RegistrationStatus) {
-    if !cache.GuildMembershipApplicationLoaded {
-        cache.LoadGuildMembershipApplication()
-    }
-
-    if cache.GuildMembershipApplication.RegistrationStatus != registrationStatus {
-        cache.GuildMembershipApplication.RegistrationStatus = registrationStatus
-        cache.GuildMembershipApplicationChanged = true
-        cache.Changed()
-
-        if registrationStatus == types.RegistrationStatus_approved {
-
-           // TODO Fix or move
-            //cache.GetPlayer().MigrateGuild(cache.GetGuild())
-
-        }
-    }
-}
-
-
-func (cache *GuildMembershipApplicationCache) SetJoinType(joinType types.GuildJoinType)  {
-    if !cache.GuildMembershipApplicationLoaded {
-        cache.LoadGuildMembershipApplication()
-    }
-
-    cache.GuildMembershipApplication.JoinType = joinType
-}
-
-func (cache *GuildMembershipApplicationCache) SetSubstationId(substationId string)  {
-    if !cache.GuildMembershipApplicationLoaded {
-        cache.LoadGuildMembershipApplication()
-    }
+func (cache *GuildMembershipApplicationCache) SetSubstationIdOverride(substationId string) (error) {
 
     if cache.GuildMembershipApplication.SubstationId != substationId {
+
+        substation := cache.K.GetSubstationCacheFromId(cache.Ctx, substationId)
+        if !substation.LoadSubstation() {
+            return sdkerrors.Wrapf(types.ErrObjectNotFound, "Substation (%s) not found", substationId)
+        }
+
+        substationPermissionError := substation.CanManagePlayerConnections(cache.CallingPlayer)
+        if substationPermissionError != nil {
+            return substationPermissionError
+        }
+
+        cache.Substation = &substation
+        cache.SubstationLoaded = true
+
         cache.GuildMembershipApplication.SubstationId = substationId
         cache.GuildMembershipApplicationChanged = true
         cache.Changed()
     }
+
+    return nil
 }

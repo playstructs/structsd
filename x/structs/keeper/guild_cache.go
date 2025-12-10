@@ -173,7 +173,11 @@ func (cache *GuildCache) CanAdministrateBank(activePlayer *PlayerCache) (error) 
 }
 
 // Associations Permission
-func (cache *GuildCache) CanAdministrateMembers(activePlayer *PlayerCache) (err error) {
+func (cache *GuildCache) CanAddMembersByProxy(activePlayer *PlayerCache) (error) {
+  return cache.PermissionCheck(types.PermissionAssociations, activePlayer)
+}
+
+func (cache *GuildCache) CanInviteMembers(activePlayer *PlayerCache) (err error) {
 
     switch cache.GetJoinInfusionMinimumBypassByInvite() {
         // Invites are currently closed
@@ -189,6 +193,15 @@ func (cache *GuildCache) CanAdministrateMembers(activePlayer *PlayerCache) (err 
             if activePlayer.GetGuildId() != cache.GetGuildId() {
                 err = sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Calling player (%s) must be a member of Guild (%s) to invite others", activePlayer.GetPlayerId(), cache.GetGuildId())
         	}
+    }
+    return
+}
+
+func (cache *GuildCache) CanRequestMembership() (err error) {
+    switch cache.GetJoinInfusionMinimumBypassByRequest() {
+        // Invites are currently closed
+        case types.GuildJoinBypassLevel_closed:
+            err = sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Guild is not currently allowing membership requests")
     }
     return
 }

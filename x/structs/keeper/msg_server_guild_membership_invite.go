@@ -5,7 +5,7 @@ import (
 
 	"structs/x/structs/types"
 
-	sdkerrors "cosmossdk.io/errors"
+	//sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -27,54 +27,24 @@ func (k msgServer) GuildMembershipInvite(goCtx context.Context, msg *types.MsgGu
         return &types.MsgGuildMembershipResponse{}, callingPlayerPermissionError
     }
 
-    // targetPlayer
-    _, err = k.GetPlayerCacheFromId(ctx, msg.PlayerId)
-    if err != nil {
-        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player (%s) not found", msg.PlayerId)
-    }
-
 	if msg.GuildId == "" {
 		msg.GuildId = callingPlayer.GetGuildId()
 	}
 
-    guild := k.GetGuildCacheFromId(ctx, msg.GuildId)
-    if !guild.LoadGuild() {
-        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Guild (%s) not found", msg.GuildId)
+    guildMembershipApplication, guildMembershipApplicationError := k.GetGuildMembershipApplicationCache(ctx, &callingPlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
+    if guildMembershipApplicationError != nil {
+        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
     }
-
-    // For guild permissions
-    guildPermissionError := guild.CanAdministrateMembers(&callingPlayer)
-    if guildPermissionError != nil {
-        return &types.MsgGuildMembershipResponse{}, guildPermissionError
-    }
-
-	guildMembershipApplication := k.GetGuildMembershipApplicationCache(ctx, callingPlayer.GetPlayerId(), msg.GuildId, msg.PlayerId)
-
-	if guildMembershipApplication.IsGuildMembershipApplicationFound() {
-		return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Membership Application already pending")
-	}
-
-	guildMembershipApplication.SetJoinType(types.GuildJoinType_invite)
 
 	/*
 	 * We're either going to load up the substation provided as an
 	 * override, or we're going to default to using the guild entry substation
 	 */
 	if msg.SubstationId != "" {
-
-        substation := k.GetSubstationCacheFromId(ctx, msg.SubstationId)
-        if !substation.LoadSubstation() {
-            return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Substation (%s) not found", msg.SubstationId)
-        }
-
-        substationPermissionError := substation.CanManagePlayerConnections(&callingPlayer)
-        if substationPermissionError != nil {
-            return &types.MsgGuildMembershipResponse{}, substationPermissionError
-        }
-
-		guildMembershipApplication.SetSubstationId(substation.GetSubstationId())
-	} else {
-	    guildMembershipApplication.SetSubstationId(guild.GetEntrySubstationId())
+	    substationOverrideError := guildMembershipApplication.SetSubstationIdOverride(msg.SubstationId)
+	    if substationOverrideError != nil {
+	        return &types.MsgGuildMembershipResponse{}, substationOverrideError
+	    }
 	}
 
 	guildMembershipApplication.Commit()

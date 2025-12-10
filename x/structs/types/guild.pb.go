@@ -199,7 +199,7 @@ func (m *GuildMembershipApplication) GetJoinType() GuildJoinType {
 	if m != nil {
 		return m.JoinType
 	}
-	return GuildJoinType_unspecified
+	return GuildJoinType_invite
 }
 
 func (m *GuildMembershipApplication) GetRegistrationStatus() RegistrationStatus {

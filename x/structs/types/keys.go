@@ -233,7 +233,6 @@ var AllocationType_enum = map[string]AllocationType{
 // but everything below is "doin the same"
 
 var GuildJoinType_enum = map[string]GuildJoinType {
-	"unspecified":  GuildJoinType_unspecified,
 	"invite":       GuildJoinType_invite,
 	"request":      GuildJoinType_request,
     "direct":       GuildJoinType_direct,

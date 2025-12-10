@@ -57,11 +57,10 @@ enum guildJoinBypassLevel {
 }
 
 enum guildJoinType {
-    unspecified = 0;
-    invite      = 1;
-    request     = 2;
-    direct      = 3;
-    proxy       = 4;
+    invite      = 0;
+    request     = 1;
+    direct      = 2;
+    proxy       = 3;
 }
 
 enum registrationStatus {
