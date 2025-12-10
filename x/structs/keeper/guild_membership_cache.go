@@ -104,7 +104,6 @@ func (cache *GuildMembershipApplicationCache) Commit() {
                 cache.K.ClearGuildMembershipApplication(cache.Ctx, cache.GuildMembershipApplication)
             case types.RegistrationStatus_revoked:
                 cache.K.ClearGuildMembershipApplication(cache.Ctx, cache.GuildMembershipApplication)
-
         }
     }
 
@@ -127,11 +126,14 @@ func (cache *GuildMembershipApplicationCache) LoadGuildMembershipApplication() (
     cache.GuildMembershipApplicationFound = guildMembershipApplicationFound
 
 	if !cache.GuildMembershipApplicationFound {
-        cache.GuildMembershipApplication.Proposer   = cache.GetProposer().GetPlayerId()
-        cache.GuildMembershipApplication.PlayerId   = cache.GetPlayer().GetPlayerId()
+        cache.GuildMembershipApplication.Proposer   = cache.GetProposerId()
+        cache.GuildMembershipApplication.PlayerId   = cache.GetPlayerId()
         cache.GuildMembershipApplication.GuildId    = cache.GetGuildId()
         cache.GuildMembershipApplication.JoinType   = types.GuildJoinType_unspecified
         cache.GuildMembershipApplication.RegistrationStatus = types.RegistrationStatus_proposed
+
+        cache.GuildMembershipApplicationChanged = true
+        cache.Changed()
 	}
 
 	cache.GuildMembershipApplicationLoaded = true
