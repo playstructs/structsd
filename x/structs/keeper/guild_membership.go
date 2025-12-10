@@ -32,15 +32,11 @@ func (k Keeper) SetGuildMembershipApplication(ctx context.Context, guildMembersh
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GuildMembershipApplicationKey))
 	b := k.cdc.MustMarshal(&guildMembership)
 	store.Set([]byte(GetGuildMembershipApplicationID(guildMembership.GuildId, guildMembership.PlayerId)), b)
-
-    k.EventGuildMembershipApplication(ctx, guildMembership)
 }
 
 func (k Keeper) ClearGuildMembershipApplication(ctx context.Context, guildMembership types.GuildMembershipApplication) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GuildMembershipApplicationKey))
 	store.Delete([]byte(GetGuildMembershipApplicationID(guildMembership.GuildId, guildMembership.PlayerId)))
-
-    k.EventGuildMembershipApplication(ctx, guildMembership)
 }
 
 func (k Keeper) EventGuildMembershipApplication(ctx context.Context, guildMembership types.GuildMembershipApplication) {

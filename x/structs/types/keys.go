@@ -232,6 +232,15 @@ var AllocationType_enum = map[string]AllocationType{
 // Going to stop repeating the same "doin the same" comment,
 // but everything below is "doin the same"
 
+var GuildJoinType_enum = map[string]GuildJoinType {
+	"unspecified":  GuildJoinType_unspecified,
+	"invite":       GuildJoinType_invite,
+	"request":      GuildJoinType_request,
+    "direct":       GuildJoinType_direct,
+    "proxy":        GuildJoinType_proxy,
+}
+
+
 var GuildJoinBypassLevel_enum = map[string]GuildJoinBypassLevel {
 	"closed":        GuildJoinBypassLevel_closed,
 	"permissioned":  GuildJoinBypassLevel_permissioned,
