@@ -407,3 +407,25 @@ func (cache *GuildMembershipApplicationCache) Kick() (error) {
 
     return nil
 }
+
+
+func (cache *GuildMembershipApplicationCache) VerifyDirectJoin() (error) {
+    if cache.GetPlayerId() != cache.CallingPlayer.GetPlayerId() {
+        if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetPlayerId(), cache.CallingPlayer.GetPlayerId()), types.PermissionAssociations)) {
+            return sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%s) has no Player Association permissions with the Player (%s) ", cache.CallingPlayer.GetPlayerId(), cache.GetPlayerId())
+        }
+    }
+    return nil
+}
+
+func (cache *GuildMembershipApplicationCache) DirectJoin() (error) {
+
+    cache.GetPlayer().MigrateGuild(cache.GetGuild())
+    cache.GetPlayer().MigrateSubstation(cache.GetSubstationId())
+
+    cache.GuildMembershipApplication.RegistrationStatus = types.RegistrationStatus_approved
+    cache.GuildMembershipApplicationChanged = true
+    cache.Changed()
+
+    return nil
+}

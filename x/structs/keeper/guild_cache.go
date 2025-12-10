@@ -144,10 +144,12 @@ func (cache *GuildCache) GetGuildId() string { return cache.GuildId }
 func (cache *GuildCache) GetOwnerId() string { if !cache.GuildLoaded { cache.LoadGuild() }; return cache.Guild.Owner }
 func (cache *GuildCache) GetOwner() *PlayerCache { if !cache.OwnerLoaded { cache.LoadOwner() }; return cache.Owner }
 
+func (cache *GuildCache) GetJoinInfusionMinimum() uint64 {if !cache.GuildLoaded { cache.LoadGuild() }; return cache.Guild.JoinInfusionMinimum }
 func (cache *GuildCache) GetJoinInfusionMinimumBypassByInvite() types.GuildJoinBypassLevel {if !cache.GuildLoaded { cache.LoadGuild() }; return cache.Guild.JoinInfusionMinimumBypassByInvite }
 func (cache *GuildCache) GetJoinInfusionMinimumBypassByRequest() types.GuildJoinBypassLevel {if !cache.GuildLoaded { cache.LoadGuild() }; return cache.Guild.JoinInfusionMinimumBypassByRequest }
 func (cache *GuildCache) GetEntrySubstationId() string { if !cache.GuildLoaded { cache.LoadGuild() }; return cache.Guild.EntrySubstationId }
 func (cache *GuildCache) GetSubstation() *SubstationCache {if !cache.SubstationLoaded { cache.LoadSubstation() }; return cache.Substation }
+func (cache *GuildCache) GetPrimaryReactorId() string { if !cache.GuildLoaded { cache.LoadGuild() }; return cache.Guild.PrimaryReactorId }
 
 func (cache *GuildCache) GetCreator() string { if !cache.GuildLoaded { cache.LoadGuild() }; return cache.Guild.Creator }
 
