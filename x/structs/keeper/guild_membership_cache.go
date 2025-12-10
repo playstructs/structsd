@@ -13,9 +13,6 @@ import (
     //authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
-
-// TODO Proposer is actually different than calling
-
 type GuildMembershipApplicationCache struct {
 	K          *Keeper
 	Ctx        context.Context
