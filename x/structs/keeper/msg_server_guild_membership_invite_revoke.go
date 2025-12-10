@@ -4,7 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
+	//sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -15,50 +15,37 @@ func (k msgServer) GuildMembershipInviteRevoke(goCtx context.Context, msg *types
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	// Look up requesting account
-	player := k.UpsertPlayer(ctx, msg.Creator)
-
-    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
-    // Make sure the address calling this has Associate permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssociations)) {
-        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
+    callingPlayer, err := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    if err != nil {
+        return &types.MsgGuildMembershipResponse{}, err
     }
 
-    if (msg.GuildId == "") {
-        msg.GuildId = player.GuildId
+    // Use cache permission methods
+    callingPlayerPermissionError := callingPlayer.CanBeAdministratedBy(msg.Creator, types.PermissionAssociations)
+    if callingPlayerPermissionError != nil {
+        return &types.MsgGuildMembershipResponse{}, callingPlayerPermissionError
     }
 
-	// look up destination guild
-	guild, guildFound := k.GetGuild(ctx, msg.GuildId)
-
-    if (!guildFound) {
-        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Guild (%s) not found", msg.GuildId)
+    if (msg.PlayerId == "") {
+        msg.PlayerId = callingPlayer.GetPlayerId()
     }
 
+	if msg.GuildId == "" {
+		msg.GuildId = callingPlayer.GetGuildId()
+	}
 
-    if (guild.JoinInfusionMinimumBypassByInvite == types.GuildJoinBypassLevel_permissioned) {
-        if (!k.PermissionHasOneOf(ctx, GetObjectPermissionIDBytes(guild.Id, player.Id), types.PermissionAssociations)) {
-            return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%s) has no Player Association permissions with the Guild (%s) ", player.Id, guild.Id)
-        }
-
-    // Otherwise, just make sure they're in the guild
-    } else if (guild.JoinInfusionMinimumBypassByInvite == types.GuildJoinBypassLevel_member) {
-        if (player.GuildId != guild.Id) {
-            return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Calling player (%s) must be a member of Guild (%s) to invite others", player.Id, guild.Id)
-        }
+    guildMembershipApplication, guildMembershipApplicationError := k.GetGuildMembershipApplicationCache(ctx, &callingPlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
+    if guildMembershipApplicationError != nil {
+        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
     }
 
-    guildMembershipApplication, guildMembershipApplicationFound := k.GetGuildMembershipApplication(ctx, msg.GuildId, msg.PlayerId)
-    if (!guildMembershipApplicationFound) {
-        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Membership Application not found")
+    guildMembershipApplicationError = guildMembershipApplication.VerifyInviteAsGuild()
+    if guildMembershipApplicationError != nil {
+        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
     }
 
-    if (guildMembershipApplication.JoinType != types.GuildJoinType_invite) {
-        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Membership Application is incorrect type for invitation revocation")
-    }
+    guildMembershipApplicationError = guildMembershipApplication.RevokeInvite()
+    guildMembershipApplication.Commit()
 
-    guildMembershipApplication.RegistrationStatus   = types.RegistrationStatus_revoked
-    k.ClearGuildMembershipApplication(ctx, guildMembershipApplication)
-
-	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication}, nil
+	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication.GuildMembershipApplication}, nil
 }

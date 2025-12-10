@@ -47,6 +47,7 @@ func (k *Keeper) GetGuildMembershipApplicationCache(ctx context.Context, calling
     }
 
     if targetPlayer.GetGuildId() == guildId {
+        k.ClearGuildMembershipApplication(ctx, guildId, playerId)
         return GuildMembershipApplicationCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player (%s) already a member of Guild (%s)", playerId, guildId)
     }
 
@@ -70,7 +71,7 @@ func (k *Keeper) GetGuildMembershipApplicationCache(ctx context.Context, calling
     } else {
 
         var guildPermissionError error
-        switch guildMembershipApplication.JoinType {
+        switch joinType {
             case types.GuildJoinType_invite:
                 guildPermissionError = guild.CanInviteMembers(callingPlayer)
             case types.GuildJoinType_request:
@@ -120,14 +121,73 @@ func (k *Keeper) GetGuildMembershipApplicationCache(ctx context.Context, calling
 	}, nil
 }
 
+func (k *Keeper) GetGuildMembershipKickCache(ctx context.Context, callingPlayer *PlayerCache, guildId string, playerId string) (GuildMembershipApplicationCache, error) {
+
+    targetPlayer, err := k.GetPlayerCacheFromId(ctx, playerId)
+    if err != nil {
+        return GuildMembershipApplicationCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player (%s) not found", playerId)
+    }
+
+    if targetPlayer.GetGuildId() != guildId {
+        return GuildMembershipApplicationCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player (%s) already not a member of Guild (%s)", playerId, guildId)
+    }
+
+    guild := k.GetGuildCacheFromId(ctx, guildId)
+    if !guild.LoadGuild() {
+        return GuildMembershipApplicationCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Guild (%s) not found", guildId)
+    }
+
+    if guild.GetOwnerId() == playerId {
+        return GuildMembershipApplicationCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player (%s) is the owner of the guild (%s), so... no.", playerId, guildId)
+    }
+
+    guildMembershipApplication, guildMembershipApplicationFound := k.GetGuildMembershipApplication(ctx, guildId, playerId)
+
+    if guildMembershipApplicationFound {
+        k.ClearGuildMembershipApplication(ctx, guildId, playerId)
+    }
+
+    guildPermissionError := guild.CanKickMembers(callingPlayer)
+    if guildPermissionError != nil {
+        return GuildMembershipApplicationCache{}, guildPermissionError
+    }
+
+    guildMembershipApplication.Proposer   = callingPlayer.GetPlayerId()
+    guildMembershipApplication.PlayerId   = playerId
+    guildMembershipApplication.GuildId    = guildId
+    guildMembershipApplication.JoinType   = types.GuildJoinType_direct
+    guildMembershipApplication.RegistrationStatus = types.RegistrationStatus_revoked
+
+    // Not true until kicked
+    guildMembershipApplicationChanged := false
+
+	return GuildMembershipApplicationCache{
+		CallingPlayer: callingPlayer,
+
+		K:          k,
+		Ctx:        ctx,
+
+		AnyChange: false,
+
+        GuildMembershipApplication: guildMembershipApplication,
+        GuildMembershipApplicationChanged: guildMembershipApplicationChanged,
+
+        Player: &targetPlayer,
+
+        Proposer: callingPlayer,
+        ProposerLoaded: true,
+
+		Guild:  &guild,
+
+		SubstationLoaded: false,
+
+	}, nil
+}
+
 func (cache *GuildMembershipApplicationCache) Commit() {
 	cache.AnyChange = false
 
     cache.K.logger.Info("Updating Guild Membership Application From Cache", "guildId", cache.GetGuildMembershipApplication().GuildId, "playerId", cache.GetGuildMembershipApplication().PlayerId)
-
-	if cache.Substation != nil && cache.GetSubstation().IsChanged() {
-		cache.GetSubstation().Commit()
-	}
 
 	if cache.Player != nil && cache.GetPlayer().IsChanged() {
 		cache.GetPlayer().Commit()
@@ -140,11 +200,11 @@ func (cache *GuildMembershipApplicationCache) Commit() {
             case types.RegistrationStatus_proposed:
                 cache.K.SetGuildMembershipApplication(cache.Ctx, cache.GuildMembershipApplication)
             case types.RegistrationStatus_approved:
-                cache.K.ClearGuildMembershipApplication(cache.Ctx, cache.GuildMembershipApplication)
+                cache.K.ClearGuildMembershipApplication(cache.Ctx, cache.GetGuildId(), cache.GetPlayerId())
             case types.RegistrationStatus_denied:
-                cache.K.ClearGuildMembershipApplication(cache.Ctx, cache.GuildMembershipApplication)
+                cache.K.ClearGuildMembershipApplication(cache.Ctx, cache.GetGuildId(), cache.GetPlayerId())
             case types.RegistrationStatus_revoked:
-                cache.K.ClearGuildMembershipApplication(cache.Ctx, cache.GuildMembershipApplication)
+                cache.K.ClearGuildMembershipApplication(cache.Ctx, cache.GetGuildId(), cache.GetPlayerId())
         }
     }
 
@@ -160,6 +220,7 @@ func (cache *GuildMembershipApplicationCache) Changed() {
 
 /* Separate Loading functions for each of the underlying containers */
 
+
 // Load the Proposer Player data
 func (cache *GuildMembershipApplicationCache) LoadProposer() bool {
 	newProposer, _ := cache.K.GetPlayerCacheFromId(cache.Ctx, cache.GetProposerId())
@@ -168,30 +229,6 @@ func (cache *GuildMembershipApplicationCache) LoadProposer() bool {
 	return cache.ProposerLoaded
 }
 
-func (cache *GuildMembershipApplicationCache) ManualLoadProposer(player *PlayerCache) {
-    cache.Proposer = player
-    cache.ProposerLoaded = true
-}
-
-// Load the Substation data
-func (cache *GuildMembershipApplicationCache) LoadSubstation() bool {
-	newSubstation := cache.K.GetSubstationCacheFromId(cache.Ctx, cache.GetSubstationId())
-	cache.Substation = &newSubstation
-	cache.SubstationLoaded = cache.Substation.LoadSubstation()
-
-	return cache.SubstationLoaded
-}
-
-func (cache *GuildMembershipApplicationCache) ManualLoadSubstation(substation *SubstationCache) {
-    cache.Substation = substation
-
-    if cache.Substation.SubstationLoaded {
-       cache.SubstationLoaded = true
-    } else {
-       cache.SubstationLoaded = cache.Substation.LoadSubstation()
-    }
-
-}
 
 /* Getters
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
@@ -211,10 +248,14 @@ func (cache *GuildMembershipApplicationCache) GetPlayer() *PlayerCache { return 
 func (cache *GuildMembershipApplicationCache) GetProposerId() string { return cache.GetGuildMembershipApplication().Proposer }
 func (cache *GuildMembershipApplicationCache) GetProposer() *PlayerCache { if !cache.ProposerLoaded { cache.LoadProposer() }; return cache.Proposer }
 
-// Get the Proposer data
-func (cache *GuildMembershipApplicationCache) GetSubstationId() string { return cache.GetGuildMembershipApplication().SubstationId }
-func (cache *GuildMembershipApplicationCache) GetSubstation() *SubstationCache { if !cache.SubstationLoaded { cache.LoadSubstation() }; return cache.Substation }
 
+func (cache *GuildMembershipApplicationCache) GetSubstationId() (substationId string ) {
+    substationId = cache.GetGuildMembershipApplication().SubstationId
+    if substationId == "" {
+        substationId = cache.GetGuild().GetEntrySubstationId()
+    }
+    return
+}
 
 func (cache *GuildMembershipApplicationCache) SetSubstationIdOverride(substationId string) (error) {
 
@@ -237,6 +278,132 @@ func (cache *GuildMembershipApplicationCache) SetSubstationIdOverride(substation
         cache.GuildMembershipApplicationChanged = true
         cache.Changed()
     }
+
+    return nil
+}
+
+
+func (cache *GuildMembershipApplicationCache) VerifyInviteAsGuild() (error) {
+    guildPermissionError := cache.GetGuild().CanInviteMembers(cache.CallingPlayer)
+    if guildPermissionError != nil {
+        return guildPermissionError
+    }
+
+    if (cache.GetJoinType() != types.GuildJoinType_invite) {
+        return sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Membership Application is incorrect type for invitation approval")
+    }
+
+    return nil
+}
+
+func (cache *GuildMembershipApplicationCache) VerifyInviteAsPlayer() (error) {
+    if cache.GetPlayerId() != cache.CallingPlayer.GetPlayerId() {
+        if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetPlayerId(), cache.CallingPlayer.GetPlayerId()), types.PermissionAssociations)) {
+            return sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%s) has no Player Association permissions with the Player (%s) ", cache.CallingPlayer.GetPlayerId(), cache.GetPlayerId())
+        }
+    }
+
+    if (cache.GetJoinType() != types.GuildJoinType_invite) {
+        return sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Membership Application is incorrect type for invitation approval")
+    }
+
+    return nil
+}
+
+func (cache *GuildMembershipApplicationCache) ApproveInvite() (error) {
+    cache.GetPlayer().MigrateGuild(cache.GetGuild())
+    cache.GetPlayer().MigrateSubstation(cache.GetSubstationId())
+
+    cache.GuildMembershipApplication.RegistrationStatus = types.RegistrationStatus_approved
+    cache.GuildMembershipApplicationChanged = true
+    cache.Changed()
+
+    return nil
+}
+
+func (cache *GuildMembershipApplicationCache) DenyInvite() (error) {
+    cache.GuildMembershipApplication.RegistrationStatus = types.RegistrationStatus_denied
+    cache.GuildMembershipApplicationChanged = true
+    cache.Changed()
+
+    return nil
+}
+
+func (cache *GuildMembershipApplicationCache) RevokeInvite() (error) {
+    cache.GuildMembershipApplication.RegistrationStatus = types.RegistrationStatus_revoked
+    cache.GuildMembershipApplicationChanged = true
+    cache.Changed()
+
+    return nil
+}
+
+
+func (cache *GuildMembershipApplicationCache) VerifyRequestAsGuild() (error) {
+    guildPermissionError := cache.GetGuild().CanApproveMembershipRequest(cache.CallingPlayer)
+    if guildPermissionError != nil {
+        return guildPermissionError
+    }
+
+    if (cache.GetJoinType() != types.GuildJoinType_request) {
+        return sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Membership Application is incorrect type for invitation approval")
+    }
+
+    return nil
+}
+
+func (cache *GuildMembershipApplicationCache) VerifyRequestAsPlayer() (error) {
+    if cache.GetPlayerId() != cache.CallingPlayer.GetPlayerId() {
+        if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetPlayerId(), cache.CallingPlayer.GetPlayerId()), types.PermissionAssociations)) {
+            return sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%s) has no Player Association permissions with the Player (%s) ", cache.CallingPlayer.GetPlayerId(), cache.GetPlayerId())
+        }
+    }
+
+    if (cache.GetJoinType() != types.GuildJoinType_request) {
+        return sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Membership Application is incorrect type for invitation approval")
+    }
+
+    return nil
+}
+
+func (cache *GuildMembershipApplicationCache) ApproveRequest() (error) {
+    cache.GetPlayer().MigrateGuild(cache.GetGuild())
+    cache.GetPlayer().MigrateSubstation(cache.GetSubstationId())
+
+    cache.GuildMembershipApplication.RegistrationStatus = types.RegistrationStatus_approved
+    cache.GuildMembershipApplicationChanged = true
+    cache.Changed()
+
+    return nil
+}
+
+func (cache *GuildMembershipApplicationCache) DenyRequest() (error) {
+    cache.GuildMembershipApplication.RegistrationStatus = types.RegistrationStatus_denied
+    cache.GuildMembershipApplicationChanged = true
+    cache.Changed()
+
+    return nil
+}
+
+func (cache *GuildMembershipApplicationCache) RevokeRequest() (error) {
+    cache.GuildMembershipApplication.RegistrationStatus = types.RegistrationStatus_revoked
+    cache.GuildMembershipApplicationChanged = true
+    cache.Changed()
+
+    return nil
+}
+
+func (cache *GuildMembershipApplicationCache) Kick() (error) {
+    cache.GetPlayer().LeaveGuild()
+
+    substationPermissionCheck := cache.GetPlayer().GetSubstation().CanManagePlayerConnections(cache.CallingPlayer)
+    if substationPermissionCheck == nil {
+        cache.GetPlayer().DisconnectSubstation()
+    } else if cache.GetPlayer().GetSubstation().GetOwnerId() == cache.GetGuild().GetOwnerId() {
+        cache.GetPlayer().DisconnectSubstation()
+    }
+
+    cache.GuildMembershipApplicationChanged = true
+    cache.Changed()
 
     return nil
 }

@@ -197,6 +197,30 @@ func (cache *GuildCache) CanInviteMembers(activePlayer *PlayerCache) (err error)
     return
 }
 
+func (cache *GuildCache) CanApproveMembershipRequest(activePlayer *PlayerCache) (err error) {
+    switch cache.GetJoinInfusionMinimumBypassByRequest() {
+        // Invites are currently closed
+        case types.GuildJoinBypassLevel_closed:
+            err = sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Guild not currently allowing requests")
+
+        // Only specific players can request
+        case types.GuildJoinBypassLevel_permissioned:
+            err = cache.PermissionCheck(types.PermissionAssociations, activePlayer)
+
+        // All Guild Members can Invite
+        case types.GuildJoinBypassLevel_member:
+            if activePlayer.GetGuildId() != cache.GetGuildId() {
+                err = sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Calling player (%s) must be a member of Guild (%s) to approve requests", activePlayer.GetPlayerId(), cache.GetGuildId())
+        	}
+    }
+    return
+}
+
+func (cache *GuildCache) CanKickMembers(activePlayer *PlayerCache) (error) {
+    return cache.PermissionCheck(types.PermissionAssociations, activePlayer)
+}
+
+
 func (cache *GuildCache) CanRequestMembership() (err error) {
     switch cache.GetJoinInfusionMinimumBypassByRequest() {
         // Invites are currently closed

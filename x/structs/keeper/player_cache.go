@@ -36,6 +36,9 @@ type PlayerCache struct {
     FleetLoaded bool
     Fleet *FleetCache
 
+    SubstationLoaded bool
+    Substation *SubstationCache
+
     StorageLoaded bool
     Storage       sdk.Coins
 
@@ -73,6 +76,12 @@ type PlayerCache struct {
     StoredOreLoaded      bool
     StoredOreChanged     bool
     StoredOre            uint64
+
+    OldSubstationId         string
+    OldSubstationIdChanged  bool
+
+    NewSubstationId         string
+    NewSubstationIdChanged  bool
 }
 
 
@@ -150,6 +159,22 @@ func (cache *PlayerCache) Commit() () {
         cache.StructsLoadChanged = false
     }
 
+    if (cache.OldSubstationIdChanged) {
+        if (cache.OldSubstationId != "") {
+            cache.K.SetGridAttributeDecrement(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, cache.OldSubstationId), 1)
+            cache.K.UpdateGridConnectionCapacity(cache.Ctx, cache.OldSubstationId)
+        }
+        cache.OldSubstationIdChanged = false
+    }
+
+    if (cache.NewSubstationIdChanged) {
+        if (cache.NewSubstationId != "") {
+            cache.K.SetGridAttributeIncrement(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, cache.NewSubstationId), 1)
+            cache.K.UpdateGridConnectionCapacity(cache.Ctx, cache.NewSubstationId)
+        }
+        cache.NewSubstationIdChanged = false
+    }
+
 }
 
 func (cache *PlayerCache) IsChanged() bool {
@@ -209,13 +234,23 @@ func (cache *PlayerCache) LoadPlanet() (bool) {
     return cache.PlanetLoaded
 }
 
-// Load the Planet data
+// Load the Fleet data
 func (cache *PlayerCache) LoadFleet() (bool) {
     newFleet, _ := cache.K.GetFleetCacheFromId(cache.Ctx, cache.GetFleetId())
     cache.Fleet = &newFleet
     cache.FleetLoaded = true
 
     return cache.FleetLoaded
+}
+
+
+// Load the Substation data
+func (cache *PlayerCache) LoadSubstation() (bool) {
+    newSubstation := cache.K.GetSubstationCacheFromId(cache.Ctx, cache.GetSubstationId())
+    cache.Substation = &newSubstation
+    cache.SubstationLoaded = true
+
+    return cache.SubstationLoaded
 }
 
 
@@ -261,9 +296,10 @@ func (cache *PlayerCache) GetPlayerId()         (string) { return cache.PlayerId
 func (cache *PlayerCache) GetPrimaryAddress()   (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.PrimaryAddress }
 func (cache *PlayerCache) GetPrimaryAccount()   (sdk.AccAddress) { acc, _ := sdk.AccAddressFromBech32(cache.GetPrimaryAddress()); return acc }
 func (cache *PlayerCache) GetActiveAddress()    (string) { return cache.ActiveAddress }
-func (cache *PlayerCache) GetSubstationId()     (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.SubstationId }
 func (cache *PlayerCache) GetIndex()            (uint64) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.Index }
 
+func (cache *PlayerCache) GetSubstationId()     (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.SubstationId }
+func (cache *PlayerCache) GetSubstation()       (*SubstationCache)   { if (!cache.SubstationLoaded) { cache.LoadSubstation() }; return cache.Substation }
 
 func (cache *PlayerCache) GetFleet()    (*FleetCache)   { if (!cache.FleetLoaded) { cache.LoadFleet() }; return cache.Fleet }
 func (cache *PlayerCache) GetFleetId()  (string)        { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.FleetId }
@@ -448,7 +484,6 @@ func (cache *PlayerCache) CanBeUpdatedBy(address string) (err error) {
     return cache.CanBeAdministratedBy(address, types.PermissionUpdate)
 }
 
-
 func (cache *PlayerCache) CanBeAdministratedBy(address string, permission types.Permission) (err error) {
 
     // Make sure the address calling this has request permissions
@@ -520,4 +555,58 @@ func (cache *PlayerCache) Resume() {
     cache.K.PlayerResume(cache.Ctx, cache.GetPlayerId())
     cache.Halted = false
     cache.HaltLoaded = true
+}
+
+func (cache *PlayerCache) MigrateGuild(guild *GuildCache){
+    if (!cache.PlayerLoaded) {
+        cache.LoadPlayer()
+    }
+
+    cache.Player.GuildId = guild.GetGuildId()
+    cache.PlayerChanged = true
+
+    cache.Changed()
+}
+
+func (cache *PlayerCache) LeaveGuild(){
+    if (!cache.PlayerLoaded) {
+        cache.LoadPlayer()
+    }
+
+    cache.Player.GuildId = ""
+    cache.PlayerChanged = true
+
+    cache.Changed()
+}
+
+func (cache *PlayerCache) MigrateSubstation(substationId string){
+    if (!cache.PlayerLoaded) {
+        cache.LoadPlayer()
+    }
+
+    cache.OldSubstationId = cache.GetSubstationId()
+    cache.OldSubstationIdChanged = true
+
+    cache.NewSubstationId = substationId
+    cache.NewSubstationIdChanged = true
+
+    cache.Player.SubstationId = substationId
+    cache.PlayerChanged = true
+
+    cache.Changed()
+}
+
+func (cache *PlayerCache) DisconnectSubstation(){
+    if (!cache.PlayerLoaded) {
+        cache.LoadPlayer()
+    }
+
+    cache.OldSubstationId = cache.GetSubstationId()
+    cache.OldSubstationIdChanged = true
+
+
+    cache.Player.SubstationId = ""
+    cache.PlayerChanged = true
+
+    cache.Changed()
 }
