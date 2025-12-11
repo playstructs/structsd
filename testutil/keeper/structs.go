@@ -2,11 +2,11 @@ package keeper
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
 	"cosmossdk.io/core/address"
-	sdkerrors "cosmossdk.io/errors"
 	"cosmossdk.io/log"
 	"cosmossdk.io/math"
 	"cosmossdk.io/store"
@@ -119,7 +119,9 @@ func (m *MockBankKeeper) SendCoins(ctx context.Context, fromAddr, toAddr sdk.Acc
 		fromBal = sdk.Coins{}
 	}
 	if fromBal.IsAllLT(amt) {
-		return sdkerrors.New("bank", 1, "insufficient funds")
+		// Use fmt.Errorf instead of sdkerrors.New to avoid error code registration issues
+		// when running multiple tests together
+		return fmt.Errorf("insufficient funds")
 	}
 	m.balances[fromAddr.String()] = fromBal.Sub(amt...)
 	toBal, exists := m.balances[toAddr.String()]
@@ -139,7 +141,9 @@ func (m *MockBankKeeper) SendCoinsFromModuleToModule(ctx context.Context, sender
 func (m *MockBankKeeper) SendCoinsFromAccountToModule(ctx context.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error {
 	fromBal := m.balances[senderAddr.String()]
 	if fromBal.IsAllLT(amt) {
-		return sdkerrors.New("bank", 1, "insufficient funds")
+		// Use fmt.Errorf instead of sdkerrors.New to avoid error code registration issues
+		// when running multiple tests together
+		return fmt.Errorf("insufficient funds")
 	}
 	m.balances[senderAddr.String()] = fromBal.Sub(amt...)
 	return nil
