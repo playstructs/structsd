@@ -23,9 +23,21 @@ var (
 )
 
 const (
-	OpWeightMsgCreateStruct = "op_weight_msg_create_struct"
-	OpWeightMsgUpdateStruct = "op_weight_msg_update_struct"
-	OpWeightMsgDeleteStruct = "op_weight_msg_delete_struct"
+	OpWeightMsgStructBuildInitiate        = "op_weight_msg_struct_build_initiate"
+	OpWeightMsgStructMove                 = "op_weight_msg_struct_move"
+	OpWeightMsgGuildCreate                = "op_weight_msg_guild_create"
+	OpWeightMsgGuildBankMint              = "op_weight_msg_guild_bank_mint"
+	OpWeightMsgGuildBankRedeem            = "op_weight_msg_guild_bank_redeem"
+	OpWeightMsgGuildBankConfiscateAndBurn = "op_weight_msg_guild_bank_confiscate_and_burn"
+	OpWeightMsgAddressRegister            = "op_weight_msg_address_register"
+	OpWeightMsgPlayerSend                 = "op_weight_msg_player_send"
+	OpWeightMsgGuildMembershipRequest     = "op_weight_msg_guild_membership_request"
+	OpWeightMsgGuildMembershipJoin        = "op_weight_msg_guild_membership_join"
+	OpWeightMsgPlanetExplore              = "op_weight_msg_planet_explore"
+	OpWeightMsgReactorInfuse              = "op_weight_msg_reactor_infuse"
+	OpWeightCommandShipBuildInitiate      = "op_weight_command_ship_build_initiate"
+	OpWeightCommandShipBuildComplete      = "op_weight_command_ship_build_complete"
+	OpWeightGiftUalpha                    = "op_weight_gift_ualpha"
 )
 
 // GenerateGenesisState creates a randomized GenState of the module.
@@ -50,46 +62,178 @@ func (AppModule) ProposalContents(_ module.SimulationState) []simtypes.WeightedP
 	return nil
 }
 
-// WeightedOperations returns the all the gov module operations with their respective weights.
+// WeightedOperations returns all the structs module operations with their respective weights.
 func (am AppModule) WeightedOperations(simState module.SimulationState) []simtypes.WeightedOperation {
 	operations := make([]simtypes.WeightedOperation, 0)
 
-	var weightMsgCreateStruct int
-	simState.AppParams.GetOrGenerate(OpWeightMsgCreateStruct, &weightMsgCreateStruct, nil,
+	var weightMsgStructBuildInitiate int
+	simState.AppParams.GetOrGenerate(OpWeightMsgStructBuildInitiate, &weightMsgStructBuildInitiate, nil,
 		func(_ *rand.Rand) {
-			weightMsgCreateStruct = 100
+			weightMsgStructBuildInitiate = 100
 		},
 	)
 
-	var weightMsgUpdateStruct int
-	simState.AppParams.GetOrGenerate(OpWeightMsgUpdateStruct, &weightMsgUpdateStruct, nil,
+	var weightMsgStructMove int
+	simState.AppParams.GetOrGenerate(OpWeightMsgStructMove, &weightMsgStructMove, nil,
 		func(_ *rand.Rand) {
-			weightMsgUpdateStruct = 50
+			weightMsgStructMove = 50
 		},
 	)
 
-	var weightMsgDeleteStruct int
-	simState.AppParams.GetOrGenerate(OpWeightMsgDeleteStruct, &weightMsgDeleteStruct, nil,
+	var weightMsgGuildCreate int
+	simState.AppParams.GetOrGenerate(OpWeightMsgGuildCreate, &weightMsgGuildCreate, nil,
 		func(_ *rand.Rand) {
-			weightMsgDeleteStruct = 30
+			weightMsgGuildCreate = 20
 		},
 	)
-/*
+
+	var weightMsgGuildBankMint int
+	simState.AppParams.GetOrGenerate(OpWeightMsgGuildBankMint, &weightMsgGuildBankMint, nil,
+		func(_ *rand.Rand) {
+			weightMsgGuildBankMint = 30
+		},
+	)
+
+	var weightMsgGuildBankRedeem int
+	simState.AppParams.GetOrGenerate(OpWeightMsgGuildBankRedeem, &weightMsgGuildBankRedeem, nil,
+		func(_ *rand.Rand) {
+			weightMsgGuildBankRedeem = 25
+		},
+	)
+
+	var weightMsgGuildBankConfiscateAndBurn int
+	simState.AppParams.GetOrGenerate(OpWeightMsgGuildBankConfiscateAndBurn, &weightMsgGuildBankConfiscateAndBurn, nil,
+		func(_ *rand.Rand) {
+			weightMsgGuildBankConfiscateAndBurn = 10
+		},
+	)
+
+	var weightMsgAddressRegister int
+	simState.AppParams.GetOrGenerate(OpWeightMsgAddressRegister, &weightMsgAddressRegister, nil,
+		func(_ *rand.Rand) {
+			weightMsgAddressRegister = 15
+		},
+	)
+
+	var weightMsgPlayerSend int
+	simState.AppParams.GetOrGenerate(OpWeightMsgPlayerSend, &weightMsgPlayerSend, nil,
+		func(_ *rand.Rand) {
+			weightMsgPlayerSend = 40
+		},
+	)
+
+	var weightMsgGuildMembershipRequest int
+	simState.AppParams.GetOrGenerate(OpWeightMsgGuildMembershipRequest, &weightMsgGuildMembershipRequest, nil,
+		func(_ *rand.Rand) {
+			weightMsgGuildMembershipRequest = 15
+		},
+	)
+
+	var weightMsgGuildMembershipJoin int
+	simState.AppParams.GetOrGenerate(OpWeightMsgGuildMembershipJoin, &weightMsgGuildMembershipJoin, nil,
+		func(_ *rand.Rand) {
+			weightMsgGuildMembershipJoin = 15
+		},
+	)
+
+	var weightMsgPlanetExplore int
+	simState.AppParams.GetOrGenerate(OpWeightMsgPlanetExplore, &weightMsgPlanetExplore, nil,
+		func(_ *rand.Rand) {
+			weightMsgPlanetExplore = 30
+		},
+	)
+
+	var weightMsgReactorInfuse int
+	simState.AppParams.GetOrGenerate(OpWeightMsgReactorInfuse, &weightMsgReactorInfuse, nil,
+		func(_ *rand.Rand) {
+			weightMsgReactorInfuse = 35
+		},
+	)
+
+	var weightCommandShipBuildInitiate int
+	simState.AppParams.GetOrGenerate(OpWeightCommandShipBuildInitiate, &weightCommandShipBuildInitiate, nil,
+		func(_ *rand.Rand) {
+			weightCommandShipBuildInitiate = 25
+		},
+	)
+
+	var weightCommandShipBuildComplete int
+	simState.AppParams.GetOrGenerate(OpWeightCommandShipBuildComplete, &weightCommandShipBuildComplete, nil,
+		func(_ *rand.Rand) {
+			weightCommandShipBuildComplete = 20
+		},
+	)
+
+	var weightGiftUalpha int
+	simState.AppParams.GetOrGenerate(OpWeightGiftUalpha, &weightGiftUalpha, nil,
+		func(_ *rand.Rand) {
+			weightGiftUalpha = 50
+		},
+	)
+
 	operations = append(operations,
 		simulation.NewWeightedOperation(
-			weightMsgCreateStruct,
-			structssimulation.SimulateMsgCreateStruct(am.keeper, am.accountKeeper, am.bankKeeper),
+			weightMsgStructBuildInitiate,
+			structssimulation.SimulateMsgStructBuildInitiate(am.keeper, am.accountKeeper, am.bankKeeper),
 		),
 		simulation.NewWeightedOperation(
-			weightMsgUpdateStruct,
-			structssimulation.SimulateMsgUpdateStruct(am.keeper, am.accountKeeper, am.bankKeeper),
+			weightMsgStructMove,
+			structssimulation.SimulateMsgStructMove(am.keeper, am.accountKeeper, am.bankKeeper),
 		),
 		simulation.NewWeightedOperation(
-			weightMsgDeleteStruct,
-			structssimulation.SimulateMsgDeleteStruct(am.keeper, am.accountKeeper, am.bankKeeper),
+			weightMsgGuildCreate,
+			structssimulation.SimulateMsgGuildCreate(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgGuildBankMint,
+			structssimulation.SimulateMsgGuildBankMint(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgGuildBankRedeem,
+			structssimulation.SimulateMsgGuildBankRedeem(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgGuildBankConfiscateAndBurn,
+			structssimulation.SimulateMsgGuildBankConfiscateAndBurn(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgAddressRegister,
+			structssimulation.SimulateMsgAddressRegister(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgPlayerSend,
+			structssimulation.SimulateMsgPlayerSend(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgGuildMembershipRequest,
+			structssimulation.SimulateMsgGuildMembershipRequest(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgGuildMembershipJoin,
+			structssimulation.SimulateMsgGuildMembershipJoin(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgPlanetExplore,
+			structssimulation.SimulateMsgPlanetExplore(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgReactorInfuse,
+			structssimulation.SimulateMsgReactorInfuse(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightCommandShipBuildInitiate,
+			structssimulation.SimulateCommandShipBuildInitiate(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightCommandShipBuildComplete,
+			structssimulation.SimulateCommandShipBuildComplete(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightGiftUalpha,
+			structssimulation.SimulateGiftUalpha(am.keeper, am.accountKeeper, am.bankKeeper),
 		),
 	)
-*/
+
 	return operations
 }
 
