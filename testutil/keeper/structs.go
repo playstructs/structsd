@@ -3,9 +3,12 @@ package keeper
 import (
 	"context"
 	"testing"
+	"time"
 
 	"cosmossdk.io/core/address"
+	sdkerrors "cosmossdk.io/errors"
 	"cosmossdk.io/log"
+	"cosmossdk.io/math"
 	"cosmossdk.io/store"
 	"cosmossdk.io/store/metrics"
 	storetypes "cosmossdk.io/store/types"
@@ -63,12 +66,14 @@ func (m *MockAccountKeeper) GetModuleAddress(module string) sdk.AccAddress {
 type MockBankKeeper struct {
 	balances map[string]sdk.Coins
 	metadata map[string]banktypes.Metadata
+	supply   map[string]math.Int // Track supply per denom
 }
 
 func NewMockBankKeeper() *MockBankKeeper {
 	return &MockBankKeeper{
 		balances: make(map[string]sdk.Coins),
 		metadata: make(map[string]banktypes.Metadata),
+		supply:   make(map[string]math.Int),
 	}
 }
 
@@ -82,7 +87,12 @@ func (m *MockBankKeeper) GetDenomMetaData(ctx context.Context, denom string) (ba
 }
 
 func (m *MockBankKeeper) GetSupply(ctx context.Context, denom string) sdk.Coin {
-	return sdk.Coin{}
+	// Return tracked supply or zero if not tracked
+	supply, exists := m.supply[denom]
+	if !exists {
+		supply = math.ZeroInt()
+	}
+	return sdk.NewCoin(denom, supply)
 }
 
 func (m *MockBankKeeper) HasBalance(ctx context.Context, addr sdk.AccAddress, coin sdk.Coin) bool {
@@ -90,34 +100,85 @@ func (m *MockBankKeeper) HasBalance(ctx context.Context, addr sdk.AccAddress, co
 }
 
 func (m *MockBankKeeper) SpendableCoins(ctx context.Context, addr sdk.AccAddress) sdk.Coins {
-	return sdk.Coins{}
+	coins, ok := m.balances[addr.String()]
+	if !ok {
+		return sdk.Coins{}
+	}
+	return coins
 }
 
 func (m *MockBankKeeper) SpendableCoin(ctx context.Context, addr sdk.AccAddress, denom string) sdk.Coin {
-	return sdk.Coin{}
+	coins := m.SpendableCoins(ctx, addr)
+	amount := coins.AmountOf(denom)
+	return sdk.NewCoin(denom, amount)
 }
 
 func (m *MockBankKeeper) SendCoins(ctx context.Context, fromAddr, toAddr sdk.AccAddress, amt sdk.Coins) error {
+	fromBal, exists := m.balances[fromAddr.String()]
+	if !exists {
+		fromBal = sdk.Coins{}
+	}
+	if fromBal.IsAllLT(amt) {
+		return sdkerrors.New("bank", 1, "insufficient funds")
+	}
+	m.balances[fromAddr.String()] = fromBal.Sub(amt...)
+	toBal, exists := m.balances[toAddr.String()]
+	if !exists {
+		toBal = sdk.Coins{}
+	}
+	m.balances[toAddr.String()] = toBal.Add(amt...)
 	return nil
 }
 
 func (m *MockBankKeeper) SendCoinsFromModuleToModule(ctx context.Context, senderModule, recipientModule string, amt sdk.Coins) error {
+	// For testing, we'll just track module balances in a special way
+	// This is a simplified implementation
 	return nil
 }
 
 func (m *MockBankKeeper) SendCoinsFromAccountToModule(ctx context.Context, senderAddr sdk.AccAddress, recipientModule string, amt sdk.Coins) error {
+	fromBal := m.balances[senderAddr.String()]
+	if fromBal.IsAllLT(amt) {
+		return sdkerrors.New("bank", 1, "insufficient funds")
+	}
+	m.balances[senderAddr.String()] = fromBal.Sub(amt...)
 	return nil
 }
 
 func (m *MockBankKeeper) SendCoinsFromModuleToAccount(ctx context.Context, senderModule string, recipientAddr sdk.AccAddress, amt sdk.Coins) error {
+	toBal, exists := m.balances[recipientAddr.String()]
+	if !exists {
+		toBal = sdk.Coins{}
+	}
+	m.balances[recipientAddr.String()] = toBal.Add(amt...)
 	return nil
 }
 
 func (m *MockBankKeeper) MintCoins(ctx context.Context, moduleName string, amt sdk.Coins) error {
+	// Track supply for each denom
+	for _, coin := range amt {
+		currentSupply, exists := m.supply[coin.Denom]
+		if !exists {
+			currentSupply = math.ZeroInt()
+		}
+		m.supply[coin.Denom] = currentSupply.Add(coin.Amount)
+	}
 	return nil
 }
 
 func (m *MockBankKeeper) BurnCoins(ctx context.Context, moduleName string, amt sdk.Coins) error {
+	// Decrease supply for each denom
+	for _, coin := range amt {
+		currentSupply, exists := m.supply[coin.Denom]
+		if !exists {
+			currentSupply = math.ZeroInt()
+		}
+		newSupply := currentSupply.Sub(coin.Amount)
+		if newSupply.IsNegative() {
+			newSupply = math.ZeroInt()
+		}
+		m.supply[coin.Denom] = newSupply
+	}
 	return nil
 }
 
@@ -173,6 +234,34 @@ func (m *MockStakingKeeper) SetDelegation(ctx context.Context, delegation stakin
 }
 
 func (m *MockStakingKeeper) RemoveDelegation(ctx context.Context, delegation stakingtypes.Delegation) error {
+	return nil
+}
+
+func (m *MockStakingKeeper) ValidateUnbondAmount(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress, amt math.Int) (math.LegacyDec, error) {
+	return math.LegacyZeroDec(), nil
+}
+
+func (m *MockStakingKeeper) BeginRedelegation(ctx context.Context, delAddr sdk.AccAddress, valSrcAddr, valDstAddr sdk.ValAddress, sharesAmount math.LegacyDec) (time.Time, error) {
+	return time.Now(), nil
+}
+
+func (m *MockStakingKeeper) BondDenom(ctx context.Context) (string, error) {
+	return "stake", nil
+}
+
+func (m *MockStakingKeeper) Delegate(ctx context.Context, delAddr sdk.AccAddress, bondAmt math.Int, tokenSrc stakingtypes.BondStatus, validator stakingtypes.Validator, subtractAccount bool) (math.LegacyDec, error) {
+	return math.LegacyZeroDec(), nil
+}
+
+func (m *MockStakingKeeper) Undelegate(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress, sharesAmount math.LegacyDec) (time.Time, math.Int, error) {
+	return time.Now(), math.ZeroInt(), nil
+}
+
+func (m *MockStakingKeeper) RemoveUnbondingDelegation(ctx context.Context, ubd stakingtypes.UnbondingDelegation) error {
+	return nil
+}
+
+func (m *MockStakingKeeper) SetUnbondingDelegation(ctx context.Context, ubd stakingtypes.UnbondingDelegation) error {
 	return nil
 }
 

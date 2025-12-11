@@ -73,7 +73,7 @@ func TestPlanetAttributes(t *testing.T) {
 
 	// Test initial attributes
 	attributes := keeper.GetPlanetAttributesByObject(ctx, planetId)
-	require.Equal(t, types.PlanetaryShieldBase, attributes.PlanetaryShield)
+	require.Equal(t, uint64(types.PlanetaryShieldBase), attributes.PlanetaryShield)
 	require.Equal(t, uint64(0), attributes.RepairNetworkQuantity)
 	require.Equal(t, uint64(0), attributes.DefensiveCannonQuantity)
 
@@ -117,18 +117,18 @@ func TestPlanetCache(t *testing.T) {
 	// Test attribute operations through cache
 	cache.LoadPlanetaryShield()
 	initialShield := cache.GetPlanetaryShield()
-	require.Equal(t, types.PlanetaryShieldBase, initialShield)
+	require.Equal(t, uint64(types.PlanetaryShieldBase), initialShield)
 
 	cache.PlanetaryShieldIncrement(50)
-	require.Equal(t, types.PlanetaryShieldBase+50, cache.GetPlanetaryShield())
+	require.Equal(t, uint64(types.PlanetaryShieldBase+50), cache.GetPlanetaryShield())
 
 	cache.PlanetaryShieldDecrement(20)
-	require.Equal(t, types.PlanetaryShieldBase+30, cache.GetPlanetaryShield())
+	require.Equal(t, uint64(types.PlanetaryShieldBase+30), cache.GetPlanetaryShield())
 
 	// Test commit
 	cache.Commit()
 	attributes := keeper.GetPlanetAttributesByObject(ctx, planetId)
-	require.Equal(t, types.PlanetaryShieldBase+30, attributes.PlanetaryShield)
+	require.Equal(t, uint64(types.PlanetaryShieldBase+30), attributes.PlanetaryShield)
 }
 
 func TestPlanetStatus(t *testing.T) {

@@ -11,8 +11,9 @@ import (
 
 func TestMsgUpdateParams(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
+	ctxSDK := ctx
 	params := types.DefaultParams()
-	require.NoError(t, k.SetParams(ctx, params))
+	require.NoError(t, k.SetParams(ctxSDK, params))
 	wctx := sdk.UnwrapSDKContext(ctx)
 
 	// default params
