@@ -4,9 +4,10 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	"context"
-    "cosmossdk.io/math"
 
-    "structs/x/structs/types"
+	"cosmossdk.io/math"
+
+	"structs/x/structs/types"
 )
 
 var _ types.StakingHooks = Hooks{}
@@ -36,7 +37,7 @@ func (h Hooks) AfterValidatorRemoved(ctx context.Context, _ sdk.ConsAddress, _ s
 // AfterValidatorCreated adds the address-pubkey relation when a validator is created.
 func (h Hooks) AfterValidatorCreated(ctx context.Context, valAddr sdk.ValAddress) error {
 
-    // Setup the Reactor object once a validator comes online
+	// Setup the Reactor object once a validator comes online
 	h.k.ReactorInitialize(ctx, valAddr)
 
 	return nil
@@ -53,7 +54,7 @@ func (h Hooks) BeforeValidatorModified(ctx context.Context, valAddr sdk.ValAddre
 }
 
 func (h Hooks) BeforeDelegationCreated(_ context.Context, _ sdk.AccAddress, _ sdk.ValAddress) error {
-    //_ = h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
+	//_ = h.k.ReactorUpdatePlayerAllocation(ctx, playerAddress, valAddr)
 	return nil
 }
 
@@ -73,11 +74,12 @@ func (h Hooks) AfterDelegationModified(ctx context.Context, playerAddress sdk.Ac
 	return nil
 }
 
-func (h Hooks) BeforeValidatorSlashed(_ context.Context, _ sdk.ValAddress, _ math.LegacyDec) error {
+func (h Hooks) BeforeValidatorSlashed(ctx context.Context, valAddr sdk.ValAddress, fraction math.LegacyDec) error {
+	h.k.ReactorUpdateInfusionsFromSlashing(ctx, valAddr, fraction)
 	return nil
 }
 
 func (h Hooks) AfterUnbondingInitiated(ctx context.Context, unbondingId uint64) error {
-    h.k.ReactorInfusionUnbonding(ctx, unbondingId)
+	h.k.ReactorInfusionUnbonding(ctx, unbondingId)
 	return nil
 }
