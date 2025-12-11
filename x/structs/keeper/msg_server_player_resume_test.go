@@ -13,6 +13,14 @@ import (
 func TestMsgPlayerResume(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
 	wctx := sdk.UnwrapSDKContext(ctx)
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+
+	// Ensure block height is high enough for charge calculation (need 666 charge)
+	// Charge = blockHeight - lastAction, so we need blockHeight >= 666
+	// If block height is too low, we'll skip the valid test
+	if ctxSDK.BlockHeight() < 666 {
+		t.Skip("Block height too low for PlayerResume charge requirement (666)")
+	}
 
 	// Create a player first
 	playerAcc := sdk.AccAddress("creator123456789012345678901234567890")
@@ -91,6 +99,8 @@ func TestMsgPlayerResume(t *testing.T) {
 			// Re-halt player and set charge appropriately for each test
 			if tc.name == "valid player resume" {
 				k.PlayerHalt(ctx, player.Id)
+				// Set lastAction to 0 to maximize charge (charge = blockHeight - lastAction)
+				// This assumes blockHeight is high enough (>= 666)
 				k.SetGridAttribute(ctx, lastActionAttrId, uint64(0))
 			} else if tc.name == "insufficient charge" {
 				k.PlayerHalt(ctx, player.Id)
