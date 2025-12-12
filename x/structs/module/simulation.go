@@ -43,6 +43,10 @@ const (
 	OpWeightCommandShipBuildInitiate      = "op_weight_command_ship_build_initiate"
 	OpWeightCommandShipBuildComplete      = "op_weight_command_ship_build_complete"
 	OpWeightGiftUalpha                    = "op_weight_gift_ualpha"
+	OpWeightMsgAllocationCreate           = "op_weight_msg_allocation_create"
+	OpWeightMsgSubstationCreate           = "op_weight_msg_substation_create"
+	OpWeightMsgProviderCreate             = "op_weight_msg_provider_create"
+	OpWeightMsgAgreementOpen              = "op_weight_msg_agreement_open"
 )
 
 // GenerateGenesisState creates a randomized GenState of the module.
@@ -414,6 +418,34 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		},
 	)
 
+	var weightMsgAllocationCreate int
+	simState.AppParams.GetOrGenerate(OpWeightMsgAllocationCreate, &weightMsgAllocationCreate, nil,
+		func(_ *rand.Rand) {
+			weightMsgAllocationCreate = 30
+		},
+	)
+
+	var weightMsgSubstationCreate int
+	simState.AppParams.GetOrGenerate(OpWeightMsgSubstationCreate, &weightMsgSubstationCreate, nil,
+		func(_ *rand.Rand) {
+			weightMsgSubstationCreate = 25
+		},
+	)
+
+	var weightMsgProviderCreate int
+	simState.AppParams.GetOrGenerate(OpWeightMsgProviderCreate, &weightMsgProviderCreate, nil,
+		func(_ *rand.Rand) {
+			weightMsgProviderCreate = 20
+		},
+	)
+
+	var weightMsgAgreementOpen int
+	simState.AppParams.GetOrGenerate(OpWeightMsgAgreementOpen, &weightMsgAgreementOpen, nil,
+		func(_ *rand.Rand) {
+			weightMsgAgreementOpen = 40
+		},
+	)
+
 	operations = append(operations,
 		simulation.NewWeightedOperation(
 			weightMsgStructBuildInitiate,
@@ -474,6 +506,22 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		simulation.NewWeightedOperation(
 			weightGiftUalpha,
 			structssimulation.SimulateGiftUalpha(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgAllocationCreate,
+			structssimulation.SimulateMsgAllocationCreate(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgSubstationCreate,
+			structssimulation.SimulateMsgSubstationCreate(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgProviderCreate,
+			structssimulation.SimulateMsgProviderCreate(am.keeper, am.accountKeeper, am.bankKeeper),
+		),
+		simulation.NewWeightedOperation(
+			weightMsgAgreementOpen,
+			structssimulation.SimulateMsgAgreementOpen(am.keeper, am.accountKeeper, am.bankKeeper),
 		),
 	)
 

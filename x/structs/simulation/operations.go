@@ -964,3 +964,333 @@ func SimulateGiftUalpha(
 		return simtypes.NoOpMsg(types.ModuleName, "gift_ualpha", fmt.Sprintf("gifted %s to %s", giftAmount.String(), simAccount.Address.String())), nil, nil
 	}
 }
+
+// SimulateMsgAllocationCreate generates a MsgAllocationCreate with random values
+// Players create allocations from themselves or substations they control
+func SimulateMsgAllocationCreate(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		simAccount, _ := simtypes.RandomAcc(r, accs)
+		account := ak.GetAccount(ctx, simAccount.Address)
+		if account == nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAllocationCreate{}), "account not found"), nil, nil
+		}
+
+		// Get player cache
+		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAllocationCreate{}), "player not found"), nil, nil
+		}
+
+		// Check if player has assets permission
+		permissionError := activePlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionAssets)
+		if permissionError != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAllocationCreate{}), "no assets permission"), nil, nil
+		}
+
+		// Choose source: either the player themselves or a substation they control
+		var sourceObjectId string
+		usePlayerAsSource := r.Intn(2) == 0 // 50% chance
+
+		if usePlayerAsSource {
+			// Create allocation from player
+			sourceObjectId = activePlayer.GetPlayerId()
+		} else {
+			// Try to find a substation the player controls
+			allSubstations := k.GetAllSubstation(ctx)
+			validSubstations := make([]types.Substation, 0)
+			for _, substation := range allSubstations {
+				substationCache := k.GetSubstationCacheFromId(ctx, substation.Id)
+				if substationCache.GetOwnerId() == activePlayer.GetPlayerId() {
+					validSubstations = append(validSubstations, substation)
+				}
+			}
+
+			if len(validSubstations) == 0 {
+				// Fall back to using player as source
+				sourceObjectId = activePlayer.GetPlayerId()
+			} else {
+				sourceObjectId = validSubstations[r.Intn(len(validSubstations))].Id
+			}
+		}
+
+		// Random allocation type (static, dynamic, or automated - not providerAgreement)
+		allocationTypes := []types.AllocationType{
+			types.AllocationType_static,
+			types.AllocationType_dynamic,
+			types.AllocationType_automated,
+		}
+		allocationType := allocationTypes[r.Intn(len(allocationTypes))]
+
+		// Random power amount (1-1000)
+		power := uint64(r.Int63n(1000) + 1)
+
+		msg := &types.MsgAllocationCreate{
+			Creator:        simAccount.Address.String(),
+			Controller:     simAccount.Address.String(), // Controller defaults to creator
+			SourceObjectId: sourceObjectId,
+			AllocationType: allocationType,
+			Power:          power,
+		}
+
+		// Execute the message using the message server
+		msgServer := keeper.NewMsgServerImpl(k)
+		_, err = msgServer.AllocationCreate(sdk.WrapSDKContext(ctx), msg)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
+		}
+
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+	}
+}
+
+// SimulateMsgSubstationCreate generates a MsgSubstationCreate with random values
+// Players create new substations with allocations they control
+func SimulateMsgSubstationCreate(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		simAccount, _ := simtypes.RandomAcc(r, accs)
+		account := ak.GetAccount(ctx, simAccount.Address)
+		if account == nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationCreate{}), "account not found"), nil, nil
+		}
+
+		// Get player cache
+		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationCreate{}), "player not found"), nil, nil
+		}
+
+		// Check if player has assets permission
+		permissionError := activePlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionAssets)
+		if permissionError != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationCreate{}), "no assets permission"), nil, nil
+		}
+
+		// Find an allocation that the player controls (has no destination yet)
+		allAllocations := k.GetAllAllocation(ctx)
+		validAllocations := make([]types.Allocation, 0)
+		for _, allocation := range allAllocations {
+			// Allocation must be controlled by this player and not have a destination yet
+			if allocation.Controller == simAccount.Address.String() && allocation.DestinationId == "" {
+				validAllocations = append(validAllocations, allocation)
+			}
+		}
+
+		if len(validAllocations) == 0 {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationCreate{}), "no available allocations"), nil, nil
+		}
+
+		// Pick a random allocation
+		allocation := validAllocations[r.Intn(len(validAllocations))]
+
+		msg := &types.MsgSubstationCreate{
+			Creator:      simAccount.Address.String(),
+			AllocationId: allocation.Id,
+		}
+
+		// Execute the message using the message server
+		msgServer := keeper.NewMsgServerImpl(k)
+		_, err = msgServer.SubstationCreate(sdk.WrapSDKContext(ctx), msg)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
+		}
+
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+	}
+}
+
+// SimulateMsgProviderCreate generates a MsgProviderCreate with random values
+// Players create providers on substations they control
+func SimulateMsgProviderCreate(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		simAccount, _ := simtypes.RandomAcc(r, accs)
+		account := ak.GetAccount(ctx, simAccount.Address)
+		if account == nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderCreate{}), "account not found"), nil, nil
+		}
+
+		// Get player cache
+		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderCreate{}), "player not found"), nil, nil
+		}
+
+		// Find substations the player controls
+		allSubstations := k.GetAllSubstation(ctx)
+		validSubstations := make([]types.Substation, 0)
+		for _, substation := range allSubstations {
+			substationCache := k.GetSubstationCacheFromId(ctx, substation.Id)
+			permissionError := substationCache.CanCreateAllocations(&activePlayer)
+			if permissionError == nil {
+				validSubstations = append(validSubstations, substation)
+			}
+		}
+
+		if len(validSubstations) == 0 {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderCreate{}), "no accessible substations"), nil, nil
+		}
+
+		// Pick a random substation
+		substation := validSubstations[r.Intn(len(validSubstations))]
+
+		// Random provider parameters
+		rateAmount := math.NewIntFromUint64(uint64(r.Int63n(1000) + 1)) // 1-1000
+		rate := sdk.NewCoin("ualpha", rateAmount)
+
+		// Random access policy
+		accessPolicies := []types.ProviderAccessPolicy{
+			types.ProviderAccessPolicy_openMarket,
+			types.ProviderAccessPolicy_guildMarket,
+		}
+		accessPolicy := accessPolicies[r.Intn(len(accessPolicies))]
+
+		// Random cancellation penalties (0.0 to 0.5)
+		providerPenalty := math.LegacyNewDecWithPrec(int64(r.Int63n(51)), 2) // 0.00 to 0.50
+		consumerPenalty := math.LegacyNewDecWithPrec(int64(r.Int63n(51)), 2) // 0.00 to 0.50
+
+		// Random capacity range (1-1000)
+		capacityMin := uint64(r.Int63n(100) + 1)               // 1-100
+		capacityMax := capacityMin + uint64(r.Int63n(900)) + 1 // capacityMin+1 to 1000
+		if capacityMax > 1000 {
+			capacityMax = 1000
+		}
+
+		// Random duration range (1-100 blocks)
+		durationMin := uint64(r.Int63n(10) + 1)               // 1-10
+		durationMax := durationMin + uint64(r.Int63n(90)) + 1 // durationMin+1 to 100
+		if durationMax > 100 {
+			durationMax = 100
+		}
+
+		msg := &types.MsgProviderCreate{
+			Creator:                     simAccount.Address.String(),
+			SubstationId:                substation.Id,
+			Rate:                        rate,
+			AccessPolicy:                accessPolicy,
+			ProviderCancellationPenalty: providerPenalty,
+			ConsumerCancellationPenalty: consumerPenalty,
+			CapacityMinimum:             capacityMin,
+			CapacityMaximum:             capacityMax,
+			DurationMinimum:             durationMin,
+			DurationMaximum:             durationMax,
+		}
+
+		// Execute the message using the message server
+		msgServer := keeper.NewMsgServerImpl(k)
+		_, err = msgServer.ProviderCreate(sdk.WrapSDKContext(ctx), msg)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
+		}
+
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+	}
+}
+
+// SimulateMsgAgreementOpen generates a MsgAgreementOpen with random values
+// Players enter into agreements on providers
+func SimulateMsgAgreementOpen(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		simAccount, _ := simtypes.RandomAcc(r, accs)
+		account := ak.GetAccount(ctx, simAccount.Address)
+		if account == nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementOpen{}), "account not found"), nil, nil
+		}
+
+		// Get player cache
+		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementOpen{}), "player not found"), nil, nil
+		}
+
+		// Find available providers
+		allProviders := k.GetAllProvider(ctx)
+		validProviders := make([]types.Provider, 0)
+		for _, provider := range allProviders {
+			providerCache := k.GetProviderCacheFromId(ctx, provider.Id)
+			permissionError := providerCache.CanOpenAgreement(&activePlayer)
+			if permissionError == nil {
+				validProviders = append(validProviders, provider)
+			}
+		}
+
+		if len(validProviders) == 0 {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementOpen{}), "no accessible providers"), nil, nil
+		}
+
+		// Pick a random provider
+		provider := validProviders[r.Intn(len(validProviders))]
+		providerCache := k.GetProviderCacheFromId(ctx, provider.Id)
+
+		// Get provider constraints
+		capacityMin := providerCache.GetCapacityMinimum()
+		capacityMax := providerCache.GetCapacityMaximum()
+		durationMin := providerCache.GetDurationMinimum()
+		durationMax := providerCache.GetDurationMaximum()
+
+		// Random capacity and duration within provider's constraints
+		capacity := capacityMin
+		if capacityMax > capacityMin {
+			capacity = capacityMin + uint64(r.Int63n(int64(capacityMax-capacityMin)+1))
+		}
+
+		duration := durationMin
+		if durationMax > durationMin {
+			duration = durationMin + uint64(r.Int63n(int64(durationMax-durationMin)+1))
+		}
+
+		// Check if player can afford the collateral
+		rate := providerCache.GetRate()
+		durationInt := math.NewIntFromUint64(duration)
+		capacityInt := math.NewIntFromUint64(capacity)
+		collateralAmount := durationInt.Mul(capacityInt).Mul(rate.Amount)
+		collateralCoin := sdk.NewCoin(rate.Denom, collateralAmount)
+
+		sourceAcc, errParam := sdk.AccAddressFromBech32(simAccount.Address.String())
+		if errParam != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementOpen{}), "invalid address"), nil, nil
+		}
+
+		if !bk.HasBalance(ctx, sourceAcc, collateralCoin) {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementOpen{}), "insufficient balance for collateral"), nil, nil
+		}
+
+		msg := &types.MsgAgreementOpen{
+			Creator:    simAccount.Address.String(),
+			ProviderId: provider.Id,
+			Duration:   duration,
+			Capacity:   capacity,
+		}
+
+		// Execute the message using the message server
+		msgServer := keeper.NewMsgServerImpl(k)
+		_, err = msgServer.AgreementOpen(sdk.WrapSDKContext(ctx), msg)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
+		}
+
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+	}
+}

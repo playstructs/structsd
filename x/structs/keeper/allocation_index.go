@@ -188,16 +188,17 @@ func (k Keeper) AutoResizeAllocation(ctx context.Context, allocationId string, s
     // Update Source Load
     k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, sourceId), newPower)
 
-    // Update Destination Capacity
-    k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, allocation.DestinationId), oldPower, newPower)
+    if allocation.DestinationId != "" {
+        // Update Destination Capacity
+        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, allocation.DestinationId), oldPower, newPower)
 
-    // Update Connection Capacity
-    k.UpdateGridConnectionCapacity(ctx, allocation.DestinationId)
+        // Update Connection Capacity
+        k.UpdateGridConnectionCapacity(ctx, allocation.DestinationId)
 
-    // Check to see if we need to check on the Destination
-    if (oldPower > newPower) {
-        k.AppendGridCascadeQueue(ctx, allocation.DestinationId)
+        // Check to see if we need to check on the Destination
+        if (oldPower > newPower) {
+            k.AppendGridCascadeQueue(ctx, allocation.DestinationId)
+        }
     }
-
 }
 
