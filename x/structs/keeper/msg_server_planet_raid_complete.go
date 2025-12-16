@@ -40,7 +40,7 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
     }
 
     // Check calling address can use Fleet
-    permissionError := fleet.GetOwner().CanBePlayedBy(msg.Creator)
+    permissionError := fleet.GetOwner().CanBeHashedBy(msg.Creator)
     if (permissionError != nil) {
         return &types.MsgPlanetRaidCompleteResponse{}, permissionError
     }

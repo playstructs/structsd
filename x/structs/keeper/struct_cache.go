@@ -735,6 +735,25 @@ func (cache *StructCache) CanBePlayedBy(address string) (err error) {
     return
 }
 
+func (cache *StructCache) CanBeHashedBy(address string) (err error) {
+
+    // Make sure the address calling this has Play permissions
+    if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(address), types.PermissionHash)) {
+        err = sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no hashing permissions ", address)
+    }
+
+    callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
+    if (err == nil) {
+        if (callingPlayer.PlayerId != cache.GetOwnerId()) {
+            if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.PlayerId), types.PermissionHash)) {
+               err = sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no hashing permissions on target player (%s)", callingPlayer.PlayerId, cache.GetOwnerId())
+            }
+        }
+    }
+
+    return
+}
+
 /* Game Functions */
 
 func (cache *StructCache) CanOreMinePlanet() (error) {

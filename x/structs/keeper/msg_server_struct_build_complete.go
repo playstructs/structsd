@@ -19,7 +19,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     structure := k.GetStructCacheFromId(ctx, msg.StructId)
 
     // Check to see if the caller has permissions to proceed
-    permissionError := structure.CanBePlayedBy(msg.Creator)
+    permissionError := structure.CanBeHashedBy(msg.Creator)
     if (permissionError != nil) {
         return &types.MsgStructStatusResponse{}, permissionError
     }

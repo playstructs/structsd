@@ -21,7 +21,7 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 	structure := k.GetStructCacheFromId(ctx, msg.StructId)
 
     // Check to see if the caller has permissions to proceed
-    permissionError := structure.CanBePlayedBy(msg.Creator)
+    permissionError := structure.CanBeHashedBy(msg.Creator)
     if (permissionError != nil) {
         return &types.MsgStructOreMinerStatusResponse{}, permissionError
     }

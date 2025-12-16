@@ -480,6 +480,10 @@ func (cache *PlayerCache) CanBePlayedBy(address string) (err error) {
     return cache.CanBeAdministratedBy(address, types.PermissionPlay)
 }
 
+func (cache *PlayerCache) CanBeHashedBy(address string) (err error) {
+    return cache.CanBeAdministratedBy(address, types.PermissionHash)
+}
+
 func (cache *PlayerCache) CanBeUpdatedBy(address string) (err error) {
     return cache.CanBeAdministratedBy(address, types.PermissionUpdate)
 }
