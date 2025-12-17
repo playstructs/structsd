@@ -49,7 +49,7 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
 
     currentAge := uint64(ctx.BlockHeight()) - structure.GetBlockStartOreRefine()
     if (!types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().GetOreRefiningDifficulty())) {
-        structure.GetOwner().Halt()
+       //structure.GetOwner().Halt()
        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Work failure for input (%s) when trying to refine on Struct %s", hashInput, structure.StructId)
     }
 

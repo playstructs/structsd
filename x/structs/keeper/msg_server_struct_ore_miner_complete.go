@@ -48,7 +48,7 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 
     currentAge := uint64(ctx.BlockHeight()) - structure.GetBlockStartOreMine()
     if (!types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().GetOreMiningDifficulty())) {
-       structure.GetOwner().Halt()
+       //structure.GetOwner().Halt()
        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Work failure for input (%s) when trying to mine on Struct %s", hashInput, structure.StructId)
     }
 
