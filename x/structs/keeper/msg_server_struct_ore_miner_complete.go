@@ -21,7 +21,7 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 	structure := k.GetStructCacheFromId(ctx, msg.StructId)
 
     // Check to see if the caller has permissions to proceed
-    permissionError := structure.CanBePlayedBy(msg.Creator)
+    permissionError := structure.CanBeHashedBy(msg.Creator)
     if (permissionError != nil) {
         return &types.MsgStructOreMinerStatusResponse{}, permissionError
     }
@@ -37,13 +37,6 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
         return &types.MsgStructOreMinerStatusResponse{}, readinessError
     }
 
-
-    playerCharge := k.GetPlayerCharge(ctx, structure.GetOwnerId())
-    if (playerCharge < structure.GetStructType().GetOreMiningCharge()) {
-        k.DischargePlayer(ctx, structure.GetOwnerId())
-        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for this mining operation, but player (%s) only had %d", structure.GetTypeId() , structure.GetStructType().GetOreMiningCharge(), structure.GetOwnerId(), playerCharge)
-    }
-
     miningReadinessError := structure.CanOreMinePlanet()
     if (miningReadinessError != nil) {
         k.DischargePlayer(ctx, structure.GetOwnerId())
@@ -55,15 +48,12 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 
     currentAge := uint64(ctx.BlockHeight()) - structure.GetBlockStartOreMine()
     if (!types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().GetOreMiningDifficulty())) {
-       structure.GetOwner().Halt()
+       //structure.GetOwner().Halt()
        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Work failure for input (%s) when trying to mine on Struct %s", hashInput, structure.StructId)
     }
 
     // Got this far, let's reward the player with some Ore
     structure.OreMinePlanet()
-
-    k.DischargePlayer(ctx, structure.GetOwnerId())
-
     structure.Commit()
 
     _ = ctx.EventManager().EmitTypedEvent(&types.EventOreMine{&types.EventOreMineDetail{PlayerId: structure.GetOwnerId(), PrimaryAddress: structure.GetOwner().GetPrimaryAddress(), Amount: 1}})

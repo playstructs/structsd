@@ -1,8 +1,23 @@
 package keeper_test
 
-/*
+import (
+	"testing"
+
+	sdk "github.com/cosmos/cosmos-sdk/types"
+	"github.com/cosmos/cosmos-sdk/types/query"
+	"github.com/stretchr/testify/require"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+
+	keepertest "structs/testutil/keeper"
+	"structs/testutil/nullify"
+	keeperlib "structs/x/structs/keeper"
+	"structs/x/structs/types"
+)
+
 func TestPlayerQuery(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
+	ctxSDK := ctx
 	wctx := sdk.WrapSDKContext(ctx)
 
 	// Create test players
@@ -15,8 +30,8 @@ func TestPlayerQuery(t *testing.T) {
 		PrimaryAddress: "cosmos1creator2",
 	}
 
-	created1 := keeper.AppendPlayer(ctx, player1)
-	created2 := keeper.AppendPlayer(ctx, player2)
+	created1 := keeper.AppendPlayer(ctxSDK, player1)
+	created2 := keeper.AppendPlayer(ctxSDK, player2)
 
 	// Set grid attributes and inventory for testing
 	gridAttr1 := types.GridAttributes{
@@ -26,8 +41,8 @@ func TestPlayerQuery(t *testing.T) {
 		Ore: 200,
 	}
 
-	keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_ore, created1.Id), gridAttr1.Ore)
-	keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_ore, created2.Id), gridAttr2.Ore)
+	keeper.SetGridAttribute(ctxSDK, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_ore, created1.Id), gridAttr1.Ore)
+	keeper.SetGridAttribute(ctxSDK, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_ore, created2.Id), gridAttr2.Ore)
 
 	tests := []struct {
 		desc     string
@@ -46,6 +61,7 @@ func TestPlayerQuery(t *testing.T) {
 				PlayerInventory: &types.PlayerInventory{},
 				Halted:          false,
 			},
+			// Note: StructsLoad will be PlayerPassiveDraw (25000) by default, so we don't check it exactly
 		},
 		{
 			desc: "Second",
@@ -79,10 +95,13 @@ func TestPlayerQuery(t *testing.T) {
 				require.ErrorIs(t, err, tc.err)
 			} else {
 				require.NoError(t, err)
-				require.Equal(t,
-					nullify.Fill(tc.response),
-					nullify.Fill(response),
-				)
+				// Check individual fields instead of full equality due to default StructsLoad
+				require.Equal(t, tc.response.Player.Id, response.Player.Id)
+				require.Equal(t, tc.response.Player.Creator, response.Player.Creator)
+				require.Equal(t, tc.response.GridAttributes.Ore, response.GridAttributes.Ore)
+				require.Equal(t, tc.response.Halted, response.Halted)
+				// StructsLoad will be PlayerPassiveDraw (25000) by default
+				require.Equal(t, uint64(25000), response.GridAttributes.StructsLoad)
 			}
 		})
 	}
@@ -90,6 +109,7 @@ func TestPlayerQuery(t *testing.T) {
 
 func TestPlayerAllQuery(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
+	ctxSDK := ctx
 	wctx := sdk.WrapSDKContext(ctx)
 
 	// Create test players
@@ -99,7 +119,7 @@ func TestPlayerAllQuery(t *testing.T) {
 			Creator:        "cosmos1creator" + string(rune(i)),
 			PrimaryAddress: "cosmos1creator" + string(rune(i)),
 		}
-		created := keeper.AppendPlayer(ctx, player)
+		created := keeper.AppendPlayer(ctxSDK, player)
 		players[i] = created
 	}
 
@@ -160,6 +180,7 @@ func TestPlayerAllQuery(t *testing.T) {
 
 func TestPlayerHaltedAllQuery(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
+	ctxSDK := ctx
 	wctx := sdk.WrapSDKContext(ctx)
 
 	// Create test players
@@ -169,13 +190,13 @@ func TestPlayerHaltedAllQuery(t *testing.T) {
 			Creator:        "cosmos1creator" + string(rune(i)),
 			PrimaryAddress: "cosmos1creator" + string(rune(i)),
 		}
-		created := keeper.AppendPlayer(ctx, player)
+		created := keeper.AppendPlayer(ctxSDK, player)
 		players[i] = created
 	}
 
 	// Halt some players
-	keeper.PlayerHalt(ctx, players[0].Id)
-	keeper.PlayerHalt(ctx, players[2].Id)
+	keeper.PlayerHalt(ctxSDK, players[0].Id)
+	keeper.PlayerHalt(ctxSDK, players[2].Id)
 
 	// Test the query
 	response, err := keeper.PlayerHaltedAll(wctx, &types.QueryAllPlayerHaltedRequest{})
@@ -185,4 +206,3 @@ func TestPlayerHaltedAllQuery(t *testing.T) {
 	require.Contains(t, response.PlayerId, players[2].Id)
 	require.NotContains(t, response.PlayerId, players[1].Id)
 }
-*/

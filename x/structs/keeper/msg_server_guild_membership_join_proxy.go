@@ -27,7 +27,7 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	// look up destination guild
 	guild, guildFound := k.GetGuild(ctx, proxyPlayer.GuildId)
 	if !guildFound {
-		return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Referenced Guild (%s) not found", guild.Id)
+		return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Referenced Guild (%s) not found", proxyPlayer.GuildId)
 	}
 
 	// Decode the PubKey from hex Encoding
@@ -155,6 +155,8 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	if player.SubstationId == "" {
 		// Connect Player to Substation
 		k.SubstationConnectPlayer(ctx, substation, player)
+	} else {
+	    k.SetPlayer(ctx, player)
 	}
 
 	// The proxy join has completely mostly successfully at this point

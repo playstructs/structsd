@@ -22,7 +22,7 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
 	structure := k.GetStructCacheFromId(ctx, msg.StructId)
 
     // Check to see if the caller has permissions to proceed
-    permissionError := structure.CanBePlayedBy(msg.Creator)
+    permissionError := structure.CanBeHashedBy(msg.Creator)
     if (permissionError != nil) {
         return &types.MsgStructOreRefineryStatusResponse{}, permissionError
     }
@@ -38,13 +38,6 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
         return &types.MsgStructOreRefineryStatusResponse{}, readinessError
     }
 
-
-    playerCharge := k.GetPlayerCharge(ctx, structure.GetOwnerId())
-    if (playerCharge < structure.GetStructType().GetOreRefiningCharge()) {
-        k.DischargePlayer(ctx, structure.GetOwnerId())
-        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for this refinement, but player (%s) only had %d", structure.GetTypeId() , structure.GetStructType().GetOreRefiningCharge(), structure.GetOwnerId(), playerCharge)
-    }
-
     refiningReadinessError := structure.CanOreRefine()
     if (refiningReadinessError != nil) {
         k.DischargePlayer(ctx, structure.GetOwnerId())
@@ -56,13 +49,11 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
 
     currentAge := uint64(ctx.BlockHeight()) - structure.GetBlockStartOreRefine()
     if (!types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().GetOreRefiningDifficulty())) {
-        structure.GetOwner().Halt()
+       //structure.GetOwner().Halt()
        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Work failure for input (%s) when trying to refine on Struct %s", hashInput, structure.StructId)
     }
 
     structure.OreRefine()
-
-    k.DischargePlayer(ctx, structure.GetOwnerId())
 
     structure.Commit()
 

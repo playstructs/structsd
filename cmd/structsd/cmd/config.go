@@ -8,7 +8,9 @@ import (
 	"structs/app"
 )
 
-func initSDKConfig() {
+// InitSDKConfig initializes the SDK configuration with the correct bech32 prefix.
+// This must be called before any modules are initialized to ensure addresses use the correct prefix.
+func InitSDKConfig() {
 	// Set prefixes
 	accountPubKeyPrefix := app.AccountAddressPrefix + "pub"
 	validatorAddressPrefix := app.AccountAddressPrefix + "valoper"

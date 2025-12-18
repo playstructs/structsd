@@ -4,7 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
+	//sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -15,69 +15,33 @@ func (k msgServer) GuildMembershipKick(goCtx context.Context, msg *types.MsgGuil
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	// Look up requesting account
-	player := k.UpsertPlayer(ctx, msg.Creator)
 
-    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
-    // Make sure the address calling this has Associate permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssociations)) {
-        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
+    callingPlayer, err := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    if err != nil {
+        return &types.MsgGuildMembershipResponse{}, err
     }
 
-    if (msg.GuildId == "") {
-        msg.GuildId = player.GuildId
+    // Use cache permission methods
+    callingPlayerPermissionError := callingPlayer.CanBeAdministratedBy(msg.Creator, types.PermissionAssociations)
+    if callingPlayerPermissionError != nil {
+        return &types.MsgGuildMembershipResponse{}, callingPlayerPermissionError
     }
 
-	// look up destination guild
-	guild, guildFound := k.GetGuild(ctx, msg.GuildId)
+	if msg.GuildId == "" {
+		msg.GuildId = callingPlayer.GetGuildId()
+	}
 
-    if (!guildFound) {
-        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Guild (%s) not found", msg.GuildId)
+    guildMembershipApplication, guildMembershipApplicationError := k.GetGuildMembershipKickCache(ctx, &callingPlayer, msg.GuildId, msg.PlayerId)
+    if guildMembershipApplicationError != nil {
+        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
     }
 
-    if (!k.PermissionHasOneOf(ctx, GetObjectPermissionIDBytes(guild.Id, player.Id), types.PermissionAssociations)) {
-        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%s) has no Player Association permissions with the Guild (%s) ", player.Id, guild.Id)
+    guildMembershipApplicationError = guildMembershipApplication.Kick()
+    if guildMembershipApplicationError != nil {
+        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
     }
 
-    guildMembershipApplication, guildMembershipApplicationFound := k.GetGuildMembershipApplication(ctx, msg.GuildId, msg.PlayerId)
+	guildMembershipApplication.Commit()
 
-    guildMembershipApplication.RegistrationStatus   = types.RegistrationStatus_revoked
-    if (!guildMembershipApplicationFound) {
-        guildMembershipApplication.Proposer             = player.Id
-        guildMembershipApplication.PlayerId             = msg.PlayerId
-        guildMembershipApplication.GuildId              = guild.Id
-        guildMembershipApplication.JoinType             = types.GuildJoinType_direct
-    }
-
-    // Look up requesting account
-    targetPlayer := k.UpsertPlayer(ctx, msg.Creator)
-    targetPlayer.GuildId = ""
-
-    targetPlayerUpdated := false
-    if (player.SubstationId != "") {
-
-        substation, substationFound := k.GetSubstation(ctx, targetPlayer.SubstationId)
-
-        if (substationFound) {
-            if (substation.Owner != targetPlayer.Id) {
-                if (!k.PermissionHasOneOf(ctx, GetObjectPermissionIDBytes(substation.Id, player.Id), types.PermissionGrid)) {
-                     k.SubstationDisconnectPlayer(ctx, targetPlayer)
-                     targetPlayerUpdated = true
-                }
-            }
-        }
-    }
-
-    if (!targetPlayerUpdated) {
-        k.SetPlayer(ctx, targetPlayer)
-    }
-
-    // TODO (Possibly) - One thing we're not doing here yet is clearing out any
-    // permissions related to the previous guild. This could get messy so doing it
-    // manually might be best. That said, perhaps it could be a configuration option
-    // for guilds to define what happens on leave.
-
-    k.ClearGuildMembershipApplication(ctx, guildMembershipApplication)
-
-	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication}, nil
+	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication.GuildMembershipApplication}, nil
 }

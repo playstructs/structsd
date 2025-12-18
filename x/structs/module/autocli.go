@@ -569,6 +569,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"}},
                  },
                  {
+                    RpcMethod:      "PlayerSend",
+                    Use:            "player-send [player id] [from address] [to address] [1coin, 2coin, ...coin]",
+                    Short:          "Send tokens from any player-owned address",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "player_id"},{ProtoField: "from_address"},{ProtoField: "to_address"},{ProtoField: "amount"}},
+                 },
+                 {
                     RpcMethod:      "ProviderCreate",
                     Use:            "provider-create [substation id] [rate] [access policy] [provider cancellation penalty] [consumer cancellation penalty] [capacity min] [capacity max] [duration min] [duration max]",
                     Short:          "Create a new Energy Provider offering",
@@ -627,6 +633,30 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     Use:            "provider-withdraw-balance [provider id] [destination address]",
                     Short:          "Withdraw the pending earnings from a Provider",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"},{ProtoField: "destinationAddress"}},
+                 },
+                 {
+                    RpcMethod:      "ReactorInfuse",
+                    Use:            "reactor-infuse [player address] [reactor address] [amount]",
+                    Short:          "Infuse Alpha from a player address into a reactor",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "delegator_address"},{ProtoField: "validator_address"},{ProtoField: "amount"}},
+                 },
+                 {
+                    RpcMethod:      "ReactorDefuse",
+                    Use:            "reactor-defuse [player address] [reactor address] [amount]",
+                    Short:          "Defuse Alpha from a Reactor, returning it to the player after a cooldown",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "delegator_address"},{ProtoField: "validator_address"},{ProtoField: "amount"}},
+                 },
+                 {
+                    RpcMethod:      "ReactorBeginMigration",
+                    Use:            "reactor-begin-migration [player address] [source reactor address] [destination reactor address] [amount]",
+                    Short:          "Migrate Alpha from one Reactor to another",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "delegator_address"},{ProtoField: "validator_src_address"},{ProtoField: "validator_dst_address"},{ProtoField: "amount"}},
+                 },
+                 {
+                    RpcMethod:      "ReactorCancelDefusion",
+                    Use:            "reactor-cancel-defusion [player address] [reactor address] [amount] [creation height]",
+                    Short:          "Place cooling Alpha back into the Reactor to resume generating energy",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "delegator_address"},{ProtoField: "validator_address"},{ProtoField: "amount"},{ProtoField: "creation_height"}},
                  },
                  {
                      RpcMethod:      "StructActivate",

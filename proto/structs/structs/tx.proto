@@ -80,6 +80,8 @@ service Msg {
   rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse   );
   rpc PlayerResume                   (MsgPlayerResume                  ) returns (MsgPlayerResumeResponse                 );
 
+  rpc PlayerSend                     (MsgPlayerSend                    ) returns (MsgPlayerSendResponse);
+
   rpc ProviderCreate                 (MsgProviderCreate                ) returns (MsgProviderResponse);
   rpc ProviderWithdrawBalance        (MsgProviderWithdrawBalance       ) returns (MsgProviderResponse);
   rpc ProviderUpdateCapacityMinimum  (MsgProviderUpdateCapacityMinimum ) returns (MsgProviderResponse);
@@ -551,7 +553,6 @@ message MsgPlayerResumeResponse {}
 // from a delegator to a validator.
 message MsgReactorInfuse {
   option (cosmos.msg.v1.signer) = "creator";
-  option (amino.name)           = "cosmos-sdk/MsgReactorInfuse";
 
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
@@ -569,7 +570,6 @@ message MsgReactorInfuseResponse {}
 // of coins from a delegator and source validator to a destination validator.
 message MsgReactorBeginMigration {
   option (cosmos.msg.v1.signer) = "creator";
-  option (amino.name)           = "cosmos-sdk/MsgReactorBeginMigration";
 
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
@@ -591,7 +591,6 @@ message MsgReactorBeginMigrationResponse {
 // delegate and a validator.
 message MsgReactorDefuse {
   option (cosmos.msg.v1.signer) = "creator";
-  option (amino.name)           = "cosmos-sdk/MsgReactorDefuse";
 
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
@@ -618,7 +617,6 @@ message MsgReactorDefuseResponse {
 // Since: cosmos-sdk 0.46
 message MsgReactorCancelDefusion {
   option (cosmos.msg.v1.signer)      = "creator";
-  option (amino.name)                = "cosmos-sdk/MsgReactorCancelDefusion";
   option (gogoproto.equal)           = false;
   option (gogoproto.goproto_getters) = false;
 
@@ -1029,3 +1027,23 @@ message MsgProviderDelete {
 }
 
 message MsgProviderResponse {}
+
+message MsgPlayerSend {
+  option (gogoproto.goproto_getters) = false;
+  option (gogoproto.equal) = false;
+  option (cosmos.msg.v1.signer) = "creator";
+  string creator        = 1;
+  string player_id      = 2;
+  string from_address   = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string to_address     = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  repeated cosmos.base.v1beta1.Coin amount = 5 [
+    (gogoproto.nullable) = false,
+    (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
+    (amino.encoding) = "legacy_coins",
+    (amino.dont_omitempty) = true
+  ];
+}
+
+message MsgPlayerSendResponse {
+  // This message has no fields.
+}

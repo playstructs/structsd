@@ -5,7 +5,6 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
-
 )
 
 // BeginBlocker will persist the current header and validator set as a historical entry
@@ -36,6 +35,7 @@ func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error)
 	 * but I think that's ok. We'll see how it goes in practice.
 	 */
 	k.GridCascade(ctx)
+	k.ProcessInfusionDestructionQueue(ctx)
 
     k.logger.Debug("End Block Complete")
 

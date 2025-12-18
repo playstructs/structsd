@@ -4,7 +4,7 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
+	//sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -15,36 +15,37 @@ func (k msgServer) GuildMembershipInviteDeny(goCtx context.Context, msg *types.M
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	// Look up requesting account
-	player := k.UpsertPlayer(ctx, msg.Creator)
+    callingPlayer, err := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    if err != nil {
+        return &types.MsgGuildMembershipResponse{}, err
+    }
 
-	if (msg.PlayerId == "") {
-	    msg.PlayerId = player.Id
+    // Use cache permission methods
+    callingPlayerPermissionError := callingPlayer.CanBeAdministratedBy(msg.Creator, types.PermissionAssociations)
+    if callingPlayerPermissionError != nil {
+        return &types.MsgGuildMembershipResponse{}, callingPlayerPermissionError
+    }
+
+    if (msg.PlayerId == "") {
+        msg.PlayerId = callingPlayer.GetPlayerId()
+    }
+
+	if msg.GuildId == "" {
+		msg.GuildId = callingPlayer.GetGuildId()
 	}
 
-    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
-    // Make sure the address calling this has Associate permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssociations)) {
-        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
+    guildMembershipApplication, guildMembershipApplicationError := k.GetGuildMembershipApplicationCache(ctx, &callingPlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
+    if guildMembershipApplicationError != nil {
+        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
     }
 
-    if (player.Id != msg.PlayerId) {
-        if (!k.PermissionHasOneOf(ctx, GetObjectPermissionIDBytes(msg.PlayerId, player.Id), types.PermissionAssociations)) {
-            return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%s) has no Player Association permissions with the Guild (%s) ", player.Id, msg.GuildId)
-        }
+    guildMembershipApplicationError = guildMembershipApplication.VerifyInviteAsPlayer()
+    if guildMembershipApplicationError != nil {
+        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
     }
 
-    guildMembershipApplication, guildMembershipApplicationFound := k.GetGuildMembershipApplication(ctx, msg.GuildId, msg.PlayerId)
-    if (!guildMembershipApplicationFound) {
-        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Membership Application not found")
-    }
+    guildMembershipApplicationError = guildMembershipApplication.DenyInvite()
+    guildMembershipApplication.Commit()
 
-    if (guildMembershipApplication.JoinType != types.GuildJoinType_invite) {
-        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Membership Application is incorrect type for invitation denial")
-    }
-
-    guildMembershipApplication.RegistrationStatus   = types.RegistrationStatus_denied
-    k.ClearGuildMembershipApplication(ctx, guildMembershipApplication)
-
-	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication}, nil
+	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication.GuildMembershipApplication}, nil
 }

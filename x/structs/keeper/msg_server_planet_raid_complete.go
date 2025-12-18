@@ -40,7 +40,7 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
     }
 
     // Check calling address can use Fleet
-    permissionError := fleet.GetOwner().CanBePlayedBy(msg.Creator)
+    permissionError := fleet.GetOwner().CanBeHashedBy(msg.Creator)
     if (permissionError != nil) {
         return &types.MsgPlanetRaidCompleteResponse{}, permissionError
     }
@@ -71,7 +71,7 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 
     currentAge := uint64(ctx.BlockHeight()) - fleet.GetPlanet().GetBlockStartRaid()
     if (!types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, fleet.GetPlanet().GetPlanetaryShield())) {
-        fleet.GetOwner().Halt()
+        //fleet.GetOwner().Halt()
         _ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleet.GetFleetId(), PlanetId: raidedPlanet, Status: types.RaidStatus_ongoing}})
        return &types.MsgPlanetRaidCompleteResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Work failure for input (%s) when trying to complete a Raid on Planet %s", hashInput, fleet.GetPlanet().GetPlanetId())
     }

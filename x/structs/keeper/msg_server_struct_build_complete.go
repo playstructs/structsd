@@ -19,7 +19,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     structure := k.GetStructCacheFromId(ctx, msg.StructId)
 
     // Check to see if the caller has permissions to proceed
-    permissionError := structure.CanBePlayedBy(msg.Creator)
+    permissionError := structure.CanBeHashedBy(msg.Creator)
     if (permissionError != nil) {
         return &types.MsgStructStatusResponse{}, permissionError
     }
@@ -58,7 +58,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 
     if !structure.GetOwner().CanSupportLoadAddition(structure.GetStructType().PassiveDraw) {
         structure.GetOwner().StructsLoadIncrement(structure.GetStructType().BuildDraw)
-        structure.GetOwner().Discharge()
+        //structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d to activate, but player (%s) has %d available", structure.GetStructType().Id, structure.GetStructType().PassiveDraw, structure.GetOwnerId(), structure.GetOwner().GetAvailableCapacity())
     }
@@ -71,8 +71,8 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 
     if (!types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().BuildDifficulty)) {
         structure.GetOwner().StructsLoadIncrement(structure.GetStructType().BuildDraw)
-        structure.GetOwner().Discharge()
-        structure.GetOwner().Halt()
+        //structure.GetOwner().Discharge()
+        //structure.GetOwner().Halt()
         structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrStructBuildComplete, "Work failure for input (%s) when trying to build Struct %s", hashInput, structure.GetStructId())
     }

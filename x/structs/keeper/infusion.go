@@ -10,8 +10,8 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 
+    "encoding/binary"
 	//"strconv"
-	"cosmossdk.io/math"
 	"strings"
 
 )
@@ -74,66 +74,6 @@ func (k Keeper) GetInfusionByID(ctx context.Context, infusionId string) (val typ
 }
 
 
-func (k Keeper) UpsertInfusion(ctx context.Context, destinationType types.ObjectType, destinationId string, address string, player types.Player, fuel uint64, commission math.LegacyDec, ratio uint64) (infusion types.Infusion, newInfusionFuel uint64, oldInfusionFuel uint64, newInfusionPower uint64, oldInfusionPower uint64, newCommissionPower uint64, oldCommissionPower uint64, newPlayerPower uint64, oldPlayerPower uint64, err error) {
-
-    infusion, infusionFound := k.GetInfusion(ctx, destinationId, address)
-    if (infusionFound) {
-         newInfusionFuel, oldInfusionFuel, newInfusionPower, oldInfusionPower, newCommissionPower, oldCommissionPower, newPlayerPower, oldPlayerPower, _, _, err = infusion.SetFuelAndCommission(fuel, commission)
-    } else {
-
-        infusion = types.CreateNewInfusion(destinationType, destinationId, address, player.Id, fuel, commission, ratio)
-
-        // Should already be the value, but let's be safe
-        oldInfusionFuel = 0
-        oldPlayerPower = 0
-        oldCommissionPower = 0
-        oldInfusionPower = 0
-
-        newInfusionFuel = fuel
-        newInfusionPower, newCommissionPower, newPlayerPower = infusion.GetPowerDistribution()
-    }
-
-    k.SetInfusion(ctx, infusion)
-
-    // Update the Fuel record on the Destination
-    if (oldInfusionFuel != newInfusionFuel) {
-        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, destinationId), oldInfusionFuel, newInfusionFuel)
-    }
-
-    // Update the Commissioned Power on the Destination
-    if (oldCommissionPower != newCommissionPower) {
-        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, destinationId), oldCommissionPower, newCommissionPower)
-
-        // Check for an automated allocation
-        destinationAllocationId, destinationAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(ctx, destinationId)
-        if (destinationAutoResizeAllocationFound) {
-            k.AutoResizeAllocation(ctx, destinationAllocationId, destinationId, oldCommissionPower, newCommissionPower)
-        } else {
-            if (oldCommissionPower > newCommissionPower) {
-                k.AppendGridCascadeQueue(ctx, destinationId)
-            }
-        }
-    }
-
-    // Update the Player's Power Capacity
-    if (oldPlayerPower != newPlayerPower) {
-        k.SetGridAttributeDelta(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id), oldPlayerPower, newPlayerPower)
-
-        // Check for an automated allocation
-        playerAllocationId, playerAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(ctx, player.Id)
-        if (playerAutoResizeAllocationFound) {
-            k.AutoResizeAllocation(ctx, playerAllocationId, player.Id, oldPlayerPower, newPlayerPower)
-        } else {
-            // This might be able to be an else from the above statement, but I need more coffee before committing
-            if (oldPlayerPower > newPlayerPower) {
-                k.AppendGridCascadeQueue(ctx, player.Id)
-            }
-        }
-    }
-
-     return
-}
-
 // RemoveInfusion removes a infusion from the store
 func (k Keeper) RemoveInfusion(ctx context.Context, destinationId string, address string) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), InfusionKeyPrefix(destinationId))
@@ -189,6 +129,58 @@ func (k Keeper) GetAllInfusionsByDestination(ctx context.Context, objectId strin
 }
 
 
+func (k Keeper) GetInfusionDestructionQueue(ctx context.Context, clear bool) (queue []string) {
+	infusionDestructionQueueStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionDestructionQueue))
+	iterator := storetypes.KVStorePrefixIterator(infusionDestructionQueueStore, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		queue = append(queue, string(iterator.Key()))
+		if clear {
+		    infusionDestructionQueueStore.Delete(iterator.Key())
+		}
+	}
+
+    return
+}
+
+
+func (k Keeper) AppendInfusionDestructionQueue(ctx context.Context, infusionId string) (err error) {
+    infusionDestructionQueueStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionDestructionQueue))
+
+	bz := make([]byte, 8)
+	binary.BigEndian.PutUint64(bz, 1)
+
+	infusionDestructionQueueStore.Set([]byte(infusionId), bz)
+
+    k.logger.Info("Infusion Destruction Queue (Add)", "queueId", infusionId)
+
+	return err
+}
+
+
+func (k Keeper) ProcessInfusionDestructionQueue(ctx context.Context) {
+
+    for {
+        // Get Queue (and clear it in the process)
+        infusionDestructionQueue := k.GetInfusionDestructionQueue(ctx, true)
+
+        if (len(infusionDestructionQueue) == 0) {
+            break
+        }
+
+        // For each Queue Item
+        for _, objectId := range infusionDestructionQueue {
+            infusion, infusionFound := k.GetInfusionByID(ctx, objectId)
+            if infusionFound {
+                if infusion.Power == 0 && infusion.Defusing == 0 {
+                    k.DestroyInfusion(ctx, infusion)
+                }
+            }
+        }
+    }
+}
 
 func (k Keeper) DestroyInfusion(ctx context.Context, infusion types.Infusion) {
 

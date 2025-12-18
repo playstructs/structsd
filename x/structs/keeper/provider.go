@@ -13,7 +13,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	//sdkerrors "cosmossdk.io/errors"
-
 )
 
 // GetProviderCount get the total number of provider
@@ -61,7 +60,6 @@ func (k Keeper) AppendProvider(ctx context.Context, provider types.Provider) (ty
 	// Set the Checkpoint to current block
 	k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_checkpointBlock, provider.Id), uint64(ctxSDK.BlockHeight()))
 
-
 	// Create the Collateral Pool
 	providerCollateralDetails := types.ProviderCollateralPool+provider.Id
 	providerCollateralAddress := authtypes.NewModuleAddress(providerCollateralDetails)
@@ -74,15 +72,18 @@ func (k Keeper) AppendProvider(ctx context.Context, provider types.Provider) (ty
 	providerEarningsAccount := k.accountKeeper.NewAccountWithAddress(ctx, providerEarningsAddress)
 	k.accountKeeper.SetAccount(ctx, providerEarningsAccount)
 
-    k.logger.Info("Provider Created",
-	                "providerId", provider.Id,
-	                "collateralPoolDetails", providerCollateralDetails,
-	                "collateralPoolAddress", providerCollateralAddress.String(),
-	                "earningsPoolDetails", providerEarningsDetails,
-	                "earningsPoolAddress", providerEarningsAddress.String())
+	providerCollateralAddressStr := providerCollateralAddress.String()
+	providerEarningsAddressStr := providerEarningsAddress.String()
+
+	k.logger.Info("Provider Created",
+		"providerId", provider.Id,
+		"collateralPoolDetails", providerCollateralDetails,
+		"collateralPoolAddress", providerCollateralAddressStr,
+		"earningsPoolDetails", providerEarningsDetails,
+		"earningsPoolAddress", providerEarningsAddressStr)
 
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProvider{Provider: &provider})
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProviderAddress{&types.EventProviderAddressDetail{ProviderId: provider.Id, CollateralPool: providerCollateralAddress.String(), EarningPool: providerEarningsAddress.String()}})
+	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProviderAddress{&types.EventProviderAddressDetail{ProviderId: provider.Id, CollateralPool: providerCollateralAddressStr, EarningPool: providerEarningsAddressStr}})
 
 	return provider, nil
 }

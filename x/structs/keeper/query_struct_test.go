@@ -11,13 +11,28 @@ import (
 
 	keepertest "structs/testutil/keeper"
 	"structs/testutil/nullify"
+	"structs/x/structs/keeper"
 	"structs/x/structs/types"
 )
+
+// Helper function to create N structs for testing (to avoid conflict with struct_test.go)
+func createNStructForQuery(keeper keeper.Keeper, ctx sdk.Context, n int) []types.Struct {
+	items := make([]types.Struct, n)
+	for i := range items {
+		items[i] = types.Struct{
+			Creator: "cosmos1creator" + string(rune(i)),
+			Owner:   "cosmos1owner" + string(rune(i)),
+			Type:    uint64(i % 3), // Different types for variety
+		}
+		items[i] = keeper.AppendStruct(ctx, items[i])
+	}
+	return items
+}
 
 func TestStructQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNStruct(keeper, ctx, 2)
+	msgs := createNStructForQuery(keeper, ctx, 2)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryGetStructRequest
@@ -72,7 +87,7 @@ func TestStructQuerySingle(t *testing.T) {
 func TestStructQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNStruct(keeper, ctx, 5)
+	msgs := createNStructForQuery(keeper, ctx, 5)
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllStructRequest {
 		return &types.QueryAllStructRequest{
@@ -128,7 +143,7 @@ func TestStructQueryPaginated(t *testing.T) {
 func TestStructAttributeQuerySingle(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNStruct(keeper, ctx, 2)
+	msgs := createNStructForQuery(keeper, ctx, 2)
 	for _, tc := range []struct {
 		desc     string
 		request  *types.QueryGetStructAttributeRequest
@@ -188,7 +203,7 @@ func TestStructAttributeQuerySingle(t *testing.T) {
 func TestStructAttributeQueryPaginated(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 	wctx := sdk.WrapSDKContext(ctx)
-	msgs := createNStruct(keeper, ctx, 5)
+	msgs := createNStructForQuery(keeper, ctx, 5)
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllStructAttributeRequest {
 		return &types.QueryAllStructAttributeRequest{

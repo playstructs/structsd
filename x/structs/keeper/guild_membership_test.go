@@ -45,7 +45,7 @@ func TestGuildMembershipApplicationRemove(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 	items := createNGuildMembershipApplication(keeper, ctx, 10)
 	for _, item := range items {
-		keeper.ClearGuildMembershipApplication(ctx, item)
+		keeper.ClearGuildMembershipApplication(ctx, item.GuildId, item.PlayerId)
 		_, found := keeper.GetGuildMembershipApplication(ctx, item.GuildId, item.PlayerId)
 		require.False(t, found)
 	}

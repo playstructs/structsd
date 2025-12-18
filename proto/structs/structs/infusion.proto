@@ -26,11 +26,7 @@ message Infusion {
   string      address                       = 7;
 
   uint64      ratio                         = 8;
-  string      defusing                      = 9 [
-    (cosmos_proto.scalar)  = "cosmos.Int",
-    (gogoproto.customtype) = "cosmossdk.io/math.Int",
-    (gogoproto.nullable)   = false
-  ];
+  uint64      defusing                      = 9;
 }
 
 

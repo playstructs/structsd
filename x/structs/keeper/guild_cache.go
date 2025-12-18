@@ -144,8 +144,12 @@ func (cache *GuildCache) GetGuildId() string { return cache.GuildId }
 func (cache *GuildCache) GetOwnerId() string { if !cache.GuildLoaded { cache.LoadGuild() }; return cache.Guild.Owner }
 func (cache *GuildCache) GetOwner() *PlayerCache { if !cache.OwnerLoaded { cache.LoadOwner() }; return cache.Owner }
 
+func (cache *GuildCache) GetJoinInfusionMinimum() uint64 {if !cache.GuildLoaded { cache.LoadGuild() }; return cache.Guild.JoinInfusionMinimum }
+func (cache *GuildCache) GetJoinInfusionMinimumBypassByInvite() types.GuildJoinBypassLevel {if !cache.GuildLoaded { cache.LoadGuild() }; return cache.Guild.JoinInfusionMinimumBypassByInvite }
+func (cache *GuildCache) GetJoinInfusionMinimumBypassByRequest() types.GuildJoinBypassLevel {if !cache.GuildLoaded { cache.LoadGuild() }; return cache.Guild.JoinInfusionMinimumBypassByRequest }
 func (cache *GuildCache) GetEntrySubstationId() string { if !cache.GuildLoaded { cache.LoadGuild() }; return cache.Guild.EntrySubstationId }
 func (cache *GuildCache) GetSubstation() *SubstationCache {if !cache.SubstationLoaded { cache.LoadSubstation() }; return cache.Substation }
+func (cache *GuildCache) GetPrimaryReactorId() string { if !cache.GuildLoaded { cache.LoadGuild() }; return cache.Guild.PrimaryReactorId }
 
 func (cache *GuildCache) GetCreator() string { if !cache.GuildLoaded { cache.LoadGuild() }; return cache.Guild.Creator }
 
@@ -170,6 +174,63 @@ func (cache *GuildCache) CanAdministrateBank(activePlayer *PlayerCache) (error) 
     return cache.PermissionCheck(types.PermissionAssets, activePlayer)
 }
 
+// Associations Permission
+func (cache *GuildCache) CanAddMembersByProxy(activePlayer *PlayerCache) (error) {
+  return cache.PermissionCheck(types.PermissionAssociations, activePlayer)
+}
+
+func (cache *GuildCache) CanInviteMembers(activePlayer *PlayerCache) (err error) {
+
+    switch cache.GetJoinInfusionMinimumBypassByInvite() {
+        // Invites are currently closed
+        case types.GuildJoinBypassLevel_closed:
+            err = sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Guild not currently allowing invitations")
+
+        // Only specific players can invite
+        case types.GuildJoinBypassLevel_permissioned:
+            err = cache.PermissionCheck(types.PermissionAssociations, activePlayer)
+
+        // All Guild Members can Invite
+        case types.GuildJoinBypassLevel_member:
+            if activePlayer.GetGuildId() != cache.GetGuildId() {
+                err = sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Calling player (%s) must be a member of Guild (%s) to invite others", activePlayer.GetPlayerId(), cache.GetGuildId())
+        	}
+    }
+    return
+}
+
+func (cache *GuildCache) CanApproveMembershipRequest(activePlayer *PlayerCache) (err error) {
+    switch cache.GetJoinInfusionMinimumBypassByRequest() {
+        // Invites are currently closed
+        case types.GuildJoinBypassLevel_closed:
+            err = sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Guild not currently allowing requests")
+
+        // Only specific players can request
+        case types.GuildJoinBypassLevel_permissioned:
+            err = cache.PermissionCheck(types.PermissionAssociations, activePlayer)
+
+        // All Guild Members can Invite
+        case types.GuildJoinBypassLevel_member:
+            if activePlayer.GetGuildId() != cache.GetGuildId() {
+                err = sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Calling player (%s) must be a member of Guild (%s) to approve requests", activePlayer.GetPlayerId(), cache.GetGuildId())
+        	}
+    }
+    return
+}
+
+func (cache *GuildCache) CanKickMembers(activePlayer *PlayerCache) (error) {
+    return cache.PermissionCheck(types.PermissionAssociations, activePlayer)
+}
+
+
+func (cache *GuildCache) CanRequestMembership() (err error) {
+    switch cache.GetJoinInfusionMinimumBypassByRequest() {
+        // Invites are currently closed
+        case types.GuildJoinBypassLevel_closed:
+            err = sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Guild is not currently allowing membership requests")
+    }
+    return
+}
 
 func (cache *GuildCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) (error) {
     // Make sure the address calling this has permissions

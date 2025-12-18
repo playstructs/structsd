@@ -16,35 +16,33 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	// Look up requesting account
-	player := k.UpsertPlayer(ctx, msg.Creator)
+    callingPlayer, err := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    if err != nil {
+        return &types.MsgGuildMembershipResponse{}, err
+    }
 
-	if (msg.PlayerId == "") {
-	    msg.PlayerId = player.Id
+    // Use cache permission methods
+    callingPlayerPermissionError := callingPlayer.CanBeAdministratedBy(msg.Creator, types.PermissionAssociations)
+    if callingPlayerPermissionError != nil {
+        return &types.MsgGuildMembershipResponse{}, callingPlayerPermissionError
+    }
+
+    if (msg.PlayerId == "") {
+        msg.PlayerId = callingPlayer.GetPlayerId()
+    }
+
+	if msg.GuildId == "" {
+		msg.GuildId = callingPlayer.GetGuildId()
 	}
 
-    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
-    // Make sure the address calling this has Associate permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssociations)) {
-        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
+    guildMembershipApplication, guildMembershipApplicationError := k.GetGuildMembershipApplicationCache(ctx, &callingPlayer, types.GuildJoinType_direct, msg.GuildId, msg.PlayerId)
+    if guildMembershipApplicationError != nil {
+        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
     }
 
-	// look up destination guild
-	guild, guildFound := k.GetGuild(ctx, msg.GuildId)
-
-    if (!guildFound) {
-        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Guild (%s) not found", msg.GuildId)
-    }
-
-    if (player.Id != msg.PlayerId) {
-        if (!k.PermissionHasOneOf(ctx, GetObjectPermissionIDBytes(msg.PlayerId, player.Id), types.PermissionAssociations)) {
-            return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%s) has no Player Association permissions with the Guild (%s) ", player.Id, guild.Id)
-        }
-    }
-
-    guildMembershipApplication, guildMembershipApplicationFound := k.GetGuildMembershipApplication(ctx, msg.GuildId, msg.PlayerId)
-    if (guildMembershipApplicationFound) {
-        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Membership Application already pending. Deny request or invitation first")
+    guildMembershipApplicationError = guildMembershipApplication.VerifyDirectJoin()
+    if guildMembershipApplicationError != nil {
+        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
     }
 
     var infusionMigrationList []types.Infusion
@@ -52,13 +50,13 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
     var infusionMigrationReactor []sdk.ValAddress
     var infusionMigrationAmount []math.Int
 
-    destinationReactor, destinationReactorFound := k.GetReactor(ctx, guild.PrimaryReactorId)
+    destinationReactor, destinationReactorFound := k.GetReactor(ctx, guildMembershipApplication.GetGuild().GetPrimaryReactorId())
     if (!destinationReactorFound) {
-        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Somehow this reactor (%s) doesn't exist, you should tell an adult",guild.PrimaryReactorId)
+        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Somehow this reactor (%s) doesn't exist, you should tell an adult", guildMembershipApplication.GetGuild().GetPrimaryReactorId())
     }
     destinationValidatorAccount, _ := sdk.ValAddressFromBech32(destinationReactor.Validator)
 
-    if (guild.JoinInfusionMinimum != 0) {
+    if (guildMembershipApplication.GetGuild().GetJoinInfusionMinimum() != 0) {
         var currentFuel uint64
 
         /* We're going to iterate through all the infusion records
@@ -104,12 +102,7 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 
                 */
 
-                // The amount available to move over is the amount of Fuel minus the Defusing quantity (as it's already moving)
-                redelegateAmountFuel := math.NewIntFromUint64(infusion.Fuel)
-                if redelegateAmountFuel.LT(infusion.Defusing) {
-                    return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Infusion (%s) unacceptable because Fuel less the defusing", infusionId)
-                }
-                redelegateAmount := redelegateAmountFuel.Sub(infusion.Defusing)
+                redelegateAmount := math.NewIntFromUint64(infusion.Fuel)
                 infusionMigrationAmount = append(infusionMigrationAmount, redelegateAmount)
 
                 // The validation should never fail assuming there isn't a bug in the Infusion system
@@ -136,47 +129,17 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 
         }
 
-        if (currentFuel < guild.JoinInfusionMinimum) {
+        if (currentFuel < guildMembershipApplication.GetGuild().GetJoinInfusionMinimum()) {
             return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Join Infusion Minimum not met")
         }
     }
 
-    /*
-     * We're either going to load up the substation provided as an
-     * override, or we're going to default to using the guild entry substation
-     */
-
-    var substation types.Substation
-    var substationFound bool
-
-    if (msg.SubstationId != "") {
-        // look up destination substation
-        substation, substationFound = k.GetSubstation(ctx, msg.SubstationId)
-
-        // Does the substation provided for override exist?
-        if (!substationFound) {
-            return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Substation (%s) not found", msg.SubstationId)
-        }
-
-        // Since the Guild Entry Substation is being overridden, let's make
-        // sure the player actually have authority over this substation
-        substationObjectPermissionId := GetObjectPermissionIDBytes(substation.Id, player.Id)
-        if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.PermissionGrid)) {
-            return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%s) has no Player Connect permissions on Substation (%s) used as override", player.Id, substation.Id)
-        }
-
-        guildMembershipApplication.SubstationId = substation.Id
-
-    } else {
-        guildMembershipApplication.SubstationId = guild.EntrySubstationId
-        substation, substationFound = k.GetSubstation(ctx, guildMembershipApplication.SubstationId)
-    }
-
-    guildMembershipApplication.Proposer             = player.Id
-    guildMembershipApplication.PlayerId             = msg.PlayerId
-    guildMembershipApplication.GuildId              = guild.Id
-    guildMembershipApplication.JoinType             = types.GuildJoinType_direct
-    guildMembershipApplication.RegistrationStatus   = types.RegistrationStatus_approved
+	if msg.SubstationId != "" {
+	    substationOverrideError := guildMembershipApplication.SetSubstationIdOverride(msg.SubstationId)
+	    if substationOverrideError != nil {
+	        return &types.MsgGuildMembershipResponse{}, substationOverrideError
+	    }
+	}
 
     // This seems like a safe place for this.
     // We either need to do this basically last, or undo any changes if errors occur.
@@ -211,18 +174,8 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 
     }
 
+    guildMembershipApplication.DirectJoin()
+    guildMembershipApplication.Commit()
 
-    // Look up joining account
-    targetPlayer := k.UpsertPlayer(ctx, msg.Creator)
-    targetPlayer.GuildId = msg.GuildId
-    k.SubstationConnectPlayer(ctx, substation, targetPlayer)
-
-    // TODO (Possibly) - One thing we're not doing here yet is clearing out any
-    // permissions related to the previous guild. This could get messy so doing it
-    // manually might be best. That said, perhaps it could be a configuration option
-    // for guilds to define what happens on leave.
-
-    k.EventGuildMembershipApplication(ctx, guildMembershipApplication)
-
-	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication}, nil
+	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication.GuildMembershipApplication}, nil
 }

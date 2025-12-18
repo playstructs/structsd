@@ -32,6 +32,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"structs/app"
+	"structs/cmd/structsd/cmd"
 )
 
 const (
@@ -42,6 +43,8 @@ var FlagEnableStreamingValue bool
 
 // Get flags every time the simulator is run
 func init() {
+	// Initialize SDK config with correct bech32 prefix before any modules are initialized
+	cmd.InitSDKConfig()
 	simcli.GetSimulatorFlags()
 	flag.BoolVar(&FlagEnableStreamingValue, "EnableStreaming", false, "Enable streaming service")
 }

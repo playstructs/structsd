@@ -414,7 +414,7 @@ func (cache *PlanetCache) GetLocationListStart() string {
 }
 
 func (cache *PlanetCache) GetLocationListLast() string {
-    return cache.GetPlanet().LocationListStart
+    return cache.GetPlanet().LocationListLast
 }
 
 func (cache *PlanetCache) GetEventAttackDetail() (*types.EventAttackDetail) {
@@ -462,7 +462,7 @@ func (cache *PlanetCache) SetLocationListStart(fleetId string) {
 func (cache *PlanetCache) SetLocationListLast(fleetId string) {
     if (!cache.PlanetLoaded) { cache.LoadPlanet() }
 
-    cache.Planet.LocationListStart = fleetId
+    cache.Planet.LocationListLast = fleetId
     cache.PlanetChanged = true
     cache.Changed()
 }
@@ -623,15 +623,15 @@ func (cache *PlanetCache) IsSuccessful(successRate fraction.Fraction) bool {
 
 func (cache *PlanetCache) BuildInitiateReadiness(structure *types.Struct, structType *types.StructType, ambit types.Ambit, ambitSlot uint64) (error) {
     if structure.GetOwner() != cache.GetOwnerId() {
-         sdkerrors.Wrapf(types.ErrStructAction, "Struct owner must match planet ")
+         return sdkerrors.Wrapf(types.ErrStructAction, "Struct owner must match planet ")
     }
 
     if structType.Type == types.CommandStruct {
-        sdkerrors.Wrapf(types.ErrStructAction, "Command Structs can only be built directly in the fleet")
+        return sdkerrors.Wrapf(types.ErrStructAction, "Command Structs can only be built directly in the fleet")
     }
 
     if cache.GetOwner().GetFleet().IsAway() {
-        sdkerrors.Wrapf(types.ErrStructAction, "Structs cannot be built unless Fleet is On Station")
+        return sdkerrors.Wrapf(types.ErrStructAction, "Structs cannot be built unless Fleet is On Station")
     }
 
     if !cache.GetOwner().GetFleet().HasCommandStruct() {
@@ -643,7 +643,7 @@ func (cache *PlanetCache) BuildInitiateReadiness(structure *types.Struct, struct
     }
 
     if (structType.Category != types.ObjectType_planet) {
-        sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist outside a Planet")
+        return sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist outside a Planet")
     }
 
     // Check that the Struct can exist in the specified ambit
@@ -685,15 +685,15 @@ func (cache *PlanetCache) BuildInitiateReadiness(structure *types.Struct, struct
 
 func (cache *PlanetCache) MoveReadiness(structure *StructCache, ambit types.Ambit, ambitSlot uint64) (error) {
     if structure.GetOwnerId() != cache.GetOwnerId() {
-         sdkerrors.Wrapf(types.ErrStructAction, "Struct owner must match planet ")
+         return sdkerrors.Wrapf(types.ErrStructAction, "Struct owner must match planet ")
     }
 
     if structure.GetStructType().Type == types.CommandStruct {
-        sdkerrors.Wrapf(types.ErrStructAction, "Command Structs can only be built directly in the fleet")
+        return sdkerrors.Wrapf(types.ErrStructAction, "Command Structs can only be built directly in the fleet")
     }
 
     if (structure.GetStructType().Category != types.ObjectType_planet) {
-        sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist outside a Planet" )
+        return sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist outside a Planet" )
     }
 
     // Check that the Struct can exist in the specified ambit

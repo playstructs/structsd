@@ -161,12 +161,22 @@ func TestAgreementExpirations(t *testing.T) {
 	keeper.AppendAgreement(ctx, agreement1)
 	keeper.AppendAgreement(ctx, agreement2)
 
+	// Verify agreements exist before expiration
+	_, found1 := keeper.GetAgreement(ctx, agreement1.Id)
+	require.True(t, found1)
+	_, found2 := keeper.GetAgreement(ctx, agreement2.Id)
+	require.True(t, found2)
+
 	// Test AgreementExpirations
 	keeper.AgreementExpirations(ctx)
 
 	// Verify expired agreement was handled
-	// Note: This test might need to be adjusted based on the actual implementation
-	// of how expired agreements are handled in the system
-	_, found := keeper.GetAgreement(ctx, agreement1.Id)
-	require.True(t, found) // Assuming expired agreements are not automatically removed
+	// AgreementExpirations calls Expire() which removes the agreement via RemoveAgreement
+	// The expired agreement should be removed
+	_, found1 = keeper.GetAgreement(ctx, agreement1.Id)
+	require.False(t, found1, "Expired agreement should be removed")
+
+	// The future agreement should still exist (not expired yet)
+	_, found2 = keeper.GetAgreement(ctx, agreement2.Id)
+	require.True(t, found2, "Future agreement should still exist")
 }

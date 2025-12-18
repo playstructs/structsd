@@ -16,19 +16,29 @@ import (
 func createNSubstation(t *testing.T, keeper keeper.Keeper, ctx sdk.Context, n int) []types.Substation {
 	items := make([]types.Substation, n)
 	for i := range items {
-		// Create test allocation and player
+		// Create test player first
+		player := types.Player{
+			Creator:        "creator" + string(rune(i)),
+			PrimaryAddress: "creator" + string(rune(i)),
+		}
+		player = keeper.AppendPlayer(ctx, player)
+
+		// Set up source capacity for the allocation
+		sourceId := "source" + string(rune(i))
+		keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceId), uint64(200))
+
+		// Create test allocation
 		allocation := types.Allocation{
-			SourceObjectId: "source" + string(rune(i)),
+			SourceObjectId: sourceId,
 			DestinationId:  "",
 			Type:           types.AllocationType_static,
 		}
-		player := types.Player{
-			Id:      "player" + string(rune(i)),
-			Creator: "creator" + string(rune(i)),
-		}
+		// Create the allocation first
+		createdAllocation, _, err := keeper.AppendAllocation(ctx, allocation, 100)
+		require.NoError(t, err)
 
 		// Append substation and handle returned values
-		substation, _, err := keeper.AppendSubstation(ctx, allocation, player)
+		substation, _, err := keeper.AppendSubstation(ctx, createdAllocation, player)
 		require.NoError(t, err)
 		items[i] = substation
 	}
@@ -79,16 +89,30 @@ func TestSubstationPlayerConnection(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 
 	// Create test substation
+	// First create a player for the substation owner
+	ownerPlayer := types.Player{
+		Creator:        "creator1",
+		PrimaryAddress: "creator1",
+	}
+	ownerPlayer = keeper.AppendPlayer(ctx, ownerPlayer)
+
+	// Set up source capacity for the allocation
+	keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, "source1"), uint64(200))
+
 	allocation := types.Allocation{
 		SourceObjectId: "source1",
 		DestinationId:  "",
 		Type:           types.AllocationType_static,
 	}
+	// Create the allocation first
+	createdAllocation, _, err := keeper.AppendAllocation(ctx, allocation, 100)
+	require.NoError(t, err)
+
 	player := types.Player{
-		Id:      "player1",
-		Creator: "creator1",
+		Id:      ownerPlayer.Id,
+		Creator: ownerPlayer.Creator,
 	}
-	substation, _, err := keeper.AppendSubstation(ctx, allocation, player)
+	substation, _, err := keeper.AppendSubstation(ctx, createdAllocation, player)
 	require.NoError(t, err)
 
 	// Create test player
