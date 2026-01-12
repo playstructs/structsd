@@ -543,6 +543,11 @@ func (cache *FleetCache) MigrateToNewPlanet(destination *PlanetCache) {
             newFleet := cache.K.AppendFleet(cache.Ctx, cache.GetOwner())
             cache.Fleet = newFleet
             cache.FleetLoaded = true
+
+            // Build an Initial Command Ship
+            structure := cache.K.InitialCommandShipStruct(cache.Ctx, cache.GetOwner())
+            structure.Commit()
+            cache.SetCommandStruct(structure.GetStruct())
         }
     }
 

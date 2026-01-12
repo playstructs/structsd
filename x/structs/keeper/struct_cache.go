@@ -110,6 +110,58 @@ func (k *Keeper) GetStructCacheFromId(ctx context.Context, structId string) (Str
     }
 }
 
+
+func (k *Keeper) InitialCommandShipStruct(ctx context.Context, owner *PlayerCache) (StructCache) {
+
+    structType, _ := k.GetStructType(ctx, types.CommandStructTypeId)
+
+    structure := types.CreateBaseStruct(&structType, owner.GetPrimaryAddress(), owner.GetPlayerId(), structType.Category, types.Ambit_space)
+    structure = k.AppendStruct(ctx, structure)
+
+    owner.BuildQuantityIncrement(structType.GetId())
+
+    var structStatus types.StructState
+    if owner.CanSupportLoadAddition(structType.PassiveDraw) {
+       structStatus = types.StructState(types.StructStateMaterialized | types.StructStateBuilt | types.StructStateOnline)
+    } else {
+       structStatus = types.StructState(types.StructStateMaterialized | types.StructStateBuilt )
+    }
+
+    // Start to put the pieces together
+    structCache := StructCache{
+                  StructId: structure.Id,
+                  K: k,
+                  Ctx: ctx,
+
+                  AnyChange: true,
+
+                  Structure: structure,
+                  StructureChanged: false,
+                  StructureLoaded: true,
+
+                  Owner: owner,
+                  OwnerLoaded: true,
+
+                  Fleet: owner.GetFleet(),
+                  FleetLoaded: true,
+
+                  // Include the health value
+                  HealthAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_health, structure.Id),
+                  HealthChanged: true,
+                  HealthLoaded: true,
+                  Health: structType.GetMaxHealth(),
+
+                  // Include the initial status value
+                  StatusAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_status, structure.Id),
+                  StatusChanged: true,
+                  StatusLoaded: true,
+                  Status: structStatus,
+  }
+
+    return structCache
+}
+
+
 // Build this initial Struct Cache object
 // This does no validation on the provided structId
 func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owner *PlayerCache, structType *types.StructType, ambit types.Ambit, slot uint64) (StructCache, error) {
