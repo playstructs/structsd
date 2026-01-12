@@ -89,6 +89,9 @@ func (k Keeper) DestroyStructDefender(ctx context.Context, structDefenderId stri
 func (k Keeper) RemoveStructDefender(ctx context.Context, protectedStructId string, structDefenderId string) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), DefenderKeyPrefix(protectedStructId))
 	store.Delete([]byte(structDefenderId))
+
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStructDefenderClear{&types.EventStructDefenderClearDetail{DefendingStructId: structDefenderId}})
 }
 
 // GetAllStructDefender returns all struct defenders for a specific struct
