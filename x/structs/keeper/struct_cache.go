@@ -121,7 +121,8 @@ func (k *Keeper) InitialCommandShipStruct(ctx context.Context, owner *PlayerCach
     owner.BuildQuantityIncrement(structType.GetId())
 
     var structStatus types.StructState
-    if owner.CanSupportLoadAddition(structType.PassiveDraw) {
+    if owner.CanSupportLoadAddition(structType.GetPassiveDraw()) {
+       owner.StructsLoadIncrement(structType.GetPassiveDraw())
        structStatus = types.StructState(types.StructStateMaterialized | types.StructStateBuilt | types.StructStateOnline)
     } else {
        structStatus = types.StructState(types.StructStateMaterialized | types.StructStateBuilt )
