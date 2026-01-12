@@ -35,10 +35,6 @@ func (k msgServer) StructBuildCancel(goCtx context.Context, msg *types.MsgStruct
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already built", msg.StructId)
     }
 
-    if structure.GetOwner().IsOffline(){
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",structure.GetOwnerId())
-    }
-
     structure.DestroyAndCommit()
 
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct()}, nil
