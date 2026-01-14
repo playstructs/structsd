@@ -106,7 +106,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
 				{
                     RpcMethod:      "Guild",
                     Use:            "guild [guild id]",
-                    Short:          "Show the details of a specific Allocation",
+                    Short:          "Show the details of a specific Guild",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "id"}},
                 },
                 {
@@ -559,7 +559,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                  {
                      RpcMethod:      "PlayerUpdatePrimaryAddress",
                      Use:            "player-update-primary-address [address]",
-                     Short:          "Revoke a set of permissions on from an address",
+                     Short:          "Update the primary address for a player",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "primaryAddress"}},
                  },
                  {
