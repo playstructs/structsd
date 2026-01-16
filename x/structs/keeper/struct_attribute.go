@@ -8,6 +8,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
+	storetypes "cosmossdk.io/store/types"
 
 	//sdkerrors "cosmossdk.io/errors"
 
@@ -158,4 +159,18 @@ func (k Keeper) GetStructAttributesByObject(ctx context.Context, objectId string
         IsLocked:          types.StructState(status)&types.StructStateLocked != 0,
 
   }
+}
+
+func (k Keeper) GetAllStructAttributeExport(ctx context.Context) (list []*types.StructAttributeRecord) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructAttributeKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		list = append(list, &types.StructAttributeRecord{
+			AttributeId: string(iterator.Key()),
+			Value:       binary.BigEndian.Uint64(iterator.Value()),
+		})
+	}
+	return
 }
