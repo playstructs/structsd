@@ -171,4 +171,9 @@ message StructAttributes {
 
 }
 
+message StructDestructionQueueRecord {
+  int64 sweepHeight = 1;
+  string structId = 2;
+}
+
 

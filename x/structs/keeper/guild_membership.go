@@ -6,6 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"cosmossdk.io/store/prefix"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+	storetypes "cosmossdk.io/store/types"
 	"structs/x/structs/types"
 
 	//"strconv"
@@ -44,5 +45,17 @@ func (k Keeper) EventGuildMembershipApplication(ctx context.Context, guildMember
     _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildMembershipApplication{GuildMembershipApplication: &guildMembership})
 }
 
+func (k Keeper) GetAllGuildMembershipApplicationExport(ctx context.Context) (list []types.GuildMembershipApplication) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GuildMembershipApplicationKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.GuildMembershipApplication
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		list = append(list, val)
+	}
+	return
+}
 
 

@@ -222,3 +222,14 @@ func (k Keeper) GetGridAttributesByObject(ctx context.Context, objectId string) 
 		CheckpointBlock:    k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_checkpointBlock, objectId)),
 	}
 }
+
+func (k Keeper) GetGridCascadeQueueExport(ctx context.Context) (queue []string) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueue))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		queue = append(queue, string(iterator.Key()))
+	}
+	return
+}
