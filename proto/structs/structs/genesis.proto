@@ -70,6 +70,6 @@ message GenesisState {
 
   repeated  AddressRecord       addressList     = 23;
 
-  repeated Fleet fleetList = 24;
+  repeated  Fleet               fleetList       = 24 [(gogoproto.nullable) = false];
 
 }
