@@ -3,6 +3,9 @@ package structs
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+    "strconv"
+    "strings"
+
 	"structs/x/structs/keeper"
 	"structs/x/structs/types"
 )
@@ -37,8 +40,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
     k.SetAllocationCount(ctx, genState.AllocationCount + k.GetAllocationCount(ctx))
     for _, allocation := range genState.AllocationList {
         k.ImportAllocation(ctx, allocation)
-        k.SetAllocationSourceIndex(ctx, allocation.SourceObjectId, allocation.Id)
-        k.SetAllocationDestinationIndex(ctx, allocation.DestinationId, allocation.Id)
 
         if allocation.Type == types.AllocationType_automated {
         	k.SetAutoResizeAllocationSource(ctx, allocation.Id, allocation.SourceObjectId)
@@ -49,9 +50,16 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
         k.SetInfusion(ctx, elem)
     }
 
+    for _, elem := range genState.InfusionDestructionQueue {
+        _ = k.AppendInfusionDestructionQueue(ctx, elem)
+    }
+
     k.SetGuildCount(ctx, genState.GuildCount + k.GetGuildCount(ctx))
     for _, elem := range genState.GuildList {
         k.SetGuild(ctx, elem)
+    }
+    for _, elem := range genState.GuildMembershipApplicationList {
+    	k.SetGuildMembershipApplication(ctx, elem)
     }
 
     k.SetPlanetCount(ctx, genState.PlanetCount + k.GetPlanetCount(ctx))
@@ -61,10 +69,12 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 
     // Planet attributes
     for _, elem := range genState.PlanetAttributeList {
-        k.SetPlanetAttribute(ctx, elem.AttributeId, elem.Value)
+        value := elem.Value
+        if isPlanetBlockHeightAttribute(elem.AttributeId) {
+            value = 0
+        }
+        k.SetPlanetAttribute(ctx, elem.AttributeId, value)
     }
-
-
 
     k.SetPlayerCount(ctx, genState.PlayerCount + k.GetPlayerCount(ctx))
     for _, elem := range genState.PlayerList {
@@ -85,7 +95,11 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
     // Struct attributes
     // TODO Update block based values to 0
     for _, elem := range genState.StructAttributeList {
-    	k.SetStructAttribute(ctx, elem.AttributeId, elem.Value)
+        value := elem.Value
+        if isStructBlockHeightAttribute(elem.AttributeId) {
+            value = 0
+        }
+        k.SetStructAttribute(ctx, elem.AttributeId, value)
     }
 
     // Struct defenders (after structs exist)
@@ -97,13 +111,25 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
         k.SetStructDefender(ctx, elem.ProtectedStructId, protected.Index, elem.DefendingStructId)
     }
 
+    for _, elem := range genState.StructDestructionQueue {
+    	k.SetStructDestructionQueueAtHeight(ctx, elem.SweepHeight, elem.StructId)
+    }
+
     k.SetSubstationCount(ctx, genState.SubstationCount + k.GetSubstationCount(ctx))
     for _, elem := range genState.SubstationList {
         k.SetSubstation(ctx, elem)
     }
 
     for _, elem := range genState.GridList {
-        k.SetGridAttribute(ctx, elem.AttributeId, elem.Value)
+        value := elem.Value
+        if isGridBlockHeightAttribute(elem.AttributeId) {
+            value = 0
+        }
+        k.SetGridAttribute(ctx, elem.AttributeId, value)
+    }
+
+    for _, elem := range genState.GridCascadeQueue {
+        _ = k.AppendGridCascadeQueue(ctx, elem)
     }
 
     for _, elem := range genState.PermissionList {
@@ -121,7 +147,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 
     for _, agreement := range genState.AgreementList {
         k.ImportAgreement(ctx, agreement)
-        k.SetAgreementProviderIndex(ctx, agreement.ProviderId, agreement.Id)
         k.SetAgreementExpirationIndex(ctx, agreement.EndBlock, agreement.Id)
     }
 
@@ -129,6 +154,9 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
     for _, elem := range genState.FleetList {
         k.SetFleet(ctx, elem)
     }
+
+    // Struct destruction queue (restore exact sweep height)
+
 
 }
 
@@ -189,3 +217,56 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 }
 
 
+func parseAttributeTypeId(attributeId string) (uint64, bool) {
+    parts := strings.SplitN(attributeId, "-", 2)
+    if len(parts) == 0 {
+        return 0, false
+    }
+    id, err := strconv.ParseUint(parts[0], 10, 64)
+    if err != nil {
+        return 0, false
+    }
+    return id, true
+}
+
+func isGridBlockHeightAttribute(attributeId string) bool {
+    attrId, ok := parseAttributeTypeId(attributeId)
+    if !ok {
+        return false
+    }
+    switch types.GridAttributeType(attrId) {
+    case types.GridAttributeType_lastAction,
+        types.GridAttributeType_checkpointBlock:
+        return true
+    default:
+        return false
+    }
+}
+
+func isStructBlockHeightAttribute(attributeId string) bool {
+    attrId, ok := parseAttributeTypeId(attributeId)
+    if !ok {
+        return false
+    }
+    switch types.StructAttributeType(attrId) {
+    case types.StructAttributeType_blockStartBuild,
+        types.StructAttributeType_blockStartOreMine,
+        types.StructAttributeType_blockStartOreRefine:
+        return true
+    default:
+        return false
+    }
+}
+
+func isPlanetBlockHeightAttribute(attributeId string) bool {
+    attrId, ok := parseAttributeTypeId(attributeId)
+    if !ok {
+        return false
+    }
+    switch types.PlanetAttributeType(attrId) {
+    case types.PlanetAttributeType_blockStartRaid:
+        return true
+    default:
+        return false
+    }
+}
