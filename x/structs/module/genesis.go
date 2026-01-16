@@ -34,8 +34,14 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
         k.SetPlayerIndexForAddress(ctx, elem.Address, elem.PlayerIndex)
     }
 
-    for _, elem := range genState.AllocationList {
-        k.ImportAllocation(ctx, elem)
+    for _, allocation := range genState.AllocationList {
+        k.ImportAllocation(ctx, allocation)
+        k.SetAllocationSourceIndex(ctx, allocation.SourceObjectId, allocation.Id)
+        k.SetAllocationDestinationIndex(ctx, allocation.DestinationId, allocation.Id)
+
+        if allocation.Type == types.AllocationType_automated {
+        	k.SetAutoResizeAllocationSource(ctx, allocation.Id, allocation.SourceObjectId)
+        }
     }
 
     for _, elem := range genState.InfusionList {
@@ -52,6 +58,12 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
         k.SetPlanet(ctx, elem)
     }
 
+    // Planet attributes
+    for _, elem := range genState.PlanetAttributeList {
+        k.SetPlanetAttribute(ctx, elem.AttributeId, elem.Value)
+    }
+
+
 
     k.SetPlayerCount(ctx, genState.PlayerCount + k.GetPlayerCount(ctx))
     for _, elem := range genState.PlayerList {
@@ -67,6 +79,20 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
     k.SetStructCount(ctx, genState.StructCount + k.GetStructCount(ctx))
     for _, elem := range genState.StructList {
         k.SetStruct(ctx, elem)
+    }
+    // Struct attributes
+    // TODO Update block based values to 0
+    for _, elem := range genState.StructAttributeList {
+    	k.SetStructAttribute(ctx, elem.AttributeId, elem.Value)
+    }
+
+    // Struct defenders (after structs exist)
+    for _, elem := range genState.StructDefenderList {
+        protected, found := k.GetStruct(ctx, elem.ProtectedStructId)
+        if !found {
+            continue
+        }
+        k.SetStructDefender(ctx, elem.ProtectedStructId, protected.Index, elem.DefendingStructId)
     }
 
     k.SetSubstationCount(ctx, genState.SubstationCount + k.GetSubstationCount(ctx))
@@ -86,9 +112,20 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
     for _, elem := range genState.ProviderList {
         k.ImportProvider(ctx, elem)
     }
+    // Provider guild access
+    for _, elem := range genState.ProviderGuildAccessList {
+        k.ProviderGrantGuild(ctx, elem.ProviderId, elem.GuildId)
+    }
 
-    for _, elem := range genState.AgreementList {
-        k.ImportAgreement(ctx, elem)
+    for _, agreement := range genState.AgreementList {
+        k.ImportAgreement(ctx, agreement)
+        k.SetAgreementProviderIndex(ctx, agreement.ProviderId, agreement.Id)
+        k.SetAgreementExpirationIndex(ctx, agreement.EndBlock, agreement.Id)
+    }
+
+    // Fleet
+    for _, elem := range genState.FleetList {
+        k.SetFleet(ctx, elem)
     }
 
 }
