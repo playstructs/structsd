@@ -7087,6 +7087,474 @@ func (x *fastReflection_StructAttributes) ProtoMethods() *protoiface.Methods {
 	}
 }
 
+var (
+	md_StructDestructionQueueRecord             protoreflect.MessageDescriptor
+	fd_StructDestructionQueueRecord_sweepHeight protoreflect.FieldDescriptor
+	fd_StructDestructionQueueRecord_structId    protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_struct_proto_init()
+	md_StructDestructionQueueRecord = File_structs_structs_struct_proto.Messages().ByName("StructDestructionQueueRecord")
+	fd_StructDestructionQueueRecord_sweepHeight = md_StructDestructionQueueRecord.Fields().ByName("sweepHeight")
+	fd_StructDestructionQueueRecord_structId = md_StructDestructionQueueRecord.Fields().ByName("structId")
+}
+
+var _ protoreflect.Message = (*fastReflection_StructDestructionQueueRecord)(nil)
+
+type fastReflection_StructDestructionQueueRecord StructDestructionQueueRecord
+
+func (x *StructDestructionQueueRecord) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_StructDestructionQueueRecord)(x)
+}
+
+func (x *StructDestructionQueueRecord) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_struct_proto_msgTypes[6]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_StructDestructionQueueRecord_messageType fastReflection_StructDestructionQueueRecord_messageType
+var _ protoreflect.MessageType = fastReflection_StructDestructionQueueRecord_messageType{}
+
+type fastReflection_StructDestructionQueueRecord_messageType struct{}
+
+func (x fastReflection_StructDestructionQueueRecord_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_StructDestructionQueueRecord)(nil)
+}
+func (x fastReflection_StructDestructionQueueRecord_messageType) New() protoreflect.Message {
+	return new(fastReflection_StructDestructionQueueRecord)
+}
+func (x fastReflection_StructDestructionQueueRecord_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_StructDestructionQueueRecord
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_StructDestructionQueueRecord) Descriptor() protoreflect.MessageDescriptor {
+	return md_StructDestructionQueueRecord
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_StructDestructionQueueRecord) Type() protoreflect.MessageType {
+	return _fastReflection_StructDestructionQueueRecord_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_StructDestructionQueueRecord) New() protoreflect.Message {
+	return new(fastReflection_StructDestructionQueueRecord)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_StructDestructionQueueRecord) Interface() protoreflect.ProtoMessage {
+	return (*StructDestructionQueueRecord)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_StructDestructionQueueRecord) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.SweepHeight != int64(0) {
+		value := protoreflect.ValueOfInt64(x.SweepHeight)
+		if !f(fd_StructDestructionQueueRecord_sweepHeight, value) {
+			return
+		}
+	}
+	if x.StructId != "" {
+		value := protoreflect.ValueOfString(x.StructId)
+		if !f(fd_StructDestructionQueueRecord_structId, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_StructDestructionQueueRecord) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.StructDestructionQueueRecord.sweepHeight":
+		return x.SweepHeight != int64(0)
+	case "structs.structs.StructDestructionQueueRecord.structId":
+		return x.StructId != ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDestructionQueueRecord"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructDestructionQueueRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructDestructionQueueRecord) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.StructDestructionQueueRecord.sweepHeight":
+		x.SweepHeight = int64(0)
+	case "structs.structs.StructDestructionQueueRecord.structId":
+		x.StructId = ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDestructionQueueRecord"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructDestructionQueueRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_StructDestructionQueueRecord) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.StructDestructionQueueRecord.sweepHeight":
+		value := x.SweepHeight
+		return protoreflect.ValueOfInt64(value)
+	case "structs.structs.StructDestructionQueueRecord.structId":
+		value := x.StructId
+		return protoreflect.ValueOfString(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDestructionQueueRecord"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructDestructionQueueRecord does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructDestructionQueueRecord) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.StructDestructionQueueRecord.sweepHeight":
+		x.SweepHeight = value.Int()
+	case "structs.structs.StructDestructionQueueRecord.structId":
+		x.StructId = value.Interface().(string)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDestructionQueueRecord"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructDestructionQueueRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructDestructionQueueRecord) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.StructDestructionQueueRecord.sweepHeight":
+		panic(fmt.Errorf("field sweepHeight of message structs.structs.StructDestructionQueueRecord is not mutable"))
+	case "structs.structs.StructDestructionQueueRecord.structId":
+		panic(fmt.Errorf("field structId of message structs.structs.StructDestructionQueueRecord is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDestructionQueueRecord"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructDestructionQueueRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_StructDestructionQueueRecord) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.StructDestructionQueueRecord.sweepHeight":
+		return protoreflect.ValueOfInt64(int64(0))
+	case "structs.structs.StructDestructionQueueRecord.structId":
+		return protoreflect.ValueOfString("")
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.StructDestructionQueueRecord"))
+		}
+		panic(fmt.Errorf("message structs.structs.StructDestructionQueueRecord does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_StructDestructionQueueRecord) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.StructDestructionQueueRecord", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_StructDestructionQueueRecord) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_StructDestructionQueueRecord) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_StructDestructionQueueRecord) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_StructDestructionQueueRecord) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*StructDestructionQueueRecord)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.SweepHeight != 0 {
+			n += 1 + runtime.Sov(uint64(x.SweepHeight))
+		}
+		l = len(x.StructId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*StructDestructionQueueRecord)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.StructId) > 0 {
+			i -= len(x.StructId)
+			copy(dAtA[i:], x.StructId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.StructId)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if x.SweepHeight != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SweepHeight))
+			i--
+			dAtA[i] = 0x8
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*StructDestructionQueueRecord)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: StructDestructionQueueRecord: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: StructDestructionQueueRecord: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SweepHeight", wireType)
+				}
+				x.SweepHeight = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.SweepHeight |= int64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field StructId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.StructId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
 // Code generated by protoc-gen-go. DO NOT EDIT.
 // versions:
 // 	protoc-gen-go v1.27.0
@@ -8021,6 +8489,49 @@ func (x *StructAttributes) GetIsLocked() bool {
 	return false
 }
 
+type StructDestructionQueueRecord struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	SweepHeight int64  `protobuf:"varint,1,opt,name=sweepHeight,proto3" json:"sweepHeight,omitempty"`
+	StructId    string `protobuf:"bytes,2,opt,name=structId,proto3" json:"structId,omitempty"`
+}
+
+func (x *StructDestructionQueueRecord) Reset() {
+	*x = StructDestructionQueueRecord{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_struct_proto_msgTypes[6]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *StructDestructionQueueRecord) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StructDestructionQueueRecord) ProtoMessage() {}
+
+// Deprecated: Use StructDestructionQueueRecord.ProtoReflect.Descriptor instead.
+func (*StructDestructionQueueRecord) Descriptor() ([]byte, []int) {
+	return file_structs_structs_struct_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *StructDestructionQueueRecord) GetSweepHeight() int64 {
+	if x != nil {
+		return x.SweepHeight
+	}
+	return 0
+}
+
+func (x *StructDestructionQueueRecord) GetStructId() string {
+	if x != nil {
+		return x.StructId
+	}
+	return ""
+}
+
 var File_structs_structs_struct_proto protoreflect.FileDescriptor
 
 var file_structs_structs_struct_proto_rawDesc = []byte{
@@ -8340,18 +8851,24 @@ var file_structs_structs_struct_proto_rawDesc = []byte{
 	0x69, 0x73, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x18, 0x0c, 0x20, 0x01, 0x28,
 	0x08, 0x52, 0x0b, 0x69, 0x73, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x12, 0x1a,
 	0x0a, 0x08, 0x69, 0x73, 0x4c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x18, 0x0d, 0x20, 0x01, 0x28, 0x08,
-	0x52, 0x08, 0x69, 0x73, 0x4c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63,
-	0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x42, 0x0b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50,
-	0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f,
-	0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c,
-	0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x52, 0x08, 0x69, 0x73, 0x4c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x22, 0x5c, 0x0a, 0x1c, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x51,
+	0x75, 0x65, 0x75, 0x65, 0x52, 0x65, 0x63, 0x6f, 0x72, 0x64, 0x12, 0x20, 0x0a, 0x0b, 0x73, 0x77,
+	0x65, 0x65, 0x70, 0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x03, 0x52,
+	0x0b, 0x73, 0x77, 0x65, 0x65, 0x70, 0x48, 0x65, 0x69, 0x67, 0x68, 0x74, 0x12, 0x1a, 0x0a, 0x08,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x42, 0x0b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a,
+	0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70,
+	0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50,
+	0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72,
+	0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -8366,41 +8883,42 @@ func file_structs_structs_struct_proto_rawDescGZIP() []byte {
 	return file_structs_structs_struct_proto_rawDescData
 }
 
-var file_structs_structs_struct_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_structs_structs_struct_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_structs_structs_struct_proto_goTypes = []interface{}{
-	(*Struct)(nil),                // 0: structs.structs.Struct
-	(*StructType)(nil),            // 1: structs.structs.StructType
-	(*StructDefender)(nil),        // 2: structs.structs.StructDefender
-	(*StructDefenders)(nil),       // 3: structs.structs.StructDefenders
-	(*StructAttributeRecord)(nil), // 4: structs.structs.StructAttributeRecord
-	(*StructAttributes)(nil),      // 5: structs.structs.StructAttributes
-	(ObjectType)(0),               // 6: structs.structs.objectType
-	(Ambit)(0),                    // 7: structs.structs.ambit
-	(TechActiveWeaponry)(0),       // 8: structs.structs.techActiveWeaponry
-	(TechWeaponControl)(0),        // 9: structs.structs.techWeaponControl
-	(TechPassiveWeaponry)(0),      // 10: structs.structs.techPassiveWeaponry
-	(TechUnitDefenses)(0),         // 11: structs.structs.techUnitDefenses
-	(TechOreReserveDefenses)(0),   // 12: structs.structs.techOreReserveDefenses
-	(TechPlanetaryDefenses)(0),    // 13: structs.structs.techPlanetaryDefenses
-	(TechPlanetaryMining)(0),      // 14: structs.structs.techPlanetaryMining
-	(TechPlanetaryRefineries)(0),  // 15: structs.structs.techPlanetaryRefineries
-	(TechPowerGeneration)(0),      // 16: structs.structs.techPowerGeneration
+	(*Struct)(nil),                       // 0: structs.structs.Struct
+	(*StructType)(nil),                   // 1: structs.structs.StructType
+	(*StructDefender)(nil),               // 2: structs.structs.StructDefender
+	(*StructDefenders)(nil),              // 3: structs.structs.StructDefenders
+	(*StructAttributeRecord)(nil),        // 4: structs.structs.StructAttributeRecord
+	(*StructAttributes)(nil),             // 5: structs.structs.StructAttributes
+	(*StructDestructionQueueRecord)(nil), // 6: structs.structs.StructDestructionQueueRecord
+	(ObjectType)(0),                      // 7: structs.structs.objectType
+	(Ambit)(0),                           // 8: structs.structs.ambit
+	(TechActiveWeaponry)(0),              // 9: structs.structs.techActiveWeaponry
+	(TechWeaponControl)(0),               // 10: structs.structs.techWeaponControl
+	(TechPassiveWeaponry)(0),             // 11: structs.structs.techPassiveWeaponry
+	(TechUnitDefenses)(0),                // 12: structs.structs.techUnitDefenses
+	(TechOreReserveDefenses)(0),          // 13: structs.structs.techOreReserveDefenses
+	(TechPlanetaryDefenses)(0),           // 14: structs.structs.techPlanetaryDefenses
+	(TechPlanetaryMining)(0),             // 15: structs.structs.techPlanetaryMining
+	(TechPlanetaryRefineries)(0),         // 16: structs.structs.techPlanetaryRefineries
+	(TechPowerGeneration)(0),             // 17: structs.structs.techPowerGeneration
 }
 var file_structs_structs_struct_proto_depIdxs = []int32{
-	6,  // 0: structs.structs.Struct.locationType:type_name -> structs.structs.objectType
-	7,  // 1: structs.structs.Struct.operatingAmbit:type_name -> structs.structs.ambit
-	6,  // 2: structs.structs.StructType.category:type_name -> structs.structs.objectType
-	8,  // 3: structs.structs.StructType.primaryWeapon:type_name -> structs.structs.techActiveWeaponry
-	9,  // 4: structs.structs.StructType.primaryWeaponControl:type_name -> structs.structs.techWeaponControl
-	8,  // 5: structs.structs.StructType.secondaryWeapon:type_name -> structs.structs.techActiveWeaponry
-	9,  // 6: structs.structs.StructType.secondaryWeaponControl:type_name -> structs.structs.techWeaponControl
-	10, // 7: structs.structs.StructType.passiveWeaponry:type_name -> structs.structs.techPassiveWeaponry
-	11, // 8: structs.structs.StructType.unitDefenses:type_name -> structs.structs.techUnitDefenses
-	12, // 9: structs.structs.StructType.oreReserveDefenses:type_name -> structs.structs.techOreReserveDefenses
-	13, // 10: structs.structs.StructType.planetaryDefenses:type_name -> structs.structs.techPlanetaryDefenses
-	14, // 11: structs.structs.StructType.planetaryMining:type_name -> structs.structs.techPlanetaryMining
-	15, // 12: structs.structs.StructType.planetaryRefinery:type_name -> structs.structs.techPlanetaryRefineries
-	16, // 13: structs.structs.StructType.powerGeneration:type_name -> structs.structs.techPowerGeneration
+	7,  // 0: structs.structs.Struct.locationType:type_name -> structs.structs.objectType
+	8,  // 1: structs.structs.Struct.operatingAmbit:type_name -> structs.structs.ambit
+	7,  // 2: structs.structs.StructType.category:type_name -> structs.structs.objectType
+	9,  // 3: structs.structs.StructType.primaryWeapon:type_name -> structs.structs.techActiveWeaponry
+	10, // 4: structs.structs.StructType.primaryWeaponControl:type_name -> structs.structs.techWeaponControl
+	9,  // 5: structs.structs.StructType.secondaryWeapon:type_name -> structs.structs.techActiveWeaponry
+	10, // 6: structs.structs.StructType.secondaryWeaponControl:type_name -> structs.structs.techWeaponControl
+	11, // 7: structs.structs.StructType.passiveWeaponry:type_name -> structs.structs.techPassiveWeaponry
+	12, // 8: structs.structs.StructType.unitDefenses:type_name -> structs.structs.techUnitDefenses
+	13, // 9: structs.structs.StructType.oreReserveDefenses:type_name -> structs.structs.techOreReserveDefenses
+	14, // 10: structs.structs.StructType.planetaryDefenses:type_name -> structs.structs.techPlanetaryDefenses
+	15, // 11: structs.structs.StructType.planetaryMining:type_name -> structs.structs.techPlanetaryMining
+	16, // 12: structs.structs.StructType.planetaryRefinery:type_name -> structs.structs.techPlanetaryRefineries
+	17, // 13: structs.structs.StructType.powerGeneration:type_name -> structs.structs.techPowerGeneration
 	2,  // 14: structs.structs.StructDefenders.structDefenders:type_name -> structs.structs.StructDefender
 	15, // [15:15] is the sub-list for method output_type
 	15, // [15:15] is the sub-list for method input_type
@@ -8488,6 +9006,18 @@ func file_structs_structs_struct_proto_init() {
 				return nil
 			}
 		}
+		file_structs_structs_struct_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*StructDestructionQueueRecord); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -8495,7 +9025,7 @@ func file_structs_structs_struct_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_structs_structs_struct_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

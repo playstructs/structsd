@@ -146,11 +146,13 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.AllocationList = k.GetAllAllocation(ctx)
 
 	genesis.InfusionList = k.GetAllInfusion(ctx)
+	genesis.InfusionDestructionQueue = k.GetInfusionDestructionQueueExport(ctx)
 
     genesis.FleetList = k.GetAllFleet(ctx)
 
 	genesis.GuildList = k.GetAllGuild(ctx)
 	genesis.GuildCount = k.GetGuildCount(ctx)
+    genesis.GuildMembershipApplicationList = k.GetAllGuildMembershipApplicationExport(ctx)
 
 	genesis.PlanetList = k.GetAllPlanet(ctx)
 	genesis.PlanetCount = k.GetPlanetCount(ctx)
@@ -171,11 +173,14 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
     genesis.StructCount = k.GetStructCount(ctx)
     genesis.StructAttributeList = k.GetAllStructAttributeExport(ctx)
     genesis.StructDefenderList = k.GetAllStructDefenderExport(ctx)
+    genesis.StructDestructionQueue = k.GetStructDestructionQueueExport(ctx)
 
 	genesis.SubstationList = k.GetAllSubstation(ctx)
 	genesis.SubstationCount = k.GetSubstationCount(ctx)
 
 	genesis.GridList        = k.GetAllGridExport(ctx)
+	genesis.GridCascadeQueue = k.GetGridCascadeQueueExport(ctx)
+
 	genesis.PermissionList  = k.GetAllPermissionExport(ctx)
 
 	// this line is used by starport scaffolding # genesis/module/export

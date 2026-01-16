@@ -228,3 +228,14 @@ func (k Keeper) DestroyAllInfusions(ctx context.Context, infusions []types.Infus
         k.DestroyInfusion(ctx, infusion)
      }
 }
+
+func (k Keeper) GetInfusionDestructionQueueExport(ctx context.Context) (queue []string) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionDestructionQueue))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		queue = append(queue, string(iterator.Key()))
+	}
+	return
+}

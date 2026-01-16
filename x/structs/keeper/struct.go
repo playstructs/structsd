@@ -6,7 +6,7 @@ import (
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"cosmossdk.io/store/prefix"
 	storetypes "cosmossdk.io/store/types"
-
+    "strings"
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -221,4 +221,35 @@ func (k Keeper) StructSweepDestroyed(ctx context.Context) {
 
         store.Delete(iterator.Key())
 	}
+}
+
+func (k Keeper) GetStructDestructionQueueExport(ctx context.Context) (list []*types.StructDestructionQueueRecord) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructDestroyedQueueKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		// key format: "{sweepHeight}/{structId}"
+		key := string(iterator.Key())
+		parts := strings.SplitN(key, "/", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		sweepHeight, err := strconv.ParseInt(parts[0], 10, 64)
+		if err != nil {
+			continue
+		}
+		list = append(list, &types.StructDestructionQueueRecord{
+			SweepHeight: sweepHeight,
+			StructId:    parts[1],
+		})
+	}
+	return
+}
+
+func (k Keeper) SetStructDestructionQueueAtHeight(ctx context.Context, sweepHeight int64, structId string) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)),
+		StructDestructionQueueReadKeyPrefix(sweepHeight),
+	)
+	store.Set([]byte(structId), []byte{})
 }
