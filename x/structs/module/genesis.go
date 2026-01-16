@@ -172,6 +172,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.AgreementList = k.GetAllAgreement(ctx)
 
 	genesis.AllocationList = k.GetAllAllocation(ctx)
+	genesis.AllocationCount = k.GetAllocationCount(ctx)
 
 	genesis.InfusionList = k.GetAllInfusion(ctx)
 	genesis.InfusionDestructionQueue = k.GetInfusionDestructionQueueExport(ctx)
