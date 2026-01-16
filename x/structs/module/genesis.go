@@ -34,6 +34,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
         k.SetPlayerIndexForAddress(ctx, elem.Address, elem.PlayerIndex)
     }
 
+    k.SetAllocationCount(ctx, genState.AllocationCount + k.GetAllocationCount(ctx))
     for _, allocation := range genState.AllocationList {
         k.ImportAllocation(ctx, allocation)
         k.SetAllocationSourceIndex(ctx, allocation.SourceObjectId, allocation.Id)
@@ -74,6 +75,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
     k.SetReactorCount(ctx, genState.ReactorCount + k.GetReactorCount(ctx))
     for _, elem := range genState.ReactorList {
         k.SetReactor(ctx, elem)
+        k.SetReactorValidatorBytes(ctx, elem.Id, elem.RawAddress)
     }
 
     k.SetStructCount(ctx, genState.StructCount + k.GetStructCount(ctx))
