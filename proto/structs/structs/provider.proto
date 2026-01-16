@@ -48,3 +48,8 @@ message Provider {
   string owner    = 13;
 
 }
+
+message ProviderGuildAccessRecord {
+  string providerId = 1;
+  string guildId = 2;
+}

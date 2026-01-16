@@ -3,6 +3,7 @@ package keeper
 import (
 	"context"
 	"encoding/binary"
+	"strings"
 
 	"cosmossdk.io/store/prefix"
 	storetypes "cosmossdk.io/store/types"
@@ -192,4 +193,23 @@ func (k Keeper) ProviderGuildAccessAllowed(ctx context.Context, providerId strin
 
 	// doesn't exist: no element
 	return bz != nil && binary.BigEndian.Uint64(bz) != 0
+}
+
+func (k Keeper) GetAllProviderGuildAccessExport(ctx context.Context) (list []*types.ProviderGuildAccessRecord) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.ProviderGuildAccessKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		key := string(iterator.Key()) // "providerId/guildId"
+		parts := strings.SplitN(key, "/", 2)
+		if len(parts) != 2 {
+			continue
+		}
+		list = append(list, &types.ProviderGuildAccessRecord{
+			ProviderId: parts[0],
+			GuildId:    parts[1],
+		})
+	}
+	return
 }

@@ -8,6 +8,7 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
+	storetypes "cosmossdk.io/store/types"
 
 	//sdkerrors "cosmossdk.io/errors"
 
@@ -124,4 +125,18 @@ func (k Keeper) GetPlanetAttributesByObject(ctx context.Context, objectId string
 
         BlockStartRaid:                         k.GetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_blockStartRaid, objectId)),
   }
+}
+
+func (k Keeper) GetAllPlanetAttributeExport(ctx context.Context) (list []*types.PlanetAttributeRecord) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlanetAttributeKey))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		list = append(list, &types.PlanetAttributeRecord{
+			AttributeId: string(iterator.Key()),
+			Value:       binary.BigEndian.Uint64(iterator.Value()),
+		})
+	}
+	return
 }

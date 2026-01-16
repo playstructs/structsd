@@ -10,6 +10,7 @@ import "structs/structs/params.proto";
 import "structs/structs/address.proto";
 import "structs/structs/agreement.proto";
 import "structs/structs/allocation.proto";
+import "structs/structs/fleet.proto";
 import "structs/structs/grid.proto";
 import "structs/structs/guild.proto";
 import "structs/structs/infusion.proto";
@@ -40,22 +41,26 @@ message GenesisState {
   repeated  Guild      guildList        = 6 [(gogoproto.nullable) = false];
             uint64     guildCount       = 7;
 
-  repeated  Planet     planetList       = 8 [(gogoproto.nullable) = false];
-            uint64     planetCount      = 9;
+  repeated  Planet                planetList            = 8 [(gogoproto.nullable) = false];
+            uint64                planetCount           = 9;
+  repeated  PlanetAttributeRecord planetAttributeList   = 25;
 
   repeated  Player     playerList       = 10 [(gogoproto.nullable) = false];
   repeated  string     playerHalted     = 11;
             uint64     playerCount      = 12;
 
 
-  repeated  Provider   providerList   =  13 [(gogoproto.nullable) = false];
-            uint64     providerCount  =  14;
+  repeated  Provider                  providerList            = 13 [(gogoproto.nullable) = false];
+            uint64                    providerCount           = 14;
+  repeated  ProviderGuildAccessRecord providerGuildAccessList = 28;
 
   repeated  Reactor    reactorList      =  15 [(gogoproto.nullable) = false];
             uint64     reactorCount     =  16;
 
-  repeated  Struct     structList       =  17 [(gogoproto.nullable) = false];
-            uint64     structCount      =  18;
+  repeated  Struct                  structList          = 17 [(gogoproto.nullable) = false];
+            uint64                  structCount         = 18;
+  repeated  StructAttributeRecord   structAttributeList = 26;
+  repeated  StructDefender          structDefenderList  = 27;
 
   repeated  Substation substationList   =  19 [(gogoproto.nullable) = false];
             uint64     substationCount  =  20;
@@ -65,5 +70,6 @@ message GenesisState {
 
   repeated  AddressRecord       addressList     = 23;
 
-}
+  repeated  Fleet               fleetList       = 24 [(gogoproto.nullable) = false];
 
+}
