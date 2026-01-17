@@ -5,6 +5,7 @@ import (
 	abci "github.com/cometbft/cometbft/abci/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
+	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
 
 // BeginBlocker will persist the current header and validator set as a historical entry
@@ -96,7 +97,105 @@ func (k *Keeper) EventAllGenesis(ctx context.Context) {
         _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStructType{StructType: &structType})
     }
 
-	// Banking
+    // Allocation
+    allocations := k.GetAllAllocation(ctx)
+    for _, allocation := range allocations {
+        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAllocation{Allocation: &allocation})
+    }
 
+    // Agreement
+    agreements := k.GetAllAgreement(ctx)
+    for _, agreement := range agreements {
+        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventAgreement{Agreement: &agreement})
+    }
+
+    // Fleet
+    fleets := k.GetAllFleet(ctx)
+    for _, fleet := range fleets {
+        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventFleet{Fleet: &fleet})
+    }
+
+    // Guild (+ bank addresses)
+    guilds := k.GetAllGuild(ctx)
+    for _, guild := range guilds {
+        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuild{Guild: &guild})
+        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildBankAddress{
+            &types.EventGuildBankAddressDetail{
+                GuildId:            guild.Id,
+                BankCollateralPool: authtypes.NewModuleAddress(types.GuildBankCollateralPool + guild.Id).String(),
+                BankTokenPool:      types.ModuleName,
+            },
+        })
+    }
+
+
+    // Planet
+    planets := k.GetAllPlanet(ctx)
+    for _, planet := range planets {
+        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPlanet{Planet: &planet})
+    }
+
+    // Planet attributes
+    planetAttrs := k.GetAllPlanetAttributeExport(ctx)
+    for _, attr := range planetAttrs {
+        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPlanetAttribute{attr})
+    }
+
+    // Provider (+ addresses)
+    providers := k.GetAllProvider(ctx)
+    for _, provider := range providers {
+        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProvider{Provider: &provider})
+        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProviderAddress{
+            &types.EventProviderAddressDetail{
+                ProviderId:     provider.Id,
+                CollateralPool: authtypes.NewModuleAddress(types.ProviderCollateralPool + provider.Id).String(),
+                EarningPool:    authtypes.NewModuleAddress(types.ProviderEarningsPool + provider.Id).String(),
+            },
+        })
+    }
+
+    // Provider guild access
+    providerAccess := k.GetAllProviderGuildAccessExport(ctx)
+    for _, entry := range providerAccess {
+        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProviderGrantGuild{
+            &types.EventProviderGrantGuildDetail{ProviderId: entry.ProviderId, GuildId: entry.GuildId},
+        })
+    }
+
+    // Struct
+    structs := k.GetAllStruct(ctx)
+    for _, s := range structs {
+        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &s})
+    }
+
+    // Struct attributes
+    structAttrs := k.GetAllStructAttributeExport(ctx)
+    for _, attr := range structAttrs {
+        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStructAttribute{attr})
+    }
+
+    // Struct defenders
+    defenders := k.GetAllStructDefenderExport(ctx)
+    for _, d := range defenders {
+        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStructDefender{StructDefender: d})
+    }
+
+    // Substation
+    substations := k.GetAllSubstation(ctx)
+    for _, s := range substations {
+        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventSubstation{Substation: &s})
+    }
+
+    // Guild membership applications
+    apps := k.GetAllGuildMembershipApplicationExport(ctx)
+    for _, app := range apps {
+        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildMembershipApplication{GuildMembershipApplication: &app})
+    }
+
+    // Halted players
+    halted := k.GetAllHaltedPlayerId(ctx)
+    for _, playerId := range halted {
+        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPlayerHalted{PlayerId: playerId})
+    }
 
 }
