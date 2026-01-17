@@ -3,6 +3,9 @@ package structs
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
+    "strconv"
+    "strings"
+
 	"structs/x/structs/keeper"
 	"structs/x/structs/types"
 )
@@ -34,17 +37,29 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
         k.SetPlayerIndexForAddress(ctx, elem.Address, elem.PlayerIndex)
     }
 
-    for _, elem := range genState.AllocationList {
-        k.ImportAllocation(ctx, elem)
+    k.SetAllocationCount(ctx, genState.AllocationCount + k.GetAllocationCount(ctx))
+    for _, allocation := range genState.AllocationList {
+        k.ImportAllocation(ctx, allocation)
+
+        if allocation.Type == types.AllocationType_automated {
+        	k.SetAutoResizeAllocationSource(ctx, allocation.Id, allocation.SourceObjectId)
+        }
     }
 
     for _, elem := range genState.InfusionList {
         k.SetInfusion(ctx, elem)
     }
 
+    for _, elem := range genState.InfusionDestructionQueue {
+        _ = k.AppendInfusionDestructionQueue(ctx, elem)
+    }
+
     k.SetGuildCount(ctx, genState.GuildCount + k.GetGuildCount(ctx))
     for _, elem := range genState.GuildList {
         k.SetGuild(ctx, elem)
+    }
+    for _, elem := range genState.GuildMembershipApplicationList {
+    	k.SetGuildMembershipApplication(ctx, elem)
     }
 
     k.SetPlanetCount(ctx, genState.PlanetCount + k.GetPlanetCount(ctx))
@@ -52,6 +67,14 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
         k.SetPlanet(ctx, elem)
     }
 
+    // Planet attributes
+    for _, elem := range genState.PlanetAttributeList {
+        value := elem.Value
+        if isPlanetBlockHeightAttribute(elem.AttributeId) {
+            value = 0
+        }
+        k.SetPlanetAttribute(ctx, elem.AttributeId, value)
+    }
 
     k.SetPlayerCount(ctx, genState.PlayerCount + k.GetPlayerCount(ctx))
     for _, elem := range genState.PlayerList {
@@ -62,11 +85,34 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
     k.SetReactorCount(ctx, genState.ReactorCount + k.GetReactorCount(ctx))
     for _, elem := range genState.ReactorList {
         k.SetReactor(ctx, elem)
+        k.SetReactorValidatorBytes(ctx, elem.Id, elem.RawAddress)
     }
 
     k.SetStructCount(ctx, genState.StructCount + k.GetStructCount(ctx))
     for _, elem := range genState.StructList {
         k.SetStruct(ctx, elem)
+    }
+    // Struct attributes
+    // TODO Update block based values to 0
+    for _, elem := range genState.StructAttributeList {
+        value := elem.Value
+        if isStructBlockHeightAttribute(elem.AttributeId) {
+            value = 0
+        }
+        k.SetStructAttribute(ctx, elem.AttributeId, value)
+    }
+
+    // Struct defenders (after structs exist)
+    for _, elem := range genState.StructDefenderList {
+        protected, found := k.GetStruct(ctx, elem.ProtectedStructId)
+        if !found {
+            continue
+        }
+        k.SetStructDefender(ctx, elem.ProtectedStructId, protected.Index, elem.DefendingStructId)
+    }
+
+    for _, elem := range genState.StructDestructionQueue {
+    	k.SetStructDestructionQueueAtHeight(ctx, elem.SweepHeight, elem.StructId)
     }
 
     k.SetSubstationCount(ctx, genState.SubstationCount + k.GetSubstationCount(ctx))
@@ -75,7 +121,15 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
     }
 
     for _, elem := range genState.GridList {
-        k.SetGridAttribute(ctx, elem.AttributeId, elem.Value)
+        value := elem.Value
+        if isGridBlockHeightAttribute(elem.AttributeId) {
+            value = 0
+        }
+        k.SetGridAttribute(ctx, elem.AttributeId, value)
+    }
+
+    for _, elem := range genState.GridCascadeQueue {
+        _ = k.AppendGridCascadeQueue(ctx, elem)
     }
 
     for _, elem := range genState.PermissionList {
@@ -86,10 +140,23 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
     for _, elem := range genState.ProviderList {
         k.ImportProvider(ctx, elem)
     }
-
-    for _, elem := range genState.AgreementList {
-        k.ImportAgreement(ctx, elem)
+    // Provider guild access
+    for _, elem := range genState.ProviderGuildAccessList {
+        k.ProviderGrantGuild(ctx, elem.ProviderId, elem.GuildId)
     }
+
+    for _, agreement := range genState.AgreementList {
+        k.ImportAgreement(ctx, agreement)
+        k.SetAgreementExpirationIndex(ctx, agreement.EndBlock, agreement.Id)
+    }
+
+    // Fleet
+    for _, elem := range genState.FleetList {
+        k.SetFleet(ctx, elem)
+    }
+
+    // Struct destruction queue (restore exact sweep height)
+
 
 }
 
@@ -151,3 +218,56 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 }
 
 
+func parseAttributeTypeId(attributeId string) (uint64, bool) {
+    parts := strings.SplitN(attributeId, "-", 2)
+    if len(parts) == 0 {
+        return 0, false
+    }
+    id, err := strconv.ParseUint(parts[0], 10, 64)
+    if err != nil {
+        return 0, false
+    }
+    return id, true
+}
+
+func isGridBlockHeightAttribute(attributeId string) bool {
+    attrId, ok := parseAttributeTypeId(attributeId)
+    if !ok {
+        return false
+    }
+    switch types.GridAttributeType(attrId) {
+    case types.GridAttributeType_lastAction,
+        types.GridAttributeType_checkpointBlock:
+        return true
+    default:
+        return false
+    }
+}
+
+func isStructBlockHeightAttribute(attributeId string) bool {
+    attrId, ok := parseAttributeTypeId(attributeId)
+    if !ok {
+        return false
+    }
+    switch types.StructAttributeType(attrId) {
+    case types.StructAttributeType_blockStartBuild,
+        types.StructAttributeType_blockStartOreMine,
+        types.StructAttributeType_blockStartOreRefine:
+        return true
+    default:
+        return false
+    }
+}
+
+func isPlanetBlockHeightAttribute(attributeId string) bool {
+    attrId, ok := parseAttributeTypeId(attributeId)
+    if !ok {
+        return false
+    }
+    switch types.PlanetAttributeType(attrId) {
+    case types.PlanetAttributeType_blockStartRaid:
+        return true
+    default:
+        return false
+    }
+}

@@ -63,7 +63,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 20,                
+ ActivateCharge: 1,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 8,                        
@@ -87,7 +87,9 @@ structType = StructType{
  UnguidedDefensiveSuccessRateDenominator: 0, 
             
  GuidedDefensiveSuccessRateNumerator: 0,       
- GuidedDefensiveSuccessRateDenominator: 0,     
+ GuidedDefensiveSuccessRateDenominator: 0,
+
+ TriggerRaidDefeatByDestruction: true,
                                                          
  } 
 genesisStructTypes = append(genesisStructTypes, structType) 
@@ -147,7 +149,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 20,                
+ ActivateCharge: 1,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -231,7 +233,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 20,                
+ ActivateCharge: 1,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -315,7 +317,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 20,                
+ ActivateCharge: 1,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -399,7 +401,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 20,                
+ ActivateCharge: 1,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -483,7 +485,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 20,                
+ ActivateCharge: 1,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -567,7 +569,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 20,                
+ ActivateCharge: 1,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -651,7 +653,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 20,                
+ ActivateCharge: 1,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -735,7 +737,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 20,                
+ ActivateCharge: 1,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -819,7 +821,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 20,                
+ ActivateCharge: 1,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -903,7 +905,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 20,                
+ ActivateCharge: 1,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -987,7 +989,7 @@ structType = StructType{
  PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,   
  PowerGeneration: TechPowerGeneration_noPowerGeneration,           
             
- ActivateCharge: 20,                
+ ActivateCharge: 1,                
  BuildCharge: 8,                      
  DefendChangeCharge: 1,        
  MoveCharge: 0,                        
@@ -1071,7 +1073,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 20,
+     ActivateCharge: 1,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,
@@ -1155,7 +1157,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 20,
+     ActivateCharge: 1,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,
@@ -1239,7 +1241,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_oreRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 20,
+     ActivateCharge: 1,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,
@@ -1323,7 +1325,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 20,
+     ActivateCharge: 1,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,
@@ -1407,7 +1409,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 20,
+     ActivateCharge: 1,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,
@@ -1491,7 +1493,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 20,
+     ActivateCharge: 1,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,
@@ -1575,7 +1577,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_noPowerGeneration,
 
-     ActivateCharge: 20,
+     ActivateCharge: 1,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,
@@ -1659,7 +1661,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_smallGenerator,
 
-     ActivateCharge: 20,
+     ActivateCharge: 1,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,
@@ -1743,7 +1745,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_mediumGenerator,
 
-     ActivateCharge: 20,
+     ActivateCharge: 1,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,
@@ -1827,7 +1829,7 @@ genesisStructTypes = append(genesisStructTypes, structType)
      PlanetaryRefinery: TechPlanetaryRefineries_noPlanetaryRefinery,
      PowerGeneration: TechPowerGeneration_largeGenerator,
 
-     ActivateCharge: 20,
+     ActivateCharge: 1,
      BuildCharge: 8,
      DefendChangeCharge: 1,
      MoveCharge: 0,

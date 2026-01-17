@@ -114,6 +114,9 @@ option go_package = "structs/x/structs/types";
   message EventOreMigrate { EventOreMigrateDetail eventOreMigrateDetail = 1;}
   message EventOreMigrateDetail { string playerId = 1; string primaryAddress = 2; string oldPrimaryAddress = 3; uint64 amount = 4;}
 
+  message EventStructDefenderClear   { EventStructDefenderClearDetail structDefenderClearDetail = 1; }
+  message EventStructDefenderClearDetail  { string defendingStructId = 1; }
+
   message EventAttack { EventAttackDetail eventAttackDetail = 1; }
 
   message EventAttackDetail {

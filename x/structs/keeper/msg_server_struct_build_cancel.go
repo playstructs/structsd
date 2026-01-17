@@ -35,19 +35,6 @@ func (k msgServer) StructBuildCancel(goCtx context.Context, msg *types.MsgStruct
         return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already built", msg.StructId)
     }
 
-    // Check Player Charge
-    if (structure.GetOwner().GetCharge() < structure.GetStructType().BuildCharge) {
-        err := sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to build, but player (%s) only had %d", structure.GetStructType().Id, structure.GetStructType().BuildCharge, structure.GetOwnerId(), structure.GetOwner().GetCharge() )
-        structure.GetOwner().Discharge()
-        structure.GetOwner().Commit()
-        return &types.MsgStructStatusResponse{}, err
-    }
-
-    if structure.GetOwner().IsOffline(){
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",structure.GetOwnerId())
-    }
-
-
     structure.DestroyAndCommit()
 
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct()}, nil
