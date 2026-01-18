@@ -545,7 +545,7 @@ func (cache *FleetCache) MigrateToNewPlanet(destination *PlanetCache) {
             cache.FleetLoaded = true
 
             // Build an Initial Command Ship
-            structure := cache.K.InitialCommandShipStruct(cache.Ctx, cache.GetOwner())
+            structure := cache.K.InitialCommandShipStruct(cache.Ctx, cache)
             // TODO Not a huge fan that this is committed separately
             // Could change cache.commit() to comment the command struct too
             // but that would need SetCommandStruct to accept the StructCache instead of Struct.
