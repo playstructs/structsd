@@ -116,6 +116,7 @@ func (k *Keeper) InitialCommandShipStruct(ctx context.Context, fleet *FleetCache
     structType, _ := k.GetStructType(ctx, types.CommandStructTypeId)
 
     structure := types.CreateBaseStruct(&structType, fleet.GetOwner().GetPrimaryAddress(), fleet.GetOwner().GetPlayerId(), structType.Category, types.Ambit_space)
+    structure.LocationId = fleet.GetFleetId()
     structure = k.AppendStruct(ctx, structure)
 
     fleet.GetOwner().BuildQuantityIncrement(structType.GetId())
@@ -127,8 +128,6 @@ func (k *Keeper) InitialCommandShipStruct(ctx context.Context, fleet *FleetCache
     } else {
        structStatus = types.StructState(types.StructStateMaterialized | types.StructStateBuilt )
     }
-
-    structure.LocationId = fleet.GetFleetId()
 
     // Start to put the pieces together
     structCache := StructCache{
