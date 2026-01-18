@@ -542,6 +542,7 @@ func (cache *FleetCache) MigrateToNewPlanet(destination *PlanetCache) {
         if !cache.LoadFleet() {
             newFleet := cache.K.AppendFleet(cache.Ctx, cache.GetOwner())
             cache.Fleet = newFleet
+            cache.FleetId = newFleet.Id
             cache.FleetLoaded = true
 
             // Build an Initial Command Ship
