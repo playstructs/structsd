@@ -111,22 +111,24 @@ func (k *Keeper) GetStructCacheFromId(ctx context.Context, structId string) (Str
 }
 
 
-func (k *Keeper) InitialCommandShipStruct(ctx context.Context, owner *PlayerCache) (StructCache) {
+func (k *Keeper) InitialCommandShipStruct(ctx context.Context, fleet *FleetCache) (StructCache) {
 
     structType, _ := k.GetStructType(ctx, types.CommandStructTypeId)
 
-    structure := types.CreateBaseStruct(&structType, owner.GetPrimaryAddress(), owner.GetPlayerId(), structType.Category, types.Ambit_space)
+    structure := types.CreateBaseStruct(&structType, fleet.GetOwner().GetPrimaryAddress(), fleet.GetOwner().GetPlayerId(), structType.Category, types.Ambit_space)
     structure = k.AppendStruct(ctx, structure)
 
-    owner.BuildQuantityIncrement(structType.GetId())
+    fleet.GetOwner().BuildQuantityIncrement(structType.GetId())
 
     var structStatus types.StructState
-    if owner.CanSupportLoadAddition(structType.GetPassiveDraw()) {
-       owner.StructsLoadIncrement(structType.GetPassiveDraw())
+    if fleet.GetOwner().CanSupportLoadAddition(structType.GetPassiveDraw()) {
+       fleet.GetOwner().StructsLoadIncrement(structType.GetPassiveDraw())
        structStatus = types.StructState(types.StructStateMaterialized | types.StructStateBuilt | types.StructStateOnline)
     } else {
        structStatus = types.StructState(types.StructStateMaterialized | types.StructStateBuilt )
     }
+
+    structure.LocationId = fleet.GetFleetId()
 
     // Start to put the pieces together
     structCache := StructCache{
@@ -140,10 +142,10 @@ func (k *Keeper) InitialCommandShipStruct(ctx context.Context, owner *PlayerCach
                   StructureChanged: false,
                   StructureLoaded: true,
 
-                  Owner: owner,
+                  Owner: fleet.GetOwner(),
                   OwnerLoaded: true,
 
-                  Fleet: owner.GetFleet(),
+                  Fleet: fleet,
                   FleetLoaded: true,
 
                   // Include the health value
