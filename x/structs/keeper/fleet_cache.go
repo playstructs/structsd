@@ -362,11 +362,11 @@ func (cache *FleetCache) PeaceDeal() (){
 
 func (cache *FleetCache) BuildInitiateReadiness(structure *types.Struct, structType *types.StructType, ambit types.Ambit, ambitSlot uint64) (error) {
     if structure.GetOwner() != cache.GetOwnerId() {
-         sdkerrors.Wrapf(types.ErrStructAction, "Struct owner must match fleet ")
+         return sdkerrors.Wrapf(types.ErrStructAction, "Struct owner must match fleet ")
     }
 
     if cache.IsAway() {
-        sdkerrors.Wrapf(types.ErrStructAction, "Structs cannot be built unless Fleet is On Station")
+        return sdkerrors.Wrapf(types.ErrStructAction, "Structs cannot be built unless Fleet is On Station")
     }
 
 
@@ -381,7 +381,7 @@ func (cache *FleetCache) BuildInitiateReadiness(structure *types.Struct, structT
     }
 
     if (structType.Category != types.ObjectType_fleet) {
-        sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist in this location ")
+        return sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist in this location ")
     }
 
     // Check that the Struct can exist in the specified ambit
@@ -430,15 +430,15 @@ func (cache *FleetCache) BuildInitiateReadiness(structure *types.Struct, structT
 
 func (cache *FleetCache) MoveReadiness(structure *StructCache, ambit types.Ambit, ambitSlot uint64) (error) {
     if structure.GetOwnerId() != cache.GetOwnerId() {
-         sdkerrors.Wrapf(types.ErrStructAction, "Struct owner must match fleet ")
+         return sdkerrors.Wrapf(types.ErrStructAction, "Struct owner must match fleet ")
     }
 
     if cache.IsAway() {
-        sdkerrors.Wrapf(types.ErrStructAction, "Structs cannot be built unless Fleet is On Station")
+        return sdkerrors.Wrapf(types.ErrStructAction, "Structs cannot be built unless Fleet is On Station")
     }
 
     if (structure.GetStructType().Category != types.ObjectType_fleet) {
-        sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist in this location ")
+        return sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist in this location ")
     }
 
     // Check that the Struct can exist in the specified ambit

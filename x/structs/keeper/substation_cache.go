@@ -182,23 +182,22 @@ func (cache *SubstationCache) CanCreateAllocations(activePlayer *PlayerCache) (e
     return cache.PermissionCheck(types.PermissionAssets, activePlayer)
 }
 
-func (cache *SubstationCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) (err error) {
+func (cache *SubstationCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) (error) {
     // Make sure the address calling this has Play permissions
     if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission)) {
-        err = sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no (%d) permissions ", activePlayer.GetActiveAddress(), permission)
-
+        return sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no (%d) permissions ", activePlayer.GetActiveAddress(), permission)
     }
 
     if !activePlayer.HasPlayerAccount() {
-        err = sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no Account", activePlayer.GetActiveAddress())
+        return sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no Account", activePlayer.GetActiveAddress())
     } else {
         if (activePlayer.GetPlayerId() != cache.GetOwnerId()) {
             if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetSubstationId(), activePlayer.GetPlayerId()), permission)) {
-               err = sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) has no (%d) permissions on target substation (%s)", activePlayer.GetPlayerId(), permission, cache.GetSubstationId())
+               return sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) has no (%d) permissions on target substation (%s)", activePlayer.GetPlayerId(), permission, cache.GetSubstationId())
             }
         }
     }
-    return
+    return nil
 }
 
 

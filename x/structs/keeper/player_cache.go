@@ -488,33 +488,35 @@ func (cache *PlayerCache) CanBeUpdatedBy(address string) (err error) {
     return cache.CanBeAdministratedBy(address, types.PermissionUpdate)
 }
 
-func (cache *PlayerCache) CanBeAdministratedBy(address string, permission types.Permission) (err error) {
+func (cache *PlayerCache) CanBeAdministratedBy(address string, permission types.Permission) (error) {
 
     // Make sure the address calling this has request permissions
     if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(address), permission)) {
-        err = sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) doesn't have the required permissions ", address)
+        return sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) doesn't have the required permissions ", address)
     }
 
     if (cache.GetPrimaryAddress() != address) {
         callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
-        if (err == nil) {
-            if (callingPlayer.GetPlayerId() != cache.GetPlayerId()) {
-                if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetPlayerId(), callingPlayer.GetPlayerId()), permission)) {
-                   err = sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) doesn't have the required permissions on target player (%s)", callingPlayer.GetPlayerId(), cache.GetPlayerId())
-                }
+        if (err != nil) {
+            return err
+        }
+
+        if (callingPlayer.GetPlayerId() != cache.GetPlayerId()) {
+            if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetPlayerId(), callingPlayer.GetPlayerId()), permission)) {
+               return sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) doesn't have the required permissions on target player (%s)", callingPlayer.GetPlayerId(), cache.GetPlayerId())
             }
         }
     }
 
-    return
+    return nil
 }
 
-func (cache *PlayerCache) ReadinessCheck() (err error) {
+func (cache *PlayerCache) ReadinessCheck() (error) {
     if (cache.IsOffline()) {
-        err = sdkerrors.Wrapf(types.ErrGridMalfunction, "Player (%s) is offline. Activate it", cache.PlayerId)
+        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Player (%s) is offline. Activate it", cache.PlayerId)
     }
     cache.Ready = true
-    return
+    return nil
 }
 
 

@@ -735,17 +735,17 @@ func (cache *StructCache) GoOffline() {
     cache.StatusRemoveOnline()
 }
 
-func (cache *StructCache) ReadinessCheck() (err error) {
+func (cache *StructCache) ReadinessCheck() (error) {
     if (cache.IsOffline()) {
-        err = sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is offline. Activate it", cache.StructId)
+        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is offline. Activate it", cache.StructId)
     } else {
         if (cache.GetOwner().IsOffline()) {
-            err = sdkerrors.Wrapf(types.ErrGridMalfunction, "Player (%s) is offline due to power", cache.GetOwnerId())
+            return sdkerrors.Wrapf(types.ErrGridMalfunction, "Player (%s) is offline due to power", cache.GetOwnerId())
         }
     }
 
     cache.Ready = true
-    return
+    return nil
 }
 
 /* Rough but Consistent Randomness Check */
@@ -770,42 +770,44 @@ func (cache *StructCache) IsSuccessful(successRate fraction.Fraction) bool {
 }
 
 /* Permissions */
-func (cache *StructCache) CanBePlayedBy(address string) (err error) {
+func (cache *StructCache) CanBePlayedBy(address string) (error) {
 
     // Make sure the address calling this has Play permissions
     if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(address), types.PermissionPlay)) {
-        err = sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", address)
+        return sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", address)
     }
 
     callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
-    if (err == nil) {
-        if (callingPlayer.PlayerId != cache.GetOwnerId()) {
-            if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.PlayerId), types.PermissionPlay)) {
-               err = sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayer.PlayerId, cache.GetOwnerId())
-            }
+    if (err != nil) {
+        return err
+    }
+    if (callingPlayer.PlayerId != cache.GetOwnerId()) {
+        if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.PlayerId), types.PermissionPlay)) {
+           return sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayer.PlayerId, cache.GetOwnerId())
         }
     }
 
-    return
+    return nil
 }
 
-func (cache *StructCache) CanBeHashedBy(address string) (err error) {
+func (cache *StructCache) CanBeHashedBy(address string) (error) {
 
     // Make sure the address calling this has Play permissions
     if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(address), types.PermissionHash)) {
-        err = sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no hashing permissions ", address)
+        return sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no hashing permissions ", address)
     }
 
     callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
-    if (err == nil) {
-        if (callingPlayer.PlayerId != cache.GetOwnerId()) {
-            if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.PlayerId), types.PermissionHash)) {
-               err = sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no hashing permissions on target player (%s)", callingPlayer.PlayerId, cache.GetOwnerId())
-            }
+    if (err != nil) {
+        return err
+    }
+    if (callingPlayer.PlayerId != cache.GetOwnerId()) {
+        if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.PlayerId), types.PermissionHash)) {
+           return sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no hashing permissions on target player (%s)", callingPlayer.PlayerId, cache.GetOwnerId())
         }
     }
 
-    return
+    return nil
 }
 
 /* Game Functions */
