@@ -12,6 +12,8 @@ import (
 
 	sdkerrors "cosmossdk.io/errors"
 	"fmt"
+
+	"slices"
 )
 
 // GetObjectID returns the string representation of the ID, based on ObjectType
@@ -111,15 +113,18 @@ func (k Keeper) GetGridCascadeQueue(ctx context.Context, clear bool) (queue []st
 	gridCascadeQueueStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueue))
 	iterator := storetypes.KVStorePrefixIterator(gridCascadeQueueStore, []byte{})
 
-	defer iterator.Close()
-
 	for ; iterator.Valid(); iterator.Next() {
 		queue = append(queue, string(iterator.Key()))
-		if clear {
-			gridCascadeQueueStore.Delete(iterator.Key())
-		}
 	}
+    iterator.Close()
 
+    slices.Sort(queue)
+
+    if clear {
+        for _, key := range queue {
+            gridCascadeQueueStore.Delete([]byte(key))
+        }
+    }
 	return
 }
 

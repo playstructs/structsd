@@ -13,6 +13,7 @@ import (
     "encoding/binary"
 	//"strconv"
 	"strings"
+	"slices"
 
 )
 
@@ -133,14 +134,18 @@ func (k Keeper) GetInfusionDestructionQueue(ctx context.Context, clear bool) (qu
 	infusionDestructionQueueStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.InfusionDestructionQueue))
 	iterator := storetypes.KVStorePrefixIterator(infusionDestructionQueueStore, []byte{})
 
-	defer iterator.Close()
-
 	for ; iterator.Valid(); iterator.Next() {
 		queue = append(queue, string(iterator.Key()))
-		if clear {
-		    infusionDestructionQueueStore.Delete(iterator.Key())
-		}
 	}
+    iterator.Close()
+
+    slices.Sort(queue)
+
+    if clear {
+        for _, key := range queue {
+            infusionDestructionQueueStore.Delete([]byte(key))
+        }
+    }
 
     return
 }

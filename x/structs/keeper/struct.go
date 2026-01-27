@@ -14,6 +14,9 @@ import (
 	"structs/x/structs/types"
 	"strconv"
 
+	"bytes"
+	"slices"
+
 
 )
 
@@ -164,18 +167,25 @@ func (k Keeper) StructSweepDestroyed(ctx context.Context) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), StructDestructionQueueReadKeyPrefix(unwrapCtx.BlockHeight()))
 	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
 
-	defer iterator.Close()
-
+    var keysToDelete [][]byte
 	for ; iterator.Valid(); iterator.Next() {
-        k.logger.Info("Struct Sweep", "structId", iterator.Key())
+	    keysToDelete = append(keysToDelete, append([]byte{}, iterator.Key()...))
+	}
+	iterator.Close()
+
+    slices.SortFunc(keysToDelete, bytes.Compare)
+
+    for _, key := range keysToDelete {
+        k.logger.Info("Struct Sweep", "structId", key)
+        structId := string(key)
 
         // Attributes
         // "health":               StructAttributeType_health,
-        k.ClearStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_health, string(iterator.Key()) ))
+        k.ClearStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_health, structId ))
         // "status":               StructAttributeType_status,
-        k.ClearStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_status, string(iterator.Key()) ))
+        k.ClearStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_status, structId ))
 
-        structure, structFound := k.GetStruct(ctx, string(iterator.Key()))
+        structure, structFound := k.GetStruct(ctx, structId)
         if structFound {
             // Location Back-Reference
             switch structure.LocationType {
@@ -217,9 +227,9 @@ func (k Keeper) StructSweepDestroyed(ctx context.Context) {
         }
 
         // Object
-        k.RemoveStruct(ctx, string(iterator.Key()))
+        k.RemoveStruct(ctx, structId)
 
-        store.Delete(iterator.Key())
+        store.Delete(key)
 	}
 }
 
