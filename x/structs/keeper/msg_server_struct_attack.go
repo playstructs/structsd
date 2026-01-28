@@ -70,13 +70,26 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
         return &types.MsgStructAttackResponse{}, types.NewCombatTargetingError(structure.GetStructId(), "", msg.WeaponSystem, "incomplete_targeting")
     }
 
+    structCacheMap := make(map[string]*StructCache)
+    structCacheMap[structure.GetStructId()] = &structure
+    pendingCommits := make([]*StructCache, 0, 32)
+    pendingCommits = append(pendingCommits, &structure)
+
     // Begin taking shots. Most weapons only use a single shot but some perform multiple.
     for shot := uint64(0); shot < (structure.GetStructType().GetWeaponTargets(weaponSystem)); shot++ {
         k.logger.Info("Attack Action", "structId", msg.OperatingStructId, "shot", shot, "shots", structure.GetStructType().GetWeaponTargets(weaponSystem), "target", msg.TargetStructId[shot] )
-        // Load the Target Struct cache object
-        targetStructure := k.GetStructCacheFromId(ctx, msg.TargetStructId[shot])
-        if !targetStructure.LoadStruct() {
-            return &types.MsgStructAttackResponse{}, types.NewObjectNotFoundError("struct", msg.TargetStructId[shot])
+
+        var targetStructure *StructCache
+        if cached, exists := structCacheMap[msg.TargetStructId[shot]]; exists {
+            targetStructure = cached
+        } else {
+            newTarget := k.GetStructCacheFromId(ctx, msg.TargetStructId[shot])
+            targetStructure = &newTarget
+            if !targetStructure.LoadStruct() {
+                return &types.MsgStructAttackResponse{}, types.NewObjectNotFoundError("struct", msg.TargetStructId[shot])
+            }
+            structCacheMap[msg.TargetStructId[shot]] = targetStructure
+            pendingCommits = append(pendingCommits, targetStructure)
         }
 
         targetStructure.ManualLoadEventAttackDetail(eventAttackDetail)
@@ -89,7 +102,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
         /* Can the attacker attack? */
         // Check that the Structs are within attacking range of each other
         // This includes both a weapon<->ambit check, and a fleet<->planet
-        targetingError := structure.CanAttack(&targetStructure, weaponSystem)
+        targetingError := structure.CanAttack(targetStructure, weaponSystem)
         if (targetingError != nil) {
             return &types.MsgStructAttackResponse{}, targetingError
         }
@@ -114,6 +127,13 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
             for _, defender := range defenders {
                 k.logger.Info("Defender at Location", "defender", defender.GetStructId(), "locationId", defender.GetLocationId())
 
+                if cachedDefender, exists := structCacheMap[defender.GetStructId()]; exists {
+                    defender = cachedDefender
+                } else {
+                    structCacheMap[defender.GetStructId()] = defender
+                    pendingCommits = append(pendingCommits, defender)
+                }
+
                 defender.Defender = true
                 defender.ManualLoadOwner(defenderPlayer)
                 defender.ManualLoadEventAttackDetail(eventAttackDetail)
@@ -124,7 +144,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
                     k.logger.Info("Defender seems ready to defend")
                     if (!attackBlocked && (structure.GetStructType().GetWeaponBlockable(weaponSystem))) {
                         k.logger.Info("Defender to attempt a block!")
-                        attackBlocked = defender.AttemptBlock(&structure, weaponSystem, &targetStructure)
+                        attackBlocked = defender.AttemptBlock(&structure, weaponSystem, targetStructure)
                     }
 
                 }
@@ -137,8 +157,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
                         structure.TakeCounterAttackDamage(defender)
                     }
                 }
-
-                defender.Commit()
+                //defender.Commit()
             }
         }
 
@@ -157,7 +176,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
             counterErrors := targetStructure.CanCounterAttack(&structure)
             if (counterErrors == nil) {
                 k.logger.Info("Target Countering!")
-                structure.TakeCounterAttackDamage(&targetStructure)
+                structure.TakeCounterAttackDamage(targetStructure)
             }
         }
 
@@ -168,8 +187,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
             targetWasOnPlanet = targetStructure.GetPlanet()
         }
 
-        // Possibly over committing if the same target is hit multiple times.
-        targetStructure.Commit()
+        //targetStructure.Commit()
     }
 
     // Recoil Damage
@@ -182,7 +200,13 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
     _ = ctx.EventManager().EmitTypedEvent(&types.EventAttack{EventAttackDetail: eventAttackDetail})
 
-    structure.Commit()
+    //structure.Commit()
+    // Commit Struct caches
+    for _, pendingStruct := range pendingCommits {
+        if pendingStruct.IsChanged() {
+            pendingStruct.Commit()
+        }
+    }
 
     k.DischargePlayer(ctx, structure.GetOwnerId())
 
