@@ -210,6 +210,10 @@ func (cache *GuildMembershipApplicationCache) IsChanged() bool {
 	return cache.AnyChange
 }
 
+func (cache *GuildMembershipApplicationCache) ID() string {
+	return cache.GuildMembershipApplication.GuildId + "/" + cache.GuildMembershipApplication.PlayerId
+}
+
 func (cache *GuildMembershipApplicationCache) Changed() {
 	cache.AnyChange = true
 }

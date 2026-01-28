@@ -96,6 +96,10 @@ func (cache *ProviderCache) IsChanged() bool {
 	return cache.AnyChange
 }
 
+func (cache *ProviderCache) ID() string {
+	return cache.ProviderId
+}
+
 func (cache *ProviderCache) Changed() {
 	cache.AnyChange = true
 }

@@ -102,6 +102,10 @@ func (cache *AgreementCache) IsChanged() bool {
 	return cache.AnyChange
 }
 
+func (cache *AgreementCache) ID() string {
+	return cache.AgreementId
+}
+
 func (cache *AgreementCache) Changed() {
 	cache.AnyChange = true
 }

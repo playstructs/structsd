@@ -138,6 +138,10 @@ func (cache *InfusionCache) IsChanged() bool {
     return cache.AnyChange
 }
 
+func (cache *InfusionCache) ID() string {
+    return cache.DestinationId + "/" + cache.Address
+}
+
 func (cache *InfusionCache) Changed() {
     cache.AnyChange = true
 }

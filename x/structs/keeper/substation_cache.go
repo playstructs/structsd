@@ -92,6 +92,10 @@ func (cache *SubstationCache) IsChanged() bool {
     return cache.AnyChange
 }
 
+func (cache *SubstationCache) ID() string {
+    return cache.SubstationId
+}
+
 func (cache *SubstationCache) Changed() {
     cache.AnyChange = true
 }

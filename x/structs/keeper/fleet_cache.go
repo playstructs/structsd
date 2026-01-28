@@ -91,6 +91,10 @@ func (cache *FleetCache) IsChanged() bool {
     return cache.AnyChange
 }
 
+func (cache *FleetCache) ID() string {
+    return cache.FleetId
+}
+
 func (cache *FleetCache) Changed() {
     cache.AnyChange = true
 }

@@ -180,6 +180,10 @@ func (cache *PlayerCache) IsChanged() bool {
     return cache.AnyChange
 }
 
+func (cache *PlayerCache) ID() string {
+    return cache.PlayerId
+}
+
 func (cache *PlayerCache) Changed() {
     cache.AnyChange = true
 }

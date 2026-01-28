@@ -325,6 +325,10 @@ func (cache *StructCache) IsChanged() bool {
     return cache.AnyChange
 }
 
+func (cache *StructCache) ID() string {
+    return cache.StructId
+}
+
 func (cache *StructCache) Changed() {
     cache.AnyChange = true
 }

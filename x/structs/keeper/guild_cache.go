@@ -92,6 +92,10 @@ func (cache *GuildCache) IsChanged() bool {
 	return cache.AnyChange
 }
 
+func (cache *GuildCache) ID() string {
+	return cache.GuildId
+}
+
 func (cache *GuildCache) Changed() {
 	cache.AnyChange = true
 }

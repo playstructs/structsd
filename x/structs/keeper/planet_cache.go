@@ -236,6 +236,10 @@ func (cache *PlanetCache) IsChanged() bool {
     return cache.AnyChange
 }
 
+func (cache *PlanetCache) ID() string {
+    return cache.PlanetId
+}
+
 func (cache *PlanetCache) Changed() {
     cache.AnyChange = true
 }
