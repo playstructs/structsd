@@ -75,6 +75,9 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
         k.logger.Info("Attack Action", "structId", msg.OperatingStructId, "shot", shot, "shots", structure.GetStructType().GetWeaponTargets(weaponSystem), "target", msg.TargetStructId[shot] )
         // Load the Target Struct cache object
         targetStructure := k.GetStructCacheFromId(ctx, msg.TargetStructId[shot])
+        if !targetStructure.LoadStruct() {
+            return &types.MsgStructAttackResponse{}, types.NewObjectNotFoundError("struct", msg.TargetStructId[shot])
+        }
 
         targetStructure.ManualLoadEventAttackDetail(eventAttackDetail)
         eventAttackDetail.SetTargetPlayerId(targetStructure.GetOwnerId())
