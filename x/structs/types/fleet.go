@@ -2,7 +2,6 @@ package types
 
 import (
 	//sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 )
 
 func (fleet *Fleet) SetSlot(structure Struct) (err error) {
@@ -17,7 +16,7 @@ func (fleet *Fleet) SetSlot(structure Struct) (err error) {
         case Ambit_space:
             fleet.Space[structure.Slot] = structure.Id
         default:
-            err = sdkerrors.Wrapf(ErrStructAction, "Struct cannot exist in the defined ambit (%s) ", structure.OperatingAmbit)
+            err = NewStructLocationError(structure.Type, structure.OperatingAmbit.String(), "invalid_ambit").WithStruct(structure.Id)
     }
 
 	return
