@@ -4,7 +4,6 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	//"fmt"
 )
@@ -26,7 +25,7 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
     }
 
     if structure.GetOwner().IsHalted() {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Struct (%s) cannot perform actions while Player (%s) is Halted", msg.StructId, structure.GetOwnerId())
+        return &types.MsgStructStatusResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "struct_activate").WithStruct(msg.StructId)
     }
 
     // Check Activation Readiness
@@ -43,7 +42,7 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
     playerCharge := k.GetPlayerCharge(ctx, structure.GetOwnerId())
     if (playerCharge < structure.GetStructType().GetActivateCharge()) {
         k.DischargePlayer(ctx, structure.GetOwnerId())
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for this mining operation, but player (%s) only had %d", structure.GetTypeId() , structure.GetStructType().GetActivateCharge(), structure.GetOwnerId(), playerCharge)
+        return &types.MsgStructStatusResponse{}, types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().GetActivateCharge(), playerCharge, "activate").WithStructType(structure.GetTypeId()).WithStructId(msg.StructId)
     }
 
     structure.GoOnline()

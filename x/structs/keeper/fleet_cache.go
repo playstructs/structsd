@@ -6,7 +6,6 @@ import (
     //"math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 
 )
@@ -325,15 +324,15 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
 
 func (cache *FleetCache) PlanetMoveReadinessCheck() (error) {
     if cache.GetOwner().IsOffline() {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Player (%s) is offline due to power", cache.GetOwnerId())
+        return types.NewPlayerPowerError(cache.GetOwnerId(), "offline")
     }
 
     if !cache.HasCommandStruct() {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet (%s) needs a Command Struct before deploy", cache.GetFleetId())
+        return types.NewFleetCommandError(cache.GetFleetId(), "no_command_struct")
     }
 
     if cache.GetCommandStruct().IsOffline() {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet (%s) needs an Online Command Struct before deploy", cache.GetFleetId())
+        return types.NewFleetCommandError(cache.GetFleetId(), "command_offline")
     }
 
     return nil
@@ -362,36 +361,36 @@ func (cache *FleetCache) PeaceDeal() (){
 
 func (cache *FleetCache) BuildInitiateReadiness(structure *types.Struct, structType *types.StructType, ambit types.Ambit, ambitSlot uint64) (error) {
     if structure.GetOwner() != cache.GetOwnerId() {
-         return sdkerrors.Wrapf(types.ErrStructAction, "Struct owner must match fleet ")
+         return types.NewStructOwnershipError(structure.Id, cache.GetOwnerId(), structure.GetOwner()).WithLocation("fleet", cache.GetFleetId())
     }
 
     if cache.IsAway() {
-        return sdkerrors.Wrapf(types.ErrStructAction, "Structs cannot be built unless Fleet is On Station")
+        return types.NewFleetStateError(cache.GetFleetId(), "away", "build")
     }
 
 
     if structType.Type != types.CommandStruct {
         if !cache.HasCommandStruct() {
-            return sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet (%s) needs a Command Struct before deploy", cache.GetFleetId())
+            return types.NewFleetCommandError(cache.GetFleetId(), "no_command_struct")
         }
 
         if cache.GetCommandStruct().IsOffline() {
-            return sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet (%s) needs an Online Command Struct before deploy", cache.GetFleetId())
+            return types.NewFleetCommandError(cache.GetFleetId(), "command_offline")
         }
     }
 
     if (structType.Category != types.ObjectType_fleet) {
-        return sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist in this location ")
+        return types.NewStructLocationError(structType.GetId(), ambit.String(), "outside_planet")
     }
 
     // Check that the Struct can exist in the specified ambit
     if types.Ambit_flag[ambit]&structType.PossibleAmbit == 0 {
-        return sdkerrors.Wrapf(types.ErrStructAction, "Struct cannot be exist in the defined ambit (%s) based on structType (%d) ", ambit, structType.Id)
+        return types.NewStructLocationError(structType.GetId(), ambit.String(), "invalid_ambit")
     }
 
     if structType.Type == types.CommandStruct {
         if cache.HasCommandStruct() {
-            return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The fleet (%s) already has a Command Struct", cache.GetFleetId())
+            return types.NewStructBuildError(structType.GetId(), "fleet", cache.GetFleetId(), "command_exists")
         }
 
     } else {
@@ -413,14 +412,14 @@ func (cache *FleetCache) BuildInitiateReadiness(structure *types.Struct, structT
                 slots = cache.GetFleet().SpaceSlots
                 slot  = cache.GetFleet().Space[ambitSlot]
             default:
-                return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The Struct Build was initiated on a non-existent ambit")
+                return types.NewStructBuildError(structType.GetId(), "fleet", cache.GetFleetId(), "invalid_ambit").WithAmbit(ambit.String())
         }
 
         if (ambitSlot >= slots) {
-            return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The Fleet (%s) specified doesn't have that slot available to build on", cache.GetFleetId())
+            return types.NewStructBuildError(structType.GetId(), "fleet", cache.GetFleetId(), "slot_unavailable").WithSlot(ambitSlot)
         }
         if (slot != "") {
-            return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The Fleet (%s) specified already has a struct on that slot", cache.GetFleetId())
+            return types.NewStructBuildError(structType.GetId(), "fleet", cache.GetFleetId(), "slot_occupied").WithSlot(ambitSlot).WithExistingStruct(slot)
         }
     }
     return nil
@@ -430,20 +429,20 @@ func (cache *FleetCache) BuildInitiateReadiness(structure *types.Struct, structT
 
 func (cache *FleetCache) MoveReadiness(structure *StructCache, ambit types.Ambit, ambitSlot uint64) (error) {
     if structure.GetOwnerId() != cache.GetOwnerId() {
-         return sdkerrors.Wrapf(types.ErrStructAction, "Struct owner must match fleet ")
+         return types.NewStructOwnershipError(structure.GetStructId(), cache.GetOwnerId(), structure.GetOwnerId()).WithLocation("fleet", cache.GetFleetId())
     }
 
     if cache.IsAway() {
-        return sdkerrors.Wrapf(types.ErrStructAction, "Structs cannot be built unless Fleet is On Station")
+        return types.NewFleetStateError(cache.GetFleetId(), "away", "move")
     }
 
     if (structure.GetStructType().Category != types.ObjectType_fleet) {
-        return sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist in this location ")
+        return types.NewStructLocationError(structure.GetStructType().GetId(), ambit.String(), "outside_planet")
     }
 
     // Check that the Struct can exist in the specified ambit
     if types.Ambit_flag[ambit]&structure.GetStructType().PossibleAmbit == 0 {
-        return sdkerrors.Wrapf(types.ErrStructAction, "Struct cannot be exist in the defined ambit (%s) based on structType (%d) ", ambit, structure.GetStructType().GetId())
+        return types.NewStructLocationError(structure.GetStructType().GetId(), ambit.String(), "invalid_ambit")
     }
 
     if structure.GetStructType().Type != types.CommandStruct {
@@ -465,14 +464,14 @@ func (cache *FleetCache) MoveReadiness(structure *StructCache, ambit types.Ambit
                 slots = cache.GetFleet().SpaceSlots
                 slot  = cache.GetFleet().Space[ambitSlot]
             default:
-                return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The Struct Build was initiated on a non-existent ambit")
+                return types.NewStructBuildError(structure.GetStructType().GetId(), "fleet", cache.GetFleetId(), "invalid_ambit").WithAmbit(ambit.String())
         }
 
         if (ambitSlot >= slots) {
-            return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The Fleet (%s) specified doesn't have that slot available to build on", cache.GetFleetId())
+            return types.NewStructBuildError(structure.GetStructType().GetId(), "fleet", cache.GetFleetId(), "slot_unavailable").WithSlot(ambitSlot)
         }
         if (slot != "") {
-            return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The Fleet (%s) specified already has a struct on that slot", cache.GetFleetId())
+            return types.NewStructBuildError(structure.GetStructType().GetId(), "fleet", cache.GetFleetId(), "slot_occupied").WithSlot(ambitSlot).WithExistingStruct(slot)
         }
     }
     return nil
@@ -492,7 +491,7 @@ func (cache *FleetCache) SetSlot(structure types.Struct) (err error) {
         case types.Ambit_space:
             cache.Fleet.Space[structure.Slot] = structure.Id
         default:
-            err = sdkerrors.Wrapf(types.ErrStructAction, "Struct cannot exist in the defined ambit (%s) ", structure.OperatingAmbit)
+            err = types.NewStructLocationError(0, structure.OperatingAmbit.String(), "invalid_ambit").WithStruct(structure.Id)
     }
 	cache.FleetChanged = true
 	cache.Changed()

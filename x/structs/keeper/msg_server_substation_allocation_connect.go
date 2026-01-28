@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -18,26 +17,26 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
 
 	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId)
 	if (!allocationFound) {
-		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "allocation (%s) not found", msg.AllocationId)
+		return &types.MsgSubstationAllocationConnectResponse{}, types.NewObjectNotFoundError("allocation", msg.AllocationId)
 	}
 
 	substation, substationFound := k.GetSubstation(ctx, msg.DestinationId)
 	if (!substationFound) {
-		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "destination substation (%s) not found", allocation.DestinationId)
+		return &types.MsgSubstationAllocationConnectResponse{}, types.NewObjectNotFoundError("substation", msg.DestinationId)
 	}
 
 
 	player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
     if (!playerFound) {
-        return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)
+        return &types.MsgSubstationAllocationConnectResponse{}, types.NewPlayerRequiredError(msg.Creator, "substation_allocation_connect")
     }
 
     allocationPlayer, AllocationPlayerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, allocation.Controller))
     if (!AllocationPlayerFound) {
-        return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not perform substation action with non-player address (%s)", allocation.Controller)
+        return &types.MsgSubstationAllocationConnectResponse{}, types.NewPlayerRequiredError(allocation.Controller, "substation_allocation_connect")
     }
     if (allocationPlayer.Id != player.Id) {
-        return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation not controlled by player (%s)", player.Id)
+        return &types.MsgSubstationAllocationConnectResponse{}, types.NewPermissionError("player", player.Id, "allocation", msg.AllocationId, uint64(types.PermissionGrid), "allocation_connect")
     }
 
 
@@ -46,22 +45,22 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
 
 	// check that the player has reactor permissions
     if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.PermissionGrid)) {
-        return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Calling player (%s) has no Substation Connect Allocation permissions ", player.Id)
+        return &types.MsgSubstationAllocationConnectResponse{}, types.NewPermissionError("player", player.Id, "substation", substation.Id, uint64(types.PermissionGrid), "allocation_connect")
     }
 
 
     // check that the account has energy management permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionGrid)) {
-        return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
+        return &types.MsgSubstationAllocationConnectResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionGrid), "energy_management")
     }
 
 
 	if (allocation.SourceObjectId == substation.Id) {
-		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationConnectionChangeImpossible, "destination substation (%s) cannot match allocation source (%s)", allocation.DestinationId, allocation.SourceObjectId)
+		return &types.MsgSubstationAllocationConnectResponse{}, types.NewAllocationError(allocation.SourceObjectId, "source_destination_match").WithDestination(substation.Id)
 	}
 
 	if substation.Id == allocation.DestinationId {
-		return &types.MsgSubstationAllocationConnectResponse{}, sdkerrors.Wrapf(types.ErrAllocationConnectionChangeImpossible, "destination substation (%s) cannot change to same destination", allocation.DestinationId)
+		return &types.MsgSubstationAllocationConnectResponse{}, types.NewAllocationError(allocation.SourceObjectId, "same_destination").WithDestination(allocation.DestinationId)
 	}
 
     power := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocation.Id))

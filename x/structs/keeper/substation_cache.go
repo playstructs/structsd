@@ -4,7 +4,6 @@ import (
 	"context"
 
 	//sdk "github.com/cosmos/cosmos-sdk/types"
-    sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -185,15 +184,15 @@ func (cache *SubstationCache) CanCreateAllocations(activePlayer *PlayerCache) (e
 func (cache *SubstationCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) (error) {
     // Make sure the address calling this has Play permissions
     if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission)) {
-        return sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no (%d) permissions ", activePlayer.GetActiveAddress(), permission)
+        return types.NewPermissionError("address", activePlayer.GetActiveAddress(), "", "", uint64(permission), "substation_action")
     }
 
     if !activePlayer.HasPlayerAccount() {
-        return sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no Account", activePlayer.GetActiveAddress())
+        return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "substation_action")
     } else {
         if (activePlayer.GetPlayerId() != cache.GetOwnerId()) {
             if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetSubstationId(), activePlayer.GetPlayerId()), permission)) {
-               return sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) has no (%d) permissions on target substation (%s)", activePlayer.GetPlayerId(), permission, cache.GetSubstationId())
+               return types.NewPermissionError("player", activePlayer.GetPlayerId(), "substation", cache.GetSubstationId(), uint64(permission), "substation_action")
             }
         }
     }

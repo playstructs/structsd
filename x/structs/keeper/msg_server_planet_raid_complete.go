@@ -7,7 +7,6 @@ import (
     //"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -46,22 +45,22 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
     }
 
     if fleet.GetOwner().IsHalted() {
-        return &types.MsgPlanetRaidCompleteResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Cannot perform actions while Player (%s) is Halted", fleet.GetOwnerId())
+        return &types.MsgPlanetRaidCompleteResponse{}, types.NewPlayerHaltedError(fleet.GetOwnerId(), "planet_raid_complete")
     }
 
     // check that the fleet is Away
     if fleet.IsOnStation() {
-       return &types.MsgPlanetRaidCompleteResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet cannot complete a Raid while On Station")
+       return &types.MsgPlanetRaidCompleteResponse{}, types.NewFleetStateError(fleet.GetFleetId(), "on_station", "raid_complete")
     }
 
     // check that forward pointer for the fleet is ""
     if (fleet.GetFleet().LocationListForward != "") {
-        return &types.MsgPlanetRaidCompleteResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet cannot complete a Raid unless it is the first in line")
+        return &types.MsgPlanetRaidCompleteResponse{}, types.NewFleetStateError(fleet.GetFleetId(), "not_first_in_queue", "raid_complete").WithPosition(0)
     }
 
     // check that the player is online
     if fleet.GetOwner().IsOffline() {
-        return &types.MsgPlanetRaidCompleteResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet cannot complete a Raid unless the player is Online")
+        return &types.MsgPlanetRaidCompleteResponse{}, types.NewPlayerPowerError(fleet.GetOwnerId(), "offline")
     }
 
 
@@ -73,7 +72,7 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
     if (!types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, fleet.GetPlanet().GetPlanetaryShield())) {
         //fleet.GetOwner().Halt()
         _ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleet.GetFleetId(), PlanetId: raidedPlanet, Status: types.RaidStatus_ongoing}})
-       return &types.MsgPlanetRaidCompleteResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Work failure for input (%s) when trying to complete a Raid on Planet %s", hashInput, fleet.GetPlanet().GetPlanetId())
+       return &types.MsgPlanetRaidCompleteResponse{}, types.NewWorkFailureError("raid", fleet.GetFleetId(), hashInput).WithPlanet(fleet.GetPlanet().GetPlanetId())
     }
 
     // Award the Ore from the defender to attacker

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	"math"
 )
@@ -29,7 +28,7 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
 
     // Check is msg.Address is the current Primary Address
     if player.GetPrimaryAddress() == msg.Address {
-        return &types.MsgAddressRevokeResponse{}, sdkerrors.Wrapf(types.ErrPermissionRevoke, "Cannot Revoke Primary Address. Update Primary Address First")
+        return &types.MsgAddressRevokeResponse{}, types.NewAddressValidationError(msg.Address, "primary_address")
     }
 
     /* Got this far, make it so... */

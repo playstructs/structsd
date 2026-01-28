@@ -4,7 +4,6 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -32,13 +31,13 @@ func (k msgServer) PermissionSetOnObject(goCtx context.Context, msg *types.MsgPe
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has the Permissions permission for editing permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permissions)) {
-        return &types.MsgPermissionResponse{}, sdkerrors.Wrapf(types.ErrPermissionAssociation, "Calling address (%s) has no permissions permission", msg.Creator)
+        return &types.MsgPermissionResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.Permissions), "permission_edit")
     }
 
     // Make sure the calling player has the same permissions that are being applied to the other player
     playerPermissionId := GetObjectPermissionIDBytes(msg.ObjectId, player.Id)
     if (!k.PermissionHasAll(ctx, playerPermissionId, types.Permission(msg.Permissions))) {
-        return &types.MsgPermissionResponse{}, sdkerrors.Wrapf(types.ErrGuildUpdate, "Calling player (%s) does not have the authority over the object", player.Id)
+        return &types.MsgPermissionResponse{}, types.NewPermissionError("player", player.Id, "object", msg.ObjectId, uint64(msg.Permissions), "permission_set")
     }
 
     targetPlayerPermissionId := GetObjectPermissionIDBytes(msg.ObjectId, msg.PlayerId)

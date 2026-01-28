@@ -4,7 +4,6 @@ import (
 	"context"
     //"strconv"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -26,13 +25,13 @@ func (k msgServer) StructBuildCancel(goCtx context.Context, msg *types.MsgStruct
     }
 
     if !structure.LoadStruct(){
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) does not exist", msg.StructId)
+        return &types.MsgStructStatusResponse{}, types.NewObjectNotFoundError("struct", msg.StructId)
     }
 
     if structure.IsBuilt() {
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already built", msg.StructId)
+        return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.StructId, "built", "building", "build_cancel")
     }
 
     structure.DestroyAndCommit()

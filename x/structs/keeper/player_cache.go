@@ -6,7 +6,6 @@ import (
     //"math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 
 )
@@ -115,7 +114,7 @@ func (k *Keeper) GetPlayerCacheFromAddress(ctx context.Context, address string) 
     index := k.GetPlayerIndexFromAddress(ctx, address)
 
     if (index == 0) {
-        return PlayerCache{ActiveAddress: address}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player Account Not Found")
+        return PlayerCache{ActiveAddress: address}, types.NewAddressValidationError(address, "not_registered")
     }
 
     player, err := k.GetPlayerCacheFromId(ctx, GetObjectID(types.ObjectType_player, index))
@@ -284,7 +283,7 @@ func (cache *PlayerCache) GetPlayer() (types.Player, error) {
     if (!cache.PlayerLoaded) {
         found := cache.LoadPlayer()
         if (!found) {
-           return types.Player{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not load Player object for %s", cache.PlayerId )
+           return types.Player{}, types.NewObjectNotFoundError("player", cache.PlayerId)
         }
     }
 
@@ -492,7 +491,7 @@ func (cache *PlayerCache) CanBeAdministratedBy(address string, permission types.
 
     // Make sure the address calling this has request permissions
     if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(address), permission)) {
-        return sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) doesn't have the required permissions ", address)
+        return types.NewPermissionError("address", address, "", "", uint64(permission), "administrate")
     }
 
     if (cache.GetPrimaryAddress() != address) {
@@ -503,7 +502,7 @@ func (cache *PlayerCache) CanBeAdministratedBy(address string, permission types.
 
         if (callingPlayer.GetPlayerId() != cache.GetPlayerId()) {
             if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetPlayerId(), callingPlayer.GetPlayerId()), permission)) {
-               return sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) doesn't have the required permissions on target player (%s)", callingPlayer.GetPlayerId(), cache.GetPlayerId())
+               return types.NewPermissionError("player", callingPlayer.GetPlayerId(), "player", cache.GetPlayerId(), uint64(permission), "administrate")
             }
         }
     }
@@ -513,7 +512,7 @@ func (cache *PlayerCache) CanBeAdministratedBy(address string, permission types.
 
 func (cache *PlayerCache) ReadinessCheck() (error) {
     if (cache.IsOffline()) {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Player (%s) is offline. Activate it", cache.PlayerId)
+        return types.NewPlayerPowerError(cache.PlayerId, "offline")
     }
     cache.Ready = true
     return nil

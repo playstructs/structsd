@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
     "cosmossdk.io/math"
 )
@@ -55,7 +54,7 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
     }
 
     if !k.bankKeeper.HasBalance(ctx, sourceAcc, collateralAmountCoin) {
-        return &types.MsgAgreementResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Player cannot afford the agreement ")
+        return &types.MsgAgreementResponse{}, types.NewPlayerAffordabilityError(activePlayer.GetPlayerId(), "agreement_open", collateralAmountCoin.String())
     }
 
     // move the funds from user to provider collateral pool

@@ -6,7 +6,6 @@ import (
     "strconv"
     //"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
@@ -33,16 +32,16 @@ func (k msgServer) ReactorCancelDefusion(goCtx context.Context, msg *types.MsgRe
 
     delegatorAddress, delegatorAddressErr := sdk.AccAddressFromBech32(msg.DelegatorAddress)
  	if delegatorAddressErr != nil {
- 		return &types.MsgReactorCancelDefusionResponse{}, sdkerrors.Wrapf(types.ErrReactorCancelDefusion, "invalid delegator address: %s", delegatorAddressErr)
+ 		return &types.MsgReactorCancelDefusionResponse{}, types.NewReactorError("cancel_defusion", "invalid_address").WithAddress(msg.DelegatorAddress, "delegator")
  	}
 
     valAddr, valErr := sdk.ValAddressFromBech32(msg.ValidatorAddress)
 	if valErr != nil {
-		return &types.MsgReactorCancelDefusionResponse{}, sdkerrors.Wrapf(types.ErrReactorCancelDefusion, "invalid validator address: %s", valErr)
+		return &types.MsgReactorCancelDefusionResponse{}, types.NewReactorError("cancel_defusion", "invalid_address").WithAddress(msg.ValidatorAddress, "validator")
 	}
 
 	if !msg.Amount.IsValid() || !msg.Amount.Amount.IsPositive() {
-		return &types.MsgReactorCancelDefusionResponse{}, sdkerrors.Wrapf(types.ErrReactorCancelDefusion, "invalid delegation amount")
+		return &types.MsgReactorCancelDefusionResponse{}, types.NewReactorError("cancel_defusion", "invalid_amount")
 	}
 
 	bondDenom, err := k.stakingKeeper.BondDenom(ctx)
@@ -51,11 +50,11 @@ func (k msgServer) ReactorCancelDefusion(goCtx context.Context, msg *types.MsgRe
 	}
 
 	if msg.Amount.Denom != bondDenom {
-		return &types.MsgReactorCancelDefusionResponse{}, sdkerrors.Wrapf(types.ErrReactorCancelDefusion, "invalid coin denomination: got %s, expected %s", msg.Amount.Denom, bondDenom)
+		return &types.MsgReactorCancelDefusionResponse{}, types.NewReactorError("cancel_defusion", "invalid_denom").WithDenom(msg.Amount.Denom, bondDenom)
 	}
 
 	if msg.CreationHeight <= 0 {
-		return &types.MsgReactorCancelDefusionResponse{}, sdkerrors.Wrapf(types.ErrReactorCancelDefusion, "invalid height" )
+		return &types.MsgReactorCancelDefusionResponse{}, types.NewReactorError("cancel_defusion", "invalid_height")
 	}
 
 	validator, err := k.stakingKeeper.GetValidator(ctx, valAddr)
@@ -76,10 +75,7 @@ func (k msgServer) ReactorCancelDefusion(goCtx context.Context, msg *types.MsgRe
 
 	ubd, err := k.stakingKeeper.GetUnbondingDelegation(ctx, delegatorAddress, valAddr)
 	if err != nil {
-		return &types.MsgReactorCancelDefusionResponse{}, sdkerrors.Wrapf(types.ErrReactorCancelDefusion,
-			"unbonding delegation with delegator %s not found for validator %s",
-			msg.DelegatorAddress, msg.ValidatorAddress,
-		)
+		return &types.MsgReactorCancelDefusionResponse{}, types.NewObjectNotFoundError("unbonding_delegation", msg.DelegatorAddress).WithContext("validator: " + msg.ValidatorAddress)
 	}
 
     var (
@@ -95,15 +91,15 @@ func (k msgServer) ReactorCancelDefusion(goCtx context.Context, msg *types.MsgRe
         }
     }
     if unbondEntryIndex == -1 {
-        return &types.MsgReactorCancelDefusionResponse{}, sdkerrors.Wrapf(types.ErrReactorCancelDefusion, "unbonding delegation entry is not found at block height %d", msg.CreationHeight)
+        return &types.MsgReactorCancelDefusionResponse{}, types.NewReactorError("cancel_defusion", "entry_not_found").WithHeight(msg.CreationHeight)
     }
 
 	if unbondEntry.Balance.LT(msg.Amount.Amount) {
-		return &types.MsgReactorCancelDefusionResponse{}, sdkerrors.Wrapf(types.ErrReactorCancelDefusion, "amount is greater than the unbonding delegation entry balance")
+		return &types.MsgReactorCancelDefusionResponse{}, types.NewReactorError("cancel_defusion", "balance_exceeded")
 	}
 
 	if unbondEntry.CompletionTime.Before(ctx.BlockTime()) {
-		return &types.MsgReactorCancelDefusionResponse{}, sdkerrors.Wrapf(types.ErrReactorCancelDefusion, "unbonding delegation is already processed")
+		return &types.MsgReactorCancelDefusionResponse{}, types.NewReactorError("cancel_defusion", "already_processed")
 	}
 
 	// delegate back the unbonding delegation amount to the validator

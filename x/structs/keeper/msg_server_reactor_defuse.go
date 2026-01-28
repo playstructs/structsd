@@ -5,7 +5,6 @@ import (
     "time"
     //"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
@@ -31,16 +30,16 @@ func (k msgServer) ReactorDefuse(goCtx context.Context, msg *types.MsgReactorDef
 
     delegatorAddress, delegatorAddressErr := sdk.AccAddressFromBech32(msg.DelegatorAddress)
  	if delegatorAddressErr != nil {
- 		return &types.MsgReactorDefuseResponse{}, sdkerrors.Wrapf(types.ErrReactorDefusion, "invalid delegator address: %s", delegatorAddressErr)
+ 		return &types.MsgReactorDefuseResponse{}, types.NewAddressValidationError(msg.DelegatorAddress, "invalid_delegator")
  	}
 
     valAddr, valErr := sdk.ValAddressFromBech32(msg.ValidatorAddress)
 	if valErr != nil {
-		return &types.MsgReactorDefuseResponse{}, sdkerrors.Wrapf(types.ErrReactorDefusion, "invalid validator address: %s", valErr)
+		return &types.MsgReactorDefuseResponse{}, types.NewAddressValidationError(msg.ValidatorAddress, "invalid_validator")
 	}
 
 	if !msg.Amount.IsValid() || !msg.Amount.Amount.IsPositive() {
-		return &types.MsgReactorDefuseResponse{}, sdkerrors.Wrapf(types.ErrReactorDefusion, "invalid delegation amount")
+		return &types.MsgReactorDefuseResponse{}, types.NewReactorError("defuse", "invalid_amount")
 	}
 
 	bondDenom, err := k.stakingKeeper.BondDenom(ctx)
@@ -49,7 +48,7 @@ func (k msgServer) ReactorDefuse(goCtx context.Context, msg *types.MsgReactorDef
 	}
 
 	if msg.Amount.Denom != bondDenom {
-		return &types.MsgReactorDefuseResponse{}, sdkerrors.Wrapf(types.ErrReactorDefusion, "invalid coin denomination: got %s, expected %s", msg.Amount.Denom, bondDenom)
+		return &types.MsgReactorDefuseResponse{}, types.NewReactorError("defuse", "invalid_denom").WithDenom(msg.Amount.Denom, bondDenom)
 	}
 
 	shares, err := k.stakingKeeper.ValidateUnbondAmount(

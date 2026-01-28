@@ -7,7 +7,6 @@ import (
     //"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -28,7 +27,7 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
     }
 
     if structure.GetOwner().IsHalted() {
-        return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Struct (%s) cannot perform actions while Player (%s) is Halted", msg.StructId, structure.GetOwnerId())
+        return &types.MsgStructOreRefineryStatusResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "ore_refine_complete").WithStruct(msg.StructId)
     }
 
     // Is the Struct & Owner online?
@@ -50,7 +49,7 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
     currentAge := uint64(ctx.BlockHeight()) - structure.GetBlockStartOreRefine()
     if (!types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().GetOreRefiningDifficulty())) {
        //structure.GetOwner().Halt()
-       return &types.MsgStructOreRefineryStatusResponse{}, sdkerrors.Wrapf(types.ErrStructRefine, "Work failure for input (%s) when trying to refine on Struct %s", hashInput, structure.StructId)
+       return &types.MsgStructOreRefineryStatusResponse{}, types.NewWorkFailureError("refine", structure.StructId, hashInput)
     }
 
     structure.OreRefine()

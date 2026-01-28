@@ -4,7 +4,6 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	//"fmt"
 )
@@ -25,7 +24,7 @@ func (k msgServer) StructStealthActivate(goCtx context.Context, msg *types.MsgSt
     }
 
     if structure.GetOwner().IsHalted() {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Struct (%s) cannot perform actions while Player (%s) is Halted", msg.StructId, structure.GetOwnerId())
+        return &types.MsgStructStatusResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "stealth_activate").WithStruct(msg.StructId)
     }
 
     // Is the Struct & Owner online?
@@ -39,21 +38,21 @@ func (k msgServer) StructStealthActivate(goCtx context.Context, msg *types.MsgSt
     if !structure.IsCommandable() {
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Commanding a Fleet Struct (%s) requires a Command Struct be Online", structure.GetStructId())
+        return &types.MsgStructStatusResponse{}, types.NewFleetCommandError(structure.GetStructId(), "no_command_struct")
     }
 
     // Is Struct Stealth Mode already activated?
     if structure.IsHidden() {
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already in stealth", msg.StructId)
+        return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.StructId, "hidden", "visible", "stealth_activate")
     }
 
 
     if (!structure.GetStructType().HasStealthSystem()) {
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) has no stealth system", msg.StructId)
+        return &types.MsgStructStatusResponse{}, types.NewStructCapabilityError(msg.StructId, "stealth")
     }
 
 
@@ -62,7 +61,7 @@ func (k msgServer) StructStealthActivate(goCtx context.Context, msg *types.MsgSt
     if (playerCharge < structure.GetStructType().GetStealthActivateCharge()) {
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for stealth mode, but player (%s) only had %d",  structure.GetTypeId(),  structure.GetStructType().GetStealthActivateCharge(), structure.GetOwnerId(), playerCharge)
+        return &types.MsgStructStatusResponse{}, types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().GetStealthActivateCharge(), playerCharge, "stealth").WithStructType(structure.GetTypeId())
     }
 
     structure.GetOwner().Discharge()

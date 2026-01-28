@@ -5,7 +5,6 @@ import (
 
 	"structs/x/structs/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 
 	// Used in Randomness Orb
 
@@ -184,7 +183,7 @@ func (cache *GuildCache) CanInviteMembers(activePlayer *PlayerCache) (err error)
     switch cache.GetJoinInfusionMinimumBypassByInvite() {
         // Invites are currently closed
         case types.GuildJoinBypassLevel_closed:
-            err = sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Guild not currently allowing invitations")
+            err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_allowed").WithJoinType("invite")
 
         // Only specific players can invite
         case types.GuildJoinBypassLevel_permissioned:
@@ -193,7 +192,7 @@ func (cache *GuildCache) CanInviteMembers(activePlayer *PlayerCache) (err error)
         // All Guild Members can Invite
         case types.GuildJoinBypassLevel_member:
             if activePlayer.GetGuildId() != cache.GetGuildId() {
-                err = sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Calling player (%s) must be a member of Guild (%s) to invite others", activePlayer.GetPlayerId(), cache.GetGuildId())
+                err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_member")
         	}
     }
     return
@@ -203,7 +202,7 @@ func (cache *GuildCache) CanApproveMembershipRequest(activePlayer *PlayerCache) 
     switch cache.GetJoinInfusionMinimumBypassByRequest() {
         // Invites are currently closed
         case types.GuildJoinBypassLevel_closed:
-            err = sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Guild not currently allowing requests")
+            err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_allowed").WithJoinType("request")
 
         // Only specific players can request
         case types.GuildJoinBypassLevel_permissioned:
@@ -212,7 +211,7 @@ func (cache *GuildCache) CanApproveMembershipRequest(activePlayer *PlayerCache) 
         // All Guild Members can Invite
         case types.GuildJoinBypassLevel_member:
             if activePlayer.GetGuildId() != cache.GetGuildId() {
-                err = sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Calling player (%s) must be a member of Guild (%s) to approve requests", activePlayer.GetPlayerId(), cache.GetGuildId())
+                err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_member")
         	}
     }
     return
@@ -227,7 +226,7 @@ func (cache *GuildCache) CanRequestMembership() (err error) {
     switch cache.GetJoinInfusionMinimumBypassByRequest() {
         // Invites are currently closed
         case types.GuildJoinBypassLevel_closed:
-            err = sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Guild is not currently allowing membership requests")
+            err = types.NewGuildMembershipError(cache.GetGuildId(), "", "not_allowed").WithJoinType("request")
     }
     return
 }
@@ -235,15 +234,15 @@ func (cache *GuildCache) CanRequestMembership() (err error) {
 func (cache *GuildCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) (error) {
     // Make sure the address calling this has permissions
     if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission)) {
-        return sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no (%d) permissions ", activePlayer.GetActiveAddress(), permission)
+        return types.NewPermissionError("address", activePlayer.GetActiveAddress(), "", "", uint64(permission), "guild_action")
     }
 
     if !activePlayer.HasPlayerAccount() {
-        return sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no Account", activePlayer.GetActiveAddress())
+        return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "guild_action")
     } else {
         if (activePlayer.GetPlayerId() != cache.GetOwnerId()) {
             if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetGuildId(), activePlayer.GetPlayerId()), permission)) {
-               return sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) has no (%d) permissions on target guild (%s)", activePlayer.GetPlayerId(), permission, cache.GetGuildId())
+               return types.NewPermissionError("player", activePlayer.GetPlayerId(), "guild", cache.GetGuildId(), uint64(permission), "guild_action")
             }
         }
     }
@@ -264,7 +263,7 @@ func (cache *GuildCache) BankMint(amountAlpha math.Int, amountToken math.Int, pl
 
     // Try to Move Alpha From the Player to the Pool
     if !cache.K.bankKeeper.HasBalance(cache.Ctx, player.GetPrimaryAccount(), alphaCollateralCoin) {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Player cannot afford the mint")
+        return types.NewPlayerAffordabilityError(player.GetPlayerId(), "mint", amountAlpha.String()+" ualpha")
     }
 
     errSend := cache.K.bankKeeper.SendCoins(cache.Ctx, player.GetPrimaryAccount(), cache.GetBankCollateralPool(), alphaCollateralCoins)
@@ -295,7 +294,7 @@ func (cache *GuildCache) BankRedeem(amountToken math.Int, player *PlayerCache) (
 
     // Try to Move Alpha From the Player to the Pool
     if !cache.K.bankKeeper.HasBalance(cache.Ctx, player.GetPrimaryAccount(), guildTokenCoin) {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Player cannot afford the mint")
+        return types.NewPlayerAffordabilityError(player.GetPlayerId(), "redeem", amountToken.String()+" "+cache.GetBankDenom())
     }
 
     // alphaAmount = amountToken / guildTokenSupply.Amount

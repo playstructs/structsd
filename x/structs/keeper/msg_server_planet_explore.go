@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -27,7 +26,7 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
     }
 
     if player.IsHalted() {
-        return &types.MsgPlanetExploreResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Cannot perform actions while Player (%s) is Halted", msg.PlayerId)
+        return &types.MsgPlanetExploreResponse{}, types.NewPlayerHaltedError(msg.PlayerId, "planet_explore")
     }
 
     // Is the Player online?

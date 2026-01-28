@@ -10,7 +10,6 @@ import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	*/
-    sdkerrors "cosmossdk.io/errors"
     sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
 )
@@ -44,12 +43,12 @@ func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (
     }
 
     if structure.GetOwner().IsHalted() {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Struct (%s) cannot perform actions while Player (%s) is Halted", msg.StructId, structure.GetOwnerId())
+        return &types.MsgStructStatusResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "struct_move").WithStruct(msg.StructId)
     }
 
     // Check Player Charge
     if structure.GetOwner().GetCharge() < structure.GetStructType().GetMoveCharge() {
-        err := sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for movement, but player (%s) only had %d", structure.GetStructType().GetId(), structure.GetStructType().GetMoveCharge(), structure.GetOwnerId(), structure.GetOwner().GetCharge() )
+        err := types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().GetMoveCharge(), structure.GetOwner().GetCharge(), "move").WithStructType(structure.GetStructType().GetId())
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, err

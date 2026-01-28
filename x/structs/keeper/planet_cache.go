@@ -4,7 +4,6 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-    sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	"github.com/nethruster/go-fraction"
 
@@ -623,32 +622,32 @@ func (cache *PlanetCache) IsSuccessful(successRate fraction.Fraction) bool {
 
 func (cache *PlanetCache) BuildInitiateReadiness(structure *types.Struct, structType *types.StructType, ambit types.Ambit, ambitSlot uint64) (error) {
     if structure.GetOwner() != cache.GetOwnerId() {
-         return sdkerrors.Wrapf(types.ErrStructAction, "Struct owner must match planet ")
+         return types.NewStructOwnershipError(structure.Id, cache.GetOwnerId(), structure.GetOwner()).WithLocation("planet", cache.GetPlanetId())
     }
 
     if structType.Type == types.CommandStruct {
-        return sdkerrors.Wrapf(types.ErrStructAction, "Command Structs can only be built directly in the fleet")
+        return types.NewStructLocationError(structType.GetId(), ambit.String(), "command_struct_fleet_only")
     }
 
     if cache.GetOwner().GetFleet().IsAway() {
-        return sdkerrors.Wrapf(types.ErrStructAction, "Structs cannot be built unless Fleet is On Station")
+        return types.NewFleetStateError(cache.GetOwner().GetFleetId(), "away", "build")
     }
 
     if !cache.GetOwner().GetFleet().HasCommandStruct() {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet (%s) needs a Command Struct before deploy", cache.GetOwner().GetFleetId())
+        return types.NewFleetCommandError(cache.GetOwner().GetFleetId(), "no_command_struct")
     }
 
     if cache.GetOwner().GetFleet().GetCommandStruct().IsOffline() {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Fleet (%s) needs an Online Command Struct before deploy", cache.GetOwner().GetFleetId())
+        return types.NewFleetCommandError(cache.GetOwner().GetFleetId(), "command_offline")
     }
 
     if (structType.Category != types.ObjectType_planet) {
-        return sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist outside a Planet")
+        return types.NewStructLocationError(structType.GetId(), ambit.String(), "outside_planet")
     }
 
     // Check that the Struct can exist in the specified ambit
     if types.Ambit_flag[ambit]&structType.PossibleAmbit == 0 {
-        return sdkerrors.Wrapf(types.ErrStructAction, "Struct cannot be exist in the defined ambit (%s) based on structType (%d) ", ambit, structType.Id)
+        return types.NewStructLocationError(structType.GetId(), ambit.String(), "invalid_ambit")
     }
 
     var slots uint64
@@ -668,14 +667,14 @@ func (cache *PlanetCache) BuildInitiateReadiness(structure *types.Struct, struct
             slots = cache.GetPlanet().SpaceSlots
             slot  = cache.GetPlanet().Space[ambitSlot]
         default:
-            return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The Struct Build was initiated on a non-existent ambit")
+            return types.NewStructBuildError(structType.GetId(), "planet", cache.GetPlanetId(), "invalid_ambit").WithAmbit(ambit.String())
     }
 
     if (ambitSlot >= slots) {
-        return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet (%s) specified doesn't have that slot available to build on", cache.GetPlanetId())
+        return types.NewStructBuildError(structType.GetId(), "planet", cache.GetPlanetId(), "slot_unavailable").WithSlot(ambitSlot)
     }
     if (slot != "") {
-        return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet (%s) specified already has a struct on that slot", cache.GetPlanetId())
+        return types.NewStructBuildError(structType.GetId(), "planet", cache.GetPlanetId(), "slot_occupied").WithSlot(ambitSlot).WithExistingStruct(slot)
     }
 
     return nil
@@ -685,20 +684,20 @@ func (cache *PlanetCache) BuildInitiateReadiness(structure *types.Struct, struct
 
 func (cache *PlanetCache) MoveReadiness(structure *StructCache, ambit types.Ambit, ambitSlot uint64) (error) {
     if structure.GetOwnerId() != cache.GetOwnerId() {
-         return sdkerrors.Wrapf(types.ErrStructAction, "Struct owner must match planet ")
+         return types.NewStructOwnershipError(structure.GetStructId(), cache.GetOwnerId(), structure.GetOwnerId()).WithLocation("planet", cache.GetPlanetId())
     }
 
     if structure.GetStructType().Type == types.CommandStruct {
-        return sdkerrors.Wrapf(types.ErrStructAction, "Command Structs can only be built directly in the fleet")
+        return types.NewStructLocationError(structure.GetStructType().GetId(), ambit.String(), "command_struct_fleet_only")
     }
 
     if (structure.GetStructType().Category != types.ObjectType_planet) {
-        return sdkerrors.Wrapf(types.ErrStructAction, "Struct Type cannot exist outside a Planet" )
+        return types.NewStructLocationError(structure.GetStructType().GetId(), ambit.String(), "outside_planet")
     }
 
     // Check that the Struct can exist in the specified ambit
     if types.Ambit_flag[ambit]&structure.GetStructType().PossibleAmbit == 0 {
-        return sdkerrors.Wrapf(types.ErrStructAction, "Struct cannot be exist in the defined ambit (%s) based on structType (%d) ", ambit, structure.GetStructType().Id)
+        return types.NewStructLocationError(structure.GetStructType().GetId(), ambit.String(), "invalid_ambit")
     }
 
     var slots uint64
@@ -718,14 +717,14 @@ func (cache *PlanetCache) MoveReadiness(structure *StructCache, ambit types.Ambi
             slots = cache.GetPlanet().SpaceSlots
             slot  = cache.GetPlanet().Space[ambitSlot]
         default:
-            return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The Struct Build was initiated on a non-existent ambit")
+            return types.NewStructBuildError(structure.GetStructType().GetId(), "planet", cache.GetPlanetId(), "invalid_ambit").WithAmbit(ambit.String())
     }
 
     if (ambitSlot >= slots) {
-        return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet (%s) specified doesn't have that slot available to build on", cache.GetPlanetId())
+        return types.NewStructBuildError(structure.GetStructType().GetId(), "planet", cache.GetPlanetId(), "slot_unavailable").WithSlot(ambitSlot)
     }
     if (slot != "") {
-        return sdkerrors.Wrapf(types.ErrStructBuildInitiate, "The planet (%s) specified already has a struct on that slot", cache.GetPlanetId())
+        return types.NewStructBuildError(structure.GetStructType().GetId(), "planet", cache.GetPlanetId(), "slot_occupied").WithSlot(ambitSlot).WithExistingStruct(slot)
     }
 
     return nil
@@ -748,7 +747,7 @@ func (cache *PlanetCache) SetSlot(structure types.Struct) (err error) {
         case types.Ambit_space:
             cache.Planet.Space[structure.Slot] = structure.Id
         default:
-            err = sdkerrors.Wrapf(types.ErrStructAction, "Struct cannot exist in the defined ambit (%s) ", structure.OperatingAmbit)
+            err = types.NewStructLocationError(0, structure.OperatingAmbit.String(), "invalid_ambit").WithStruct(structure.Id)
     }
 
     cache.PlanetChanged = true
@@ -807,7 +806,7 @@ func (cache *PlanetCache) AttemptComplete() (error) {
         cache.Commit()
         return nil
     }
-    return sdkerrors.Wrapf(types.ErrPlanetExploration, "New Planet cannot be explored while current planet (%s) has Ore available for mining", cache.GetPlanetId())
+    return types.NewPlanetStateError(cache.GetPlanetId(), "has_ore", "explore")
 }
 
 

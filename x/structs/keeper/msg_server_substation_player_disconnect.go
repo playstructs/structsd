@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -16,12 +15,12 @@ func (k msgServer) SubstationPlayerDisconnect(goCtx context.Context, msg *types.
 
 	player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
     if (!playerFound) {
-        return &types.MsgSubstationPlayerDisconnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)
+        return &types.MsgSubstationPlayerDisconnectResponse{}, types.NewPlayerRequiredError(msg.Creator, "substation_player_disconnect")
     }
 
 	targetPlayer, targetPlayerFound := k.GetPlayer(ctx, msg.PlayerId)
     if (!targetPlayerFound) {
-        return &types.MsgSubstationPlayerDisconnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Target player (%s) could be be found", msg.PlayerId)
+        return &types.MsgSubstationPlayerDisconnectResponse{}, types.NewObjectNotFoundError("player", msg.PlayerId)
     }
 
     // Check if the Calling Player isn't Target Player
@@ -36,7 +35,7 @@ func (k msgServer) SubstationPlayerDisconnect(goCtx context.Context, msg *types.
             if (!k.PermissionHasOneOf(ctx, playerObjectPermissionId, types.PermissionGrid)) {
 
                 // Calling Player has no authority over this process
-                return &types.MsgSubstationPlayerDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%s) has no Energy Management permissions on Player (%s) or Substation (%s)", player.Id, targetPlayer.Id, player.SubstationId)
+                return &types.MsgSubstationPlayerDisconnectResponse{}, types.NewPermissionError("player", player.Id, "player", targetPlayer.Id, uint64(types.PermissionGrid), "player_disconnect")
             }
         }
     }
@@ -44,7 +43,7 @@ func (k msgServer) SubstationPlayerDisconnect(goCtx context.Context, msg *types.
     // check that the account has energy management permissions
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionGrid)) {
-       return &types.MsgSubstationPlayerDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
+       return &types.MsgSubstationPlayerDisconnectResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionGrid), "energy_management")
     }
 
 	// connect to new substation

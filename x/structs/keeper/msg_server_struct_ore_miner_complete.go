@@ -7,7 +7,6 @@ import (
     //"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -27,7 +26,7 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
     }
 
     if structure.GetOwner().IsHalted() {
-        return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Struct (%s) cannot perform actions while Player (%s) is Halted", msg.StructId, structure.GetOwnerId())
+        return &types.MsgStructOreMinerStatusResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "ore_mine_complete").WithStruct(msg.StructId)
     }
 
     // Is the Struct & Owner online?
@@ -49,7 +48,7 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
     currentAge := uint64(ctx.BlockHeight()) - structure.GetBlockStartOreMine()
     if (!types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().GetOreMiningDifficulty())) {
        //structure.GetOwner().Halt()
-       return &types.MsgStructOreMinerStatusResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Work failure for input (%s) when trying to mine on Struct %s", hashInput, structure.StructId)
+       return &types.MsgStructOreMinerStatusResponse{}, types.NewWorkFailureError("mine", structure.StructId, hashInput)
     }
 
     // Got this far, let's reward the player with some Ore

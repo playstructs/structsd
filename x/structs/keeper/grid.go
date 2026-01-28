@@ -10,7 +10,6 @@ import (
 	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	sdkerrors "cosmossdk.io/errors"
 	"fmt"
 
 	"slices"
@@ -132,7 +131,7 @@ func (k Keeper) AppendGridCascadeQueue(ctx context.Context, queueId string) (err
 
 	// Skip if queueId is empty or nil to prevent "key is nil or empty" panic
 	if queueId == "" {
-		return sdkerrors.Wrapf(types.ErrObjectNotFound, "queueId (%s) empty", queueId)
+		return types.NewObjectNotFoundError("grid_queue", queueId)
 	}
 
 	gridCascadeQueueStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueue))

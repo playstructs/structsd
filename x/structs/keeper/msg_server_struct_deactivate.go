@@ -4,7 +4,6 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	//"fmt"
 )
@@ -26,27 +25,27 @@ func (k msgServer) StructDeactivate(goCtx context.Context, msg *types.MsgStructD
     }
 
     if structure.GetOwner().IsHalted() {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Struct (%s) cannot perform actions while Player (%s) is Halted", msg.StructId, structure.GetOwnerId())
+        return &types.MsgStructStatusResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "struct_deactivate").WithStruct(msg.StructId)
     }
 
     if !structure.LoadStruct(){
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) does not exist", msg.StructId)
+        return &types.MsgStructStatusResponse{}, types.NewObjectNotFoundError("struct", msg.StructId)
     }
 
     if !structure.IsBuilt() {
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) isn't built yet", msg.StructId)
+        return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.StructId, "building", "built", "deactivate")
     }
 
     if structure.IsOffline() {
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already offline", msg.StructId)
+        return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.StructId, "offline", "online", "deactivate")
     }
 
     if structure.GetOwner().IsOffline(){
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",structure.GetOwnerId())
+        return &types.MsgStructStatusResponse{}, types.NewPlayerPowerError(structure.GetOwnerId(), "offline")
     }
 
 

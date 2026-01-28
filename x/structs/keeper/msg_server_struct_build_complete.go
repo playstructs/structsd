@@ -4,7 +4,6 @@ import (
 	"context"
     "strconv"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -25,24 +24,24 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     }
 
     if !structure.LoadStruct(){
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) does not exist", msg.StructId)
+        return &types.MsgStructStatusResponse{}, types.NewObjectNotFoundError("struct", msg.StructId)
     }
 
     if structure.GetOwner().IsHalted() {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Struct (%s) cannot perform actions while Player (%s) is Halted", msg.StructId, structure.GetOwnerId())
+        return &types.MsgStructStatusResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "struct_build_complete").WithStruct(msg.StructId)
     }
 
     if structure.IsBuilt() {
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already built", msg.StructId)
+        return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.StructId, "built", "building", "build_complete")
     }
 
 
     // Check Player Charge
     /*
     if (structure.GetOwner().GetCharge() < structure.GetStructType().ActivateCharge) {
-        err := sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to build, but player (%s) only had %d", structure.GetStructType().Id, structure.GetStructType().ActivateCharge, structure.GetOwnerId(), structure.GetOwner().GetCharge() )
+        err := types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().ActivateCharge, structure.GetOwner().GetCharge(), "struct_build_complete").WithStructType(structure.GetStructType().Id)
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, err
@@ -50,7 +49,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
     */
 
     if structure.GetOwner().IsOffline(){
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",structure.GetOwnerId())
+        return &types.MsgStructStatusResponse{}, types.NewPlayerPowerError(structure.GetOwnerId(), "offline")
     }
 
     // Remove the BuildDraw load
@@ -60,7 +59,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
         structure.GetOwner().StructsLoadIncrement(structure.GetStructType().BuildDraw)
         //structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d to activate, but player (%s) has %d available", structure.GetStructType().Id, structure.GetStructType().PassiveDraw, structure.GetOwnerId(), structure.GetOwner().GetAvailableCapacity())
+        return &types.MsgStructStatusResponse{}, types.NewPlayerPowerError(structure.GetOwnerId(), "capacity_exceeded").WithCapacity(structure.GetStructType().PassiveDraw, structure.GetOwner().GetAvailableCapacity())
     }
 
     // Check the Proof
@@ -74,7 +73,7 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
         //structure.GetOwner().Discharge()
         //structure.GetOwner().Halt()
         structure.GetOwner().Commit()
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrStructBuildComplete, "Work failure for input (%s) when trying to build Struct %s", hashInput, structure.GetStructId())
+        return &types.MsgStructStatusResponse{}, types.NewWorkFailureError("build", structure.GetStructId(), hashInput)
     }
 
     structure.StatusAddBuilt()

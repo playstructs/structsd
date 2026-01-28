@@ -5,7 +5,6 @@ import (
 
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 
 	"cosmossdk.io/math"
@@ -20,7 +19,7 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 
     callingPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
     if (callingPlayerIndex == 0) {
-        return &types.MsgStructGeneratorStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build actions requires Player account but none associated with %s", msg.Creator)
+        return &types.MsgStructGeneratorStatusResponse{}, types.NewPlayerRequiredError(msg.Creator, "struct_generator_infuse")
     }
     callingPlayerId := GetObjectID(types.ObjectType_player, callingPlayerIndex)
     callingPlayer, _ := k.GetPlayer(ctx, callingPlayerId)
@@ -28,32 +27,32 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has Assets permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets)) {
-        return &types.MsgStructGeneratorStatusResponse{}, sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no assets permissions ", msg.Creator)
+        return &types.MsgStructGeneratorStatusResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "assets")
     }
 
     structStatusAttributeId := GetStructAttributeIDByObjectId(types.StructAttributeType_status, msg.StructId)
 
     structure, structureFound := k.GetStruct(ctx, msg.StructId)
     if (!structureFound) {
-        return &types.MsgStructGeneratorStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) not found", msg.StructId)
+        return &types.MsgStructGeneratorStatusResponse{}, types.NewObjectNotFoundError("struct", msg.StructId)
     }
 
     // Is the Struct online?
     if (k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateOnline))) {
         k.DischargePlayer(ctx, callingPlayerId)
-        return &types.MsgStructGeneratorStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is offline. Activate it", msg.StructId)
+        return &types.MsgStructGeneratorStatusResponse{}, types.NewStructStateError(msg.StructId, "offline", "online", "generator_infuse")
     }
 
     // Load Struct Type
     structType, structTypeFound := k.GetStructType(ctx, structure.Type)
     if (!structTypeFound) {
-        return &types.MsgStructGeneratorStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct Type (%d) was not found. Building a Struct with schematics might be tough", structure.Type)
+        return &types.MsgStructGeneratorStatusResponse{}, types.NewObjectNotFoundError("struct_type", "").WithIndex(structure.Type)
     }
 
 
     if (structType.PowerGeneration == types.TechPowerGeneration_noPowerGeneration) {
         k.DischargePlayer(ctx, callingPlayerId)
-        return &types.MsgStructGeneratorStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) has no generation systems", msg.StructId)
+        return &types.MsgStructGeneratorStatusResponse{}, types.NewStructCapabilityError(msg.StructId, "generation")
     }
 
     // FIX FIX FIX  FIX
@@ -64,21 +63,21 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
     // FIX FIX FIX  FIX
     planet, planetFound := k.GetPlanet(ctx, structure.LocationId)
     if (!planetFound) {
-        return &types.MsgStructGeneratorStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Planet (%s) was not found, which is actually a pretty big problem. Please tell an adult", structure.LocationId)
+        return &types.MsgStructGeneratorStatusResponse{}, types.NewObjectNotFoundError("planet", structure.LocationId)
     }
 
     if (planet.Status == types.PlanetStatus_complete) {
         k.DischargePlayer(ctx, callingPlayerId)
-        return &types.MsgStructGeneratorStatusResponse{}, sdkerrors.Wrapf(types.ErrStructMine, "Planet (%s) is already complete. Move on bud, no work to be done here", structure.LocationId)
+        return &types.MsgStructGeneratorStatusResponse{}, types.NewPlanetStateError(structure.LocationId, "complete", "generator_infuse")
     }
 
     infusionAmount, parseError := sdk.ParseCoinsNormalized(msg.InfuseAmount)
     if (parseError != nil ){
-        return &types.MsgStructGeneratorStatusResponse{}, sdkerrors.Wrapf(types.ErrStructInfuse, "Infuse amount (%s) is invalid", msg.InfuseAmount)
+        return &types.MsgStructGeneratorStatusResponse{}, types.NewFuelInfuseError(msg.StructId, msg.InfuseAmount, "invalid_amount")
     }
 
     if len(infusionAmount) < 1 {
-        return &types.MsgStructGeneratorStatusResponse{}, sdkerrors.Wrapf(types.ErrStructInfuse, "Infuse amount (%s) is invalid", msg.InfuseAmount)
+        return &types.MsgStructGeneratorStatusResponse{}, types.NewFuelInfuseError(msg.StructId, msg.InfuseAmount, "invalid_amount")
     }
 
     if (infusionAmount[0].Denom == "ualpha") {
@@ -88,7 +87,7 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
         infusionAmount[0].Amount = infusionAmount[0].Amount.Mul(alphaUnitConversionInt)
         infusionAmount[0].Denom  = "ualpha"
     } else {
-        return &types.MsgStructGeneratorStatusResponse{}, sdkerrors.Wrapf(types.ErrStructInfuse, "Infuse amount (%s) is invalid, %s is not a fuel", msg.InfuseAmount, infusionAmount[0].Denom)
+        return &types.MsgStructGeneratorStatusResponse{}, types.NewFuelInfuseError(msg.StructId, msg.InfuseAmount, "invalid_denom").WithDenom(infusionAmount[0].Denom)
     }
 
     // Transfer the refined Alpha from the player
@@ -97,7 +96,7 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 
     if (sendError != nil){
         k.DischargePlayer(ctx, callingPlayerId)
-        return &types.MsgStructGeneratorStatusResponse{}, sdkerrors.Wrapf(types.ErrStructInfuse, "Infuse failed %s", sendError )
+        return &types.MsgStructGeneratorStatusResponse{}, types.NewFuelInfuseError(msg.StructId, msg.InfuseAmount, "transfer_failed").WithDetails(sendError.Error())
     }
     k.bankKeeper.BurnCoins(ctx, types.ModuleName, infusionAmount)
 

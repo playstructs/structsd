@@ -4,7 +4,6 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 
 	"structs/x/structs/types"
 )
@@ -27,7 +26,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
     }
 
     if structure.GetOwner().IsHalted() {
-        return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Struct (%s) cannot perform actions while Player (%s) is Halted", msg.OperatingStructId, structure.GetOwnerId())
+        return &types.MsgStructAttackResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "struct_attack").WithStruct(msg.OperatingStructId)
     }
 
     // Is the Struct & Owner online?
@@ -39,13 +38,13 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
     if !structure.IsCommandable() {
         k.DischargePlayer(ctx, structure.GetOwnerId())
-        return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Commanding a Fleet Struct (%s) requires a Command Struct be Online", structure.GetStructId())
+        return &types.MsgStructAttackResponse{}, types.NewFleetCommandError(structure.GetFleet().GetFleetId(), "command_offline").WithStructId(structure.GetStructId())
     }
 
     playerCharge := k.GetPlayerCharge(ctx, structure.GetOwnerId())
     if (playerCharge < structure.GetStructType().GetWeaponCharge(types.TechWeaponSystem_enum[msg.WeaponSystem])) {
         k.DischargePlayer(ctx, structure.GetOwnerId())
-        return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d for this attack, but player (%s) only had %d", structure.GetTypeId() , structure.GetStructType().GetWeaponCharge(types.TechWeaponSystem_enum[msg.WeaponSystem]), structure.GetOwnerId(), playerCharge)
+        return &types.MsgStructAttackResponse{}, types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().GetWeaponCharge(types.TechWeaponSystem_enum[msg.WeaponSystem]), playerCharge, "attack").WithStructType(structure.GetTypeId())
     }
 
     // Jump out of Stealth Mode for the attack
@@ -62,7 +61,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
     if uint64(len(msg.TargetStructId)) != structure.GetStructType().GetWeaponTargets(types.TechWeaponSystem_enum[msg.WeaponSystem]) {
         k.DischargePlayer(ctx, structure.GetOwnerId())
-        return &types.MsgStructAttackResponse{}, sdkerrors.Wrapf(types.ErrStructAction, "Attack Targeting Incomplete")
+        return &types.MsgStructAttackResponse{}, types.NewCombatTargetingError(structure.GetStructId(), "", msg.WeaponSystem, "incomplete_targeting")
     }
 
     // Begin taking shots. Most weapons only use a single shot but some perform multiple.

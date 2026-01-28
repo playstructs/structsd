@@ -4,7 +4,6 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-    sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	"github.com/nethruster/go-fraction"
 
@@ -191,7 +190,7 @@ func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owne
 
             structure.LocationId = owner.GetFleetId()
         default:
-            return StructCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "We're not building these yet")
+            return StructCache{}, types.NewStructBuildError(structType.GetId(), "", "", "type_unsupported")
     }
 
 
@@ -628,22 +627,22 @@ func (cache *StructCache) GridStatusRemoveReady() {
 func (cache *StructCache) ActivationReadinessCheck() (err error) {
     // Check Struct is Built
     if !cache.IsBuilt(){
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) isn't finished being built yet", cache.StructId)
+        return types.NewStructStateError(cache.StructId, "building", "built", "activation")
     }
 
     // Check Struct is Online
     if cache.IsOnline(){
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is already online", cache.StructId)
+        return types.NewStructStateError(cache.StructId, "online", "offline", "activation")
     }
 
     // Check Player is Online
     if cache.GetOwner().IsOffline() {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Player (%s) is offline due to power", cache.GetOwnerId())
+        return types.NewPlayerPowerError(cache.GetOwnerId(), "offline")
     }
 
     // Check Player Capacity
     if (!cache.GetOwner().CanSupportLoadAddition(cache.GetStructType().GetPassiveDraw())) {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Player (%s) cannot handle the new load requirements", cache.GetOwnerId())
+        return types.NewPlayerPowerError(cache.GetOwnerId(), "capacity_exceeded").WithCapacity(cache.GetStructType().GetPassiveDraw(), cache.GetOwner().GetAvailableCapacity())
     }
 
     return
@@ -737,10 +736,10 @@ func (cache *StructCache) GoOffline() {
 
 func (cache *StructCache) ReadinessCheck() (error) {
     if (cache.IsOffline()) {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is offline. Activate it", cache.StructId)
+        return types.NewStructStateError(cache.StructId, "offline", "online", "readiness_check")
     } else {
         if (cache.GetOwner().IsOffline()) {
-            return sdkerrors.Wrapf(types.ErrGridMalfunction, "Player (%s) is offline due to power", cache.GetOwnerId())
+            return types.NewPlayerPowerError(cache.GetOwnerId(), "offline")
         }
     }
 
@@ -774,7 +773,7 @@ func (cache *StructCache) CanBePlayedBy(address string) (error) {
 
     // Make sure the address calling this has Play permissions
     if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(address), types.PermissionPlay)) {
-        return sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no play permissions ", address)
+        return types.NewPermissionError("address", address, "", "", uint64(types.PermissionPlay), "play")
     }
 
     callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
@@ -783,7 +782,7 @@ func (cache *StructCache) CanBePlayedBy(address string) (error) {
     }
     if (callingPlayer.PlayerId != cache.GetOwnerId()) {
         if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.PlayerId), types.PermissionPlay)) {
-           return sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no play permissions on target player (%s)", callingPlayer.PlayerId, cache.GetOwnerId())
+           return types.NewPermissionError("player", callingPlayer.PlayerId, "player", cache.GetOwnerId(), uint64(types.PermissionPlay), "play")
         }
     }
 
@@ -792,9 +791,9 @@ func (cache *StructCache) CanBePlayedBy(address string) (error) {
 
 func (cache *StructCache) CanBeHashedBy(address string) (error) {
 
-    // Make sure the address calling this has Play permissions
+    // Make sure the address calling this has Hash permissions
     if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(address), types.PermissionHash)) {
-        return sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling address (%s) has no hashing permissions ", address)
+        return types.NewPermissionError("address", address, "", "", uint64(types.PermissionHash), "hash")
     }
 
     callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
@@ -803,7 +802,7 @@ func (cache *StructCache) CanBeHashedBy(address string) (error) {
     }
     if (callingPlayer.PlayerId != cache.GetOwnerId()) {
         if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.PlayerId), types.PermissionHash)) {
-           return sdkerrors.Wrapf(types.ErrPermissionPlay, "Calling account (%s) has no hashing permissions on target player (%s)", callingPlayer.PlayerId, cache.GetOwnerId())
+           return types.NewPermissionError("player", callingPlayer.PlayerId, "player", cache.GetOwnerId(), uint64(types.PermissionHash), "hash")
         }
     }
 
@@ -815,19 +814,19 @@ func (cache *StructCache) CanBeHashedBy(address string) (error) {
 func (cache *StructCache) CanOreMinePlanet() (error) {
 
     if (!cache.GetStructType().HasOreMiningSystem()) {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) has no mining system", cache.StructId)
+        return types.NewStructCapabilityError(cache.StructId, "mining")
     }
 
     if (cache.GetBlockStartOreMine() == 0) {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) not mining", cache.StructId)
+        return types.NewStructStateError(cache.StructId, "not_mining", "mining", "ore_mine")
     }
 
     if (cache.GetPlanet().IsComplete()) {
-        return sdkerrors.Wrapf(types.ErrStructMine, "Planet (%s) is already complete. Move on bud, no work to be done here", cache.GetPlanet().GetPlanetId())
+        return types.NewPlanetStateError(cache.GetPlanet().GetPlanetId(), "complete", "mine")
     }
 
     if (cache.GetPlanet().IsEmptyOfOre()) {
-        return sdkerrors.Wrapf(types.ErrStructMine, "Planet (%s) is empty, nothing to mine", cache.GetPlanet().GetPlanetId())
+        return types.NewPlanetStateError(cache.GetPlanet().GetPlanetId(), "empty", "mine")
     }
 
     return nil
@@ -845,15 +844,15 @@ func (cache *StructCache) OreMinePlanet() {
 func (cache *StructCache) CanOreRefine() (error) {
 
     if (!cache.GetStructType().HasOreRefiningSystem()) {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) has no refining system", cache.StructId)
+        return types.NewStructCapabilityError(cache.StructId, "refining")
     }
 
     if (cache.GetBlockStartOreRefine() == 0) {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) not mining", cache.StructId)
+        return types.NewStructStateError(cache.StructId, "not_refining", "refining", "ore_refine")
     }
 
     if (!cache.GetOwner().HasStoredOre()) {
-        return sdkerrors.Wrapf(types.ErrStructMine, "Player (%s) has no Ore to refine. Move on bud, no work to be done here", cache.GetOwner().PlayerId)
+        return types.NewPlayerAffordabilityError(cache.GetOwner().PlayerId, "refine", "ore")
     }
 
     return nil
@@ -871,17 +870,17 @@ func (cache *StructCache) OreRefine() {
 func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem types.TechWeaponSystem) (err error) {
 
      if (targetStruct.IsDestroyed()) {
-        err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is already destroyed", targetStruct.StructId)
+        err = types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "destroyed")
      } else {
         if (!cache.GetStructType().CanTargetAmbit(weaponSystem, cache.GetOperatingAmbit(), targetStruct.GetOperatingAmbit())) {
-            err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) cannot be hit from Attacker Struct (%s) using this weapon system %s", targetStruct.StructId, cache.StructId, weaponSystem)
+            err = types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "out_of_range").WithAmbits(cache.GetOperatingAmbit().String(), targetStruct.GetOperatingAmbit().String())
         } else {
             // Not MVP CanBlockTargeting always returns false
             if ((!cache.GetStructType().GetWeaponBlockable(weaponSystem)) && (targetStruct.GetStructType().CanBlockTargeting())) {
-                err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) currently blocking Attacker Struct (%s)", targetStruct.StructId, cache.StructId)
+                err = types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "blocked")
             } else {
                 if (targetStruct.IsHidden() && (targetStruct.GetOperatingAmbit() != cache.GetOperatingAmbit())) {
-                    err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is current hidden from Attacker Struct (%s)", targetStruct.StructId, cache.StructId)
+                    err = types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "hidden")
                 }
             }
         }
@@ -894,7 +893,7 @@ func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem type
                 if (cache.GetPlanet().GetLocationListStart() == targetStruct.GetLocationId()) {
                     // The enemy fleet is here
                 } else {
-                    err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Planetary Attacker Struct (%s)", targetStruct.StructId, cache.StructId)
+                    err = types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "unreachable")
                 }
 
             case types.ObjectType_fleet:
@@ -905,7 +904,7 @@ func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem type
                         // The Fleet is on station, and the enemy is reachable
                         // Proceed with the intended action for the Fleet attacking the target
                     } else {
-                        err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by from the Struct (%s) on Planet", targetStruct.StructId, cache.StructId)
+                        err = types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "unreachable")
                     }
                 // Or is the Fleet out raiding another planet?
                 } else {
@@ -918,11 +917,11 @@ func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem type
                         // The target is to either side of the Fleet
                         // Proceed with the intended action for the Fleet attacking the target
                     } else {
-                        err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Fleet Attacker Struct (%s)", targetStruct.StructId, cache.StructId)
+                        err = types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "unreachable")
                     }
                 }
             default:
-                err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Attacker Struct (%s). Should tell an adult about this one", targetStruct.StructId, cache.StructId)
+                err = types.NewCombatTargetingError(cache.StructId, targetStruct.StructId, weaponSystem.String(), "unreachable")
         }
      }
     return
@@ -933,11 +932,11 @@ func (cache *StructCache) CanCounterAttack(attackerStruct *StructCache) (err err
 
      if (attackerStruct.IsDestroyed() || cache.IsDestroyed()) {
         cache.K.logger.Info("Counter Struct or Attacker Struct is already destroyed", "counterStruct", cache.StructId, "target", attackerStruct.StructId)
-        err = sdkerrors.Wrapf(types.ErrStructAction, "Counter Struct (%s) or Attacker Struct (%s) is already destroyed", cache.StructId, attackerStruct.StructId)
+        err = types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "destroyed").AsCounter()
      } else {
         if (!cache.GetStructType().CanCounterTargetAmbit(cache.GetOperatingAmbit(), attackerStruct.GetOperatingAmbit())) {
             cache.K.logger.Info("Attacker Struct cannot be hit from Counter Struct using this weapon system", "target", attackerStruct.StructId, "counterStruct", cache.StructId)
-            err = sdkerrors.Wrapf(types.ErrStructAction, "Attacker Struct (%s) cannot be hit from Counter Struct (%s) using this weapon system", attackerStruct.StructId, cache.StructId)
+            err = types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "out_of_range").AsCounter().WithAmbits(cache.GetOperatingAmbit().String(), attackerStruct.GetOperatingAmbit().String())
         }
      }
 
@@ -948,7 +947,7 @@ func (cache *StructCache) CanCounterAttack(attackerStruct *StructCache) (err err
                 if (cache.GetPlanet().GetLocationListStart() == attackerStruct.GetLocationId()) {
                     // The enemy fleet is here
                 } else {
-                    err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Planetary Counter-Attacker Struct (%s)", attackerStruct.StructId, cache.StructId)
+                    err = types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "unreachable").AsCounter()
                 }
 
             case types.ObjectType_fleet:
@@ -959,7 +958,7 @@ func (cache *StructCache) CanCounterAttack(attackerStruct *StructCache) (err err
                         // The Fleet is on station, and the enemy is reachable
                         // Proceed with the intended action for the Fleet attacking the target
                     } else {
-                        err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by from the Counter-Attacker Struct (%s) on Planet", attackerStruct.StructId, cache.StructId)
+                        err = types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "unreachable").AsCounter()
                     }
                 // Or is the Fleet out raiding another planet?
                 } else {
@@ -972,11 +971,11 @@ func (cache *StructCache) CanCounterAttack(attackerStruct *StructCache) (err err
                         // The target is to either side of the Fleet
                         // Proceed with the intended action for the Fleet attacking the target
                     } else {
-                        err = sdkerrors.Wrapf(types.ErrStructAction, "Target Struct (%s) is unreachable by Fleet Counter-Attacker Struct (%s)", attackerStruct.StructId, cache.StructId)
+                        err = types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "unreachable").AsCounter()
                     }
                 }
             default:
-                err = sdkerrors.Wrapf(types.ErrStructAction, "Attacker Struct (%s) is unreachable by Counter-Attacker Struct (%s). Should tell an adult about this one", attackerStruct.StructId, cache.StructId)
+                err = types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "unreachable").AsCounter()
         }
      }
     return
@@ -1345,7 +1344,7 @@ func (cache *StructCache) AttemptMove(destinationType types.ObjectType, ambit ty
     if (!cache.StructureLoaded) { cache.LoadStruct() }
 
     if cache.IsOffline() {
-        return sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct cannot move when offline")
+        return types.NewStructStateError(cache.StructId, "offline", "online", "move")
     }
 
     switch destinationType {
@@ -1360,7 +1359,7 @@ func (cache *StructCache) AttemptMove(destinationType types.ObjectType, ambit ty
                 return  err
             }
         default:
-            return sdkerrors.Wrapf(types.ErrObjectNotFound, "We're not building these yet")
+            return types.NewStructBuildError(cache.GetStructType().GetId(), destinationType.String(), "", "type_unsupported")
     }
 
     switch (cache.Structure.LocationType) {

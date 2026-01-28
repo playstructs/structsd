@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -23,7 +22,7 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
 
     player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
     if (!playerFound) {
-        return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)
+        return &types.MsgAllocationCreateResponse{}, types.NewPlayerRequiredError(msg.Creator, "allocation_create")
     }
 
     sourceObjectPermissionId := GetObjectPermissionIDBytes(msg.SourceObjectId, player.Id)
@@ -34,14 +33,14 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
     if (player.Id != msg.SourceObjectId) {
         // check that the player has permissions
         if (!k.PermissionHasOneOf(ctx, sourceObjectPermissionId, types.PermissionAssets)) {
-            return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionAllocation, "Calling player (%s) has no Allocation permissions on source (%s) ", player.Id, msg.SourceObjectId)
+            return &types.MsgAllocationCreateResponse{}, types.NewPermissionError("player", player.Id, "allocation", msg.SourceObjectId, uint64(types.PermissionAssets), "allocation_create")
         }
     }
 
 
     // check that the account has energy management permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.PermissionAssets))) {
-        return &types.MsgAllocationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
+        return &types.MsgAllocationCreateResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "energy_management")
     }
 
 	allocation, _ , err := k.AppendAllocation(ctx, allocation, msg.Power)
