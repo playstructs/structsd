@@ -902,7 +902,7 @@ func SimulateCommandShipBuildComplete(
 			proof = hex.EncodeToString(hash.Sum(nil))
 
 			// Check if proof meets difficulty
-			if types.HashBuildAndCheckDifficulty(hashInput, proof, currentAge, structCache.GetStructType().BuildDifficulty) {
+			if valid, _ := types.HashBuildAndCheckDifficulty(hashInput, proof, currentAge, structCache.GetStructType().BuildDifficulty); valid {
 				break
 			}
 		}
@@ -1812,7 +1812,7 @@ func SimulateMsgStructBuildComplete(
 				nonce = fmt.Sprintf("%d", r.Int63())
 				hashInput := structure.Id + nonce
 				proof = types.HashBuild(hashInput)
-				if types.HashBuildAndCheckDifficulty(hashInput, proof, currentAge, structCache.GetStructType().BuildDifficulty) {
+				if valid, _ := types.HashBuildAndCheckDifficulty(hashInput, proof, currentAge, structCache.GetStructType().BuildDifficulty); valid {
 					break
 				}
 			}

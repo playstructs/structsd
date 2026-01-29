@@ -216,3 +216,12 @@ option go_package = "structs/x/structs/types";
     string      planetId   = 2;
     raidStatus  status     = 3;
   }
+
+  message EventHashSuccess { EventHashSuccessDetail eventHashSuccessDetail = 1;}
+  message EventHashSuccessDetail {
+    string callerAddress    = 1;
+    string category         = 2;
+    uint64 difficulty       = 3;
+    string objectId         = 4;
+    string planetId         = 5;
+  }

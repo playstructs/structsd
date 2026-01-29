@@ -793,24 +793,25 @@ func (cache *StructCache) CanBePlayedBy(address string) (error) {
     return nil
 }
 
-func (cache *StructCache) CanBeHashedBy(address string) (error) {
-
+func (cache *StructCache) CanBeHashedBy(address string) (string, bool, error) {
+    owner := true
     // Make sure the address calling this has Hash permissions
     if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(address), types.PermissionHash)) {
-        return types.NewPermissionError("address", address, "", "", uint64(types.PermissionHash), "hash")
+        return "", owner, types.NewPermissionError("address", address, "", "", uint64(types.PermissionHash), "hash")
     }
 
     callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
     if (err != nil) {
-        return err
+        return "", owner, err
     }
     if (callingPlayer.PlayerId != cache.GetOwnerId()) {
+        owner = false
         if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.PlayerId), types.PermissionHash)) {
-           return types.NewPermissionError("player", callingPlayer.PlayerId, "player", cache.GetOwnerId(), uint64(types.PermissionHash), "hash")
+           return callingPlayer.PlayerId, owner, types.NewPermissionError("player", callingPlayer.PlayerId, "player", cache.GetOwnerId(), uint64(types.PermissionHash), "hash")
         }
     }
 
-    return nil
+    return cache.GetOwnerId(), owner, nil
 }
 
 /* Game Functions */

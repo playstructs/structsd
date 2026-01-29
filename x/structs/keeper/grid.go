@@ -53,6 +53,10 @@ func (k Keeper) GetGridAttribute(ctx context.Context, gridAttributeId string) (a
 func (k Keeper) ClearGridAttribute(ctx context.Context, gridAttributeId string) {
 	gridAttributeStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridAttributeKey))
 	gridAttributeStore.Delete([]byte(gridAttributeId))
+
+    ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGrid{&types.GridRecord{AttributeId: gridAttributeId, Value: 0}})
+    k.logger.Info("Grid Change (Clear)", "gridAttributeId", gridAttributeId)
 }
 
 func (k Keeper) SetGridAttribute(ctx context.Context, gridAttributeId string, amount uint64) {
