@@ -146,6 +146,8 @@ option go_package = "structs/x/structs/types";
     string attackerPlayerId = 17;
     string targetPlayerId   = 18;
 
+    uint64 attackerHealthAfter = 19;
+
   }
 
   message EventAttackShotDetail {
@@ -193,6 +195,10 @@ option go_package = "structs/x/structs/types";
     uint64 postDestructionDamage                    = 30;
     bool postDestructionDamageDestroyedAttacker     = 31;
     techPassiveWeaponry postDestructionDamageCause  = 32;
+
+    uint64 targetHealthBefore  = 33;
+    uint64 targetHealthAfter   = 34;
+    uint64 blockerHealthAfter  = 35;
 
   }
 
