@@ -902,9 +902,11 @@ func (cache *StructCache) CanOreMinePlanet() error {
 		return types.NewStructCapabilityError(cache.StructId, "mining")
 	}
 
+    /*
 	if cache.GetBlockStartOreMine() == 0 {
 		return types.NewStructStateError(cache.StructId, "not_mining", "mining", "ore_mine")
 	}
+	*/
 
 	if cache.GetPlanet().IsComplete() {
 		return types.NewPlanetStateError(cache.GetPlanet().GetPlanetId(), "complete", "mine")
@@ -931,9 +933,11 @@ func (cache *StructCache) CanOreRefine() error {
 		return types.NewStructCapabilityError(cache.StructId, "refining")
 	}
 
+    /*
 	if cache.GetBlockStartOreRefine() == 0 {
 		return types.NewStructStateError(cache.StructId, "not_refining", "refining", "ore_refine")
 	}
+	*/
 
 	if !cache.GetOwner().HasStoredOre() {
 		return types.NewPlayerAffordabilityError(cache.GetOwner().PlayerId, "refine", "ore")

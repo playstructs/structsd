@@ -96,7 +96,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
     for _, elem := range genState.StructAttributeList {
         value := elem.Value
         if isStructBlockHeightAttribute(elem.AttributeId) {
-            value = 1
+            value = 0
         }
         k.SetStructAttribute(ctx, elem.AttributeId, value)
     }

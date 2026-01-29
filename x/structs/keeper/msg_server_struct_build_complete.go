@@ -35,8 +35,8 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 	}
 
 	if structure.IsBuilt() {
-		structure.GetOwner().Discharge()
-		structure.GetOwner().Commit()
+		//structure.GetOwner().Discharge()
+		//structure.GetOwner().Commit()
 		return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.StructId, "built", "building", "build_complete")
 	}
 
@@ -58,9 +58,9 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 	structure.GetOwner().StructsLoadDecrement(structure.GetStructType().BuildDraw)
 
 	if !structure.GetOwner().CanSupportLoadAddition(structure.GetStructType().PassiveDraw) {
-		structure.GetOwner().StructsLoadIncrement(structure.GetStructType().BuildDraw)
+		//structure.GetOwner().StructsLoadIncrement(structure.GetStructType().BuildDraw)
 		//structure.GetOwner().Discharge()
-		structure.GetOwner().Commit()
+		//structure.GetOwner().Commit()
 		return &types.MsgStructStatusResponse{}, types.NewPlayerPowerError(structure.GetOwnerId(), "capacity_exceeded").WithCapacity(structure.GetStructType().PassiveDraw, structure.GetOwner().GetAvailableCapacity())
 	}
 
@@ -72,10 +72,10 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 
     valid, achievedDifficulty := types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().BuildDifficulty)
 	if !valid {
-		structure.GetOwner().StructsLoadIncrement(structure.GetStructType().BuildDraw)
+		//structure.GetOwner().StructsLoadIncrement(structure.GetStructType().BuildDraw)
 		//structure.GetOwner().Discharge()
 		//structure.GetOwner().Halt()
-		structure.GetOwner().Commit()
+		//structure.GetOwner().Commit()
 		return &types.MsgStructStatusResponse{}, types.NewWorkFailureError("build", structure.GetStructId(), hashInput)
 	}
 
