@@ -3,6 +3,7 @@ package keeper
 import (
 	//"encoding/binary"
     "context"
+    "strconv"
 
     "github.com/cosmos/cosmos-sdk/runtime"
 	"cosmossdk.io/store/prefix"
@@ -118,7 +119,7 @@ func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation, 
 
 	if (previousAllocation.Index != allocation.Index) {
 	    // Should never change the SourceId of an Allocation
-	    return allocation, newPower, types.NewAllocationError(allocation.SourceObjectId, "immutable_index").WithFieldChange("index", string(previousAllocation.Index), string(allocation.Index))
+	    return allocation, newPower, types.NewAllocationError(allocation.SourceObjectId, "immutable_index").WithFieldChange("index", strconv.FormatUint(previousAllocation.Index, 10), strconv.FormatUint(allocation.Index, 10))
 	}
 
     if (previousAllocation.Type != allocation.Type) {
