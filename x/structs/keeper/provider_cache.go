@@ -5,7 +5,6 @@ import (
 
 	"structs/x/structs/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"cosmossdk.io/math"
     authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 )
@@ -97,6 +96,10 @@ func (cache *ProviderCache) IsChanged() bool {
 	return cache.AnyChange
 }
 
+func (cache *ProviderCache) ID() string {
+	return cache.ProviderId
+}
+
 func (cache *ProviderCache) Changed() {
 	cache.AnyChange = true
 }
@@ -185,24 +188,24 @@ func (cache *ProviderCache) GetEarningsPoolLocation() sdk.AccAddress { return au
 func (cache *ProviderCache) AgreementVerify(capacity uint64, duration uint64) (error) {
     // min < capacity < max
     if cache.GetCapacityMinimum() > capacity {
-        return sdkerrors.Wrapf(types.ErrInvalidParameters, "Capacity (%d) cannot be lower than Minimum Capacity (%d)", capacity, cache.GetCapacityMinimum())
+        return types.NewParameterValidationError("capacity", capacity, "below_minimum").WithRange(cache.GetCapacityMinimum(), cache.GetCapacityMaximum())
     }
     if capacity > cache.GetCapacityMaximum() {
-        return sdkerrors.Wrapf(types.ErrInvalidParameters, "Capacity (%d) cannot be greater than Maximum Capacity (%d)", capacity, cache.GetCapacityMaximum())
+        return types.NewParameterValidationError("capacity", capacity, "above_maximum").WithRange(cache.GetCapacityMinimum(), cache.GetCapacityMaximum())
     }
 
     // min < duration < max
     if cache.GetDurationMinimum() > duration {
-        return sdkerrors.Wrapf(types.ErrInvalidParameters, "Duration (%d) cannot be lower than Minimum Duration (%d)", duration, cache.GetDurationMinimum())
+        return types.NewParameterValidationError("duration", duration, "below_minimum").WithRange(cache.GetDurationMinimum(), cache.GetDurationMaximum())
     }
     if duration > cache.GetDurationMaximum() {
-        return sdkerrors.Wrapf(types.ErrInvalidParameters, "Duration (%d) cannot be greater than Maximum Duration (%d)", duration, cache.GetDurationMaximum())
+        return types.NewParameterValidationError("duration", duration, "above_maximum").WithRange(cache.GetDurationMinimum(), cache.GetDurationMaximum())
     }
 
     // Can the Substation support the added capacity
     substation := cache.K.GetSubstationCacheFromId(cache.Ctx, cache.GetSubstationId())
     if capacity > substation.GetAvailableCapacity(){
-        return sdkerrors.Wrapf(types.ErrInvalidParameters, "Desired Capacity (%d) is beyond what the Substation (%s) can support (%d) for this Provider (%s)", capacity, substation.GetSubstationId(), substation.GetAvailableCapacity(), cache.GetProviderId())
+        return types.NewParameterValidationError("capacity", capacity, "exceeds_available").WithSubstation(substation.GetSubstationId()).WithRange(0, substation.GetAvailableCapacity())
     }
 
     return nil
@@ -231,15 +234,15 @@ func (cache *ProviderCache) CanWithdrawBalance(activePlayer *PlayerCache) (error
 func (cache *ProviderCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) (error) {
     // Make sure the address calling this has permissions
     if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission)) {
-        return sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no (%d) permissions ", activePlayer.GetActiveAddress(), permission)
+        return types.NewPermissionError("address", activePlayer.GetActiveAddress(), "", "", uint64(permission), "provider_action")
     }
 
     if !activePlayer.HasPlayerAccount() {
-        return sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no Account", activePlayer.GetActiveAddress())
+        return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "provider_action")
     } else {
         if (activePlayer.GetPlayerId() != cache.GetOwnerId()) {
             if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetProviderId(), activePlayer.GetPlayerId()), permission)) {
-               return sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) has no (%d) permissions on target provider (%s)", activePlayer.GetPlayerId(), permission, cache.GetProviderId())
+               return types.NewPermissionError("player", activePlayer.GetPlayerId(), "provider", cache.GetProviderId(), uint64(permission), "provider_action")
             }
         }
     }
@@ -250,19 +253,19 @@ func (cache *ProviderCache) CanOpenAgreement(activePlayer *PlayerCache) (error) 
 
     if cache.GetAccessPolicy() == types.ProviderAccessPolicy_openMarket {
         if !activePlayer.HasPlayerAccount() {
-            return sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no Account", activePlayer.GetActiveAddress())
+            return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "agreement_open")
         }
 
     } else if cache.GetAccessPolicy() == types.ProviderAccessPolicy_guildMarket {
         if !cache.K.ProviderGuildAccessAllowed(cache.Ctx, cache.GetProviderId(), activePlayer.GetGuildId()) {
-            return sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) is not a member of an approved guild (%s)", activePlayer.GetPlayerId(), activePlayer.GetGuildId())
+            return types.NewProviderAccessError(cache.GetProviderId(), "guild_not_allowed").WithGuild(activePlayer.GetGuildId()).WithPlayer(activePlayer.GetPlayerId())
         }
 
     } else if cache.GetAccessPolicy() == types.ProviderAccessPolicy_closedMarket {
-        return sdkerrors.Wrapf(types.ErrPermission, "Provider (%s) is not accepting new Agreements", cache.GetProviderId())
+        return types.NewProviderAccessError(cache.GetProviderId(), "closed_market").WithPlayer(activePlayer.GetPlayerId())
 
     } else {
-        return sdkerrors.Wrapf(types.ErrPermission, "We're not really sure why it's not allowed, but it isn't. Pls tell an adult")
+        return types.NewProviderAccessError(cache.GetProviderId(), "unknown").WithPlayer(activePlayer.GetPlayerId())
     }
 
     return nil
@@ -320,7 +323,7 @@ func (cache *ProviderCache) GrantGuildsAndCommit(guildIdSet []string) (error) {
     for _, guildId := range guildIdSet {
         _, found := cache.K.GetGuild(cache.Ctx, guildId)
         if !found {
-            return sdkerrors.Wrapf(types.ErrObjectNotFound, "Guild ID (%s) not found ", guildId)
+            return types.NewObjectNotFoundError("guild", guildId)
         }
         cache.K.ProviderGrantGuild(cache.Ctx, cache.GetProviderId(), guildId)
     }

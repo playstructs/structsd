@@ -5,7 +5,6 @@ import (
     "time"
     "cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
@@ -52,7 +51,7 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 
     destinationReactor, destinationReactorFound := k.GetReactor(ctx, guildMembershipApplication.GetGuild().GetPrimaryReactorId())
     if (!destinationReactorFound) {
-        return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Somehow this reactor (%s) doesn't exist, you should tell an adult", guildMembershipApplication.GetGuild().GetPrimaryReactorId())
+        return &types.MsgGuildMembershipResponse{}, types.NewObjectNotFoundError("reactor", guildMembershipApplication.GetGuild().GetPrimaryReactorId())
     }
     destinationValidatorAccount, _ := sdk.ValAddressFromBech32(destinationReactor.Validator)
 
@@ -75,20 +74,20 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 
             infusion, infusionFound := k.GetInfusionByID(ctx, infusionId)
             if (!infusionFound) {
-                return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Infusion (%s) not found", infusionId)
+                return &types.MsgGuildMembershipResponse{}, types.NewObjectNotFoundError("infusion", infusionId)
             }
 
             if (infusion.PlayerId != msg.PlayerId) {
-                return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Infusion (%s) does not belong to player (%s)", infusionId, msg.PlayerId)
+                return &types.MsgGuildMembershipResponse{}, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "infusion_ownership").WithInfusion(infusionId)
             }
 
             if (infusion.DestinationType != types.ObjectType_reactor) {
-                return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Only Reactor infusions allowed, Infusion (%s) unacceptable", infusionId)
+                return &types.MsgGuildMembershipResponse{}, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "invalid_infusion_type").WithInfusion(infusionId)
             }
 
             sourceReactor, sourceReactorFound := k.GetReactor(ctx, infusion.DestinationId)
             if (!sourceReactorFound) {
-                return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Somehow this reactor (%s) doesn't exist, you should tell an adult",infusion.DestinationId)
+                return &types.MsgGuildMembershipResponse{}, types.NewObjectNotFoundError("reactor", infusion.DestinationId)
             }
 
             if (sourceReactor.GuildId != msg.GuildId) {
@@ -130,7 +129,7 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
         }
 
         if (currentFuel < guildMembershipApplication.GetGuild().GetJoinInfusionMinimum()) {
-            return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Join Infusion Minimum not met")
+            return &types.MsgGuildMembershipResponse{}, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "minimum_not_met").WithMinimum(guildMembershipApplication.GetGuild().GetJoinInfusionMinimum(), currentFuel)
         }
     }
 

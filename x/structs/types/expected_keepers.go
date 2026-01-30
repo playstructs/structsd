@@ -2,13 +2,15 @@ package types
 
 import (
 	"context"
-    "time"
-    "cosmossdk.io/math"
+	"time"
+
 	"cosmossdk.io/core/address"
+	"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-    //auth "github.com/cosmos/cosmos-sdk/x/auth/types"
-    staking "github.com/cosmos/cosmos-sdk/x/staking/types"
-    banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+
+	//auth "github.com/cosmos/cosmos-sdk/x/auth/types"
+	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
+	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 // StakingKeeper defines the expected interface for the Staking module.
@@ -17,31 +19,30 @@ type StakingKeeper interface {
 	ValidatorByConsAddr(context.Context, sdk.ConsAddress) (staking.ValidatorI, error)
 	// Methods imported from account should be defined here
 
-    GetValidator(context.Context, sdk.ValAddress) (staking.Validator, error)
-    GetAllValidators(context.Context) ([]staking.Validator, error)
-    GetValidators(context.Context, uint32) ([]staking.Validator, error)
+	GetValidator(context.Context, sdk.ValAddress) (staking.Validator, error)
+	GetAllValidators(context.Context) ([]staking.Validator, error)
+	GetValidators(context.Context, uint32) ([]staking.Validator, error)
 
-    GetValidatorDelegations(context.Context, sdk.ValAddress) ([]staking.Delegation, error)
+	GetValidatorDelegations(context.Context, sdk.ValAddress) ([]staking.Delegation, error)
 
-    GetDelegation(context.Context, sdk.AccAddress, sdk.ValAddress) (staking.Delegation, error)
+	GetDelegation(context.Context, sdk.AccAddress, sdk.ValAddress) (staking.Delegation, error)
 
-    GetUnbondingDelegation(context.Context, sdk.AccAddress, sdk.ValAddress) (staking.UnbondingDelegation, error)
-    GetUnbondingDelegationByUnbondingID(context.Context, uint64) (staking.UnbondingDelegation, error)
+	GetUnbondingDelegation(context.Context, sdk.AccAddress, sdk.ValAddress) (staking.UnbondingDelegation, error)
+	GetUnbondingDelegationByUnbondingID(context.Context, uint64) (staking.UnbondingDelegation, error)
 
-    GetDelegatorDelegations(ctx context.Context, delegator sdk.AccAddress, maxRetrieve uint16) ([]staking.Delegation, error)
+	GetDelegatorDelegations(ctx context.Context, delegator sdk.AccAddress, maxRetrieve uint16) ([]staking.Delegation, error)
 	SetDelegation(ctx context.Context, delegation staking.Delegation) error
 	RemoveDelegation(ctx context.Context, delegation staking.Delegation) error
 
-    // Needed for the Join Migration
-    ValidateUnbondAmount(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress, amt math.Int) (shares math.LegacyDec, err error)
-    BeginRedelegation(ctx context.Context, delAddr sdk.AccAddress, valSrcAddr, valDstAddr sdk.ValAddress, sharesAmount math.LegacyDec) (completionTime time.Time, err error)
+	// Needed for the Join Migration
+	ValidateUnbondAmount(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress, amt math.Int) (shares math.LegacyDec, err error)
+	BeginRedelegation(ctx context.Context, delAddr sdk.AccAddress, valSrcAddr, valDstAddr sdk.ValAddress, sharesAmount math.LegacyDec) (completionTime time.Time, err error)
 
-    BondDenom(ctx context.Context) (string, error)
-    Delegate(ctx context.Context, delAddr sdk.AccAddress, bondAmt math.Int, tokenSrc staking.BondStatus, validator staking.Validator, subtractAccount bool) (newShares math.LegacyDec, err error)
-    Undelegate(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress, sharesAmount math.LegacyDec) (time.Time, math.Int, error)
-    RemoveUnbondingDelegation(ctx context.Context, ubd staking.UnbondingDelegation) error
-    SetUnbondingDelegation(ctx context.Context, ubd staking.UnbondingDelegation) error
-
+	BondDenom(ctx context.Context) (string, error)
+	Delegate(ctx context.Context, delAddr sdk.AccAddress, bondAmt math.Int, tokenSrc staking.BondStatus, validator staking.Validator, subtractAccount bool) (newShares math.LegacyDec, err error)
+	Undelegate(ctx context.Context, delAddr sdk.AccAddress, valAddr sdk.ValAddress, sharesAmount math.LegacyDec) (time.Time, math.Int, error)
+	RemoveUnbondingDelegation(ctx context.Context, ubd staking.UnbondingDelegation) error
+	SetUnbondingDelegation(ctx context.Context, ubd staking.UnbondingDelegation) error
 }
 
 // StakingHooks event hooks for staking validator object (noalias)
@@ -76,15 +77,14 @@ type BankKeeper interface {
 	GetDenomMetaData(context.Context, string) (banktypes.Metadata, bool)
 	GetSupply(context.Context, string) sdk.Coin
 	HasBalance(context.Context, sdk.AccAddress, sdk.Coin) bool
-    SpendableCoins(context.Context, sdk.AccAddress) sdk.Coins
-    SpendableCoin(context.Context, sdk.AccAddress, string) sdk.Coin
-    SendCoins(context.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) error
-    SendCoinsFromModuleToModule(context.Context, string, string, sdk.Coins) error
-    SendCoinsFromAccountToModule(context.Context, sdk.AccAddress, string, sdk.Coins) error
-    SendCoinsFromModuleToAccount(context.Context, string, sdk.AccAddress, sdk.Coins) error
-    MintCoins(context.Context, string, sdk.Coins) error
-    BurnCoins(context.Context, string, sdk.Coins) error
-
+	SpendableCoins(context.Context, sdk.AccAddress) sdk.Coins
+	SpendableCoin(context.Context, sdk.AccAddress, string) sdk.Coin
+	SendCoins(context.Context, sdk.AccAddress, sdk.AccAddress, sdk.Coins) error
+	SendCoinsFromModuleToModule(context.Context, string, string, sdk.Coins) error
+	SendCoinsFromAccountToModule(context.Context, sdk.AccAddress, string, sdk.Coins) error
+	SendCoinsFromModuleToAccount(context.Context, string, sdk.AccAddress, sdk.Coins) error
+	MintCoins(context.Context, string, sdk.Coins) error
+	BurnCoins(context.Context, string, sdk.Coins) error
 }
 
 // ParamSubspace defines the expected Subspace interface for parameters.
@@ -92,4 +92,3 @@ type ParamSubspace interface {
 	Get(context.Context, []byte, interface{})
 	Set(context.Context, []byte, interface{})
 }
-

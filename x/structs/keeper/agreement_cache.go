@@ -4,7 +4,6 @@ import (
 	"context"
 
     sdk "github.com/cosmos/cosmos-sdk/types"
-    sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	"cosmossdk.io/math"
 )
@@ -103,6 +102,10 @@ func (cache *AgreementCache) IsChanged() bool {
 	return cache.AnyChange
 }
 
+func (cache *AgreementCache) ID() string {
+	return cache.AgreementId
+}
+
 func (cache *AgreementCache) Changed() {
 	cache.AnyChange = true
 }
@@ -183,15 +186,15 @@ func (cache *AgreementCache) CanUpdate(activePlayer *PlayerCache) (error) {
 func (cache *AgreementCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) (error) {
     // Make sure the address calling this has permissions
     if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission)) {
-        return sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no (%d) permissions ", activePlayer.GetActiveAddress(), permission)
+        return types.NewPermissionError("address", activePlayer.GetActiveAddress(), "", "", uint64(permission), "agreement_action")
     }
 
     if !activePlayer.HasPlayerAccount() {
-        return sdkerrors.Wrapf(types.ErrPermission, "Calling address (%s) has no Account", activePlayer.GetActiveAddress())
+        return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "agreement_action")
     } else {
         if (activePlayer.GetPlayerId() != cache.GetOwnerId()) {
             if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetAgreementId(), activePlayer.GetPlayerId()), permission)) {
-               return sdkerrors.Wrapf(types.ErrPermission, "Calling account (%s) has no (%d) permissions on target agreement (%s)", activePlayer.GetPlayerId(), permission, cache.GetAgreementId())
+               return types.NewPermissionError("player", activePlayer.GetPlayerId(), "agreement", cache.GetAgreementId(), uint64(permission), "agreement_action")
             }
         }
     }
@@ -402,7 +405,7 @@ func (cache *AgreementCache) SetEndBlock(endBlock uint64) {
 
 func (cache *AgreementCache) CapacityIncrease(amount uint64) (error){
     if cache.GetProvider().GetSubstation().GetAvailableCapacity() < amount {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Substation (%s) cannot afford the increase", cache.GetProvider().GetSubstationId())
+        return types.NewParameterValidationError("capacity", amount, "exceeds_available").WithSubstation(cache.GetProvider().GetSubstationId()).WithRange(0, cache.GetProvider().GetSubstation().GetAvailableCapacity())
     }
 
     cache.PayoutVoidedProviderCancellationPenalty()
@@ -441,7 +444,7 @@ func (cache *AgreementCache) CapacityDecrease(amount uint64) (error){
         // remaining duration = end block - current block
         // new duration = (remaining duration * old capacity) / new capacity .Truncate()
     if cache.GetCapacity() < amount {
-        return sdkerrors.Wrapf(types.ErrGridMalfunction, "Cannot decrease passed zero")
+        return types.NewParameterValidationError("capacity", amount, "below_minimum").WithRange(0, cache.GetCapacity())
     }
     newCapacity := cache.GetCapacity() - amount
 

@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -16,12 +15,12 @@ func (k msgServer) AllocationDelete(goCtx context.Context, msg *types.MsgAllocat
 
 	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId)
 	if (!allocationFound) {
-		return &types.MsgAllocationDeleteResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "allocation (%s) not found", msg.AllocationId)
+		return &types.MsgAllocationDeleteResponse{}, types.NewObjectNotFoundError("allocation", msg.AllocationId)
 	}
 
     player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
     if (!playerFound) {
-        return &types.MsgAllocationDeleteResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not perform allocation action with non-player address (%s)", msg.Creator)
+        return &types.MsgAllocationDeleteResponse{}, types.NewPlayerRequiredError(msg.Creator, "allocation_delete")
     }
 
     sourceObjectPermissionId := GetObjectPermissionIDBytes(allocation.SourceObjectId, player.Id)
@@ -32,18 +31,18 @@ func (k msgServer) AllocationDelete(goCtx context.Context, msg *types.MsgAllocat
     if (player.Id != allocation.SourceObjectId) {
         // check that the player has permissions
         if (!k.PermissionHasOneOf(ctx, sourceObjectPermissionId, types.PermissionAssets)) {
-            return &types.MsgAllocationDeleteResponse{}, sdkerrors.Wrapf(types.ErrPermissionAllocation, "Calling player (%s) has no Allocation permissions on source (%s) ", player.Id, allocation.SourceObjectId)
+            return &types.MsgAllocationDeleteResponse{}, types.NewPermissionError("player", player.Id, "allocation", allocation.SourceObjectId, uint64(types.PermissionAssets), "allocation_delete")
         }
     }
 
     // check that the account has energy management permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.PermissionAssets))) {
-        return &types.MsgAllocationDeleteResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
+        return &types.MsgAllocationDeleteResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "energy_management")
     }
 
 
     if (allocation.Type != types.AllocationType_dynamic) {
-        return &types.MsgAllocationDeleteResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Allocation Type must be Dynamic for deleting ")
+        return &types.MsgAllocationDeleteResponse{}, types.NewAllocationError(allocation.SourceObjectId, "immutable_type").WithFieldChange("type", allocation.Type.String(), "dynamic")
     }
 
     k.DestroyAllocation(ctx, msg.AllocationId)

@@ -171,6 +171,10 @@ func (cache *GridCache) IsChanged() bool {
     return cache.AnyChange
 }
 
+func (cache *GridCache) ID() string {
+    return cache.ObjectId
+}
+
 func (cache *GridCache) Changed() {
     cache.AnyChange = true
 }

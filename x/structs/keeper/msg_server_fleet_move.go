@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -28,12 +27,12 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
     }
 
     if fleet.GetOwner().IsHalted() {
-        return &types.MsgFleetMoveResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Cannot perform actions while Player (%s) is Halted", fleet.GetOwnerId())
+        return &types.MsgFleetMoveResponse{}, types.NewPlayerHaltedError(fleet.GetOwnerId(), "fleet_move")
     }
 
     destination := k.GetPlanetCacheFromId(ctx, msg.DestinationLocationId)
     if (!destination.LoadPlanet()) {
-        return &types.MsgFleetMoveResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Planet (%s) wasn't found", msg.DestinationLocationId)
+        return &types.MsgFleetMoveResponse{}, types.NewObjectNotFoundError("planet", msg.DestinationLocationId)
     }
 
     // Is the Fleet able to move?

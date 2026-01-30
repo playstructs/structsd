@@ -49,6 +49,10 @@ func (k Keeper) GetPlanetAttribute(ctx context.Context, planetAttributeId string
 func (k Keeper) ClearPlanetAttribute(ctx context.Context, planetAttributeId string) () {
 	planetAttributeStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlanetAttributeKey))
 	planetAttributeStore.Delete([]byte(planetAttributeId))
+
+    ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPlanetAttribute{&types.PlanetAttributeRecord{AttributeId: planetAttributeId, Value: 0}})
+    k.logger.Info("Planet Change (Clear)", "planetAttributeId", planetAttributeId)
 }
 
 

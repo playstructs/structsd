@@ -21,10 +21,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	banktypes "github.com/cosmos/cosmos-sdk/x/bank/types"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
-	portkeeper "github.com/cosmos/ibc-go/v8/modules/core/05-port/keeper"
-	ibcexported "github.com/cosmos/ibc-go/v8/modules/core/exported"
-	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
+	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 	"github.com/stretchr/testify/require"
 
 	"structs/x/structs/keeper"
@@ -59,7 +56,7 @@ func (m *MockAccountKeeper) NewAccountWithAddress(ctx context.Context, addr sdk.
 }
 
 func (m *MockAccountKeeper) GetModuleAddress(module string) sdk.AccAddress {
-	return sdk.AccAddress{}
+	return authtypes.NewModuleAddress(module)
 }
 
 // MockBankKeeper is a mock implementation of the BankKeeper interface
@@ -281,30 +278,21 @@ func StructsKeeper(t testing.TB) (keeper.Keeper, sdk.Context) {
 
 	registry := codectypes.NewInterfaceRegistry()
 	appCodec := codec.NewProtoCodec(registry)
-	capabilityKeeper := capabilitykeeper.NewKeeper(appCodec, storeKey, memStoreKey)
 	authority := authtypes.NewModuleAddress(govtypes.ModuleName)
-
-	scopedKeeper := capabilityKeeper.ScopeToModule(ibcexported.ModuleName)
-	portKeeper := portkeeper.NewKeeper(scopedKeeper)
-	scopeModule := capabilityKeeper.ScopeToModule(types.ModuleName)
 
 	// Create mock keepers
 	mockAccountKeeper := NewMockAccountKeeper()
 	mockBankKeeper := NewMockBankKeeper()
 	mockStakingKeeper := NewMockStakingKeeper()
 
+	// IBC v10 - no capability keeper needed
 	k := keeper.NewKeeper(
 		appCodec,
 		runtime.NewKVStoreService(storeKey),
 		log.NewNopLogger(),
 		authority.String(),
 		func() *ibckeeper.Keeper {
-			return &ibckeeper.Keeper{
-				PortKeeper: &portKeeper,
-			}
-		},
-		func(string) capabilitykeeper.ScopedKeeper {
-			return scopeModule
+			return &ibckeeper.Keeper{}
 		},
 		mockBankKeeper,
 		mockStakingKeeper,

@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	"math"
 )
@@ -28,16 +27,16 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
 
     _ , addressValidationError := sdk.AccAddressFromBech32(msg.PrimaryAddress)
     if (addressValidationError != nil){
-        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPlayerUpdate, "New Primary Address provided (%s) couldn't be validated as a real address. Update aborted. ", msg.PrimaryAddress)
+        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, types.NewAddressValidationError(msg.PrimaryAddress, "invalid_format")
     }
 
     relatedPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.PrimaryAddress)
     if (relatedPlayerIndex == 0) {
-        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPlayerUpdate, "New Primary Address provided (%s) is not associated with a player, register it with the player before setting it as Primary. Update aborted.", msg.PrimaryAddress)
+        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, types.NewAddressValidationError(msg.PrimaryAddress, "not_registered")
     }
 
     if relatedPlayerIndex != player.GetIndex() {
-        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, sdkerrors.Wrapf(types.ErrPlayerUpdate, "New Primary Address provided (%s) is associated with Player %d instead of Player %d. Update aborted.", msg.PrimaryAddress, relatedPlayerIndex, player.GetIndex())
+        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, types.NewAddressValidationError(msg.PrimaryAddress, "wrong_player").WithPlayers(player.GetPlayerId(), "")
     }
 
 

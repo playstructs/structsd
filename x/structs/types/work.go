@@ -1,49 +1,46 @@
 package types
 
 import (
-    "math"
-    "crypto/sha256"
-    "encoding/hex"
-
+	"crypto/sha256"
+	"encoding/hex"
+	"math"
 )
 
-
 func HashCheck(input string, hash string) bool {
-    newHash := sha256.New()
-    newHash.Write([]byte(input))
-    newHashOutput := hex.EncodeToString(newHash.Sum(nil))
+	newHash := sha256.New()
+	newHash.Write([]byte(input))
+	newHashOutput := hex.EncodeToString(newHash.Sum(nil))
 
-    return (newHashOutput == hash)
+	return (newHashOutput == hash)
 }
 
 func HashBuild(input string) string {
-    newHash := sha256.New()
-    newHash.Write([]byte(input))
-    newHashOutput := hex.EncodeToString(newHash.Sum(nil))
+	newHash := sha256.New()
+	newHash.Write([]byte(input))
+	newHashOutput := hex.EncodeToString(newHash.Sum(nil))
 
-    return newHashOutput
+	return newHashOutput
 }
 
-func HashBuildAndCheckDifficulty(input string, proof string, age uint64, difficultyRange uint64) bool {
-    hash := HashBuild(input)
+func HashBuildAndCheckDifficulty(input string, proof string, age uint64, difficultyRange uint64) (bool, uint64) {
+	hash := HashBuild(input)
 
-    if (proof != hash) {
-        return false
-    }
+	if proof != hash {
+		return false, 0
+	}
 
-    difficulty := CalculateDifficulty(float64(age), difficultyRange)
+	difficulty := CalculateDifficulty(float64(age), difficultyRange)
 
+	// Count leading zeros in the hash, up to the required difficulty
+	achievedDifficulty := uint64(0)
+	for position := 1; position <= difficulty; position++ {
+		if hash[position-1:position] != "0" {
+			return false, achievedDifficulty
+		}
+		achievedDifficulty++
+	}
 
-    position := 1
-    for position <= difficulty {
-        if (hash[position - 1 : position] != "0") {
-            return false
-        }
-        position++
-    }
-
-    return true
-
+	return true, achievedDifficulty
 }
 
 func CalculateDifficulty(activationAge float64, difficultyRange uint64) int {
@@ -61,12 +58,9 @@ func CalculateDifficulty(activationAge float64, difficultyRange uint64) int {
 	return difficulty
 }
 
-
-func DifficultyPrefixString(plength int) (s string){
-    for i:=len(s);i<plength;i++{
-        s="1"+s
-    }
-    return s
+func DifficultyPrefixString(plength int) (s string) {
+	for i := len(s); i < plength; i++ {
+		s = "1" + s
+	}
+	return s
 }
-
-

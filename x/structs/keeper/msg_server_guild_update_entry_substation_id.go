@@ -4,7 +4,6 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -17,25 +16,25 @@ func (k msgServer) GuildUpdateEntrySubstationId(goCtx context.Context, msg *type
 
     playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
     if (playerIndex == 0) {
-     return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Guild update requires Player account but none associated with %s", msg.Creator)
+     return &types.MsgGuildUpdateResponse{}, types.NewPlayerRequiredError(msg.Creator, "guild_update_entry_substation")
     }
     player, _ := k.GetPlayerFromIndex(ctx, playerIndex)
 
     guild, guildFound := k.GetGuild(ctx, msg.GuildId)
     if (!guildFound) {
-         return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Guild (%s) wasn't found. Can't update that which does not exist", msg.GuildId)
+         return &types.MsgGuildUpdateResponse{}, types.NewObjectNotFoundError("guild", msg.GuildId)
     }
 
     guildObjectPermissionId := GetObjectPermissionIDBytes(msg.GuildId, player.Id)
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
 
     if (!k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.PermissionUpdate)) {
-        return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrGuildUpdate, "Calling player (%s) has no permissions to update guild", player.Id)
+        return &types.MsgGuildUpdateResponse{}, types.NewPermissionError("player", player.Id, "guild", msg.GuildId, uint64(types.PermissionUpdate), "guild_update")
     }
 
     // Make sure the address calling this has Associate permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets)) {
-        return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
+        return &types.MsgGuildUpdateResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "guild_management")
     }
 
     if (msg.EntrySubstationId != "") {
@@ -44,7 +43,7 @@ func (k msgServer) GuildUpdateEntrySubstationId(goCtx context.Context, msg *type
 
         // check that the calling player has substation permissions
         if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.PermissionGrid)) {
-            return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%s) has no Substation Connect Player permissions ", player.Id)
+            return &types.MsgGuildUpdateResponse{}, types.NewPermissionError("player", player.Id, "substation", msg.EntrySubstationId, uint64(types.PermissionGrid), "substation_connect")
         }
         guild.SetEntrySubstationId(msg.EntrySubstationId)
     }

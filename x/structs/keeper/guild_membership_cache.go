@@ -5,7 +5,6 @@ import (
 
 	"structs/x/structs/types"
 	//sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 
 	// Used in Randomness Orb
 
@@ -40,17 +39,17 @@ func (k *Keeper) GetGuildMembershipApplicationCache(ctx context.Context, calling
 
     targetPlayer, err := k.GetPlayerCacheFromId(ctx, playerId)
     if err != nil {
-        return GuildMembershipApplicationCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player (%s) not found", playerId)
+        return GuildMembershipApplicationCache{}, types.NewObjectNotFoundError("player", playerId)
     }
 
     if targetPlayer.GetGuildId() == guildId {
         k.ClearGuildMembershipApplication(ctx, guildId, playerId)
-        return GuildMembershipApplicationCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player (%s) already a member of Guild (%s)", playerId, guildId)
+        return GuildMembershipApplicationCache{}, types.NewGuildMembershipError(guildId, playerId, "already_member")
     }
 
     guild := k.GetGuildCacheFromId(ctx, guildId)
     if !guild.LoadGuild() {
-        return GuildMembershipApplicationCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Guild (%s) not found", guildId)
+        return GuildMembershipApplicationCache{}, types.NewObjectNotFoundError("guild", guildId)
     }
 
     guildMembershipApplication, guildMembershipApplicationFound := k.GetGuildMembershipApplication(ctx, guildId, playerId)
@@ -62,7 +61,7 @@ func (k *Keeper) GetGuildMembershipApplicationCache(ctx context.Context, calling
     if guildMembershipApplicationFound {
 
         if guildMembershipApplication.JoinType != joinType {
-            return GuildMembershipApplicationCache{}, sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Application cannot change join type")
+            return GuildMembershipApplicationCache{}, types.NewGuildMembershipError(guildId, playerId, "join_type_mismatch")
         }
 
     } else {
@@ -122,20 +121,20 @@ func (k *Keeper) GetGuildMembershipKickCache(ctx context.Context, callingPlayer 
 
     targetPlayer, err := k.GetPlayerCacheFromId(ctx, playerId)
     if err != nil {
-        return GuildMembershipApplicationCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player (%s) not found", playerId)
+        return GuildMembershipApplicationCache{}, types.NewObjectNotFoundError("player", playerId)
     }
 
     if targetPlayer.GetGuildId() != guildId {
-        return GuildMembershipApplicationCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player (%s) already not a member of Guild (%s)", playerId, guildId)
+        return GuildMembershipApplicationCache{}, types.NewGuildMembershipError(guildId, playerId, "not_member")
     }
 
     guild := k.GetGuildCacheFromId(ctx, guildId)
     if !guild.LoadGuild() {
-        return GuildMembershipApplicationCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Guild (%s) not found", guildId)
+        return GuildMembershipApplicationCache{}, types.NewObjectNotFoundError("guild", guildId)
     }
 
     if guild.GetOwnerId() == playerId {
-        return GuildMembershipApplicationCache{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Player (%s) is the owner of the guild (%s), so... no.", playerId, guildId)
+        return GuildMembershipApplicationCache{}, types.NewGuildMembershipError(guildId, playerId, "cannot_kick_owner")
     }
 
     guildMembershipApplication, guildMembershipApplicationFound := k.GetGuildMembershipApplication(ctx, guildId, playerId)
@@ -211,6 +210,10 @@ func (cache *GuildMembershipApplicationCache) IsChanged() bool {
 	return cache.AnyChange
 }
 
+func (cache *GuildMembershipApplicationCache) ID() string {
+	return cache.GuildMembershipApplication.GuildId + "/" + cache.GuildMembershipApplication.PlayerId
+}
+
 func (cache *GuildMembershipApplicationCache) Changed() {
 	cache.AnyChange = true
 }
@@ -260,7 +263,7 @@ func (cache *GuildMembershipApplicationCache) SetSubstationIdOverride(substation
 
         substation := cache.K.GetSubstationCacheFromId(cache.Ctx, substationId)
         if !substation.LoadSubstation() {
-            return sdkerrors.Wrapf(types.ErrObjectNotFound, "Substation (%s) not found", substationId)
+            return types.NewObjectNotFoundError("substation", substationId)
         }
 
         substationPermissionError := substation.CanManagePlayerConnections(cache.CallingPlayer)
@@ -287,7 +290,7 @@ func (cache *GuildMembershipApplicationCache) VerifyInviteAsGuild() (error) {
     }
 
     if (cache.GetJoinType() != types.GuildJoinType_invite) {
-        return sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Membership Application is incorrect type for invitation approval")
+        return types.NewGuildMembershipError(cache.GetGuildId(), cache.GetPlayerId(), "wrong_join_type").WithJoinType("invite")
     }
 
     return nil
@@ -296,12 +299,12 @@ func (cache *GuildMembershipApplicationCache) VerifyInviteAsGuild() (error) {
 func (cache *GuildMembershipApplicationCache) VerifyInviteAsPlayer() (error) {
     if cache.GetPlayerId() != cache.CallingPlayer.GetPlayerId() {
         if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetPlayerId(), cache.CallingPlayer.GetPlayerId()), types.PermissionAssociations)) {
-            return sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%s) has no Player Association permissions with the Player (%s) ", cache.CallingPlayer.GetPlayerId(), cache.GetPlayerId())
+            return types.NewPermissionError("player", cache.CallingPlayer.GetPlayerId(), "player", cache.GetPlayerId(), uint64(types.PermissionAssociations), "guild_register")
         }
     }
 
     if (cache.GetJoinType() != types.GuildJoinType_invite) {
-        return sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Membership Application is incorrect type for invitation approval")
+        return types.NewGuildMembershipError(cache.GetGuildId(), cache.GetPlayerId(), "wrong_join_type").WithJoinType("invite")
     }
 
     return nil
@@ -342,7 +345,7 @@ func (cache *GuildMembershipApplicationCache) VerifyRequestAsGuild() (error) {
     }
 
     if (cache.GetJoinType() != types.GuildJoinType_request) {
-        return sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Membership Application is incorrect type for invitation approval")
+        return types.NewGuildMembershipError(cache.GetGuildId(), cache.GetPlayerId(), "wrong_join_type").WithJoinType("request")
     }
 
     return nil
@@ -351,12 +354,12 @@ func (cache *GuildMembershipApplicationCache) VerifyRequestAsGuild() (error) {
 func (cache *GuildMembershipApplicationCache) VerifyRequestAsPlayer() (error) {
     if cache.GetPlayerId() != cache.CallingPlayer.GetPlayerId() {
         if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetPlayerId(), cache.CallingPlayer.GetPlayerId()), types.PermissionAssociations)) {
-            return sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%s) has no Player Association permissions with the Player (%s) ", cache.CallingPlayer.GetPlayerId(), cache.GetPlayerId())
+            return types.NewPermissionError("player", cache.CallingPlayer.GetPlayerId(), "player", cache.GetPlayerId(), uint64(types.PermissionAssociations), "guild_register")
         }
     }
 
     if (cache.GetJoinType() != types.GuildJoinType_request) {
-        return sdkerrors.Wrapf(types.ErrGuildMembershipApplication, "Membership Application is incorrect type for invitation approval")
+        return types.NewGuildMembershipError(cache.GetGuildId(), cache.GetPlayerId(), "wrong_join_type").WithJoinType("request")
     }
 
     return nil
@@ -409,7 +412,7 @@ func (cache *GuildMembershipApplicationCache) Kick() (error) {
 func (cache *GuildMembershipApplicationCache) VerifyDirectJoin() (error) {
     if cache.GetPlayerId() != cache.CallingPlayer.GetPlayerId() {
         if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetPlayerId(), cache.CallingPlayer.GetPlayerId()), types.PermissionAssociations)) {
-            return sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%s) has no Player Association permissions with the Player (%s) ", cache.CallingPlayer.GetPlayerId(), cache.GetPlayerId())
+            return types.NewPermissionError("player", cache.CallingPlayer.GetPlayerId(), "player", cache.GetPlayerId(), uint64(types.PermissionAssociations), "guild_register")
         }
     }
     return nil

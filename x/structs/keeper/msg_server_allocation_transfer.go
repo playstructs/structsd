@@ -2,7 +2,6 @@ package keeper
 
 import (
 	"context"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
@@ -18,15 +17,15 @@ func (k msgServer) AllocationTransfer(goCtx context.Context, msg *types.MsgAlloc
 
 	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId)
 	if (!allocationFound) {
-		return &types.MsgAllocationTransferResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "allocation (%s) not found", msg.AllocationId)
+		return &types.MsgAllocationTransferResponse{}, types.NewObjectNotFoundError("allocation", msg.AllocationId)
 	}
 
 	if (allocation.Controller != msg.Creator) {
-		return &types.MsgAllocationTransferResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "allocation (%s) not controller by transaction creator. Unable to transfer", msg.AllocationId)
+		return &types.MsgAllocationTransferResponse{}, types.NewPermissionError("address", msg.Creator, "allocation", msg.AllocationId, uint64(types.PermissionAssets), "allocation_transfer")
 	}
 
     if (allocation.DestinationId != "") {
-    	return &types.MsgAllocationTransferResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "allocation (%s) must not be connected to a substation during a transfer", msg.AllocationId)
+    	return &types.MsgAllocationTransferResponse{}, types.NewAllocationError(msg.AllocationId, "connected").WithDestination(allocation.DestinationId)
     }
 
     allocation.Controller = msg.Controller

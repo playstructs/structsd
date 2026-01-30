@@ -14,11 +14,13 @@ import (
 	cdctypes "github.com/cosmos/cosmos-sdk/codec/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/cosmos/cosmos-sdk/types/module"
+	authkeeper "github.com/cosmos/cosmos-sdk/x/auth/keeper"
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+	bankkeeper "github.com/cosmos/cosmos-sdk/x/bank/keeper"
 	govtypes "github.com/cosmos/cosmos-sdk/x/gov/types"
-	capabilitykeeper "github.com/cosmos/ibc-go/modules/capability/keeper"
-	porttypes "github.com/cosmos/ibc-go/v8/modules/core/05-port/types"
-	ibckeeper "github.com/cosmos/ibc-go/v8/modules/core/keeper"
+	stakingkeeper "github.com/cosmos/cosmos-sdk/x/staking/keeper"
+	porttypes "github.com/cosmos/ibc-go/v10/modules/core/05-port/types"
+	ibckeeper "github.com/cosmos/ibc-go/v10/modules/core/keeper"
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/spf13/cobra"
 
@@ -26,10 +28,11 @@ import (
 
 	modulev1 "structs/api/structs/structs/module"
 
-	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 	"structs/x/structs/client/cli"
 	"structs/x/structs/keeper"
 	"structs/x/structs/types"
+
+	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
 
 var (
@@ -101,7 +104,6 @@ func (a AppModuleBasic) GetTxCmd() *cobra.Command {
 	return cli.GetTxCmd()
 }
 
-
 // GetQueryCmd returns the root Query command for the module.
 // These commands enrich the AutoCLI tx commands.
 func (a AppModuleBasic) GetQueryCmd() *cobra.Command {
@@ -117,15 +119,15 @@ type AppModule struct {
 	AppModuleBasic
 
 	keeper        keeper.Keeper
-	accountKeeper types.AccountKeeper
-	bankKeeper    types.BankKeeper
+	accountKeeper authkeeper.AccountKeeper
+	bankKeeper    bankkeeper.Keeper
 }
 
 func NewAppModule(
 	cdc codec.Codec,
 	keeper keeper.Keeper,
-	accountKeeper types.AccountKeeper,
-	bankKeeper types.BankKeeper,
+	accountKeeper authkeeper.AccountKeeper,
+	bankKeeper bankkeeper.Keeper,
 ) AppModule {
 	return AppModule{
 		AppModuleBasic: NewAppModuleBasic(cdc),
@@ -168,7 +170,7 @@ func (AppModule) ConsensusVersion() uint64 { return 1 }
 // The begin block implementation is optional.
 func (am AppModule) BeginBlock(ctx context.Context) error {
 	c := sdk.UnwrapSDKContext(ctx)
-    am.keeper.BeginBlocker(c)
+	am.keeper.BeginBlocker(c)
 	return nil
 }
 
@@ -176,7 +178,7 @@ func (am AppModule) BeginBlock(ctx context.Context) error {
 // The end block implementation is optional.
 func (am AppModule) EndBlock(ctx context.Context) error {
 	c := sdk.UnwrapSDKContext(ctx)
-    am.keeper.EndBlocker(c)
+	am.keeper.EndBlocker(c)
 	return nil
 }
 
@@ -205,12 +207,11 @@ type ModuleInputs struct {
 	Config       *modulev1.Module
 	Logger       log.Logger
 
-	AccountKeeper types.AccountKeeper
-	BankKeeper    types.BankKeeper
-	StakingKeeper types.StakingKeeper
+	AccountKeeper authkeeper.AccountKeeper
+	BankKeeper    bankkeeper.Keeper
+	StakingKeeper *stakingkeeper.Keeper
 
-	IBCKeeperFn        func() *ibckeeper.Keeper                   `optional:"true"`
-	CapabilityScopedFn func(string) capabilitykeeper.ScopedKeeper `optional:"true"`
+	IBCKeeperFn func() *ibckeeper.Keeper `optional:"true"`
 }
 
 type ModuleOutputs struct {
@@ -219,7 +220,7 @@ type ModuleOutputs struct {
 	StructsKeeper keeper.Keeper
 	Module        appmodule.AppModule
 
-	Hooks  staking.StakingHooksWrapper
+	Hooks staking.StakingHooksWrapper
 }
 
 func ProvideModule(in ModuleInputs) ModuleOutputs {
@@ -234,7 +235,6 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 		in.Logger,
 		authority.String(),
 		in.IBCKeeperFn,
-		in.CapabilityScopedFn,
 		in.BankKeeper,
 		in.StakingKeeper,
 		in.AccountKeeper,
@@ -246,5 +246,5 @@ func ProvideModule(in ModuleInputs) ModuleOutputs {
 		in.BankKeeper,
 	)
 
-	return ModuleOutputs{StructsKeeper: k, Module: m, Hooks:  staking.StakingHooksWrapper{StakingHooks: k.Hooks()},}
+	return ModuleOutputs{StructsKeeper: k, Module: m, Hooks: staking.StakingHooksWrapper{StakingHooks: k.Hooks()}}
 }

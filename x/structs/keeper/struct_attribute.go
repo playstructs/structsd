@@ -54,6 +54,10 @@ func (k Keeper) GetStructAttribute(ctx context.Context, structAttributeId string
 func (k Keeper) ClearStructAttribute(ctx context.Context, structAttributeId string) () {
 	structAttributeStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructAttributeKey))
 	structAttributeStore.Delete([]byte(structAttributeId))
+
+    ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStructAttribute{&types.StructAttributeRecord{AttributeId: structAttributeId, Value: 0}})
+    k.logger.Info("Struct Change (Clear)", "structAttributeId", structAttributeId)
 }
 
 

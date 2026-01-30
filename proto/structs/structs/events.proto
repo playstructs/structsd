@@ -146,6 +146,8 @@ option go_package = "structs/x/structs/types";
     string attackerPlayerId = 17;
     string targetPlayerId   = 18;
 
+    uint64 attackerHealthAfter = 19;
+
   }
 
   message EventAttackShotDetail {
@@ -194,6 +196,10 @@ option go_package = "structs/x/structs/types";
     bool postDestructionDamageDestroyedAttacker     = 31;
     techPassiveWeaponry postDestructionDamageCause  = 32;
 
+    uint64 targetHealthBefore  = 33;
+    uint64 targetHealthAfter   = 34;
+    uint64 blockerHealthAfter  = 35;
+
   }
 
   message EventAttackDefenderCounterDetail {
@@ -215,4 +221,13 @@ option go_package = "structs/x/structs/types";
     string      fleetId    = 1;
     string      planetId   = 2;
     raidStatus  status     = 3;
+  }
+
+  message EventHashSuccess { EventHashSuccessDetail eventHashSuccessDetail = 1;}
+  message EventHashSuccessDetail {
+    string callerAddress    = 1;
+    string category         = 2;
+    uint64 difficulty       = 3;
+    string objectId         = 4;
+    string planetId         = 5;
   }

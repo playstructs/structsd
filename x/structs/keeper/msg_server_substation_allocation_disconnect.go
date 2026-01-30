@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -19,25 +18,24 @@ func (k msgServer) SubstationAllocationDisconnect(goCtx context.Context, msg *ty
 
 	player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
     if (!playerFound) {
-        return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)
+        return &types.MsgSubstationAllocationDisconnectResponse{}, types.NewPlayerRequiredError(msg.Creator, "substation_allocation_disconnect")
     }
 
 	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId)
 	if (!allocationFound) {
-		return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "allocation (%s) not found", msg.AllocationId)
+		return &types.MsgSubstationAllocationDisconnectResponse{}, types.NewObjectNotFoundError("allocation", msg.AllocationId)
 	}
 
     allocationPlayer, AllocationPlayerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, allocation.Controller))
     if (!AllocationPlayerFound) {
-        return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not perform substation action with non-player address (%s)", allocation.Controller)
+        return &types.MsgSubstationAllocationDisconnectResponse{}, types.NewPlayerRequiredError(allocation.Controller, "substation_allocation_disconnect")
     }
     if (allocationPlayer.Id != player.Id) {
         sourceObjectPermissionId := GetObjectPermissionIDBytes(allocation.DestinationId, player.Id)
         // check that the player has reactor permissions
         if (!k.PermissionHasOneOf(ctx, sourceObjectPermissionId, types.PermissionGrid)) {
             // technically both correct. Refactor this to be clearer
-            return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationDisconnect, "Calling player (%s) has no Substation Disconnect Allocation permissions ", player.Id)
-            //return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation not controlled by player (%s)", player.Id)
+            return &types.MsgSubstationAllocationDisconnectResponse{}, types.NewPermissionError("player", player.Id, "substation", allocation.DestinationId, uint64(types.PermissionGrid), "allocation_disconnect")
         }
 
     }
@@ -46,7 +44,7 @@ func (k msgServer) SubstationAllocationDisconnect(goCtx context.Context, msg *ty
 
     // check that the account has energy management permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionGrid)) {
-        return &types.MsgSubstationAllocationDisconnectResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
+        return &types.MsgSubstationAllocationDisconnectResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionGrid), "energy_management")
     }
 
 

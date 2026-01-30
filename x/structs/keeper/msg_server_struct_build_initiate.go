@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -25,7 +24,7 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     // Load the Owner Player
     owner, err := k.GetPlayerCacheFromId(ctx, msg.PlayerId)
     if (err != nil) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Struct build initialization requires Player account but none associated with %s", msg.Creator)
+        return &types.MsgStructStatusResponse{}, types.NewPlayerRequiredError(msg.Creator, "struct_build_initiate")
     }
 
     // Check address play permissions
@@ -35,13 +34,13 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     }
 
     if owner.IsHalted() {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Cannot perform actions while Player (%s) is Halted", msg.PlayerId)
+        return &types.MsgStructStatusResponse{}, types.NewPlayerHaltedError(msg.PlayerId, "struct_build_initiate")
     }
 
     // Load the Struct Type
     structType, structTypeFound := k.GetStructType(ctx, msg.StructTypeId)
     if !structTypeFound {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct Type (%d) was not found. Building a Struct with schematics might be tough", msg.StructTypeId)
+        return &types.MsgStructStatusResponse{}, types.NewObjectNotFoundError("struct_type", "").WithIndex(msg.StructTypeId)
     }
 
     // Check that the player can build more of this type of Struct
@@ -49,13 +48,13 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
         if (owner.GetBuiltQuantity(msg.StructTypeId) >= structType.GetBuildLimit()) {
             owner.Discharge()
             owner.Commit()
-            return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) cannot build more of this type ",owner.GetPlayerId())
+            return &types.MsgStructStatusResponse{}, types.NewPlayerPowerError(owner.GetPlayerId(), "capacity_exceeded").WithCapacity(structType.GetBuildLimit(), owner.GetBuiltQuantity(msg.StructTypeId))
         }
     }
 
     // Check Player Charge
     if (owner.GetCharge() < structType.BuildCharge) {
-        err := sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to build, but player (%s) only had %d", msg.StructTypeId, structType.BuildCharge, owner.GetPlayerId(), owner.GetCharge() )
+        err := types.NewInsufficientChargeError(owner.GetPlayerId(), structType.BuildCharge, owner.GetCharge(), "build").WithStructType(msg.StructTypeId)
         owner.Discharge()
         owner.Commit()
         return &types.MsgStructStatusResponse{}, err
@@ -63,14 +62,14 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
 
 
     if !owner.IsOnline(){
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",owner.GetPlayerId())
+        return &types.MsgStructStatusResponse{}, types.NewPlayerPowerError(owner.GetPlayerId(), "offline")
     }
 
 
     if !owner.CanSupportLoadAddition(structType.BuildDraw) {
         owner.Discharge()
         owner.Commit()
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct Type (%d) required a draw of %d during build, but player (%s) has %d available", msg.StructTypeId, structType.BuildDraw, owner.GetPlayerId(),owner.GetAvailableCapacity())
+        return &types.MsgStructStatusResponse{}, types.NewPlayerPowerError(owner.GetPlayerId(), "capacity_exceeded").WithCapacity(structType.BuildDraw, owner.GetAvailableCapacity())
     }
 
 

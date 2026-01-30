@@ -144,7 +144,6 @@ message StructDefenders {
   repeated StructDefender structDefenders = 1;
 }
 
-
 message StructAttributeRecord {
   string attributeId = 1;
   uint64 value = 2;

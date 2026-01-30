@@ -5,7 +5,6 @@ import (
     "time"
     //"cosmossdk.io/math"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	staking "github.com/cosmos/cosmos-sdk/x/staking/types"
 )
@@ -31,21 +30,21 @@ func (k msgServer) ReactorBeginMigration(goCtx context.Context, msg *types.MsgRe
 
     valSrcAddr, valSrcErr := sdk.ValAddressFromBech32(msg.ValidatorSrcAddress)
 	if valSrcErr != nil {
-		return &types.MsgReactorBeginMigrationResponse{}, sdkerrors.Wrapf(types.ErrReactorBeginMigration, "invalid validator address: %s", valSrcErr)
+		return &types.MsgReactorBeginMigrationResponse{}, types.NewAddressValidationError(msg.ValidatorSrcAddress, "invalid_validator")
 	}
 
     valDstAddr, valDstErr := sdk.ValAddressFromBech32(msg.ValidatorDstAddress)
 	if valDstErr != nil {
-		return &types.MsgReactorBeginMigrationResponse{}, sdkerrors.Wrapf(types.ErrReactorBeginMigration, "invalid validator address: %s", valDstErr)
+		return &types.MsgReactorBeginMigrationResponse{}, types.NewAddressValidationError(msg.ValidatorDstAddress, "invalid_validator")
 	}
 
     delegatorAddress, delegatorAddressErr := sdk.AccAddressFromBech32(msg.DelegatorAddress)
  	if delegatorAddressErr != nil {
- 		return &types.MsgReactorBeginMigrationResponse{}, sdkerrors.Wrapf(types.ErrReactorBeginMigration, "invalid delegator address: %s", delegatorAddressErr)
+ 		return &types.MsgReactorBeginMigrationResponse{}, types.NewAddressValidationError(msg.DelegatorAddress, "invalid_delegator")
  	}
 
 	if !msg.Amount.IsValid() || !msg.Amount.Amount.IsPositive() {
-		return &types.MsgReactorBeginMigrationResponse{}, sdkerrors.Wrapf(types.ErrReactorBeginMigration, "invalid delegation amount")
+		return &types.MsgReactorBeginMigrationResponse{}, types.NewReactorError("begin_migration", "invalid_amount")
 	}
 
 	shares, err := k.stakingKeeper.ValidateUnbondAmount(
@@ -61,7 +60,7 @@ func (k msgServer) ReactorBeginMigration(goCtx context.Context, msg *types.MsgRe
 	}
 
 	if msg.Amount.Denom != bondDenom {
-        return &types.MsgReactorBeginMigrationResponse{}, sdkerrors.Wrapf(types.ErrReactorBeginMigration, "invalid coin denomination: got %s, expected %s", msg.Amount.Denom, bondDenom)
+        return &types.MsgReactorBeginMigrationResponse{}, types.NewReactorError("begin_migration", "invalid_denom").WithDenom(msg.Amount.Denom, bondDenom)
     }
 
 	completionTime, err := k.stakingKeeper.BeginRedelegation(

@@ -10,8 +10,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/runtime"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
-	sdkerrors "cosmossdk.io/errors"
 	"fmt"
+
+	"slices"
 )
 
 // GetObjectID returns the string representation of the ID, based on ObjectType
@@ -52,6 +53,10 @@ func (k Keeper) GetGridAttribute(ctx context.Context, gridAttributeId string) (a
 func (k Keeper) ClearGridAttribute(ctx context.Context, gridAttributeId string) {
 	gridAttributeStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridAttributeKey))
 	gridAttributeStore.Delete([]byte(gridAttributeId))
+
+    ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGrid{&types.GridRecord{AttributeId: gridAttributeId, Value: 0}})
+    k.logger.Info("Grid Change (Clear)", "gridAttributeId", gridAttributeId)
 }
 
 func (k Keeper) SetGridAttribute(ctx context.Context, gridAttributeId string, amount uint64) {
@@ -111,15 +116,18 @@ func (k Keeper) GetGridCascadeQueue(ctx context.Context, clear bool) (queue []st
 	gridCascadeQueueStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueue))
 	iterator := storetypes.KVStorePrefixIterator(gridCascadeQueueStore, []byte{})
 
-	defer iterator.Close()
-
 	for ; iterator.Valid(); iterator.Next() {
 		queue = append(queue, string(iterator.Key()))
-		if clear {
-			gridCascadeQueueStore.Delete(iterator.Key())
-		}
 	}
+    iterator.Close()
 
+    slices.Sort(queue)
+
+    if clear {
+        for _, key := range queue {
+            gridCascadeQueueStore.Delete([]byte(key))
+        }
+    }
 	return
 }
 
@@ -127,7 +135,7 @@ func (k Keeper) AppendGridCascadeQueue(ctx context.Context, queueId string) (err
 
 	// Skip if queueId is empty or nil to prevent "key is nil or empty" panic
 	if queueId == "" {
-		return sdkerrors.Wrapf(types.ErrObjectNotFound, "queueId (%s) empty", queueId)
+		return types.NewObjectNotFoundError("grid_queue", queueId)
 	}
 
 	gridCascadeQueueStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueue))

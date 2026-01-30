@@ -4,7 +4,6 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -35,7 +34,7 @@ func (k msgServer) PermissionSetOnAddress(goCtx context.Context, msg *types.MsgP
     // Make sure the calling address has enough permissions to apply to another address
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     if (!k.PermissionHasAll(ctx, addressPermissionId, types.Permission(msg.Permissions) | types.Permissions)) {
-        return &types.MsgPermissionResponse{}, sdkerrors.Wrapf(types.ErrGuildUpdate, "Calling address (%s) does not have the permissions needed to grant this level", msg.Creator)
+        return &types.MsgPermissionResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(msg.Permissions), "permission_set")
     }
 
     targetAddressPermissionId := GetAddressPermissionIDBytes(msg.Address)

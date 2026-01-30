@@ -4,7 +4,6 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -18,7 +17,7 @@ func (k msgServer) PermissionGrantOnObject(goCtx context.Context, msg *types.Msg
    var err error
 
     if msg.Permissions == 0 {
-        return &types.MsgPermissionResponse{}, sdkerrors.Wrapf(types.ErrPermission, "Cannot Grant 0")
+        return &types.MsgPermissionResponse{}, types.NewParameterValidationError("permissions", 0, "below_minimum").WithRange(1, 0)
     }
 
     player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
@@ -36,13 +35,13 @@ func (k msgServer) PermissionGrantOnObject(goCtx context.Context, msg *types.Msg
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // Make sure the address calling this has the Permissions permission for editing permissions
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permissions)) {
-        return &types.MsgPermissionResponse{}, sdkerrors.Wrapf(types.ErrPermissionAssociation, "Calling address (%s) has no permissions permission", msg.Creator)
+        return &types.MsgPermissionResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.Permissions), "permission_edit")
     }
 
     // Make sure the calling player has the same permissions that are being applied to the other player
     playerPermissionId := GetObjectPermissionIDBytes(msg.ObjectId, player.Id)
     if (!k.PermissionHasAll(ctx, playerPermissionId, types.Permission(msg.Permissions))) {
-        return &types.MsgPermissionResponse{}, sdkerrors.Wrapf(types.ErrGuildUpdate, "Calling player (%s) does not have the authority over the object", player.Id)
+        return &types.MsgPermissionResponse{}, types.NewPermissionError("player", player.Id, "object", msg.ObjectId, uint64(msg.Permissions), "permission_grant")
     }
 
     targetPlayerPermissionId := GetObjectPermissionIDBytes(msg.ObjectId, msg.PlayerId)

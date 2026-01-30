@@ -5,7 +5,6 @@ import (
 
 	"structs/x/structs/types"
 
-	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -18,31 +17,31 @@ func (k msgServer) GuildUpdateOwnerId(goCtx context.Context, msg *types.MsgGuild
 
 	playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
 	if playerIndex == 0 {
-		return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Guild update requires Player account but none associated with %s", msg.Creator)
+		return &types.MsgGuildUpdateResponse{}, types.NewPlayerRequiredError(msg.Creator, "guild_update_owner")
 	}
 	player, _ := k.GetPlayerFromIndex(ctx, playerIndex)
 
 	guild, guildFound := k.GetGuild(ctx, msg.GuildId)
 	if !guildFound {
-		return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Guild (%s) wasn't found. Can't update that which does not exist", msg.GuildId)
+		return &types.MsgGuildUpdateResponse{}, types.NewObjectNotFoundError("guild", msg.GuildId)
 	}
 
 	guildObjectPermissionId := GetObjectPermissionIDBytes(msg.GuildId, player.Id)
 	addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
 
 	if !k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.PermissionUpdate) {
-		return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrGuildUpdate, "Calling player (%s) has no permissions to update guild", player.Id)
+		return &types.MsgGuildUpdateResponse{}, types.NewPermissionError("player", player.Id, "guild", msg.GuildId, uint64(types.PermissionUpdate), "guild_update")
 	}
 
 	// Make sure the address calling this has Associate permissions
 	if !k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets) {
-		return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
+		return &types.MsgGuildUpdateResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "guild_management")
 	}
 
 	if guild.Owner != msg.Owner {
 		_, guildOwnerFound := k.GetPlayer(ctx, msg.Owner)
 		if !guildOwnerFound {
-			return &types.MsgGuildUpdateResponse{}, sdkerrors.Wrapf(types.ErrGuildUpdate, "Guild could not change to new owner (%s) because they weren't found", msg.Owner)
+			return &types.MsgGuildUpdateResponse{}, types.NewObjectNotFoundError("player", msg.Owner)
 		}
 		guild.SetOwner(msg.Owner)
 		k.SetGuild(ctx, guild)

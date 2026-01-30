@@ -25034,6 +25034,7 @@ var (
 	fd_EventAttackDetail_planetaryDefenseCannonDamageDestroyedAttacker protoreflect.FieldDescriptor
 	fd_EventAttackDetail_attackerPlayerId                              protoreflect.FieldDescriptor
 	fd_EventAttackDetail_targetPlayerId                                protoreflect.FieldDescriptor
+	fd_EventAttackDetail_attackerHealthAfter                           protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -25057,6 +25058,7 @@ func init() {
 	fd_EventAttackDetail_planetaryDefenseCannonDamageDestroyedAttacker = md_EventAttackDetail.Fields().ByName("planetaryDefenseCannonDamageDestroyedAttacker")
 	fd_EventAttackDetail_attackerPlayerId = md_EventAttackDetail.Fields().ByName("attackerPlayerId")
 	fd_EventAttackDetail_targetPlayerId = md_EventAttackDetail.Fields().ByName("targetPlayerId")
+	fd_EventAttackDetail_attackerHealthAfter = md_EventAttackDetail.Fields().ByName("attackerHealthAfter")
 }
 
 var _ protoreflect.Message = (*fastReflection_EventAttackDetail)(nil)
@@ -25232,6 +25234,12 @@ func (x *fastReflection_EventAttackDetail) Range(f func(protoreflect.FieldDescri
 			return
 		}
 	}
+	if x.AttackerHealthAfter != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.AttackerHealthAfter)
+		if !f(fd_EventAttackDetail_attackerHealthAfter, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -25283,6 +25291,8 @@ func (x *fastReflection_EventAttackDetail) Has(fd protoreflect.FieldDescriptor) 
 		return x.AttackerPlayerId != ""
 	case "structs.structs.EventAttackDetail.targetPlayerId":
 		return x.TargetPlayerId != ""
+	case "structs.structs.EventAttackDetail.attackerHealthAfter":
+		return x.AttackerHealthAfter != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAttackDetail"))
@@ -25335,6 +25345,8 @@ func (x *fastReflection_EventAttackDetail) Clear(fd protoreflect.FieldDescriptor
 		x.AttackerPlayerId = ""
 	case "structs.structs.EventAttackDetail.targetPlayerId":
 		x.TargetPlayerId = ""
+	case "structs.structs.EventAttackDetail.attackerHealthAfter":
+		x.AttackerHealthAfter = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAttackDetail"))
@@ -25408,6 +25420,9 @@ func (x *fastReflection_EventAttackDetail) Get(descriptor protoreflect.FieldDesc
 	case "structs.structs.EventAttackDetail.targetPlayerId":
 		value := x.TargetPlayerId
 		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventAttackDetail.attackerHealthAfter":
+		value := x.AttackerHealthAfter
+		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAttackDetail"))
@@ -25466,6 +25481,8 @@ func (x *fastReflection_EventAttackDetail) Set(fd protoreflect.FieldDescriptor, 
 		x.AttackerPlayerId = value.Interface().(string)
 	case "structs.structs.EventAttackDetail.targetPlayerId":
 		x.TargetPlayerId = value.Interface().(string)
+	case "structs.structs.EventAttackDetail.attackerHealthAfter":
+		x.AttackerHealthAfter = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAttackDetail"))
@@ -25526,6 +25543,8 @@ func (x *fastReflection_EventAttackDetail) Mutable(fd protoreflect.FieldDescript
 		panic(fmt.Errorf("field attackerPlayerId of message structs.structs.EventAttackDetail is not mutable"))
 	case "structs.structs.EventAttackDetail.targetPlayerId":
 		panic(fmt.Errorf("field targetPlayerId of message structs.structs.EventAttackDetail is not mutable"))
+	case "structs.structs.EventAttackDetail.attackerHealthAfter":
+		panic(fmt.Errorf("field attackerHealthAfter of message structs.structs.EventAttackDetail is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAttackDetail"))
@@ -25576,6 +25595,8 @@ func (x *fastReflection_EventAttackDetail) NewField(fd protoreflect.FieldDescrip
 		return protoreflect.ValueOfString("")
 	case "structs.structs.EventAttackDetail.targetPlayerId":
 		return protoreflect.ValueOfString("")
+	case "structs.structs.EventAttackDetail.attackerHealthAfter":
+		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAttackDetail"))
@@ -25706,6 +25727,9 @@ func (x *fastReflection_EventAttackDetail) ProtoMethods() *protoiface.Methods {
 		if l > 0 {
 			n += 2 + l + runtime.Sov(uint64(l))
 		}
+		if x.AttackerHealthAfter != 0 {
+			n += 2 + runtime.Sov(uint64(x.AttackerHealthAfter))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -25734,6 +25758,13 @@ func (x *fastReflection_EventAttackDetail) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.AttackerHealthAfter != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.AttackerHealthAfter))
+			i--
+			dAtA[i] = 0x1
+			i--
+			dAtA[i] = 0x98
 		}
 		if len(x.TargetPlayerId) > 0 {
 			i -= len(x.TargetPlayerId)
@@ -26332,6 +26363,25 @@ func (x *fastReflection_EventAttackDetail) ProtoMethods() *protoiface.Methods {
 				}
 				x.TargetPlayerId = string(dAtA[iNdEx:postIndex])
 				iNdEx = postIndex
+			case 19:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field AttackerHealthAfter", wireType)
+				}
+				x.AttackerHealthAfter = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.AttackerHealthAfter |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -26452,6 +26502,9 @@ var (
 	fd_EventAttackShotDetail_postDestructionDamage                  protoreflect.FieldDescriptor
 	fd_EventAttackShotDetail_postDestructionDamageDestroyedAttacker protoreflect.FieldDescriptor
 	fd_EventAttackShotDetail_postDestructionDamageCause             protoreflect.FieldDescriptor
+	fd_EventAttackShotDetail_targetHealthBefore                     protoreflect.FieldDescriptor
+	fd_EventAttackShotDetail_targetHealthAfter                      protoreflect.FieldDescriptor
+	fd_EventAttackShotDetail_blockerHealthAfter                     protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -26489,6 +26542,9 @@ func init() {
 	fd_EventAttackShotDetail_postDestructionDamage = md_EventAttackShotDetail.Fields().ByName("postDestructionDamage")
 	fd_EventAttackShotDetail_postDestructionDamageDestroyedAttacker = md_EventAttackShotDetail.Fields().ByName("postDestructionDamageDestroyedAttacker")
 	fd_EventAttackShotDetail_postDestructionDamageCause = md_EventAttackShotDetail.Fields().ByName("postDestructionDamageCause")
+	fd_EventAttackShotDetail_targetHealthBefore = md_EventAttackShotDetail.Fields().ByName("targetHealthBefore")
+	fd_EventAttackShotDetail_targetHealthAfter = md_EventAttackShotDetail.Fields().ByName("targetHealthAfter")
+	fd_EventAttackShotDetail_blockerHealthAfter = md_EventAttackShotDetail.Fields().ByName("blockerHealthAfter")
 }
 
 var _ protoreflect.Message = (*fastReflection_EventAttackShotDetail)(nil)
@@ -26748,6 +26804,24 @@ func (x *fastReflection_EventAttackShotDetail) Range(f func(protoreflect.FieldDe
 			return
 		}
 	}
+	if x.TargetHealthBefore != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.TargetHealthBefore)
+		if !f(fd_EventAttackShotDetail_targetHealthBefore, value) {
+			return
+		}
+	}
+	if x.TargetHealthAfter != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.TargetHealthAfter)
+		if !f(fd_EventAttackShotDetail_targetHealthAfter, value) {
+			return
+		}
+	}
+	if x.BlockerHealthAfter != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.BlockerHealthAfter)
+		if !f(fd_EventAttackShotDetail_blockerHealthAfter, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -26827,6 +26901,12 @@ func (x *fastReflection_EventAttackShotDetail) Has(fd protoreflect.FieldDescript
 		return x.PostDestructionDamageDestroyedAttacker != false
 	case "structs.structs.EventAttackShotDetail.postDestructionDamageCause":
 		return x.PostDestructionDamageCause != 0
+	case "structs.structs.EventAttackShotDetail.targetHealthBefore":
+		return x.TargetHealthBefore != uint64(0)
+	case "structs.structs.EventAttackShotDetail.targetHealthAfter":
+		return x.TargetHealthAfter != uint64(0)
+	case "structs.structs.EventAttackShotDetail.blockerHealthAfter":
+		return x.BlockerHealthAfter != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAttackShotDetail"))
@@ -26907,6 +26987,12 @@ func (x *fastReflection_EventAttackShotDetail) Clear(fd protoreflect.FieldDescri
 		x.PostDestructionDamageDestroyedAttacker = false
 	case "structs.structs.EventAttackShotDetail.postDestructionDamageCause":
 		x.PostDestructionDamageCause = 0
+	case "structs.structs.EventAttackShotDetail.targetHealthBefore":
+		x.TargetHealthBefore = uint64(0)
+	case "structs.structs.EventAttackShotDetail.targetHealthAfter":
+		x.TargetHealthAfter = uint64(0)
+	case "structs.structs.EventAttackShotDetail.blockerHealthAfter":
+		x.BlockerHealthAfter = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAttackShotDetail"))
@@ -27022,6 +27108,15 @@ func (x *fastReflection_EventAttackShotDetail) Get(descriptor protoreflect.Field
 	case "structs.structs.EventAttackShotDetail.postDestructionDamageCause":
 		value := x.PostDestructionDamageCause
 		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	case "structs.structs.EventAttackShotDetail.targetHealthBefore":
+		value := x.TargetHealthBefore
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventAttackShotDetail.targetHealthAfter":
+		value := x.TargetHealthAfter
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventAttackShotDetail.blockerHealthAfter":
+		value := x.BlockerHealthAfter
+		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAttackShotDetail"))
@@ -27108,6 +27203,12 @@ func (x *fastReflection_EventAttackShotDetail) Set(fd protoreflect.FieldDescript
 		x.PostDestructionDamageDestroyedAttacker = value.Bool()
 	case "structs.structs.EventAttackShotDetail.postDestructionDamageCause":
 		x.PostDestructionDamageCause = (TechPassiveWeaponry)(value.Enum())
+	case "structs.structs.EventAttackShotDetail.targetHealthBefore":
+		x.TargetHealthBefore = value.Uint()
+	case "structs.structs.EventAttackShotDetail.targetHealthAfter":
+		x.TargetHealthAfter = value.Uint()
+	case "structs.structs.EventAttackShotDetail.blockerHealthAfter":
+		x.BlockerHealthAfter = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAttackShotDetail"))
@@ -27196,6 +27297,12 @@ func (x *fastReflection_EventAttackShotDetail) Mutable(fd protoreflect.FieldDesc
 		panic(fmt.Errorf("field postDestructionDamageDestroyedAttacker of message structs.structs.EventAttackShotDetail is not mutable"))
 	case "structs.structs.EventAttackShotDetail.postDestructionDamageCause":
 		panic(fmt.Errorf("field postDestructionDamageCause of message structs.structs.EventAttackShotDetail is not mutable"))
+	case "structs.structs.EventAttackShotDetail.targetHealthBefore":
+		panic(fmt.Errorf("field targetHealthBefore of message structs.structs.EventAttackShotDetail is not mutable"))
+	case "structs.structs.EventAttackShotDetail.targetHealthAfter":
+		panic(fmt.Errorf("field targetHealthAfter of message structs.structs.EventAttackShotDetail is not mutable"))
+	case "structs.structs.EventAttackShotDetail.blockerHealthAfter":
+		panic(fmt.Errorf("field blockerHealthAfter of message structs.structs.EventAttackShotDetail is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAttackShotDetail"))
@@ -27274,6 +27381,12 @@ func (x *fastReflection_EventAttackShotDetail) NewField(fd protoreflect.FieldDes
 		return protoreflect.ValueOfBool(false)
 	case "structs.structs.EventAttackShotDetail.postDestructionDamageCause":
 		return protoreflect.ValueOfEnum(0)
+	case "structs.structs.EventAttackShotDetail.targetHealthBefore":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventAttackShotDetail.targetHealthAfter":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventAttackShotDetail.blockerHealthAfter":
+		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventAttackShotDetail"))
@@ -27446,6 +27559,15 @@ func (x *fastReflection_EventAttackShotDetail) ProtoMethods() *protoiface.Method
 		if x.PostDestructionDamageCause != 0 {
 			n += 2 + runtime.Sov(uint64(x.PostDestructionDamageCause))
 		}
+		if x.TargetHealthBefore != 0 {
+			n += 2 + runtime.Sov(uint64(x.TargetHealthBefore))
+		}
+		if x.TargetHealthAfter != 0 {
+			n += 2 + runtime.Sov(uint64(x.TargetHealthAfter))
+		}
+		if x.BlockerHealthAfter != 0 {
+			n += 2 + runtime.Sov(uint64(x.BlockerHealthAfter))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -27474,6 +27596,27 @@ func (x *fastReflection_EventAttackShotDetail) ProtoMethods() *protoiface.Method
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.BlockerHealthAfter != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.BlockerHealthAfter))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0x98
+		}
+		if x.TargetHealthAfter != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.TargetHealthAfter))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0x90
+		}
+		if x.TargetHealthBefore != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.TargetHealthBefore))
+			i--
+			dAtA[i] = 0x2
+			i--
+			dAtA[i] = 0x88
 		}
 		if x.PostDestructionDamageCause != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.PostDestructionDamageCause))
@@ -28462,6 +28605,63 @@ func (x *fastReflection_EventAttackShotDetail) ProtoMethods() *protoiface.Method
 					b := dAtA[iNdEx]
 					iNdEx++
 					x.PostDestructionDamageCause |= TechPassiveWeaponry(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 33:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TargetHealthBefore", wireType)
+				}
+				x.TargetHealthBefore = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.TargetHealthBefore |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 34:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field TargetHealthAfter", wireType)
+				}
+				x.TargetHealthAfter = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.TargetHealthAfter |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 35:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field BlockerHealthAfter", wireType)
+				}
+				x.BlockerHealthAfter = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.BlockerHealthAfter |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
@@ -30211,6 +30411,1101 @@ func (x *fastReflection_EventRaidDetail) ProtoMethods() *protoiface.Methods {
 						break
 					}
 				}
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventHashSuccess                        protoreflect.MessageDescriptor
+	fd_EventHashSuccess_eventHashSuccessDetail protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventHashSuccess = File_structs_structs_events_proto.Messages().ByName("EventHashSuccess")
+	fd_EventHashSuccess_eventHashSuccessDetail = md_EventHashSuccess.Fields().ByName("eventHashSuccessDetail")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventHashSuccess)(nil)
+
+type fastReflection_EventHashSuccess EventHashSuccess
+
+func (x *EventHashSuccess) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventHashSuccess)(x)
+}
+
+func (x *EventHashSuccess) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[59]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventHashSuccess_messageType fastReflection_EventHashSuccess_messageType
+var _ protoreflect.MessageType = fastReflection_EventHashSuccess_messageType{}
+
+type fastReflection_EventHashSuccess_messageType struct{}
+
+func (x fastReflection_EventHashSuccess_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventHashSuccess)(nil)
+}
+func (x fastReflection_EventHashSuccess_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventHashSuccess)
+}
+func (x fastReflection_EventHashSuccess_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventHashSuccess
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventHashSuccess) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventHashSuccess
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventHashSuccess) Type() protoreflect.MessageType {
+	return _fastReflection_EventHashSuccess_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventHashSuccess) New() protoreflect.Message {
+	return new(fastReflection_EventHashSuccess)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventHashSuccess) Interface() protoreflect.ProtoMessage {
+	return (*EventHashSuccess)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventHashSuccess) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.EventHashSuccessDetail != nil {
+		value := protoreflect.ValueOfMessage(x.EventHashSuccessDetail.ProtoReflect())
+		if !f(fd_EventHashSuccess_eventHashSuccessDetail, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventHashSuccess) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventHashSuccess.eventHashSuccessDetail":
+		return x.EventHashSuccessDetail != nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventHashSuccess"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventHashSuccess does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventHashSuccess) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventHashSuccess.eventHashSuccessDetail":
+		x.EventHashSuccessDetail = nil
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventHashSuccess"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventHashSuccess does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventHashSuccess) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventHashSuccess.eventHashSuccessDetail":
+		value := x.EventHashSuccessDetail
+		return protoreflect.ValueOfMessage(value.ProtoReflect())
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventHashSuccess"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventHashSuccess does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventHashSuccess) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventHashSuccess.eventHashSuccessDetail":
+		x.EventHashSuccessDetail = value.Message().Interface().(*EventHashSuccessDetail)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventHashSuccess"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventHashSuccess does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventHashSuccess) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventHashSuccess.eventHashSuccessDetail":
+		if x.EventHashSuccessDetail == nil {
+			x.EventHashSuccessDetail = new(EventHashSuccessDetail)
+		}
+		return protoreflect.ValueOfMessage(x.EventHashSuccessDetail.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventHashSuccess"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventHashSuccess does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventHashSuccess) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventHashSuccess.eventHashSuccessDetail":
+		m := new(EventHashSuccessDetail)
+		return protoreflect.ValueOfMessage(m.ProtoReflect())
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventHashSuccess"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventHashSuccess does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventHashSuccess) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventHashSuccess", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventHashSuccess) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventHashSuccess) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventHashSuccess) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventHashSuccess) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventHashSuccess)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		if x.EventHashSuccessDetail != nil {
+			l = options.Size(x.EventHashSuccessDetail)
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventHashSuccess)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.EventHashSuccessDetail != nil {
+			encoded, err := options.Marshal(x.EventHashSuccessDetail)
+			if err != nil {
+				return protoiface.MarshalOutput{
+					NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+					Buf:               input.Buf,
+				}, err
+			}
+			i -= len(encoded)
+			copy(dAtA[i:], encoded)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(encoded)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventHashSuccess)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventHashSuccess: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventHashSuccess: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field EventHashSuccessDetail", wireType)
+				}
+				var msglen int
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					msglen |= int(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				if msglen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + msglen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if x.EventHashSuccessDetail == nil {
+					x.EventHashSuccessDetail = &EventHashSuccessDetail{}
+				}
+				if err := options.Unmarshal(dAtA[iNdEx:postIndex], x.EventHashSuccessDetail); err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				iNdEx = postIndex
+			default:
+				iNdEx = preIndex
+				skippy, err := runtime.Skip(dAtA[iNdEx:])
+				if err != nil {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, err
+				}
+				if (skippy < 0) || (iNdEx+skippy) < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if (iNdEx + skippy) > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				if !options.DiscardUnknown {
+					x.unknownFields = append(x.unknownFields, dAtA[iNdEx:iNdEx+skippy]...)
+				}
+				iNdEx += skippy
+			}
+		}
+
+		if iNdEx > l {
+			return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+		}
+		return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, nil
+	}
+	return &protoiface.Methods{
+		NoUnkeyedLiterals: struct{}{},
+		Flags:             protoiface.SupportMarshalDeterministic | protoiface.SupportUnmarshalDiscardUnknown,
+		Size:              size,
+		Marshal:           marshal,
+		Unmarshal:         unmarshal,
+		Merge:             nil,
+		CheckInitialized:  nil,
+	}
+}
+
+var (
+	md_EventHashSuccessDetail               protoreflect.MessageDescriptor
+	fd_EventHashSuccessDetail_callerAddress protoreflect.FieldDescriptor
+	fd_EventHashSuccessDetail_category      protoreflect.FieldDescriptor
+	fd_EventHashSuccessDetail_difficulty    protoreflect.FieldDescriptor
+	fd_EventHashSuccessDetail_objectId      protoreflect.FieldDescriptor
+	fd_EventHashSuccessDetail_planetId      protoreflect.FieldDescriptor
+)
+
+func init() {
+	file_structs_structs_events_proto_init()
+	md_EventHashSuccessDetail = File_structs_structs_events_proto.Messages().ByName("EventHashSuccessDetail")
+	fd_EventHashSuccessDetail_callerAddress = md_EventHashSuccessDetail.Fields().ByName("callerAddress")
+	fd_EventHashSuccessDetail_category = md_EventHashSuccessDetail.Fields().ByName("category")
+	fd_EventHashSuccessDetail_difficulty = md_EventHashSuccessDetail.Fields().ByName("difficulty")
+	fd_EventHashSuccessDetail_objectId = md_EventHashSuccessDetail.Fields().ByName("objectId")
+	fd_EventHashSuccessDetail_planetId = md_EventHashSuccessDetail.Fields().ByName("planetId")
+}
+
+var _ protoreflect.Message = (*fastReflection_EventHashSuccessDetail)(nil)
+
+type fastReflection_EventHashSuccessDetail EventHashSuccessDetail
+
+func (x *EventHashSuccessDetail) ProtoReflect() protoreflect.Message {
+	return (*fastReflection_EventHashSuccessDetail)(x)
+}
+
+func (x *EventHashSuccessDetail) slowProtoReflect() protoreflect.Message {
+	mi := &file_structs_structs_events_proto_msgTypes[60]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+var _fastReflection_EventHashSuccessDetail_messageType fastReflection_EventHashSuccessDetail_messageType
+var _ protoreflect.MessageType = fastReflection_EventHashSuccessDetail_messageType{}
+
+type fastReflection_EventHashSuccessDetail_messageType struct{}
+
+func (x fastReflection_EventHashSuccessDetail_messageType) Zero() protoreflect.Message {
+	return (*fastReflection_EventHashSuccessDetail)(nil)
+}
+func (x fastReflection_EventHashSuccessDetail_messageType) New() protoreflect.Message {
+	return new(fastReflection_EventHashSuccessDetail)
+}
+func (x fastReflection_EventHashSuccessDetail_messageType) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventHashSuccessDetail
+}
+
+// Descriptor returns message descriptor, which contains only the protobuf
+// type information for the message.
+func (x *fastReflection_EventHashSuccessDetail) Descriptor() protoreflect.MessageDescriptor {
+	return md_EventHashSuccessDetail
+}
+
+// Type returns the message type, which encapsulates both Go and protobuf
+// type information. If the Go type information is not needed,
+// it is recommended that the message descriptor be used instead.
+func (x *fastReflection_EventHashSuccessDetail) Type() protoreflect.MessageType {
+	return _fastReflection_EventHashSuccessDetail_messageType
+}
+
+// New returns a newly allocated and mutable empty message.
+func (x *fastReflection_EventHashSuccessDetail) New() protoreflect.Message {
+	return new(fastReflection_EventHashSuccessDetail)
+}
+
+// Interface unwraps the message reflection interface and
+// returns the underlying ProtoMessage interface.
+func (x *fastReflection_EventHashSuccessDetail) Interface() protoreflect.ProtoMessage {
+	return (*EventHashSuccessDetail)(x)
+}
+
+// Range iterates over every populated field in an undefined order,
+// calling f for each field descriptor and value encountered.
+// Range returns immediately if f returns false.
+// While iterating, mutating operations may only be performed
+// on the current field descriptor.
+func (x *fastReflection_EventHashSuccessDetail) Range(f func(protoreflect.FieldDescriptor, protoreflect.Value) bool) {
+	if x.CallerAddress != "" {
+		value := protoreflect.ValueOfString(x.CallerAddress)
+		if !f(fd_EventHashSuccessDetail_callerAddress, value) {
+			return
+		}
+	}
+	if x.Category != "" {
+		value := protoreflect.ValueOfString(x.Category)
+		if !f(fd_EventHashSuccessDetail_category, value) {
+			return
+		}
+	}
+	if x.Difficulty != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.Difficulty)
+		if !f(fd_EventHashSuccessDetail_difficulty, value) {
+			return
+		}
+	}
+	if x.ObjectId != "" {
+		value := protoreflect.ValueOfString(x.ObjectId)
+		if !f(fd_EventHashSuccessDetail_objectId, value) {
+			return
+		}
+	}
+	if x.PlanetId != "" {
+		value := protoreflect.ValueOfString(x.PlanetId)
+		if !f(fd_EventHashSuccessDetail_planetId, value) {
+			return
+		}
+	}
+}
+
+// Has reports whether a field is populated.
+//
+// Some fields have the property of nullability where it is possible to
+// distinguish between the default value of a field and whether the field
+// was explicitly populated with the default value. Singular message fields,
+// member fields of a oneof, and proto2 scalar fields are nullable. Such
+// fields are populated only if explicitly set.
+//
+// In other cases (aside from the nullable cases above),
+// a proto3 scalar field is populated if it contains a non-zero value, and
+// a repeated field is populated if it is non-empty.
+func (x *fastReflection_EventHashSuccessDetail) Has(fd protoreflect.FieldDescriptor) bool {
+	switch fd.FullName() {
+	case "structs.structs.EventHashSuccessDetail.callerAddress":
+		return x.CallerAddress != ""
+	case "structs.structs.EventHashSuccessDetail.category":
+		return x.Category != ""
+	case "structs.structs.EventHashSuccessDetail.difficulty":
+		return x.Difficulty != uint64(0)
+	case "structs.structs.EventHashSuccessDetail.objectId":
+		return x.ObjectId != ""
+	case "structs.structs.EventHashSuccessDetail.planetId":
+		return x.PlanetId != ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventHashSuccessDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventHashSuccessDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// Clear clears the field such that a subsequent Has call reports false.
+//
+// Clearing an extension field clears both the extension type and value
+// associated with the given field number.
+//
+// Clear is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventHashSuccessDetail) Clear(fd protoreflect.FieldDescriptor) {
+	switch fd.FullName() {
+	case "structs.structs.EventHashSuccessDetail.callerAddress":
+		x.CallerAddress = ""
+	case "structs.structs.EventHashSuccessDetail.category":
+		x.Category = ""
+	case "structs.structs.EventHashSuccessDetail.difficulty":
+		x.Difficulty = uint64(0)
+	case "structs.structs.EventHashSuccessDetail.objectId":
+		x.ObjectId = ""
+	case "structs.structs.EventHashSuccessDetail.planetId":
+		x.PlanetId = ""
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventHashSuccessDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventHashSuccessDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// Get retrieves the value for a field.
+//
+// For unpopulated scalars, it returns the default value, where
+// the default value of a bytes scalar is guaranteed to be a copy.
+// For unpopulated composite types, it returns an empty, read-only view
+// of the value; to obtain a mutable reference, use Mutable.
+func (x *fastReflection_EventHashSuccessDetail) Get(descriptor protoreflect.FieldDescriptor) protoreflect.Value {
+	switch descriptor.FullName() {
+	case "structs.structs.EventHashSuccessDetail.callerAddress":
+		value := x.CallerAddress
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventHashSuccessDetail.category":
+		value := x.Category
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventHashSuccessDetail.difficulty":
+		value := x.Difficulty
+		return protoreflect.ValueOfUint64(value)
+	case "structs.structs.EventHashSuccessDetail.objectId":
+		value := x.ObjectId
+		return protoreflect.ValueOfString(value)
+	case "structs.structs.EventHashSuccessDetail.planetId":
+		value := x.PlanetId
+		return protoreflect.ValueOfString(value)
+	default:
+		if descriptor.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventHashSuccessDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventHashSuccessDetail does not contain field %s", descriptor.FullName()))
+	}
+}
+
+// Set stores the value for a field.
+//
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType.
+// When setting a composite type, it is unspecified whether the stored value
+// aliases the source's memory in any way. If the composite value is an
+// empty, read-only value, then it panics.
+//
+// Set is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventHashSuccessDetail) Set(fd protoreflect.FieldDescriptor, value protoreflect.Value) {
+	switch fd.FullName() {
+	case "structs.structs.EventHashSuccessDetail.callerAddress":
+		x.CallerAddress = value.Interface().(string)
+	case "structs.structs.EventHashSuccessDetail.category":
+		x.Category = value.Interface().(string)
+	case "structs.structs.EventHashSuccessDetail.difficulty":
+		x.Difficulty = value.Uint()
+	case "structs.structs.EventHashSuccessDetail.objectId":
+		x.ObjectId = value.Interface().(string)
+	case "structs.structs.EventHashSuccessDetail.planetId":
+		x.PlanetId = value.Interface().(string)
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventHashSuccessDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventHashSuccessDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// Mutable returns a mutable reference to a composite type.
+//
+// If the field is unpopulated, it may allocate a composite value.
+// For a field belonging to a oneof, it implicitly clears any other field
+// that may be currently set within the same oneof.
+// For extension fields, it implicitly stores the provided ExtensionType
+// if not already stored.
+// It panics if the field does not contain a composite type.
+//
+// Mutable is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventHashSuccessDetail) Mutable(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventHashSuccessDetail.callerAddress":
+		panic(fmt.Errorf("field callerAddress of message structs.structs.EventHashSuccessDetail is not mutable"))
+	case "structs.structs.EventHashSuccessDetail.category":
+		panic(fmt.Errorf("field category of message structs.structs.EventHashSuccessDetail is not mutable"))
+	case "structs.structs.EventHashSuccessDetail.difficulty":
+		panic(fmt.Errorf("field difficulty of message structs.structs.EventHashSuccessDetail is not mutable"))
+	case "structs.structs.EventHashSuccessDetail.objectId":
+		panic(fmt.Errorf("field objectId of message structs.structs.EventHashSuccessDetail is not mutable"))
+	case "structs.structs.EventHashSuccessDetail.planetId":
+		panic(fmt.Errorf("field planetId of message structs.structs.EventHashSuccessDetail is not mutable"))
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventHashSuccessDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventHashSuccessDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// NewField returns a new value that is assignable to the field
+// for the given descriptor. For scalars, this returns the default value.
+// For lists, maps, and messages, this returns a new, empty, mutable value.
+func (x *fastReflection_EventHashSuccessDetail) NewField(fd protoreflect.FieldDescriptor) protoreflect.Value {
+	switch fd.FullName() {
+	case "structs.structs.EventHashSuccessDetail.callerAddress":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventHashSuccessDetail.category":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventHashSuccessDetail.difficulty":
+		return protoreflect.ValueOfUint64(uint64(0))
+	case "structs.structs.EventHashSuccessDetail.objectId":
+		return protoreflect.ValueOfString("")
+	case "structs.structs.EventHashSuccessDetail.planetId":
+		return protoreflect.ValueOfString("")
+	default:
+		if fd.IsExtension() {
+			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventHashSuccessDetail"))
+		}
+		panic(fmt.Errorf("message structs.structs.EventHashSuccessDetail does not contain field %s", fd.FullName()))
+	}
+}
+
+// WhichOneof reports which field within the oneof is populated,
+// returning nil if none are populated.
+// It panics if the oneof descriptor does not belong to this message.
+func (x *fastReflection_EventHashSuccessDetail) WhichOneof(d protoreflect.OneofDescriptor) protoreflect.FieldDescriptor {
+	switch d.FullName() {
+	default:
+		panic(fmt.Errorf("%s is not a oneof field in structs.structs.EventHashSuccessDetail", d.FullName()))
+	}
+	panic("unreachable")
+}
+
+// GetUnknown retrieves the entire list of unknown fields.
+// The caller may only mutate the contents of the RawFields
+// if the mutated bytes are stored back into the message with SetUnknown.
+func (x *fastReflection_EventHashSuccessDetail) GetUnknown() protoreflect.RawFields {
+	return x.unknownFields
+}
+
+// SetUnknown stores an entire list of unknown fields.
+// The raw fields must be syntactically valid according to the wire format.
+// An implementation may panic if this is not the case.
+// Once stored, the caller must not mutate the content of the RawFields.
+// An empty RawFields may be passed to clear the fields.
+//
+// SetUnknown is a mutating operation and unsafe for concurrent use.
+func (x *fastReflection_EventHashSuccessDetail) SetUnknown(fields protoreflect.RawFields) {
+	x.unknownFields = fields
+}
+
+// IsValid reports whether the message is valid.
+//
+// An invalid message is an empty, read-only value.
+//
+// An invalid message often corresponds to a nil pointer of the concrete
+// message type, but the details are implementation dependent.
+// Validity is not part of the protobuf data model, and may not
+// be preserved in marshaling or other operations.
+func (x *fastReflection_EventHashSuccessDetail) IsValid() bool {
+	return x != nil
+}
+
+// ProtoMethods returns optional fastReflectionFeature-path implementations of various operations.
+// This method may return nil.
+//
+// The returned methods type is identical to
+// "google.golang.org/protobuf/runtime/protoiface".Methods.
+// Consult the protoiface package documentation for details.
+func (x *fastReflection_EventHashSuccessDetail) ProtoMethods() *protoiface.Methods {
+	size := func(input protoiface.SizeInput) protoiface.SizeOutput {
+		x := input.Message.Interface().(*EventHashSuccessDetail)
+		if x == nil {
+			return protoiface.SizeOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Size:              0,
+			}
+		}
+		options := runtime.SizeInputToOptions(input)
+		_ = options
+		var n int
+		var l int
+		_ = l
+		l = len(x.CallerAddress)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.Category)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.Difficulty != 0 {
+			n += 1 + runtime.Sov(uint64(x.Difficulty))
+		}
+		l = len(x.ObjectId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		l = len(x.PlanetId)
+		if l > 0 {
+			n += 1 + l + runtime.Sov(uint64(l))
+		}
+		if x.unknownFields != nil {
+			n += len(x.unknownFields)
+		}
+		return protoiface.SizeOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Size:              n,
+		}
+	}
+
+	marshal := func(input protoiface.MarshalInput) (protoiface.MarshalOutput, error) {
+		x := input.Message.Interface().(*EventHashSuccessDetail)
+		if x == nil {
+			return protoiface.MarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Buf:               input.Buf,
+			}, nil
+		}
+		options := runtime.MarshalInputToOptions(input)
+		_ = options
+		size := options.Size(x)
+		dAtA := make([]byte, size)
+		i := len(dAtA)
+		_ = i
+		var l int
+		_ = l
+		if x.unknownFields != nil {
+			i -= len(x.unknownFields)
+			copy(dAtA[i:], x.unknownFields)
+		}
+		if len(x.PlanetId) > 0 {
+			i -= len(x.PlanetId)
+			copy(dAtA[i:], x.PlanetId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.PlanetId)))
+			i--
+			dAtA[i] = 0x2a
+		}
+		if len(x.ObjectId) > 0 {
+			i -= len(x.ObjectId)
+			copy(dAtA[i:], x.ObjectId)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.ObjectId)))
+			i--
+			dAtA[i] = 0x22
+		}
+		if x.Difficulty != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.Difficulty))
+			i--
+			dAtA[i] = 0x18
+		}
+		if len(x.Category) > 0 {
+			i -= len(x.Category)
+			copy(dAtA[i:], x.Category)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.Category)))
+			i--
+			dAtA[i] = 0x12
+		}
+		if len(x.CallerAddress) > 0 {
+			i -= len(x.CallerAddress)
+			copy(dAtA[i:], x.CallerAddress)
+			i = runtime.EncodeVarint(dAtA, i, uint64(len(x.CallerAddress)))
+			i--
+			dAtA[i] = 0xa
+		}
+		if input.Buf != nil {
+			input.Buf = append(input.Buf, dAtA...)
+		} else {
+			input.Buf = dAtA
+		}
+		return protoiface.MarshalOutput{
+			NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+			Buf:               input.Buf,
+		}, nil
+	}
+	unmarshal := func(input protoiface.UnmarshalInput) (protoiface.UnmarshalOutput, error) {
+		x := input.Message.Interface().(*EventHashSuccessDetail)
+		if x == nil {
+			return protoiface.UnmarshalOutput{
+				NoUnkeyedLiterals: input.NoUnkeyedLiterals,
+				Flags:             input.Flags,
+			}, nil
+		}
+		options := runtime.UnmarshalInputToOptions(input)
+		_ = options
+		dAtA := input.Buf
+		l := len(dAtA)
+		iNdEx := 0
+		for iNdEx < l {
+			preIndex := iNdEx
+			var wire uint64
+			for shift := uint(0); ; shift += 7 {
+				if shift >= 64 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+				}
+				if iNdEx >= l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				b := dAtA[iNdEx]
+				iNdEx++
+				wire |= uint64(b&0x7F) << shift
+				if b < 0x80 {
+					break
+				}
+			}
+			fieldNum := int32(wire >> 3)
+			wireType := int(wire & 0x7)
+			if wireType == 4 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventHashSuccessDetail: wiretype end group for non-group")
+			}
+			if fieldNum <= 0 {
+				return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: EventHashSuccessDetail: illegal tag %d (wire type %d)", fieldNum, wire)
+			}
+			switch fieldNum {
+			case 1:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field CallerAddress", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.CallerAddress = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 2:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Category", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.Category = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 3:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field Difficulty", wireType)
+				}
+				x.Difficulty = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.Difficulty |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 4:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field ObjectId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.ObjectId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
+			case 5:
+				if wireType != 2 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field PlanetId", wireType)
+				}
+				var stringLen uint64
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					stringLen |= uint64(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+				intStringLen := int(stringLen)
+				if intStringLen < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				postIndex := iNdEx + intStringLen
+				if postIndex < 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrInvalidLength
+				}
+				if postIndex > l {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+				}
+				x.PlanetId = string(dAtA[iNdEx:postIndex])
+				iNdEx = postIndex
 			default:
 				iNdEx = preIndex
 				skippy, err := runtime.Skip(dAtA[iNdEx:])
@@ -32412,6 +33707,7 @@ type EventAttackDetail struct {
 	PlanetaryDefenseCannonDamageDestroyedAttacker bool                     `protobuf:"varint,16,opt,name=planetaryDefenseCannonDamageDestroyedAttacker,proto3" json:"planetaryDefenseCannonDamageDestroyedAttacker,omitempty"`
 	AttackerPlayerId                              string                   `protobuf:"bytes,17,opt,name=attackerPlayerId,proto3" json:"attackerPlayerId,omitempty"`
 	TargetPlayerId                                string                   `protobuf:"bytes,18,opt,name=targetPlayerId,proto3" json:"targetPlayerId,omitempty"`
+	AttackerHealthAfter                           uint64                   `protobuf:"varint,19,opt,name=attackerHealthAfter,proto3" json:"attackerHealthAfter,omitempty"`
 }
 
 func (x *EventAttackDetail) Reset() {
@@ -32560,6 +33856,13 @@ func (x *EventAttackDetail) GetTargetPlayerId() string {
 	return ""
 }
 
+func (x *EventAttackDetail) GetAttackerHealthAfter() uint64 {
+	if x != nil {
+		return x.AttackerHealthAfter
+	}
+	return 0
+}
+
 type EventAttackShotDetail struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -32597,6 +33900,9 @@ type EventAttackShotDetail struct {
 	PostDestructionDamage                  uint64                              `protobuf:"varint,30,opt,name=postDestructionDamage,proto3" json:"postDestructionDamage,omitempty"`
 	PostDestructionDamageDestroyedAttacker bool                                `protobuf:"varint,31,opt,name=postDestructionDamageDestroyedAttacker,proto3" json:"postDestructionDamageDestroyedAttacker,omitempty"`
 	PostDestructionDamageCause             TechPassiveWeaponry                 `protobuf:"varint,32,opt,name=postDestructionDamageCause,proto3,enum=structs.structs.TechPassiveWeaponry" json:"postDestructionDamageCause,omitempty"`
+	TargetHealthBefore                     uint64                              `protobuf:"varint,33,opt,name=targetHealthBefore,proto3" json:"targetHealthBefore,omitempty"`
+	TargetHealthAfter                      uint64                              `protobuf:"varint,34,opt,name=targetHealthAfter,proto3" json:"targetHealthAfter,omitempty"`
+	BlockerHealthAfter                     uint64                              `protobuf:"varint,35,opt,name=blockerHealthAfter,proto3" json:"blockerHealthAfter,omitempty"`
 }
 
 func (x *EventAttackShotDetail) Reset() {
@@ -32843,6 +34149,27 @@ func (x *EventAttackShotDetail) GetPostDestructionDamageCause() TechPassiveWeapo
 	return TechPassiveWeaponry_noPassiveWeaponry
 }
 
+func (x *EventAttackShotDetail) GetTargetHealthBefore() uint64 {
+	if x != nil {
+		return x.TargetHealthBefore
+	}
+	return 0
+}
+
+func (x *EventAttackShotDetail) GetTargetHealthAfter() uint64 {
+	if x != nil {
+		return x.TargetHealthAfter
+	}
+	return 0
+}
+
+func (x *EventAttackShotDetail) GetBlockerHealthAfter() uint64 {
+	if x != nil {
+		return x.BlockerHealthAfter
+	}
+	return 0
+}
+
 type EventAttackDefenderCounterDetail struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -33018,6 +34345,108 @@ func (x *EventRaidDetail) GetStatus() RaidStatus {
 		return x.Status
 	}
 	return RaidStatus_initiated
+}
+
+type EventHashSuccess struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	EventHashSuccessDetail *EventHashSuccessDetail `protobuf:"bytes,1,opt,name=eventHashSuccessDetail,proto3" json:"eventHashSuccessDetail,omitempty"`
+}
+
+func (x *EventHashSuccess) Reset() {
+	*x = EventHashSuccess{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[59]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventHashSuccess) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventHashSuccess) ProtoMessage() {}
+
+// Deprecated: Use EventHashSuccess.ProtoReflect.Descriptor instead.
+func (*EventHashSuccess) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{59}
+}
+
+func (x *EventHashSuccess) GetEventHashSuccessDetail() *EventHashSuccessDetail {
+	if x != nil {
+		return x.EventHashSuccessDetail
+	}
+	return nil
+}
+
+type EventHashSuccessDetail struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	CallerAddress string `protobuf:"bytes,1,opt,name=callerAddress,proto3" json:"callerAddress,omitempty"`
+	Category      string `protobuf:"bytes,2,opt,name=category,proto3" json:"category,omitempty"`
+	Difficulty    uint64 `protobuf:"varint,3,opt,name=difficulty,proto3" json:"difficulty,omitempty"`
+	ObjectId      string `protobuf:"bytes,4,opt,name=objectId,proto3" json:"objectId,omitempty"`
+	PlanetId      string `protobuf:"bytes,5,opt,name=planetId,proto3" json:"planetId,omitempty"`
+}
+
+func (x *EventHashSuccessDetail) Reset() {
+	*x = EventHashSuccessDetail{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_structs_structs_events_proto_msgTypes[60]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *EventHashSuccessDetail) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*EventHashSuccessDetail) ProtoMessage() {}
+
+// Deprecated: Use EventHashSuccessDetail.ProtoReflect.Descriptor instead.
+func (*EventHashSuccessDetail) Descriptor() ([]byte, []int) {
+	return file_structs_structs_events_proto_rawDescGZIP(), []int{60}
+}
+
+func (x *EventHashSuccessDetail) GetCallerAddress() string {
+	if x != nil {
+		return x.CallerAddress
+	}
+	return ""
+}
+
+func (x *EventHashSuccessDetail) GetCategory() string {
+	if x != nil {
+		return x.Category
+	}
+	return ""
+}
+
+func (x *EventHashSuccessDetail) GetDifficulty() uint64 {
+	if x != nil {
+		return x.Difficulty
+	}
+	return 0
+}
+
+func (x *EventHashSuccessDetail) GetObjectId() string {
+	if x != nil {
+		return x.ObjectId
+	}
+	return ""
+}
+
+func (x *EventHashSuccessDetail) GetPlanetId() string {
+	if x != nil {
+		return x.PlanetId
+	}
+	return ""
 }
 
 var File_structs_structs_events_proto protoreflect.FileDescriptor
@@ -33426,7 +34855,7 @@ var file_structs_structs_events_proto_rawDesc = []byte{
 	0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x22, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
 	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74,
 	0x61, 0x63, 0x6b, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x11, 0x65, 0x76, 0x65, 0x6e, 0x74,
-	0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0xd6, 0x09, 0x0a,
+	0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x88, 0x0a, 0x0a,
 	0x11, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x74, 0x61,
 	0x69, 0x6c, 0x12, 0x2a, 0x0a, 0x10, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x53, 0x74,
 	0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x10, 0x61, 0x74,
@@ -33504,137 +34933,149 @@ var file_structs_structs_events_proto_rawDesc = []byte{
 	0x61, 0x63, 0x6b, 0x65, 0x72, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x26, 0x0a,
 	0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x50, 0x6c, 0x61, 0x79, 0x65, 0x72, 0x49, 0x64, 0x18,
 	0x12, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x50, 0x6c, 0x61,
-	0x79, 0x65, 0x72, 0x49, 0x64, 0x22, 0x9a, 0x10, 0x0a, 0x15, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41,
-	0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x68, 0x6f, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12,
-	0x26, 0x0a, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49,
-	0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x2a, 0x0a, 0x10, 0x74, 0x61, 0x72, 0x67, 0x65,
-	0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x10, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54,
-	0x79, 0x70, 0x65, 0x12, 0x5e, 0x0a, 0x18, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x18,
-	0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
-	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54, 0x79,
-	0x70, 0x65, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x18, 0x74, 0x61, 0x72, 0x67, 0x65,
-	0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54,
-	0x79, 0x70, 0x65, 0x12, 0x36, 0x0a, 0x16, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x04, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x16, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x5d, 0x0a, 0x1a, 0x74,
-	0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61,
-	0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x0e, 0x32,
-	0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
-	0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69, 0x74, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1a,
-	0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72,
-	0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x2a, 0x0a, 0x10, 0x74, 0x61,
-	0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x18, 0x06,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x10, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64,
-	0x18, 0x07, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x12, 0x43,
-	0x0a, 0x0b, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x08, 0x20,
-	0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x55, 0x6e, 0x69, 0x74, 0x44, 0x65,
-	0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x52, 0x0b, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x43, 0x61,
-	0x75, 0x73, 0x65, 0x12, 0x3c, 0x0a, 0x19, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79, 0x50,
-	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73,
-	0x18, 0x09, 0x20, 0x01, 0x28, 0x08, 0x52, 0x19, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79,
-	0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65,
-	0x73, 0x12, 0x6e, 0x0a, 0x1e, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79, 0x50, 0x6c, 0x61,
-	0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x43, 0x61,
-	0x75, 0x73, 0x65, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x26, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68,
-	0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65,
-	0x73, 0x52, 0x1e, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79, 0x50, 0x6c, 0x61, 0x6e, 0x65,
-	0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x43, 0x61, 0x75, 0x73,
-	0x65, 0x12, 0x18, 0x0a, 0x07, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x18, 0x0b, 0x20, 0x01,
-	0x28, 0x08, 0x52, 0x07, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x12, 0x2c, 0x0a, 0x11, 0x62,
-	0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64,
-	0x18, 0x0c, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42,
-	0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x30, 0x0a, 0x13, 0x62, 0x6c, 0x6f,
-	0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65,
-	0x18, 0x0d, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42,
-	0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x64, 0x0a, 0x1b, 0x62,
-	0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f,
-	0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x18, 0x0e, 0x20, 0x01, 0x28, 0x0e,
-	0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x42, 0x05, 0xa8,
-	0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53,
+	0x79, 0x65, 0x72, 0x49, 0x64, 0x12, 0x30, 0x0a, 0x13, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65,
+	0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x66, 0x74, 0x65, 0x72, 0x18, 0x13, 0x20, 0x01,
+	0x28, 0x04, 0x52, 0x13, 0x61, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c,
+	0x74, 0x68, 0x41, 0x66, 0x74, 0x65, 0x72, 0x22, 0xa8, 0x11, 0x0a, 0x15, 0x45, 0x76, 0x65, 0x6e,
+	0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x53, 0x68, 0x6f, 0x74, 0x44, 0x65, 0x74, 0x61, 0x69,
+	0x6c, 0x12, 0x26, 0x0a, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0e, 0x74, 0x61, 0x72, 0x67, 0x65,
+	0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x2a, 0x0a, 0x10, 0x74, 0x61, 0x72,
+	0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x10, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x5e, 0x0a, 0x18, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53,
 	0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70,
-	0x65, 0x12, 0x3c, 0x0a, 0x19, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18, 0x0f,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x19, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12,
-	0x63, 0x0a, 0x1d, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74,
-	0x18, 0x10, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69, 0x74, 0x42, 0x05,
-	0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1d, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79,
-	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41,
-	0x6d, 0x62, 0x69, 0x74, 0x12, 0x30, 0x0a, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42,
-	0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x18, 0x11, 0x20, 0x01, 0x28,
-	0x04, 0x52, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x12, 0x2a, 0x0a, 0x10, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65,
-	0x72, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x18, 0x12, 0x20, 0x01, 0x28, 0x08,
-	0x52, 0x10, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79,
-	0x65, 0x64, 0x12, 0x7d, 0x0a, 0x20, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63,
-	0x6b, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72,
-	0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x13, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x31, 0x2e, 0x73,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45,
-	0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64,
-	0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52,
-	0x20, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x66, 0x65,
-	0x6e, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x74, 0x61, 0x69,
-	0x6c, 0x12, 0x20, 0x0a, 0x0b, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x61, 0x6c, 0x74,
-	0x18, 0x14, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65,
-	0x61, 0x6c, 0x74, 0x12, 0x28, 0x0a, 0x0f, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x64,
-	0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x15, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f, 0x64, 0x61,
-	0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x55, 0x0a,
-	0x14, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e,
-	0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x16, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x73, 0x74,
+	0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74,
+	0x54, 0x79, 0x70, 0x65, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x18, 0x74, 0x61, 0x72,
+	0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f,
+	0x6e, 0x54, 0x79, 0x70, 0x65, 0x12, 0x36, 0x0a, 0x16, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x18,
+	0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x16, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64, 0x12, 0x5d, 0x0a,
+	0x1a, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65,
+	0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28,
+	0x0e, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
+	0x63, 0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69, 0x74, 0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01,
+	0x52, 0x1a, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70,
+	0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x2a, 0x0a, 0x10,
+	0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74,
+	0x18, 0x06, 0x20, 0x01, 0x28, 0x04, 0x52, 0x10, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x12, 0x16, 0x0a, 0x06, 0x65, 0x76, 0x61, 0x64,
+	0x65, 0x64, 0x18, 0x07, 0x20, 0x01, 0x28, 0x08, 0x52, 0x06, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64,
+	0x12, 0x43, 0x0a, 0x0b, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x43, 0x61, 0x75, 0x73, 0x65, 0x18,
+	0x08, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x55, 0x6e, 0x69, 0x74,
+	0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x52, 0x0b, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64,
+	0x43, 0x61, 0x75, 0x73, 0x65, 0x12, 0x3c, 0x0a, 0x19, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42,
+	0x79, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73,
+	0x65, 0x73, 0x18, 0x09, 0x20, 0x01, 0x28, 0x08, 0x52, 0x19, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64,
+	0x42, 0x79, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e,
+	0x73, 0x65, 0x73, 0x12, 0x6e, 0x0a, 0x1e, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79, 0x50,
+	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73,
+	0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x26, 0x2e, 0x73, 0x74,
 	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65,
-	0x63, 0x68, 0x55, 0x6e, 0x69, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x52, 0x14,
-	0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43,
-	0x61, 0x75, 0x73, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x17,
-	0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x28, 0x0a, 0x0f,
-	0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x64, 0x18,
-	0x18, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75,
-	0x6e, 0x74, 0x65, 0x72, 0x65, 0x64, 0x12, 0x34, 0x0a, 0x15, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
-	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x64, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18,
-	0x19, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75,
-	0x6e, 0x74, 0x65, 0x72, 0x65, 0x64, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x46, 0x0a, 0x1e,
-	0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x73,
-	0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x1a,
-	0x20, 0x01, 0x28, 0x08, 0x52, 0x1e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e,
-	0x74, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61,
-	0x63, 0x6b, 0x65, 0x72, 0x12, 0x54, 0x0a, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f,
-	0x75, 0x6e, 0x74, 0x65, 0x72, 0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x1b, 0x20, 0x01, 0x28, 0x0e,
-	0x32, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65, 0x57, 0x65,
-	0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x52, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f,
-	0x75, 0x6e, 0x74, 0x65, 0x72, 0x43, 0x61, 0x75, 0x73, 0x65, 0x12, 0x28, 0x0a, 0x0f, 0x74, 0x61,
-	0x72, 0x67, 0x65, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x18, 0x1c, 0x20,
-	0x01, 0x28, 0x08, 0x52, 0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72,
-	0x6f, 0x79, 0x65, 0x64, 0x12, 0x48, 0x0a, 0x1f, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41,
-	0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x1d, 0x20, 0x01, 0x28, 0x08, 0x52, 0x1f, 0x70,
-	0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61,
-	0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x34,
-	0x0a, 0x15, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f,
-	0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x1e, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x70,
-	0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61,
-	0x6d, 0x61, 0x67, 0x65, 0x12, 0x56, 0x0a, 0x26, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74,
+	0x63, 0x68, 0x50, 0x6c, 0x61, 0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e,
+	0x73, 0x65, 0x73, 0x52, 0x1e, 0x65, 0x76, 0x61, 0x64, 0x65, 0x64, 0x42, 0x79, 0x50, 0x6c, 0x61,
+	0x6e, 0x65, 0x74, 0x61, 0x72, 0x79, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73, 0x43, 0x61,
+	0x75, 0x73, 0x65, 0x12, 0x18, 0x0a, 0x07, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x18, 0x0b,
+	0x20, 0x01, 0x28, 0x08, 0x52, 0x07, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x12, 0x2c, 0x0a,
+	0x11, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x49, 0x64, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x09, 0x52, 0x11, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65,
+	0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x12, 0x30, 0x0a, 0x13, 0x62,
+	0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79,
+	0x70, 0x65, 0x18, 0x0d, 0x20, 0x01, 0x28, 0x04, 0x52, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65,
+	0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x12, 0x64, 0x0a,
+	0x1b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54, 0x79, 0x70, 0x65, 0x18, 0x0e, 0x20, 0x01,
+	0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x54, 0x79, 0x70, 0x65, 0x42,
+	0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1b, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42,
+	0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x54,
+	0x79, 0x70, 0x65, 0x12, 0x3c, 0x0a, 0x19, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79,
+	0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49, 0x64,
+	0x18, 0x0f, 0x20, 0x01, 0x28, 0x09, 0x52, 0x19, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42,
+	0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4c, 0x6f, 0x63, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x49,
+	0x64, 0x12, 0x63, 0x0a, 0x1d, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e, 0x67, 0x41, 0x6d, 0x62,
+	0x69, 0x74, 0x18, 0x10, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x16, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x61, 0x6d, 0x62, 0x69, 0x74,
+	0x42, 0x05, 0xa8, 0xe7, 0xb0, 0x2a, 0x01, 0x52, 0x1d, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64,
+	0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x4f, 0x70, 0x65, 0x72, 0x61, 0x74, 0x69, 0x6e,
+	0x67, 0x41, 0x6d, 0x62, 0x69, 0x74, 0x12, 0x30, 0x0a, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65,
+	0x64, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x18, 0x11, 0x20,
+	0x01, 0x28, 0x04, 0x52, 0x13, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x64, 0x42, 0x79, 0x53, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x53, 0x6c, 0x6f, 0x74, 0x12, 0x2a, 0x0a, 0x10, 0x62, 0x6c, 0x6f, 0x63,
+	0x6b, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x18, 0x12, 0x20, 0x01,
+	0x28, 0x08, 0x52, 0x10, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72,
+	0x6f, 0x79, 0x65, 0x64, 0x12, 0x7d, 0x0a, 0x20, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74,
+	0x61, 0x63, 0x6b, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74,
+	0x65, 0x72, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x13, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x31,
+	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65, 0x66, 0x65,
+	0x6e, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x74, 0x61, 0x69,
+	0x6c, 0x52, 0x20, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x44, 0x65,
+	0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x74,
+	0x61, 0x69, 0x6c, 0x12, 0x20, 0x0a, 0x0b, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x61,
+	0x6c, 0x74, 0x18, 0x14, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0b, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65,
+	0x44, 0x65, 0x61, 0x6c, 0x74, 0x12, 0x28, 0x0a, 0x0f, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x52,
+	0x65, 0x64, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x15, 0x20, 0x01, 0x28, 0x04, 0x52, 0x0f,
+	0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x12,
+	0x55, 0x0a, 0x14, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69,
+	0x6f, 0x6e, 0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x16, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x21, 0x2e,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e,
+	0x74, 0x65, 0x63, 0x68, 0x55, 0x6e, 0x69, 0x74, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x73, 0x65, 0x73,
+	0x52, 0x14, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x52, 0x65, 0x64, 0x75, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x43, 0x61, 0x75, 0x73, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65,
+	0x18, 0x17, 0x20, 0x01, 0x28, 0x04, 0x52, 0x06, 0x64, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x28,
+	0x0a, 0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x65,
+	0x64, 0x18, 0x18, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43,
+	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x64, 0x12, 0x34, 0x0a, 0x15, 0x74, 0x61, 0x72, 0x67,
+	0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x64, 0x44, 0x61, 0x6d, 0x61, 0x67,
+	0x65, 0x18, 0x19, 0x20, 0x01, 0x28, 0x04, 0x52, 0x15, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43,
+	0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x65, 0x64, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x46,
+	0x0a, 0x1e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x44,
+	0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72,
+	0x18, 0x1a, 0x20, 0x01, 0x28, 0x08, 0x52, 0x1e, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x43, 0x6f,
+	0x75, 0x6e, 0x74, 0x65, 0x72, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74,
+	0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x54, 0x0a, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
+	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x1b, 0x20, 0x01,
+	0x28, 0x0e, 0x32, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65,
+	0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x52, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74,
+	0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65, 0x72, 0x43, 0x61, 0x75, 0x73, 0x65, 0x12, 0x28, 0x0a, 0x0f,
+	0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x18,
+	0x1c, 0x20, 0x01, 0x28, 0x08, 0x52, 0x0f, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x44, 0x65, 0x73,
+	0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x12, 0x48, 0x0a, 0x1f, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54,
+	0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x1d, 0x20, 0x01, 0x28, 0x08, 0x52,
+	0x1f, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x54, 0x6f, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72,
+	0x12, 0x34, 0x0a, 0x15, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x18, 0x1e, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x15, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e,
+	0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x12, 0x56, 0x0a, 0x26, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44,
+	0x65, 0x73, 0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72,
+	0x18, 0x1f, 0x20, 0x01, 0x28, 0x08, 0x52, 0x26, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74,
 	0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73,
-	0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x18, 0x1f,
-	0x20, 0x01, 0x28, 0x08, 0x52, 0x26, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x44, 0x65, 0x73, 0x74, 0x72,
-	0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x64, 0x0a, 0x1a,
-	0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44,
-	0x61, 0x6d, 0x61, 0x67, 0x65, 0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x20, 0x20, 0x01, 0x28, 0x0e,
-	0x32, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63,
-	0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65, 0x57, 0x65,
-	0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x52, 0x1a, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74,
-	0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x43, 0x61, 0x75,
-	0x73, 0x65, 0x22, 0x9f, 0x04, 0x0a, 0x20, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61,
+	0x74, 0x72, 0x6f, 0x79, 0x65, 0x64, 0x41, 0x74, 0x74, 0x61, 0x63, 0x6b, 0x65, 0x72, 0x12, 0x64,
+	0x0a, 0x1a, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x43, 0x61, 0x75, 0x73, 0x65, 0x18, 0x20, 0x20, 0x01,
+	0x28, 0x0e, 0x32, 0x24, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72,
+	0x75, 0x63, 0x74, 0x73, 0x2e, 0x74, 0x65, 0x63, 0x68, 0x50, 0x61, 0x73, 0x73, 0x69, 0x76, 0x65,
+	0x57, 0x65, 0x61, 0x70, 0x6f, 0x6e, 0x72, 0x79, 0x52, 0x1a, 0x70, 0x6f, 0x73, 0x74, 0x44, 0x65,
+	0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x44, 0x61, 0x6d, 0x61, 0x67, 0x65, 0x43,
+	0x61, 0x75, 0x73, 0x65, 0x12, 0x2e, 0x0a, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x48, 0x65,
+	0x61, 0x6c, 0x74, 0x68, 0x42, 0x65, 0x66, 0x6f, 0x72, 0x65, 0x18, 0x21, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x12, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x42, 0x65,
+	0x66, 0x6f, 0x72, 0x65, 0x12, 0x2c, 0x0a, 0x11, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x48, 0x65,
+	0x61, 0x6c, 0x74, 0x68, 0x41, 0x66, 0x74, 0x65, 0x72, 0x18, 0x22, 0x20, 0x01, 0x28, 0x04, 0x52,
+	0x11, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x66, 0x74,
+	0x65, 0x72, 0x12, 0x2e, 0x0a, 0x12, 0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61,
+	0x6c, 0x74, 0x68, 0x41, 0x66, 0x74, 0x65, 0x72, 0x18, 0x23, 0x20, 0x01, 0x28, 0x04, 0x52, 0x12,
+	0x62, 0x6c, 0x6f, 0x63, 0x6b, 0x65, 0x72, 0x48, 0x65, 0x61, 0x6c, 0x74, 0x68, 0x41, 0x66, 0x74,
+	0x65, 0x72, 0x22, 0x9f, 0x04, 0x0a, 0x20, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x41, 0x74, 0x74, 0x61,
 	0x63, 0x6b, 0x44, 0x65, 0x66, 0x65, 0x6e, 0x64, 0x65, 0x72, 0x43, 0x6f, 0x75, 0x6e, 0x74, 0x65,
 	0x72, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x2c, 0x0a, 0x11, 0x63, 0x6f, 0x75, 0x6e, 0x74,
 	0x65, 0x72, 0x42, 0x79, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01,
@@ -33681,18 +35122,37 @@ var file_structs_structs_events_proto_rawDesc = []byte{
 	0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x12, 0x33, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73,
 	0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
 	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x72, 0x61, 0x69, 0x64, 0x53, 0x74, 0x61,
-	0x74, 0x75, 0x73, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x42, 0xa1, 0x01, 0x0a, 0x13,
-	0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75,
-	0x63, 0x74, 0x73, 0x42, 0x0b, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f,
-	0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f, 0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f,
-	0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0xa2, 0x02, 0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72,
-	0x75, 0x63, 0x74, 0x73, 0x2e, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02,
-	0x1b, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65, 0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53,
-	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62,
-	0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x74, 0x75, 0x73, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x22, 0x73, 0x0a, 0x10, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x12,
+	0x5f, 0x0a, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x53, 0x75, 0x63, 0x63,
+	0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,
+	0x27, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x53, 0x75, 0x63, 0x63, 0x65,
+	0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x48,
+	0x61, 0x73, 0x68, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
+	0x22, 0xb2, 0x01, 0x0a, 0x16, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x53, 0x75,
+	0x63, 0x63, 0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x12, 0x24, 0x0a, 0x0d, 0x63,
+	0x61, 0x6c, 0x6c, 0x65, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x0d, 0x63, 0x61, 0x6c, 0x6c, 0x65, 0x72, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73,
+	0x73, 0x12, 0x1a, 0x0a, 0x08, 0x63, 0x61, 0x74, 0x65, 0x67, 0x6f, 0x72, 0x79, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x09, 0x52, 0x08, 0x63, 0x61, 0x74, 0x65, 0x67, 0x6f, 0x72, 0x79, 0x12, 0x1e, 0x0a,
+	0x0a, 0x64, 0x69, 0x66, 0x66, 0x69, 0x63, 0x75, 0x6c, 0x74, 0x79, 0x18, 0x03, 0x20, 0x01, 0x28,
+	0x04, 0x52, 0x0a, 0x64, 0x69, 0x66, 0x66, 0x69, 0x63, 0x75, 0x6c, 0x74, 0x79, 0x12, 0x1a, 0x0a,
+	0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x08, 0x6f, 0x62, 0x6a, 0x65, 0x63, 0x74, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c, 0x61,
+	0x6e, 0x65, 0x74, 0x49, 0x64, 0x18, 0x05, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c, 0x61,
+	0x6e, 0x65, 0x74, 0x49, 0x64, 0x42, 0xa1, 0x01, 0x0a, 0x13, 0x63, 0x6f, 0x6d, 0x2e, 0x73, 0x74,
+	0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x42, 0x0b, 0x45,
+	0x76, 0x65, 0x6e, 0x74, 0x73, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x20, 0x63, 0x6f,
+	0x73, 0x6d, 0x6f, 0x73, 0x73, 0x64, 0x6b, 0x2e, 0x69, 0x6f, 0x2f, 0x61, 0x70, 0x69, 0x2f, 0x73,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xa2, 0x02,
+	0x03, 0x53, 0x53, 0x58, 0xaa, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x53,
+	0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xca, 0x02, 0x0f, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0xe2, 0x02, 0x1b, 0x53, 0x74, 0x72, 0x75, 0x63,
+	0x74, 0x73, 0x5c, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x5c, 0x47, 0x50, 0x42, 0x4d, 0x65,
+	0x74, 0x61, 0x64, 0x61, 0x74, 0x61, 0xea, 0x02, 0x10, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
+	0x3a, 0x3a, 0x53, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f,
+	0x33,
 }
 
 var (
@@ -33707,7 +35167,7 @@ func file_structs_structs_events_proto_rawDescGZIP() []byte {
 	return file_structs_structs_events_proto_rawDescData
 }
 
-var file_structs_structs_events_proto_msgTypes = make([]protoimpl.MessageInfo, 59)
+var file_structs_structs_events_proto_msgTypes = make([]protoimpl.MessageInfo, 61)
 var file_structs_structs_events_proto_goTypes = []interface{}{
 	(*EventAllocation)(nil),                       // 0: structs.structs.EventAllocation
 	(*EventAgreement)(nil),                        // 1: structs.structs.EventAgreement
@@ -33768,67 +35228,69 @@ var file_structs_structs_events_proto_goTypes = []interface{}{
 	(*EventAttackDefenderCounterDetail)(nil),      // 56: structs.structs.EventAttackDefenderCounterDetail
 	(*EventRaid)(nil),                             // 57: structs.structs.EventRaid
 	(*EventRaidDetail)(nil),                       // 58: structs.structs.EventRaidDetail
-	(*Allocation)(nil),                            // 59: structs.structs.Allocation
-	(*Agreement)(nil),                             // 60: structs.structs.Agreement
-	(*Fleet)(nil),                                 // 61: structs.structs.Fleet
-	(*Guild)(nil),                                 // 62: structs.structs.Guild
-	(*Infusion)(nil),                              // 63: structs.structs.Infusion
-	(*Planet)(nil),                                // 64: structs.structs.Planet
-	(*PlanetAttributeRecord)(nil),                 // 65: structs.structs.PlanetAttributeRecord
-	(*Player)(nil),                                // 66: structs.structs.Player
-	(*Provider)(nil),                              // 67: structs.structs.Provider
-	(*Reactor)(nil),                               // 68: structs.structs.Reactor
-	(*Struct)(nil),                                // 69: structs.structs.Struct
-	(*StructAttributeRecord)(nil),                 // 70: structs.structs.StructAttributeRecord
-	(*StructDefender)(nil),                        // 71: structs.structs.StructDefender
-	(*StructType)(nil),                            // 72: structs.structs.StructType
-	(*Substation)(nil),                            // 73: structs.structs.Substation
-	(*timestamppb.Timestamp)(nil),                 // 74: google.protobuf.Timestamp
-	(*PermissionRecord)(nil),                      // 75: structs.structs.PermissionRecord
-	(*GridRecord)(nil),                            // 76: structs.structs.GridRecord
-	(*AddressAssociation)(nil),                    // 77: structs.structs.AddressAssociation
-	(*AddressActivity)(nil),                       // 78: structs.structs.AddressActivity
-	(*GuildMembershipApplication)(nil),            // 79: structs.structs.GuildMembershipApplication
-	(ObjectType)(0),                               // 80: structs.structs.objectType
-	(Ambit)(0),                                    // 81: structs.structs.ambit
-	(TechWeaponSystem)(0),                         // 82: structs.structs.techWeaponSystem
-	(TechWeaponControl)(0),                        // 83: structs.structs.techWeaponControl
-	(TechActiveWeaponry)(0),                       // 84: structs.structs.techActiveWeaponry
-	(TechUnitDefenses)(0),                         // 85: structs.structs.techUnitDefenses
-	(TechPlanetaryDefenses)(0),                    // 86: structs.structs.techPlanetaryDefenses
-	(TechPassiveWeaponry)(0),                      // 87: structs.structs.techPassiveWeaponry
-	(RaidStatus)(0),                               // 88: structs.structs.raidStatus
+	(*EventHashSuccess)(nil),                      // 59: structs.structs.EventHashSuccess
+	(*EventHashSuccessDetail)(nil),                // 60: structs.structs.EventHashSuccessDetail
+	(*Allocation)(nil),                            // 61: structs.structs.Allocation
+	(*Agreement)(nil),                             // 62: structs.structs.Agreement
+	(*Fleet)(nil),                                 // 63: structs.structs.Fleet
+	(*Guild)(nil),                                 // 64: structs.structs.Guild
+	(*Infusion)(nil),                              // 65: structs.structs.Infusion
+	(*Planet)(nil),                                // 66: structs.structs.Planet
+	(*PlanetAttributeRecord)(nil),                 // 67: structs.structs.PlanetAttributeRecord
+	(*Player)(nil),                                // 68: structs.structs.Player
+	(*Provider)(nil),                              // 69: structs.structs.Provider
+	(*Reactor)(nil),                               // 70: structs.structs.Reactor
+	(*Struct)(nil),                                // 71: structs.structs.Struct
+	(*StructAttributeRecord)(nil),                 // 72: structs.structs.StructAttributeRecord
+	(*StructDefender)(nil),                        // 73: structs.structs.StructDefender
+	(*StructType)(nil),                            // 74: structs.structs.StructType
+	(*Substation)(nil),                            // 75: structs.structs.Substation
+	(*timestamppb.Timestamp)(nil),                 // 76: google.protobuf.Timestamp
+	(*PermissionRecord)(nil),                      // 77: structs.structs.PermissionRecord
+	(*GridRecord)(nil),                            // 78: structs.structs.GridRecord
+	(*AddressAssociation)(nil),                    // 79: structs.structs.AddressAssociation
+	(*AddressActivity)(nil),                       // 80: structs.structs.AddressActivity
+	(*GuildMembershipApplication)(nil),            // 81: structs.structs.GuildMembershipApplication
+	(ObjectType)(0),                               // 82: structs.structs.objectType
+	(Ambit)(0),                                    // 83: structs.structs.ambit
+	(TechWeaponSystem)(0),                         // 84: structs.structs.techWeaponSystem
+	(TechWeaponControl)(0),                        // 85: structs.structs.techWeaponControl
+	(TechActiveWeaponry)(0),                       // 86: structs.structs.techActiveWeaponry
+	(TechUnitDefenses)(0),                         // 87: structs.structs.techUnitDefenses
+	(TechPlanetaryDefenses)(0),                    // 88: structs.structs.techPlanetaryDefenses
+	(TechPassiveWeaponry)(0),                      // 89: structs.structs.techPassiveWeaponry
+	(RaidStatus)(0),                               // 90: structs.structs.raidStatus
 }
 var file_structs_structs_events_proto_depIdxs = []int32{
-	59, // 0: structs.structs.EventAllocation.allocation:type_name -> structs.structs.Allocation
-	60, // 1: structs.structs.EventAgreement.agreement:type_name -> structs.structs.Agreement
-	61, // 2: structs.structs.EventFleet.fleet:type_name -> structs.structs.Fleet
-	62, // 3: structs.structs.EventGuild.guild:type_name -> structs.structs.Guild
-	63, // 4: structs.structs.EventInfusion.infusion:type_name -> structs.structs.Infusion
-	64, // 5: structs.structs.EventPlanet.planet:type_name -> structs.structs.Planet
-	65, // 6: structs.structs.EventPlanetAttribute.planetAttributeRecord:type_name -> structs.structs.PlanetAttributeRecord
-	66, // 7: structs.structs.EventPlayer.player:type_name -> structs.structs.Player
-	67, // 8: structs.structs.EventProvider.provider:type_name -> structs.structs.Provider
-	68, // 9: structs.structs.EventReactor.reactor:type_name -> structs.structs.Reactor
-	69, // 10: structs.structs.EventStruct.structure:type_name -> structs.structs.Struct
-	70, // 11: structs.structs.EventStructAttribute.structAttributeRecord:type_name -> structs.structs.StructAttributeRecord
-	71, // 12: structs.structs.EventStructDefender.structDefender:type_name -> structs.structs.StructDefender
-	72, // 13: structs.structs.EventStructType.structType:type_name -> structs.structs.StructType
-	73, // 14: structs.structs.EventSubstation.substation:type_name -> structs.structs.Substation
+	61, // 0: structs.structs.EventAllocation.allocation:type_name -> structs.structs.Allocation
+	62, // 1: structs.structs.EventAgreement.agreement:type_name -> structs.structs.Agreement
+	63, // 2: structs.structs.EventFleet.fleet:type_name -> structs.structs.Fleet
+	64, // 3: structs.structs.EventGuild.guild:type_name -> structs.structs.Guild
+	65, // 4: structs.structs.EventInfusion.infusion:type_name -> structs.structs.Infusion
+	66, // 5: structs.structs.EventPlanet.planet:type_name -> structs.structs.Planet
+	67, // 6: structs.structs.EventPlanetAttribute.planetAttributeRecord:type_name -> structs.structs.PlanetAttributeRecord
+	68, // 7: structs.structs.EventPlayer.player:type_name -> structs.structs.Player
+	69, // 8: structs.structs.EventProvider.provider:type_name -> structs.structs.Provider
+	70, // 9: structs.structs.EventReactor.reactor:type_name -> structs.structs.Reactor
+	71, // 10: structs.structs.EventStruct.structure:type_name -> structs.structs.Struct
+	72, // 11: structs.structs.EventStructAttribute.structAttributeRecord:type_name -> structs.structs.StructAttributeRecord
+	73, // 12: structs.structs.EventStructDefender.structDefender:type_name -> structs.structs.StructDefender
+	74, // 13: structs.structs.EventStructType.structType:type_name -> structs.structs.StructType
+	75, // 14: structs.structs.EventSubstation.substation:type_name -> structs.structs.Substation
 	16, // 15: structs.structs.EventTime.eventTimeDetail:type_name -> structs.structs.EventTimeDetail
-	74, // 16: structs.structs.EventTimeDetail.blockTime:type_name -> google.protobuf.Timestamp
-	75, // 17: structs.structs.EventPermission.permissionRecord:type_name -> structs.structs.PermissionRecord
-	76, // 18: structs.structs.EventGrid.gridRecord:type_name -> structs.structs.GridRecord
+	76, // 16: structs.structs.EventTimeDetail.blockTime:type_name -> google.protobuf.Timestamp
+	77, // 17: structs.structs.EventPermission.permissionRecord:type_name -> structs.structs.PermissionRecord
+	78, // 18: structs.structs.EventGrid.gridRecord:type_name -> structs.structs.GridRecord
 	20, // 19: structs.structs.EventProviderAddress.eventProviderAddressDetail:type_name -> structs.structs.EventProviderAddressDetail
 	22, // 20: structs.structs.EventProviderGrantGuild.eventProviderGrantGuildDetail:type_name -> structs.structs.EventProviderGrantGuildDetail
 	24, // 21: structs.structs.EventProviderRevokeGuild.eventProviderRevokeGuildDetail:type_name -> structs.structs.EventProviderRevokeGuildDetail
-	77, // 22: structs.structs.EventAddressAssociation.addressAssociation:type_name -> structs.structs.AddressAssociation
-	78, // 23: structs.structs.EventAddressActivity.addressActivity:type_name -> structs.structs.AddressActivity
+	79, // 22: structs.structs.EventAddressAssociation.addressAssociation:type_name -> structs.structs.AddressAssociation
+	80, // 23: structs.structs.EventAddressActivity.addressActivity:type_name -> structs.structs.AddressActivity
 	31, // 24: structs.structs.EventGuildBankAddress.eventGuildBankAddressDetail:type_name -> structs.structs.EventGuildBankAddressDetail
 	33, // 25: structs.structs.EventGuildBankMint.eventGuildBankMintDetail:type_name -> structs.structs.EventGuildBankMintDetail
 	35, // 26: structs.structs.EventGuildBankRedeem.eventGuildBankRedeemDetail:type_name -> structs.structs.EventGuildBankRedeemDetail
 	37, // 27: structs.structs.EventGuildBankConfiscateAndBurn.eventGuildBankConfiscateAndBurnDetail:type_name -> structs.structs.EventGuildBankConfiscateAndBurnDetail
-	79, // 28: structs.structs.EventGuildMembershipApplication.guildMembershipApplication:type_name -> structs.structs.GuildMembershipApplication
+	81, // 28: structs.structs.EventGuildMembershipApplication.guildMembershipApplication:type_name -> structs.structs.GuildMembershipApplication
 	40, // 29: structs.structs.EventOreMine.eventOreMineDetail:type_name -> structs.structs.EventOreMineDetail
 	42, // 30: structs.structs.EventAlphaRefine.eventAlphaRefineDetail:type_name -> structs.structs.EventAlphaRefineDetail
 	44, // 31: structs.structs.EventAlphaInfuse.eventAlphaInfuseDetail:type_name -> structs.structs.EventAlphaInfuseDetail
@@ -33837,31 +35299,32 @@ var file_structs_structs_events_proto_depIdxs = []int32{
 	50, // 34: structs.structs.EventOreMigrate.eventOreMigrateDetail:type_name -> structs.structs.EventOreMigrateDetail
 	52, // 35: structs.structs.EventStructDefenderClear.structDefenderClearDetail:type_name -> structs.structs.EventStructDefenderClearDetail
 	54, // 36: structs.structs.EventAttack.eventAttackDetail:type_name -> structs.structs.EventAttackDetail
-	80, // 37: structs.structs.EventAttackDetail.attackerStructLocationType:type_name -> structs.structs.objectType
-	81, // 38: structs.structs.EventAttackDetail.attackerStructOperatingAmbit:type_name -> structs.structs.ambit
-	82, // 39: structs.structs.EventAttackDetail.weaponSystem:type_name -> structs.structs.techWeaponSystem
-	83, // 40: structs.structs.EventAttackDetail.weaponControl:type_name -> structs.structs.techWeaponControl
-	84, // 41: structs.structs.EventAttackDetail.activeWeaponry:type_name -> structs.structs.techActiveWeaponry
+	82, // 37: structs.structs.EventAttackDetail.attackerStructLocationType:type_name -> structs.structs.objectType
+	83, // 38: structs.structs.EventAttackDetail.attackerStructOperatingAmbit:type_name -> structs.structs.ambit
+	84, // 39: structs.structs.EventAttackDetail.weaponSystem:type_name -> structs.structs.techWeaponSystem
+	85, // 40: structs.structs.EventAttackDetail.weaponControl:type_name -> structs.structs.techWeaponControl
+	86, // 41: structs.structs.EventAttackDetail.activeWeaponry:type_name -> structs.structs.techActiveWeaponry
 	55, // 42: structs.structs.EventAttackDetail.eventAttackShotDetail:type_name -> structs.structs.EventAttackShotDetail
-	80, // 43: structs.structs.EventAttackShotDetail.targetStructLocationType:type_name -> structs.structs.objectType
-	81, // 44: structs.structs.EventAttackShotDetail.targetStructOperatingAmbit:type_name -> structs.structs.ambit
-	85, // 45: structs.structs.EventAttackShotDetail.evadedCause:type_name -> structs.structs.techUnitDefenses
-	86, // 46: structs.structs.EventAttackShotDetail.evadedByPlanetaryDefensesCause:type_name -> structs.structs.techPlanetaryDefenses
-	80, // 47: structs.structs.EventAttackShotDetail.blockedByStructLocationType:type_name -> structs.structs.objectType
-	81, // 48: structs.structs.EventAttackShotDetail.blockedByStructOperatingAmbit:type_name -> structs.structs.ambit
+	82, // 43: structs.structs.EventAttackShotDetail.targetStructLocationType:type_name -> structs.structs.objectType
+	83, // 44: structs.structs.EventAttackShotDetail.targetStructOperatingAmbit:type_name -> structs.structs.ambit
+	87, // 45: structs.structs.EventAttackShotDetail.evadedCause:type_name -> structs.structs.techUnitDefenses
+	88, // 46: structs.structs.EventAttackShotDetail.evadedByPlanetaryDefensesCause:type_name -> structs.structs.techPlanetaryDefenses
+	82, // 47: structs.structs.EventAttackShotDetail.blockedByStructLocationType:type_name -> structs.structs.objectType
+	83, // 48: structs.structs.EventAttackShotDetail.blockedByStructOperatingAmbit:type_name -> structs.structs.ambit
 	56, // 49: structs.structs.EventAttackShotDetail.eventAttackDefenderCounterDetail:type_name -> structs.structs.EventAttackDefenderCounterDetail
-	85, // 50: structs.structs.EventAttackShotDetail.damageReductionCause:type_name -> structs.structs.techUnitDefenses
-	87, // 51: structs.structs.EventAttackShotDetail.targetCounterCause:type_name -> structs.structs.techPassiveWeaponry
-	87, // 52: structs.structs.EventAttackShotDetail.postDestructionDamageCause:type_name -> structs.structs.techPassiveWeaponry
-	80, // 53: structs.structs.EventAttackDefenderCounterDetail.counterByStructLocationType:type_name -> structs.structs.objectType
-	81, // 54: structs.structs.EventAttackDefenderCounterDetail.counterByStructOperatingAmbit:type_name -> structs.structs.ambit
+	87, // 50: structs.structs.EventAttackShotDetail.damageReductionCause:type_name -> structs.structs.techUnitDefenses
+	89, // 51: structs.structs.EventAttackShotDetail.targetCounterCause:type_name -> structs.structs.techPassiveWeaponry
+	89, // 52: structs.structs.EventAttackShotDetail.postDestructionDamageCause:type_name -> structs.structs.techPassiveWeaponry
+	82, // 53: structs.structs.EventAttackDefenderCounterDetail.counterByStructLocationType:type_name -> structs.structs.objectType
+	83, // 54: structs.structs.EventAttackDefenderCounterDetail.counterByStructOperatingAmbit:type_name -> structs.structs.ambit
 	58, // 55: structs.structs.EventRaid.eventRaidDetail:type_name -> structs.structs.EventRaidDetail
-	88, // 56: structs.structs.EventRaidDetail.status:type_name -> structs.structs.raidStatus
-	57, // [57:57] is the sub-list for method output_type
-	57, // [57:57] is the sub-list for method input_type
-	57, // [57:57] is the sub-list for extension type_name
-	57, // [57:57] is the sub-list for extension extendee
-	0,  // [0:57] is the sub-list for field type_name
+	90, // 56: structs.structs.EventRaidDetail.status:type_name -> structs.structs.raidStatus
+	60, // 57: structs.structs.EventHashSuccess.eventHashSuccessDetail:type_name -> structs.structs.EventHashSuccessDetail
+	58, // [58:58] is the sub-list for method output_type
+	58, // [58:58] is the sub-list for method input_type
+	58, // [58:58] is the sub-list for extension type_name
+	58, // [58:58] is the sub-list for extension extendee
+	0,  // [0:58] is the sub-list for field type_name
 }
 
 func init() { file_structs_structs_events_proto_init() }
@@ -34594,6 +36057,30 @@ func file_structs_structs_events_proto_init() {
 				return nil
 			}
 		}
+		file_structs_structs_events_proto_msgTypes[59].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventHashSuccess); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_structs_structs_events_proto_msgTypes[60].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*EventHashSuccessDetail); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -34601,7 +36088,7 @@ func file_structs_structs_events_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_structs_structs_events_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   59,
+			NumMessages:   61,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

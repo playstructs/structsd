@@ -6,7 +6,6 @@ import (
     //"fmt"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 
 
 	"structs/x/structs/types"
@@ -39,34 +38,34 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
     }
 
     if !structure.LoadStruct(){
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) does not exist", msg.DefenderStructId)
+        return &types.MsgStructStatusResponse{}, types.NewObjectNotFoundError("struct", msg.DefenderStructId)
     }
 
     if structure.GetOwner().IsHalted() {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrPlayerHalted, "Struct (%s) cannot perform actions while Player (%s) is Halted", msg.DefenderStructId, structure.GetOwnerId())
+        return &types.MsgStructStatusResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "defense_set").WithStruct(msg.DefenderStructId)
     }
 
     if structure.IsOffline() {
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) already built", msg.DefenderStructId)
+        return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.DefenderStructId, "offline", "online", "defense_set")
     }
 
     if !structure.IsCommandable() {
         k.DischargePlayer(ctx, structure.GetOwnerId())
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Commanding a Fleet Struct (%s) requires a Command Struct be Online", structure.GetStructId())
+        return &types.MsgStructStatusResponse{}, types.NewFleetCommandError(structure.GetStructId(), "no_command_struct")
     }
 
     // Check Player Charge
     if (structure.GetOwner().GetCharge() < structure.GetStructType().DefendChangeCharge) {
-        err := sdkerrors.Wrapf(types.ErrInsufficientCharge, "Struct Type (%d) required a charge of %d to change defensive stance, but player (%s) only had %d", structure.GetStructType().Id, structure.GetStructType().DefendChangeCharge, structure.GetOwnerId(), structure.GetOwner().GetCharge() )
+        err := types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().DefendChangeCharge, structure.GetOwner().GetCharge(), "defend").WithStructType(structure.GetStructType().Id)
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, err
     }
 
     if structure.GetOwner().IsOffline(){
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "The player (%s) is offline ",structure.GetOwnerId())
+        return &types.MsgStructStatusResponse{}, types.NewPlayerPowerError(structure.GetOwnerId(), "offline")
     }
 
 
@@ -75,7 +74,7 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
     //load target
     protectedStructure, protectedStructureFound := k.GetStruct(ctx,  msg.ProtectedStructId)
     if (!protectedStructureFound) {
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Struct (%s) not found", msg.ProtectedStructId)
+        return &types.MsgStructStatusResponse{}, types.NewObjectNotFoundError("struct", msg.ProtectedStructId)
     }
 
     // Are they within defensive range
@@ -102,7 +101,7 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
     if (!inRange) {
         structure.GetOwner().Discharge()
         structure.GetOwner().Commit()
-        return &types.MsgStructStatusResponse{}, sdkerrors.Wrapf(types.ErrGridMalfunction, "Struct (%s) is not within ranger to defend Struct (%s) ", structure.GetStructId(), msg.ProtectedStructId)
+        return &types.MsgStructStatusResponse{}, types.NewStructLocationError(structure.GetStructType().Id, "", "not_in_range").WithStruct(structure.GetStructId()).WithLocation("struct", msg.ProtectedStructId)
     }
 
 

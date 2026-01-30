@@ -7,7 +7,6 @@ import (
     "math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 
     crypto "github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
@@ -27,14 +26,14 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     }
 
     if !player.LoadPlayer() {
-        return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Non-player account cannot associate new addresses with themselves")
+        return &types.MsgAddressRegisterResponse{}, types.NewObjectNotFoundError("player", msg.PlayerId)
     }
 
 
 	// Is the address associated with an account yet
     playerFoundForAddress := k.GetPlayerIndexFromAddress(ctx, msg.Address)
     if (playerFoundForAddress > 0) {
-        return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not associate an address when already has an account")
+        return &types.MsgAddressRegisterResponse{}, types.NewAddressValidationError(msg.Address, "already_registered")
     }
 
      // Check if msg.Creator has PermissionAssociations on the Address and Account
@@ -47,7 +46,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // The calling address must have a minimum of the same permission level
     if (!k.PermissionHasAll(ctx, addressPermissionId, types.Permission(msg.Permissions))) {
-        return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrPermissionAssociation, "Calling address (%s) does not have permissions needed to allow address association of higher functionality ", msg.Creator)
+        return &types.MsgAddressRegisterResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(msg.Permissions), "address_association")
     }
 
 	// Does the signature verify in the proof
@@ -61,7 +60,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     // Convert provided pub key into a bech32 string (i.e., an address)
 	address := types.PubKeyToBech32(decodedProofPubKey)
     if (address != msg.Address) {
-         return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrPlayerUpdate, "Proof mismatch for %s vs %s", address, msg.Address)
+         return &types.MsgAddressRegisterResponse{}, types.NewAddressValidationError(msg.Address, "proof_mismatch").WithPlayers(address, msg.Address)
     }
 
     pubKey := crypto.PubKey{}
@@ -79,7 +78,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
 
     // Proof needs to only be 64 characters. Some systems provide a checksum bit on the end that ruins it all
     if (!pubKey.VerifySignature([]byte(hashInput), decodedProofSignature[:64])) {
-         return &types.MsgAddressRegisterResponse{}, sdkerrors.Wrapf(types.ErrPlayerUpdate, "Proof signature verification failure")
+         return &types.MsgAddressRegisterResponse{}, types.NewAddressValidationError(msg.Address, "signature_invalid")
     }
 
 	// Add the address and player index to the keeper

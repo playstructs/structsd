@@ -4,7 +4,6 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -25,7 +24,7 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
     reactor, reactorFound := k.GetReactorByBytes(ctx, reactorBytes)
 
     if (!reactorFound) {
-        return &types.MsgGuildCreateResponse{}, sdkerrors.Wrapf(types.ErrReactorRequired, "Guild creation requires Reactor but none associated with %s", msg.Creator)
+        return &types.MsgGuildCreateResponse{}, types.NewReactorError("guild_create", "required").WithAddress(msg.Creator, "validator")
     }
 
     // Currently, no real reason to do permission checks that the player can
@@ -39,7 +38,7 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
     if (playerIndex == 0) {
         // should really never get here as player creation is triggered
         // during reactor initialization
-        return &types.MsgGuildCreateResponse{}, sdkerrors.Wrapf(types.ErrPlayerRequired, "Guild creation requires Player account but none associated with %s", msg.Creator)
+        return &types.MsgGuildCreateResponse{}, types.NewPlayerRequiredError(msg.Creator, "guild_create")
     }
     player, _ := k.GetPlayerFromIndex(ctx, playerIndex)
 
@@ -49,13 +48,13 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
         // Check that the Substation exists
         _, substationFound := k.GetSubstation(ctx, msg.EntrySubstationId)
         if (!substationFound) {
-            return &types.MsgGuildCreateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "proposed substation (%s) not found", msg.EntrySubstationId)
+            return &types.MsgGuildCreateResponse{}, types.NewObjectNotFoundError("substation", msg.EntrySubstationId)
         }
 
         // check that the calling player has substation permissions
         substationObjectPermissionId := GetObjectPermissionIDBytes(msg.EntrySubstationId, player.Id)
         if (!k.PermissionHasOneOf(ctx,substationObjectPermissionId, types.PermissionGrid)) {
-            return &types.MsgGuildCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationPlayerConnect, "Calling player (%s) has no Substation Connect Player permissions ", player.Id)
+            return &types.MsgGuildCreateResponse{}, types.NewPermissionError("player", player.Id, "substation", msg.EntrySubstationId, uint64(types.PermissionGrid), "substation_connect")
         }
     }
 

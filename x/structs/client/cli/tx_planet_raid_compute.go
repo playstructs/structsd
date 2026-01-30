@@ -7,8 +7,9 @@ import (
 	"github.com/cosmos/cosmos-sdk/client/flags"
 	"github.com/cosmos/cosmos-sdk/client/tx"
 
-	"github.com/spf13/cobra"
 	"structs/x/structs/types"
+
+	"github.com/spf13/cobra"
 
 	//sdkerrors "github.com/cosmos/cosmos-sdk/types/errors"
 
@@ -16,12 +17,11 @@ import (
 	"fmt"
 	"time"
 
-    "crypto/sha256"
-    "encoding/hex"
+	"crypto/sha256"
+	"encoding/hex"
 )
 
 var _ = strconv.Itoa(0)
-
 
 func CmdPlanetRaidCompute() *cobra.Command {
 	cmd := &cobra.Command{
@@ -40,7 +40,7 @@ func CmdPlanetRaidCompute() *cobra.Command {
 				return err
 			}
 
-            difficultyTargetStart, _ := cmd.Flags().GetInt("difficulty_target_start")
+			difficultyTargetStart, _ := cmd.Flags().GetInt("difficulty_target_start")
 
 			queryClient := types.NewQueryClient(clientCtx)
 
@@ -57,66 +57,67 @@ func CmdPlanetRaidCompute() *cobra.Command {
 			var performingFleet types.Fleet
 			performingFleet = performing_fleet_res.Fleet
 
-            planet_params := &types.QueryGetPlanetRequest{
-                Id: performingFleet.LocationId,
-            }
+			planet_params := &types.QueryGetPlanetRequest{
+				Id: performingFleet.LocationId,
+			}
 
-            Planet_res, _ := queryClient.Planet(context.Background(), planet_params)
-            planet := Planet_res.Planet
-            planetAttributes := Planet_res.PlanetAttributes
+			Planet_res, _ := queryClient.Planet(context.Background(), planet_params)
+			planet := Planet_res.Planet
+			planetAttributes := Planet_res.PlanetAttributes
 
-            if (planetAttributes.BlockStartRaid == 0) {
-                fmt.Printf("Planet (%s) has no Active raid \n", performingFleet.LocationId)
-                return nil
-            }
+			if planetAttributes.BlockStartRaid == 0 {
+				fmt.Printf("Planet (%s) has no Active raid \n", performingFleet.LocationId)
+				return nil
+			}
 
-            currentBlockResponse, _ := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
-            currentBlock := currentBlockResponse.BlockHeight
-            fmt.Printf("Raid process against planet %s activated on %d, current block is %d \n", planet.Id, planetAttributes.BlockStartRaid, currentBlock)
-            currentAge := currentBlock - planetAttributes.BlockStartRaid
-            currentDifficulty := types.CalculateDifficulty(float64(currentAge), planetAttributes.PlanetaryShield)//structType.BuildDifficulty)
-            fmt.Printf("Raid difficulty is %d \n", currentDifficulty)
+			currentBlockResponse, _ := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+			currentBlock := currentBlockResponse.BlockHeight
+			fmt.Printf("Raid process against planet %s activated on %d, current block is %d \n", planet.Id, planetAttributes.BlockStartRaid, currentBlock)
+			currentAge := currentBlock - planetAttributes.BlockStartRaid
+			currentDifficulty := types.CalculateDifficulty(float64(currentAge), planetAttributes.PlanetaryShield) //structType.BuildDifficulty)
+			fmt.Printf("Raid difficulty is %d \n", currentDifficulty)
 
+			activeRaidBlockString := strconv.FormatUint(planetAttributes.BlockStartRaid, 10)
+			fmt.Println("Starting Raiding...")
 
-            activeRaidBlockString := strconv.FormatUint(planetAttributes.BlockStartRaid, 10)
-            fmt.Println("Starting Raiding...")
-
-            var newDifficulty int
+			var newDifficulty int
 			var i int = 0
-			for  {
-				if i > 0  {      // the condition stops matching
-                	break        // break out of the loop
-        		}
+			for {
+				if i > 0 { // the condition stops matching
+					break // break out of the loop
+				}
 
-COMPUTE:
+			COMPUTE:
 				i = i + 1
 
-                if (i % 20000) == 0 {
-                    currentBlockResponse, _ = queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
-                    currentBlock = currentBlockResponse.BlockHeight
-                    currentAge = currentBlock - planetAttributes.BlockStartRaid
-                    newDifficulty = types.CalculateDifficulty(float64(currentAge), planetAttributes.PlanetaryShield)
+				if (i % 20000) == 0 {
+					currentBlockResponse, _ = queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+					currentBlock = currentBlockResponse.BlockHeight
+					currentAge = currentBlock - planetAttributes.BlockStartRaid
+					newDifficulty = types.CalculateDifficulty(float64(currentAge), planetAttributes.PlanetaryShield)
 
-                    if currentDifficulty != newDifficulty {
-                        currentDifficulty = newDifficulty
-                        fmt.Printf("Difficulty Change: %d \n", currentDifficulty)
-                    }
+					if currentDifficulty != newDifficulty {
+						currentDifficulty = newDifficulty
+						fmt.Printf("Difficulty Change: %d \n", currentDifficulty)
+					}
 
-                    if (difficultyTargetStart > 0 ) {
-                        if (difficultyTargetStart > currentDifficulty) {
-                            time.Sleep(5 * time.Minute)
-                            goto COMPUTE
-                        }
-                    }
+					if difficultyTargetStart > 0 {
+						if difficultyTargetStart > currentDifficulty {
+							time.Sleep(5 * time.Minute)
+							goto COMPUTE
+						}
+					}
 
-                }
+				}
 				newHash := sha256.New()
 
-                newInput := performingFleet.Id + "@" + planet.Id + "RAID" + activeRaidBlockString + "NONCE" + strconv.Itoa(i)
+				newInput := performingFleet.Id + "@" + planet.Id + "RAID" + activeRaidBlockString + "NONCE" + strconv.Itoa(i)
 				newHash.Write([]byte(newInput))
 				newHashOutput := hex.EncodeToString(newHash.Sum(nil))
 
-				if (!types.HashBuildAndCheckDifficulty(newInput, newHashOutput, currentAge, planetAttributes.PlanetaryShield)) { goto COMPUTE }
+				if valid, _ := types.HashBuildAndCheckDifficulty(newInput, newHashOutput, currentAge, planetAttributes.PlanetaryShield); !valid {
+					goto COMPUTE
+				}
 
 				fmt.Println("")
 				fmt.Println("Raid Complete!")
@@ -126,20 +127,19 @@ COMPUTE:
 				argProof = newHashOutput
 			}
 
-
 			msg := &types.MsgPlanetRaidComplete{
-                Creator:  clientCtx.GetFromAddress().String(),
-                FleetId: argFleetId,
-                Proof: argProof,
-                Nonce: argNonce,
-            }
+				Creator: clientCtx.GetFromAddress().String(),
+				FleetId: argFleetId,
+				Proof:   argProof,
+				Nonce:   argNonce,
+			}
 
 			return tx.GenerateOrBroadcastTxCLI(clientCtx, cmd.Flags(), msg)
 		},
 	}
 
 	flags.AddTxFlagsToCmd(cmd)
-    cmd.Flags().IntP("difficulty_target_start", "D", 0, "Do not start the compute process until difficulty reaches this level (1-64)")
+	cmd.Flags().IntP("difficulty_target_start", "D", 0, "Do not start the compute process until difficulty reaches this level (1-64)")
 
 	return cmd
 }

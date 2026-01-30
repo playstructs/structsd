@@ -4,7 +4,6 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -17,21 +16,21 @@ func (k msgServer) SubstationDelete(goCtx context.Context, msg *types.MsgSubstat
 
 	player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
     if (!playerFound) {
-        return &types.MsgSubstationDeleteResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Could not perform substation action with non-player address (%s)", msg.Creator)
+        return &types.MsgSubstationDeleteResponse{}, types.NewPlayerRequiredError(msg.Creator, "substation_delete")
     }
 
 
     substationObjectPermissionId := GetObjectPermissionIDBytes(msg.SubstationId, player.Id)
 	// check that the player has reactor permissions
     if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.PermissionDelete)) {
-        return &types.MsgSubstationDeleteResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationDelete, "Calling player (%s) has no Substation Delete permissions ", player.Id)
+        return &types.MsgSubstationDeleteResponse{}, types.NewPermissionError("player", player.Id, "substation", msg.SubstationId, uint64(types.PermissionDelete), "substation_delete")
     }
 
 
     // check that the account has energy management permissions
     addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets)) {
-        return &types.MsgSubstationDeleteResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
+        return &types.MsgSubstationDeleteResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "energy_management")
     }
 
 

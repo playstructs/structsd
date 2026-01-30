@@ -7,7 +7,6 @@ import (
 
 	"structs/x/structs/types"
 
-	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 
 	crypto "github.com/cosmos/cosmos-sdk/crypto/keys/secp256k1"
@@ -27,7 +26,7 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	// look up destination guild
 	guild, guildFound := k.GetGuild(ctx, proxyPlayer.GuildId)
 	if !guildFound {
-		return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Referenced Guild (%s) not found", proxyPlayer.GuildId)
+		return &types.MsgGuildMembershipResponse{}, types.NewObjectNotFoundError("guild", proxyPlayer.GuildId)
 	}
 
 	// Decode the PubKey from hex Encoding
@@ -42,7 +41,7 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	address := types.PubKeyToBech32(decodedProofPubKey)
 
 	if address != msg.Address {
-		return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Proof mismatch for %s vs %s", address, msg.Address)
+		return &types.MsgGuildMembershipResponse{}, types.NewAddressValidationError(msg.Address, "proof_mismatch").WithPlayers(address, msg.Address)
 	}
 
 	pubKey := crypto.PubKey{}
@@ -78,7 +77,7 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 
 	// Proof needs to only be 64 characters. Some systems provide a checksum bit on the end that ruins it all
 	if !pubKey.VerifySignature([]byte(hashInput), decodedProofSignature[:64]) {
-		return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Proof signature verification failure")
+		return &types.MsgGuildMembershipResponse{}, types.NewAddressValidationError(msg.Address, "signature_invalid")
 	}
 
 	guildObjectPermissionId := GetObjectPermissionIDBytes(guild.Id, proxyPlayer.Id)
@@ -86,12 +85,12 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 
 	// Check to make sure the player has permissions on the guild
 	if !k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.PermissionAssociations) {
-		return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%s) has no Player Registration permissions ", proxyPlayer.Id)
+		return &types.MsgGuildMembershipResponse{}, types.NewPermissionError("player", proxyPlayer.Id, "guild", guild.Id, uint64(types.PermissionAssociations), "register_player")
 	}
 
 	// Make sure the address calling this has Associate permissions
 	if !k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssociations) {
-		return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageGuild, "Calling address (%s) has no Guild Management permissions ", msg.Creator)
+		return &types.MsgGuildMembershipResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssociations), "guild_management")
 	}
 
 	var substation types.Substation
@@ -110,21 +109,21 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	if msg.SubstationId != "" {
 		substation, substationFound = k.GetSubstation(ctx, msg.SubstationId)
 		if !substationFound {
-			return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Provided Substation Override (%s) not found", msg.SubstationId)
+			return &types.MsgGuildMembershipResponse{}, types.NewObjectNotFoundError("substation", msg.SubstationId).WithContext("override substation")
 		}
 
 		// Since the Guild Entry Substation is being overridden, let's make
 		// sure the ProxyPlayer actually have authority over this substation
 		substationObjectPermissionId := GetObjectPermissionIDBytes(substation.Id, proxyPlayer.Id)
 		if !k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.PermissionGrid) {
-			return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrPermissionGuildRegister, "Calling player (%s) has no Player Connect permissions on Substation (%s) used as override", proxyPlayer.Id, substation.Id)
+			return &types.MsgGuildMembershipResponse{}, types.NewPermissionError("player", proxyPlayer.Id, "substation", substation.Id, uint64(types.PermissionGrid), "player_connect")
 		}
 	}
 
 	if !substationFound {
 		substation, substationFound = k.GetSubstation(ctx, guild.EntrySubstationId)
 		if !substationFound {
-			return &types.MsgGuildMembershipResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "Entry Substation (%s) for Guild (%s) not found", guild.EntrySubstationId, guild.Id)
+			return &types.MsgGuildMembershipResponse{}, types.NewObjectNotFoundError("substation", guild.EntrySubstationId).WithContext("guild entry substation for " + guild.Id)
 		}
 	}
 

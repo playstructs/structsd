@@ -2,7 +2,6 @@ package types
 
 import (
 	//sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"github.com/nethruster/go-fraction"
 	"fmt"
 )
@@ -12,14 +11,14 @@ func (structType *StructType) VerifyWeaponSystem(weaponSystem TechWeaponSystem) 
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:
             if (structType.PrimaryWeapon == TechActiveWeaponry_noActiveWeaponry) {
-                err = sdkerrors.Wrapf(ErrObjectNotFound, "No valid primary weapon system")
+                err = NewStructCapabilityError(fmt.Sprintf("struct_type_%d", structType.Id), "primary_weapon")
             }
         case TechWeaponSystem_secondaryWeapon:
             if (structType.SecondaryWeapon == TechActiveWeaponry_noActiveWeaponry) {
-                err = sdkerrors.Wrapf(ErrObjectNotFound, "No valid secondary weapon system")
+                err = NewStructCapabilityError(fmt.Sprintf("struct_type_%d", structType.Id), "secondary_weapon")
             }
         default:
-            err = sdkerrors.Wrapf(ErrObjectNotFound, "No valid weapon system provided")
+            err = NewStructCapabilityError(fmt.Sprintf("struct_type_%d", structType.Id), "weapon_system")
     }
     return
 }

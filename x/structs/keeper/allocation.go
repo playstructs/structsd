@@ -3,6 +3,7 @@ package keeper
 import (
 	//"encoding/binary"
     "context"
+    "strconv"
 
     "github.com/cosmos/cosmos-sdk/runtime"
 	"cosmossdk.io/store/prefix"
@@ -10,9 +11,6 @@ import (
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
-
-	sdkerrors "cosmossdk.io/errors"
-
 )
 
 // AppendAllocation appends a allocation in the store with a new id
@@ -37,7 +35,7 @@ func (k Keeper) AppendAllocation(
 	    // TODO - make a quicker lookup. This is going to get slow as allocation increase
 	    sourceAllocations := k.GetAllAllocationIdBySourceIndex(ctx, allocation.SourceObjectId)
 	    if (len(sourceAllocations) > 0) {
-	        return allocation, power, sdkerrors.Wrapf(types.ErrAllocationAppend, "Allocation Source (%s) cannot have an automated Allocation with other allocations in place", allocation.SourceObjectId)
+	        return allocation, power, types.NewAllocationError(allocation.SourceObjectId, "automated_conflict")
 	    }
 
 	    // Update the Power definition to be the capacity of the source
@@ -50,7 +48,7 @@ func (k Keeper) AppendAllocation(
         sourceLoad := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, allocation.SourceObjectId))
         availableCapacity := allocationSourceCapacity - sourceLoad
         if (availableCapacity < power) {
-            return allocation, power, sdkerrors.Wrapf(types.ErrAllocationAppend, "Allocation Source (%s) does not have the capacity (%d) for the power (%d) defined in this allocation",  allocation.SourceObjectId, availableCapacity, power)
+            return allocation, power, types.NewAllocationError(allocation.SourceObjectId, "capacity_exceeded").WithCapacity(availableCapacity, power)
         }
     }
 
@@ -109,24 +107,24 @@ func (k Keeper) SetAllocation(ctx context.Context, allocation types.Allocation, 
 	previousAllocation, previousAllocationFound := k.GetAllocation(ctx, allocation.Id)
 	if (!previousAllocationFound) {
 	    // This should be an append, not a set.
-	    return allocation, newPower, sdkerrors.Wrapf(types.ErrAllocationSet, "Trying to set an allocation that doesn't exist yet. Should have been an append?")
+	    return allocation, newPower, types.NewAllocationError(allocation.SourceObjectId, "not_exists").WithAllocation(allocation.Id)
 	}
 
     previousPower := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocation.Id))
 
 	if (previousAllocation.SourceObjectId != allocation.SourceObjectId) {
 	    // Should never change the Source of an Allocation
-	    return allocation, newPower, sdkerrors.Wrapf(types.ErrAllocationSet, "Source Object (%s vs %s) should never change during an allocation update", previousAllocation.SourceObjectId, allocation.SourceObjectId)
+	    return allocation, newPower, types.NewAllocationError(allocation.SourceObjectId, "immutable_source").WithFieldChange("source", previousAllocation.SourceObjectId, allocation.SourceObjectId)
 	}
 
 	if (previousAllocation.Index != allocation.Index) {
 	    // Should never change the SourceId of an Allocation
-	    return allocation, newPower, sdkerrors.Wrapf(types.ErrAllocationSet, "Allocation Index (%d vs %d) should never change during an allocation update", previousAllocation.Index, allocation.Index)
+	    return allocation, newPower, types.NewAllocationError(allocation.SourceObjectId, "immutable_index").WithFieldChange("index", strconv.FormatUint(previousAllocation.Index, 10), strconv.FormatUint(allocation.Index, 10))
 	}
 
     if (previousAllocation.Type != allocation.Type) {
         // Allocation Type should never change
-	    return allocation, newPower, sdkerrors.Wrapf(types.ErrAllocationSet, "Allocation Type (%d vs %d) should never change during an allocation update", previousAllocation.Type, allocation.Type)
+	    return allocation, newPower, types.NewAllocationError(allocation.SourceObjectId, "immutable_type").WithFieldChange("type", previousAllocation.Type.String(), allocation.Type.String())
     }
 
 

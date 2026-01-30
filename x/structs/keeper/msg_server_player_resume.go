@@ -4,7 +4,6 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 	//"fmt"
 )
@@ -29,7 +28,7 @@ func (k msgServer) PlayerResume(goCtx context.Context, msg *types.MsgPlayerResum
     }
 
     if (player.GetCharge() < types.PlayerResumeCharge) {
-        return &types.MsgPlayerResumeResponse{}, sdkerrors.Wrapf(types.ErrInsufficientCharge, "Resuming from Halt requires a charge of %d, but player (%s) only had %d", types.PlayerResumeCharge, msg.PlayerId , player.GetCharge())
+        return &types.MsgPlayerResumeResponse{}, types.NewInsufficientChargeError(msg.PlayerId, types.PlayerResumeCharge, player.GetCharge(), "resume")
     }
 
     player.Resume()

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	sdkerrors "cosmossdk.io/errors"
 	"structs/x/structs/types"
 )
 
@@ -20,7 +19,7 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
     // Make sure the allocation exists
     allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId)
     if (!allocationFound) {
-        return &types.MsgSubstationCreateResponse{}, sdkerrors.Wrapf(types.ErrObjectNotFound, "allocation (%s) not found", msg.AllocationId)
+        return &types.MsgSubstationCreateResponse{}, types.NewObjectNotFoundError("allocation", msg.AllocationId)
     }
 
 	// Check to see if ths calling address is a player and if it relates to the allocation
@@ -32,24 +31,24 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
 	allocationPlayerIndex   := k.GetPlayerIndexFromAddress(ctx, allocation.Controller)
 	callingPlayerIndex      := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
 
-    allocationPlayer, AllocationPlayerFound := k.GetPlayerFromIndex(ctx, allocationPlayerIndex)
+    _, AllocationPlayerFound := k.GetPlayerFromIndex(ctx, allocationPlayerIndex)
     player := k.UpsertPlayer(ctx, msg.Creator)
 
     if (!AllocationPlayerFound) {
         if (allocation.Controller == msg.Creator){
             connectPlayer = true
         } else {
-            return &types.MsgSubstationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation (%s) controlled by player (%s), not calling player (%s) ", allocation.Id, allocation.Controller, msg.Creator)
+            return &types.MsgSubstationCreateResponse{}, types.NewPermissionError("address", msg.Creator, "allocation", allocation.Id, uint64(types.PermissionAssets), "allocation_control")
         }
     } else {
         if (allocationPlayerIndex != callingPlayerIndex) {
-            return &types.MsgSubstationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionSubstationAllocationConnect, "Trying to manage an Allocation (%s) controlled by player (%s), not calling player (%s) ", allocation.Id, allocationPlayer.Id, player.Id)
+            return &types.MsgSubstationCreateResponse{}, types.NewPermissionError("player", player.Id, "allocation", allocation.Id, uint64(types.PermissionAssets), "allocation_control")
         }
 
         addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
         // check that the account has energy management permissions
         if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets)) {
-            return &types.MsgSubstationCreateResponse{}, sdkerrors.Wrapf(types.ErrPermissionManageEnergy, "Calling address (%s) has no Energy Management permissions ", msg.Creator)
+            return &types.MsgSubstationCreateResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "energy_management")
         }
     }
 
