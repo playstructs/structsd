@@ -436,10 +436,6 @@ func (cache *FleetCache) MoveReadiness(structure *StructCache, ambit types.Ambit
          return types.NewStructOwnershipError(structure.GetStructId(), cache.GetOwnerId(), structure.GetOwnerId()).WithLocation("fleet", cache.GetFleetId())
     }
 
-    if cache.IsAway() {
-        return types.NewFleetStateError(cache.GetFleetId(), "away", "move")
-    }
-
     if (structure.GetStructType().Category != types.ObjectType_fleet) {
         return types.NewStructLocationError(structure.GetStructType().GetId(), ambit.String(), "outside_planet")
     }
