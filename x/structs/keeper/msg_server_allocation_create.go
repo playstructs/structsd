@@ -8,6 +8,8 @@ import (
 
 func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocationCreate) (*types.MsgAllocationCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -42,6 +44,8 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
     if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.PermissionAssets))) {
         return &types.MsgAllocationCreateResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "energy_management")
     }
+
+	_ = cc
 
 	allocation, _ , err := k.AppendAllocation(ctx, allocation, msg.Power)
 

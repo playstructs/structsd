@@ -8,6 +8,8 @@ import (
 
 func (k msgServer) AllocationDelete(goCtx context.Context, msg *types.MsgAllocationDelete) (*types.MsgAllocationDeleteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -18,20 +20,20 @@ func (k msgServer) AllocationDelete(goCtx context.Context, msg *types.MsgAllocat
 		return &types.MsgAllocationDeleteResponse{}, types.NewObjectNotFoundError("allocation", msg.AllocationId)
 	}
 
-    player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
-    if (!playerFound) {
+    player, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
         return &types.MsgAllocationDeleteResponse{}, types.NewPlayerRequiredError(msg.Creator, "allocation_delete")
     }
 
-    sourceObjectPermissionId := GetObjectPermissionIDBytes(allocation.SourceObjectId, player.Id)
+    sourceObjectPermissionId := GetObjectPermissionIDBytes(allocation.SourceObjectId, player.PlayerId)
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
 
     // Ignore the one case where it's a player creating an allocation on themselves.
     // Surely that doesn't need a lookup.
-    if (player.Id != allocation.SourceObjectId) {
+    if (player.PlayerId != allocation.SourceObjectId) {
         // check that the player has permissions
         if (!k.PermissionHasOneOf(ctx, sourceObjectPermissionId, types.PermissionAssets)) {
-            return &types.MsgAllocationDeleteResponse{}, types.NewPermissionError("player", player.Id, "allocation", allocation.SourceObjectId, uint64(types.PermissionAssets), "allocation_delete")
+            return &types.MsgAllocationDeleteResponse{}, types.NewPermissionError("player", player.PlayerId, "allocation", allocation.SourceObjectId, uint64(types.PermissionAssets), "allocation_delete")
         }
     }
 

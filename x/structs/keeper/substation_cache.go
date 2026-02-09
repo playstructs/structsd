@@ -10,24 +10,16 @@ import (
 
 type SubstationCache struct {
     SubstationId string
-    K *Keeper
-    Ctx context.Context
+    CC  *CurrentContext
 
     Ready bool
-
-    AnyChange bool
+    Loaded bool
+    Changed bool
 
     SubstationLoaded  bool
-    SubstationChanged bool
     Substation  types.Substation
 
-    OwnerLoaded bool
-    OwnerChanged bool
-    Owner *PlayerCache
-
-    GridLoaded bool
-    GridChanged bool
-    Grid *GridCache
+    ConnectionCountAttributeId string
 
 }
 
@@ -36,10 +28,11 @@ type SubstationCache struct {
 func (k *Keeper) GetSubstationCacheFromId(ctx context.Context, substationId string) (SubstationCache) {
     return SubstationCache{
         SubstationId: substationId,
-        K: k,
-        Ctx: ctx,
+
 
         AnyChange: false,
+
+        ConnectionCountAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, substationId),
 
     }
 }
@@ -55,8 +48,7 @@ func (k *Keeper) InitiateSubstation(ctx context.Context, creatorAddress string, 
     // Start to put the pieces together
     substationCache := SubstationCache{
                   SubstationId: substation.Id,
-                  K: k,
-                  Ctx: ctx,
+
 
                   AnyChange: true,
 
@@ -73,32 +65,27 @@ func (k *Keeper) InitiateSubstation(ctx context.Context, creatorAddress string, 
 
 
 func (cache *SubstationCache) Commit() () {
-    cache.AnyChange = false
+    if cache.Changed {
+        cache.CC.k.logger.Info("Updating Substation From Cache","substationId", cache.SubstationId)
 
-    cache.K.logger.Info("Updating Substation From Cache","substationId", cache.SubstationId)
-
-    if (cache.SubstationChanged) {
-        cache.K.SetSubstation(cache.Ctx, cache.Substation)
-        cache.SubstationChanged = false
-    }
-
-    if (cache.Owner != nil && cache.GetOwner().IsChanged()) {
-        cache.GetOwner().Commit()
+        if cache.Deleted {
+            cache.K.ClearSubstation(cache.CC.ctx, cache.SubstationId)
+        } else {
+            cache.CC.k.SetSubstation(cache.CC.ctx, cache.Substation)
+        }
+        cache.Changed = false
     }
 
 }
 
 func (cache *SubstationCache) IsChanged() bool {
-    return cache.AnyChange
+    return cache.Changed
 }
 
 func (cache *SubstationCache) ID() string {
     return cache.SubstationId
 }
 
-func (cache *SubstationCache) Changed() {
-    cache.AnyChange = true
-}
 
 /* Separate Loading functions for each of the underlying containers */
 
@@ -106,30 +93,6 @@ func (cache *SubstationCache) Changed() {
 func (cache *SubstationCache) LoadSubstation() (bool) {
     cache.Substation, cache.SubstationLoaded = cache.K.GetSubstation(cache.Ctx, cache.SubstationId)
     return cache.SubstationLoaded
-}
-
-// Load the Player data
-func (cache *SubstationCache) LoadOwner() (bool) {
-    newOwner, _ := cache.K.GetPlayerCacheFromId(cache.Ctx, cache.GetOwnerId())
-    cache.Owner = &newOwner
-    cache.OwnerLoaded = true
-    return cache.OwnerLoaded
-}
-
-// Load the Grid cache object
-func (cache *SubstationCache) LoadGrid() (bool) {
-    newGrid := cache.K.GetGridCacheFromId(cache.Ctx, cache.GetSubstationId())
-    cache.Grid = &newGrid
-    cache.GridLoaded = true
-    return cache.GridLoaded
-}
-
-
-// Set the Owner data manually
-// Useful for loading multiple defenders
-func (cache *SubstationCache) ManualLoadOwner(owner *PlayerCache) {
-    cache.Owner = owner
-    cache.OwnerLoaded = true
 }
 
 
@@ -140,29 +103,23 @@ func (cache *SubstationCache) ManualLoadOwner(owner *PlayerCache) {
 func (cache *SubstationCache) GetSubstation()   (types.Substation)  { if (!cache.SubstationLoaded) { cache.LoadSubstation() }; return cache.Substation }
 func (cache *SubstationCache) GetSubstationId() (string)            { return cache.SubstationId }
 
-func (cache *SubstationCache) GetOwner()        (*PlayerCache)      { if (!cache.OwnerLoaded) { cache.LoadOwner() }; return cache.Owner }
 func (cache *SubstationCache) GetOwnerId()      (string)            { if (!cache.SubstationLoaded) { cache.LoadSubstation() }; return cache.Substation.Owner }
-
-func (cache *SubstationCache) GetGrid()         (*GridCache)        { if (!cache.GridLoaded) { cache.LoadGrid() }; return cache.Grid }
-
 func (cache *SubstationCache) GetAvailableCapacity() (uint64)       { return cache.GetGrid().GetCapacity() - cache.GetGrid().GetLoad() }
 
-/* Setters - SET DOES NOT COMMIT()
- * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
- */
+func (cache *SubstationCache) GetOwner()        (*PlayerCache)      { return cache.CC.GetPlayer( cache.GetOwnerId() ) }
+
+func (cache *SubstationCache) Delete() {
+    cache.Deleted = true
+    // TODO Expand
+    cache.Changed = true
+}
 
 // Set the Owner Id data
 func (cache *SubstationCache) SetOwnerId(owner string) {
     if (!cache.SubstationLoaded) { cache.LoadSubstation() }
-
     cache.Substation.Owner = owner
-    cache.SubstationChanged = true
-    cache.Changed()
-
-    // Player object might be stale now
-    cache.OwnerLoaded = false
+    cache.Changed = true
 }
-
 
 
 // Delete Permission
@@ -187,7 +144,7 @@ func (cache *SubstationCache) CanCreateAllocations(activePlayer *PlayerCache) (e
 
 func (cache *SubstationCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) (error) {
     // Make sure the address calling this has Play permissions
-    if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission)) {
+    if (!cache.CC.PermissionHasOneOf(GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission)) {
         return types.NewPermissionError("address", activePlayer.GetActiveAddress(), "", "", uint64(permission), "substation_action")
     }
 
@@ -195,12 +152,22 @@ func (cache *SubstationCache) PermissionCheck(permission types.Permission, activ
         return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "substation_action")
     } else {
         if (activePlayer.GetPlayerId() != cache.GetOwnerId()) {
-            if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetSubstationId(), activePlayer.GetPlayerId()), permission)) {
+            if (!cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetSubstationId(), activePlayer.GetPlayerId()), permission)) {
                return types.NewPermissionError("player", activePlayer.GetPlayerId(), "substation", cache.GetSubstationId(), uint64(permission), "substation_action")
             }
         }
     }
     return nil
+}
+
+func (cache *SubstationCache) ConnectionCountDecrement(amount uint64) {
+    cache.CC.SetGridAttributeDecrement(cache.ConnectionCountAttributeId, amount)
+    cache.CC.UpdateSubstationConnectionCapacity(cache.SubstationId)
+}
+
+func (cache *SubstationCache) ConnectionCountIncrement(amount uint64) {
+    cache.CC.SetGridAttributeIncrement(cache.ConnectionCountAttributeId, amount)
+    cache.CC.UpdateSubstationConnectionCapacity(cache.SubstationId)
 }
 
 

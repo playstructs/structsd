@@ -69,47 +69,6 @@ func (k Keeper) SetPlanetAttribute(ctx context.Context, planetAttributeId string
     k.logger.Info("Planet Change (Set)", "planetAttributeId", planetAttributeId, "amount", amount)
 }
 
-func (k Keeper) SetPlanetAttributeDelta(ctx context.Context, planetAttributeId string, oldAmount uint64, newAmount uint64) (amount uint64, err error) {
-    currentAmount := k.GetPlanetAttribute(ctx, planetAttributeId)
-
-    var resetAmount uint64
-    if (oldAmount < currentAmount) {
-        resetAmount = currentAmount - oldAmount
-    }
-
-    amount = resetAmount + newAmount
-
-    k.logger.Info("Planet Change (Delta)", "planetAttributeId", planetAttributeId, "oldAmount", oldAmount, "newAmount", newAmount)
-    k.SetPlanetAttribute(ctx, planetAttributeId, amount)
-
-    return
-}
-
-func (k Keeper) SetPlanetAttributeDecrement(ctx context.Context, planetAttributeId string, decrementAmount uint64) (amount uint64, err error) {
-    currentAmount := k.GetPlanetAttribute(ctx, planetAttributeId)
-
-    if (decrementAmount < currentAmount) {
-        amount = currentAmount - decrementAmount
-    }
-
-    k.logger.Info("Planet Change (Decrement)", "planetAttributeId", planetAttributeId, "decrementAmount", decrementAmount)
-    k.SetPlanetAttribute(ctx, planetAttributeId, amount)
-
-    return
-}
-
-func (k Keeper) SetPlanetAttributeIncrement(ctx context.Context, planetAttributeId string, incrementAmount uint64) (amount uint64) {
-    currentAmount := k.GetPlanetAttribute(ctx, planetAttributeId)
-
-    amount = currentAmount + incrementAmount
-
-    k.logger.Info("Planet Change (Increment)", "planetAttributeId", planetAttributeId, "incrementAmount", incrementAmount)
-    k.SetPlanetAttribute(ctx, planetAttributeId, amount)
-
-    return
-}
-
-
 
 func (k Keeper) GetPlanetAttributesByObject(ctx context.Context, objectId string) (types.PlanetAttributes) {
     return types.PlanetAttributes{

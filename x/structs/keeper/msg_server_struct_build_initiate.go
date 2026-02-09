@@ -16,13 +16,15 @@ import (
 
 func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStructBuildInitiate) (*types.MsgStructStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
     // Load the Owner Player
-    owner, err := k.GetPlayerCacheFromId(ctx, msg.PlayerId)
+    owner, err := cc.GetPlayer(msg.PlayerId)
     if (err != nil) {
         return &types.MsgStructStatusResponse{}, types.NewPlayerRequiredError(msg.Creator, "struct_build_initiate")
     }
@@ -47,7 +49,6 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     if (structType.GetBuildLimit() > 0) {
         if (owner.GetBuiltQuantity(msg.StructTypeId) >= structType.GetBuildLimit()) {
             owner.Discharge()
-            owner.Commit()
             return &types.MsgStructStatusResponse{}, types.NewPlayerPowerError(owner.GetPlayerId(), "capacity_exceeded").WithCapacity(structType.GetBuildLimit(), owner.GetBuiltQuantity(msg.StructTypeId))
         }
     }
@@ -56,7 +57,6 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     if (owner.GetCharge() < structType.BuildCharge) {
         err := types.NewInsufficientChargeError(owner.GetPlayerId(), structType.BuildCharge, owner.GetCharge(), "build").WithStructType(msg.StructTypeId)
         owner.Discharge()
-        owner.Commit()
         return &types.MsgStructStatusResponse{}, err
     }
 
@@ -68,19 +68,18 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
 
     if !owner.CanSupportLoadAddition(structType.BuildDraw) {
         owner.Discharge()
-        owner.Commit()
         return &types.MsgStructStatusResponse{}, types.NewPlayerPowerError(owner.GetPlayerId(), "capacity_exceeded").WithCapacity(structType.BuildDraw, owner.GetAvailableCapacity())
     }
 
 
     k.logger.Info("Struct Materializing", "structType", structType.Type, "ambit", msg.OperatingAmbit, "slot", msg.Slot)
-    structure, err := k.InitiateStruct(ctx, msg.Creator, &owner, &structType, msg.OperatingAmbit, msg.Slot)
+    structure, err := k.InitiateStruct(ctx, msg.Creator, owner, &structType, msg.OperatingAmbit, msg.Slot)
     if (err != nil) {
         return &types.MsgStructStatusResponse{}, err
     }
+    cc.RegisterStruct(&structure)
 
     owner.Discharge()
-    structure.Commit()
 
 
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct()}, nil

@@ -8,6 +8,8 @@ import (
 
 func (k msgServer) AllocationUpdate(goCtx context.Context, msg *types.MsgAllocationUpdate) (*types.MsgAllocationUpdateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -18,20 +20,20 @@ func (k msgServer) AllocationUpdate(goCtx context.Context, msg *types.MsgAllocat
 		return &types.MsgAllocationUpdateResponse{}, types.NewObjectNotFoundError("allocation", msg.AllocationId)
 	}
 
-    player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
-    if (!playerFound) {
+    player, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
         return &types.MsgAllocationUpdateResponse{}, types.NewPlayerRequiredError(msg.Creator, "allocation_update")
     }
 
-    sourceObjectPermissionId := GetObjectPermissionIDBytes(allocation.SourceObjectId, player.Id)
+    sourceObjectPermissionId := GetObjectPermissionIDBytes(allocation.SourceObjectId, player.PlayerId)
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
 
     // Ignore the one case where it's a player creating an allocation on themselves.
     // Surely that doesn't need a lookup.
-    if (player.Id != allocation.SourceObjectId) {
+    if (player.PlayerId != allocation.SourceObjectId) {
         // check that the player has permissions
         if (!k.PermissionHasOneOf(ctx, sourceObjectPermissionId, types.PermissionAssets)) {
-            return &types.MsgAllocationUpdateResponse{}, types.NewPermissionError("player", player.Id, "allocation", allocation.SourceObjectId, uint64(types.PermissionAssets), "allocation_update")
+            return &types.MsgAllocationUpdateResponse{}, types.NewPermissionError("player", player.PlayerId, "allocation", allocation.SourceObjectId, uint64(types.PermissionAssets), "allocation_update")
         }
     }
 
@@ -49,7 +51,7 @@ func (k msgServer) AllocationUpdate(goCtx context.Context, msg *types.MsgAllocat
         return &types.MsgAllocationUpdateResponse{}, types.NewParameterValidationError("power", 0, "below_minimum").WithRange(1, 0)
     }
 
-	allocation, _, err := k.SetAllocation(ctx, allocation, msg.Power)
+	allocation, _, err = k.SetAllocation(ctx, allocation, msg.Power)
 
 	return &types.MsgAllocationUpdateResponse{
 		AllocationId: msg.AllocationId,

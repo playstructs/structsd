@@ -101,6 +101,17 @@ func (k Keeper) SetSubstation(ctx context.Context, substation types.Substation) 
 
 }
 
+
+// ClearSubstation removes a substation from the store
+func (k Keeper) ClearSubstation(ctx context.Context, substationId string) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.SubstationKey))
+
+	store.Delete([]byte(substationId))
+
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventDelete{ ObjectId: substationId })
+}
+
 // RemoveSubstation removes a substation from the store
 func (k Keeper) RemoveSubstation(ctx context.Context, substationId string, migrationSubstationId string) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.SubstationKey))

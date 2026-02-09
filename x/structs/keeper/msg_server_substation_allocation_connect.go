@@ -8,44 +8,44 @@ import (
 
 func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types.MsgSubstationAllocationConnect) (*types.MsgSubstationAllocationConnectResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    var err error
-
-	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId)
+	allocation, allocationFound := cc.GetAllocation(msg.AllocationId)
 	if (!allocationFound) {
 		return &types.MsgSubstationAllocationConnectResponse{}, types.NewObjectNotFoundError("allocation", msg.AllocationId)
 	}
 
-	substation, substationFound := k.GetSubstation(ctx, msg.DestinationId)
-	if (!substationFound) {
+	substation := cc.GetSubstation(msg.DestinationId)
+	if (!substation.LoadSubstation()) {
 		return &types.MsgSubstationAllocationConnectResponse{}, types.NewObjectNotFoundError("substation", msg.DestinationId)
 	}
 
 
-	player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
-    if (!playerFound) {
-        return &types.MsgSubstationAllocationConnectResponse{}, types.NewPlayerRequiredError(msg.Creator, "substation_allocation_connect")
+	player, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+        return &types.MsgSubstationAllocationConnectResponse{}, err
     }
 
-    allocationPlayer, AllocationPlayerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, allocation.Controller))
-    if (!AllocationPlayerFound) {
-        return &types.MsgSubstationAllocationConnectResponse{}, types.NewPlayerRequiredError(allocation.Controller, "substation_allocation_connect")
+    allocationPlayer, err := cc.GetPlayerByAddress(allocation.Controller)
+    if err != nil {
+        return &types.MsgSubstationAllocationConnectResponse{}, err
     }
-    if (allocationPlayer.Id != player.Id) {
-        return &types.MsgSubstationAllocationConnectResponse{}, types.NewPermissionError("player", player.Id, "allocation", msg.AllocationId, uint64(types.PermissionGrid), "allocation_connect")
+    if (allocationPlayer.GetPlayerId() != player.GetPlayerId()) {
+        return &types.MsgSubstationAllocationConnectResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "allocation", msg.AllocationId, uint64(types.PermissionGrid), "allocation_connect")
     }
 
 
-    substationObjectPermissionId := GetObjectPermissionIDBytes(substation.Id, player.Id)
+    substationObjectPermissionId := GetObjectPermissionIDBytes(substation.GetSubstationId(), player.GetPlayerId())
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
 
 	// check that the player has reactor permissions
     if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.PermissionGrid)) {
-        return &types.MsgSubstationAllocationConnectResponse{}, types.NewPermissionError("player", player.Id, "substation", substation.Id, uint64(types.PermissionGrid), "allocation_connect")
+        return &types.MsgSubstationAllocationConnectResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "substation", substation.GetSubstationId(), uint64(types.PermissionGrid), "allocation_connect")
     }
 
 
@@ -55,16 +55,16 @@ func (k msgServer) SubstationAllocationConnect(goCtx context.Context, msg *types
     }
 
 
-	if (allocation.SourceObjectId == substation.Id) {
-		return &types.MsgSubstationAllocationConnectResponse{}, types.NewAllocationError(allocation.SourceObjectId, "source_destination_match").WithDestination(substation.Id)
+	if (allocation.SourceObjectId == substation.GetSubstationId()) {
+		return &types.MsgSubstationAllocationConnectResponse{}, types.NewAllocationError(allocation.SourceObjectId, "source_destination_match").WithDestination(substation.GetSubstationId())
 	}
 
-	if substation.Id == allocation.DestinationId {
+	if substation.GetSubstationId() == allocation.DestinationId {
 		return &types.MsgSubstationAllocationConnectResponse{}, types.NewAllocationError(allocation.SourceObjectId, "same_destination").WithDestination(allocation.DestinationId)
 	}
 
     power := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocation.Id))
-    allocation.DestinationId = substation.Id
+    allocation.DestinationId = substation.GetSubstationId()
     allocation, _, err = k.SetAllocation(ctx, allocation, power)
 
 	return &types.MsgSubstationAllocationConnectResponse{}, err

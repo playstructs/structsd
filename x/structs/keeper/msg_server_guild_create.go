@@ -9,6 +9,8 @@ import (
 
 func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate) (*types.MsgGuildCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -57,6 +59,8 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
             return &types.MsgGuildCreateResponse{}, types.NewPermissionError("player", player.Id, "substation", msg.EntrySubstationId, uint64(types.PermissionGrid), "substation_connect")
         }
     }
+
+    _ = cc
 
     guild := k.AppendGuild(ctx, msg.Endpoint, msg.EntrySubstationId, reactor, player)
 

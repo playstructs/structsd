@@ -8,13 +8,15 @@ import (
 
 func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExplore) (*types.MsgPlanetExploreResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
     // Load the Player record
-    player, playerLookupErr := k.GetPlayerCacheFromId(ctx, msg.PlayerId)
+    player, playerLookupErr := cc.GetPlayer(msg.PlayerId)
     if (playerLookupErr != nil) {
         return &types.MsgPlanetExploreResponse{}, playerLookupErr
     }
@@ -53,10 +55,8 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
         return &types.MsgPlanetExploreResponse{}, planetExploreError
     }
 
-    player.GetFleet().ManualLoadOwner(&player)
+    player.GetFleet().ManualLoadOwner(player)
     player.GetFleet().MigrateToNewPlanet(player.GetPlanet())
-
-    player.Commit()
 
 	return &types.MsgPlanetExploreResponse{Planet: player.GetPlanet().GetPlanet()}, nil
 }

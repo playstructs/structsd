@@ -21,15 +21,20 @@ message MsgAgreementOpen {
 
 func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementOpen) (*types.MsgAgreementResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
-    activePlayer, _ := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+        return &types.MsgAgreementResponse{}, err
+    }
 
-    provider := k.GetProviderCacheFromId(ctx, msg.ProviderId)
+    provider := cc.GetProvider(msg.ProviderId)
 
-    permissionError := provider.CanOpenAgreement(&activePlayer)
+    permissionError := provider.CanOpenAgreement(activePlayer)
     if (permissionError != nil) {
         return &types.MsgAgreementResponse{}, permissionError
     }
@@ -81,7 +86,6 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
         return &types.MsgAgreementResponse{}, checkpointError
     }
     provider.AgreementLoadIncrease(msg.Capacity)
-    provider.Commit()
 
 	return &types.MsgAgreementResponse{}, nil
 }

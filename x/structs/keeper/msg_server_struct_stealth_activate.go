@@ -10,13 +10,15 @@ import (
 
 func (k msgServer) StructStealthActivate(goCtx context.Context, msg *types.MsgStructStealthActivate) (*types.MsgStructStatusResponse, error) {
     ctx := sdk.UnwrapSDKContext(goCtx)
+    cc := k.NewCurrentContext(ctx)
+    defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
 
-    structure := k.GetStructCacheFromId(ctx, msg.StructId)
+    structure := cc.GetStruct(msg.StructId)
 
     permissionError := structure.CanBePlayedBy(msg.Creator)
     if (permissionError != nil) {
@@ -31,27 +33,23 @@ func (k msgServer) StructStealthActivate(goCtx context.Context, msg *types.MsgSt
     readinessError := structure.ReadinessCheck()
     if (readinessError != nil) {
         structure.GetOwner().Discharge()
-        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, readinessError
     }
 
     if !structure.IsCommandable() {
         structure.GetOwner().Discharge()
-        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, types.NewFleetCommandError(structure.GetStructId(), "no_command_struct")
     }
 
     // Is Struct Stealth Mode already activated?
     if structure.IsHidden() {
         structure.GetOwner().Discharge()
-        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.StructId, "hidden", "visible", "stealth_activate")
     }
 
 
     if (!structure.GetStructType().HasStealthSystem()) {
         structure.GetOwner().Discharge()
-        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, types.NewStructCapabilityError(msg.StructId, "stealth")
     }
 
@@ -60,7 +58,6 @@ func (k msgServer) StructStealthActivate(goCtx context.Context, msg *types.MsgSt
     playerCharge := k.GetPlayerCharge(ctx, structure.GetOwnerId())
     if (playerCharge < structure.GetStructType().GetStealthActivateCharge()) {
         structure.GetOwner().Discharge()
-        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().GetStealthActivateCharge(), playerCharge, "stealth").WithStructType(structure.GetTypeId())
     }
 
@@ -68,7 +65,6 @@ func (k msgServer) StructStealthActivate(goCtx context.Context, msg *types.MsgSt
 
     // Set the struct status flag to include hidden
     structure.StatusAddHidden()
-    structure.Commit()
 
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct() }, nil
 }

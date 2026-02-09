@@ -13,6 +13,7 @@ type ProviderCache struct {
 	ProviderId string
 	K          *Keeper
 	Ctx        context.Context
+	CC         *CurrentContext
 
 	AnyChange bool
 
@@ -72,14 +73,6 @@ func (cache *ProviderCache) Commit() {
 		cache.ProviderChanged = false
 	}
 
-	if cache.Substation != nil && cache.GetSubstation().IsChanged() {
-		cache.GetSubstation().Commit()
-	}
-
-	if cache.Owner != nil && cache.GetOwner().IsChanged() {
-		cache.GetOwner().Commit()
-	}
-
     if (cache.CheckpointBlockChanged) {
         cache.K.SetGridAttribute(cache.Ctx, cache.CheckpointBlockAttributeId, cache.CheckpointBlock)
         cache.CheckpointBlockChanged = false
@@ -108,8 +101,13 @@ func (cache *ProviderCache) Changed() {
 
 // Load the Player data
 func (cache *ProviderCache) LoadOwner() bool {
-	newOwner, _ := cache.K.GetPlayerCacheFromId(cache.Ctx, cache.GetOwnerId())
-	cache.Owner = &newOwner
+	if cache.CC != nil {
+		owner, _ := cache.CC.GetPlayer(cache.GetOwnerId())
+		cache.Owner = owner
+	} else {
+		newOwner, _ := cache.K.GetPlayerCacheFromId(cache.Ctx, cache.GetOwnerId())
+		cache.Owner = &newOwner
+	}
 	cache.OwnerLoaded = true
 	return cache.OwnerLoaded
 }
@@ -131,8 +129,12 @@ func (cache *ProviderCache) LoadProvider() {
 
 // Load the Substation data
 func (cache *ProviderCache) LoadSubstation() bool {
-	newSubstation := cache.K.GetSubstationCacheFromId(cache.Ctx, cache.GetSubstationId())
-	cache.Substation = &newSubstation
+	if cache.CC != nil {
+		cache.Substation = cache.CC.GetSubstation(cache.GetSubstationId())
+	} else {
+		newSubstation := cache.K.GetSubstationCacheFromId(cache.Ctx, cache.GetSubstationId())
+		cache.Substation = &newSubstation
+	}
 	cache.SubstationLoaded = true
 	return cache.SubstationLoaded
 }

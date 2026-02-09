@@ -14,13 +14,15 @@ import (
 
 func (k msgServer) StructDefenseClear(goCtx context.Context, msg *types.MsgStructDefenseClear) (*types.MsgStructStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
     // load struct
-    structure := k.GetStructCacheFromId(ctx, msg.DefenderStructId)
+    structure := cc.GetStruct(msg.DefenderStructId)
 
     // Check to see if the caller has permissions to proceed
     permissionError := structure.CanBePlayedBy(msg.Creator)
@@ -38,13 +40,11 @@ func (k msgServer) StructDefenseClear(goCtx context.Context, msg *types.MsgStruc
 
     if structure.IsOffline() {
         structure.GetOwner().Discharge()
-        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.DefenderStructId, "offline", "online", "defense_clear")
     }
 
     if !structure.IsCommandable() {
         structure.GetOwner().Discharge()
-        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, types.NewFleetCommandError(structure.GetStructId(), "no_command_struct")
     }
 
@@ -52,7 +52,6 @@ func (k msgServer) StructDefenseClear(goCtx context.Context, msg *types.MsgStruc
     if (structure.GetOwner().GetCharge() < structure.GetStructType().DefendChangeCharge) {
         err := types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().DefendChangeCharge, structure.GetOwner().GetCharge(), "defend").WithStructType(structure.GetStructType().Id)
         structure.GetOwner().Discharge()
-        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, err
     }
 
@@ -63,7 +62,6 @@ func (k msgServer) StructDefenseClear(goCtx context.Context, msg *types.MsgStruc
     protectedStructIndex := k.GetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, msg.DefenderStructId))
     if (protectedStructIndex == 0) {
         structure.GetOwner().Discharge()
-        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.DefenderStructId, "not_defending", "defending", "defense_clear")
     }
     protectedStructId := GetObjectID(types.ObjectType_struct, protectedStructIndex)
@@ -71,7 +69,6 @@ func (k msgServer) StructDefenseClear(goCtx context.Context, msg *types.MsgStruc
     k.ClearStructDefender(ctx, protectedStructId, msg.DefenderStructId)
 
     structure.GetOwner().Discharge()
-    structure.Commit()
 
 	return &types.MsgStructStatusResponse{}, nil
 }

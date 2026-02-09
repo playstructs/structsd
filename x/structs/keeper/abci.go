@@ -192,10 +192,4 @@ func (k *Keeper) EventAllGenesis(ctx context.Context) {
         _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildMembershipApplication{GuildMembershipApplication: &app})
     }
 
-    // Halted players
-    halted := k.GetAllHaltedPlayerId(ctx)
-    for _, playerId := range halted {
-        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPlayerHalted{PlayerId: playerId})
-    }
-
 }

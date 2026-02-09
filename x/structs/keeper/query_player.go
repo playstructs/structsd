@@ -64,9 +64,3 @@ func (k Keeper) Player(goCtx context.Context, req *types.QueryGetPlayerRequest) 
 }
 
 
-func (k Keeper) PlayerHaltedAll(goCtx context.Context, req *types.QueryAllPlayerHaltedRequest) (*types.QueryAllPlayerHaltedResponse, error) {
-	ctx := sdk.UnwrapSDKContext(goCtx)
-    playerIds := k.GetAllHaltedPlayerId(ctx)
-
-	return &types.QueryAllPlayerHaltedResponse{PlayerId: playerIds}, nil
-}

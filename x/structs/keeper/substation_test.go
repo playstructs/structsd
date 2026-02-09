@@ -80,9 +80,9 @@ func TestSubstationGetAll(t *testing.T) {
 
 func TestSubstationCount(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
+	initialCount := keeper.GetSubstationCount(ctx)
 	items := createNSubstation(t, keeper, ctx, 10)
-	count := uint64(len(items))
-	require.Equal(t, count, keeper.GetSubstationCount(ctx))
+	require.Equal(t, initialCount+uint64(len(items)), keeper.GetSubstationCount(ctx))
 }
 
 func TestSubstationPlayerConnection(t *testing.T) {

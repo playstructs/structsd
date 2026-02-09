@@ -29,12 +29,14 @@ message MsgStructMove {
 */
 func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (*types.MsgStructStatusResponse, error) {
     ctx := sdk.UnwrapSDKContext(goCtx)
+    cc := k.NewCurrentContext(ctx)
+    defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
     k.AddressEmitActivity(ctx, msg.Creator)
 
-    structure := k.GetStructCacheFromId(ctx, msg.StructId)
+    structure := cc.GetStruct(msg.StructId)
 
     // Check to see if the caller has permissions to proceed
     permissionError := structure.CanBePlayedBy(msg.Creator)
@@ -50,7 +52,6 @@ func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (
     if structure.GetOwner().GetCharge() < structure.GetStructType().GetMoveCharge() {
         err := types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().GetMoveCharge(), structure.GetOwner().GetCharge(), "move").WithStructType(structure.GetStructType().GetId())
         structure.GetOwner().Discharge()
-        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, err
     }
 
@@ -60,7 +61,6 @@ func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (
     }
 
     structure.GetOwner().Discharge()
-    structure.Commit()
 
 	return &types.MsgStructStatusResponse{}, nil
 }

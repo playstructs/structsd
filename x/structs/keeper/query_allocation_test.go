@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	keepertest "structs/testutil/keeper"
+	keeperlib "structs/x/structs/keeper"
 	"structs/x/structs/types"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -17,7 +18,14 @@ func TestQueryAllocation(t *testing.T) {
 
 	sourceId := "source1"
 	destId := "dest1"
-	alloc := createTestAllocation(sourceId, destId, types.AllocationType_static)
+	power := uint64(100)
+
+	// Set up source capacity
+	keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceId), uint64(200))
+
+	allocation := createTestAllocation(sourceId, destId, types.AllocationType_static)
+	alloc, _, err := keeper.AppendAllocation(ctx, allocation, power)
+	require.NoError(t, err)
 
 	resp, err := keeper.Allocation(wctx, &types.QueryGetAllocationRequest{Id: alloc.Id})
 	require.NoError(t, err)
@@ -36,9 +44,16 @@ func TestQueryAllocationAll(t *testing.T) {
 	wctx := sdk.WrapSDKContext(ctx)
 
 	sourceId := "source2"
+	power := uint64(10)
+
+	// Set up source capacity large enough for all allocations
+	keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceId), uint64(1000))
+
 	for i := 0; i < 5; i++ {
 		destId := "dest" + string(rune(i))
-		createTestAllocation(sourceId, destId, types.AllocationType_static)
+		allocation := createTestAllocation(sourceId, destId, types.AllocationType_static)
+		_, _, err := keeper.AppendAllocation(ctx, allocation, power)
+		require.NoError(t, err)
 	}
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllAllocationRequest {
@@ -69,9 +84,16 @@ func TestQueryAllocationAllBySource(t *testing.T) {
 	wctx := sdk.WrapSDKContext(ctx)
 
 	sourceId := "source3"
+	power := uint64(10)
+
+	// Set up source capacity
+	keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceId), uint64(1000))
+
 	for i := 0; i < 3; i++ {
 		destId := "dest" + string(rune(i))
-		createTestAllocation(sourceId, destId, types.AllocationType_static)
+		allocation := createTestAllocation(sourceId, destId, types.AllocationType_static)
+		_, _, err := keeper.AppendAllocation(ctx, allocation, power)
+		require.NoError(t, err)
 	}
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllAllocationBySourceRequest {
@@ -99,9 +121,17 @@ func TestQueryAllocationAllByDestination(t *testing.T) {
 	wctx := sdk.WrapSDKContext(ctx)
 
 	destId := "destX"
+	power := uint64(10)
+
 	for i := 0; i < 2; i++ {
 		sourceId := "sourceX" + string(rune(i))
-		createTestAllocation(sourceId, destId, types.AllocationType_static)
+
+		// Set up source capacity for each source
+		keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceId), uint64(1000))
+
+		allocation := createTestAllocation(sourceId, destId, types.AllocationType_static)
+		_, _, err := keeper.AppendAllocation(ctx, allocation, power)
+		require.NoError(t, err)
 	}
 
 	request := func(next []byte, offset, limit uint64, total bool) *types.QueryAllAllocationByDestinationRequest {

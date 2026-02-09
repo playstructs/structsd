@@ -72,45 +72,6 @@ func (k Keeper) SetGridAttribute(ctx context.Context, gridAttributeId string, am
 	k.logger.Info("Grid Change (Set)", "gridAttributeId", gridAttributeId, "amount", amount)
 }
 
-func (k Keeper) SetGridAttributeDelta(ctx context.Context, gridAttributeId string, oldAmount uint64, newAmount uint64) (amount uint64, err error) {
-	currentAmount := k.GetGridAttribute(ctx, gridAttributeId)
-
-	var resetAmount uint64
-	if oldAmount < currentAmount {
-		resetAmount = currentAmount - oldAmount
-	}
-
-	amount = resetAmount + newAmount
-
-	k.logger.Info("Grid Change (Delta)", "gridAttributeId", gridAttributeId, "oldAmount", oldAmount, "newAmount", newAmount)
-	k.SetGridAttribute(ctx, gridAttributeId, amount)
-
-	return
-}
-
-func (k Keeper) SetGridAttributeDecrement(ctx context.Context, gridAttributeId string, decrementAmount uint64) (amount uint64, err error) {
-	currentAmount := k.GetGridAttribute(ctx, gridAttributeId)
-
-	if decrementAmount < currentAmount {
-		amount = currentAmount - decrementAmount
-	}
-
-	k.logger.Info("Grid Change (Decrement)", "gridAttributeId", gridAttributeId, "decrementAmount", decrementAmount)
-	k.SetGridAttribute(ctx, gridAttributeId, amount)
-
-	return
-}
-
-func (k Keeper) SetGridAttributeIncrement(ctx context.Context, gridAttributeId string, incrementAmount uint64) (amount uint64) {
-	currentAmount := k.GetGridAttribute(ctx, gridAttributeId)
-
-	amount = currentAmount + incrementAmount
-
-	k.logger.Info("Grid Change (Increment)", "gridAttributeId", gridAttributeId, "incrementAmount", incrementAmount)
-	k.SetGridAttribute(ctx, gridAttributeId, amount)
-
-	return
-}
 
 func (k Keeper) GetGridCascadeQueue(ctx context.Context, clear bool) (queue []string) {
 	gridCascadeQueueStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueue))
@@ -178,24 +139,6 @@ func (k Keeper) GridCascade(ctx context.Context) {
 				allocationPointer++
 			}
 		}
-	}
-}
-
-func (k Keeper) UpdateGridConnectionCapacity(ctx context.Context, objectId string) {
-	capacity := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId))
-	load := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId))
-
-	if capacity > load {
-		availableCapacity := capacity - load
-
-		connectionCount := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, objectId))
-		if connectionCount == 0 {
-			connectionCount = 1
-		}
-
-		k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, objectId), availableCapacity/connectionCount)
-	} else {
-		k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, objectId), 0)
 	}
 }
 

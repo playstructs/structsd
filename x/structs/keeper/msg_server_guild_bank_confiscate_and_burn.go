@@ -12,16 +12,18 @@ import (
 
 func (k msgServer) GuildBankConfiscateAndBurn(goCtx context.Context, msg *types.MsgGuildBankConfiscateAndBurn) (*types.MsgGuildBankConfiscateAndBurnResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    activePlayer, _ := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    activePlayer, _ := cc.GetPlayerByAddress(msg.Creator)
 
-    guild := k.GetGuildCacheFromId(ctx, activePlayer.GetGuildId())
+    guild := cc.GetGuild(activePlayer.GetGuildId())
 
-    permissionError := guild.CanAdministrateBank(&activePlayer)
+    permissionError := guild.CanAdministrateBank(activePlayer)
     if (permissionError != nil) {
         return &types.MsgGuildBankConfiscateAndBurnResponse{}, permissionError
     }

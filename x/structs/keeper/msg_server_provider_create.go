@@ -31,16 +31,18 @@ message MsgProviderCreate {
 
 func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderCreate) (*types.MsgProviderResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
-    activePlayer, _ := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    activePlayer, _ := cc.GetPlayerByAddress(msg.Creator)
 
-    substation := k.GetSubstationCacheFromId(ctx, msg.SubstationId)
+    substation := cc.GetSubstation(msg.SubstationId)
 
 
-    permissionError := substation.CanCreateAllocations(&activePlayer)
+    permissionError := substation.CanCreateAllocations(activePlayer)
     if (permissionError != nil) {
         return &types.MsgProviderResponse{}, permissionError
     }

@@ -18,6 +18,7 @@ type StructCache struct {
 	StructId string
 	K        *Keeper
 	Ctx      context.Context
+	CC       *CurrentContext
 
 	Ready bool
 
@@ -270,18 +271,6 @@ func (cache *StructCache) Commit() {
 		cache.StructureChanged = false
 	}
 
-	if cache.Owner != nil && cache.GetOwner().IsChanged() {
-		cache.GetOwner().Commit()
-	}
-
-	if cache.Planet != nil && cache.GetPlanet().IsChanged() {
-		cache.GetPlanet().Commit()
-	}
-
-	if cache.Fleet != nil && cache.GetFleet().IsChanged() {
-		cache.GetFleet().Commit()
-	}
-
 	if cache.HealthChanged {
 		cache.K.SetStructAttribute(cache.Ctx, cache.HealthAttributeId, cache.Health)
 		cache.HealthChanged = false
@@ -341,16 +330,26 @@ func (cache *StructCache) LoadStructType() bool {
 
 // Load the Player data
 func (cache *StructCache) LoadOwner() bool {
-	newOwner, _ := cache.K.GetPlayerCacheFromId(cache.Ctx, cache.GetOwnerId())
-	cache.Owner = &newOwner
+	if cache.CC != nil {
+		owner, _ := cache.CC.GetPlayer(cache.GetOwnerId())
+		cache.Owner = owner
+	} else {
+		newOwner, _ := cache.K.GetPlayerCacheFromId(cache.Ctx, cache.GetOwnerId())
+		cache.Owner = &newOwner
+	}
 	cache.OwnerLoaded = true
 	return cache.OwnerLoaded
 }
 
 // Load the Fleet data
 func (cache *StructCache) LoadFleet() bool {
-	newFleet, _ := cache.K.GetFleetCacheFromId(cache.Ctx, cache.GetOwner().GetFleetId())
-	cache.Fleet = &newFleet
+	if cache.CC != nil {
+		fleet, _ := cache.CC.GetFleet(cache.GetOwner().GetFleetId())
+		cache.Fleet = fleet
+	} else {
+		newFleet, _ := cache.K.GetFleetCacheFromId(cache.Ctx, cache.GetOwner().GetFleetId())
+		cache.Fleet = &newFleet
+	}
 	cache.FleetLoaded = true
 	return cache.FleetLoaded
 }
@@ -359,13 +358,21 @@ func (cache *StructCache) LoadFleet() bool {
 func (cache *StructCache) LoadPlanet() bool {
 	switch cache.GetLocationType() {
 	case types.ObjectType_planet:
-		newPlanet := cache.K.GetPlanetCacheFromId(cache.Ctx, cache.GetLocationId())
-		cache.Planet = &newPlanet
+		if cache.CC != nil {
+			cache.Planet = cache.CC.GetPlanet(cache.GetLocationId())
+		} else {
+			newPlanet := cache.K.GetPlanetCacheFromId(cache.Ctx, cache.GetLocationId())
+			cache.Planet = &newPlanet
+		}
 		cache.PlanetLoaded = true
 	case types.ObjectType_fleet:
 		if cache.GetFleet().GetLocationType() == types.ObjectType_planet {
-			newPlanet := cache.K.GetPlanetCacheFromId(cache.Ctx, cache.GetFleet().GetLocationId())
-			cache.Planet = &newPlanet
+			if cache.CC != nil {
+				cache.Planet = cache.CC.GetPlanet(cache.GetFleet().GetLocationId())
+			} else {
+				newPlanet := cache.K.GetPlanetCacheFromId(cache.Ctx, cache.GetFleet().GetLocationId())
+				cache.Planet = &newPlanet
+			}
 			cache.PlanetLoaded = true
 		}
 	}

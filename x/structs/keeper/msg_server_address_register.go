@@ -14,13 +14,15 @@ import (
 
 func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressRegister) (*types.MsgAddressRegisterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
 
-    player, err := k.GetPlayerCacheFromId(ctx, msg.PlayerId)
+    player, err := cc.GetPlayer(msg.PlayerId)
     if err != nil {
        return &types.MsgAddressRegisterResponse{}, err
     }
@@ -31,7 +33,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
 
 
 	// Is the address associated with an account yet
-    playerFoundForAddress := k.GetPlayerIndexFromAddress(ctx, msg.Address)
+    playerFoundForAddress := cc.GetPlayerIndexFromAddress(msg.Address)
     if (playerFoundForAddress > 0) {
         return &types.MsgAddressRegisterResponse{}, types.NewAddressValidationError(msg.Address, "already_registered")
     }
@@ -82,7 +84,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     }
 
 	// Add the address and player index to the keeper
-    k.SetPlayerIndexForAddress(ctx, msg.Address, player.GetIndex())
+    cc.SetPlayerIndexForAddress(msg.Address, player.GetIndex())
 
 	// Add the permission to the new address
     newAddressPermissionId := GetAddressPermissionIDBytes(msg.Address)

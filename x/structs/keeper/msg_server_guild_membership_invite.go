@@ -11,12 +11,14 @@ import (
 
 func (k msgServer) GuildMembershipInvite(goCtx context.Context, msg *types.MsgGuildMembershipInvite) (*types.MsgGuildMembershipResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
 	// Add an Active Address record to the
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayer, err := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
         return &types.MsgGuildMembershipResponse{}, err
     }
@@ -31,10 +33,11 @@ func (k msgServer) GuildMembershipInvite(goCtx context.Context, msg *types.MsgGu
 		msg.GuildId = callingPlayer.GetGuildId()
 	}
 
-    guildMembershipApplication, guildMembershipApplicationError := k.GetGuildMembershipApplicationCache(ctx, &callingPlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
+    guildMembershipApplication, guildMembershipApplicationError := k.GetGuildMembershipApplicationCache(ctx, callingPlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
         return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
     }
+    cc.RegisterGuildMembershipApp(&guildMembershipApplication)
 
 	/*
 	 * We're either going to load up the substation provided as an
@@ -46,8 +49,6 @@ func (k msgServer) GuildMembershipInvite(goCtx context.Context, msg *types.MsgGu
 	        return &types.MsgGuildMembershipResponse{}, substationOverrideError
 	    }
 	}
-
-	guildMembershipApplication.Commit()
 
 	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication.GuildMembershipApplication}, nil
 }

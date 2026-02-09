@@ -9,6 +9,9 @@ import (
 
 func (k msgServer) PermissionRevokeOnAddress(goCtx context.Context, msg *types.MsgPermissionRevokeOnAddress) (*types.MsgPermissionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
+	_ = cc
 
     // Add an Active Address record to the
     // indexer for UI requirements

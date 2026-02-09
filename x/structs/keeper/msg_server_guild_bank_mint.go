@@ -11,16 +11,18 @@ import (
 
 func (k msgServer) GuildBankMint(goCtx context.Context, msg *types.MsgGuildBankMint) (*types.MsgGuildBankMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    activePlayer, _ := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    activePlayer, _ := cc.GetPlayerByAddress(msg.Creator)
 
-    guild := k.GetGuildCacheFromId(ctx, activePlayer.GetGuildId())
+    guild := cc.GetGuild(activePlayer.GetGuildId())
 
-    permissionError := guild.CanAdministrateBank(&activePlayer)
+    permissionError := guild.CanAdministrateBank(activePlayer)
     if (permissionError != nil) {
         return &types.MsgGuildBankMintResponse{}, permissionError
     }
@@ -28,7 +30,7 @@ func (k msgServer) GuildBankMint(goCtx context.Context, msg *types.MsgGuildBankM
     amountAlphaInt := math.NewIntFromUint64(msg.AmountAlpha)
     amountTokenInt := math.NewIntFromUint64(msg.AmountToken)
 
-    err := guild.BankMint(amountAlphaInt, amountTokenInt, &activePlayer);
+    err := guild.BankMint(amountAlphaInt, amountTokenInt, activePlayer);
 
 	return &types.MsgGuildBankMintResponse{}, err
 }

@@ -12,13 +12,15 @@ import (
 
 func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.MsgStructOreRefineryComplete) (*types.MsgStructOreRefineryStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
 
-	structure := k.GetStructCacheFromId(ctx, msg.StructId)
+	structure := cc.GetStruct(msg.StructId)
 
     // Check to see if the caller has permissions to proceed
     /*
@@ -55,8 +57,6 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
     }
 
     structure.OreRefine()
-
-    structure.Commit()
 
     _ = ctx.EventManager().EmitTypedEvent(&types.EventAlphaRefine{&types.EventAlphaRefineDetail{PlayerId: structure.GetOwnerId(), PrimaryAddress: structure.GetOwner().GetPrimaryAddress(), Amount: 1}})
     _ = ctx.EventManager().EmitTypedEvent(&types.EventHashSuccess{&types.EventHashSuccessDetail{CallerAddress: msg.Creator, Category: "refine", Difficulty: achievedDifficulty, ObjectId: msg.StructId }})

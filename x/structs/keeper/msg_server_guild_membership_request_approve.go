@@ -10,12 +10,14 @@ import (
 
 func (k msgServer) GuildMembershipRequestApprove(goCtx context.Context, msg *types.MsgGuildMembershipRequestApprove) (*types.MsgGuildMembershipResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayer, err := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
         return &types.MsgGuildMembershipResponse{}, err
     }
@@ -34,10 +36,11 @@ func (k msgServer) GuildMembershipRequestApprove(goCtx context.Context, msg *typ
 		msg.GuildId = callingPlayer.GetGuildId()
 	}
 
-    guildMembershipApplication, guildMembershipApplicationError := k.GetGuildMembershipApplicationCache(ctx, &callingPlayer, types.GuildJoinType_request, msg.GuildId, msg.PlayerId)
+    guildMembershipApplication, guildMembershipApplicationError := k.GetGuildMembershipApplicationCache(ctx, callingPlayer, types.GuildJoinType_request, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
         return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
     }
+    cc.RegisterGuildMembershipApp(&guildMembershipApplication)
 
     guildMembershipApplicationError = guildMembershipApplication.VerifyRequestAsGuild()
     if guildMembershipApplicationError != nil {
@@ -52,7 +55,6 @@ func (k msgServer) GuildMembershipRequestApprove(goCtx context.Context, msg *typ
 	}
 
     guildMembershipApplicationError = guildMembershipApplication.ApproveRequest()
-    guildMembershipApplication.Commit()
 
 	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication.GuildMembershipApplication}, nil
 }

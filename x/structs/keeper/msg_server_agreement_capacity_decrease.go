@@ -9,15 +9,17 @@ import (
 
 func (k msgServer) AgreementCapacityDecrease(goCtx context.Context, msg *types.MsgAgreementCapacityDecrease) (*types.MsgAgreementResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
-    activePlayer, _ := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    activePlayer, _ := cc.GetPlayerByAddress(msg.Creator)
 
-    agreement := k.GetAgreementCacheFromId(ctx, msg.AgreementId)
+    agreement := cc.GetAgreement(msg.AgreementId)
 
-    permissionError := agreement.CanUpdate(&activePlayer)
+    permissionError := agreement.CanUpdate(activePlayer)
     if (permissionError != nil) {
         return &types.MsgAgreementResponse{}, permissionError
     }
@@ -29,8 +31,6 @@ func (k msgServer) AgreementCapacityDecrease(goCtx context.Context, msg *types.M
         // Decrease provider load
         // which increases duration
     agreement.CapacityDecrease(msg.CapacityDecrease)
-
-    agreement.Commit()
 
 	return &types.MsgAgreementResponse{}, nil
 }

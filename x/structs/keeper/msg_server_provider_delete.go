@@ -9,15 +9,17 @@ import (
 
 func (k msgServer) ProviderDelete(goCtx context.Context, msg *types.MsgProviderDelete) (*types.MsgProviderResponse, error) {
     ctx := sdk.UnwrapSDKContext(goCtx)
+    cc := k.NewCurrentContext(ctx)
+    defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
-    activePlayer, _ := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    activePlayer, _ := cc.GetPlayerByAddress(msg.Creator)
 
-    provider := k.GetProviderCacheFromId(ctx, msg.ProviderId)
+    provider := cc.GetProvider(msg.ProviderId)
 
-    permissionError := provider.CanDelete(&activePlayer)
+    permissionError := provider.CanDelete(activePlayer)
     if (permissionError != nil) {
         return &types.MsgProviderResponse{}, permissionError
     }

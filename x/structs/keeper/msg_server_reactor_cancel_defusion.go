@@ -12,13 +12,16 @@ import (
 
 func (k msgServer) ReactorCancelDefusion(goCtx context.Context, msg *types.MsgReactorCancelDefusion) (*types.MsgReactorCancelDefusionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
+
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
     // Load the player related to the specified address
     // Normally the address specified should be the PrimaryAddress
-    player, err := k.GetPlayerCacheFromAddress(ctx, msg.DelegatorAddress)
+    player, err := cc.GetPlayerByAddress(msg.DelegatorAddress)
     if err != nil {
        return &types.MsgReactorCancelDefusionResponse{}, err
     }

@@ -16,6 +16,7 @@ type InfusionCache struct {
 
     K *Keeper
     Ctx context.Context
+    CC  *CurrentContext
 
     AnyChange bool
     Ready bool
@@ -84,10 +85,6 @@ func (cache *InfusionCache) Commit() () {
     if (cache.InfusionChanged) {
         cache.K.SetInfusion(cache.Ctx, cache.Infusion)
         cache.InfusionChanged = false
-    }
-
-    if (cache.Owner != nil && cache.GetOwner().IsChanged()) {
-        cache.GetOwner().Commit()
     }
 
     if (cache.DestinationFuelChanged) {
@@ -176,8 +173,13 @@ func (cache *InfusionCache) LoadInfusion() (bool) {
 
 // Load the Player data
 func (cache *InfusionCache) LoadOwner() (bool) {
-    newOwner, _ := cache.K.GetPlayerCacheFromId(cache.Ctx, cache.GetOwnerId())
-    cache.Owner = &newOwner
+    if cache.CC != nil {
+        owner, _ := cache.CC.GetPlayer(cache.GetOwnerId())
+        cache.Owner = owner
+    } else {
+        newOwner, _ := cache.K.GetPlayerCacheFromId(cache.Ctx, cache.GetOwnerId())
+        cache.Owner = &newOwner
+    }
     cache.OwnerLoaded = true
     return cache.OwnerLoaded
 }

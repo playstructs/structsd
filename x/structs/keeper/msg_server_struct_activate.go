@@ -10,13 +10,15 @@ import (
 
 func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructActivate) (*types.MsgStructStatusResponse, error) {
     ctx := sdk.UnwrapSDKContext(goCtx)
+    cc := k.NewCurrentContext(ctx)
+    defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
     // load struct
-    structure := k.GetStructCacheFromId(ctx, msg.StructId)
+    structure := cc.GetStruct(msg.StructId)
 
     // Check to see if the caller has permissions to proceed
     permissionError := structure.CanBePlayedBy(msg.Creator)
@@ -46,7 +48,6 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
     }
 
     structure.GoOnline()
-    structure.Commit()
 
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct()}, nil
 }

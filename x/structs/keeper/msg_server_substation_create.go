@@ -9,6 +9,8 @@ import (
 
 func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstationCreate) (*types.MsgSubstationCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -51,6 +53,8 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
             return &types.MsgSubstationCreateResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "energy_management")
         }
     }
+
+	_ = cc
 
     substation, allocation, err := k.AppendSubstation(ctx, allocation, player)
 

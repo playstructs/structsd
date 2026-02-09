@@ -12,6 +12,8 @@ import (
 
 func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgStructGeneratorInfuse) (*types.MsgStructGeneratorStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
 	// Add an Active Address record to the
 	// indexer for UI requirements
@@ -99,12 +101,11 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 	}
 	k.bankKeeper.BurnCoins(ctx, types.ModuleName, infusionAmount)
 
-	infusion := k.GetInfusionCache(ctx, types.ObjectType_struct, structure.Id, callingPlayer.PrimaryAddress)
+	infusion := cc.GetInfusion(types.ObjectType_struct, structure.Id, callingPlayer.PrimaryAddress)
 
 	infusion.SetRatio(structType.GeneratingRate)
 	infusion.SetCommission(math.LegacyZeroDec())
 	infusion.AddFuel(infusionAmount[0].Amount.Uint64())
-	infusion.Commit()
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventAlphaInfuse{&types.EventAlphaInfuseDetail{PlayerId: callingPlayer.Id, PrimaryAddress: callingPlayer.PrimaryAddress, Amount: infusionAmount[0].Amount.Uint64()}})
 

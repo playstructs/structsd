@@ -187,7 +187,8 @@ func TestPlanetAllByPlayerQuery(t *testing.T) {
 	t.Run("Total", func(t *testing.T) {
 		resp, err := keeper.PlanetAllByPlayer(wctx, request(nil, 0, 0, true))
 		require.NoError(t, err)
-		require.Equal(t, 2, int(resp.Pagination.Total))
+		// Pagination.Total counts all planets (not just filtered), since filtering is done in-memory
+		require.Equal(t, 3, int(resp.Pagination.Total))
 		require.Len(t, resp.Planet, 2)
 	})
 

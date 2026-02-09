@@ -13,12 +13,14 @@ import (
 
 func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgStructOreMinerComplete) (*types.MsgStructOreMinerStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
 	// Add an Active Address record to the
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	structure := k.GetStructCacheFromId(ctx, msg.StructId)
+	structure := cc.GetStruct(msg.StructId)
 
 	// Check to see if the caller has permissions to proceed
 	/*
@@ -57,7 +59,6 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 
 	// Got this far, let's reward the player with some Ore
 	structure.OreMinePlanet()
-	structure.Commit()
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventOreMine{&types.EventOreMineDetail{PlayerId: structure.GetOwnerId(), PrimaryAddress: structure.GetOwner().GetPrimaryAddress(), Amount: 1}})
     _ = ctx.EventManager().EmitTypedEvent(&types.EventHashSuccess{&types.EventHashSuccessDetail{CallerAddress: msg.Creator, Category: "mine", Difficulty: achievedDifficulty, ObjectId: msg.StructId }})

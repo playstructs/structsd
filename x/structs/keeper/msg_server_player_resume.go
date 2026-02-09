@@ -10,13 +10,15 @@ import (
 
 func (k msgServer) PlayerResume(goCtx context.Context, msg *types.MsgPlayerResume) (*types.MsgPlayerResumeResponse, error) {
     ctx := sdk.UnwrapSDKContext(goCtx)
+    cc := k.NewCurrentContext(ctx)
+    defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
     // load player
-    player, playerLoadError := k.GetPlayerCacheFromId(ctx, msg.PlayerId)
+    player, playerLoadError := cc.GetPlayer(msg.PlayerId)
     if (playerLoadError != nil) {
         return &types.MsgPlayerResumeResponse{}, playerLoadError
     }
@@ -33,7 +35,6 @@ func (k msgServer) PlayerResume(goCtx context.Context, msg *types.MsgPlayerResum
 
     player.Resume()
     player.Discharge()
-    player.Commit()
 
 	return &types.MsgPlayerResumeResponse{}, nil
 }

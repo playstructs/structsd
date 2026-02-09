@@ -14,6 +14,7 @@ type FleetCache struct {
     FleetId string
     K *Keeper
     Ctx context.Context
+    CC  *CurrentContext
 
     AnyChange bool
 
@@ -74,17 +75,6 @@ func (cache *FleetCache) Commit() () {
 
     if (cache.FleetChanged) { cache.K.SetFleet(cache.Ctx, cache.Fleet) }
 
-    if (cache.Owner != nil && cache.GetOwner().IsChanged()) { cache.GetOwner().Commit() }
-
-    if (cache.Planet != nil && cache.GetPlanet().IsChanged()) { cache.GetPlanet().Commit() }
-    if (cache.PreviousPlanet != nil && cache.GetPreviousPlanet().IsChanged()) { cache.GetPreviousPlanet().Commit() }
-
-    if (cache.ForwardFleet != nil && cache.GetForwardFleet().IsChanged()) { cache.GetForwardFleet().Commit() }
-    if (cache.BackwardFleet != nil && cache.GetBackwardFleet().IsChanged()) { cache.GetBackwardFleet().Commit() }
-
-    if (cache.PreviousForwardFleet != nil && cache.GetPreviousForwardFleet().IsChanged()) { cache.GetPreviousForwardFleet().Commit() }
-    if (cache.PreviousBackwardFleet != nil && cache.GetPreviousBackwardFleet().IsChanged()) { cache.GetPreviousBackwardFleet().Commit() }
-
 }
 
 func (cache *FleetCache) IsChanged() bool {
@@ -112,16 +102,25 @@ func (cache *FleetCache) LoadFleet() (found bool) {
 
 // Load the Player data
 func (cache *FleetCache) LoadOwner() (bool) {
-    newOwner, _ := cache.K.GetPlayerCacheFromId(cache.Ctx, cache.GetOwnerId())
-    cache.Owner = &newOwner
+    if cache.CC != nil {
+        owner, _ := cache.CC.GetPlayer(cache.GetOwnerId())
+        cache.Owner = owner
+    } else {
+        newOwner, _ := cache.K.GetPlayerCacheFromId(cache.Ctx, cache.GetOwnerId())
+        cache.Owner = &newOwner
+    }
     cache.OwnerLoaded = true
     return cache.OwnerLoaded
 }
 
-// Load the Player data
+// Load the CommandStruct data
 func (cache *FleetCache) LoadCommandStruct() (bool) {
-    cmdStruct := cache.K.GetStructCacheFromId(cache.Ctx, cache.GetCommandStructId())
-    cache.CommandStruct = &cmdStruct
+    if cache.CC != nil {
+        cache.CommandStruct = cache.CC.GetStruct(cache.GetCommandStructId())
+    } else {
+        cmdStruct := cache.K.GetStructCacheFromId(cache.Ctx, cache.GetCommandStructId())
+        cache.CommandStruct = &cmdStruct
+    }
     cache.CommandStructLoaded = true
     return cache.CommandStructLoaded
 }
@@ -130,8 +129,12 @@ func (cache *FleetCache) LoadCommandStruct() (bool) {
 // Load the Planet data
 func (cache *FleetCache) LoadPlanet() (bool) {
     if (cache.GetLocationType() == types.ObjectType_planet) {
-        newPlanet := cache.K.GetPlanetCacheFromId(cache.Ctx, cache.GetLocationId())
-        cache.Planet = &newPlanet
+        if cache.CC != nil {
+            cache.Planet = cache.CC.GetPlanet(cache.GetLocationId())
+        } else {
+            newPlanet := cache.K.GetPlanetCacheFromId(cache.Ctx, cache.GetLocationId())
+            cache.Planet = &newPlanet
+        }
         cache.PlanetLoaded = true
         cache.PlanetChanged = false
     }
@@ -141,25 +144,39 @@ func (cache *FleetCache) LoadPlanet() (bool) {
 // Load the Forward Fleet data
 func (cache *FleetCache) LoadForwardFleet() (bool) {
     if (cache.GetLocationListForward() != "") {
-        forwardFleet, err := cache.K.GetFleetCacheFromId(cache.Ctx, cache.GetLocationListForward())
-        cache.ForwardFleet = &forwardFleet
-        if (err == nil) {
-            cache.ForwardFleetLoaded = true
+        if cache.CC != nil {
+            forwardFleet, err := cache.CC.GetFleet(cache.GetLocationListForward())
+            cache.ForwardFleet = forwardFleet
+            if err == nil {
+                cache.ForwardFleetLoaded = true
+            }
+        } else {
+            forwardFleet, err := cache.K.GetFleetCacheFromId(cache.Ctx, cache.GetLocationListForward())
+            cache.ForwardFleet = &forwardFleet
+            if err == nil {
+                cache.ForwardFleetLoaded = true
+            }
         }
-
     }
     return cache.ForwardFleetLoaded
 }
 
-// Load the Forward Fleet data
+// Load the Backward Fleet data
 func (cache *FleetCache) LoadBackwardFleet() (bool) {
     if (cache.GetLocationListBackward() != "") {
-        backwardFleet, err := cache.K.GetFleetCacheFromId(cache.Ctx, cache.GetLocationListBackward())
-        cache.BackwardFleet = &backwardFleet
-        if (err == nil) {
-            cache.BackwardFleetLoaded = true
+        if cache.CC != nil {
+            backwardFleet, err := cache.CC.GetFleet(cache.GetLocationListBackward())
+            cache.BackwardFleet = backwardFleet
+            if err == nil {
+                cache.BackwardFleetLoaded = true
+            }
+        } else {
+            backwardFleet, err := cache.K.GetFleetCacheFromId(cache.Ctx, cache.GetLocationListBackward())
+            cache.BackwardFleet = &backwardFleet
+            if err == nil {
+                cache.BackwardFleetLoaded = true
+            }
         }
-
     }
     return cache.BackwardFleetLoaded
 }

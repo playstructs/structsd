@@ -10,13 +10,15 @@ import (
 
 func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStructBuildComplete) (*types.MsgStructStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
 	// Add an Active Address record to the
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
 	// load struct
-	structure := k.GetStructCacheFromId(ctx, msg.StructId)
+	structure := cc.GetStruct(msg.StructId)
 
 	// Check to see if the caller has permissions to proceed
 	/*
@@ -81,7 +83,6 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 
 	structure.StatusAddBuilt()
 	structure.GoOnline()
-	structure.Commit()
 
     _ = ctx.EventManager().EmitTypedEvent(&types.EventHashSuccess{&types.EventHashSuccessDetail{CallerAddress: msg.Creator, Category: "build", Difficulty: achievedDifficulty, ObjectId: msg.StructId }})
 

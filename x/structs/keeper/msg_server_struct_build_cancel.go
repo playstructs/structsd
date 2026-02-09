@@ -9,6 +9,8 @@ import (
 
 func (k msgServer) StructBuildCancel(goCtx context.Context, msg *types.MsgStructBuildCancel) (*types.MsgStructStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -16,7 +18,7 @@ func (k msgServer) StructBuildCancel(goCtx context.Context, msg *types.MsgStruct
 
 
     // load struct
-    structure := k.GetStructCacheFromId(ctx, msg.StructId)
+    structure := cc.GetStruct(msg.StructId)
 
     // Check to see if the caller has permissions to proceed
     permissionError := structure.CanBePlayedBy(msg.Creator)
@@ -30,7 +32,6 @@ func (k msgServer) StructBuildCancel(goCtx context.Context, msg *types.MsgStruct
 
     if structure.IsBuilt() {
         structure.GetOwner().Discharge()
-        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.StructId, "built", "building", "build_cancel")
     }
 

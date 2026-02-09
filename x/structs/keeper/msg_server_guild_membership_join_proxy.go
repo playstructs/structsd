@@ -15,6 +15,8 @@ import (
 
 func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.MsgGuildMembershipJoinProxy) (*types.MsgGuildMembershipResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+	defer cc.CommitAll()
 
 	// Add an Active Address record to the
 	// indexer for UI requirements
@@ -157,6 +159,8 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	} else {
 	    k.SetPlayer(ctx, player)
 	}
+
+	_ = cc
 
 	// The proxy join has completely mostly successfully at this point
 	// Increase the nonce of the player account to prevent replay of this signed message

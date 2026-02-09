@@ -80,7 +80,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
     for _, elem := range genState.PlayerList {
         k.SetPlayer(ctx, elem)
     }
-    k.SetAllHaltedPlayerId(ctx, genState.PlayerHalted)
+
 
     k.SetReactorCount(ctx, genState.ReactorCount + k.GetReactorCount(ctx))
     for _, elem := range genState.ReactorList {
@@ -188,7 +188,6 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 
 	genesis.PlayerList = k.GetAllPlayer(ctx)
 	genesis.PlayerCount = k.GetPlayerCount(ctx)
-	genesis.PlayerHalted = k.GetAllHaltedPlayerId(ctx)
 
 	genesis.ProviderList = k.GetAllProvider(ctx)
 	genesis.ProviderCount = k.GetProviderCount(ctx)
