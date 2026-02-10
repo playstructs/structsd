@@ -12,29 +12,6 @@ import (
 
 )
 
-
-// AppendFleet appends a fleet in the store with a new id and update the count
-func (k Keeper) AppendFleet(
-	ctx context.Context,
-	player *PlayerCache,
-) (fleet types.Fleet) {
-    fleet = types.CreateEmptyFleet()
-
-	// Set the ID of the appended value
-	fleet.Id = GetObjectID(types.ObjectType_fleet, player.GetIndex())
-	fleet.Owner = player.GetPlayerId()
-	player.SetFleetId(fleet.Id)
-
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.FleetKey))
-	appendedValue := k.cdc.MustMarshal(&fleet)
-	store.Set([]byte(fleet.Id), appendedValue)
-
-	ctxSDK := sdk.UnwrapSDKContext(ctx)
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventFleet{Fleet: &fleet})
-
-	return fleet
-}
-
 // SetFleet set a specific fleet in the store
 func (k Keeper) SetFleet(ctx context.Context, fleet types.Fleet) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.FleetKey))

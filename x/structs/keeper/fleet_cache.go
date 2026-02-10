@@ -12,226 +12,131 @@ import (
 
 type FleetCache struct {
     FleetId string
-    K *Keeper
-    Ctx context.Context
+    Index uint64
+    PlayerId string
+
     CC  *CurrentContext
 
-    AnyChange bool
+    Changed bool
 
     FleetLoaded  bool
-    FleetChanged bool
     Fleet        types.Fleet
 
-    OwnerLoaded bool
-    Owner *PlayerCache
-
-    CommandStructLoaded bool
-    CommandStruct *StructCache
-
-    PlanetLoaded bool
-    PlanetChanged bool
-    Planet *PlanetCache
-
-    PreviousPlanetLoaded bool
-    PreviousPlanetChanged bool
-    PreviousPlanet *PlanetCache
-
-    ForwardFleetLoaded  bool
-    ForwardFleetChanged bool
-    ForwardFleet        *FleetCache
-
-    PreviousForwardFleetLoaded  bool
-    PreviousForwardFleetChanged bool
-    PreviousForwardFleet        *FleetCache
-
-    BackwardFleetLoaded  bool
-    BackwardFleetChanged bool
-    BackwardFleet        *FleetCache
-
-    PreviousBackwardFleetLoaded  bool
-    PreviousBackwardFleetChanged bool
-    PreviousBackwardFleet        *FleetCache
-
-
-}
-
-
-func (k *Keeper) GetFleetCacheFromId(ctx context.Context, fleetId string) (FleetCache, error) {
-    return FleetCache{
-        FleetId: fleetId,
-        K: k,
-        Ctx: ctx,
-
-        AnyChange: false,
-
-    }, nil
 }
 
 
 func (cache *FleetCache) Commit() () {
-    cache.AnyChange = false
-
-    cache.K.logger.Info("Updating Fleet From Cache","fleetId",cache.FleetId)
-
-    if (cache.FleetChanged) { cache.K.SetFleet(cache.Ctx, cache.Fleet) }
-
+    if (cache.Changed) {
+        cache.CC.k.logger.Info("Updating Fleet From Cache", "fleetId", cache.FleetId)
+        cache.CC.k.SetFleet(cache.CC.ctx, cache.Fleet)
+    }
+    cache.Changed = false
 }
 
 func (cache *FleetCache) IsChanged() bool {
-    return cache.AnyChange
+    return cache.Changed
 }
 
 func (cache *FleetCache) ID() string {
     return cache.FleetId
 }
 
-func (cache *FleetCache) Changed() {
-    cache.AnyChange = true
-}
-
-
 func (cache *FleetCache) LoadFleet() (found bool) {
-    cache.Fleet, found = cache.K.GetFleet(cache.Ctx, cache.FleetId)
+    cache.Fleet, found = cache.CC.k.GetFleet(cache.CC.ctx, cache.FleetId)
 
-    if (found) {
-        cache.FleetLoaded = true
+    if (!found) {
+        fleet := types.CreateEmptyFleet()
+        // Set the ID of the appended value
+        fleet.Id = cache.FleetId
+        fleet.Owner = cache.PlayerId
+
+        player, _ := cache.CC.GetPlayer(cache.PlayerId)
+        player.SetFleetId(cache.FleetId)
+
+        structure := cache.CC.InitialCommandShipStruct(cache.PlayerId, cache.FleetId)
+        cache.SetCommandStruct(structure.GetStructId())
+
+        cache.Fleet = fleet
+        cache.Changed = true
     }
 
-    return found
+    cache.FleetLoaded = true
+
+    return cache.FleetLoaded
 }
 
-// Load the Player data
-func (cache *FleetCache) LoadOwner() (bool) {
-    if cache.CC != nil {
-        owner, _ := cache.CC.GetPlayer(cache.GetOwnerId())
-        cache.Owner = owner
-    } else {
-        newOwner, _ := cache.K.GetPlayerCacheFromId(cache.Ctx, cache.GetOwnerId())
-        cache.Owner = &newOwner
-    }
-    cache.OwnerLoaded = true
-    return cache.OwnerLoaded
-}
-
-// Load the CommandStruct data
-func (cache *FleetCache) LoadCommandStruct() (bool) {
-    if cache.CC != nil {
-        cache.CommandStruct = cache.CC.GetStruct(cache.GetCommandStructId())
-    } else {
-        cmdStruct := cache.K.GetStructCacheFromId(cache.Ctx, cache.GetCommandStructId())
-        cache.CommandStruct = &cmdStruct
-    }
-    cache.CommandStructLoaded = true
-    return cache.CommandStructLoaded
-}
-
-
-// Load the Planet data
-func (cache *FleetCache) LoadPlanet() (bool) {
-    if (cache.GetLocationType() == types.ObjectType_planet) {
-        if cache.CC != nil {
-            cache.Planet = cache.CC.GetPlanet(cache.GetLocationId())
-        } else {
-            newPlanet := cache.K.GetPlanetCacheFromId(cache.Ctx, cache.GetLocationId())
-            cache.Planet = &newPlanet
-        }
-        cache.PlanetLoaded = true
-        cache.PlanetChanged = false
-    }
-    return cache.PlanetLoaded
-}
-
-// Load the Forward Fleet data
-func (cache *FleetCache) LoadForwardFleet() (bool) {
-    if (cache.GetLocationListForward() != "") {
-        if cache.CC != nil {
-            forwardFleet, err := cache.CC.GetFleet(cache.GetLocationListForward())
-            cache.ForwardFleet = forwardFleet
-            if err == nil {
-                cache.ForwardFleetLoaded = true
-            }
-        } else {
-            forwardFleet, err := cache.K.GetFleetCacheFromId(cache.Ctx, cache.GetLocationListForward())
-            cache.ForwardFleet = &forwardFleet
-            if err == nil {
-                cache.ForwardFleetLoaded = true
-            }
-        }
-    }
-    return cache.ForwardFleetLoaded
-}
-
-// Load the Backward Fleet data
-func (cache *FleetCache) LoadBackwardFleet() (bool) {
-    if (cache.GetLocationListBackward() != "") {
-        if cache.CC != nil {
-            backwardFleet, err := cache.CC.GetFleet(cache.GetLocationListBackward())
-            cache.BackwardFleet = backwardFleet
-            if err == nil {
-                cache.BackwardFleetLoaded = true
-            }
-        } else {
-            backwardFleet, err := cache.K.GetFleetCacheFromId(cache.Ctx, cache.GetLocationListBackward())
-            cache.BackwardFleet = &backwardFleet
-            if err == nil {
-                cache.BackwardFleetLoaded = true
-            }
-        }
-    }
-    return cache.BackwardFleetLoaded
-}
-
-func (cache *FleetCache) ManualLoadPlanet(planet *PlanetCache) {
-    cache.Planet = planet
-    cache.PlanetLoaded = true
-    cache.PlanetChanged = false
-}
-
-func (cache *FleetCache) ManualLoadOwner(owner *PlayerCache) {
-    cache.Owner = owner
-    cache.OwnerLoaded = true
-}
 
 // Fleet Details
 func (cache *FleetCache) GetFleet()     (types.Fleet)   { if (!cache.FleetLoaded) { cache.LoadFleet() }; return cache.Fleet }
 func (cache *FleetCache) GetFleetId()   (string)        { return cache.FleetId }
 
 // Ownership Details
-func (cache *FleetCache) GetOwner()     (*PlayerCache)  { if (!cache.OwnerLoaded) { cache.LoadOwner() }; return cache.Owner }
-func (cache *FleetCache) GetOwnerId()   (string)        { return cache.GetFleet().Owner }
+func (cache *FleetCache) GetOwnerId()   (string)        { return cache.PlayerId }
 
 // Command Struct Details
-func (cache *FleetCache) GetCommandStruct()     (*StructCache)  { if (!cache.CommandStructLoaded) { cache.LoadCommandStruct() }; return cache.CommandStruct }
 func (cache *FleetCache) GetCommandStructId()   (string)        { return cache.GetFleet().CommandStruct }
 
 // Location Details
 func (cache *FleetCache) GetLocationId()        (string)            { return cache.GetFleet().LocationId }
 func (cache *FleetCache) GetLocationType()      (types.ObjectType)  { return cache.GetFleet().LocationType }
-func (cache *FleetCache) GetPlanet()            (*PlanetCache)      { if (!cache.PlanetLoaded) { cache.LoadPlanet() }; return cache.Planet }
-func (cache *FleetCache) GetPreviousPlanet()    (*PlanetCache)      { return cache.PreviousPlanet }
 
 // Planet Battle Queue Position
 func (cache *FleetCache) GetLocationListForward()   (string)        { return cache.GetFleet().LocationListForward }
-func (cache *FleetCache) GetForwardFleet()          (*FleetCache)   { if (!cache.ForwardFleetLoaded) { cache.LoadForwardFleet() }; return cache.ForwardFleet }
-func (cache *FleetCache) GetPreviousForwardFleet()  (*FleetCache)   { return cache.PreviousForwardFleet }
-
 func (cache *FleetCache) GetLocationListBackward()  (string)        { return cache.GetFleet().LocationListBackward }
-func (cache *FleetCache) GetBackwardFleet()         (*FleetCache)   { if (!cache.BackwardFleetLoaded) { cache.LoadBackwardFleet() }; return cache.BackwardFleet }
-func (cache *FleetCache) GetPreviousBackwardFleet() (*FleetCache)   { return cache.PreviousBackwardFleet }
+
+func (cache *FleetCache) GetOwner()  (*PlayerCache)  {
+    player, _ := cache.CC.GetPlayer( cache.PlayerId )
+    return player
+}
+
+func (cache *FleetCache) GetCommandStruct() (*StructCache)  {
+    structure := cache.CC.GetStruct( cache.GetCommandStructId() )
+    return structure
+}
+
+func (cache *FleetCache) GetPlanet() (planet *PlanetCache) {
+    if (cache.GetLocationType() == types.ObjectType_planet) {
+        planet = cache.CC.GetPlanet( cache.GetLocationId() )
+    }
+    return planet
+}
+
+
+func (cache *FleetCache) GetForwardFleet() (forwardFleet *FleetCache) {
+    if (cache.GetLocationListForward() != "") {
+        forwardFleet, _ = cache.CC.GetFleetById( cache.GetLocationListForward() )
+    }
+    return forwardFleet
+}
+
+func (cache *FleetCache) GetBackwardFleet() (backwardFleet *FleetCache) {
+    if (cache.GetLocationListBackward() != "") {
+        backwardFleet, _ = cache.CC.GetFleetById( cache.GetLocationListBackward() )
+    }
+    return backwardFleet
+}
+
+
+
+//func (cache *FleetCache) GetPreviousPlanet()    (*PlanetCache)      { return cache.PreviousPlanet }
+//func (cache *FleetCache) GetPreviousForwardFleet()  (*FleetCache)   { return cache.PreviousForwardFleet }
+//func (cache *FleetCache) GetPreviousBackwardFleet() (*FleetCache)   { return cache.PreviousBackwardFleet }
+
+
 
 
 func (cache *FleetCache) SetLocationListForward(fleetId string) () {
     if (!cache.FleetLoaded) { cache.LoadFleet() }
 
     cache.Fleet.LocationListForward = fleetId
-    cache.FleetChanged = true
+    cache.Changed = true
 }
 
 func (cache *FleetCache) SetLocationListBackward(fleetId string) () {
     if (!cache.FleetLoaded) { cache.LoadFleet() }
 
     cache.Fleet.LocationListBackward = fleetId
-    cache.FleetChanged = true
+    cache.Changed = true
 }
 
 func (cache *FleetCache) IsOnStation() (bool) {
@@ -248,6 +153,7 @@ func (cache *FleetCache) HasCommandStruct() (bool) {
 
 
 func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
+    if (!cache.FleetLoaded) { cache.LoadFleet() }
 
     // TODO/MVP
     // One day it'll matter that the previous destination might not be a planet
@@ -257,58 +163,38 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
     if (cache.GetLocationId() == destination.GetPlanetId()) { return }
 
     // Let's do some initial copies
-    cache.PreviousPlanet = cache.GetPlanet()
-    cache.PreviousPlanetChanged = cache.PlanetChanged
-    cache.PreviousPlanetLoaded = cache.PlanetLoaded
+    previousPlanetId := cache.GetLocationId()
+    previousPlanet := cache.GetPlanet()
 
     previousForwardFleetId := cache.GetLocationListForward()
-    cache.PreviousForwardFleet = cache.GetForwardFleet()
-    cache.PreviousForwardFleetLoaded = cache.ForwardFleetLoaded
-    cache.PreviousForwardFleetChanged = cache.ForwardFleetChanged
+    previousForwardFleet := cache.GetForwardFleet()
 
     previousBackwardFleetId := cache.GetLocationListBackward()
-    cache.PreviousBackwardFleet = cache.GetBackwardFleet()
-    cache.PreviousBackwardFleetLoaded = cache.BackwardFleetLoaded
-    cache.PreviousBackwardFleetChanged = cache.BackwardFleetChanged
+    previousBackwardFleet := cache.GetBackwardFleet()
 
     // Location updated and next call to GetPlanet() will pull the new location
     cache.Fleet.LocationId = destination.GetPlanetId()
     cache.Fleet.LocationType = types.ObjectType_planet
-    cache.FleetChanged = true
-
-    cache.Planet = destination
 
 
     // Old destination wasn't home - update all the previous stuff
-    if (cache.GetOwner().GetPlanetId() != cache.GetPreviousPlanet().GetPlanetId()) {
+    if (cache.GetOwner().GetPlanetId() != previousPlanetId) {
 
         // Are we at the start of the list?
         if (previousForwardFleetId == "") {
-            cache.GetPreviousPlanet().SetLocationListStart(previousBackwardFleetId)
-            cache.PreviousPlanetChanged = true
-
-            if (cache.GetPreviousBackwardFleet() != nil) {
-                cache.GetPreviousBackwardFleet().SetLocationListForward("")
-                cache.PreviousBackwardFleetChanged = true
+            previousPlanet.SetLocationListStart(previousBackwardFleetId)
+            if (previousBackwardFleetId != "") {
+                previousBackwardFleet.SetLocationListForward("")
             }
-
-
         // The back of the list
         } else if (previousBackwardFleetId == "") {
-            cache.GetPreviousPlanet().SetLocationListLast(previousForwardFleetId)
-            cache.PreviousPlanetChanged = true
-
-            cache.GetPreviousForwardFleet().SetLocationListBackward("")
-            cache.PreviousForwardFleetChanged = true
+            previousPlanet.SetLocationListLast(previousForwardFleetId)
+            previousForwardFleet.SetLocationListBackward("")
 
         // Or Somewhere In The Between
         } else {
-            cache.GetPreviousForwardFleet().SetLocationListBackward(previousBackwardFleetId)
-            cache.PreviousForwardFleetChanged = true
-
-            cache.GetPreviousBackwardFleet().SetLocationListForward(previousForwardFleetId)
-            cache.PreviousBackwardFleetChanged = true
-
+            previousForwardFleet.SetLocationListBackward(previousBackwardFleetId)
+            previousBackwardFleet.SetLocationListForward(previousForwardFleetId)
         }
 
         cache.SetLocationListForward("")
@@ -321,26 +207,19 @@ func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
         // Is it the first fleet to arrive?
         if (cache.GetPlanet().GetLocationListStart() == "") {
             cache.GetPlanet().SetLocationListStart(cache.GetFleetId())
-            cache.PlanetChanged = true
-
         } else {
             cache.SetLocationListForward(cache.GetPlanet().GetLocationListLast())
-
             cache.GetForwardFleet().SetLocationListBackward(cache.GetFleetId())
-            cache.ForwardFleetChanged = true
         }
 
         cache.GetPlanet().SetLocationListLast(cache.GetFleetId())
-        cache.PlanetChanged = true
 
         cache.Fleet.Status = types.FleetStatus_away
     } else {
         cache.Fleet.Status = types.FleetStatus_onStation
     }
 
-
-    cache.Changed()
-
+    cache.Changed = true
 }
 
 func (cache *FleetCache) PlanetMoveReadinessCheck() (error) {
@@ -362,7 +241,7 @@ func (cache *FleetCache) PlanetMoveReadinessCheck() (error) {
 func (cache *FleetCache) Defeat() (){
     if (!cache.FleetLoaded) { cache.LoadFleet() }
 
-    uctx := sdk.UnwrapSDKContext(cache.Ctx)
+    uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
     _ = uctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: cache.GetFleetId(), PlanetId: cache.GetPlanet().GetPlanetId(), Status: types.RaidStatus_attackerDefeated}})
 
     // Send Fleet home
@@ -373,7 +252,7 @@ func (cache *FleetCache) Defeat() (){
 func (cache *FleetCache) PeaceDeal() (){
     if (!cache.FleetLoaded) { cache.LoadFleet() }
 
-    uctx := sdk.UnwrapSDKContext(cache.Ctx)
+    uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
     _ = uctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: cache.GetFleetId(), PlanetId: cache.GetPlanet().GetPlanetId(), Status: types.RaidStatus_demilitarized}})
 
     // Send Fleet home
@@ -510,8 +389,7 @@ func (cache *FleetCache) SetSlot(structure types.Struct) (err error) {
         default:
             err = types.NewStructLocationError(0, structure.OperatingAmbit.String(), "invalid_ambit").WithStruct(structure.Id)
     }
-	cache.FleetChanged = true
-	cache.Changed()
+	cache.Changed = true
 	return
 }
 
@@ -530,58 +408,36 @@ func (cache *FleetCache) ClearSlot(ambit types.Ambit, slot uint64)  {
         case types.Ambit_space:
             cache.Fleet.Space[slot] = ""
     }
-    cache.FleetChanged = true
-    cache.Changed()
+    cache.Changed = true
 }
 
 
-func (cache *FleetCache) SetCommandStruct(structure types.Struct) {
+func (cache *FleetCache) SetCommandStruct(structId string) {
     if (!cache.FleetLoaded) { cache.LoadFleet() }
 
-    cache.Fleet.CommandStruct = structure.Id
-    cache.FleetChanged = true
-    cache.Changed()
+    cache.Fleet.CommandStruct = structId
+    cache.Changed = true
 }
 
 func (cache *FleetCache) ClearCommandStruct() {
     if (!cache.FleetLoaded) { cache.LoadFleet() }
 
     cache.Fleet.CommandStruct = ""
-    cache.FleetChanged = true
-    cache.Changed()
+    cache.Changed = true
 }
 
 
 func (cache *FleetCache) MigrateToNewPlanet(destination *PlanetCache) {
-
     if (!cache.FleetLoaded) {
-        if !cache.LoadFleet() {
-            newFleet := cache.K.AppendFleet(cache.Ctx, cache.GetOwner())
-            cache.Fleet = newFleet
-            cache.FleetId = newFleet.Id
-            cache.FleetLoaded = true
-
-            // Build an Initial Command Ship
-            structure := cache.K.InitialCommandShipStruct(cache.Ctx, cache)
-            // TODO Not a huge fan that this is committed separately
-            // Could change cache.commit() to comment the command struct too
-            // but that would need SetCommandStruct to accept the StructCache instead of Struct.
-            structure.Commit()
-            cache.SetCommandStruct(structure.GetStruct())
-        }
+        cache.LoadFleet()
     }
 
     // Online Migrate if it's at home
     if cache.IsAway() { return }
 
-
     // Location updated and next call to GetPlanet() will pull the new location
     cache.Fleet.LocationId = destination.GetPlanetId()
     cache.Fleet.LocationType = types.ObjectType_planet
-    cache.FleetChanged = true
 
-    cache.Planet = destination
-    cache.PlanetChanged = true
-    cache.Changed()
-
+    cache.Changed = true
 }

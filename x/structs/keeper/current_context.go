@@ -63,14 +63,14 @@ type CurrentContext struct {
 	permissions     map[string]*PermissionsCache
 
 	players             map[string]*PlayerCache
-
+	fleets              map[uint64]*FleetCache
 
 
 
 
 	// Complex entity caches (Committable, tracked in pendingCommits)
 	agreements          map[string]*AgreementCache
-	fleets              map[string]*FleetCache
+
 	guilds              map[string]*GuildCache
 	guildMembershipApps map[string]*GuildMembershipApplicationCache
 	infusions           map[string]*InfusionCache
@@ -112,14 +112,14 @@ func (k *Keeper) NewCurrentContext(ctx context.Context) *CurrentContext {
 		permissions:     make(map[string]*PermissionsCache),
 
 		players:             make(map[string]*PlayerCache),
-
+		fleets:              make(map[uint64]*FleetCache),
 
 
 
 
 		// Complex entity caches
 		agreements:          make(map[string]*AgreementCache),
-		fleets:              make(map[string]*FleetCache),
+
 		guilds:              make(map[string]*GuildCache),
 		guildMembershipApps: make(map[string]*GuildMembershipApplicationCache),
 		infusions:           make(map[string]*InfusionCache),
@@ -228,7 +228,7 @@ func (cc *CurrentContext) Reset() {
 
 	// Re-initialize all maps
 	cc.agreements = make(map[string]*AgreementCache)
-	cc.fleets = make(map[string]*FleetCache)
+	cc.fleets = make(map[uint64]*FleetCache)
 	cc.guilds = make(map[string]*GuildCache)
 	cc.guildMembershipApps = make(map[string]*GuildMembershipApplicationCache)
 	cc.infusions = make(map[string]*InfusionCache)

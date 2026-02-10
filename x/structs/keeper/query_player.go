@@ -58,9 +58,8 @@ func (k Keeper) Player(goCtx context.Context, req *types.QueryGetPlayerRequest) 
 
 	gridAttributes := k.GetGridAttributesByObject(ctx, req.Id)
 	playerInventory := k.GetPlayerInventory(ctx, player.PrimaryAddress)
-	halted := k.IsPlayerHalted(ctx, req.Id)
 
-	return &types.QueryGetPlayerResponse{Player: player, GridAttributes: &gridAttributes, PlayerInventory: &playerInventory, Halted: halted}, nil
+	return &types.QueryGetPlayerResponse{Player: player, GridAttributes: &gridAttributes, PlayerInventory: &playerInventory}, nil
 }
 
 
