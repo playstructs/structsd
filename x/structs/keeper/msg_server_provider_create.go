@@ -79,13 +79,11 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
 
     provider.SetAccessPolicy(msg.AccessPolicy)
 
-
     // Provider Grid values are OK to leave uninitialized
         // Unset Load is zero
         // Unset CheckpointBlock is zero
 
-    // Pass it to the Keeper
-    k.AppendProvider(ctx, provider)
+    cc.NewProvider(ctx, provider)
 
 
 	return &types.MsgProviderResponse{}, nil

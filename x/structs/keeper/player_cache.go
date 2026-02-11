@@ -72,16 +72,21 @@ func (cache *PlayerCache) LoadStorage() (error){
     return nil
 }
 
-
-func (cache *PlayerCache) GetPlayer() (types.Player, error) {
+func (cache *PlayerCache) CheckPlayer() (error) {
     if (!cache.PlayerLoaded) {
-        found := cache.LoadPlayer()
-        if (!found) {
-           return types.Player{}, types.NewObjectNotFoundError("player", cache.PlayerId)
+        if !cache.LoadPlayer() {
+           return types.NewObjectNotFoundError("player", cache.PlayerId)
         }
     }
+    return nil
+}
 
-    return cache.Player, nil
+
+func (cache *PlayerCache) GetPlayer() (types.Player) {
+    if (!cache.PlayerLoaded) {
+        cache.LoadPlayer()
+    }
+    return cache.Player
 }
 
 

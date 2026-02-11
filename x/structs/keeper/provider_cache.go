@@ -11,144 +11,49 @@ import (
 
 type ProviderCache struct {
 	ProviderId string
-	K          *Keeper
-	Ctx        context.Context
 	CC         *CurrentContext
 
-	AnyChange bool
-
+	Changed bool
+	Deleted bool
 	Ready bool
 
 	ProviderLoaded  bool
-	ProviderChanged bool
 	Provider        types.Provider
 
-	OwnerLoaded bool
-	Owner       *PlayerCache
-
-    SubstationLoaded bool
-    Substation       *SubstationCache
-
-	CheckpointBlockAttributeId   string
-	CheckpointBlock              uint64
-	CheckpointBlockLoaded        bool
-	CheckpointBlockChanged       bool
-
+	CheckpointBlockAttributeId  string
 	AgreementLoadAttributeId    string
-	AgreementLoad               uint64
-	AgreementLoadLoaded         bool
-	AgreementLoadChanged        bool
-
-	// AgreementCache[]
-
-}
-
-// Build this initial Provider Cache object
-func (k *Keeper) GetProviderCacheFromId(ctx context.Context, providerId string) ProviderCache {
-	return ProviderCache{
-		ProviderId: providerId,
-		K:          k,
-		Ctx:        ctx,
-
-		AnyChange: false,
-
-		OwnerLoaded: false,
-
-		ProviderLoaded:  false,
-		ProviderChanged: false,
-
-		CheckpointBlockAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_checkpointBlock, providerId),
-
-		AgreementLoadAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_load, providerId),
-	}
 }
 
 func (cache *ProviderCache) Commit() {
-	cache.AnyChange = false
-
-    cache.K.logger.Info("Updating Provider From Cache", "providerId", cache.ProviderId)
-
-	if cache.ProviderChanged {
-		cache.K.SetProvider(cache.Ctx, cache.Provider)
-		cache.ProviderChanged = false
+	if cache.Changed {
+        cache.CC.K.logger.Info("Updating Provider From Cache", "providerId", cache.ProviderId)
+        if cache.Deleted {
+            cache.CC.K.RemoveProvider(cache.CC.ctx, cache.ProviderId)
+        } else {
+            cache.CC.K.SetProvider(cache.CC.ctx, cache.Provider)
+        }
 	}
-
-    if (cache.CheckpointBlockChanged) {
-        cache.K.SetGridAttribute(cache.Ctx, cache.CheckpointBlockAttributeId, cache.CheckpointBlock)
-        cache.CheckpointBlockChanged = false
-    }
-
-    if (cache.AgreementLoadChanged) {
-        cache.K.SetGridAttribute(cache.Ctx, cache.AgreementLoadAttributeId, cache.AgreementLoad)
-        cache.AgreementLoadChanged = false
-    }
-
+    cache.Changed = false
 }
 
 func (cache *ProviderCache) IsChanged() bool {
-	return cache.AnyChange
+	return cache.Changed
 }
 
 func (cache *ProviderCache) ID() string {
 	return cache.ProviderId
 }
 
-func (cache *ProviderCache) Changed() {
-	cache.AnyChange = true
-}
+
 
 /* Separate Loading functions for each of the underlying containers */
 
-// Load the Player data
-func (cache *ProviderCache) LoadOwner() bool {
-	if cache.CC != nil {
-		owner, _ := cache.CC.GetPlayer(cache.GetOwnerId())
-		cache.Owner = owner
-	} else {
-		newOwner, _ := cache.K.GetPlayerCacheFromId(cache.Ctx, cache.GetOwnerId())
-		cache.Owner = &newOwner
-	}
-	cache.OwnerLoaded = true
-	return cache.OwnerLoaded
-}
-
-func (cache *ProviderCache) ManualLoadOwner(owner *PlayerCache) {
-    cache.Owner = owner
-    cache.OwnerLoaded = true
-}
 
 // Load the Provider record
-func (cache *ProviderCache) LoadProvider() {
-	provider, providerFound := cache.K.GetProvider(cache.Ctx, cache.ProviderId)
-
-	if providerFound {
-		cache.Provider = provider
-		cache.ProviderLoaded = true
-	}
+func (cache *ProviderCache) LoadProvider() (bool) {
+	cache.Provider, cache.ProviderLoaded := cache.CC.k.GetProvider(cache.CC.ctx, cache.ProviderId)
+    return cache.ProviderLoaded
 }
-
-// Load the Substation data
-func (cache *ProviderCache) LoadSubstation() bool {
-	if cache.CC != nil {
-		cache.Substation = cache.CC.GetSubstation(cache.GetSubstationId())
-	} else {
-		newSubstation := cache.K.GetSubstationCacheFromId(cache.Ctx, cache.GetSubstationId())
-		cache.Substation = &newSubstation
-	}
-	cache.SubstationLoaded = true
-	return cache.SubstationLoaded
-}
-
-func (cache *ProviderCache) LoadCheckpointBlock() {
-    cache.CheckpointBlock = cache.K.GetGridAttribute(cache.Ctx, cache.CheckpointBlockAttributeId)
-    cache.CheckpointBlockLoaded = true
-}
-
-func (cache *ProviderCache) LoadAgreementLoad() {
-    cache.AgreementLoad = cache.K.GetGridAttribute(cache.Ctx, cache.AgreementLoadAttributeId)
-    cache.AgreementLoadLoaded = true
-}
-
 
 
 /* Getters
@@ -159,13 +64,18 @@ func (cache *ProviderCache) LoadAgreementLoad() {
 func (cache *ProviderCache) GetProvider() types.Provider { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider }
 func (cache *ProviderCache) GetProviderId() string { return cache.ProviderId }
 
+func (cache *ProviderCache) GetOwner() *PlayerCache {
+    player, _ := cache.CC.GetPlayer(cache.GetOwnerId())
+    return player
+}
 
-// Get the Owner data
+func (cache *ProviderCache) GetSubstation() *SubstationCache {
+    substation, _ := cache.CC.GetSubstation(cache.GetSubstationId())
+    return substation
+}
+
 func (cache *ProviderCache) GetOwnerId() string { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.Owner }
-func (cache *ProviderCache) GetOwner() *PlayerCache { if !cache.OwnerLoaded { cache.LoadOwner() }; return cache.Owner }
-
 func (cache *ProviderCache) GetSubstationId() string { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.SubstationId }
-func (cache *ProviderCache) GetSubstation() *SubstationCache {if !cache.SubstationLoaded { cache.LoadSubstation() }; return cache.Substation }
 
 func (cache *ProviderCache) GetRate() sdk.Coin { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.Rate }
 
@@ -181,8 +91,13 @@ func (cache *ProviderCache) GetConsumerCancellationPenalty() math.LegacyDec { if
 
 func (cache *ProviderCache) GetCreator() string { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.Creator }
 
-func (cache *ProviderCache) GetAgreementLoad() uint64 { if !cache.AgreementLoadLoaded { cache.LoadAgreementLoad() }; return cache.AgreementLoad }
-func (cache *ProviderCache) GetCheckpointBlock() uint64 { if !cache.CheckpointBlockLoaded { cache.LoadCheckpointBlock() }; return cache.CheckpointBlock }
+func (cache *ProviderCache) GetAgreementLoad() uint64 {
+    return cache.CC.GetGridAttribute(cache.AgreementLoadAttributeId)
+}
+
+func (cache *ProviderCache) GetCheckpointBlock() uint64 {
+    return cache.CC.GetGridAttribute(cache.CheckpointBlockAttributeId)
+}
 
 func (cache *ProviderCache) GetCollateralPoolLocation() sdk.AccAddress { return authtypes.NewModuleAddress(types.ProviderCollateralPool + cache.GetProviderId()) }
 func (cache *ProviderCache) GetEarningsPoolLocation() sdk.AccAddress { return authtypes.NewModuleAddress(types.ProviderEarningsPool + cache.GetProviderId()) }
@@ -205,7 +120,7 @@ func (cache *ProviderCache) AgreementVerify(capacity uint64, duration uint64) (e
     }
 
     // Can the Substation support the added capacity
-    substation := cache.K.GetSubstationCacheFromId(cache.Ctx, cache.GetSubstationId())
+    substation := cache.CC.GetSubstation(cache.GetSubstationId())
     if capacity > substation.GetAvailableCapacity(){
         return types.NewParameterValidationError("capacity", capacity, "exceeds_available").WithSubstation(substation.GetSubstationId()).WithRange(0, substation.GetAvailableCapacity())
     }
@@ -235,7 +150,7 @@ func (cache *ProviderCache) CanWithdrawBalance(activePlayer *PlayerCache) (error
 
 func (cache *ProviderCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) (error) {
     // Make sure the address calling this has permissions
-    if (!cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission)) {
+    if (!cache.CC.PermissionHasOneOf(GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission)) {
         return types.NewPermissionError("address", activePlayer.GetActiveAddress(), "", "", uint64(permission), "provider_action")
     }
 
@@ -243,7 +158,7 @@ func (cache *ProviderCache) PermissionCheck(permission types.Permission, activeP
         return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "provider_action")
     } else {
         if (activePlayer.GetPlayerId() != cache.GetOwnerId()) {
-            if (!cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetProviderId(), activePlayer.GetPlayerId()), permission)) {
+            if (!cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetProviderId(), activePlayer.GetPlayerId()), permission)) {
                return types.NewPermissionError("player", activePlayer.GetPlayerId(), "provider", cache.GetProviderId(), uint64(permission), "provider_action")
             }
         }
@@ -259,7 +174,7 @@ func (cache *ProviderCache) CanOpenAgreement(activePlayer *PlayerCache) (error) 
         }
 
     } else if cache.GetAccessPolicy() == types.ProviderAccessPolicy_guildMarket {
-        if !cache.K.ProviderGuildAccessAllowed(cache.Ctx, cache.GetProviderId(), activePlayer.GetGuildId()) {
+        if !cache.CC.k.ProviderGuildAccessAllowed(cache.CC.ctx, cache.GetProviderId(), activePlayer.GetGuildId()) {
             return types.NewProviderAccessError(cache.GetProviderId(), "guild_not_allowed").WithGuild(activePlayer.GetGuildId()).WithPlayer(activePlayer.GetPlayerId())
         }
 
@@ -283,7 +198,7 @@ func (cache *ProviderCache) WithdrawBalanceAndCommit(destinationAddress string) 
     }
 
     // First handle the balances available via checkpoint
-    uctx := sdk.UnwrapSDKContext(cache.Ctx)
+    uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
     currentBlock := uint64(uctx.BlockHeight())
     blockDifference := currentBlock - cache.GetCheckpointBlock()
 
@@ -298,7 +213,7 @@ func (cache *ProviderCache) WithdrawBalanceAndCommit(destinationAddress string) 
 
     withdrawAmountCoin := sdk.NewCoins(sdk.NewCoin(cache.GetRate().Denom, finalWithdrawBalance))
 
-    errSend := cache.K.bankKeeper.SendCoins(cache.Ctx, cache.GetCollateralPoolLocation(), destinationAcc, withdrawAmountCoin)
+    errSend := cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetCollateralPoolLocation(), destinationAcc, withdrawAmountCoin)
     if errSend != nil {
         return errSend
     }
@@ -307,9 +222,9 @@ func (cache *ProviderCache) WithdrawBalanceAndCommit(destinationAddress string) 
 
     // Now handle the value available in the Earnings pool
     // Get Balance
-    earningsBalances := cache.K.bankKeeper.SpendableCoins(cache.Ctx, cache.GetEarningsPoolLocation())
+    earningsBalances := cache.CC.k.bankKeeper.SpendableCoins(cache.CC.ctx, cache.GetEarningsPoolLocation())
     // Transfer
-    errSend = cache.K.bankKeeper.SendCoins(cache.Ctx, cache.GetEarningsPoolLocation(), destinationAcc, earningsBalances)
+    errSend = cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetEarningsPoolLocation(), destinationAcc, earningsBalances)
     if errSend != nil {
         return errSend
     }
@@ -323,77 +238,65 @@ func (cache *ProviderCache) WithdrawBalanceAndCommit(destinationAddress string) 
 
 func (cache *ProviderCache) GrantGuildsAndCommit(guildIdSet []string) (error) {
     for _, guildId := range guildIdSet {
-        _, found := cache.K.GetGuild(cache.Ctx, guildId)
-        if !found {
+        guild := cache.CC.GetGuild(guildId)
+        if !guild.LoadGuild() {
             return types.NewObjectNotFoundError("guild", guildId)
         }
-        cache.K.ProviderGrantGuild(cache.Ctx, cache.GetProviderId(), guildId)
+        cache.CC.k.ProviderGrantGuild(cache.CC.ctx, cache.GetProviderId(), guildId)
     }
     return nil
 }
 
 func (cache *ProviderCache) RevokeGuildsAndCommit(guildIdSet []string) (error) {
     for _, guildId := range guildIdSet {
-        cache.K.ProviderRevokeGuild(cache.Ctx, cache.GetProviderId(), guildId)
+        cache.CC.k.ProviderRevokeGuild(cache.CC.ctx, cache.GetProviderId(), guildId)
     }
     return nil
 }
 
-func (cache *ProviderCache) DeleteAndCommit() (error) {
+func (cache *ProviderCache) Delete() (error) {
 
     // Get List of Agreements
-    agreements := cache.K.GetAllAgreementIdByProviderIndex(cache.Ctx, cache.GetProviderId())
+    agreements := cache.CC.k.GetAllAgreementIdByProviderIndex(cache.CC.ctx, cache.GetProviderId())
     for _, agreementId := range agreements {
-        agreement := cache.K.GetAgreementCacheFromId(cache.Ctx, agreementId)
-        agreement.ManualLoadProvider(cache)
+        agreement := cache.CC.GetAgreement(cache.Ctx, agreementId)
         agreement.PrematureCloseByProvider()
     }
 
+    cache.CC.ClearGridAttribute(cache.CheckpointBlockAttributeId)
+    cache.CC.ClearGridAttribute(cache.AgreementLoadAttributeId)
+
+    cache.Deleted = true
     return nil
 }
 
-/* Setters - SET DOES NOT COMMIT()
- */
-
 
 func (cache *ProviderCache) ResetCheckpointBlock() {
-    uctx := sdk.UnwrapSDKContext(cache.Ctx)
-    cache.CheckpointBlock = uint64(uctx.BlockHeight())
-    cache.CheckpointBlockLoaded = true
-    cache.CheckpointBlockChanged = true
-    cache.Changed()
+    uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
+    cache.CC.SetGridAttribute(cache.CheckpointBlockAttributeId, uint64(uctx.BlockHeight()))
 }
 
 func (cache *ProviderCache) SetCheckpointBlock(block uint64) {
-    cache.CheckpointBlock = block
-    cache.CheckpointBlockLoaded = true
-    cache.CheckpointBlockChanged = true
-    cache.Changed()
+    cache.CC.SetGridAttribute(cache.CheckpointBlockAttributeId, block)
 }
 
 func (cache *ProviderCache) AgreementLoadIncrease(amount uint64) {
-    cache.AgreementLoad = cache.GetAgreementLoad() + amount
-    cache.AgreementLoadChanged = true
+    cache.CC.SetGridAttributeIncrement(cache.AgreementLoadAttributeId, amount)
 }
 
 func (cache *ProviderCache) AgreementLoadDecrease(amount uint64) {
-    if amount > cache.GetAgreementLoad() {
-        cache.AgreementLoad = 0
-    } else {
-        cache.AgreementLoad = cache.GetAgreementLoad() - amount
-    }
-    cache.AgreementLoadChanged = true
+    cache.CC.SetGridAttributeDecrement(cache.AgreementLoadAttributeId, amount)
 }
 
 func (cache *ProviderCache) SetAccessPolicy(accessPolicy types.ProviderAccessPolicy) {
     cache.Provider.SetAccessPolicy(accessPolicy)
-    cache.Changed()
+    cache.Changed = true
 }
 
 func (cache *ProviderCache) SetCapacityMaximum(maximum uint64) (error){
     paramError := cache.Provider.SetCapacityMaximum(maximum)
     if paramError != nil {
-        cache.Changed()
+        cache.Changed = true
     }
     return paramError
 }
@@ -401,7 +304,7 @@ func (cache *ProviderCache) SetCapacityMaximum(maximum uint64) (error){
 func (cache *ProviderCache) SetCapacityMinimum(minimum uint64) (error){
     paramError := cache.Provider.SetCapacityMinimum(minimum)
     if paramError != nil {
-        cache.Changed()
+        cache.Changed = true
     }
     return paramError
 }
@@ -409,7 +312,7 @@ func (cache *ProviderCache) SetCapacityMinimum(minimum uint64) (error){
 func (cache *ProviderCache) SetDurationMaximum(maximum uint64) (error){
     paramError := cache.Provider.SetDurationMaximum(maximum)
     if paramError != nil {
-        cache.Changed()
+        cache.Changed = true
     }
     return paramError
 }
@@ -417,7 +320,7 @@ func (cache *ProviderCache) SetDurationMaximum(maximum uint64) (error){
 func (cache *ProviderCache) SetDurationMinimum(minimum uint64) (error){
     paramError := cache.Provider.SetDurationMinimum(minimum)
     if paramError != nil {
-        cache.Changed()
+        cache.Changed = true
     }
     return paramError
 }
@@ -426,7 +329,7 @@ func (cache *ProviderCache) SetDurationMinimum(minimum uint64) (error){
 func (cache *ProviderCache) Checkpoint() (error) {
 
     // First handle the balances available via checkpoint
-    uctx := sdk.UnwrapSDKContext(cache.Ctx)
+    uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
     currentBlock := uint64(uctx.BlockHeight())
     blockDifference := currentBlock - cache.GetCheckpointBlock()
 
@@ -441,7 +344,7 @@ func (cache *ProviderCache) Checkpoint() (error) {
 
     checkpointBalanceCoin := sdk.NewCoins(sdk.NewCoin(cache.GetRate().Denom, checkpointBalance))
 
-    errSend := cache.K.bankKeeper.SendCoins(cache.Ctx, cache.GetCollateralPoolLocation(), cache.GetEarningsPoolLocation(), checkpointBalanceCoin)
+    errSend := cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetCollateralPoolLocation(), cache.GetEarningsPoolLocation(), checkpointBalanceCoin)
     if errSend != nil {
         return errSend
     }
