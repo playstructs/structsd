@@ -337,20 +337,15 @@ func (cache *PlayerCache) ClearGuild() {
 }
 
 func (cache *PlayerCache) MigrateSubstation(substationId string){
-    if (!cache.PlayerLoaded) {
-        cache.LoadPlayer()
-    }
 
-    if (cache.GetSubstationId() != "") {
-        cache.GetSubstation().ConnectionCountDecrement(1)
-    }
+    cache.DisconnectSubstation()
 
     if (substationId != "") {
+        cache.Player.SubstationId = substationId
+        cache.CC.k.SetSubstationPlayerIndex(cache.CC.ctx, cache.GetSubstationId(), cache.GetPlayerId())
         cache.GetSubstation().ConnectionCountIncrement(1)
+        cache.Changed = true
     }
-
-    cache.Player.SubstationId = substationId
-    cache.Changed = true
 }
 
 func (cache *PlayerCache) DisconnectSubstation(){
@@ -360,8 +355,8 @@ func (cache *PlayerCache) DisconnectSubstation(){
 
     if (cache.GetSubstationId() != "") {
         cache.GetSubstation().ConnectionCountDecrement(1)
+        cache.CC.k.RemoveSubstationPlayerIndex(cache.CC.ctx, cache.GetSubstationId(), cache.GetPlayerId())
+        cache.Player.SubstationId = ""
+        cache.Changed = true
     }
-
-    cache.Player.SubstationId = ""
-    cache.Changed = true
 }

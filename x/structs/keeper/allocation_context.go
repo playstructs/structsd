@@ -30,6 +30,31 @@ func (cc *CurrentContext) GetAllocation(allocationId string) (*AllocationCache, 
 }
 
 
+func (cc *CurrentContext) GetAllAllocationBySource(objectId string) (allocations []*AllocationCache) {
+    allocationList := cc.k.GetAllAllocationIdBySourceIndex(cc.ctx, objectId)
+
+    for _, allocationId := range allocationList {
+        allocation, allocationFound := cc.GetAllocation(allocationId)
+        if allocationFound {
+            allocations = append(allocations, allocation)
+        }
+    }
+    return
+}
+
+func (cc *CurrentContext) GetAllAllocationByDestination(objectId string) (allocations []*AllocationCache) {
+    allocationList := cc.k.GetAllAllocationIdByDestinationIndex(cc.ctx, objectId)
+
+    for _, allocationId := range allocationList {
+        allocation, allocationFound := cc.GetAllocation(allocationId)
+        if allocationFound {
+            allocations = append(allocations, allocation)
+        }
+    }
+    return
+}
+
+
 func (cc *CurrentContext) NewAllocation(
 	allocationType types.AllocationType,
 	sourceObjectId string,

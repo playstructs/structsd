@@ -62,6 +62,17 @@ func (cc *CurrentContext) GetPlayerByIndex(playerIndex uint64) (*PlayerCache, er
 	return player, nil
 }
 
+
+func (cc *CurrentContext) GetAllPlayerBySubstation(substationId string) (players []*PlayerCache) {
+    playerList := cc.k.GetAllPlayerIdBySubstationIndex(cc.ctx, substationId)
+
+    for _, playerId := range playerList {
+        player := cc.GetPlayer(playerId)
+        players = append(players, player)
+    }
+    return
+}
+
 func (cc *CurrentContext) NewPlayer(address string) *PlayerCache {
 
 	// Create the player

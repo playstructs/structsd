@@ -21,7 +21,6 @@ func (cache *StructTypeCache) ID() uint64 {
 	return cache.StructTypeId
 }
 
-
 func (cache *StructTypeCache) GetStructType() types.StructType {
 	return cache.StructType
 }

@@ -245,10 +245,9 @@ func (cache *AllocationCache) SetDestination(objectId string) (error) {
         // Deal with the new Destination
         if (objectId != "") {
 
-            if !cache.CC.GetSubstation(objectId).LoadSubstation() {
+            if cache.CC.GetSubstation(objectId).CheckSubstation() != nil {
                 return types.NewAllocationError(cache.ID(), "unacceptable_destination")
             }
-
 
             if cache.GetPower() > 0 {
                 // Increment the Capacity of the new Destination

@@ -13,55 +13,18 @@ type SubstationCache struct {
     CC  *CurrentContext
 
     Ready bool
-    Loaded bool
     Changed bool
 
     SubstationLoaded  bool
     Substation  types.Substation
 
+    LoadAttributeId string
+    CapacityAttributeId string
     ConnectionCountAttributeId string
+    ConnectionCapacityAttributeId string
 
 }
 
-// Build this initial Substation Cache object
-// This does no validation on the provided substationId
-func (k *Keeper) GetSubstationCacheFromId(ctx context.Context, substationId string) (SubstationCache) {
-    return SubstationCache{
-        SubstationId: substationId,
-
-
-        AnyChange: false,
-
-        ConnectionCountAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, substationId),
-
-    }
-}
-
-// Build this initial Substation Cache object
-// This does no validation on the provided substationId
-func (k *Keeper) InitiateSubstation(ctx context.Context, creatorAddress string, owner *PlayerCache, allocation types.Allocation) (SubstationCache, error) {
-
-    // Append Substation
-    owner.LoadPlayer()
-    substation, _, _ := k.AppendSubstation(ctx, allocation, owner.Player)
-
-    // Start to put the pieces together
-    substationCache := SubstationCache{
-                  SubstationId: substation.Id,
-
-
-                  AnyChange: true,
-
-                  Substation: substation,
-                  SubstationChanged: false,
-                  SubstationLoaded: true,
-
-                  Owner: owner,
-                  OwnerLoaded: true,
-    }
-
-    return substationCache, nil
-}
 
 
 func (cache *SubstationCache) Commit() () {
@@ -95,6 +58,15 @@ func (cache *SubstationCache) LoadSubstation() (bool) {
     return cache.SubstationLoaded
 }
 
+func (cache *SubstationCache) CheckSubstation() (error) {
+    if (!cache.SubstationLoaded) {
+        if !cache.LoadSubstation() {
+           return types.NewObjectNotFoundError("substation", cache.SubstationId)
+        }
+    }
+    return nil
+}
+
 
 /* Getters
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
@@ -108,9 +80,35 @@ func (cache *SubstationCache) GetAvailableCapacity() (uint64)       { return cac
 
 func (cache *SubstationCache) GetOwner()        (*PlayerCache)      { return cache.CC.GetPlayer( cache.GetOwnerId() ) }
 
-func (cache *SubstationCache) Delete() {
+func (cache *SubstationCache) Delete(migrationSubstation *SubstationCache) {
+
+    // Migrate everyone away
+    playerConnections := cache.CC.GetGridAttribute(cache.ConnectionCountAttributeId)
+    if (playerConnections > 0) {
+        connectedPlayers := cc.GetAllPlayerBySubstation(substationId)
+        for _, disconnectPlayer := range connectedPlayers {
+            if migrationSubstation.GetSubstationId() == cache.GetSubstationId() {
+               disconnectPlayer.DisconnectSubstation()
+            } else {
+               disconnectPlayer.MigrateSubstation(migrationSubstation.GetSubstationId())
+            }
+        }
+	}
+
+	// Destroy allocations out
+    allocationsOut := cc.k.GetAllAllocationIdBySourceIndex(cache.CC.ctx, substationId)
+    cache.CC.DestroyMultipleAllocations(ctx, allocationsOut)
+
+    allocationsIn := cc.k.GetAllAllocationIdByDestinationIndex(cache.CC.ctx, substationId)
+    cache.CC.DestroyMultipleAllocations(ctx, allocationsIn)
+
+	// Clear out Grid attributes
+	cache.CC.ClearGridAttribute(cache.LoadAttributeId)
+	cache.CC.ClearGridAttribute(cache.CapacityAttributeId)
+	cache.CC.ClearGridAttribute(cache.ConnectionCountAttributeId)
+	cache.CC.ClearGridAttribute(cache.ConnectionCapacityAttributeId)
+
     cache.Deleted = true
-    // TODO Expand
     cache.Changed = true
 }
 
@@ -170,4 +168,12 @@ func (cache *SubstationCache) ConnectionCountIncrement(amount uint64) {
     cache.CC.UpdateSubstationConnectionCapacity(cache.SubstationId)
 }
 
+func (cache *SubstationCache) PlayerIncrease() {
+    cache.CC.SetGridAttributeIncrement(cache.ConnectionCountAttributeId, 1)
+    cc.UpdateSubstationConnectionCapacity(cache.ID())
+}
 
+func (cache *SubstationCache) PlayerDecrease(player *PlayerCache){
+    cache.SetGridAttributeDecrement(cache.ConnectionCountAttributeId, 1)
+    cc.UpdateSubstationConnectionCapacity(cache.ID())
+}

@@ -51,44 +51,6 @@ func (k Keeper) SetSubstationCount(ctx context.Context, count uint64) {
 	store.Set(byteKey, bz)
 }
 
-// AppendSubstation appends a substation in the store with a new id and update the count
-func (k Keeper) AppendSubstation(
-	ctx context.Context,
-    allocation types.Allocation,
-    player types.Player,
-) (substation types.Substation, updatedAllocation types.Allocation, err error) {
-	// Set the ID of the appended value
-    substation.Id = GetObjectID(types.ObjectType_substation, k.GetNextSubstationId(ctx))
-
-    // Update the allocations new destination
-    allocation.DestinationId = substation.Id
-
-    power := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocation.Id))
-    updatedAllocation, _, err = k.SetAllocation(ctx, allocation, power)
-    if (err != nil) {
-        return substation, updatedAllocation, err
-    }
-
-    // Setup some Substation details
-    substation.Owner    = player.Id
-    substation.Creator  = player.Creator
-
-    permissionId := GetObjectPermissionIDBytes(substation.Id, player.Id)
-    k.PermissionAdd(ctx, permissionId, types.PermissionAll)
-
-
-    // actually commit to the store
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.SubstationKey))
-	appendedValue := k.cdc.MustMarshal(&substation)
-	store.Set([]byte(substation.Id), appendedValue)
-
-
-    // Cache invalidation event
-	ctxSDK := sdk.UnwrapSDKContext(ctx)
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventSubstation{Substation: &substation})
-
-	return substation, updatedAllocation, err
-}
 
 // SetSubstation set a specific substation in the store
 func (k Keeper) SetSubstation(ctx context.Context, substation types.Substation) {

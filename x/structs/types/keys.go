@@ -92,6 +92,7 @@ const (
 	SubstationKey       = "Substation/value/"
 	SubstationCountKey  = "Substation/count/"
 	SubstationStatusKey = "Substation/status/"
+    SubstationPlayerKey = "Substation/player/"
 )
 
 const (
