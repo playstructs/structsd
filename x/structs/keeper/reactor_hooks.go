@@ -46,11 +46,11 @@ func (k Keeper) ReactorInitialize(ctx context.Context, validatorAddress sdk.ValA
 
 		var identity sdk.AccAddress
 		identity = validatorAddress.Bytes()
-		player := k.UpsertPlayer(ctx, identity.String())
+		player := cc.UpsertPlayer(identity.String())
 
 		// Add the player as a permissioned user of the reactor
 		permissionId := GetObjectPermissionIDBytes(reactor.Id, player.Id)
-		k.PermissionAdd(ctx, permissionId, types.PermissionAll)
+		cc.PermissionAdd(permissionId, types.PermissionAll)
 
 		// TODO apply the energy distribution to the reactor player account
 		delegation, err := k.stakingKeeper.GetDelegation(ctx, identity, validatorAddress)
@@ -85,7 +85,7 @@ func (k Keeper) ReactorUpdatePlayerInfusion(ctx context.Context, playerAddress s
 	reactor, _ := k.GetReactorByBytes(ctx, reactorBytes)
 	validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
 
-	k.UpsertPlayer(ctx, playerAddress.String())
+	cc.UpsertPlayer(playerAddress.String())
 	infusion := cc.GetInfusion(types.ObjectType_reactor, reactor.Id, playerAddress.String())
 
 	delegation, err := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
