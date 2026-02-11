@@ -26,6 +26,8 @@ func (k *Keeper) BeginBlocker(ctx context.Context) {
 // Called every block, update validator set
 func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error) {
 	k.logger.Debug("End Block Processes")
+    cc := k.NewCurrentContext(ctx)
+    defer cc.CommitAll()
 
 	k.AgreementExpirations(ctx)
 
@@ -36,7 +38,8 @@ func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error)
 	 * but I think that's ok. We'll see how it goes in practice.
 	 */
 	k.GridCascade(ctx)
-	k.ProcessInfusionDestructionQueue(ctx)
+
+    cc.ProcessInfusionDestructionQueue()
 
     k.logger.Debug("End Block Complete")
 

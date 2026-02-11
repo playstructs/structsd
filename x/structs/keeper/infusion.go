@@ -25,21 +25,7 @@ func GetInfusionID(address string) []byte {
 	return []byte(address)
 }
 
-// AppendInfusion appends a infusion in the store
-func (k Keeper) AppendInfusion(
-	ctx context.Context,
-	infusion types.Infusion,
-) error {
 
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), InfusionKeyPrefix(infusion.DestinationId))
-	appendedValue := k.cdc.MustMarshal(&infusion)
-	store.Set(GetInfusionID(infusion.Address), appendedValue)
-
-	ctxSDK := sdk.UnwrapSDKContext(ctx)
-	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventInfusion{Infusion: &infusion})
-
-	return nil
-}
 
 // SetInfusion set a specific infusion in the store
 func (k Keeper) SetInfusion(ctx context.Context, infusion types.Infusion) {
@@ -157,73 +143,6 @@ func (k Keeper) AppendInfusionDestructionQueue(ctx context.Context, infusionId s
 	k.logger.Info("Infusion Destruction Queue (Add)", "queueId", infusionId)
 
 	return err
-}
-
-func (k Keeper) ProcessInfusionDestructionQueue(ctx context.Context) {
-
-	for {
-		// Get Queue (and clear it in the process)
-		infusionDestructionQueue := k.GetInfusionDestructionQueue(ctx, true)
-
-		if len(infusionDestructionQueue) == 0 {
-			break
-		}
-
-		// For each Queue Item
-		for _, objectId := range infusionDestructionQueue {
-			infusion, infusionFound := k.GetInfusionByID(ctx, objectId)
-			if infusionFound {
-				if infusion.Power == 0 && infusion.Defusing == 0 {
-					k.DestroyInfusion(ctx, infusion)
-				}
-			}
-		}
-	}
-}
-
-func (k Keeper) DestroyInfusion(ctx context.Context, infusion types.Infusion) {
-
-	infusionPower, commissionPower, playerPower := infusion.GetPowerDistribution()
-
-	// Quiet the go lords
-	_ = infusionPower
-
-	// update destination fuel
-	k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, infusion.DestinationId), infusion.Fuel)
-
-	// Update destination commission capacity
-	k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, infusion.DestinationId), commissionPower)
-
-	// Check for an automated allocation on the destination
-	destinationAllocationId, destinationAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(ctx, infusion.DestinationId)
-	if destinationAutoResizeAllocationFound {
-		k.AutoResizeAllocation(ctx, destinationAllocationId, infusion.DestinationId, commissionPower, 0)
-	} else {
-		k.AppendGridCascadeQueue(ctx, infusion.DestinationId)
-	}
-
-	// update player capacity
-	k.SetGridAttributeDecrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, infusion.PlayerId), playerPower)
-
-	// Check for an automated allocation on the player
-	playerAllocationId, playerAutoResizeAllocationFound := k.GetAutoResizeAllocationBySource(ctx, infusion.PlayerId)
-	if playerAutoResizeAllocationFound {
-		k.AutoResizeAllocation(ctx, playerAllocationId, infusion.PlayerId, playerPower, 0)
-	} else {
-		k.AppendGridCascadeQueue(ctx, infusion.PlayerId)
-	}
-
-	// Remove the Infusion record from the store
-	k.RemoveInfusion(ctx, infusion.DestinationId, infusion.Address)
-
-}
-
-// TODO could likely be done far more efficiently
-// Currently makes separate writes for each update
-func (k Keeper) DestroyAllInfusions(ctx context.Context, infusions []types.Infusion) {
-	for _, infusion := range infusions {
-		k.DestroyInfusion(ctx, infusion)
-	}
 }
 
 func (k Keeper) GetInfusionDestructionQueueExport(ctx context.Context) (queue []string) {
