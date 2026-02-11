@@ -16,65 +16,21 @@ import (
 
 type StructCache struct {
 	StructId string
-	K        *Keeper
-	Ctx      context.Context
 	CC       *CurrentContext
 
 	Ready bool
 
-	AnyChange bool
-
+	Changed bool
 	StructureLoaded  bool
-	StructureChanged bool
 	Structure        types.Struct
 
-	StructTypeLoaded bool
-	StructType       *types.StructType
-
-	OwnerLoaded  bool
-	OwnerChanged bool
-	Owner        *PlayerCache
-
-	FleetLoaded  bool
-	FleetChanged bool
-	Fleet        *FleetCache
-
-	PlanetLoaded  bool
-	PlanetChanged bool
-	Planet        *PlanetCache
-
-	DefendersLoaded bool
-	Defenders       []*StructCache
-
 	HealthAttributeId string
-	HealthLoaded      bool
-	HealthChanged     bool
-	Health            uint64
-
 	StatusAttributeId string
-	StatusLoaded      bool
-	StatusChanged     bool
-	Status            types.StructState
-
+//	Status            types.StructState
 	BlockStartBuildAttributeId string
-	BlockStartBuildLoaded      bool
-	BlockStartBuildChanged     bool
-	BlockStartBuild            uint64
-
 	BlockStartOreMineAttributeId string
-	BlockStartOreMineLoaded      bool
-	BlockStartOreMineChanged     bool
-	BlockStartOreMine            uint64
-
 	BlockStartOreRefineAttributeId string
-	BlockStartOreRefineLoaded      bool
-	BlockStartOreRefineChanged     bool
-	BlockStartOreRefine            uint64
-
 	ProtectedStructIndexAttributeId string
-	ProtectedStructIndexLoaded      bool
-	ProtectedStructIndexChanged     bool
-	ProtectedStructIndex            uint64
 
 	Blocker  bool
 	Defender bool
@@ -90,349 +46,36 @@ type StructCache struct {
 // Build this initial Struct Cache object
 // This does no validation on the provided structId
 func (k *Keeper) GetStructCacheFromId(ctx context.Context, structId string) StructCache {
-	return StructCache{
-		StructId: structId,
-		K:        k,
-		Ctx:      ctx,
-
-		AnyChange: false,
-
-		HealthAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_health, structId),
-		StatusAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_status, structId),
-
-		BlockStartBuildAttributeId:     GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structId),
-		BlockStartOreMineAttributeId:   GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structId),
-		BlockStartOreRefineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structId),
-
-		ProtectedStructIndexAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, structId),
-	}
+	return
 }
 
-func (k *Keeper) InitialCommandShipStruct(ctx context.Context, fleet *FleetCache) StructCache {
-
-	structType, _ := k.GetStructType(ctx, types.CommandStructTypeId)
-
-	structure := types.CreateBaseStruct(&structType, fleet.GetOwner().GetPrimaryAddress(), fleet.GetOwner().GetPlayerId(), structType.Category, types.Ambit_space)
-	structure.LocationId = fleet.GetFleetId()
-	structure = k.AppendStruct(ctx, structure)
-
-	fleet.GetOwner().BuildQuantityIncrement(structType.GetId())
-
-	var structStatus types.StructState
-	if fleet.GetOwner().CanSupportLoadAddition(structType.GetPassiveDraw()) {
-		fleet.GetOwner().StructsLoadIncrement(structType.GetPassiveDraw())
-		structStatus = types.StructState(types.StructStateMaterialized | types.StructStateBuilt | types.StructStateOnline)
-	} else {
-		structStatus = types.StructState(types.StructStateMaterialized | types.StructStateBuilt)
-	}
-
-	// Start to put the pieces together
-	structCache := StructCache{
-		StructId: structure.Id,
-		K:        k,
-		Ctx:      ctx,
-
-		AnyChange: true,
-
-		Structure:        structure,
-		StructureChanged: false,
-		StructureLoaded:  true,
-
-		Owner:       fleet.GetOwner(),
-		OwnerLoaded: true,
-
-		Fleet:       fleet,
-		FleetLoaded: true,
-
-		// Include the health value
-		HealthAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_health, structure.Id),
-		HealthChanged:     true,
-		HealthLoaded:      true,
-		Health:            structType.GetMaxHealth(),
-
-		// Include the initial status value
-		StatusAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_status, structure.Id),
-		StatusChanged:     true,
-		StatusLoaded:      true,
-		Status:            structStatus,
-	}
-
-	return structCache
-}
-
-// Build this initial Struct Cache object
-// This does no validation on the provided structId
-func (k *Keeper) InitiateStruct(ctx context.Context, creatorAddress string, owner *PlayerCache, structType *types.StructType, ambit types.Ambit, slot uint64) (StructCache, error) {
-
-	structure := types.CreateBaseStruct(structType, creatorAddress, owner.GetPlayerId(), structType.Category, ambit)
-
-	switch structType.Category {
-	case types.ObjectType_planet:
-		err := owner.GetPlanet().BuildInitiateReadiness(&structure, structType, ambit, slot)
-		if err != nil {
-			return StructCache{}, err
-		}
-
-		structure.LocationId = owner.GetPlanetId()
-		structure.Slot = slot
-	case types.ObjectType_fleet:
-		err := owner.GetFleet().BuildInitiateReadiness(&structure, structType, ambit, slot)
-		if err != nil {
-			return StructCache{}, err
-		}
-
-		if structType.Type != types.CommandStruct {
-			structure.Slot = slot
-		}
-
-		structure.LocationId = owner.GetFleetId()
-	default:
-		return StructCache{}, types.NewStructBuildError(structType.GetId(), "", "", "type_unsupported")
-	}
-
-	// Append Struct
-	structure = k.AppendStruct(ctx, structure)
-
-	owner.StructsLoadIncrement(structType.GetBuildDraw())
-	owner.BuildQuantityIncrement(structType.GetId())
-
-	switch structType.Category {
-	case types.ObjectType_planet:
-		// Update the cross reference on the planet
-		k.logger.Info("Struct Set Slot", "slot", structure.Slot, "planetId", owner.GetPlanet().GetPlanetId())
-		err := owner.GetPlanet().SetSlot(structure)
-		if err != nil {
-			return StructCache{}, err
-		}
-
-	case types.ObjectType_fleet:
-		// Update the cross reference on the planet
-		if structType.Type == types.CommandStruct {
-			owner.GetFleet().SetCommandStruct(structure)
-		} else {
-			err := owner.GetFleet().SetSlot(structure)
-			if err != nil {
-				return StructCache{}, err
-			}
-		}
-	}
-
-	// Start to put the pieces together
-	structCache := StructCache{
-		StructId: structure.Id,
-		K:        k,
-		Ctx:      ctx,
-
-		AnyChange: true,
-
-		Structure:        structure,
-		StructureChanged: false,
-		StructureLoaded:  true,
-
-		Owner:       owner,
-		OwnerLoaded: true,
-
-		Planet:       owner.GetPlanet(),
-		PlanetLoaded: true,
-
-		Fleet:       owner.GetFleet(),
-		FleetLoaded: true,
-
-		// Include the health value
-		HealthAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_health, structure.Id),
-		HealthChanged:     true,
-		HealthLoaded:      true,
-		Health:            structType.GetMaxHealth(),
-
-		// Include the initial status value
-		StatusAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_status, structure.Id),
-		StatusChanged:     true,
-		StatusLoaded:      true,
-		Status:            types.StructState(types.StructStateMaterialized),
-
-		// include the initial build block value
-		BlockStartBuildAttributeId:     GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structure.Id),
-		BlockStartOreMineAttributeId:   GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structure.Id),
-		BlockStartOreRefineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structure.Id),
-
-		ProtectedStructIndexAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, structure.Id),
-	}
-
-	return structCache, nil
-}
 
 func (cache *StructCache) Commit() {
-	cache.AnyChange = false
-
-	cache.K.logger.Info("Updating Struct From Cache", "structId", cache.StructId)
-
-	if cache.StructureChanged {
-		cache.K.SetStruct(cache.Ctx, cache.Structure)
-		cache.StructureChanged = false
-	}
-
-	if cache.HealthChanged {
-		cache.K.SetStructAttribute(cache.Ctx, cache.HealthAttributeId, cache.Health)
-		cache.HealthChanged = false
-	}
-
-	if cache.StatusChanged {
-		cache.K.SetStructAttribute(cache.Ctx, cache.StatusAttributeId, uint64(cache.Status))
-		cache.StatusChanged = false
-	}
-
-	if cache.BlockStartBuildChanged {
-		cache.K.SetStructAttribute(cache.Ctx, cache.BlockStartBuildAttributeId, cache.BlockStartBuild)
-		cache.BlockStartBuildChanged = false
-	}
-	if cache.BlockStartOreMineChanged {
-		cache.K.SetStructAttribute(cache.Ctx, cache.BlockStartOreMineAttributeId, cache.BlockStartOreMine)
-		cache.BlockStartOreMineChanged = false
-	}
-	if cache.BlockStartOreRefineChanged {
-		cache.K.SetStructAttribute(cache.Ctx, cache.BlockStartOreRefineAttributeId, cache.BlockStartOreRefine)
-		cache.BlockStartOreRefineChanged = false
-	}
-
-	if cache.ProtectedStructIndexChanged {
-		cache.K.SetStructAttribute(cache.Ctx, cache.ProtectedStructIndexAttributeId, cache.ProtectedStructIndex)
-		cache.ProtectedStructIndexChanged = false
+	if cache.Changed {
+    	cache.CC.k.logger.Info("Updating Struct From Cache", "structId", cache.StructId)
+		cache.CC.k.SetStruct(cache.CC.ctx, cache.Structure)
+		cache.Changed = false
 	}
 }
 
 func (cache *StructCache) IsChanged() bool {
-	return cache.AnyChange
+	return cache.Changed
 }
 
 func (cache *StructCache) ID() string {
 	return cache.StructId
 }
 
-func (cache *StructCache) Changed() {
-	cache.AnyChange = true
-}
-
 /* Separate Loading functions for each of the underlying containers */
 
 // Load the core Struct data
 func (cache *StructCache) LoadStruct() bool {
-	cache.Structure, cache.StructureLoaded = cache.K.GetStruct(cache.Ctx, cache.StructId)
+	cache.Structure, cache.StructureLoaded = cache.CC.k.GetStruct(cache.CC.ctx, cache.StructId)
 	return cache.StructureLoaded
 }
 
-// Load the Struct Type data
-func (cache *StructCache) LoadStructType() bool {
-	newStructType, newStructTypeFound := cache.K.GetStructType(cache.Ctx, cache.GetTypeId())
-	cache.StructType = &newStructType
-	cache.StructTypeLoaded = newStructTypeFound
-	return cache.StructTypeLoaded
-}
 
-// Load the Player data
-func (cache *StructCache) LoadOwner() bool {
-	if cache.CC != nil {
-		owner, _ := cache.CC.GetPlayer(cache.GetOwnerId())
-		cache.Owner = owner
-	} else {
-		newOwner, _ := cache.K.GetPlayerCacheFromId(cache.Ctx, cache.GetOwnerId())
-		cache.Owner = &newOwner
-	}
-	cache.OwnerLoaded = true
-	return cache.OwnerLoaded
-}
 
-// Load the Fleet data
-func (cache *StructCache) LoadFleet() bool {
-	if cache.CC != nil {
-		fleet, _ := cache.CC.GetFleet(cache.GetOwner().GetFleetId())
-		cache.Fleet = fleet
-	} else {
-		newFleet, _ := cache.K.GetFleetCacheFromId(cache.Ctx, cache.GetOwner().GetFleetId())
-		cache.Fleet = &newFleet
-	}
-	cache.FleetLoaded = true
-	return cache.FleetLoaded
-}
-
-// Load the Planet data
-func (cache *StructCache) LoadPlanet() bool {
-	switch cache.GetLocationType() {
-	case types.ObjectType_planet:
-		if cache.CC != nil {
-			cache.Planet = cache.CC.GetPlanet(cache.GetLocationId())
-		} else {
-			newPlanet := cache.K.GetPlanetCacheFromId(cache.Ctx, cache.GetLocationId())
-			cache.Planet = &newPlanet
-		}
-		cache.PlanetLoaded = true
-	case types.ObjectType_fleet:
-		if cache.GetFleet().GetLocationType() == types.ObjectType_planet {
-			if cache.CC != nil {
-				cache.Planet = cache.CC.GetPlanet(cache.GetFleet().GetLocationId())
-			} else {
-				newPlanet := cache.K.GetPlanetCacheFromId(cache.Ctx, cache.GetFleet().GetLocationId())
-				cache.Planet = &newPlanet
-			}
-			cache.PlanetLoaded = true
-		}
-	}
-	return cache.PlanetLoaded
-}
-
-// Load the Defenders data
-func (cache *StructCache) LoadDefenders() bool {
-	cache.Defenders = cache.K.GetAllStructCacheDefender(cache.Ctx, cache.GetStructId())
-	cache.DefendersLoaded = true
-	return cache.DefendersLoaded
-}
-
-// Load the Health record
-func (cache *StructCache) LoadHealth() {
-	cache.Health = cache.K.GetStructAttribute(cache.Ctx, cache.HealthAttributeId)
-	cache.HealthLoaded = true
-}
-
-// Load the Struct Status record
-func (cache *StructCache) LoadStatus() {
-	cache.Status = types.StructState(cache.K.GetStructAttribute(cache.Ctx, cache.StatusAttributeId))
-	cache.StatusLoaded = true
-}
-
-// Load the Struct BlockStartBuild record
-func (cache *StructCache) LoadBlockStartBuild() {
-	cache.BlockStartBuild = cache.K.GetStructAttribute(cache.Ctx, cache.BlockStartBuildAttributeId)
-	cache.BlockStartBuildLoaded = true
-}
-
-// Load the Struct BlockStarOreMine record
-func (cache *StructCache) LoadBlockStartOreMine() {
-	cache.BlockStartOreMine = cache.K.GetStructAttribute(cache.Ctx, cache.BlockStartOreMineAttributeId)
-	cache.BlockStartOreMineLoaded = true
-}
-
-// Load the Struct BlockStartOreRefine record
-func (cache *StructCache) LoadBlockStartOreRefine() {
-	cache.BlockStartOreRefine = cache.K.GetStructAttribute(cache.Ctx, cache.BlockStartOreRefineAttributeId)
-	cache.BlockStartOreRefineLoaded = true
-}
-
-// Load the Struct BlockStartOreRefine record
-func (cache *StructCache) LoadProtectedStructIndex() {
-	cache.ProtectedStructIndex = cache.K.GetStructAttribute(cache.Ctx, cache.ProtectedStructIndexAttributeId)
-	cache.ProtectedStructIndexLoaded = true
-}
-
-// Set the Owner data manually
-// Useful for loading multiple defenders
-func (cache *StructCache) ManualLoadOwner(owner *PlayerCache) {
-	cache.Owner = owner
-	cache.OwnerLoaded = true
-}
-
-func (cache *StructCache) ManualLoadPlanet(planet *PlanetCache) {
-	cache.Planet = planet
-	cache.PlanetLoaded = true
-}
 
 // Set the Event data manually
 // Used to manage the same event across objects
@@ -449,50 +92,49 @@ func (cache *StructCache) ManualLoadEventAttackShotDetail(eventAttackShotDetail 
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
  */
 
+func (cache *StructCache) CheckStruct() error {
+	if !cache.StructureLoaded {
+		if !cache.LoadStruct() {
+		    return types.NewObjectNotFoundError("player", cache.PlayerId)
+		}
+	}
+	return nil
+}
+
 func (cache *StructCache) GetStruct() types.Struct {
 	if !cache.StructureLoaded {
 		cache.LoadStruct()
 	}
 	return cache.Structure
 }
+
+
 func (cache *StructCache) GetStructId() string { return cache.StructId }
 
 func (cache *StructCache) GetHealth() uint64 {
-	if !cache.HealthLoaded {
-		cache.LoadHealth()
-	}
-	return cache.Health
-}
-func (cache *StructCache) GetStatus() types.StructState {
-	if !cache.StatusLoaded {
-		cache.LoadStatus()
-	}
-	return cache.Status
-}
-func (cache *StructCache) GetBlockStartBuild() uint64 {
-	if !cache.BlockStartBuildLoaded {
-		cache.LoadBlockStartBuild()
-	}
-	return cache.BlockStartBuild
-}
-func (cache *StructCache) GetBlockStartOreMine() uint64 {
-	if !cache.BlockStartOreMineLoaded {
-		cache.LoadBlockStartOreMine()
-	}
-	return cache.BlockStartOreMine
-}
-func (cache *StructCache) GetBlockStartOreRefine() uint64 {
-	if !cache.BlockStartOreRefineLoaded {
-		cache.LoadBlockStartOreRefine()
-	}
-	return cache.BlockStartOreRefine
+	return cache.CC.GetStructAttribute(cache.HealthAttributeId)
 }
 
-func (cache *StructCache) GetStructType() *types.StructType {
-	if !cache.StructTypeLoaded {
-		cache.LoadStructType()
-	}
-	return cache.StructType
+func (cache *StructCache) GetStatus() types.StructState {
+    return types.StructState(cache.CC.GetStructAttribute(cache.StatusAttributeId))
+}
+
+
+func (cache *StructCache) GetBlockStartBuild() uint64 {
+	return cache.CC.GetStructAttribute(cache.BlockStartBuildAttributeId)
+}
+
+func (cache *StructCache) GetBlockStartOreMine() uint64 {
+    return cache.CC.GetStructAttribute(cache.BlockStartOreMineAttributeId)
+}
+
+func (cache *StructCache) GetBlockStartOreRefine() uint64 {
+    return cache.CC.GetStructAttribute(cache.BlockStartOreRefineAttributeId)
+}
+
+func (cache *StructCache) GetStructType() types.StructType {
+    return cache.CC.GetStructType(cache.GetTypeId()).GetStructType()
+
 }
 func (cache *StructCache) GetTypeId() uint64 {
 	if !cache.StructureLoaded {
@@ -502,11 +144,10 @@ func (cache *StructCache) GetTypeId() uint64 {
 }
 
 func (cache *StructCache) GetOwner() *PlayerCache {
-	if !cache.OwnerLoaded {
-		cache.LoadOwner()
-	}
-	return cache.Owner
+	player, _ := cache.CC.GetPlayer(cache.GetOwnerId())
+	return player
 }
+
 func (cache *StructCache) GetOwnerId() string {
 	if !cache.StructureLoaded {
 		cache.LoadStruct()
@@ -539,18 +180,19 @@ func (cache *StructCache) GetSlot() uint64 {
 	return cache.Structure.Slot
 }
 
-func (cache *StructCache) GetPlanet() *PlanetCache {
-	if !cache.PlanetLoaded {
-		cache.LoadPlanet()
+func (cache *StructCache) GetPlanet() (planet *PlanetCache) {
+	switch cache.GetLocationType() {
+	    case types.ObjectType_planet:
+		    planet = cache.CC.GetPlanet(cache.GetLocationId())
+    	case types.ObjectType_fleet:
+	    	planet = cache.CC.GetPlanet(cache.GetFleet().GetLocationId())
 	}
-	return cache.Planet
 }
 func (cache *StructCache) GetPlanetId() string { return cache.GetPlanet().GetPlanetId() }
+
 func (cache *StructCache) GetFleet() *FleetCache {
-	if !cache.FleetLoaded {
-		cache.LoadFleet()
-	}
-	return cache.Fleet
+	fleet, _ := cache.CC.GetFleet(cache.GetFleetId())
+	return fleet
 }
 
 func (cache *StructCache) GetDefenders() []*StructCache {
@@ -586,41 +228,27 @@ func (cache *StructCache) SetOwnerId(owner string) {
 	}
 
 	cache.Structure.Owner = owner
-	cache.StructureChanged = true
-	cache.Changed()
-
-	// Player object might be stale now
-	cache.OwnerLoaded = false
+	cache.Changed = true
 }
 
 func (cache *StructCache) ResetBlockStartOreMine() {
-	uctx := sdk.UnwrapSDKContext(cache.Ctx)
-	cache.BlockStartOreMine = uint64(uctx.BlockHeight())
-	cache.BlockStartOreMineLoaded = true
-	cache.BlockStartOreMineChanged = true
-	cache.Changed()
+	uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
+	cache.CC.SetStructAttribute(cache.BlockStartOreMineAttributeId, uint64(uctx.BlockHeight())
 }
 
 func (cache *StructCache) ResetBlockStartOreRefine() {
-	uctx := sdk.UnwrapSDKContext(cache.Ctx)
-	cache.BlockStartOreRefine = uint64(uctx.BlockHeight())
-	cache.BlockStartOreRefineLoaded = true
-	cache.BlockStartOreRefineChanged = true
-	cache.Changed()
+	uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
+	cache.CC.SetStructAttribute(cache.BlockStartOreRefineAttributeId, uint64(uctx.BlockHeight())
 }
 
 func (cache *StructCache) ClearBlockStartOreMine() {
-	cache.BlockStartOreMine = 0
-	cache.BlockStartOreMineLoaded = true
-	cache.BlockStartOreMineChanged = true
-	cache.Changed()
+	uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
+	cache.CC.SetStructAttribute(cache.BlockStartOreMineAttributeId, 0)
 }
 
 func (cache *StructCache) ClearBlockStartOreRefine() {
-	cache.BlockStartOreRefine = 0
-	cache.BlockStartOreRefineLoaded = true
-	cache.BlockStartOreRefineChanged = true
-	cache.Changed()
+	uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
+	cache.CC.SetStructAttribute(cache.BlockStartOreRefineAttributeId, 0)
 }
 
 func (cache *StructCache) FlushEventAttackShotDetail() *types.EventAttackShotDetail {

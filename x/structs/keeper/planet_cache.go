@@ -303,12 +303,12 @@ func (cache *PlanetCache) IsSuccessful(successRate fraction.Fraction) bool {
 	return randomnessCheck
 }
 
-func (cache *PlanetCache) BuildInitiateReadiness(structure *types.Struct, structType *types.StructType, ambit types.Ambit, ambitSlot uint64) (error) {
+func (cache *PlanetCache) BuildInitiateReadiness(structure *types.Struct, structType *StructTypeCache, ambit types.Ambit, ambitSlot uint64) (error) {
     if structure.GetOwner() != cache.GetOwnerId() {
-         return types.NewStructOwnershipError(structure.Id, cache.GetOwnerId(), structure.GetOwner()).WithLocation("planet", cache.GetPlanetId())
+         return types.NewStructOwnershipError(structure.GetStructId(), cache.GetOwnerId(), structure.GetOwner()).WithLocation("planet", cache.GetPlanetId())
     }
 
-    if structType.Type == types.CommandStruct {
+    if structType.GetStructType().Type == types.CommandStruct {
         return types.NewStructLocationError(structType.GetId(), ambit.String(), "command_struct_fleet_only")
     }
 
@@ -324,7 +324,7 @@ func (cache *PlanetCache) BuildInitiateReadiness(structure *types.Struct, struct
         return types.NewFleetCommandError(cache.GetOwner().GetFleetId(), "command_offline")
     }
 
-    if (structType.Category != types.ObjectType_planet) {
+    if (structType.GetStructType().Category != types.ObjectType_planet) {
         return types.NewStructLocationError(structType.GetId(), ambit.String(), "outside_planet")
     }
 

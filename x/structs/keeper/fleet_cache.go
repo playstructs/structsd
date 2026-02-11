@@ -259,9 +259,9 @@ func (cache *FleetCache) PeaceDeal() (){
     cache.SetLocationToPlanet(cache.GetOwner().GetPlanet())
 }
 
-func (cache *FleetCache) BuildInitiateReadiness(structure *types.Struct, structType *types.StructType, ambit types.Ambit, ambitSlot uint64) (error) {
+func (cache *FleetCache) BuildInitiateReadiness(structure *types.Struct, structType *StructTypeCache, ambit types.Ambit, ambitSlot uint64) (error) {
     if structure.GetOwner() != cache.GetOwnerId() {
-         return types.NewStructOwnershipError(structure.Id, cache.GetOwnerId(), structure.GetOwner()).WithLocation("fleet", cache.GetFleetId())
+         return types.NewStructOwnershipError(structure.GetStructId(), cache.GetOwnerId(), structure.GetOwner()).WithLocation("fleet", cache.GetFleetId())
     }
 
     if cache.IsAway() {
@@ -269,7 +269,7 @@ func (cache *FleetCache) BuildInitiateReadiness(structure *types.Struct, structT
     }
 
 
-    if structType.Type != types.CommandStruct {
+    if structType.GetStructType().Type != types.CommandStruct {
         if !cache.HasCommandStruct() {
             return types.NewFleetCommandError(cache.GetFleetId(), "no_command_struct")
         }
@@ -279,7 +279,7 @@ func (cache *FleetCache) BuildInitiateReadiness(structure *types.Struct, structT
         }
     }
 
-    if (structType.Category != types.ObjectType_fleet) {
+    if (structType.GetStructType().Category != types.ObjectType_fleet) {
         return types.NewStructLocationError(structType.GetId(), ambit.String(), "outside_planet")
     }
 
@@ -288,7 +288,7 @@ func (cache *FleetCache) BuildInitiateReadiness(structure *types.Struct, structT
         return types.NewStructLocationError(structType.GetId(), ambit.String(), "invalid_ambit")
     }
 
-    if structType.Type == types.CommandStruct {
+    if structType.GetStructType().Type == types.CommandStruct {
         if cache.HasCommandStruct() {
             return types.NewStructBuildError(structType.GetId(), "fleet", cache.GetFleetId(), "command_exists")
         }
