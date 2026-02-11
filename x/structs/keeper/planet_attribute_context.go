@@ -39,26 +39,26 @@ func (cc *CurrentContext) ClearPlanetAttribute(planetAttributeId string) {
 }
 
 // SetPlanetAttributeIncrement increments a planet attribute
-func (cc *CurrentContext) SetPlanetAttributeIncrement(attributeId string, delta uint64) uint64 {
-	current := cc.GetPlanetAttribute(attributeId)
-	newValue := current + delta
+func (cc *CurrentContext) SetPlanetAttributeIncrement(planetAttributeId string, incrementAmount uint64) uint64 {
+	current := cc.GetPlanetAttribute(planetAttributeId)
+	newValue := current + incrementAmount
 
 	cc.k.logger.Info("Planet Change (Increment)", "planetAttributeId", planetAttributeId, "incrementAmount", incrementAmount)
-	cc.SetPlanetAttribute(attributeId, newValue)
+	cc.SetPlanetAttribute(planetAttributeId, newValue)
 	return newValue
 }
 
 // SetPlanetAttributeDecrement decrements a planet attribute
 // Will not go below zero.
-func (cc *CurrentContext) SetPlanetAttributeDecrement(attributeId string, delta uint64) uint64 {
-	current := cc.GetPlanetAttribute(attributeId)
+func (cc *CurrentContext) SetPlanetAttributeDecrement(planetAttributeId string, decrementAmount uint64) uint64 {
+	current := cc.GetPlanetAttribute(planetAttributeId)
 	var newValue uint64
-	if delta < current {
-		newValue = current - delta
+	if decrementAmount < current {
+		newValue = current - decrementAmount
 	}
 
 	cc.k.logger.Info("Planet Change (Decrement)", "planetAttributeId", planetAttributeId, "decrementAmount", decrementAmount)
-	cc.SetPlanetAttribute(attributeId, newValue)
+	cc.SetPlanetAttribute(planetAttributeId, newValue)
 	return newValue
 }
 
@@ -73,7 +73,7 @@ func (cc *CurrentContext) SetPlanetAttributeDelta(planetAttributeId string, oldA
 	amount := resetAmount + newAmount
 
     cc.k.logger.Info("Planet Change (Delta)", "planetAttributeId", planetAttributeId, "oldAmount", oldAmount, "newAmount", newAmount)
-    cc.SetPlanetAttribute(attributeId, amount)
+    cc.SetPlanetAttribute(planetAttributeId, amount)
 
 	return amount
 }

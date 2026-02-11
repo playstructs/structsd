@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"context"
+	//"context"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
@@ -18,78 +18,28 @@ import (
 
 type PlanetCache struct {
     PlanetId string
-    K *Keeper
-    Ctx context.Context
     CC  *CurrentContext
 
-    AnyChange bool
+    Changed bool
 
     Ready bool
 
     PlanetLoaded  bool
-    PlanetChanged bool
     Planet  types.Planet
 
-    OwnerLoaded bool
-    Owner *PlayerCache
 
     BlockStartRaidAttributeId string
-    BlockStartRaidLoaded bool
-    BlockStartRaidChanged bool
-    BlockStartRaid  uint64
-
     BuriedOreAttributeId string
-    BuriedOreLoaded bool
-    BuriedOreChanged bool
-    BuriedOre  uint64
-
     PlanetaryShieldAttributeId string
-    PlanetaryShieldLoaded bool
-    PlanetaryShieldChanged bool
-    PlanetaryShield  uint64
-
     RepairNetworkQuantityAttributeId string
-    RepairNetworkQuantityLoaded bool
-    RepairNetworkQuantityChanged bool
-    RepairNetworkQuantity uint64
-
     DefensiveCannonQuantityAttributeId string
-    DefensiveCannonQuantityLoaded bool
-    DefensiveCannonQuantityChanged bool
-    DefensiveCannonQuantity uint64
-
     CoordinatedGlobalShieldNetworkQuantityAttributeId string
-    CoordinatedGlobalShieldNetworkQuantityLoaded bool
-    CoordinatedGlobalShieldNetworkQuantityChanged bool
-    CoordinatedGlobalShieldNetworkQuantity uint64
-
     LowOrbitBallisticsInterceptorNetworkQuantityAttributeId string
-    LowOrbitBallisticsInterceptorNetworkQuantityLoaded bool
-    LowOrbitBallisticsInterceptorNetworkQuantityChanged bool
-    LowOrbitBallisticsInterceptorNetworkQuantity uint64
-
     AdvancedLowOrbitBallisticsInterceptorNetworkQuantityAttributeId string
-    AdvancedLowOrbitBallisticsInterceptorNetworkQuantityLoaded bool
-    AdvancedLowOrbitBallisticsInterceptorNetworkQuantityChanged bool
-    AdvancedLowOrbitBallisticsInterceptorNetworkQuantity uint64
-
     LowOrbitBallisticsInterceptorNetworkSuccessRateNumeratorAttributeId string
     LowOrbitBallisticsInterceptorNetworkSuccessRateDenominatorAttributeId string
-    LowOrbitBallisticsInterceptorNetworkSuccessRateLoaded bool
-    LowOrbitBallisticsInterceptorNetworkSuccessRateChanged bool
-    LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator uint64
-    LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator uint64
-
     OrbitalJammingStationQuantityAttributeId string
-    OrbitalJammingStationQuantityLoaded bool
-    OrbitalJammingStationQuantityChanged bool
-    OrbitalJammingStationQuantity uint64
-
     AdvancedOrbitalJammingStationQuantityAttributeId string
-    AdvancedOrbitalJammingStationQuantityLoaded bool
-    AdvancedOrbitalJammingStationQuantityChanged bool
-    AdvancedOrbitalJammingStationQuantity uint64
-
 
     // Event Tracking
     EventAttackDetailLoaded bool
@@ -100,237 +50,31 @@ type PlanetCache struct {
 
 }
 
-// Build this initial Struct Cache object
-// This does no validation on the provided structId
-func (k *Keeper) GetPlanetCacheFromId(ctx context.Context, planetId string) (PlanetCache) {
-    return PlanetCache{
-        PlanetId: planetId,
-        K: k,
-        Ctx: ctx,
-
-        AnyChange: false,
-
-        PlanetLoaded: false,
-        PlanetChanged: false,
-        OwnerLoaded: false,
-        BlockStartRaidLoaded: false,
-        BlockStartRaidChanged: false,
-        BuriedOreLoaded: false,
-        BuriedOreChanged: false,
-        PlanetaryShieldLoaded: false,
-        PlanetaryShieldChanged: false,
-        RepairNetworkQuantityLoaded: false,
-        RepairNetworkQuantityChanged: false,
-        DefensiveCannonQuantityLoaded: false,
-        DefensiveCannonQuantityChanged: false,
-        CoordinatedGlobalShieldNetworkQuantityLoaded: false,
-        CoordinatedGlobalShieldNetworkQuantityChanged: false,
-        LowOrbitBallisticsInterceptorNetworkQuantityLoaded: false,
-        LowOrbitBallisticsInterceptorNetworkQuantityChanged: false,
-        AdvancedLowOrbitBallisticsInterceptorNetworkQuantityLoaded: false,
-        AdvancedLowOrbitBallisticsInterceptorNetworkQuantityChanged: false,
-        LowOrbitBallisticsInterceptorNetworkSuccessRateLoaded: false,
-        LowOrbitBallisticsInterceptorNetworkSuccessRateChanged: false,
-        OrbitalJammingStationQuantityLoaded: false,
-        OrbitalJammingStationQuantityChanged: false,
-        AdvancedOrbitalJammingStationQuantityLoaded: false,
-        AdvancedOrbitalJammingStationQuantityChanged: false,
-        EventAttackDetailLoaded: false,
-        EventAttackShotDetailLoaded: false,
-
-        BlockStartRaidAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_blockStartRaid, planetId),
-        BuriedOreAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_ore, planetId),
-
-        PlanetaryShieldAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_planetaryShield, planetId),
-        RepairNetworkQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_repairNetworkQuantity, planetId),
-        DefensiveCannonQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_defensiveCannonQuantity, planetId),
-
-        CoordinatedGlobalShieldNetworkQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_coordinatedGlobalShieldNetworkQuantity, planetId),
-
-        LowOrbitBallisticsInterceptorNetworkQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkQuantity, planetId),
-        AdvancedLowOrbitBallisticsInterceptorNetworkQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_advancedLowOrbitBallisticsInterceptorNetworkQuantity, planetId),
-
-        LowOrbitBallisticsInterceptorNetworkSuccessRateNumeratorAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkSuccessRateNumerator, planetId),
-        LowOrbitBallisticsInterceptorNetworkSuccessRateDenominatorAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_lowOrbitBallisticsInterceptorNetworkSuccessRateDenominator, planetId),
-
-
-        OrbitalJammingStationQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_orbitalJammingStationQuantity, planetId),
-        AdvancedOrbitalJammingStationQuantityAttributeId: GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_advancedOrbitalJammingStationQuantity, planetId),
-
-
-    }
-}
 
 func (cache *PlanetCache) Commit() () {
-    cache.AnyChange = false
-
-    cache.K.logger.Info("Updating Planet From Cache","planetId",cache.PlanetId)
-
-    if (cache.PlanetChanged) {
-        cache.K.SetPlanet(cache.Ctx, cache.Planet)
-        cache.PlanetChanged = false
+    if (cache.Changed) {
+        cache.CC.k.logger.Info("Updating Planet From Cache","planetId",cache.PlanetId)
+        cache.CC.k.SetPlanet(cache.CC.ctx, cache.Planet)
     }
-
-    if (cache.BlockStartRaidChanged) {
-        cache.K.SetPlanetAttribute(cache.Ctx, cache.BlockStartRaidAttributeId, cache.BlockStartRaid)
-        cache.BlockStartRaidChanged = false
-    }
-
-    if (cache.BuriedOreChanged) {
-        cache.K.SetGridAttribute(cache.Ctx, cache.BuriedOreAttributeId, cache.BuriedOre)
-        cache.BuriedOreChanged = false
-    }
-
-    if (cache.PlanetaryShieldChanged) {
-        cache.K.SetPlanetAttribute(cache.Ctx, cache.PlanetaryShieldAttributeId, cache.PlanetaryShield)
-        cache.PlanetaryShieldChanged = false
-    }
-
-    if (cache.RepairNetworkQuantityChanged) {
-        cache.K.SetPlanetAttribute(cache.Ctx, cache.RepairNetworkQuantityAttributeId, cache.RepairNetworkQuantity)
-        cache.RepairNetworkQuantityChanged = false
-    }
-
-    if (cache.DefensiveCannonQuantityChanged) {
-        cache.K.SetPlanetAttribute(cache.Ctx, cache.DefensiveCannonQuantityAttributeId, cache.DefensiveCannonQuantity)
-        cache.DefensiveCannonQuantityChanged = false
-    }
-
-    if (cache.CoordinatedGlobalShieldNetworkQuantityChanged) {
-        cache.K.SetPlanetAttribute(cache.Ctx, cache.CoordinatedGlobalShieldNetworkQuantityAttributeId, cache.CoordinatedGlobalShieldNetworkQuantity)
-        cache.CoordinatedGlobalShieldNetworkQuantityChanged = false
-    }
-
-    if (cache.LowOrbitBallisticsInterceptorNetworkQuantityChanged) {
-        cache.K.SetPlanetAttribute(cache.Ctx, cache.LowOrbitBallisticsInterceptorNetworkQuantityAttributeId, cache.LowOrbitBallisticsInterceptorNetworkQuantity)
-        cache.LowOrbitBallisticsInterceptorNetworkQuantityChanged = false
-    }
-
-    if (cache.AdvancedLowOrbitBallisticsInterceptorNetworkQuantityChanged) {
-        cache.K.SetPlanetAttribute(cache.Ctx, cache.AdvancedLowOrbitBallisticsInterceptorNetworkQuantityAttributeId, cache.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity)
-        cache.AdvancedLowOrbitBallisticsInterceptorNetworkQuantityChanged = false
-    }
-
-    if (cache.LowOrbitBallisticsInterceptorNetworkSuccessRateChanged) {
-        cache.K.SetPlanetAttribute(cache.Ctx, cache.LowOrbitBallisticsInterceptorNetworkSuccessRateNumeratorAttributeId, cache.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator)
-        cache.K.SetPlanetAttribute(cache.Ctx, cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominatorAttributeId, cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator)
-        cache.LowOrbitBallisticsInterceptorNetworkSuccessRateChanged = false
-    }
-
-    if (cache.OrbitalJammingStationQuantityChanged) {
-        cache.K.SetPlanetAttribute(cache.Ctx, cache.OrbitalJammingStationQuantityAttributeId, cache.OrbitalJammingStationQuantity)
-        cache.OrbitalJammingStationQuantityChanged = false
-    }
-
-    if (cache.AdvancedOrbitalJammingStationQuantityChanged) {
-        cache.K.SetPlanetAttribute(cache.Ctx, cache.AdvancedOrbitalJammingStationQuantityAttributeId, cache.AdvancedOrbitalJammingStationQuantity)
-        cache.AdvancedOrbitalJammingStationQuantityChanged = false
-    }
-
+    cache.Changed = false
 }
 
 func (cache *PlanetCache) IsChanged() bool {
-    return cache.AnyChange
+    return cache.Changed
 }
 
 func (cache *PlanetCache) ID() string {
     return cache.PlanetId
 }
 
-func (cache *PlanetCache) Changed() {
-    cache.AnyChange = true
-}
 
 /* Separate Loading functions for each of the underlying containers */
 
 // Load the core Planet data
 func (cache *PlanetCache) LoadPlanet() (bool) {
-    cache.Planet, cache.PlanetLoaded = cache.K.GetPlanet(cache.Ctx, cache.PlanetId)
+    cache.Planet, cache.PlanetLoaded = cache.CC.k.GetPlanet(cache.CC.ctx, cache.PlanetId)
     return cache.PlanetLoaded
 }
-
-
-// Load the Player data
-func (cache *PlanetCache) LoadOwner() (bool) {
-    if cache.CC != nil {
-        owner, _ := cache.CC.GetPlayer(cache.GetOwnerId())
-        cache.Owner = owner
-    } else {
-        newOwner, _ := cache.K.GetPlayerCacheFromId(cache.Ctx, cache.GetOwnerId())
-        cache.Owner = &newOwner
-    }
-    cache.OwnerLoaded = true
-    return cache.OwnerLoaded
-}
-
-
-// Load the BuriedOre record
-func (cache *PlanetCache) LoadBlockStartRaid() {
-    cache.BlockStartRaid = cache.K.GetPlanetAttribute(cache.Ctx, cache.BlockStartRaidAttributeId)
-    cache.BlockStartRaidLoaded = true
-}
-
-// Load the BuriedOre record
-func (cache *PlanetCache) LoadBuriedOre() {
-    cache.BuriedOre = cache.K.GetGridAttribute(cache.Ctx, cache.BuriedOreAttributeId)
-    cache.BuriedOreLoaded = true
-}
-
-// Load the Planet PlanetaryShield record
-func (cache *PlanetCache) LoadPlanetaryShield() {
-    cache.PlanetaryShield = cache.K.GetPlanetAttribute(cache.Ctx, cache.PlanetaryShieldAttributeId)
-    cache.PlanetaryShieldLoaded = true
-}
-
-// Load the Planet RepairNetworkQuantity record
-func (cache *PlanetCache) LoadRepairNetworkQuantity() {
-    cache.RepairNetworkQuantity = cache.K.GetPlanetAttribute(cache.Ctx, cache.RepairNetworkQuantityAttributeId)
-    cache.RepairNetworkQuantityLoaded = true
-}
-
-// Load the Planet DefensiveCannonQuantity record
-func (cache *PlanetCache) LoadDefensiveCannonQuantity() {
-    cache.DefensiveCannonQuantity = cache.K.GetPlanetAttribute(cache.Ctx, cache.DefensiveCannonQuantityAttributeId)
-    cache.DefensiveCannonQuantityLoaded = true
-}
-
-// Load the Planet CoordinatedGlobalShieldNetworkQuantity record
-func (cache *PlanetCache) LoadCoordinatedGlobalShieldNetworkQuantity() {
-    cache.CoordinatedGlobalShieldNetworkQuantity = cache.K.GetPlanetAttribute(cache.Ctx, cache.CoordinatedGlobalShieldNetworkQuantityAttributeId)
-    cache.CoordinatedGlobalShieldNetworkQuantityLoaded = true
-}
-
-// Load the Planet LowOrbitBallisticsInterceptorNetworkQuantity record
-func (cache *PlanetCache) LoadLowOrbitBallisticsInterceptorNetworkQuantity() {
-    cache.LowOrbitBallisticsInterceptorNetworkQuantity = cache.K.GetPlanetAttribute(cache.Ctx, cache.LowOrbitBallisticsInterceptorNetworkQuantityAttributeId)
-    cache.LowOrbitBallisticsInterceptorNetworkQuantityLoaded = true
-}
-
-// Load the Planet LowOrbitBallisticsInterceptorNetworkSuccessRate records
-func (cache *PlanetCache) LoadLowOrbitBallisticsInterceptorNetworkSuccessRate() {
-    cache.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator = cache.K.GetPlanetAttribute(cache.Ctx, cache.LowOrbitBallisticsInterceptorNetworkSuccessRateNumeratorAttributeId)
-    cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator = cache.K.GetPlanetAttribute(cache.Ctx, cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominatorAttributeId)
-    cache.LowOrbitBallisticsInterceptorNetworkSuccessRateLoaded = true
-}
-
-// Load the Planet AdvancedLowOrbitBallisticsInterceptorNetworkQuantity record
-func (cache *PlanetCache) LoadAdvancedLowOrbitBallisticsInterceptorNetworkQuantity() {
-    cache.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity = cache.K.GetPlanetAttribute(cache.Ctx, cache.AdvancedLowOrbitBallisticsInterceptorNetworkQuantityAttributeId)
-    cache.AdvancedLowOrbitBallisticsInterceptorNetworkQuantityLoaded = true
-}
-
-// Load the Planet OrbitalJammingStationQuantity record
-func (cache *PlanetCache) LoadOrbitalJammingStationQuantity() {
-    cache.OrbitalJammingStationQuantity = cache.K.GetPlanetAttribute(cache.Ctx, cache.OrbitalJammingStationQuantityAttributeId)
-    cache.OrbitalJammingStationQuantityLoaded = true
-}
-
-// Load the Planet AdvancedOrbitalJammingStationQuantity record
-func (cache *PlanetCache) LoadAdvancedOrbitalJammingStationQuantity() {
-    cache.AdvancedOrbitalJammingStationQuantity = cache.K.GetPlanetAttribute(cache.Ctx, cache.AdvancedOrbitalJammingStationQuantityAttributeId)
-    cache.AdvancedOrbitalJammingStationQuantityLoaded = true
-}
-
 
 /* Getters
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
@@ -343,9 +87,9 @@ func (cache *PlanetCache) GetOwnerId() (string) {
 }
 
 // Get the Owner data
-func (cache *PlanetCache) GetOwner() (*PlayerCache) {
-    if (!cache.OwnerLoaded) { cache.LoadOwner() }
-    return cache.Owner
+func (cache *PlanetCache) GetOwner() (player *PlayerCache) {
+    player, _ = cache.CC.GetPlayer(cache.GetOwnerId())
+    return
 }
 
 func (cache *PlanetCache) GetPlanet() (types.Planet) {
@@ -354,60 +98,48 @@ func (cache *PlanetCache) GetPlanet() (types.Planet) {
 }
 
 func (cache *PlanetCache) GetBlockStartRaid() (uint64) {
-    if (!cache.BlockStartRaidLoaded) { cache.LoadBlockStartRaid() }
-    return cache.BlockStartRaid
+    return cache.CC.GetPlanetAttribute(cache.BlockStartRaidAttributeId)
 }
 
 func (cache *PlanetCache) GetBuriedOre() (uint64) {
-    if (!cache.BuriedOreLoaded) { cache.LoadBuriedOre() }
-    return cache.BuriedOre
+    return cache.CC.GetGridAttribute(cache.BuriedOreAttributeId)
 }
 
 func (cache *PlanetCache) GetPlanetaryShield() (uint64) {
-    if (!cache.PlanetaryShieldLoaded) { cache.LoadPlanetaryShield() }
-    return cache.PlanetaryShield
+    return cache.CC.GetPlanetAttribute(cache.PlanetaryShieldAttributeId)
 }
 
 func (cache *PlanetCache) GetRepairNetworkQuantity() (uint64) {
-    if (!cache.RepairNetworkQuantityLoaded) { cache.LoadRepairNetworkQuantity() }
-    return cache.RepairNetworkQuantity
+    return cache.CC.GetPlanetAttribute(cache.RepairNetworkQuantityAttributeId)
 }
 
 func (cache *PlanetCache) GetDefensiveCannonQuantity() (uint64) {
-    if (!cache.DefensiveCannonQuantityLoaded) { cache.LoadDefensiveCannonQuantity() }
-    return cache.DefensiveCannonQuantity
+    return cache.CC.GetPlanetAttribute(cache.DefensiveCannonQuantityAttributeId)
 }
 
 func (cache *PlanetCache) GetCoordinatedGlobalShieldNetworkQuantity() (uint64) {
-    if (!cache.CoordinatedGlobalShieldNetworkQuantityLoaded) { cache.LoadCoordinatedGlobalShieldNetworkQuantity() }
-    return cache.CoordinatedGlobalShieldNetworkQuantity
+    return cache.CC.GetPlanetAttribute(cache.CoordinatedGlobalShieldNetworkQuantityAttributeId)
 }
 
 func (cache *PlanetCache) GetLowOrbitBallisticsInterceptorNetworkQuantity() (uint64) {
-    if (!cache.LowOrbitBallisticsInterceptorNetworkQuantityLoaded) { cache.LoadLowOrbitBallisticsInterceptorNetworkQuantity() }
-    return cache.LowOrbitBallisticsInterceptorNetworkQuantity
+    return cache.CC.GetPlanetAttribute(cache.LowOrbitBallisticsInterceptorNetworkQuantityAttributeId)
 }
 
 func (cache *PlanetCache) GetAdvancedLowOrbitBallisticsInterceptorNetworkQuantity() (uint64) {
-    if (!cache.AdvancedLowOrbitBallisticsInterceptorNetworkQuantityLoaded) { cache.LoadAdvancedLowOrbitBallisticsInterceptorNetworkQuantity() }
-    return cache.AdvancedLowOrbitBallisticsInterceptorNetworkQuantity
+    return cache.CC.GetPlanetAttribute(cache.AdvancedLowOrbitBallisticsInterceptorNetworkQuantityAttributeId)
 }
 
 func (cache *PlanetCache) GetLowOrbitBallisticsInterceptorNetworkSuccessRate() (successRate fraction.Fraction, err error) {
-    if (!cache.LowOrbitBallisticsInterceptorNetworkSuccessRateLoaded) { cache.LoadLowOrbitBallisticsInterceptorNetworkSuccessRate() }
-
-    successRate, err = fraction.New(cache.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator, cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator)
+    successRate, err = fraction.New(cache.CC.GetPlanetAttribute(cache.LowOrbitBallisticsInterceptorNetworkSuccessRateNumeratorAttributeId), cache.CC.GetPlanetAttribute(cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominatorAttributeId))
     return
 }
 
 func (cache *PlanetCache) GetOrbitalJammingStationQuantity() (uint64) {
-    if (!cache.OrbitalJammingStationQuantityLoaded) { cache.LoadOrbitalJammingStationQuantity() }
-    return cache.OrbitalJammingStationQuantity
+    return cache.CC.GetPlanetAttribute(cache.OrbitalJammingStationQuantityAttributeId)
 }
 
 func (cache *PlanetCache) GetAdvancedOrbitalJammingStationQuantity() (uint64) {
-    if (!cache.AdvancedOrbitalJammingStationQuantityLoaded) { cache.LoadAdvancedOrbitalJammingStationQuantity() }
-    return cache.AdvancedOrbitalJammingStationQuantity
+    return cache.CC.GetPlanetAttribute(cache.AdvancedOrbitalJammingStationQuantityAttributeId)
 }
 
 func (cache *PlanetCache) GetPlanetId() string {
@@ -445,19 +177,17 @@ func (cache *PlanetCache) SetStatus(status types.PlanetStatus) () {
     if (!cache.PlanetLoaded) { cache.LoadPlanet() }
 
     cache.Planet.Status = status
-    cache.PlanetChanged = true
-    cache.Changed()
+    cache.Changed = true
 }
 
 func (cache *PlanetCache) SetLocationListStart(fleetId string) {
     if (!cache.PlanetLoaded) { cache.LoadPlanet() }
 
     cache.Planet.LocationListStart = fleetId
-    cache.PlanetChanged = true
-    cache.Changed()
+    cache.Changed = true
 
     if (fleetId != "") {
-        uctx := sdk.UnwrapSDKContext(cache.Ctx)
+        uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
         _ = uctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleetId, PlanetId: cache.GetPlanetId(), Status: types.RaidStatus_initiated}})
         cache.ResetBlockStartRaid()
     }
@@ -468,85 +198,43 @@ func (cache *PlanetCache) SetLocationListLast(fleetId string) {
     if (!cache.PlanetLoaded) { cache.LoadPlanet() }
 
     cache.Planet.LocationListLast = fleetId
-    cache.PlanetChanged = true
-    cache.Changed()
+    cache.Changed = true
 }
 
 func (cache *PlanetCache) ResetBlockStartRaid() {
-    uctx := sdk.UnwrapSDKContext(cache.Ctx)
-    cache.BlockStartRaid = uint64(uctx.BlockHeight())
-    cache.BlockStartRaidLoaded = true
-    cache.BlockStartRaidChanged = true
-    cache.Changed()
+    uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
+    cache.CC.SetPlanetAttribute(cache.BlockStartRaidAttributeId, uint64(uctx.BlockHeight()))
 }
 
+// TODO START UPDATING THESE TO POINT TO CC GRID
 func (cache *PlanetCache) BuriedOreDecrement(amount uint64) {
-
-    if (cache.GetBuriedOre() > amount) {
-        cache.BuriedOre = cache.BuriedOre - amount
-    } else {
-        cache.BuriedOre = 0
-    }
-
-    cache.BuriedOreChanged = true
-    cache.Changed()
+    cache.CC.SetGridAttributeDecrement(cache.BuriedOreAttributeId, amount)
 }
 
 func (cache *PlanetCache) PlanetaryShieldIncrement(amount uint64) {
-    cache.PlanetaryShield = cache.GetPlanetaryShield() + amount
-    cache.PlanetaryShieldChanged = true
-    cache.Changed()
+    cache.CC.SetPlanetAttributeIncrement(cache.PlanetaryShieldAttributeId, amount)
 }
 
 func (cache *PlanetCache) PlanetaryShieldDecrement(amount uint64) {
-
-    if (cache.GetPlanetaryShield() > amount) {
-        cache.PlanetaryShield = cache.PlanetaryShield - amount
-    } else {
-        cache.PlanetaryShield = 0
-    }
-
-    cache.PlanetaryShieldChanged = true
-    cache.Changed()
+    cache.CC.SetPlanetAttributeDecrement(cache.PlanetaryShieldAttributeId, amount)
 }
 
 func (cache *PlanetCache) DefensiveCannonQuantityIncrement(amount uint64) {
-    cache.DefensiveCannonQuantity = cache.GetDefensiveCannonQuantity() + amount
-    cache.DefensiveCannonQuantityChanged = true
-    cache.Changed()
+    cache.CC.SetPlanetAttributeIncrement(cache.DefensiveCannonQuantityAttributeId, amount)
 }
 
 func (cache *PlanetCache) DefensiveCannonQuantityDecrement(amount uint64) {
-
-    if (cache.GetDefensiveCannonQuantity() > amount) {
-        cache.DefensiveCannonQuantity = cache.DefensiveCannonQuantity - amount
-    } else {
-        cache.DefensiveCannonQuantity = 0
-    }
-
-    cache.DefensiveCannonQuantityChanged = true
-    cache.Changed()
+    cache.CC.SetPlanetAttributeDecrement(cache.DefensiveCannonQuantityAttributeId, amount)
 }
 
 
 func (cache *PlanetCache) LowOrbitBallisticsInterceptorNetworkQuantityIncrement(amount uint64) {
-    cache.LowOrbitBallisticsInterceptorNetworkQuantity = cache.GetLowOrbitBallisticsInterceptorNetworkQuantity() + amount
-    cache.LowOrbitBallisticsInterceptorNetworkQuantityChanged = true
-    cache.Changed()
-
+    cache.CC.SetPlanetAttributeIncrement(cache.LowOrbitBallisticsInterceptorNetworkQuantityAttributeId, amount)
     cache.LowOrbitBallisticsInterceptorNetworkRecalculate()
 }
 
 func (cache *PlanetCache) LowOrbitBallisticsInterceptorNetworkQuantityDecrement(amount uint64) {
-
-    if (cache.GetLowOrbitBallisticsInterceptorNetworkQuantity() > amount) {
-        cache.LowOrbitBallisticsInterceptorNetworkQuantity = cache.LowOrbitBallisticsInterceptorNetworkQuantity - amount
-    } else {
-        cache.LowOrbitBallisticsInterceptorNetworkQuantity = 0
-    }
-
-    cache.LowOrbitBallisticsInterceptorNetworkQuantityChanged = true
-    cache.Changed()
+    cache.CC.SetPlanetAttributeDecrement(cache.LowOrbitBallisticsInterceptorNetworkQuantityAttributeId, amount)
     cache.LowOrbitBallisticsInterceptorNetworkRecalculate()
 }
 
@@ -564,21 +252,11 @@ func (cache *PlanetCache) LowOrbitBallisticsInterceptorNetworkRecalculate() {
 
         overallSuccessRate := oneRate.Subtract(overallFailureRate)
 
-        cache.LowOrbitBallisticsInterceptorNetworkSuccessRateNumerator = uint64(overallSuccessRate.Numerator())
-        cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominator = uint64(overallSuccessRate.Denominator())
-        cache.LowOrbitBallisticsInterceptorNetworkSuccessRateChanged = true
-        cache.LowOrbitBallisticsInterceptorNetworkSuccessRateLoaded  = true
-        cache.Changed()
-
+        cache.CC.SetPlanetAttribute(cache.LowOrbitBallisticsInterceptorNetworkSuccessRateNumeratorAttributeId, uint64(overallSuccessRate.Numerator()))
+        cache.CC.SetPlanetAttribute(cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominatorAttributeId, uint64(overallSuccessRate.Denominator()))
     }
 }
 
-// Set the Owner data manually
-// Useful for loading multiple defenders
-func (cache *PlanetCache) ManualLoadOwner(owner *PlayerCache) {
-    cache.Owner = owner
-    cache.OwnerLoaded = true
-}
 
 // Set the Event data manually
 // Used to manage the same event across objects
@@ -608,7 +286,7 @@ func (cache *PlanetCache) IsEmptyOfOre() bool {
 
 /* Rough but Consistent Randomness Check */
 func (cache *PlanetCache) IsSuccessful(successRate fraction.Fraction) bool {
-    uctx := sdk.UnwrapSDKContext(cache.Ctx)
+    uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
 
 	var seed int64
 
@@ -622,7 +300,7 @@ func (cache *PlanetCache) IsSuccessful(successRate fraction.Fraction) bool {
 
     randomnessCheck := (int(successRate.Numerator()) <= (randomnessOrb.Intn(max-min+1) + min))
 
-    cache.K.logger.Info("Planetary Success-Check Randomness", "planetId", cache.GetPlanetId(), "seed", seed, "offset", cache.GetOwner().GetNextNonce(), "seedOffset", seedOffset, "numerator", successRate.Numerator(), "denominator", successRate.Denominator(), "success", randomnessCheck)
+    cache.CC.k.logger.Info("Planetary Success-Check Randomness", "planetId", cache.GetPlanetId(), "seed", seed, "offset", cache.GetOwner().GetNextNonce(), "seedOffset", seedOffset, "numerator", successRate.Numerator(), "denominator", successRate.Denominator(), "success", randomnessCheck)
 	return randomnessCheck
 }
 
@@ -739,7 +417,7 @@ func (cache *PlanetCache) MoveReadiness(structure *StructCache, ambit types.Ambi
 
 func (cache *PlanetCache) SetSlot(structure types.Struct) (err error) {
 
-    cache.K.logger.Info("Planet Slot Update","planetId", cache.GetPlanetId(), "slot", structure.Slot, "ambit", structure.OperatingAmbit)
+    cache.CC.k.logger.Info("Planet Slot Update","planetId", cache.GetPlanetId(), "slot", structure.Slot, "ambit", structure.OperatingAmbit)
 
     if (!cache.PlanetLoaded) { cache.LoadPlanet() }
 
@@ -756,8 +434,7 @@ func (cache *PlanetCache) SetSlot(structure types.Struct) (err error) {
             err = types.NewStructLocationError(0, structure.OperatingAmbit.String(), "invalid_ambit").WithStruct(structure.Id)
     }
 
-    cache.PlanetChanged = true
-    cache.Changed()
+    cache.Changed = true
 	return
 }
 
@@ -775,8 +452,8 @@ func (cache *PlanetCache) ClearSlot(ambit types.Ambit, slot uint64) {
         case types.Ambit_space:
             cache.Planet.Space[slot] = ""
     }
-    cache.PlanetChanged = true
-    cache.Changed()
+
+    cache.Changed = true
 }
 
 /* Game Logic */
@@ -795,27 +472,21 @@ func (cache *PlanetCache) AttemptComplete() (error) {
         // For Space
         for _, structId := range structsToDestroy {
             if structId != "" {
-                planetStruct := cache.K.GetStructCacheFromId(cache.Ctx, structId)
-                planetStruct.ManualLoadOwner(cache.GetOwner())
-                planetStruct.ManualLoadPlanet(cache)
-                planetStruct.DestroyAndCommit()
+                planetStruct := cache.CC.GetStruct(structId)
+                planetStruct.Destroy()
             }
         }
 
         // Send Fleets away
         for cache.GetLocationListStart() != "" {
-               currentFleet, _ := cache.K.GetFleetCacheFromId(cache.Ctx, cache.GetLocationListStart())
-               currentFleet.ManualLoadPlanet(cache)
+               currentFleet, _ := cache.CC.GetFleetById(cache.GetLocationListStart())
                currentFleet.PeaceDeal()
         }
 
-        cache.Commit()
         return nil
     }
     return types.NewPlanetStateError(cache.GetPlanetId(), "has_ore", "explore")
 }
-
-
 
 func (cache *PlanetCache) AttemptDefenseCannon(attacker *StructCache) (cannoned bool) {
     if (cache.GetDefensiveCannonQuantity() > 0) {

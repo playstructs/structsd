@@ -65,16 +65,16 @@ type CurrentContext struct {
 	players             map[string]*PlayerCache
 	fleets              map[uint64]*FleetCache
 
-
-
-
-	// Complex entity caches (Committable, tracked in pendingCommits)
 	agreements          map[string]*AgreementCache
-
 	guilds              map[string]*GuildCache
 	guildMembershipApps map[string]*GuildMembershipApplicationCache
 	infusions           map[string]*InfusionCache
 	planets             map[string]*PlanetCache
+
+	// Complex entity caches (Committable, tracked in pendingCommits)
+
+
+
 
 	providers           map[string]*ProviderCache
 	structs             map[string]*StructCache
@@ -114,16 +114,16 @@ func (k *Keeper) NewCurrentContext(ctx context.Context) *CurrentContext {
 		players:             make(map[string]*PlayerCache),
 		fleets:              make(map[uint64]*FleetCache),
 
-
-
-
-		// Complex entity caches
 		agreements:          make(map[string]*AgreementCache),
 
 		guilds:              make(map[string]*GuildCache),
 		guildMembershipApps: make(map[string]*GuildMembershipApplicationCache),
 		infusions:           make(map[string]*InfusionCache),
 		planets:             make(map[string]*PlanetCache),
+
+
+		// Complex entity caches
+
 
 		providers:           make(map[string]*ProviderCache),
 		structs:             make(map[string]*StructCache),
@@ -182,6 +182,23 @@ func (cc *CurrentContext) CommitAll() {
 
     for _, playerCache := range cc.players {
         playerCache.Commit()
+    }
+
+
+    for _, guildCache := range cc.guilds {
+        guildCache.Commit()
+    }
+
+    for _, guildMembershipApp := range cc.guildMembershipApps {
+        guildMembershipApp.Commit()
+    }
+
+    for _, fleetCache := range cc.fleets {
+        fleetCache.Commit()
+    }
+
+    for _, infusionCache := range cc.infusions {
+        infusionCache.Commit()
     }
 
 	for _, permissionsCache := range cc.permissions {
