@@ -62,12 +62,64 @@ func (cc *CurrentContext) GetPlayerByIndex(playerIndex uint64) (*PlayerCache, er
 	return player, nil
 }
 
-// RegisterPlayer registers an externally created PlayerCache with the context.
-func (cc *CurrentContext) RegisterPlayer(cache *PlayerCache) {
-	if cache == nil {
-		return
-	}
-	cache.CC = cc
-	cc.players[cache.PlayerId] = cache
-	cc.pendingCommits = append(cc.pendingCommits, cache)
+func (cc *CurrentContext) NewPlayer(address string) *PlayerCache {
+
+	// Create the player
+    var player types.Player
+
+    player.Index = k.GetPlayerCount(ctx)
+	cc.k.SetPlayerCount(cc.ctx, player.Index + 1)
+
+	playerId := GetObjectID(types.ObjectType_player, player.Index)
+	player.Id = playerId
+
+	player.Creator = address
+	player.PrimaryAddress = address
+
+   cc.players[playerId] = &PlayerCache{
+               PlayerId: playerId,
+
+               CC: cc,
+               Player: player,
+               PlayerLoaded: true,
+               Changed: true,
+               Deleted: false,
+
+               NonceAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_nonce, playerId),
+
+               LastActionAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, playerId),
+
+               LoadAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_load, playerId),
+               CapacityAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, playerId),
+
+               StructsLoadAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, playerId),
+
+               StoredOreAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_ore, playerId),
+           }
+
+	//Add Address records
+	cc.k.SetPlayerIndexForAddress(cc.ctx, player.Creator, player.Index)
+
+    //Add permissions
+	addressPermissionId := GetAddressPermissionIDBytes(player.Creator)
+	cc.PermissionAdd(addressPermissionId, types.PermissionAll)
+
+    // Add the initial Player Load
+    cc.SetGridAttributeIncrement(cc.players[playerId].StructsLoadAttributeId, types.PlayerPassiveDraw)
+
+	return cc.players[playerId]
 }
+
+// Technically more of an InGet than an UpSert
+func (k Keeper) UpsertPlayer(ctx context.Context, address string) (player *PlayerCache) {
+    playerIndex := cc.k.GetPlayerIndexFromAddress(cc.ctx, playerAddress)
+
+    if (playerIndex == 0) {
+        player = cc.NewPlayer(address)
+    } else {
+        player, _ = cc.GetPlayerByIndex(playerIndex)
+    }
+
+    return
+}
+

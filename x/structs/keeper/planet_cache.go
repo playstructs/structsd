@@ -206,7 +206,6 @@ func (cache *PlanetCache) ResetBlockStartRaid() {
     cache.CC.SetPlanetAttribute(cache.BlockStartRaidAttributeId, uint64(uctx.BlockHeight()))
 }
 
-// TODO START UPDATING THESE TO POINT TO CC GRID
 func (cache *PlanetCache) BuriedOreDecrement(amount uint64) {
     cache.CC.SetGridAttributeDecrement(cache.BuriedOreAttributeId, amount)
 }

@@ -16,7 +16,6 @@ type PlayerCache struct {
 
     Ready bool
 
-    Loaded bool
     Changed bool
     Deleted bool
 
@@ -39,17 +38,15 @@ type PlayerCache struct {
 }
 
 func (cache *PlayerCache) Commit() () {
-    cache.AnyChange = false
-
-    cache.CC.k.logger.Info("Updating Player From Cache","playerId",cache.PlayerId)
-
     if cache.Changed {
+        cache.CC.k.logger.Info("Updating Player From Cache","playerId", cache.PlayerId)
         cache.CC.k.SetPlayer(cache.CC.ctx, cache.Player)
     }
+    cache.Changed = false
 }
 
 func (cache *PlayerCache) IsChanged() bool {
-    return cache.AnyChange
+    return cache.Changed
 }
 
 func (cache *PlayerCache) ID() string {
@@ -58,13 +55,9 @@ func (cache *PlayerCache) ID() string {
 
 
 func (cache *PlayerCache) LoadPlayer() (found bool) {
-    cache.Player, found = cache.K.GetPlayer(cache.Ctx, cache.PlayerId)
+    cache.Player, cache.PlayerLoaded = cache.CC.k.GetPlayer(cache.CC.ctx, cache.PlayerId)
 
-    if (found) {
-        cache.PlayerLoaded = true
-    }
-
-    return found
+    return cache.PlayerLoaded
 }
 
 
@@ -74,7 +67,7 @@ func (cache *PlayerCache) LoadStorage() (error){
         return nil // TODO update to be an error
     }
     playerAcc, _ := sdk.AccAddressFromBech32(cache.Player.PrimaryAddress)
-    cache.Storage = cache.CC.k.bankKeeper.SpendableCoins(cache.Ctx, playerAcc)
+    cache.Storage = cache.CC.k.bankKeeper.SpendableCoins(cache.CC.ctx, playerAcc)
 
     return nil
 }
