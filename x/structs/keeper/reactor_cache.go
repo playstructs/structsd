@@ -44,7 +44,7 @@ func (cache *ReactorCache) LoadReactor() bool {
 }
 
 func (cache *ReactorCache) CheckReactor() error {
-	if !cache.Loaded {
+	if !cache.ReactorLoaded {
 		if !cache.LoadReactor() {
             return types.NewObjectNotFoundError("reactor", cache.ReactorId)
         }
@@ -53,7 +53,7 @@ func (cache *ReactorCache) CheckReactor() error {
 }
 
 func (cache *ReactorCache) GetReactor() types.Reactor {
-	if !cache.Loaded {
+	if !cache.ReactorLoaded {
 		cache.LoadReactor()
 	}
 	return cache.Reactor
