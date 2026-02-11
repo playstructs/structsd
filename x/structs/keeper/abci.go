@@ -37,7 +37,7 @@ func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error)
 	 * devices have one last block of power before shutting down
 	 * but I think that's ok. We'll see how it goes in practice.
 	 */
-	k.GridCascade(ctx)
+	cc.GridCascade()
 
     cc.ProcessInfusionDestructionQueue()
 

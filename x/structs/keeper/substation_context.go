@@ -1,7 +1,9 @@
 package keeper
 
-// GetSubstation returns a SubstationCache by ID, loading from store if not already cached.
-// Returns nil if the substation has been deleted in this context.
+import (
+	"structs/x/structs/types"
+)
+
 func (cc *CurrentContext) GetSubstation(substationId string) *SubstationCache {
 	if cache, exists := cc.substations[substationId]; exists {
 		return cache
@@ -12,10 +14,10 @@ func (cc *CurrentContext) GetSubstation(substationId string) *SubstationCache {
                 CC: cc,
                 Changed: false,
 
-                  LoadAttributeId:    	        GetGridAttributeIDByObjectId(types.GridAttributeType_load, substationId),
-                  CapacityAttributeId:    	    GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, substationId),
-                  ConnectionCountAttributeId:   GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, substationId),
-                  ConnectionCapacityAttributeId:GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, substationId),
+                LoadAttributeId:    	        GetGridAttributeIDByObjectId(types.GridAttributeType_load, substationId),
+                CapacityAttributeId:    	    GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, substationId),
+                ConnectionCountAttributeId:     GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, substationId),
+                ConnectionCapacityAttributeId:  GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, substationId),
             }
 
 	return cc.substations[substationId]

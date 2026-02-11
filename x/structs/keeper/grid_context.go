@@ -107,3 +107,42 @@ func (cc *CurrentContext) UpdateSubstationConnectionCapacity(objectId string) {
 
 
 
+
+func (cc *CurrentContext) GridCascade() {
+
+	// This needs to be able to iterate until the queue is empty
+	// If there are no bugs, there should always be an end
+	// If there are bugs, Cisphyx will find it
+	for {
+		// Get Queue (and clear it in the process)
+		gridQueue := cc.k.GetGridCascadeQueue(cc.ctx, true)
+
+		if len(gridQueue) == 0 {
+			break
+		}
+
+		// For each Queue Item
+		for _, objectId := range gridQueue {
+
+			allocationList := cc.GetAllAllocationBySource(objectId)
+			allocationPointer := 0
+
+            loadAttributeId := GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)
+            capacityAttributeId := GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId)
+
+			for cc.GetGridAttribute(loadAttributeId) > cc.GetGridAttribute(capacityAttributeId) {
+				cc.k.logger.Info("Grid Queue (Brownout)", "objectId", objectId, "load", cc.GetGridAttribute(loadAttributeId), "capacity", cc.GetGridAttribute(capacityAttributeId))
+
+				allocationList[allocationPointer].Destroy()
+				cc.k.logger.Info("Grid Queue (Allocation Destroyed)", "allocationId", allocationList[allocationPointer].GetAllocationId())
+
+				allocationPointer++
+				if allocationPointer >= len(allocationList) {
+				    // Something is probably wrong here...
+				    cc.k.logger.Warn("Grid Queue problem", "objectId", objectId)
+				    break;
+				}
+			}
+		}
+	}
+}

@@ -45,6 +45,10 @@ func (cache *AllocationCache) ID() string {
 	return cache.AllocationId
 }
 
+func (cache *AllocationCache) GetAllocationId() string {
+	return cache.AllocationId
+}
+
 func (cache *AllocationCache) LoadAllocation() bool {
 	allocation, allocationFound := cache.CC.k.GetAllocation(cache.CC.ctx, cache.AllocationId)
 

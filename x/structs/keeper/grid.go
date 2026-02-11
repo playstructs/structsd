@@ -111,36 +111,6 @@ func (k Keeper) AppendGridCascadeQueue(ctx context.Context, queueId string) (err
 	return err
 }
 
-func (k Keeper) GridCascade(ctx context.Context) {
-
-	// This needs to be able to iterate until the queue is empty
-	// If there are no bugs, there should always be an end
-	// If there are bugs, Cisphyx will find it
-	for {
-		// Get Queue (and clear it in the process)
-		gridQueue := k.GetGridCascadeQueue(ctx, true)
-
-		if len(gridQueue) == 0 {
-			break
-		}
-
-		// For each Queue Item
-		for _, objectId := range gridQueue {
-
-			allocationList := k.GetAllAllocationIdBySourceIndex(ctx, objectId)
-			allocationPointer := 0
-
-			for k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)) > k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId)) {
-				k.logger.Info("Grid Queue (Brownout)", "objectId", objectId, "load", k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)), "capacity", k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId)))
-
-				k.DestroyAllocation(ctx, allocationList[allocationPointer])
-				k.logger.Info("Grid Queue (Allocation Destroyed)", "allocationId", allocationList[allocationPointer])
-
-				allocationPointer++
-			}
-		}
-	}
-}
 
 // GetAllGridExport returns all grid attributes
 func (k Keeper) GetAllGridExport(ctx context.Context) (list []*types.GridRecord) {

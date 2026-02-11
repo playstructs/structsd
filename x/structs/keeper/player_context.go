@@ -87,7 +87,7 @@ func (cc *CurrentContext) NewPlayer(address string) *PlayerCache {
 	player.Creator = address
 	player.PrimaryAddress = address
 
-   cc.players[playerId] = &PlayerCache{
+    cc.players[playerId] = &PlayerCache{
                PlayerId: playerId,
 
                CC: cc,
@@ -122,7 +122,7 @@ func (cc *CurrentContext) NewPlayer(address string) *PlayerCache {
 }
 
 // Technically more of an InGet than an UpSert
-func (k Keeper) UpsertPlayer(ctx context.Context, address string) (player *PlayerCache) {
+func (cc *CurrentContext) UpsertPlayer(address string) (player *PlayerCache) {
     playerIndex := cc.k.GetPlayerIndexFromAddress(cc.ctx, playerAddress)
 
     if (playerIndex == 0) {

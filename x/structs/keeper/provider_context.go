@@ -1,5 +1,9 @@
 package keeper
 
+import (
+	"structs/x/structs/types"
+)
+
 // GetProvider returns a ProviderCache by ID, loading from store if not already cached.
 // Returns nil if the provider has been deleted in this context.
 func (cc *CurrentContext) GetProvider(providerId string) *ProviderCache {
