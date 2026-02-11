@@ -88,6 +88,7 @@ func (cache *SubstationCache) Delete(migrationSubstation *SubstationCache) {
         connectedPlayers := cc.GetAllPlayerBySubstation(substationId)
         for _, disconnectPlayer := range connectedPlayers {
             if migrationSubstation.GetSubstationId() == cache.GetSubstationId() {
+               // Somewhat punishes tomfoolery but whatever
                disconnectPlayer.DisconnectSubstation()
             } else {
                disconnectPlayer.MigrateSubstation(migrationSubstation.GetSubstationId())
