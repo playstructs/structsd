@@ -34,88 +34,38 @@ message Guild {
 
 type GuildCache struct {
 	GuildId string
-	K       *Keeper
-	Ctx     context.Context
 	CC      *CurrentContext
 
-	AnyChange bool
+	Changed bool
 	Ready     bool
-	Deleted   bool
 
 	GuildLoaded  bool
-	GuildChanged bool
 	Guild        types.Guild
 
-	OwnerLoaded bool
-	Owner       *PlayerCache
-
-	SubstationLoaded bool
-	Substation       *SubstationCache
 }
 
-// Build this initial Guild Cache object
-func (k *Keeper) GetGuildCacheFromId(ctx context.Context, guildId string) GuildCache {
-	return GuildCache{
-		GuildId: guildId,
-		K:       k,
-		Ctx:     ctx,
-
-		AnyChange: false,
-
-		OwnerLoaded: false,
-
-		GuildLoaded:  false,
-		GuildChanged: false,
-	}
-}
 
 func (cache *GuildCache) Commit() {
-	cache.AnyChange = false
-
-	cache.K.logger.Info("Updating Guild From Cache", "guildId", cache.GuildId)
-
-	if cache.GuildChanged {
-		cache.K.SetGuild(cache.Ctx, cache.Guild)
-		cache.GuildChanged = false
+	if cache.Changed {
+    	cache.CC.k.logger.Info("Updating Guild From Cache", "guildId", cache.GuildId)
+		cache.CC.k.SetGuild(cache.CC.ctx, cache.Guild)
 	}
-
+	cache.Changed = false
 }
 
 func (cache *GuildCache) IsChanged() bool {
-	return cache.AnyChange
+	return cache.Changed
 }
 
 func (cache *GuildCache) ID() string {
 	return cache.GuildId
 }
 
-func (cache *GuildCache) Changed() {
-	cache.AnyChange = true
-}
-
 /* Separate Loading functions for each of the underlying containers */
-
-// Load the Player data
-func (cache *GuildCache) LoadOwner() bool {
-	if cache.CC != nil {
-		owner, _ := cache.CC.GetPlayer(cache.GetOwnerId())
-		cache.Owner = owner
-	} else {
-		newOwner, _ := cache.K.GetPlayerCacheFromId(cache.Ctx, cache.GetOwnerId())
-		cache.Owner = &newOwner
-	}
-	cache.OwnerLoaded = true
-	return cache.OwnerLoaded
-}
-
-func (cache *GuildCache) ManualLoadOwner(owner *PlayerCache) {
-	cache.Owner = owner
-	cache.OwnerLoaded = true
-}
 
 // Load the Guild record
 func (cache *GuildCache) LoadGuild() bool {
-	guild, guildFound := cache.K.GetGuild(cache.Ctx, cache.GuildId)
+	guild, guildFound := cache.CC.k.GetGuild(cache.CC.ctx, cache.GuildId)
 
 	if guildFound {
 		cache.Guild = guild
@@ -123,18 +73,6 @@ func (cache *GuildCache) LoadGuild() bool {
 	}
 
 	return cache.GuildLoaded
-}
-
-// Load the Substation data
-func (cache *GuildCache) LoadSubstation() bool {
-	if cache.CC != nil {
-		cache.Substation = cache.CC.GetSubstation(cache.GetEntrySubstationId())
-	} else {
-		newSubstation := cache.K.GetSubstationCacheFromId(cache.Ctx, cache.GetEntrySubstationId())
-		cache.Substation = &newSubstation
-	}
-	cache.SubstationLoaded = true
-	return cache.SubstationLoaded
 }
 
 /* Getters
@@ -156,10 +94,8 @@ func (cache *GuildCache) GetOwnerId() string {
 	return cache.Guild.Owner
 }
 func (cache *GuildCache) GetOwner() *PlayerCache {
-	if !cache.OwnerLoaded {
-		cache.LoadOwner()
-	}
-	return cache.Owner
+    player, _ := cache.CC.GetPlayer(cache.GetOwnerId())
+	return player
 }
 
 func (cache *GuildCache) GetJoinInfusionMinimum() uint64 {
@@ -186,12 +122,13 @@ func (cache *GuildCache) GetEntrySubstationId() string {
 	}
 	return cache.Guild.EntrySubstationId
 }
-func (cache *GuildCache) GetSubstation() *SubstationCache {
-	if !cache.SubstationLoaded {
-		cache.LoadSubstation()
-	}
-	return cache.Substation
+func (cache *GuildCache) GetSubstation() (substation *SubstationCache) {
+    if cache.GetEntrySubstationId() != "" {
+        substation = cache.CC.GetSubstation(cache.GetEntrySubstationId())
+    }
+	return
 }
+
 func (cache *GuildCache) GetPrimaryReactorId() string {
 	if !cache.GuildLoaded {
 		cache.LoadGuild()
@@ -287,7 +224,7 @@ func (cache *GuildCache) CanRequestMembership() (err error) {
 
 func (cache *GuildCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) error {
 	// Make sure the address calling this has permissions
-	if !cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission) {
+	if !cache.CC.PermissionHasOneOf(GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission) {
 		return types.NewPermissionError("address", activePlayer.GetActiveAddress(), "", "", uint64(permission), "guild_action")
 	}
 
@@ -295,7 +232,7 @@ func (cache *GuildCache) PermissionCheck(permission types.Permission, activePlay
 		return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "guild_action")
 	} else {
 		if activePlayer.GetPlayerId() != cache.GetOwnerId() {
-			if !cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetGuildId(), activePlayer.GetPlayerId()), permission) {
+			if !cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetGuildId(), activePlayer.GetPlayerId()), permission) {
 				return types.NewPermissionError("player", activePlayer.GetPlayerId(), "guild", cache.GetGuildId(), uint64(permission), "guild_action")
 			}
 		}
@@ -314,22 +251,22 @@ func (cache *GuildCache) BankMint(amountAlpha math.Int, amountToken math.Int, pl
 	guildTokenCoins := sdk.NewCoins(guildTokenCoin)
 
 	// Try to Move Alpha From the Player to the Pool
-	if !cache.K.bankKeeper.HasBalance(cache.Ctx, player.GetPrimaryAccount(), alphaCollateralCoin) {
+	if !cache.CC.k.bankKeeper.HasBalance(cache.CC.ctx, player.GetPrimaryAccount(), alphaCollateralCoin) {
 		return types.NewPlayerAffordabilityError(player.GetPlayerId(), "mint", amountAlpha.String()+" ualpha")
 	}
 
-	errSend := cache.K.bankKeeper.SendCoins(cache.Ctx, player.GetPrimaryAccount(), cache.GetBankCollateralPool(), alphaCollateralCoins)
+	errSend := cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, player.GetPrimaryAccount(), cache.GetBankCollateralPool(), alphaCollateralCoins)
 	if errSend != nil {
 		return errSend
 	}
 
 	// Mint new Guild Token
-	cache.K.bankKeeper.MintCoins(cache.Ctx, types.ModuleName, guildTokenCoins)
+	cache.CC.k.bankKeeper.MintCoins(cache.CC.ctx, types.ModuleName, guildTokenCoins)
 
 	// Move the new Guild Token to Player
-	cache.K.bankKeeper.SendCoinsFromModuleToAccount(cache.Ctx, types.ModuleName, player.GetPrimaryAccount(), guildTokenCoins)
+	cache.CC.k.bankKeeper.SendCoinsFromModuleToAccount(cache.CC.ctx, types.ModuleName, player.GetPrimaryAccount(), guildTokenCoins)
 
-	ctxSDK := sdk.UnwrapSDKContext(cache.Ctx)
+	ctxSDK := sdk.UnwrapSDKContext(cache.CC.ctx)
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildBankMint{&types.EventGuildBankMintDetail{GuildId: cache.GetGuildId(), AmountAlpha: amountAlpha.Uint64(), AmountToken: amountToken.Uint64(), PlayerId: player.GetPlayerId()}})
 
 	return nil
@@ -337,14 +274,14 @@ func (cache *GuildCache) BankMint(amountAlpha math.Int, amountToken math.Int, pl
 
 func (cache *GuildCache) BankRedeem(amountToken math.Int, player *PlayerCache) error {
 
-	alphaCollateralBalance := cache.K.bankKeeper.SpendableCoin(cache.Ctx, cache.GetBankCollateralPool(), "ualpha")
-	guildTokenSupply := cache.K.bankKeeper.GetSupply(cache.Ctx, cache.GetBankDenom())
+	alphaCollateralBalance := cache.CC.k.bankKeeper.SpendableCoin(cache.CC.ctx, cache.GetBankCollateralPool(), "ualpha")
+	guildTokenSupply := cache.CC.k.bankKeeper.GetSupply(cache.CC.ctx, cache.GetBankDenom())
 
 	guildTokenCoin := sdk.NewCoin(cache.GetBankDenom(), amountToken)
 	guildTokenCoins := sdk.NewCoins(guildTokenCoin)
 
 	// Try to Move Alpha From the Player to the Pool
-	if !cache.K.bankKeeper.HasBalance(cache.Ctx, player.GetPrimaryAccount(), guildTokenCoin) {
+	if !cache.CC.k.bankKeeper.HasBalance(cache.CC.ctx, player.GetPrimaryAccount(), guildTokenCoin) {
 		return types.NewPlayerAffordabilityError(player.GetPlayerId(), "redeem", amountToken.String()+" "+cache.GetBankDenom())
 	}
 
@@ -356,9 +293,9 @@ func (cache *GuildCache) BankRedeem(amountToken math.Int, player *PlayerCache) e
 	alphaAmount := amountTokenDec.Quo(guildTokenSupplyDec).Mul(alphaCollateralBalanceDec).TruncateInt()
 
 	// Move the new coins back to the module
-	cache.K.bankKeeper.SendCoinsFromAccountToModule(cache.Ctx, player.GetPrimaryAccount(), types.ModuleName, guildTokenCoins)
+	cache.CC.k.bankKeeper.SendCoinsFromAccountToModule(cache.CC.ctx, player.GetPrimaryAccount(), types.ModuleName, guildTokenCoins)
 	// Burn the Guild Token
-	errBurn := cache.K.bankKeeper.BurnCoins(cache.Ctx, types.ModuleName, guildTokenCoins)
+	errBurn := cache.CC.k.bankKeeper.BurnCoins(cache.CC.ctx, types.ModuleName, guildTokenCoins)
 	if errBurn != nil {
 		return errBurn
 	}
@@ -366,9 +303,9 @@ func (cache *GuildCache) BankRedeem(amountToken math.Int, player *PlayerCache) e
 	// Move the Alpha to Player
 	alphaAmountCoin := sdk.NewCoin("ualpha", alphaAmount)
 	alphaAmountCoins := sdk.NewCoins(alphaAmountCoin)
-	cache.K.bankKeeper.SendCoins(cache.Ctx, cache.GetBankCollateralPool(), player.GetPrimaryAccount(), alphaAmountCoins)
+	cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetBankCollateralPool(), player.GetPrimaryAccount(), alphaAmountCoins)
 
-	ctxSDK := sdk.UnwrapSDKContext(cache.Ctx)
+	ctxSDK := sdk.UnwrapSDKContext(cache.CC.ctx)
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildBankRedeem{&types.EventGuildBankRedeemDetail{GuildId: cache.GetGuildId(), AmountAlpha: alphaAmount.Uint64(), AmountToken: amountToken.Uint64(), PlayerId: player.GetPlayerId()}})
 
 	return nil
@@ -381,16 +318,36 @@ func (cache *GuildCache) BankConfiscateAndBurn(amountToken math.Int, address str
 
 	// Confiscate
 	playerAcc, _ := sdk.AccAddressFromBech32(address)
-	cache.K.bankKeeper.SendCoinsFromAccountToModule(cache.Ctx, playerAcc, types.ModuleName, guildTokenCoins)
+	cache.CC.k.bankKeeper.SendCoinsFromAccountToModule(cache.CC.ctx, playerAcc, types.ModuleName, guildTokenCoins)
 
 	// Burn the Guild Token
-	errBurn := cache.K.bankKeeper.BurnCoins(cache.Ctx, types.ModuleName, guildTokenCoins)
+	errBurn := cache.CC.k.bankKeeper.BurnCoins(cache.CC.ctx, types.ModuleName, guildTokenCoins)
 	if errBurn != nil {
 		return errBurn
 	}
 
-	ctxSDK := sdk.UnwrapSDKContext(cache.Ctx)
+	ctxSDK := sdk.UnwrapSDKContext(cache.CC.ctx)
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildBankConfiscateAndBurn{&types.EventGuildBankConfiscateAndBurnDetail{GuildId: cache.GetGuildId(), AmountToken: amountToken.Uint64(), Address: address}})
 
 	return nil
+}
+
+
+
+func (cache *PlayerCache) MigrateGuild(guild *GuildCache){
+    if (!cache.PlayerLoaded) {
+        cache.LoadPlayer()
+    }
+
+    cache.Player.GuildId = guild.GetGuildId()
+    cache.Changed = true
+}
+
+func (cache *PlayerCache) LeaveGuild(){
+    if (!cache.PlayerLoaded) {
+        cache.LoadPlayer()
+    }
+
+    cache.Player.GuildId = ""
+    cache.Changed = true
 }

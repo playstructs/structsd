@@ -34,15 +34,6 @@ func (k Keeper) GetFleet(ctx context.Context, fleetId string) (val types.Fleet, 
 	return val, true
 }
 
-// RemoveFleet removes a fleet from the store
-func (k Keeper) RemoveFleet(ctx context.Context, fleetId string) {
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.FleetKey))
-	store.Delete([]byte(fleetId))
-
-	ctxSDK := sdk.UnwrapSDKContext(ctx)
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventDelete{ ObjectId: fleetId })
-}
-
 // GetAllFleet returns all fleet
 func (k Keeper) GetAllFleet(ctx context.Context) (list []types.Fleet) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.FleetKey))

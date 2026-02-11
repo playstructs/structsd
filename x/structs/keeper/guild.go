@@ -74,7 +74,7 @@ func (k Keeper) AppendGuild(
 	k.SetGuildCount(ctx, count+1)
 
 	permissionId := GetObjectPermissionIDBytes(guild.Id, player.Id)
-	k.PermissionAdd(ctx, permissionId, types.PermissionAll)
+	k.SetPermissionsByBytes(ctx, permissionId, types.PermissionAll)
 
 	// Setup the Guild Token
 	guildDenomMetadata := banktypes.Metadata{
