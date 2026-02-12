@@ -23,7 +23,7 @@ type AgreementCache struct {
 	Agreement        types.Agreement
 
 	PreviousEndBlock uint64
-	EndBlockChanged  bool
+	EndBlockChanged bool
 
 	DurationRemaining       uint64
 	DurationRemainingLoaded bool
@@ -54,16 +54,14 @@ func (cache *AgreementCache) Commit() {
     		cache.CC.k.SetAgreement(cache.CC.ctx, cache.Agreement)
     	}
 
-        cache.Changed = false
-
-            /* TODO DEAL WITH
-    	if cache.EndBlockChanged {
+    	if (cache.EndBlockChanged) {
     		if cache.PreviousEndBlock > 0 {
-    			cache.K.RemoveAgreementExpirationIndex(cache.Ctx, cache.PreviousEndBlock, cache.GetAgreementId())
-    		}
-    		cache.K.SetAgreementExpirationIndex(cache.Ctx, cache.GetEndBlock(), cache.GetAgreementId())
+                cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.PreviousEndBlock, cache.GetAgreementId())
+            }
+            cache.CC.k.SetAgreementExpirationIndex(cache.CC.ctx, cache.GetEndBlock(), cache.GetAgreementId())
     	}
-    	*/
+
+        cache.Changed = false
 
     }
 
@@ -83,14 +81,9 @@ func (cache *AgreementCache) ID() string {
 
 // Load the Agreement record
 func (cache *AgreementCache) LoadAgreement() bool {
-	agreement, agreementFound := cache.CC.k.GetAgreement(cache.CC.ctx, cache.AgreementId)
+	cache.Agreement, cache.AgreementLoaded = cache.CC.k.GetAgreement(cache.CC.ctx, cache.AgreementId)
 
-	if agreementFound {
-		cache.Agreement = agreement
-		cache.AgreementLoaded = true
-	}
-
-	return agreementFound
+	return cache.AgreementLoaded
 }
 
 func (cache *AgreementCache) LoadCurrentBlock() bool {
@@ -420,7 +413,7 @@ func (cache *AgreementCache) SetEndBlock(endBlock uint64) {
 
 	cache.PreviousEndBlock = cache.Agreement.EndBlock
 	cache.Agreement.EndBlock = endBlock
-	cache.EndBlockChanged = true
+    cache.EndBlockChanged = true
 
 	cache.DurationLoaded = false
 	cache.DurationPastLoaded = false

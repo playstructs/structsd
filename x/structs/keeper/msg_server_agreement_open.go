@@ -68,23 +68,40 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
         return &types.MsgAgreementResponse{}, errSend
     }
 
-    // Create the allocation
-    allocation := types.CreateAllocationStub(types.AllocationType_providerAgreement, provider.GetSubstationId(), msg.Creator, activePlayer.GetPlayerId())
-    allocation, _ , _ = k.AppendAllocation(ctx, allocation, msg.Capacity)
-
-    // Build the Agreement range
-    startBlock := uint64(ctx.BlockHeight()) + uint64(1)
-    endBlock := startBlock + msg.Duration
-
-    agreement := types.CreateBaseAgreement(msg.Creator, activePlayer.GetPlayerId(), msg.ProviderId, msg.Capacity, startBlock, endBlock, allocation.Id)
-    // Append the Agreement using the Allocations Id Index
-    agreement.Id = GetObjectID(types.ObjectType_agreement, allocation.Index)
-    k.AppendAgreement(ctx, agreement)
-
     checkpointError := provider.Checkpoint()
     if checkpointError != nil {
         return &types.MsgAgreementResponse{}, checkpointError
     }
+
+    // Create the allocation through context
+    allocation, allocationErr := cc.NewAllocation(
+        types.AllocationType_providerAgreement,
+        provider.GetSubstationId(),
+        "",
+        msg.Creator,
+        activePlayer.GetPlayerId(),
+        msg.Capacity,
+    )
+    if allocationErr != nil {
+        return &types.MsgAgreementResponse{}, allocationErr
+    }
+
+    // Build the Agreement through context
+    startBlock := uint64(ctx.BlockHeight()) + 1
+    endBlock := startBlock + msg.Duration
+
+    agreementRecord := types.CreateBaseAgreement(
+        msg.Creator,
+        activePlayer.GetPlayerId(),
+        msg.ProviderId,
+        msg.Capacity,
+        startBlock,
+        endBlock,
+        allocation.GetAllocation().Id,
+    )
+    agreementRecord.Id = GetObjectID(types.ObjectType_agreement, allocation.GetAllocation().Index)
+    cc.NewAgreement(agreementRecord)
+
     provider.AgreementLoadIncrease(msg.Capacity)
 
 	return &types.MsgAgreementResponse{}, nil
