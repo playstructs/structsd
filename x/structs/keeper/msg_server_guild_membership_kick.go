@@ -33,11 +33,10 @@ func (k msgServer) GuildMembershipKick(goCtx context.Context, msg *types.MsgGuil
 		msg.GuildId = callingPlayer.GetGuildId()
 	}
 
-    guildMembershipApplication, guildMembershipApplicationError := k.GetGuildMembershipKickCache(ctx, callingPlayer, msg.GuildId, msg.PlayerId)
+    guildMembershipApplication, guildMembershipApplicationError := cc.GetGuildMembershipKickCache(callingPlayer, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
         return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
     }
-    cc.RegisterGuildMembershipApp(&guildMembershipApplication)
 
     guildMembershipApplicationError = guildMembershipApplication.Kick()
     if guildMembershipApplicationError != nil {

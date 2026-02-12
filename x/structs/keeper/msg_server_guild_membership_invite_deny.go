@@ -36,11 +36,10 @@ func (k msgServer) GuildMembershipInviteDeny(goCtx context.Context, msg *types.M
 		msg.GuildId = callingPlayer.GetGuildId()
 	}
 
-    guildMembershipApplication, guildMembershipApplicationError := k.GetGuildMembershipApplicationCache(ctx, callingPlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
+    guildMembershipApplication, guildMembershipApplicationError := cc.GetGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
         return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
     }
-    cc.RegisterGuildMembershipApp(&guildMembershipApplication)
 
     guildMembershipApplicationError = guildMembershipApplication.VerifyInviteAsPlayer()
     if guildMembershipApplicationError != nil {

@@ -78,6 +78,16 @@ func (cache *GuildCache) LoadGuild() bool {
 /* Getters
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
  */
+func (cache *GuildCache) CheckGuild() (error) {
+    if (!cache.GuildLoaded) {
+        if !cache.LoadGuild() {
+            return types.NewObjectNotFoundError("guild", cache.GuildId)
+        }
+    }
+    return nil
+}
+
+
 func (cache *GuildCache) GetGuild() types.Guild {
 	if !cache.GuildLoaded {
 		cache.LoadGuild()

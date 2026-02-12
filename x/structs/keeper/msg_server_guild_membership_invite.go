@@ -33,11 +33,10 @@ func (k msgServer) GuildMembershipInvite(goCtx context.Context, msg *types.MsgGu
 		msg.GuildId = callingPlayer.GetGuildId()
 	}
 
-    guildMembershipApplication, guildMembershipApplicationError := k.GetGuildMembershipApplicationCache(ctx, callingPlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
+    guildMembershipApplication, guildMembershipApplicationError := cc.GetGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
         return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
     }
-    cc.RegisterGuildMembershipApp(&guildMembershipApplication)
 
 	/*
 	 * We're either going to load up the substation provided as an

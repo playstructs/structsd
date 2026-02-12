@@ -23,12 +23,12 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	k.AddressEmitActivity(ctx, msg.Creator)
 
 	// Look up requesting account
-	proxyPlayer := k.UpsertPlayer(ctx, msg.Creator)
+	proxyPlayer := cc.UpsertPlayer(msg.Creator)
 
 	// look up destination guild
-	guild, guildFound := k.GetGuild(ctx, proxyPlayer.GuildId)
-	if !guildFound {
-		return &types.MsgGuildMembershipResponse{}, types.NewObjectNotFoundError("guild", proxyPlayer.GuildId)
+	guild := cc.GetGuild(proxyPlayer.GetGuildId())
+	if guild.CheckGuild() != nil {
+		return &types.MsgGuildMembershipResponse{}, types.NewObjectNotFoundError("guild", proxyPlayer.GetGuildId())
 	}
 
 	// Decode the PubKey from hex Encoding
@@ -54,10 +54,10 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	//
 	// A playerIndex of 0 should never return anything other than a nonce of 0
 	playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Address)
-	nonce := k.GetGridAttribute(ctx, GetGridAttributeID(types.GridAttributeType_proxyNonce, types.ObjectType_player, playerIndex))
+	nonce := cc.GetGridAttribute(GetGridAttributeID(types.GridAttributeType_proxyNonce, types.ObjectType_player, playerIndex))
 
 	// We rebuild the message manually here rather than trust the client to provide it
-	hashInput := fmt.Sprintf("GUILD%sADDRESS%sNONCE%d", guild.Id, msg.Address, nonce)
+	hashInput := fmt.Sprintf("GUILD%sADDRESS%sNONCE%d", guild.GetGuildId(), msg.Address, nonce)
 
 	/*
 	   fmt.Printf("Hash: %s \n", hashInput)
@@ -82,22 +82,21 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 		return &types.MsgGuildMembershipResponse{}, types.NewAddressValidationError(msg.Address, "signature_invalid")
 	}
 
-	guildObjectPermissionId := GetObjectPermissionIDBytes(guild.Id, proxyPlayer.Id)
+	guildObjectPermissionId := GetObjectPermissionIDBytes(guild.GetGuildId(), proxyPlayer.GetPlayerId())
 	addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
 
 	// Check to make sure the player has permissions on the guild
-	if !k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.PermissionAssociations) {
-		return &types.MsgGuildMembershipResponse{}, types.NewPermissionError("player", proxyPlayer.Id, "guild", guild.Id, uint64(types.PermissionAssociations), "register_player")
+	if !cc.PermissionHasOneOf(guildObjectPermissionId, types.PermissionAssociations) {
+		return &types.MsgGuildMembershipResponse{}, types.NewPermissionError("player", proxyPlayer.GetPlayerId(), "guild", guild.GetGuildId(), uint64(types.PermissionAssociations), "register_player")
 	}
 
 	// Make sure the address calling this has Associate permissions
-	if !k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssociations) {
+	if !cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssociations) {
 		return &types.MsgGuildMembershipResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssociations), "guild_management")
 	}
 
-	var substation types.Substation
-	substationFound := false
-
+	var substation *SubstationCache
+    substationSet := false
 	/* Look up destination substation
 	 *
 	 * We're going to try and load up the substation override first
@@ -109,62 +108,59 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	 */
 
 	if msg.SubstationId != "" {
-		substation, substationFound = k.GetSubstation(ctx, msg.SubstationId)
-		if !substationFound {
+		substation = cc.GetSubstation(msg.SubstationId)
+		if substation.CheckSubstation() != nil {
 			return &types.MsgGuildMembershipResponse{}, types.NewObjectNotFoundError("substation", msg.SubstationId).WithContext("override substation")
 		}
 
 		// Since the Guild Entry Substation is being overridden, let's make
 		// sure the ProxyPlayer actually have authority over this substation
-		substationObjectPermissionId := GetObjectPermissionIDBytes(substation.Id, proxyPlayer.Id)
-		if !k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.PermissionGrid) {
-			return &types.MsgGuildMembershipResponse{}, types.NewPermissionError("player", proxyPlayer.Id, "substation", substation.Id, uint64(types.PermissionGrid), "player_connect")
+		substationObjectPermissionId := GetObjectPermissionIDBytes(substation.GetSubstationId(), proxyPlayer.GetPlayerId())
+		if !cc.PermissionHasOneOf(substationObjectPermissionId, types.PermissionGrid) {
+			return &types.MsgGuildMembershipResponse{}, types.NewPermissionError("player", proxyPlayer.GetPlayerId(), "substation", substation.GetSubstationId(), uint64(types.PermissionGrid), "player_connect")
 		}
+		substationSet = true
 	}
 
-	if !substationFound {
-		substation, substationFound = k.GetSubstation(ctx, guild.EntrySubstationId)
-		if !substationFound {
-			return &types.MsgGuildMembershipResponse{}, types.NewObjectNotFoundError("substation", guild.EntrySubstationId).WithContext("guild entry substation for " + guild.Id)
+	if !substationSet {
+		substation = cc.GetSubstation(guild.GetEntrySubstationId())
+		if substation.CheckSubstation() != nil {
+			return &types.MsgGuildMembershipResponse{}, types.NewObjectNotFoundError("substation", guild.GetEntrySubstationId()).WithContext("guild entry substation for " + guild.GetGuildId())
 		}
 	}
 
 	// create new player
-	player := k.UpsertPlayer(ctx, msg.Address)
+	player := cc.UpsertPlayer(msg.Address)
 
-	if player.GuildId != "" {
+	if player.GetGuildId() != "" {
 		// TODO new guild setting that dictates what to do when a player leaves
 		// If already in a guild, leave permissions as-is?
 		// Force disconnection of Substation?
 
 		// look up old guild
-		oldGuild, _ := k.GetGuild(ctx, player.GuildId)
+		oldGuild := cc.GetGuild(player.GetGuildId())
 
 		// Let's only disconnect the player if it's the main substation for the guild
 		// Otherwise it might be there own substation and maybe they don't really want
 		// that fucked with. Could also throw a flag in the calling message to force this.
-		if player.SubstationId != "" && player.SubstationId == oldGuild.EntrySubstationId {
-			player, _ = k.SubstationDisconnectPlayer(ctx, player)
+		if player.GetSubstationId() != "" && player.GetSubstationId() == oldGuild.GetEntrySubstationId() {
+			player.DisconnectSubstation()
 		}
 	}
 
 	// Add player to the guild
-	player.GuildId = guild.Id
+	player.SetGuild(guild.GetGuildId())
 
 	// Connect player to the substation
 	// Now let's get the player some power
-	if player.SubstationId == "" {
+	if player.GetSubstationId() == "" {
 		// Connect Player to Substation
-		k.SubstationConnectPlayer(ctx, substation, player)
-	} else {
-	    k.SetPlayer(ctx, player)
+		player.MigrateSubstation(substation.GetSubstationId())
 	}
-
-	_ = cc
 
 	// The proxy join has completely mostly successfully at this point
 	// Increase the nonce of the player account to prevent replay of this signed message
-	k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_proxyNonce, player.Id), 1)
+	cc.SetGridAttributeIncrement(GetGridAttributeIDByObjectId(types.GridAttributeType_proxyNonce, player.GetPlayerId()), 1)
 
 	return &types.MsgGuildMembershipResponse{}, nil
 }
