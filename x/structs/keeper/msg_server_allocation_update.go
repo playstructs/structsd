@@ -15,7 +15,7 @@ func (k msgServer) AllocationUpdate(goCtx context.Context, msg *types.MsgAllocat
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId)
+	allocation, allocationFound := cc.GetAllocation(msg.AllocationId)
 	if (!allocationFound) {
 		return &types.MsgAllocationUpdateResponse{}, types.NewObjectNotFoundError("allocation", msg.AllocationId)
 	}
@@ -25,33 +25,33 @@ func (k msgServer) AllocationUpdate(goCtx context.Context, msg *types.MsgAllocat
         return &types.MsgAllocationUpdateResponse{}, types.NewPlayerRequiredError(msg.Creator, "allocation_update")
     }
 
-    sourceObjectPermissionId := GetObjectPermissionIDBytes(allocation.SourceObjectId, player.PlayerId)
+    sourceObjectPermissionId := GetObjectPermissionIDBytes(allocation.GetAllocation().SourceObjectId, player.GetPlayerId())
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
 
     // Ignore the one case where it's a player creating an allocation on themselves.
     // Surely that doesn't need a lookup.
-    if (player.PlayerId != allocation.SourceObjectId) {
+    if (player.GetPlayerId() != allocation.GetAllocation().SourceObjectId) {
         // check that the player has permissions
-        if (!k.PermissionHasOneOf(ctx, sourceObjectPermissionId, types.PermissionAssets)) {
-            return &types.MsgAllocationUpdateResponse{}, types.NewPermissionError("player", player.PlayerId, "allocation", allocation.SourceObjectId, uint64(types.PermissionAssets), "allocation_update")
+        if (!cc.PermissionHasOneOf(sourceObjectPermissionId, types.PermissionAssets)) {
+            return &types.MsgAllocationUpdateResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "allocation", allocation.GetAllocation().SourceObjectId, uint64(types.PermissionAssets), "allocation_update")
         }
     }
 
     // check that the account has energy management permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.Permission(types.PermissionAssets))) {
+    if (!cc.PermissionHasOneOf(addressPermissionId, types.Permission(types.PermissionAssets))) {
         return &types.MsgAllocationUpdateResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "energy_management")
     }
 
 
-    if (allocation.Type != types.AllocationType_dynamic) {
-        return &types.MsgAllocationUpdateResponse{}, types.NewAllocationError(allocation.SourceObjectId, "immutable_type").WithFieldChange("type", allocation.Type.String(), "dynamic")
+    if (allocation.GetAllocation().Type != types.AllocationType_dynamic) {
+        return &types.MsgAllocationUpdateResponse{}, types.NewAllocationError(allocation.GetAllocation().SourceObjectId, "immutable_type").WithFieldChange("type", allocation.GetAllocation().Type.String(), "dynamic")
     }
 
     if (msg.Power == 0) {
         return &types.MsgAllocationUpdateResponse{}, types.NewParameterValidationError("power", 0, "below_minimum").WithRange(1, 0)
     }
 
-	allocation, _, err = k.SetAllocation(ctx, allocation, msg.Power)
+    allocation.SetDynamicPower(msg.Power)
 
 	return &types.MsgAllocationUpdateResponse{
 		AllocationId: msg.AllocationId,

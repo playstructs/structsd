@@ -97,6 +97,14 @@ func (cache *AllocationCache) GetObjectLoad(objectId string) (uint64) {
     return cache.CC.GetGridAttribute(objectLoadAttributeId)
 }
 
+func (cache *AllocationCache) SetController(address string) () {
+    if !cache.Loaded {
+        cache.LoadAllocation()
+    }
+    cache.Allocation.Controller = address
+    cache.Changed = true
+}
+
 func (cache *AllocationCache) SetAllocationSourceObjectId(sourceObjectId string) (bool) {
     if ! cache.Loaded {
         if ! cache.LoadAllocation() {
