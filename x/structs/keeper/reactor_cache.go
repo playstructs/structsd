@@ -58,3 +58,12 @@ func (cache *ReactorCache) GetReactor() types.Reactor {
 	}
 	return cache.Reactor
 }
+
+func (cache *ReactorCache) SetGuild(guildId string) {
+	if !cache.ReactorLoaded {
+		cache.LoadReactor()
+	}
+	cache.Reactor.GuildId = guildId
+	cache.Changed = true
+
+}

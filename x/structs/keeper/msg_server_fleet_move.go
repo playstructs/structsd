@@ -17,7 +17,7 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
 
 
     // Load the fleet
-    fleet, fleetLookupErr := cc.GetFleet(msg.FleetId)
+    fleet, fleetLookupErr := cc.GetFleetById(msg.FleetId)
     if (fleetLookupErr != nil) {
         return &types.MsgFleetMoveResponse{}, fleetLookupErr
     }
@@ -28,10 +28,6 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
         return &types.MsgFleetMoveResponse{}, permissionError
     }
 
-    if fleet.GetOwner().IsHalted() {
-        return &types.MsgFleetMoveResponse{}, types.NewPlayerHaltedError(fleet.GetOwnerId(), "fleet_move")
-    }
-
     destination := cc.GetPlanet(msg.DestinationLocationId)
     if (!destination.LoadPlanet()) {
         return &types.MsgFleetMoveResponse{}, types.NewObjectNotFoundError("planet", msg.DestinationLocationId)
@@ -40,7 +36,6 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
     // Is the Fleet able to move?
     readinessError := fleet.PlanetMoveReadinessCheck()
     if (readinessError != nil) {
-        k.DischargePlayer(ctx, fleet.GetOwnerId())
         return &types.MsgFleetMoveResponse{}, readinessError
     }
 

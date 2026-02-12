@@ -23,9 +23,9 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
     validatorAddress = playerAddress.Bytes()
 
     reactorBytes, _ := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
-    reactor, reactorFound := k.GetReactorByBytes(ctx, reactorBytes)
+    reactor := cc.GetReactor(string(reactorBytes))
 
-    if (!reactorFound) {
+    if reactor.CheckReactor() != nil {
         return &types.MsgGuildCreateResponse{}, types.NewReactorError("guild_create", "required").WithAddress(msg.Creator, "validator")
     }
 
@@ -36,39 +36,33 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
         // that includes a validator as an associated address, it's able to perform this step
 
 
-    playerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
-    if (playerIndex == 0) {
+    player, playerErr := cc.GetPlayerByAddress(msg.Creator)
+    if playerErr != nil {
         // should really never get here as player creation is triggered
         // during reactor initialization
         return &types.MsgGuildCreateResponse{}, types.NewPlayerRequiredError(msg.Creator, "guild_create")
     }
-    player, _ := k.GetPlayerFromIndex(ctx, playerIndex)
-
 
     if (msg.EntrySubstationId != "") {
 
         // Check that the Substation exists
-        _, substationFound := k.GetSubstation(ctx, msg.EntrySubstationId)
-        if (!substationFound) {
+        substation := cc.GetSubstation(msg.EntrySubstationId)
+        if substation.CheckSubstation() != nil {
             return &types.MsgGuildCreateResponse{}, types.NewObjectNotFoundError("substation", msg.EntrySubstationId)
         }
 
         // check that the calling player has substation permissions
-        substationObjectPermissionId := GetObjectPermissionIDBytes(msg.EntrySubstationId, player.Id)
-        if (!k.PermissionHasOneOf(ctx,substationObjectPermissionId, types.PermissionGrid)) {
-            return &types.MsgGuildCreateResponse{}, types.NewPermissionError("player", player.Id, "substation", msg.EntrySubstationId, uint64(types.PermissionGrid), "substation_connect")
+        substationObjectPermissionId := GetObjectPermissionIDBytes(msg.EntrySubstationId, player.GetPlayerId())
+        if (!cc.PermissionHasOneOf(substationObjectPermissionId, types.PermissionGrid)) {
+            return &types.MsgGuildCreateResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "substation", msg.EntrySubstationId, uint64(types.PermissionGrid), "substation_connect")
         }
     }
 
-    _ = cc
+    // TODO Fix Guild Creation
+    guild := k.AppendGuild(ctx, msg.Endpoint, msg.EntrySubstationId, reactor.GetReactor(), player.GetPlayer())
 
-    guild := k.AppendGuild(ctx, msg.Endpoint, msg.EntrySubstationId, reactor, player)
-
-    player.GuildId = guild.Id
-    k.SetPlayer(ctx, player)
-
-    reactor.GuildId = guild.Id
-    k.SetReactor(ctx, reactor)
+    player.SetGuild(guild.Id)
+    reactor.SetGuild(guild.Id)
 
 	return &types.MsgGuildCreateResponse{GuildId: guild.Id}, nil
 }
