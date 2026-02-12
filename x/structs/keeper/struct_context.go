@@ -30,6 +30,17 @@ func (cc *CurrentContext) GetStruct(structId string) *StructCache {
 	return cc.structs[structId]
 }
 
+func (cc *CurrentContext) GetAllStructDefender(protectedStructId string) (defenders []*StructCache) {
+    defenderList := cc.k.GetAllStructDefender(cc.ctx, protectedStructId)
+    for _, defenderId := range defenderList {
+        structure, structureFound := cc.GetStruct(defenderId)
+        if structureFound {
+            defenders = append(defenders, structure)
+        }
+    }
+    return
+}
+
 func (cc *CurrentContext) InitialCommandShipStruct(fleet *FleetCache) *StructCache {
 
 	structType, _ := cc.GetStructType()

@@ -88,7 +88,6 @@ type CurrentContext struct {
 	allocations     map[string]*AllocationCache
 
 	reactors        map[string]*ReactorCache
-	structDefenders map[string]*StructDefenderCache
 	structTypes     map[uint64]*StructTypeCache // read-only, never committed
 
 
@@ -136,7 +135,6 @@ func (k *Keeper) NewCurrentContext(ctx context.Context) *CurrentContext {
 		allocations:     make(map[string]*AllocationCache),
 
 		reactors:        make(map[string]*ReactorCache),
-		structDefenders: make(map[string]*StructDefenderCache),
 		structTypes:     make(map[uint64]*StructTypeCache),
 
 
@@ -263,7 +261,6 @@ func (cc *CurrentContext) Reset() {
 	cc.allocations = make(map[string]*AllocationCache)
 	cc.permissions = make(map[string]*PermissionsCache)
 	cc.reactors = make(map[string]*ReactorCache)
-	cc.structDefenders = make(map[string]*StructDefenderCache)
 	cc.structTypes = make(map[uint64]*StructTypeCache)
 
 

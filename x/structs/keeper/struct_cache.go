@@ -196,10 +196,7 @@ func (cache *StructCache) GetFleet() *FleetCache {
 }
 
 func (cache *StructCache) GetDefenders() []*StructCache {
-	if !cache.DefendersLoaded {
-		cache.LoadDefenders()
-	}
-	return cache.Defenders
+	return cache.CC.GetAllStructDefender(cache.GetStructId())
 }
 
 func (cache *StructCache) GetEventAttackDetail() *types.EventAttackDetail {

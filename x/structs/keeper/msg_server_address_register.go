@@ -27,7 +27,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
        return &types.MsgAddressRegisterResponse{}, err
     }
 
-    if !player.CheckPlayer() != nil {
+    if player.CheckPlayer() != nil {
         return &types.MsgAddressRegisterResponse{}, types.NewObjectNotFoundError("player", msg.PlayerId)
     }
 
