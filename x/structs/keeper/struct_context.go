@@ -1,5 +1,9 @@
 package keeper
 
+import (
+	"structs/x/structs/types"
+)
+
 // GetStruct returns a StructCache, loading from store if not already cached.
 // Returns the same instance if called multiple times with the same ID.
 func (cc *CurrentContext) GetStruct(structId string) *StructCache {

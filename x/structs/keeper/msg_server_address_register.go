@@ -27,10 +27,9 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
        return &types.MsgAddressRegisterResponse{}, err
     }
 
-    if !player.LoadPlayer() {
+    if !player.CheckPlayer() != nil {
         return &types.MsgAddressRegisterResponse{}, types.NewObjectNotFoundError("player", msg.PlayerId)
     }
-
 
 	// Is the address associated with an account yet
     playerFoundForAddress := cc.GetPlayerIndexFromAddress(msg.Address)
@@ -47,7 +46,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
 	// Does this creator address have the permissions to do this
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // The calling address must have a minimum of the same permission level
-    if (!k.PermissionHasAll(ctx, addressPermissionId, types.Permission(msg.Permissions))) {
+    if (!cc.PermissionHasAll(addressPermissionId, types.Permission(msg.Permissions))) {
         return &types.MsgAddressRegisterResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(msg.Permissions), "address_association")
     }
 
@@ -88,7 +87,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
 
 	// Add the permission to the new address
     newAddressPermissionId := GetAddressPermissionIDBytes(msg.Address)
-    k.PermissionAdd(ctx, newAddressPermissionId, types.Permission(msg.Permissions))
+    cc.PermissionAdd(newAddressPermissionId, types.Permission(msg.Permissions))
 
 
     // Move Funds

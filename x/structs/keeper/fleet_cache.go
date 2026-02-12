@@ -42,9 +42,9 @@ func (cache *FleetCache) ID() string {
 }
 
 func (cache *FleetCache) LoadFleet() (found bool) {
-    cache.Fleet, found = cache.CC.k.GetFleet(cache.CC.ctx, cache.FleetId)
+    cache.Fleet, cache.FleetLoaded = cache.CC.k.GetFleet(cache.CC.ctx, cache.FleetId)
 
-    if (!found) {
+    if (!cache.FleetLoaded) {
         fleet := types.CreateEmptyFleet()
         // Set the ID of the appended value
         fleet.Id = cache.FleetId
@@ -53,14 +53,12 @@ func (cache *FleetCache) LoadFleet() (found bool) {
         player, _ := cache.CC.GetPlayer(cache.PlayerId)
         player.SetFleetId(cache.FleetId)
 
-        structure := cache.CC.InitialCommandShipStruct(cache.PlayerId, cache.FleetId)
-        cache.SetCommandStruct(structure.GetStructId())
-
         cache.Fleet = fleet
         cache.Changed = true
+        cache.FleetLoaded = true
+        structure := cache.CC.InitialCommandShipStruct(cache)
+        cache.SetCommandStruct(structure.GetStructId())
     }
-
-    cache.FleetLoaded = true
 
     return cache.FleetLoaded
 }
@@ -261,7 +259,7 @@ func (cache *FleetCache) PeaceDeal() (){
 
 func (cache *FleetCache) BuildInitiateReadiness(structure *types.Struct, structType *StructTypeCache, ambit types.Ambit, ambitSlot uint64) (error) {
     if structure.GetOwner() != cache.GetOwnerId() {
-         return types.NewStructOwnershipError(structure.GetStructId(), cache.GetOwnerId(), structure.GetOwner()).WithLocation("fleet", cache.GetFleetId())
+         return types.NewStructOwnershipError(structure.Id, cache.GetOwnerId(), structure.GetOwner()).WithLocation("fleet", cache.GetFleetId())
     }
 
     if cache.IsAway() {
@@ -280,17 +278,17 @@ func (cache *FleetCache) BuildInitiateReadiness(structure *types.Struct, structT
     }
 
     if (structType.GetStructType().Category != types.ObjectType_fleet) {
-        return types.NewStructLocationError(structType.GetId(), ambit.String(), "outside_planet")
+        return types.NewStructLocationError(structType.ID(), ambit.String(), "outside_planet")
     }
 
     // Check that the Struct can exist in the specified ambit
-    if types.Ambit_flag[ambit]&structType.PossibleAmbit == 0 {
-        return types.NewStructLocationError(structType.GetId(), ambit.String(), "invalid_ambit")
+    if types.Ambit_flag[ambit]&structType.GetStructType().PossibleAmbit == 0 {
+        return types.NewStructLocationError(structType.ID(), ambit.String(), "invalid_ambit")
     }
 
     if structType.GetStructType().Type == types.CommandStruct {
         if cache.HasCommandStruct() {
-            return types.NewStructBuildError(structType.GetId(), "fleet", cache.GetFleetId(), "command_exists")
+            return types.NewStructBuildError(structType.ID(), "fleet", cache.GetFleetId(), "command_exists")
         }
 
     } else {
@@ -312,14 +310,14 @@ func (cache *FleetCache) BuildInitiateReadiness(structure *types.Struct, structT
                 slots = cache.GetFleet().SpaceSlots
                 slot  = cache.GetFleet().Space[ambitSlot]
             default:
-                return types.NewStructBuildError(structType.GetId(), "fleet", cache.GetFleetId(), "invalid_ambit").WithAmbit(ambit.String())
+                return types.NewStructBuildError(structType.ID(), "fleet", cache.GetFleetId(), "invalid_ambit").WithAmbit(ambit.String())
         }
 
         if (ambitSlot >= slots) {
-            return types.NewStructBuildError(structType.GetId(), "fleet", cache.GetFleetId(), "slot_unavailable").WithSlot(ambitSlot)
+            return types.NewStructBuildError(structType.ID(), "fleet", cache.GetFleetId(), "slot_unavailable").WithSlot(ambitSlot)
         }
         if (slot != "") {
-            return types.NewStructBuildError(structType.GetId(), "fleet", cache.GetFleetId(), "slot_occupied").WithSlot(ambitSlot).WithExistingStruct(slot)
+            return types.NewStructBuildError(structType.ID(), "fleet", cache.GetFleetId(), "slot_occupied").WithSlot(ambitSlot).WithExistingStruct(slot)
         }
     }
     return nil
@@ -333,12 +331,12 @@ func (cache *FleetCache) MoveReadiness(structure *StructCache, ambit types.Ambit
     }
 
     if (structure.GetStructType().Category != types.ObjectType_fleet) {
-        return types.NewStructLocationError(structure.GetStructType().GetId(), ambit.String(), "outside_planet")
+        return types.NewStructLocationError(structure.GetTypeId(), ambit.String(), "outside_planet")
     }
 
     // Check that the Struct can exist in the specified ambit
     if types.Ambit_flag[ambit]&structure.GetStructType().PossibleAmbit == 0 {
-        return types.NewStructLocationError(structure.GetStructType().GetId(), ambit.String(), "invalid_ambit")
+        return types.NewStructLocationError(structure.GetTypeId(), ambit.String(), "invalid_ambit")
     }
 
     if structure.GetStructType().Type != types.CommandStruct {
@@ -360,14 +358,14 @@ func (cache *FleetCache) MoveReadiness(structure *StructCache, ambit types.Ambit
                 slots = cache.GetFleet().SpaceSlots
                 slot  = cache.GetFleet().Space[ambitSlot]
             default:
-                return types.NewStructBuildError(structure.GetStructType().GetId(), "fleet", cache.GetFleetId(), "invalid_ambit").WithAmbit(ambit.String())
+                return types.NewStructBuildError(structure.GetTypeId(), "fleet", cache.GetFleetId(), "invalid_ambit").WithAmbit(ambit.String())
         }
 
         if (ambitSlot >= slots) {
-            return types.NewStructBuildError(structure.GetStructType().GetId(), "fleet", cache.GetFleetId(), "slot_unavailable").WithSlot(ambitSlot)
+            return types.NewStructBuildError(structure.GetTypeId(), "fleet", cache.GetFleetId(), "slot_unavailable").WithSlot(ambitSlot)
         }
         if (slot != "") {
-            return types.NewStructBuildError(structure.GetStructType().GetId(), "fleet", cache.GetFleetId(), "slot_occupied").WithSlot(ambitSlot).WithExistingStruct(slot)
+            return types.NewStructBuildError(structure.GetTypeId(), "fleet", cache.GetFleetId(), "slot_occupied").WithSlot(ambitSlot).WithExistingStruct(slot)
         }
     }
     return nil

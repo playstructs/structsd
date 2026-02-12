@@ -20,7 +20,7 @@ func CreateBaseStruct(structTypeId uint64, creator string, owner string, locatio
         Creator: creator,
         Owner: owner,
 
-        Type: structType.Id,
+        Type: structTypeId,
 
         LocationType: locationType,
         OperatingAmbit: ambit,

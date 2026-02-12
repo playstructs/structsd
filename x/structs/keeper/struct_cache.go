@@ -233,12 +233,12 @@ func (cache *StructCache) SetOwnerId(owner string) {
 
 func (cache *StructCache) ResetBlockStartOreMine() {
 	uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
-	cache.CC.SetStructAttribute(cache.BlockStartOreMineAttributeId, uint64(uctx.BlockHeight())
+	cache.CC.SetStructAttribute(cache.BlockStartOreMineAttributeId, uint64(uctx.BlockHeight()))
 }
 
 func (cache *StructCache) ResetBlockStartOreRefine() {
 	uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
-	cache.CC.SetStructAttribute(cache.BlockStartOreRefineAttributeId, uint64(uctx.BlockHeight())
+	cache.CC.SetStructAttribute(cache.BlockStartOreRefineAttributeId, uint64(uctx.BlockHeight()))
 }
 
 func (cache *StructCache) ClearBlockStartOreMine() {

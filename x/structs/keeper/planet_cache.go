@@ -305,7 +305,7 @@ func (cache *PlanetCache) IsSuccessful(successRate fraction.Fraction) bool {
 
 func (cache *PlanetCache) BuildInitiateReadiness(structure *types.Struct, structType *StructTypeCache, ambit types.Ambit, ambitSlot uint64) (error) {
     if structure.GetOwner() != cache.GetOwnerId() {
-         return types.NewStructOwnershipError(structure.GetStructId(), cache.GetOwnerId(), structure.GetOwner()).WithLocation("planet", cache.GetPlanetId())
+         return types.NewStructOwnershipError(structure.Id, cache.GetOwnerId(), structure.GetOwner()).WithLocation("planet", cache.GetPlanetId())
     }
 
     if structType.GetStructType().Type == types.CommandStruct {
@@ -325,12 +325,12 @@ func (cache *PlanetCache) BuildInitiateReadiness(structure *types.Struct, struct
     }
 
     if (structType.GetStructType().Category != types.ObjectType_planet) {
-        return types.NewStructLocationError(structType.GetId(), ambit.String(), "outside_planet")
+        return types.NewStructLocationError(structType.ID(), ambit.String(), "outside_planet")
     }
 
     // Check that the Struct can exist in the specified ambit
-    if types.Ambit_flag[ambit]&structType.PossibleAmbit == 0 {
-        return types.NewStructLocationError(structType.GetId(), ambit.String(), "invalid_ambit")
+    if types.Ambit_flag[ambit]&structType.GetStructType().PossibleAmbit == 0 {
+        return types.NewStructLocationError(structType.ID(), ambit.String(), "invalid_ambit")
     }
 
     var slots uint64
@@ -350,14 +350,14 @@ func (cache *PlanetCache) BuildInitiateReadiness(structure *types.Struct, struct
             slots = cache.GetPlanet().SpaceSlots
             slot  = cache.GetPlanet().Space[ambitSlot]
         default:
-            return types.NewStructBuildError(structType.GetId(), "planet", cache.GetPlanetId(), "invalid_ambit").WithAmbit(ambit.String())
+            return types.NewStructBuildError(structType.ID(), "planet", cache.GetPlanetId(), "invalid_ambit").WithAmbit(ambit.String())
     }
 
     if (ambitSlot >= slots) {
-        return types.NewStructBuildError(structType.GetId(), "planet", cache.GetPlanetId(), "slot_unavailable").WithSlot(ambitSlot)
+        return types.NewStructBuildError(structType.ID(), "planet", cache.GetPlanetId(), "slot_unavailable").WithSlot(ambitSlot)
     }
     if (slot != "") {
-        return types.NewStructBuildError(structType.GetId(), "planet", cache.GetPlanetId(), "slot_occupied").WithSlot(ambitSlot).WithExistingStruct(slot)
+        return types.NewStructBuildError(structType.ID(), "planet", cache.GetPlanetId(), "slot_occupied").WithSlot(ambitSlot).WithExistingStruct(slot)
     }
 
     return nil
@@ -371,16 +371,16 @@ func (cache *PlanetCache) MoveReadiness(structure *StructCache, ambit types.Ambi
     }
 
     if structure.GetStructType().Type == types.CommandStruct {
-        return types.NewStructLocationError(structure.GetStructType().GetId(), ambit.String(), "command_struct_fleet_only")
+        return types.NewStructLocationError(structure.GetTypeId(), ambit.String(), "command_struct_fleet_only")
     }
 
     if (structure.GetStructType().Category != types.ObjectType_planet) {
-        return types.NewStructLocationError(structure.GetStructType().GetId(), ambit.String(), "outside_planet")
+        return types.NewStructLocationError(structure.GetTypeId(), ambit.String(), "outside_planet")
     }
 
     // Check that the Struct can exist in the specified ambit
     if types.Ambit_flag[ambit]&structure.GetStructType().PossibleAmbit == 0 {
-        return types.NewStructLocationError(structure.GetStructType().GetId(), ambit.String(), "invalid_ambit")
+        return types.NewStructLocationError(structure.GetTypeId(), ambit.String(), "invalid_ambit")
     }
 
     var slots uint64
@@ -400,14 +400,14 @@ func (cache *PlanetCache) MoveReadiness(structure *StructCache, ambit types.Ambi
             slots = cache.GetPlanet().SpaceSlots
             slot  = cache.GetPlanet().Space[ambitSlot]
         default:
-            return types.NewStructBuildError(structure.GetStructType().GetId(), "planet", cache.GetPlanetId(), "invalid_ambit").WithAmbit(ambit.String())
+            return types.NewStructBuildError(structure.GetTypeId(), "planet", cache.GetPlanetId(), "invalid_ambit").WithAmbit(ambit.String())
     }
 
     if (ambitSlot >= slots) {
-        return types.NewStructBuildError(structure.GetStructType().GetId(), "planet", cache.GetPlanetId(), "slot_unavailable").WithSlot(ambitSlot)
+        return types.NewStructBuildError(structure.GetTypeId(), "planet", cache.GetPlanetId(), "slot_unavailable").WithSlot(ambitSlot)
     }
     if (slot != "") {
-        return types.NewStructBuildError(structure.GetStructType().GetId(), "planet", cache.GetPlanetId(), "slot_occupied").WithSlot(ambitSlot).WithExistingStruct(slot)
+        return types.NewStructBuildError(structure.GetTypeId(), "planet", cache.GetPlanetId(), "slot_occupied").WithSlot(ambitSlot).WithExistingStruct(slot)
     }
 
     return nil
