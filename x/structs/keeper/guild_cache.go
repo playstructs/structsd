@@ -65,13 +65,7 @@ func (cache *GuildCache) ID() string {
 
 // Load the Guild record
 func (cache *GuildCache) LoadGuild() bool {
-	guild, guildFound := cache.CC.k.GetGuild(cache.CC.ctx, cache.GuildId)
-
-	if guildFound {
-		cache.Guild = guild
-		cache.GuildLoaded = true
-	}
-
+	cache.Guild, cache.GuildLoaded = cache.CC.k.GetGuild(cache.CC.ctx, cache.GuildId)
 	return cache.GuildLoaded
 }
 
@@ -344,20 +338,55 @@ func (cache *GuildCache) BankConfiscateAndBurn(amountToken math.Int, address str
 
 
 
-func (cache *PlayerCache) MigrateGuild(guild *GuildCache){
-    if (!cache.PlayerLoaded) {
-        cache.LoadPlayer()
-    }
 
-    cache.Player.GuildId = guild.GetGuildId()
+func (cache *GuildCache) SetEndpoint(endpoint string) {
+    if (!cache.GuildLoaded) {
+        cache.LoadGuild()
+    }
+    cache.Guild.Endpoint = endpoint
     cache.Changed = true
 }
 
-func (cache *PlayerCache) LeaveGuild(){
-    if (!cache.PlayerLoaded) {
-        cache.LoadPlayer()
+func (cache *GuildCache) SetOwner(owner string) {
+    if (!cache.GuildLoaded) {
+        cache.LoadGuild()
     }
-
-    cache.Player.GuildId = ""
+    cache.Guild.Owner = owner
     cache.Changed = true
 }
+
+
+func (cache *GuildCache) SetJoinInfusionMinimumBypassByRequest(level types.guildJoinBypassLevel) {
+    if (!cache.GuildLoaded) {
+        cache.LoadGuild()
+    }
+    cache.Guild.JoinInfusionMinimumBypassByRequest = level
+    cache.Changed = true
+}
+
+
+func (cache *GuildCache) SetJoinInfusionMinimumBypassByInvite(level types.guildJoinBypassLevel) {
+    if (!cache.GuildLoaded) {
+        cache.LoadGuild()
+    }
+    cache.Guild.JoinInfusionMinimumBypassByInvite = level
+    cache.Changed = true
+}
+
+func (cache *GuildCache) SetJoinInfusionMinimum(minimum uint64) {
+    if (!cache.GuildLoaded) {
+        cache.LoadGuild()
+    }
+    cache.Guild.JoinInfusionMinimum = minimum
+    cache.Changed = true
+}
+
+
+func (cache *GuildCache) SetEntrySubstationId(substationId string) {
+    if (!cache.GuildLoaded) {
+        cache.LoadGuild()
+    }
+    cache.Guild.EntrySubstationId = substationId
+    cache.Changed = true
+}
+

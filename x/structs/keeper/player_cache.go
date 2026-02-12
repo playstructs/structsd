@@ -360,3 +360,22 @@ func (cache *PlayerCache) DisconnectSubstation(){
         cache.Changed = true
     }
 }
+
+
+func (cache *PlayerCache) MigrateGuild(guild *GuildCache){
+    if (!cache.PlayerLoaded) {
+        cache.LoadPlayer()
+    }
+
+    cache.Player.GuildId = guild.GetGuildId()
+    cache.Changed = true
+}
+
+func (cache *PlayerCache) LeaveGuild(){
+    if (!cache.PlayerLoaded) {
+        cache.LoadPlayer()
+    }
+
+    cache.Player.GuildId = ""
+    cache.Changed = true
+}
