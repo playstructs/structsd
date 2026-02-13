@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"context"
 
 	"structs/x/structs/types"
 

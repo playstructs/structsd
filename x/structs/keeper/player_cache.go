@@ -2,7 +2,7 @@ package keeper
 
 import (
 
-	"context"
+
     //"math"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -101,10 +101,18 @@ func (cache *PlayerCache) GetGuildId()      (string) { if (!cache.PlayerLoaded) 
 func (cache *PlayerCache) GetPlanetId()     (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.PlanetId }
 func (cache *PlayerCache) GetSubstationId() (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.SubstationId }
 
-func (cache *PlayerCache) GetFleet()        (*FleetCache)       { return cache.CC.GetFleet( cache.GetFleetId() ) }
+func (cache *PlayerCache) GetFleet()        (*FleetCache)       {
+    fleet, _ := cache.CC.GetFleetById( cache.GetFleetId() )
+    return fleet
+}
+
 func (cache *PlayerCache) GetGuild()        (*GuildCache)       { return cache.CC.GetGuild( cache.GetGuildId() ) }
+
 func (cache *PlayerCache) GetPlanet()       (*PlanetCache)      { return cache.CC.GetPlanet( cache.GetPlanetId() ) }
-func (cache *PlayerCache) GetSubstation()   (*SubstationCache)  { return cache.CC.GetSubstation( cache.GetSubstationId() ) }
+
+func (cache *PlayerCache) GetSubstation()   (*SubstationCache)  {
+    return cache.CC.GetSubstation( cache.GetSubstationId() )
+}
 
 
 func (cache *PlayerCache) GetNonce() (int64) {
@@ -306,11 +314,8 @@ func (cache *PlayerCache) ReadinessCheck() (error) {
 
 
 func (cache *PlayerCache) AttemptPlanetExplore() (err error) {
-    newPlanetId := cache.CC.k.AppendPlanet(cache.CC.ctx, cache.Player)
-    cache.SetPlanetId(newPlanetId)
-
-    // TODO move fleet to new planet (if it's not elsewhere I guess?)
-
+    planet := cache.CC.NewPlanet(cache.GetPrimaryAddress(), cache.GetPlayerId())
+    cache.SetPlanetId(planet.GetPlanetId())
     return nil
 }
 

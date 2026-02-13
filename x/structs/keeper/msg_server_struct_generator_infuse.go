@@ -78,7 +78,7 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 	}
 	k.bankKeeper.BurnCoins(ctx, types.ModuleName, infusionAmount)
 
-	infusion := cc.GetInfusion(types.ObjectType_struct, structure.GetStructId(), callingPlayer.GetPrimaryAddress())
+	infusion := cc.UpsertInfusion(types.ObjectType_struct, structure.GetStructId(), callingPlayer.GetPrimaryAddress(), callingPlayer.GetPlayerId())
 
 	infusion.SetRatio(structure.GetStructType().GeneratingRate)
 	infusion.SetCommission(math.LegacyZeroDec())

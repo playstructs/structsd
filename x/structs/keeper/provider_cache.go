@@ -1,7 +1,7 @@
 package keeper
 
 import (
-	"context"
+
 
 	"structs/x/structs/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -26,11 +26,11 @@ type ProviderCache struct {
 
 func (cache *ProviderCache) Commit() {
 	if cache.Changed {
-        cache.CC.K.logger.Info("Updating Provider From Cache", "providerId", cache.ProviderId)
+        cache.CC.k.logger.Info("Updating Provider From Cache", "providerId", cache.ProviderId)
         if cache.Deleted {
-            cache.CC.K.RemoveProvider(cache.CC.ctx, cache.ProviderId)
+            cache.CC.k.RemoveProvider(cache.CC.ctx, cache.ProviderId)
         } else {
-            cache.CC.K.SetProvider(cache.CC.ctx, cache.Provider)
+            cache.CC.k.SetProvider(cache.CC.ctx, cache.Provider)
         }
 	}
     cache.Changed = false
@@ -51,7 +51,7 @@ func (cache *ProviderCache) ID() string {
 
 // Load the Provider record
 func (cache *ProviderCache) LoadProvider() (bool) {
-	cache.Provider, cache.ProviderLoaded := cache.CC.k.GetProvider(cache.CC.ctx, cache.ProviderId)
+	cache.Provider, cache.ProviderLoaded = cache.CC.k.GetProvider(cache.CC.ctx, cache.ProviderId)
     return cache.ProviderLoaded
 }
 
@@ -70,8 +70,7 @@ func (cache *ProviderCache) GetOwner() *PlayerCache {
 }
 
 func (cache *ProviderCache) GetSubstation() *SubstationCache {
-    substation, _ := cache.CC.GetSubstation(cache.GetSubstationId())
-    return substation
+    return cache.CC.GetSubstation(cache.GetSubstationId())
 }
 
 func (cache *ProviderCache) GetOwnerId() string { if !cache.ProviderLoaded { cache.LoadProvider() }; return cache.Provider.Owner }
@@ -259,7 +258,7 @@ func (cache *ProviderCache) Delete() (error) {
     // Get List of Agreements
     agreements := cache.CC.k.GetAllAgreementIdByProviderIndex(cache.CC.ctx, cache.GetProviderId())
     for _, agreementId := range agreements {
-        agreement := cache.CC.GetAgreement(cache.Ctx, agreementId)
+        agreement := cache.CC.GetAgreement(agreementId)
         agreement.PrematureCloseByProvider()
     }
 

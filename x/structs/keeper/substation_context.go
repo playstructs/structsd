@@ -28,14 +28,14 @@ func (cc *CurrentContext) GetSubstation(substationId string) *SubstationCache {
 // This does no validation on the provided substationId
 func (cc *CurrentContext) NewSubstation(creatorAddress string, owner *PlayerCache, allocation *AllocationCache) (*SubstationCache, error) {
     var substation types.Substation
-    substationId := GetObjectID(types.ObjectType_substation, k.GetNextSubstationId(ctx))
+    substationId := GetObjectID(types.ObjectType_substation, cc.k.GetNextSubstationId(cc.ctx))
 
     substation.Id       = substationId
     substation.Owner    = owner.ID()
     substation.Creator  = creatorAddress
 
     // Start to put the pieces together
-    cc.substations[substationId] := &SubstationCache{
+    cc.substations[substationId] = &SubstationCache{
                   SubstationId: substationId,
                   CC: cc,
 

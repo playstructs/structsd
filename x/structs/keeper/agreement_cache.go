@@ -1,8 +1,6 @@
 package keeper
 
 import (
-	"context"
-
 	"structs/x/structs/types"
 
 	"cosmossdk.io/math"

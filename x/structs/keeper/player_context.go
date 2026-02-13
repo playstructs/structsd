@@ -14,11 +14,9 @@ func (cc *CurrentContext) GetPlayer(playerId string) (*PlayerCache, error) {
                PlayerId: playerId,
 
                CC: cc,
-               Loaded: true,
+               PlayerLoaded: false,
                Changed: false,
                Deleted: false,
-
-               AnyChange: false,
 
                NonceAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_nonce, playerId),
 
@@ -67,7 +65,7 @@ func (cc *CurrentContext) GetAllPlayerBySubstation(substationId string) (players
     playerList := cc.k.GetAllPlayerIdBySubstationIndex(cc.ctx, substationId)
 
     for _, playerId := range playerList {
-        player := cc.GetPlayer(playerId)
+        player, _ := cc.GetPlayer(playerId)
         players = append(players, player)
     }
     return
@@ -78,7 +76,7 @@ func (cc *CurrentContext) NewPlayer(address string) *PlayerCache {
 	// Create the player
     var player types.Player
 
-    player.Index = k.GetPlayerCount(ctx)
+    player.Index = cc.k.GetPlayerCount(cc.ctx)
 	cc.k.SetPlayerCount(cc.ctx, player.Index + 1)
 
 	playerId := GetObjectID(types.ObjectType_player, player.Index)
@@ -123,7 +121,7 @@ func (cc *CurrentContext) NewPlayer(address string) *PlayerCache {
 
 // Technically more of an InGet than an UpSert
 func (cc *CurrentContext) UpsertPlayer(address string) (player *PlayerCache) {
-    playerIndex := cc.k.GetPlayerIndexFromAddress(cc.ctx, playerAddress)
+    playerIndex := cc.k.GetPlayerIndexFromAddress(cc.ctx, address)
 
     if (playerIndex == 0) {
         player = cc.NewPlayer(address)

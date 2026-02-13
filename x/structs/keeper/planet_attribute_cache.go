@@ -1,8 +1,5 @@
 package keeper
 
-import (
-	"structs/x/structs/types"
-)
 
 // attributeCache holds a single attribute value with change tracking.
 type PlanetAttributeCache struct {
@@ -11,6 +8,7 @@ type PlanetAttributeCache struct {
 	Value               uint64
 	Loaded              bool
 	Changed             bool
+	Deleted             bool
 }
 
 

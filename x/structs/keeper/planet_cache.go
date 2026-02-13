@@ -309,7 +309,7 @@ func (cache *PlanetCache) BuildInitiateReadiness(structure *types.Struct, struct
     }
 
     if structType.GetStructType().Type == types.CommandStruct {
-        return types.NewStructLocationError(structType.GetId(), ambit.String(), "command_struct_fleet_only")
+        return types.NewStructLocationError(structType.GetStructType().Id, ambit.String(), "command_struct_fleet_only")
     }
 
     if cache.GetOwner().GetFleet().IsAway() {
@@ -472,7 +472,7 @@ func (cache *PlanetCache) AttemptComplete() (error) {
         for _, structId := range structsToDestroy {
             if structId != "" {
                 planetStruct := cache.CC.GetStruct(structId)
-                planetStruct.Destroy()
+                planetStruct.DestroyAndCommit()
             }
         }
 

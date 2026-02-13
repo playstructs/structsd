@@ -12,6 +12,7 @@ type ReactorCache struct {
 	Reactor         types.Reactor
 
 	Changed bool
+	Deleted bool
 
 }
 
@@ -38,8 +39,7 @@ func (cache *ReactorCache) ID() string {
 }
 
 func (cache *ReactorCache) LoadReactor() bool {
-	cache.Reactor, cache.ReactorLoaded := cache.CC.k.GetReactor(cache.CC.ctx, cache.ReactorId)
-
+	cache.Reactor, cache.ReactorLoaded = cache.CC.k.GetReactor(cache.CC.ctx, cache.ReactorId)
 	return cache.ReactorLoaded
 }
 
@@ -57,6 +57,10 @@ func (cache *ReactorCache) GetReactor() types.Reactor {
 		cache.LoadReactor()
 	}
 	return cache.Reactor
+}
+
+func (cache *ReactorCache) GetReactorId() string {
+	return cache.ReactorId
 }
 
 func (cache *ReactorCache) SetGuild(guildId string) {

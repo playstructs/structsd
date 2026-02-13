@@ -1,8 +1,5 @@
 package keeper
 
-import (
-	"structs/x/structs/types"
-)
 
 // GetStructType returns a StructType by ID, caching the result
 func (cc *CurrentContext) GetStructType(structTypeId uint64) (*StructTypeCache, bool) {

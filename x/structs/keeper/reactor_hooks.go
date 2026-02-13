@@ -49,7 +49,7 @@ func (k Keeper) ReactorInitialize(ctx context.Context, validatorAddress sdk.ValA
 		player := cc.UpsertPlayer(identity.String())
 
 		// Add the player as a permissioned user of the reactor
-		permissionId := GetObjectPermissionIDBytes(reactor.Id, player.Id)
+		permissionId := GetObjectPermissionIDBytes(reactor.Id, player.GetPlayerId())
 		cc.PermissionAdd(permissionId, types.PermissionAll)
 
 		// TODO apply the energy distribution to the reactor player account
@@ -58,7 +58,7 @@ func (k Keeper) ReactorInitialize(ctx context.Context, validatorAddress sdk.ValA
 			validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
 			delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(math.LegacyNewDecFromInt(validator.Tokens))).RoundInt()
 
-			infusion := cc.GetInfusion(types.ObjectType_reactor, reactor.Id, identity.String())
+			infusion := cc.UpsertInfusion(types.ObjectType_reactor, reactor.Id, identity.String(), player.GetPlayerId())
 
 			infusion.SetRatio(types.ReactorFuelToEnergyConversion)
 			infusion.SetFuelAndCommission(delegationShare.Uint64(), reactor.DefaultCommission)
@@ -85,9 +85,8 @@ func (k Keeper) ReactorUpdatePlayerInfusion(ctx context.Context, playerAddress s
 	reactor, _ := k.GetReactorByBytes(ctx, reactorBytes)
 	validator, _ := k.stakingKeeper.GetValidator(ctx, validatorAddress)
 
-	cc.UpsertPlayer(playerAddress.String())
-	infusion := cc.GetInfusion(types.ObjectType_reactor, reactor.Id, playerAddress.String())
-
+	player := cc.UpsertPlayer(playerAddress.String())
+	infusion := cc.UpsertInfusion(types.ObjectType_reactor, reactor.Id, playerAddress.String(), player.GetPlayerId())
 	delegation, err := k.stakingKeeper.GetDelegation(ctx, playerAddress, validatorAddress)
 
 	if err == nil {
@@ -142,7 +141,8 @@ func (k Keeper) ReactorInfusionUnbonding(ctx context.Context, unbondingId uint64
 		reactorBytes, _ := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
 		reactor, _ := k.GetReactorByBytes(ctx, reactorBytes)
 
-		infusion := cc.GetInfusion(types.ObjectType_reactor, reactor.Id, playerAddress.String())
+        player := cc.UpsertPlayer(playerAddress.String())
+		infusion := cc.UpsertInfusion(types.ObjectType_reactor, reactor.Id, playerAddress.String(),player.GetPlayerId())
 
 		infusion.SetRatio(types.ReactorFuelToEnergyConversion)
 		infusion.SetCommission(reactor.DefaultCommission)
@@ -222,8 +222,8 @@ func (k Keeper) ReactorUpdateInfusionsFromSlashing(ctx context.Context, validato
 		 */
 		delegationShare := ((delegation.Shares.Quo(validator.DelegatorShares)).Mul(tokensAfterSlash)).RoundInt()
 
-		k.UpsertPlayer(ctx, delegatorAddr.String())
-		infusion := cc.GetInfusion(types.ObjectType_reactor, reactor.Id, delegatorAddr.String())
+		player := cc.UpsertPlayer(delegatorAddr.String())
+		infusion := cc.UpsertInfusion(types.ObjectType_reactor, reactor.Id, delegatorAddr.String(), player.GetPlayerId())
 
 		infusion.SetRatio(types.ReactorFuelToEnergyConversion)
 		infusion.SetFuelAndCommission(delegationShare.Uint64(), reactor.DefaultCommission)

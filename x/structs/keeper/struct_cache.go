@@ -1,7 +1,6 @@
 package keeper
 
 import (
-	"context"
 
 	"structs/x/structs/types"
 
@@ -31,6 +30,7 @@ type StructCache struct {
 	BlockStartOreMineAttributeId string
 	BlockStartOreRefineAttributeId string
 	ProtectedStructIndexAttributeId string
+	ReadyAttributeId string
 
 	Blocker  bool
 	Defender bool
@@ -41,12 +41,6 @@ type StructCache struct {
 
 	EventAttackShotDetailLoaded bool
 	EventAttackShotDetail       *types.EventAttackShotDetail
-}
-
-// Build this initial Struct Cache object
-// This does no validation on the provided structId
-func (k *Keeper) GetStructCacheFromId(ctx context.Context, structId string) StructCache {
-	return
 }
 
 
@@ -95,7 +89,7 @@ func (cache *StructCache) ManualLoadEventAttackShotDetail(eventAttackShotDetail 
 func (cache *StructCache) CheckStruct() error {
 	if !cache.StructureLoaded {
 		if !cache.LoadStruct() {
-		    return types.NewObjectNotFoundError("player", cache.PlayerId)
+		    return types.NewObjectNotFoundError("struct", cache.GetStructId())
 		}
 	}
 	return nil
@@ -133,7 +127,8 @@ func (cache *StructCache) GetBlockStartOreRefine() uint64 {
 }
 
 func (cache *StructCache) GetStructType() types.StructType {
-    return cache.CC.GetStructType(cache.GetTypeId()).GetStructType()
+    structType, _ := cache.CC.GetStructType(cache.GetTypeId())
+    return structType.GetStructType()
 
 }
 func (cache *StructCache) GetTypeId() uint64 {
@@ -187,11 +182,13 @@ func (cache *StructCache) GetPlanet() (planet *PlanetCache) {
     	case types.ObjectType_fleet:
 	    	planet = cache.CC.GetPlanet(cache.GetFleet().GetLocationId())
 	}
+	return
 }
+
 func (cache *StructCache) GetPlanetId() string { return cache.GetPlanet().GetPlanetId() }
 
 func (cache *StructCache) GetFleet() *FleetCache {
-	fleet, _ := cache.CC.GetFleet(cache.GetFleetId())
+	fleet, _ := cache.CC.GetFleetById(cache.GetOwner().GetFleetId())
 	return fleet
 }
 
@@ -239,12 +236,10 @@ func (cache *StructCache) ResetBlockStartOreRefine() {
 }
 
 func (cache *StructCache) ClearBlockStartOreMine() {
-	uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
 	cache.CC.SetStructAttribute(cache.BlockStartOreMineAttributeId, 0)
 }
 
 func (cache *StructCache) ClearBlockStartOreRefine() {
-	uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
 	cache.CC.SetStructAttribute(cache.BlockStartOreRefineAttributeId, 0)
 }
 
@@ -291,42 +286,30 @@ func (cache *StructCache) IsHidden() bool {
 }
 
 func (cache *StructCache) StatusAddBuilt() {
-	cache.Status = cache.GetStatus() | types.StructStateBuilt
-	cache.StatusChanged = true
-	cache.Changed()
+	cache.CC.SetStructAttributeFlagAdd(cache.StatusAttributeId, uint64(types.StructStateBuilt))
 }
 
 func (cache *StructCache) StatusAddOnline() {
-	cache.Status = cache.GetStatus() | types.StructStateOnline
-	cache.StatusChanged = true
-	cache.Changed()
+	cache.CC.SetStructAttributeFlagAdd(cache.StatusAttributeId, uint64(types.StructStateOnline))
 }
 
 func (cache *StructCache) StatusAddHidden() {
-	cache.Status = cache.GetStatus() | types.StructStateHidden
-	cache.StatusChanged = true
-	cache.Changed()
+	cache.CC.SetStructAttributeFlagAdd(cache.StatusAttributeId, uint64(types.StructStateHidden))
 }
 
 func (cache *StructCache) StatusAddDestroyed() {
-	cache.Status = cache.GetStatus() | types.StructStateDestroyed
-	cache.StatusChanged = true
-	cache.Changed()
+    cache.CC.SetStructAttributeFlagAdd(cache.StatusAttributeId, uint64(types.StructStateDestroyed))
 }
 
 func (cache *StructCache) StatusRemoveHidden() {
 	if cache.IsHidden() {
-		cache.Status = cache.Status &^ types.StructStateHidden
-		cache.StatusChanged = true
-		cache.Changed()
+    	cache.CC.SetStructAttributeFlagRemove(cache.StatusAttributeId, uint64(types.StructStateHidden))
 	}
 }
 
 func (cache *StructCache) StatusRemoveOnline() {
 	if cache.IsOnline() {
-		cache.Status = cache.Status &^ types.StructStateOnline
-		cache.StatusChanged = true
-		cache.Changed()
+	    cache.CC.SetStructAttributeFlagRemove(cache.StatusAttributeId, uint64(types.StructStateOnline))
 	}
 }
 
@@ -335,11 +318,11 @@ func (cache *StructCache) IsDestroyed() bool {
 }
 
 func (cache *StructCache) GridStatusAddReady() {
-	cache.K.SetGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ready, cache.StructId), 1)
+	cache.CC.SetGridAttribute(cache.ReadyAttributeId, 1)
 }
 
 func (cache *StructCache) GridStatusRemoveReady() {
-	cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ready, cache.StructId))
+    cache.CC.ClearGridAttribute(cache.ReadyAttributeId)
 }
 
 func (cache *StructCache) ActivationReadinessCheck() (err error) {
@@ -359,8 +342,8 @@ func (cache *StructCache) ActivationReadinessCheck() (err error) {
 	}
 
 	// Check Player Capacity
-	if !cache.GetOwner().CanSupportLoadAddition(cache.GetStructType().GetPassiveDraw()) {
-		return types.NewPlayerPowerError(cache.GetOwnerId(), "capacity_exceeded").WithCapacity(cache.GetStructType().GetPassiveDraw(), cache.GetOwner().GetAvailableCapacity())
+	if !cache.GetOwner().CanSupportLoadAddition(cache.GetStructType().PassiveDraw) {
+		return types.NewPlayerPowerError(cache.GetOwnerId(), "capacity_exceeded").WithCapacity(cache.GetStructType().PassiveDraw, cache.GetOwner().GetAvailableCapacity())
 	}
 
 	return
@@ -368,7 +351,7 @@ func (cache *StructCache) ActivationReadinessCheck() (err error) {
 
 func (cache *StructCache) GoOnline() {
 	// Add to the players struct load
-	cache.GetOwner().StructsLoadIncrement(cache.GetStructType().GetPassiveDraw())
+	cache.GetOwner().StructsLoadIncrement(cache.GetStructType().PassiveDraw)
 	//k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.PassiveDraw)
 
 	// Turn on the mining systems
@@ -383,14 +366,14 @@ func (cache *StructCache) GoOnline() {
 
 	// Raise the planetary shields
 	if cache.GetStructType().HasOreReserveDefensesSystem() {
-		cache.GetPlanet().PlanetaryShieldIncrement(cache.GetStructType().GetPlanetaryShieldContribution())
+		cache.GetPlanet().PlanetaryShieldIncrement(cache.GetStructType().PlanetaryShieldContribution)
 	}
 
 	// TODO
 	// This is the least generic/abstracted part of the code for now.
 	// Prob need to clean this up down the road
 	if cache.GetStructType().HasPlanetaryDefensesSystem() {
-		switch cache.GetStructType().GetPlanetaryDefenses() {
+		switch cache.GetStructType().PlanetaryDefenses {
 		case types.TechPlanetaryDefenses_defensiveCannon:
 			cache.GetPlanet().DefensiveCannonQuantityIncrement(1)
 		case types.TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork:
@@ -408,7 +391,7 @@ func (cache *StructCache) GoOnline() {
 
 func (cache *StructCache) GoOffline() {
 	// Add to the players struct load
-	cache.GetOwner().StructsLoadDecrement(cache.GetStructType().GetPassiveDraw())
+	cache.GetOwner().StructsLoadDecrement(cache.GetStructType().PassiveDraw)
 	//k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.PassiveDraw)
 
 	// Turn off the mining systems
@@ -423,14 +406,14 @@ func (cache *StructCache) GoOffline() {
 
 	// Lower the planetary shields
 	if cache.GetStructType().HasOreReserveDefensesSystem() {
-		cache.GetPlanet().PlanetaryShieldDecrement(cache.GetStructType().GetPlanetaryShieldContribution())
+		cache.GetPlanet().PlanetaryShieldDecrement(cache.GetStructType().PlanetaryShieldContribution)
 	}
 
 	// TODO
 	// This is the least generic/abstracted part of the code for now.
 	// Prob need to clean this up down the road
 	if cache.GetStructType().HasPlanetaryDefensesSystem() {
-		switch cache.GetStructType().GetPlanetaryDefenses() {
+		switch cache.GetStructType().PlanetaryDefenses {
 		case types.TechPlanetaryDefenses_defensiveCannon:
 			cache.GetPlanet().DefensiveCannonQuantityDecrement(1)
 		case types.TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork:
@@ -442,8 +425,10 @@ func (cache *StructCache) GoOffline() {
 		cache.GridStatusRemoveReady()
 
 		// Remove all allocations
-		allocations := cache.K.GetAllAllocationBySourceIndex(cache.Ctx, cache.StructId)
-		cache.K.DestroyAllAllocations(cache.Ctx, allocations)
+		allocations := cache.CC.GetAllAllocationBySource(cache.StructId)
+		for _, allocation := range allocations {
+		    allocation.Destroy()
+		}
 	}
 
 	// Set the struct status flag to include built
@@ -465,7 +450,7 @@ func (cache *StructCache) ReadinessCheck() error {
 
 /* Rough but Consistent Randomness Check */
 func (cache *StructCache) IsSuccessful(successRate fraction.Fraction) bool {
-	uctx := sdk.UnwrapSDKContext(cache.Ctx)
+	uctx := sdk.UnwrapSDKContext(cache.CC.ctx)
 
 	var seed int64
 
@@ -479,7 +464,7 @@ func (cache *StructCache) IsSuccessful(successRate fraction.Fraction) bool {
 	max := int(successRate.Denominator())
 
 	randomnessCheck := (int(successRate.Numerator()) <= (randomnessOrb.Intn(max-min+1) + min))
-	cache.K.logger.Info("Struct Success-Check Randomness", "structId", cache.GetStructId(), "seed", seed, "offset", cache.GetOwner().GetNextNonce(), "seedOffset", seedOffset, "numerator", successRate.Numerator(), "denominator", successRate.Denominator(), "success", randomnessCheck)
+	cache.CC.k.logger.Info("Struct Success-Check Randomness", "structId", cache.GetStructId(), "seed", seed, "offset", cache.GetOwner().GetNextNonce(), "seedOffset", seedOffset, "numerator", successRate.Numerator(), "denominator", successRate.Denominator(), "success", randomnessCheck)
 
 	return randomnessCheck
 }
@@ -488,37 +473,36 @@ func (cache *StructCache) IsSuccessful(successRate fraction.Fraction) bool {
 func (cache *StructCache) CanBePlayedBy(address string) error {
 
 	// Make sure the address calling this has Play permissions
-	if !cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(address), types.PermissionPlay) {
+	if !cache.CC.PermissionHasOneOf(GetAddressPermissionIDBytes(address), types.PermissionPlay) {
 		return types.NewPermissionError("address", address, "", "", uint64(types.PermissionPlay), "play")
 	}
 
-	callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
+	callingPlayer, err := cache.CC.GetPlayerByAddress(address)
 	if err != nil {
 		return err
 	}
-	if callingPlayer.PlayerId != cache.GetOwnerId() {
-		if !cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.PlayerId), types.PermissionPlay) {
-			return types.NewPermissionError("player", callingPlayer.PlayerId, "player", cache.GetOwnerId(), uint64(types.PermissionPlay), "play")
+	if callingPlayer.GetPlayerId() != cache.GetOwnerId() {
+		if !cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.GetPlayerId()), types.PermissionPlay) {
+			return types.NewPermissionError("player", callingPlayer.GetPlayerId(), "player", cache.GetOwnerId(), uint64(types.PermissionPlay), "play")
 		}
 	}
-
 	return nil
 }
 
 func (cache *StructCache) CanBeHashedBy(address string) (string, bool, error) {
 	owner := true
 	// Make sure the address calling this has Hash permissions
-	if !cache.K.PermissionHasOneOf(cache.Ctx, GetAddressPermissionIDBytes(address), types.PermissionHash) {
+	if !cache.CC.PermissionHasOneOf(GetAddressPermissionIDBytes(address), types.PermissionHash) {
 		return "", owner, types.NewPermissionError("address", address, "", "", uint64(types.PermissionHash), "hash")
 	}
 
-	callingPlayer, err := cache.K.GetPlayerCacheFromAddress(cache.Ctx, address)
+	callingPlayer, err := cache.CC.GetPlayerByAddress(address)
 	if err != nil {
 		return "", owner, err
 	}
-	if callingPlayer.PlayerId != cache.GetOwnerId() {
+	if callingPlayer.GetPlayerId() != cache.GetOwnerId() {
 		owner = false
-		if !cache.K.PermissionHasOneOf(cache.Ctx, GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.PlayerId), types.PermissionHash) {
+		if !cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.GetPlayerId()), types.PermissionHash) {
 			return callingPlayer.PlayerId, owner, types.NewPermissionError("player", callingPlayer.PlayerId, "player", cache.GetOwnerId(), uint64(types.PermissionHash), "hash")
 		}
 	}
@@ -650,11 +634,11 @@ func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem type
 func (cache *StructCache) CanCounterAttack(attackerStruct *StructCache) (err error) {
 
 	if attackerStruct.IsDestroyed() || cache.IsDestroyed() {
-		cache.K.logger.Info("Counter Struct or Attacker Struct is already destroyed", "counterStruct", cache.StructId, "target", attackerStruct.StructId)
+		cache.CC.k.logger.Info("Counter Struct or Attacker Struct is already destroyed", "counterStruct", cache.StructId, "target", attackerStruct.StructId)
 		err = types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "destroyed").AsCounter()
 	} else {
 		if !cache.GetStructType().CanCounterTargetAmbit(cache.GetOperatingAmbit(), attackerStruct.GetOperatingAmbit()) {
-			cache.K.logger.Info("Attacker Struct cannot be hit from Counter Struct using this weapon system", "target", attackerStruct.StructId, "counterStruct", cache.StructId)
+			cache.CC.k.logger.Info("Attacker Struct cannot be hit from Counter Struct using this weapon system", "target", attackerStruct.StructId, "counterStruct", cache.StructId)
 			err = types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "out_of_range").AsCounter().WithAmbits(cache.GetOperatingAmbit().String(), attackerStruct.GetOperatingAmbit().String())
 		}
 	}
@@ -714,7 +698,7 @@ func (cache *StructCache) CanEvade(attackerStruct *StructCache, weaponSystem typ
 		canEvade = cache.IsSuccessful(successRate)
 	}
 
-	cache.GetEventAttackShotDetail().SetEvade(canEvade, cache.GetStructType().GetUnitDefenses())
+	cache.GetEventAttackShotDetail().SetEvade(canEvade, cache.GetStructType().UnitDefenses)
 
 	// If there has already been an successful evade then don't both evading harder
 	if !canEvade {
@@ -750,8 +734,6 @@ func (cache *StructCache) TakeAttackDamage(attackingStruct *StructCache, weaponS
 		return 0
 	}
 
-	// Ensure health is loaded before any modifications
-	_ = cache.GetHealth()
 
 	for shot := uint64(0); shot < attackingStruct.GetStructType().GetWeaponShots(weaponSystem); shot++ {
 		if attackingStruct.IsSuccessful(attackingStruct.GetStructType().GetWeaponShotSuccessRate(weaponSystem)) {
@@ -762,10 +744,10 @@ func (cache *StructCache) TakeAttackDamage(attackingStruct *StructCache, weaponS
 	cache.GetEventAttackShotDetail().SetDamageDealt(damage)
 
 	if damage != 0 {
-		damageReduction := cache.GetStructType().GetAttackReduction()
+		damageReduction := cache.GetStructType().AttackReduction
 
 		if damageReduction > 0 {
-			cache.GetEventAttackShotDetail().SetDamageReduction(damageReduction, cache.GetStructType().GetUnitDefenses())
+			cache.GetEventAttackShotDetail().SetDamageReduction(damageReduction, cache.GetStructType().UnitDefenses)
 		}
 
 		if damageReduction > damage {
@@ -779,18 +761,9 @@ func (cache *StructCache) TakeAttackDamage(attackingStruct *StructCache, weaponS
 
 	if damage != 0 {
 
-		if damage > cache.GetHealth() {
-			cache.Health = 0
-			cache.HealthChanged = true
-			cache.Changed()
+        cache.CC.SetStructAttributeDecrement(cache.HealthAttributeId, damage)
 
-		} else {
-			cache.Health = cache.GetHealth() - damage
-			cache.HealthChanged = true
-			cache.Changed()
-		}
-
-		if cache.Health == 0 {
+		if cache.GetHealth() == 0 {
 			if cache.Blocker {
 				cache.GetEventAttackShotDetail().SetBlockerDestroyed()
 			} else {
@@ -798,7 +771,7 @@ func (cache *StructCache) TakeAttackDamage(attackingStruct *StructCache, weaponS
 			}
 
 			// destruction damage from the grave
-			if cache.GetStructType().GetPostDestructionDamage() > 0 {
+			if cache.GetStructType().PostDestructionDamage > 0 {
 				attackingStruct.TakePostDestructionDamage(cache)
 			}
 
@@ -809,9 +782,10 @@ func (cache *StructCache) TakeAttackDamage(attackingStruct *StructCache, weaponS
 
 	// Always set final health (uses same Blocker pattern as SetBlockerDestroyed/SetTargetDestroyed)
 	if cache.Blocker {
-		cache.GetEventAttackShotDetail().SetBlockerHealthAfter(cache.Health)
+
+		cache.GetEventAttackShotDetail().SetBlockerHealthAfter(cache.GetHealth())
 	} else {
-		cache.GetEventAttackShotDetail().SetTargetHealthAfter(cache.Health)
+		cache.GetEventAttackShotDetail().SetTargetHealthAfter(cache.GetHealth())
 	}
 
 	return
@@ -825,19 +799,9 @@ func (cache *StructCache) TakeRecoilDamage(weaponSystem types.TechWeaponSystem) 
 	damage = cache.GetStructType().GetWeaponRecoilDamage(weaponSystem)
 
 	if damage != 0 {
+        cache.CC.SetStructAttributeDecrement(cache.HealthAttributeId, damage)
 
-		if damage > cache.GetHealth() {
-			cache.Health = 0
-			cache.HealthChanged = true
-			cache.Changed()
-
-		} else {
-			cache.Health = cache.GetHealth() - damage
-			cache.HealthChanged = true
-			cache.Changed()
-		}
-
-		if cache.Health == 0 {
+		if cache.GetHealth() == 0 {
 			cache.DestroyAndCommit()
 		}
 	}
@@ -851,28 +815,18 @@ func (cache *StructCache) TakePostDestructionDamage(attackingStruct *StructCache
 		return 0
 	}
 
-	damage = cache.GetStructType().GetPostDestructionDamage()
+	damage = cache.GetStructType().PostDestructionDamage
 
 	if damage != 0 {
+        cache.CC.SetStructAttributeDecrement(cache.HealthAttributeId, damage)
 
-		if damage > cache.GetHealth() {
-			cache.Health = 0
-			cache.HealthChanged = true
-			cache.Changed()
-
-		} else {
-			cache.Health = cache.GetHealth() - damage
-			cache.HealthChanged = true
-			cache.Changed()
-		}
-
-		if cache.Health == 0 {
+		if cache.GetHealth() == 0 {
 			cache.DestroyAndCommit()
 		}
 
 	}
 
-	cache.GetEventAttackShotDetail().SetPostDestructionDamage(damage, cache.IsDestroyed(), attackingStruct.GetStructType().GetPassiveWeaponry())
+	cache.GetEventAttackShotDetail().SetPostDestructionDamage(damage, cache.IsDestroyed(), attackingStruct.GetStructType().PassiveWeaponry)
 
 	return
 }
@@ -883,25 +837,15 @@ func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (d
 	}
 
 	damage = counterStruct.GetStructType().GetCounterAttackDamage(cache.GetOperatingAmbit() == counterStruct.GetOperatingAmbit())
-	cache.K.logger.Info("Struct Counter-Attack", "damage", damage, "counterAttacker", counterStruct.GetStructId(), "target", cache.GetStructId())
+	cache.CC.k.logger.Info("Struct Counter-Attack", "damage", damage, "counterAttacker", counterStruct.GetStructId(), "target", cache.GetStructId())
 
 	if damage != 0 {
+        cache.CC.SetStructAttributeDecrement(cache.HealthAttributeId, damage)
 
-		if damage > cache.GetHealth() {
-			cache.Health = 0
-			cache.HealthChanged = true
-			cache.Changed()
-
-		} else {
-			cache.Health = cache.GetHealth() - damage
-			cache.HealthChanged = true
-			cache.Changed()
-		}
-
-		if cache.Health == 0 {
+		if cache.GetHealth() == 0 {
 			// destruction damage from the grave
-			cache.K.logger.Info("Struct Destroyed During Counter-Attack", "counterAttacker", counterStruct.GetStructId(), "target", cache.GetStructId())
-			if cache.GetStructType().GetPostDestructionDamage() > 0 {
+			cache.CC.k.logger.Info("Struct Destroyed During Counter-Attack", "counterAttacker", counterStruct.GetStructId(), "target", cache.GetStructId())
+			if cache.GetStructType().PostDestructionDamage > 0 {
 				counterStruct.TakePostDestructionDamage(cache)
 			}
 			cache.DestroyAndCommit()
@@ -910,11 +854,11 @@ func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (d
 	}
 
 	if counterStruct.Defender {
-		cache.K.logger.Info("Generating a Defender Counter-Attack Record for the event")
+		cache.CC.k.logger.Info("Generating a Defender Counter-Attack Record for the event")
 		cache.GetEventAttackShotDetail().AppendDefenderCounter(counterStruct.StructId, damage, cache.IsDestroyed(), counterStruct.GetTypeId(), counterStruct.GetLocationType(), counterStruct.GetLocationId(), counterStruct.GetOperatingAmbit(), counterStruct.GetSlot())
 	} else {
-		cache.K.logger.Info("Generating a Target Counter-Attack Record for the event")
-		cache.GetEventAttackShotDetail().AppendTargetCounter(damage, cache.IsDestroyed(), counterStruct.GetStructType().GetPassiveWeaponry())
+		cache.CC.k.logger.Info("Generating a Target Counter-Attack Record for the event")
+		cache.GetEventAttackShotDetail().AppendTargetCounter(damage, cache.IsDestroyed(), counterStruct.GetStructType().PassiveWeaponry)
 	}
 
 	return
@@ -926,20 +870,9 @@ func (cache *StructCache) TakePlanetaryDefenseCanonDamage(damage uint64) uint64 
 	}
 
 	if damage != 0 {
+        cache.CC.SetStructAttributeDecrement(cache.HealthAttributeId, damage)
 
-		if damage > cache.GetHealth() {
-			damage = cache.GetHealth()
-			cache.Health = 0
-			cache.HealthChanged = true
-			cache.Changed()
-
-		} else {
-			cache.Health = cache.GetHealth() - damage
-			cache.HealthChanged = true
-			cache.Changed()
-		}
-
-		if cache.Health == 0 {
+		if cache.GetHealth() == 0 {
 			cache.DestroyAndCommit()
 		}
 	}
@@ -968,98 +901,81 @@ func (cache *StructCache) DestroyAndCommit() {
 	cache.GoOffline()
 
 	// Drop the Struct Type count for the owner
-	cache.K.SetStructAttributeDecrement(cache.Ctx, GetStructAttributeIDByObjectIdAndSubIndex(types.StructAttributeType_typeCount, cache.GetOwnerId(), cache.GetStructType().GetId()), 1)
+	cache.CC.SetStructAttributeDecrement(GetStructAttributeIDByObjectIdAndSubIndex(types.StructAttributeType_typeCount, cache.GetOwnerId(), cache.GetTypeId()), 1)
 
 	// Don't clear these now, clear them on sweeps?
 	// "health":               StructAttributeType_health,
 	// "status":               StructAttributeType_status,
 
 	// It's possible the build was never complete, so clear out this attribute to be safe
-	cache.K.ClearStructAttribute(cache.Ctx, cache.BlockStartBuildAttributeId)
+	cache.CC.ClearStructAttribute(cache.BlockStartBuildAttributeId)
 
 	// Destroy mining systems
 	if cache.GetStructType().HasOreMiningSystem() {
-		cache.K.ClearStructAttribute(cache.Ctx, cache.BlockStartOreMineAttributeId)
+		cache.CC.ClearStructAttribute(cache.BlockStartOreMineAttributeId)
 	}
 
 	// Turn off the refinery
 	if cache.GetStructType().HasOreRefiningSystem() {
-		cache.K.ClearStructAttribute(cache.Ctx, cache.BlockStartOreRefineAttributeId)
+		cache.CC.ClearStructAttribute(cache.BlockStartOreRefineAttributeId)
 	}
 
 	// Clear Defensive Relationships
-	cache.K.DestroyStructDefender(cache.Ctx, cache.GetStructId())
+	cache.CC.k.DestroyStructDefender(cache.CC.ctx, cache.GetStructId())
 
 	// TODO clean this up to be more function based.. but it's fine
 	if cache.GetStructType().HasPowerGenerationSystem() {
 		// Clear out infusions
-		cache.K.DestroyAllInfusions(cache.Ctx, cache.K.GetAllInfusionsByDestination(cache.Ctx, cache.StructId))
+		infusions := cache.CC.GetAllInfusionByDestination(cache.StructId)
+		for _, infusion := range infusions {
+		    infusion.Destroy()
+		}
 
 		// Clear out all remaining allocations
 		// clearing out all infusions should automatically clear allocations too,
 		// but some allocations, such as automated ones may still exist
-		cache.K.DestroyAllAllocations(cache.Ctx, cache.K.GetAllAllocationBySourceIndex(cache.Ctx, cache.StructId))
+		allocations := cache.CC.GetAllAllocationBySource(cache.StructId)
+        for _, allocation := range allocations {
+            allocation.Destroy()
+        }
 
 		// Clear Load
-		cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, cache.StructId))
+		cache.CC.ClearGridAttribute(GetGridAttributeIDByObjectId(types.GridAttributeType_load, cache.StructId))
 
 		// Clear Capacity
-		cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, cache.StructId))
+		cache.CC.ClearGridAttribute(GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, cache.StructId))
 
 		// Clear Fuel
-		cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, cache.StructId))
+		cache.CC.ClearGridAttribute(GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, cache.StructId))
 
 		// Clear Power
-		cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, cache.StructId))
-
-		// Clear Allocation Pointer Start + End
-		cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerStart, cache.StructId))
-		cache.K.ClearGridAttribute(cache.Ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_allocationPointerEnd, cache.StructId))
+		cache.CC.ClearGridAttribute(GetGridAttributeIDByObjectId(types.GridAttributeType_power, cache.StructId))
 
 	}
 
 	// Clear Permissions
 	// This only clears permissions for the current owner, which is likely a problem in the future.
 	permissionId := GetObjectPermissionIDBytes(cache.StructId, cache.GetOwnerId())
-	cache.K.PermissionClearAll(cache.Ctx, permissionId)
+	cache.CC.ClearPermissions(permissionId)
 
 	// We're not going to remove it from the location yet, that happens during sweeps
 
 	// Set to Destroyed
 	cache.StatusAddDestroyed()
 
-	// Might need to do this manually so it doesn't undo some of the above...
-	//cache.Commit()
-	if cache.StructureChanged {
-		cache.K.SetStruct(cache.Ctx, cache.Structure)
-		cache.StructureChanged = false
-	}
-
-	if cache.HealthChanged {
-		cache.K.SetStructAttribute(cache.Ctx, cache.HealthAttributeId, cache.Health)
-		cache.HealthChanged = false
-	}
-
-	if cache.StatusChanged {
-		cache.K.SetStructAttribute(cache.Ctx, cache.StatusAttributeId, uint64(cache.Status))
-		cache.StatusChanged = false
-	}
 
 	// Can the Struct be a catalyst for raid-end
 	// cache.GetFleet().Defeat()
 	// Check for raid win conditions
 	if cache.CanTriggerRaidDefeatByDestruction() {
 		cache.GetFleet().Defeat()
-		cache.FleetChanged = true
 	}
 
-	cache.K.AppendStructDestructionQueue(cache.Ctx, cache.StructId)
-
-	cache.Commit()
+	cache.CC.k.AppendStructDestructionQueue(cache.CC.ctx, cache.StructId)
 }
 
 func (cache *StructCache) CanTriggerRaidDefeatByDestruction() bool {
-	if !cache.GetStructType().GetTriggerRaidDefeatByDestruction() {
+	if !cache.GetStructType().TriggerRaidDefeatByDestruction {
 		return false
 	}
 
@@ -1081,67 +997,63 @@ func (cache *StructCache) AttemptMove(destinationType types.ObjectType, ambit ty
 	}
 
 	switch destinationType {
-	case types.ObjectType_planet:
-		err := cache.GetOwner().GetPlanet().MoveReadiness(cache, ambit, slot)
-		if err != nil {
-			return err
-		}
-	case types.ObjectType_fleet:
-		err := cache.GetOwner().GetFleet().MoveReadiness(cache, ambit, slot)
-		if err != nil {
-			return err
-		}
-	default:
-		return types.NewStructBuildError(cache.GetStructType().GetId(), destinationType.String(), "", "type_unsupported")
+        case types.ObjectType_planet:
+            err := cache.GetOwner().GetPlanet().MoveReadiness(cache, ambit, slot)
+            if err != nil {
+                return err
+            }
+        case types.ObjectType_fleet:
+            err := cache.GetOwner().GetFleet().MoveReadiness(cache, ambit, slot)
+            if err != nil {
+                return err
+            }
+        default:
+            return types.NewStructBuildError(cache.GetTypeId(), destinationType.String(), "", "type_unsupported")
 	}
 
 	switch cache.Structure.LocationType {
-	case types.ObjectType_planet:
-		cache.GetOwner().GetPlanet().ClearSlot(cache.Structure.OperatingAmbit, cache.Structure.Slot)
-		cache.GetOwner().Changed()
-	case types.ObjectType_fleet:
-		if cache.GetStructType().Type != types.CommandStruct {
-			cache.GetOwner().GetFleet().ClearSlot(cache.Structure.OperatingAmbit, cache.Structure.Slot)
-			cache.GetOwner().Changed()
-		}
+        case types.ObjectType_planet:
+            cache.GetOwner().GetPlanet().ClearSlot(cache.Structure.OperatingAmbit, cache.Structure.Slot)
+        case types.ObjectType_fleet:
+            if cache.GetStructType().Type != types.CommandStruct {
+                cache.GetOwner().GetFleet().ClearSlot(cache.Structure.OperatingAmbit, cache.Structure.Slot)
+            }
 	}
 
 	switch destinationType {
-	case types.ObjectType_planet:
+        case types.ObjectType_planet:
 
-		cache.Structure.LocationId = cache.GetOwner().GetPlanetId()
-		cache.Structure.LocationType = destinationType
-		cache.Structure.OperatingAmbit = ambit
+            cache.Structure.LocationId = cache.GetOwner().GetPlanetId()
+            cache.Structure.LocationType = destinationType
+            cache.Structure.OperatingAmbit = ambit
 
-		// Update the cross reference on the planet
-		err := cache.GetOwner().GetPlanet().SetSlot(cache.Structure)
-		if err != nil {
-			return err
-		}
-		cache.GetOwner().Changed()
+            // Update the cross reference on the planet
+            err := cache.GetOwner().GetPlanet().SetSlot(cache.Structure)
+            if err != nil {
+                return err
+            }
 
-	case types.ObjectType_fleet:
+        case types.ObjectType_fleet:
 
-		// Update the cross reference on the planet
-		if cache.GetStructType().Type == types.CommandStruct {
-			cache.Structure.OperatingAmbit = ambit
-		} else {
+            // Update the cross reference on the planet
+            if cache.GetStructType().Type == types.CommandStruct {
+                cache.Structure.OperatingAmbit = ambit
+            } else {
 
-			cache.Structure.LocationId = cache.GetOwner().GetFleetId()
-			cache.Structure.LocationType = destinationType
-			cache.Structure.OperatingAmbit = ambit
-			cache.Structure.Slot = slot
+                cache.Structure.LocationId = cache.GetOwner().GetFleetId()
+                cache.Structure.LocationType = destinationType
+                cache.Structure.OperatingAmbit = ambit
+                cache.Structure.Slot = slot
 
-			err := cache.GetOwner().GetFleet().SetSlot(cache.Structure)
-			if err != nil {
-				return err
-			}
-			cache.GetOwner().Changed()
-		}
+                err := cache.GetOwner().GetFleet().SetSlot(cache.Structure)
+                if err != nil {
+                    return err
+                }
+            }
 
-		cache.StructureChanged = true
+
 	}
+    cache.Changed = true
 
-	cache.Changed()
 	return nil
 }

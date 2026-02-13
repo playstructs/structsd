@@ -2,6 +2,9 @@ package keeper
 
 import (
 	"structs/x/structs/types"
+
+    authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+    sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // GetProvider returns a ProviderCache by ID, loading from store if not already cached.
@@ -30,8 +33,8 @@ func (cc *CurrentContext) GetProvider(providerId string) *ProviderCache {
 func (cc *CurrentContext) NewProvider(provider types.Provider) (*ProviderCache) {
 
 	// Define the provider id
-	provider.Index := cc.k.GetProviderCount(cc.ctx)
-    k.SetProviderCount(ctx, count+1)
+	provider.Index = cc.k.GetProviderCount(cc.ctx)
+    cc.k.SetProviderCount(cc.ctx, provider.Index+1)
 	// Set the ID of the appended value
 	providerId := GetObjectID(types.ObjectType_provider, provider.Index)
 	provider.Id = providerId

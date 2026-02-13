@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"structs/x/structs/types"
+    sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // GetStruct returns a StructCache, loading from store if not already cached.
@@ -25,6 +26,8 @@ func (cc *CurrentContext) GetStruct(structId string) *StructCache {
             BlockStartOreRefineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structId),
 
             ProtectedStructIndexAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, structId),
+
+            ReadyAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_ready, structId),
         }
 
 	return cc.structs[structId]
@@ -33,8 +36,8 @@ func (cc *CurrentContext) GetStruct(structId string) *StructCache {
 func (cc *CurrentContext) GetAllStructDefender(protectedStructId string) (defenders []*StructCache) {
     defenderList := cc.k.GetAllStructDefender(cc.ctx, protectedStructId)
     for _, defenderId := range defenderList {
-        structure, structureFound := cc.GetStruct(defenderId)
-        if structureFound {
+        structure := cc.GetStruct(defenderId)
+        if structure.CheckStruct() == nil {
             defenders = append(defenders, structure)
         }
     }
@@ -43,12 +46,12 @@ func (cc *CurrentContext) GetAllStructDefender(protectedStructId string) (defend
 
 func (cc *CurrentContext) InitialCommandShipStruct(fleet *FleetCache) *StructCache {
 
-	structType, _ := cc.GetStructType()
+	structType, _ := cc.GetStructType(types.CommandStructTypeId)
 	structure := types.CreateBaseStruct(types.CommandStructTypeId, fleet.GetOwner().GetPrimaryAddress(), fleet.GetOwner().GetPlayerId(), structType.GetStructType().Category, types.Ambit_land)
 	structure.LocationId = fleet.GetFleetId()
 
     // Create the struct
-    structure.Index := cc.k.GetStructCount(cc.ctx)
+    structure.Index = cc.k.GetStructCount(cc.ctx)
     cc.k.SetStructCount(cc.ctx, structure.Index+1)
 
     structId := GetObjectID(types.ObjectType_struct, structure.Index)
@@ -57,15 +60,15 @@ func (cc *CurrentContext) InitialCommandShipStruct(fleet *FleetCache) *StructCac
 	fleet.GetOwner().BuildQuantityIncrement(types.CommandStructTypeId)
 
 	var structStatus types.StructState
-	if fleet.GetOwner().CanSupportLoadAddition(structType.GetPassiveDraw()) {
-		fleet.GetOwner().StructsLoadIncrement(structType.GetPassiveDraw())
+	if fleet.GetOwner().CanSupportLoadAddition(structType.GetStructType().PassiveDraw) {
+		fleet.GetOwner().StructsLoadIncrement(structType.GetStructType().PassiveDraw)
 		structStatus = types.StructState(types.StructStateMaterialized | types.StructStateBuilt | types.StructStateOnline)
 	} else {
 		structStatus = types.StructState(types.StructStateMaterialized | types.StructStateBuilt)
 	}
 
 	// Start to put the pieces together
-	cc.structs[structId] := &StructCache{
+	cc.structs[structId] = &StructCache{
 		StructId: structId,
 		CC: cc,
 
@@ -82,9 +85,11 @@ func (cc *CurrentContext) InitialCommandShipStruct(fleet *FleetCache) *StructCac
         BlockStartOreRefineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structId),
 
         ProtectedStructIndexAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, structId),
+
+	    ReadyAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_ready, structId),
 	}
 
-	cc.SetStructAttribute(cc.structs[structId].HealthAttributeId, structType.GetMaxHealth())
+	cc.SetStructAttribute(cc.structs[structId].HealthAttributeId, structType.GetStructType().MaxHealth)
 	cc.SetStructAttribute(cc.structs[structId].StatusAttributeId, uint64(structStatus))
 
     // Set the Permissions
@@ -102,7 +107,7 @@ func (cc *CurrentContext) InitiateStruct(creatorAddress string, owner *PlayerCac
 
 	structure := types.CreateBaseStruct(structType.ID(), creatorAddress, owner.GetPlayerId(), structType.GetStructType().Category, ambit)
 
-    structure.Index := cc.k.GetStructCount(cc.ctx)
+    structure.Index = cc.k.GetStructCount(cc.ctx)
     cc.k.SetStructCount(cc.ctx, structure.Index+1)
 
     structId := GetObjectID(types.ObjectType_struct, structure.Index)
@@ -112,7 +117,7 @@ func (cc *CurrentContext) InitiateStruct(creatorAddress string, owner *PlayerCac
 	case types.ObjectType_planet:
 		err := owner.GetPlanet().BuildInitiateReadiness(&structure, structType, ambit, slot)
 		if err != nil {
-			return StructCache{}, err
+			return &StructCache{}, err
 		}
 
 		structure.LocationId = owner.GetPlanetId()
@@ -120,7 +125,7 @@ func (cc *CurrentContext) InitiateStruct(creatorAddress string, owner *PlayerCac
 	case types.ObjectType_fleet:
 		err := owner.GetFleet().BuildInitiateReadiness(&structure, structType, ambit, slot)
 		if err != nil {
-			return StructCache{}, err
+			return &StructCache{}, err
 		}
 
 		if structType.GetStructType().Type != types.CommandStruct {
@@ -129,10 +134,10 @@ func (cc *CurrentContext) InitiateStruct(creatorAddress string, owner *PlayerCac
 
 		structure.LocationId = owner.GetFleetId()
 	default:
-		return &StructCache{}, types.NewStructBuildError(structType.GetId(), "", "", "type_unsupported")
+		return &StructCache{}, types.NewStructBuildError(structType.ID(), "", "", "type_unsupported")
 	}
 
-	owner.StructsLoadIncrement(structType.GetStructType().GetBuildDraw())
+	owner.StructsLoadIncrement(structType.GetStructType().BuildDraw)
 	owner.BuildQuantityIncrement(structType.ID())
 
 	switch structType.GetStructType().Category {
@@ -147,7 +152,7 @@ func (cc *CurrentContext) InitiateStruct(creatorAddress string, owner *PlayerCac
 	case types.ObjectType_fleet:
 		// Update the cross reference on the planet
 		if structType.GetStructType().Type == types.CommandStruct {
-			owner.GetFleet().SetCommandStruct(structure)
+			owner.GetFleet().SetCommandStruct(structId)
 		} else {
 			err := owner.GetFleet().SetSlot(structure)
 			if err != nil {
@@ -157,7 +162,7 @@ func (cc *CurrentContext) InitiateStruct(creatorAddress string, owner *PlayerCac
 	}
 
 	// Start to put the pieces together
-	cc.structs[structId] := &StructCache{
+	cc.structs[structId] = &StructCache{
 		StructId: structId,
 		CC: cc,
 
@@ -174,10 +179,12 @@ func (cc *CurrentContext) InitiateStruct(creatorAddress string, owner *PlayerCac
         BlockStartOreRefineAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreRefine, structId),
 
         ProtectedStructIndexAttributeId: GetStructAttributeIDByObjectId(types.StructAttributeType_protectedStructIndex, structId),
+
+	    ReadyAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_ready, structId),
 	}
 
-	cc.SetStructAttribute(cc.structs[structId].HealthAttributeId, structType.GetMaxHealth())
-	cc.SetStructAttribute(cc.structs[structId].StatusAttributeId, uint64(types.StructState(types.StructStateMaterialized),))
+	cc.SetStructAttribute(cc.structs[structId].HealthAttributeId, structType.GetStructType().MaxHealth)
+	cc.SetStructAttribute(cc.structs[structId].StatusAttributeId, uint64(types.StructState(types.StructStateMaterialized)))
 
     ctxSDK := sdk.UnwrapSDKContext(cc.ctx)
     cc.SetStructAttribute(cc.structs[structId].BlockStartBuildAttributeId, uint64(ctxSDK.BlockHeight()))

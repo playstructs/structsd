@@ -39,26 +39,26 @@ func (cc *CurrentContext) ClearStructAttribute(structAttributeId string) {
 }
 
 // SetStructAttributeIncrement increments a struct attribute
-func (cc *CurrentContext) SetStructAttributeIncrement(attributeId string, delta uint64) uint64 {
-	current := cc.GetStructAttribute(attributeId)
-	newValue := current + delta
+func (cc *CurrentContext) SetStructAttributeIncrement(structAttributeId string, incrementAmount uint64) uint64 {
+	current := cc.GetStructAttribute(structAttributeId)
+	newValue := current + incrementAmount
 
 	cc.k.logger.Info("Struct Change (Increment)", "structAttributeId", structAttributeId, "incrementAmount", incrementAmount)
-	cc.SetStructAttribute(attributeId, newValue)
+	cc.SetStructAttribute(structAttributeId, newValue)
 	return newValue
 }
 
 // SetStructAttributeDecrement decrements a struct attribute
 // Will not go below zero.
-func (cc *CurrentContext) SetStructAttributeDecrement(attributeId string, delta uint64) uint64 {
-	current := cc.GetStructAttribute(attributeId)
+func (cc *CurrentContext) SetStructAttributeDecrement(structAttributeId string, decrementAmount uint64) uint64 {
+	current := cc.GetStructAttribute(structAttributeId)
 	var newValue uint64
-	if delta < current {
-		newValue = current - delta
+	if decrementAmount < current {
+		newValue = current - decrementAmount
 	}
 
 	cc.k.logger.Info("Struct Change (Decrement)", "structAttributeId", structAttributeId, "decrementAmount", decrementAmount)
-	cc.SetStructAttribute(attributeId, newValue)
+	cc.SetStructAttribute(structAttributeId, newValue)
 	return newValue
 }
 
@@ -73,7 +73,7 @@ func (cc *CurrentContext) SetStructAttributeDelta(structAttributeId string, oldA
 	amount := resetAmount + newAmount
 
     cc.k.logger.Info("Struct Change (Delta)", "structAttributeId", structAttributeId, "oldAmount", oldAmount, "newAmount", newAmount)
-    cc.SetStructAttribute(attributeId, amount)
+    cc.SetStructAttribute(structAttributeId, amount)
 
 	return amount
 }

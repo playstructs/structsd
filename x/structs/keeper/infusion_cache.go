@@ -7,7 +7,7 @@ import (
 )
 
 type InfusionCache struct {
-    DestinationType types.ObjectType
+    InfusionId      string
     DestinationId   string
     Address         string
 
@@ -44,7 +44,7 @@ func (cache *InfusionCache) Commit() {
 func (cache *InfusionCache) IsChanged() bool { return cache.Changed }
 
 func (cache *InfusionCache) ID() string {
-    return cache.DestinationId + "/" + cache.Address
+    return cache.InfusionId
 }
 
 // =========================================================================
@@ -56,17 +56,6 @@ func (cache *InfusionCache) LoadInfusion() bool {
     cache.Infusion, cache.InfusionLoaded = cache.CC.k.GetInfusion(
         cache.CC.ctx, cache.DestinationId, cache.Address,
     )
-
-    if !cache.InfusionLoaded {
-        cache.Infusion = types.Infusion{
-            DestinationType: cache.DestinationType,
-            DestinationId:   cache.DestinationId,
-            Address:         cache.Address,
-            PlayerId:        cache.GetOwnerId(),
-            Commission:      math.LegacyZeroDec(),
-        }
-        cache.InfusionLoaded = true
-    }
 
     return cache.InfusionLoaded
 }
@@ -80,6 +69,15 @@ func (cache *InfusionCache) GetOwnerId() string {
         return GetObjectID(types.ObjectType_player, cache.CC.GetPlayerIndexFromAddress(cache.Address))
     }
     return cache.Infusion.PlayerId
+}
+
+func (cache *InfusionCache) CheckInfusion() error  {
+    if !cache.InfusionLoaded {
+        if !cache.LoadInfusion() {
+            return types.NewObjectNotFoundError("infusion", cache.InfusionId)
+        }
+    }
+    return nil
 }
 
 func (cache *InfusionCache) GetInfusion() types.Infusion { if !cache.InfusionLoaded { cache.LoadInfusion() }; return cache.Infusion }

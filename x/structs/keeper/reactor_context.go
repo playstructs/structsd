@@ -1,8 +1,5 @@
 package keeper
 
-import (
-	"structs/x/structs/types"
-)
 
 // GetReactor returns a Reactor by ID, caching the result.
 func (cc *CurrentContext) GetReactor(reactorId string) (*ReactorCache) {

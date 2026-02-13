@@ -56,7 +56,7 @@ func (k Keeper) GetInfusionByID(ctx context.Context, infusionId string) (val typ
 	if len(infusionIdSplit) != 2 {
 		return types.Infusion{}, false
 	}
-	return k.GetInfusion(ctx, infusionIdSplit[0], infusionIdSplit[1])
+	return k.GetInfusion(ctx, infusionIdSplit[0] + "-" + infusionIdSplit[1], infusionIdSplit[2])
 }
 
 // RemoveInfusion removes a infusion from the store
@@ -107,6 +107,24 @@ func (k Keeper) GetAllInfusionsByDestination(ctx context.Context, objectId strin
 		var val types.Infusion
 		k.cdc.MustUnmarshal(iterator.Value(), &val)
 		list = append(list, val)
+	}
+
+	return
+}
+
+
+// GetAllInfusionsByDestination returns all infusion relating to a struct
+func (k Keeper) GetAllInfusionIdsByDestination(ctx context.Context, objectId string) (list []string) {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), InfusionKeyPrefix(objectId))
+	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
+
+	defer iterator.Close()
+
+	for ; iterator.Valid(); iterator.Next() {
+		var val types.Infusion
+		k.cdc.MustUnmarshal(iterator.Value(), &val)
+		allocationId := objectId + "-" + val.Address
+		list = append(list, allocationId)
 	}
 
 	return
