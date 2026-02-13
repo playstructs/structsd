@@ -80,18 +80,18 @@ func (cache *SubstationCache) GetAvailableCapacity() (uint64)       { return cac
 
 func (cache *SubstationCache) GetOwner()        (*PlayerCache)      { return cache.CC.GetPlayer( cache.GetOwnerId() ) }
 
-func (cache *SubstationCache) Delete(migrationSubstation *SubstationCache) {
+func (cache *SubstationCache) Delete(migrationSubstationId string) {
 
     // Migrate everyone away
     playerConnections := cache.CC.GetGridAttribute(cache.ConnectionCountAttributeId)
     if (playerConnections > 0) {
         connectedPlayers := cc.GetAllPlayerBySubstation(substationId)
         for _, disconnectPlayer := range connectedPlayers {
-            if migrationSubstation.GetSubstationId() == cache.GetSubstationId() {
+            if migrationSubstationId == "" || migrationSubstationId == cache.GetSubstationId() {
                // Somewhat punishes tomfoolery but whatever
                disconnectPlayer.DisconnectSubstation()
             } else {
-               disconnectPlayer.MigrateSubstation(migrationSubstation.GetSubstationId())
+               disconnectPlayer.MigrateSubstation(migrationSubstationId)
             }
         }
 	}

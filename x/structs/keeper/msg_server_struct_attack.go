@@ -26,10 +26,6 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 		return &types.MsgStructAttackResponse{}, permissionError
 	}
 
-	if structure.GetOwner().IsHalted() {
-		return &types.MsgStructAttackResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "struct_attack").WithStruct(msg.OperatingStructId)
-	}
-
 	// Is the Struct & Owner online?
 	readinessError := structure.ReadinessCheck()
 	if readinessError != nil {
@@ -50,9 +46,8 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 		return &types.MsgStructAttackResponse{}, weaponSystemError
 	}
 
-	playerCharge := k.GetPlayerCharge(ctx, structure.GetOwnerId())
-	if playerCharge < structure.GetStructType().GetWeaponCharge(weaponSystem) {
-		return &types.MsgStructAttackResponse{}, types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().GetWeaponCharge(weaponSystem), playerCharge, "attack").WithStructType(structure.GetTypeId())
+	if structure.GetOwner().GetCharge() < structure.GetStructType().GetWeaponCharge(weaponSystem) {
+		return &types.MsgStructAttackResponse{}, types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().GetWeaponCharge(weaponSystem), structure.GetOwner().GetCharge(), "attack").WithStructType(structure.GetTypeId())
 	}
 
 	// Jump out of Stealth Mode for the attack
@@ -115,7 +110,6 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 		if (structure.GetStructType().GetWeaponBlockable(weaponSystem)) || (structure.GetStructType().GetWeaponCounterable(weaponSystem)) {
 
 			// Check the Defenders
-			defenderPlayer := targetStructure.GetOwner()
 			defenders := targetStructure.GetDefenders()
 			for _, defender := range defenders {
 				k.logger.Info("Defender at Location", "defender", defender.GetStructId(), "locationId", defender.GetLocationId())
@@ -124,7 +118,6 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 				defender = cc.GetStruct(defender.GetStructId())
 
 				defender.Defender = true
-				defender.ManualLoadOwner(defenderPlayer)
 				defender.ManualLoadEventAttackDetail(eventAttackDetail)
 				defender.ManualLoadEventAttackShotDetail(eventAttackShotDetail)
 
@@ -168,7 +161,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
 		structure.GetEventAttackDetail().AppendShot(targetStructure.FlushEventAttackShotDetail())
 
-		if targetStructure.GetStructType().GetCategory() == types.ObjectType_planet {
+		if targetStructure.GetStructType().Category == types.ObjectType_planet {
 			targetWasPlanetary = true
 			targetWasOnPlanet = targetStructure.GetPlanet()
 		}
@@ -187,7 +180,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventAttack{EventAttackDetail: eventAttackDetail})
 
-	k.DischargePlayer(ctx, structure.GetOwnerId())
+    structure.GetOwner().Discharge()
 
 	if ctx.ExecMode() == sdk.ExecModeCheck {
 		//ctx.GasMeter().RefundGas(ctx.GasMeter().GasConsumed(), "Walkin it back")

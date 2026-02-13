@@ -40,7 +40,7 @@ func (k msgServer) PermissionSetOnAddress(goCtx context.Context, msg *types.MsgP
     }
 
     targetAddressPermissionId := GetAddressPermissionIDBytes(msg.Address)
-    cc.SetPermissions(targetAddressPermissionId, msg.Permissions)
+    cc.SetPermissions(targetAddressPermissionId, types.Permission(msg.Permissions))
 
 	return &types.MsgPermissionResponse{}, nil
 }

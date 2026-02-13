@@ -32,10 +32,6 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 		return &types.MsgStructStatusResponse{}, types.NewObjectNotFoundError("struct", msg.StructId)
 	}
 
-	if structure.GetOwner().IsHalted() {
-		return &types.MsgStructStatusResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "struct_build_complete").WithStruct(msg.StructId)
-	}
-
 	if structure.IsBuilt() {
 		//structure.GetOwner().Discharge()
 		//structure.GetOwner().Commit()

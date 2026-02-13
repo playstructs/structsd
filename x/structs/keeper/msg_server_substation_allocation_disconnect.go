@@ -26,31 +26,27 @@ func (k msgServer) SubstationAllocationDisconnect(goCtx context.Context, msg *ty
 		return &types.MsgSubstationAllocationDisconnectResponse{}, types.NewObjectNotFoundError("allocation", msg.AllocationId)
 	}
 
-    allocationPlayer, err := cc.GetPlayerByAddress(allocation.Controller)
+    allocationPlayer, err := cc.GetPlayerByAddress(allocation.GetAllocation().Controller)
     if err != nil {
         return &types.MsgSubstationAllocationDisconnectResponse{}, err
     }
     if (allocationPlayer.GetPlayerId() != player.GetPlayerId()) {
-        sourceObjectPermissionId := GetObjectPermissionIDBytes(allocation.DestinationId, player.GetPlayerId())
+        sourceObjectPermissionId := GetObjectPermissionIDBytes(allocation.GetAllocation().DestinationId, player.GetPlayerId())
         // check that the player has reactor permissions
-        if (!k.PermissionHasOneOf(ctx, sourceObjectPermissionId, types.PermissionGrid)) {
+        if (!cc.PermissionHasOneOf(sourceObjectPermissionId, types.PermissionGrid)) {
             // technically both correct. Refactor this to be clearer
-            return &types.MsgSubstationAllocationDisconnectResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "substation", allocation.DestinationId, uint64(types.PermissionGrid), "allocation_disconnect")
+            return &types.MsgSubstationAllocationDisconnectResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "substation", allocation.GetAllocation().DestinationId, uint64(types.PermissionGrid), "allocation_disconnect")
         }
-
     }
 
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
 
     // check that the account has energy management permissions
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionGrid)) {
+    if (!cc.PermissionHasOneOf(addressPermissionId, types.PermissionGrid)) {
         return &types.MsgSubstationAllocationDisconnectResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionGrid), "energy_management")
     }
 
-
-    power := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocation.Id))
-    allocation.DestinationId = ""
-    allocation, _, err = k.SetAllocation(ctx, allocation, power)
+    allocation.SetDestination("")
 
 	return &types.MsgSubstationAllocationDisconnectResponse{}, err
 }

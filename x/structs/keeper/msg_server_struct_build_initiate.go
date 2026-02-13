@@ -35,28 +35,22 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
         return &types.MsgStructStatusResponse{}, permissionError
     }
 
-    if owner.IsHalted() {
-        return &types.MsgStructStatusResponse{}, types.NewPlayerHaltedError(msg.PlayerId, "struct_build_initiate")
-    }
-
     // Load the Struct Type
-    structType, structTypeFound := k.GetStructType(ctx, msg.StructTypeId)
+    structType, structTypeFound := cc.GetStructType(msg.StructTypeId)
     if !structTypeFound {
         return &types.MsgStructStatusResponse{}, types.NewObjectNotFoundError("struct_type", "").WithIndex(msg.StructTypeId)
     }
 
     // Check that the player can build more of this type of Struct
-    if (structType.GetBuildLimit() > 0) {
-        if (owner.GetBuiltQuantity(msg.StructTypeId) >= structType.GetBuildLimit()) {
-            owner.Discharge()
-            return &types.MsgStructStatusResponse{}, types.NewPlayerPowerError(owner.GetPlayerId(), "capacity_exceeded").WithCapacity(structType.GetBuildLimit(), owner.GetBuiltQuantity(msg.StructTypeId))
+    if (structType.GetStructType().BuildLimit > 0) {
+        if (owner.GetBuiltQuantity(msg.StructTypeId) >= structType.GetStructType().BuildLimit) {
+            return &types.MsgStructStatusResponse{}, types.NewPlayerPowerError(owner.GetPlayerId(), "capacity_exceeded").WithCapacity(structType.GetStructType().BuildLimit, owner.GetBuiltQuantity(msg.StructTypeId))
         }
     }
 
     // Check Player Charge
-    if (owner.GetCharge() < structType.BuildCharge) {
-        err := types.NewInsufficientChargeError(owner.GetPlayerId(), structType.BuildCharge, owner.GetCharge(), "build").WithStructType(msg.StructTypeId)
-        owner.Discharge()
+    if (owner.GetCharge() < structType.GetStructType().BuildCharge) {
+        err := types.NewInsufficientChargeError(owner.GetPlayerId(), structType.GetStructType().BuildCharge, owner.GetCharge(), "build").WithStructType(msg.StructTypeId)
         return &types.MsgStructStatusResponse{}, err
     }
 
@@ -66,21 +60,17 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     }
 
 
-    if !owner.CanSupportLoadAddition(structType.BuildDraw) {
-        owner.Discharge()
-        return &types.MsgStructStatusResponse{}, types.NewPlayerPowerError(owner.GetPlayerId(), "capacity_exceeded").WithCapacity(structType.BuildDraw, owner.GetAvailableCapacity())
+    if !owner.CanSupportLoadAddition(structType.GetStructType().BuildDraw) {
+        return &types.MsgStructStatusResponse{}, types.NewPlayerPowerError(owner.GetPlayerId(), "capacity_exceeded").WithCapacity(structType.GetStructType().BuildDraw, owner.GetAvailableCapacity())
     }
 
-
-    k.logger.Info("Struct Materializing", "structType", structType.Type, "ambit", msg.OperatingAmbit, "slot", msg.Slot)
-    structure, err := k.InitiateStruct(ctx, msg.Creator, owner, &structType, msg.OperatingAmbit, msg.Slot)
+    k.logger.Info("Struct Materializing", "structType", structType.GetStructType().Type, "ambit", msg.OperatingAmbit, "slot", msg.Slot)
+    structure, err := cc.InitiateStruct(msg.Creator, owner, structType, msg.OperatingAmbit, msg.Slot)
     if (err != nil) {
         return &types.MsgStructStatusResponse{}, err
     }
-    cc.RegisterStruct(&structure)
 
     owner.Discharge()
-
 
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct()}, nil
 }

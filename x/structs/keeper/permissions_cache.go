@@ -7,10 +7,11 @@ import (
 // attributeCache holds a single attribute value with change tracking.
 type PermissionsCache struct {
     CC              *CurrentContext
-    PermissionsId   []byte
+    PermissionId    []byte
 	Value           types.Permission
 	Loaded          bool
 	Changed         bool
+	Deleted         bool
 }
 
 
@@ -18,19 +19,19 @@ func (cache *PermissionsCache) IsChanged() bool {
 	return cache.Changed
 }
 
-func (cache *PermissionsCache) ID() string {
-	return cache.PermissionsId
+func (cache *PermissionsCache) ID() []byte {
+	return cache.PermissionId
 }
 
 func (cache *PermissionsCache) Commit() {
     if cache.Loaded && cache.Changed {
         cache.Changed = false
-    	cache.CC.k.logger.Info("Updating Permission From Cache", "PermissionsId", cache.PermissionsId, "value", cache.Value)
+    	cache.CC.k.logger.Info("Updating Permission From Cache", "PermissionsId", cache.PermissionId, "value", cache.Value)
 
         if cache.Deleted {
-            cache.CC.k.ClearPermissions(cache.CC.ctx, cache.PermissionsId)
+            cache.CC.k.PermissionClearAll(cache.CC.ctx, cache.PermissionId)
         } else {
-            cache.CC.k.SetPermissionsByBytes(cache.CC.ctx, []bytes(cache.PermissionsId), cache.Value)
+            cache.CC.k.SetPermissionsByBytes(cache.CC.ctx, cache.PermissionId, cache.Value)
         }
     }
 }

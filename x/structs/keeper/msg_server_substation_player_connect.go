@@ -15,45 +15,32 @@ func (k msgServer) SubstationPlayerConnect(goCtx context.Context, msg *types.Msg
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	player, err := cc.GetPlayerByAddress(msg.Creator)
-    if err != nil {
-        return &types.MsgSubstationPlayerConnectResponse{}, err
+	player, _ := cc.GetPlayer(msg.Creator)
+    if player.CheckPlayer() != nil {
+        return &types.MsgSubstationPlayerConnectResponse{}, player.CheckPlayer()
     }
 
-	targetPlayer, err := cc.GetPlayer(msg.PlayerId)
-    if err != nil {
-        return &types.MsgSubstationPlayerConnectResponse{}, err
-    }
-    if !targetPlayer.LoadPlayer() {
-        return &types.MsgSubstationPlayerConnectResponse{}, types.NewObjectNotFoundError("player", msg.PlayerId)
-    }
-
-    substationObjectPermissionId := GetObjectPermissionIDBytes(msg.SubstationId, player.GetPlayerId())
-    // check that the calling player has substation permissions
-    if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.PermissionGrid)) {
-        return &types.MsgSubstationPlayerConnectResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "substation", msg.SubstationId, uint64(types.PermissionGrid), "player_connect")
-    }
-
-    if (player.GetPlayerId() != msg.PlayerId) {
-        // check that the calling player has target player permissions
-        playerObjectPermissionId := GetObjectPermissionIDBytes(msg.PlayerId, player.GetPlayerId())
-        if (!k.PermissionHasOneOf(ctx, playerObjectPermissionId, types.PermissionGrid)) {
-            return &types.MsgSubstationPlayerConnectResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "player", msg.PlayerId, uint64(types.PermissionGrid), "player_connect")
-        }
-    }
-
-    // check that the account has energy management permissions
-    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
-    if(!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionGrid)) {
-        return &types.MsgSubstationPlayerConnectResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionGrid), "energy_management")
+	targetPlayer, _ := cc.GetPlayer(msg.PlayerId)
+    if targetPlayer.CheckPlayer() != nil {
+        return &types.MsgSubstationPlayerConnectResponse{}, targetPlayer.CheckPlayer()
     }
 
     substation := cc.GetSubstation(msg.SubstationId)
-    if (!substation.LoadSubstation()) {
+    if substation.CheckSubstation() != nil {
         return &types.MsgSubstationPlayerConnectResponse{}, types.NewObjectNotFoundError("substation", msg.SubstationId)
     }
 
-	// connect to new substation
+    permissionSubstationErr := substation.CanManagePlayerConnections(player)
+    if permissionSubstationErr != nil {
+        return &types.MsgSubstationPlayerConnectResponse{}, permissionSubstationErr
+    }
+
+    permissionPlayerErr := targetPlayer.CanManageGridBy(msg.Creator)
+    if permissionPlayerErr != nil {
+        return &types.MsgSubstationPlayerConnectResponse{}, permissionPlayerErr
+    }
+
+    // connect to new substation
 	// This call handles the disconnection from other substations as well
     targetPlayer.MigrateSubstation(substation.GetSubstationId())
 

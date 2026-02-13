@@ -43,24 +43,17 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
         return &types.MsgStructStatusResponse{}, types.NewObjectNotFoundError("struct", msg.DefenderStructId)
     }
 
-    if structure.GetOwner().IsHalted() {
-        return &types.MsgStructStatusResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "defense_set").WithStruct(msg.DefenderStructId)
-    }
-
     if structure.IsOffline() {
-        structure.GetOwner().Discharge()
         return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.DefenderStructId, "offline", "online", "defense_set")
     }
 
     if !structure.IsCommandable() {
-        k.DischargePlayer(ctx, structure.GetOwnerId())
         return &types.MsgStructStatusResponse{}, types.NewFleetCommandError(structure.GetStructId(), "no_command_struct")
     }
 
     // Check Player Charge
     if (structure.GetOwner().GetCharge() < structure.GetStructType().DefendChangeCharge) {
         err := types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().DefendChangeCharge, structure.GetOwner().GetCharge(), "defend").WithStructType(structure.GetStructType().Id)
-        structure.GetOwner().Discharge()
         return &types.MsgStructStatusResponse{}, err
     }
 
@@ -99,10 +92,8 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
     }
 
     if (!inRange) {
-        structure.GetOwner().Discharge()
         return &types.MsgStructStatusResponse{}, types.NewStructLocationError(structure.GetStructType().Id, "", "not_in_range").WithStruct(structure.GetStructId()).WithLocation("struct", msg.ProtectedStructId)
     }
-
 
     k.SetStructDefender(ctx, msg.ProtectedStructId, protectedStructure.Index, structure.GetStructId())
 

@@ -15,48 +15,39 @@ func (k msgServer) SubstationPlayerMigrate(goCtx context.Context, msg *types.Msg
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	player, err := cc.GetPlayerByAddress(msg.Creator)
-    if err != nil {
-        return &types.MsgSubstationPlayerMigrateResponse{}, err
-    }
-
-    substationObjectPermissionId := GetObjectPermissionIDBytes(msg.SubstationId, player.GetPlayerId())
-    // check that the calling player has substation permissions
-    if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.PermissionGrid)) {
-        return &types.MsgSubstationPlayerMigrateResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "substation", msg.SubstationId, uint64(types.PermissionGrid), "player_migrate")
-    }
-
-    // check that the account has energy management permissions
-    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
-    if(!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionGrid)) {
-        return &types.MsgSubstationPlayerMigrateResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionGrid), "energy_management")
+	player, _ := cc.GetPlayer(msg.Creator)
+    if player.CheckPlayer() != nil {
+        return &types.MsgSubstationPlayerMigrateResponse{}, player.CheckPlayer()
     }
 
     substation := cc.GetSubstation(msg.SubstationId)
-    if (!substation.LoadSubstation()) {
+    if substation.CheckSubstation() != nil {
         return &types.MsgSubstationPlayerMigrateResponse{}, types.NewObjectNotFoundError("substation", msg.SubstationId)
     }
 
+    permissionSubstationErr := substation.CanManagePlayerConnections(player)
+    if permissionSubstationErr != nil {
+        return &types.MsgSubstationPlayerMigrateResponse{}, permissionSubstationErr
+    }
 
     var targetPlayers []*PlayerCache
     for _, targetPlayerId := range msg.PlayerId {
-
-        // check permissions
-        if (player.GetPlayerId() != targetPlayerId) {
-            // check that the calling player has target player permissions
-            playerObjectPermissionId := GetObjectPermissionIDBytes(targetPlayerId, player.GetPlayerId())
-            if (!k.PermissionHasOneOf(ctx, playerObjectPermissionId, types.PermissionGrid)) {
-                return &types.MsgSubstationPlayerMigrateResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "player", targetPlayerId, uint64(types.PermissionGrid), "player_migrate")
-            }
-        }
 
         targetPlayer, err := cc.GetPlayer(targetPlayerId)
         if err != nil {
             return &types.MsgSubstationPlayerMigrateResponse{}, err
         }
-        if !targetPlayer.LoadPlayer() {
+        if targetPlayer.CheckPlayer() != nil {
             return &types.MsgSubstationPlayerMigrateResponse{}, types.NewObjectNotFoundError("player", targetPlayerId)
         }
+
+        // check permissions
+        if (player.GetPlayerId() != targetPlayerId) {
+            if targetPlayer.CanManageGridBy(msg.Creator) != nil {
+                return &types.MsgSubstationPlayerMigrateResponse{}, targetPlayer.CanManageGridBy(msg.Creator)
+            }
+        }
+
         targetPlayers = append(targetPlayers, targetPlayer)
     }
 

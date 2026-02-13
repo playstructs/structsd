@@ -269,6 +269,10 @@ func (cache *PlayerCache) CanBeUpdatedBy(address string) (err error) {
     return cache.CanBeAdministratedBy(address, types.PermissionUpdate)
 }
 
+func (cache *PlayerCache) CanManageGridBy(address string) (err error) {
+    return cache.CanBeAdministratedBy(address, types.PermissionGrid)
+}
+
 func (cache *PlayerCache) CanBeAdministratedBy(address string, permission types.Permission) (error) {
 
     // Make sure the address calling this has request permissions

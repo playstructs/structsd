@@ -217,12 +217,6 @@ func (cc *CurrentContext) CommitAll() {
 
 
 
-
-
-
-
-
-
 	cc.committed = true
     /*
 	TODO
@@ -230,39 +224,4 @@ func (cc *CurrentContext) CommitAll() {
 		"entity_cache_count", 0,
 	)
 	*/
-}
-
-// Reset clears all caches but keeps the context usable.
-// Useful for long-running operations (like ABCI hooks) that want to
-// commit periodically to avoid memory buildup.
-func (cc *CurrentContext) Reset() {
-	// Commit any pending changes first
-	if !cc.committed {
-		cc.CommitAll()
-	}
-
-	// Re-initialize all maps
-	cc.agreements = make(map[string]*AgreementCache)
-	cc.fleets = make(map[uint64]*FleetCache)
-	cc.guilds = make(map[string]*GuildCache)
-	cc.guildMembershipApps = make(map[string]*GuildMembershipApplicationCache)
-	cc.infusions = make(map[string]*InfusionCache)
-	cc.planets = make(map[string]*PlanetCache)
-	cc.players = make(map[string]*PlayerCache)
-	cc.providers = make(map[string]*ProviderCache)
-	cc.structs = make(map[string]*StructCache)
-	cc.substations = make(map[string]*SubstationCache)
-
-	cc.gridAttributes = make(map[string]*GridAttributeCache)
-	cc.structAttributes = make(map[string]*StructAttributeCache)
-	cc.planetAttributes = make(map[string]*PlanetAttributeCache)
-
-	cc.addresses = make(map[string]*AddressCache)
-	cc.allocations = make(map[string]*AllocationCache)
-	cc.permissions = make(map[string]*PermissionsCache)
-	cc.reactors = make(map[string]*ReactorCache)
-	cc.structTypes = make(map[uint64]*StructTypeCache)
-
-
-	cc.committed = false
 }

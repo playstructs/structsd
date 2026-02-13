@@ -5,13 +5,13 @@ import (
 )
 
 // GetPermission returns a struct attribute value, caching the result.
-func (cc *CurrentContext) GetPermissions(permissionId []byte) uint64 {
-	if cache, exists := cc.permissions[permissionId]; exists {
+func (cc *CurrentContext) GetPermissions(permissionId []byte) types.Permission {
+	if cache, exists := cc.permissions[string(permissionId)]; exists {
 		return cache.Value
 	}
 
-	value := cc.k.GetPermission(cc.ctx, permissionId)
-	cc.permissions[permissionId] = &PermissionsCache{
+	value := cc.k.GetPermissionsByBytes(cc.ctx, permissionId)
+	cc.permissions[string(permissionId)] = &PermissionsCache{
 	    CC:     cc,
 	    PermissionId: permissionId,
 	    Value:  value,
@@ -20,8 +20,8 @@ func (cc *CurrentContext) GetPermissions(permissionId []byte) uint64 {
 	return value
 }
 
-func (cc *CurrentContext) SetPermissions(permissionId []byte, value uint64) {
-	cc.permissions[permissionId] = &PermissionsCache{
+func (cc *CurrentContext) SetPermissions(permissionId []byte, value types.Permission) {
+	cc.permissions[string(permissionId)] = &PermissionsCache{
  	    CC:     cc,
  	    PermissionId: permissionId,
 	    Value: value,
@@ -32,10 +32,10 @@ func (cc *CurrentContext) SetPermissions(permissionId []byte, value uint64) {
 }
 
 func (cc *CurrentContext) ClearPermissions(permissionId []byte) {
-	cc.permissions[permissionId] = &PermissionsCache{
+	cc.permissions[string(permissionId)] = &PermissionsCache{
  	    CC:                 cc,
  	    PermissionId:    permissionId,
-	    Value: 0,
+	    Value: types.Permissionless,
 	    Loaded: true,
 	    Changed: true,
 	    Deleted: true,

@@ -30,20 +30,14 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
     }
     */
 
-    if structure.GetOwner().IsHalted() {
-        return &types.MsgStructOreRefineryStatusResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "ore_refine_complete").WithStruct(msg.StructId)
-    }
-
     // Is the Struct & Owner online?
     readinessError := structure.ReadinessCheck()
     if (readinessError != nil) {
-        k.DischargePlayer(ctx, structure.GetOwnerId())
         return &types.MsgStructOreRefineryStatusResponse{}, readinessError
     }
 
     refiningReadinessError := structure.CanOreRefine()
     if (refiningReadinessError != nil) {
-        k.DischargePlayer(ctx, structure.GetOwnerId())
         return &types.MsgStructOreRefineryStatusResponse{}, refiningReadinessError
     }
 
@@ -51,7 +45,7 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
     hashInput := structure.StructId + "REFINE" + activeOreRefiningSystemBlockString + "NONCE" + msg.Nonce
 
     currentAge := uint64(ctx.BlockHeight()) - structure.GetBlockStartOreRefine()
-    valid, achievedDifficulty := types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().GetOreRefiningDifficulty())
+    valid, achievedDifficulty := types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().OreRefiningDifficulty)
     if !valid {
        return &types.MsgStructOreRefineryStatusResponse{}, types.NewWorkFailureError("refine", structure.StructId, hashInput)
     }

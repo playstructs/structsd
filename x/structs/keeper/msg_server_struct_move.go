@@ -44,14 +44,9 @@ func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (
         return &types.MsgStructStatusResponse{}, permissionError
     }
 
-    if structure.GetOwner().IsHalted() {
-        return &types.MsgStructStatusResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "struct_move").WithStruct(msg.StructId)
-    }
-
     // Check Player Charge
-    if structure.GetOwner().GetCharge() < structure.GetStructType().GetMoveCharge() {
-        err := types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().GetMoveCharge(), structure.GetOwner().GetCharge(), "move").WithStructType(structure.GetStructType().GetId())
-        structure.GetOwner().Discharge()
+    if structure.GetOwner().GetCharge() < structure.GetStructType().MoveCharge {
+        err := types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().MoveCharge, structure.GetOwner().GetCharge(), "move").WithStructType(structure.GetTypeId())
         return &types.MsgStructStatusResponse{}, err
     }
 

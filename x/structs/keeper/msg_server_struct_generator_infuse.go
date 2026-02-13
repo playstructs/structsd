@@ -19,57 +19,35 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	callingPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
-	if callingPlayerIndex == 0 {
+	callingPlayer, _ := cc.GetPlayerByAddress(msg.Creator)
+	if callingPlayer.CheckPlayer() != nil {
 		return &types.MsgStructGeneratorStatusResponse{}, types.NewPlayerRequiredError(msg.Creator, "struct_generator_infuse")
 	}
-	callingPlayerId := GetObjectID(types.ObjectType_player, callingPlayerIndex)
-	callingPlayer, _ := k.GetPlayer(ctx, callingPlayerId)
 
 	addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
 	// Make sure the address calling this has Assets permissions
-	if !k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets) {
+	if !cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets) {
 		return &types.MsgStructGeneratorStatusResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "assets")
 	}
 
 	structStatusAttributeId := GetStructAttributeIDByObjectId(types.StructAttributeType_status, msg.StructId)
 
-	structure, structureFound := k.GetStruct(ctx, msg.StructId)
-	if !structureFound {
+	structure := cc.GetStruct(msg.StructId)
+	if structure.CheckStruct() != nil {
 		return &types.MsgStructGeneratorStatusResponse{}, types.NewObjectNotFoundError("struct", msg.StructId)
 	}
 
 	// Is the Struct online?
-	if k.StructAttributeFlagHasOneOf(ctx, structStatusAttributeId, uint64(types.StructStateOnline)) {
-		k.DischargePlayer(ctx, callingPlayerId)
+	if cc.StructAttributeFlagHasOneOf(structStatusAttributeId, uint64(types.StructStateOnline)) {
 		return &types.MsgStructGeneratorStatusResponse{}, types.NewStructStateError(msg.StructId, "offline", "online", "generator_infuse")
 	}
 
-	// Load Struct Type
-	structType, structTypeFound := k.GetStructType(ctx, structure.Type)
-	if !structTypeFound {
-		return &types.MsgStructGeneratorStatusResponse{}, types.NewObjectNotFoundError("struct_type", "").WithIndex(structure.Type)
-	}
-
-	if structType.PowerGeneration == types.TechPowerGeneration_noPowerGeneration {
-		k.DischargePlayer(ctx, callingPlayerId)
+	if structure.GetStructType().PowerGeneration == types.TechPowerGeneration_noPowerGeneration {
 		return &types.MsgStructGeneratorStatusResponse{}, types.NewStructCapabilityError(msg.StructId, "generation")
 	}
 
-	// FIX FIX FIX  FIX
-	// TODO
-	// Change all of these to do a more deeper check
-	// Check for Fleet location, etc.
-	// repeat everywhere
-	// FIX FIX FIX  FIX
-	planet, planetFound := k.GetPlanet(ctx, structure.LocationId)
-	if !planetFound {
-		return &types.MsgStructGeneratorStatusResponse{}, types.NewObjectNotFoundError("planet", structure.LocationId)
-	}
-
-	if planet.Status == types.PlanetStatus_complete {
-		k.DischargePlayer(ctx, callingPlayerId)
-		return &types.MsgStructGeneratorStatusResponse{}, types.NewPlanetStateError(structure.LocationId, "complete", "generator_infuse")
+	if structure.GetPlanet().IsComplete() {
+		return &types.MsgStructGeneratorStatusResponse{}, types.NewPlanetStateError(structure.GetLocationId(), "complete", "generator_infuse")
 	}
 
 	infusionAmount, parseError := sdk.ParseCoinsNormalized(msg.InfuseAmount)
@@ -92,22 +70,21 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 	}
 
 	// Transfer the refined Alpha from the player
-	playerAcc, _ := sdk.AccAddressFromBech32(callingPlayer.PrimaryAddress)
+	playerAcc, _ := sdk.AccAddressFromBech32(callingPlayer.GetPrimaryAddress())
 	sendError := k.bankKeeper.SendCoinsFromAccountToModule(ctx, playerAcc, types.ModuleName, infusionAmount)
 
 	if sendError != nil {
-		k.DischargePlayer(ctx, callingPlayerId)
 		return &types.MsgStructGeneratorStatusResponse{}, types.NewFuelInfuseError(msg.StructId, msg.InfuseAmount, "transfer_failed").WithDetails(sendError.Error())
 	}
 	k.bankKeeper.BurnCoins(ctx, types.ModuleName, infusionAmount)
 
-	infusion := cc.GetInfusion(types.ObjectType_struct, structure.Id, callingPlayer.PrimaryAddress)
+	infusion := cc.GetInfusion(types.ObjectType_struct, structure.GetStructId(), callingPlayer.GetPrimaryAddress())
 
-	infusion.SetRatio(structType.GeneratingRate)
+	infusion.SetRatio(structure.GetStructType().GeneratingRate)
 	infusion.SetCommission(math.LegacyZeroDec())
 	infusion.AddFuel(infusionAmount[0].Amount.Uint64())
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventAlphaInfuse{&types.EventAlphaInfuseDetail{PlayerId: callingPlayer.Id, PrimaryAddress: callingPlayer.PrimaryAddress, Amount: infusionAmount[0].Amount.Uint64()}})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventAlphaInfuse{&types.EventAlphaInfuseDetail{PlayerId: callingPlayer.GetPlayerId(), PrimaryAddress: callingPlayer.GetPrimaryAddress(), Amount: infusionAmount[0].Amount.Uint64()}})
 
 	return &types.MsgStructGeneratorStatusResponse{}, nil
 }

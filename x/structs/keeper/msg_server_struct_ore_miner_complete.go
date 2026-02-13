@@ -30,20 +30,14 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 	   }
 	*/
 
-	if structure.GetOwner().IsHalted() {
-		return &types.MsgStructOreMinerStatusResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "ore_mine_complete").WithStruct(msg.StructId)
-	}
-
 	// Is the Struct & Owner online?
 	readinessError := structure.ReadinessCheck()
 	if readinessError != nil {
-		k.DischargePlayer(ctx, structure.GetOwnerId())
 		return &types.MsgStructOreMinerStatusResponse{}, readinessError
 	}
 
 	miningReadinessError := structure.CanOreMinePlanet()
 	if miningReadinessError != nil {
-		k.DischargePlayer(ctx, structure.GetOwnerId())
 		return &types.MsgStructOreMinerStatusResponse{}, miningReadinessError
 	}
 
@@ -52,7 +46,7 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 
 	currentAge := uint64(ctx.BlockHeight()) - structure.GetBlockStartOreMine()
 
-	valid, achievedDifficulty := types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().GetOreMiningDifficulty());
+	valid, achievedDifficulty := types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().OreMiningDifficulty);
 	if !valid {
 		return &types.MsgStructOreMinerStatusResponse{}, types.NewWorkFailureError("mine", structure.StructId, hashInput)
 	}

@@ -7,7 +7,7 @@ import (
 )
 
 
-func (structType *StructType) VerifyWeaponSystem(weaponSystem TechWeaponSystem) (err error) {
+func (structType StructType) VerifyWeaponSystem(weaponSystem TechWeaponSystem) (err error) {
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:
             if (structType.PrimaryWeapon == TechActiveWeaponry_noActiveWeaponry) {
@@ -23,31 +23,31 @@ func (structType *StructType) VerifyWeaponSystem(weaponSystem TechWeaponSystem) 
     return
 }
 
-func (structType *StructType) HasStealthSystem() (bool) {
+func (structType StructType) HasStealthSystem() (bool) {
     return (structType.UnitDefenses == TechUnitDefenses_stealthMode)
 }
 
-func (structType *StructType) HasOreMiningSystem() (bool) {
+func (structType StructType) HasOreMiningSystem() (bool) {
     return (structType.PlanetaryMining != TechPlanetaryMining_noPlanetaryMining)
 }
 
-func (structType *StructType) HasOreRefiningSystem() (bool) {
+func (structType StructType) HasOreRefiningSystem() (bool) {
     return (structType.PlanetaryRefinery != TechPlanetaryRefineries_noPlanetaryRefinery)
 }
 
-func (structType *StructType) HasOreReserveDefensesSystem() (bool) {
+func (structType StructType) HasOreReserveDefensesSystem() (bool) {
     return (structType.OreReserveDefenses != TechOreReserveDefenses_noOreReserveDefenses)
 }
 
-func (structType *StructType) HasPlanetaryDefensesSystem() (bool) {
+func (structType StructType) HasPlanetaryDefensesSystem() (bool) {
     return (structType.PlanetaryDefenses != TechPlanetaryDefenses_noPlanetaryDefense)
 }
 
-func (structType *StructType) HasPowerGenerationSystem() (bool) {
+func (structType StructType) HasPowerGenerationSystem() (bool) {
   return (structType.PowerGeneration != TechPowerGeneration_noPowerGeneration)
 }
 
-func (structType *StructType) GetWeapon(weaponSystem TechWeaponSystem) (weapon TechActiveWeaponry) {
+func (structType StructType) GetWeapon(weaponSystem TechWeaponSystem) (weapon TechActiveWeaponry) {
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:
             weapon = structType.PrimaryWeapon
@@ -58,7 +58,7 @@ func (structType *StructType) GetWeapon(weaponSystem TechWeaponSystem) (weapon T
     return weapon
 }
 
-func (structType *StructType) GetWeaponControl(weaponSystem TechWeaponSystem) (weaponControl TechWeaponControl) {
+func (structType StructType) GetWeaponControl(weaponSystem TechWeaponSystem) (weaponControl TechWeaponControl) {
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:
             weaponControl = structType.PrimaryWeaponControl
@@ -70,7 +70,7 @@ func (structType *StructType) GetWeaponControl(weaponSystem TechWeaponSystem) (w
 }
 
 
-func (structType *StructType) GetWeaponCharge(weaponSystem TechWeaponSystem) (weaponCharge uint64) {
+func (structType StructType) GetWeaponCharge(weaponSystem TechWeaponSystem) (weaponCharge uint64) {
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:
             weaponCharge = structType.PrimaryWeaponCharge
@@ -81,7 +81,7 @@ func (structType *StructType) GetWeaponCharge(weaponSystem TechWeaponSystem) (we
     return weaponCharge
 }
 
-func (structType *StructType) GetWeaponAmbits(weaponSystem TechWeaponSystem) (weaponAmbits uint64) {
+func (structType StructType) GetWeaponAmbits(weaponSystem TechWeaponSystem) (weaponAmbits uint64) {
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:
             weaponAmbits = structType.PrimaryWeaponAmbits
@@ -92,7 +92,7 @@ func (structType *StructType) GetWeaponAmbits(weaponSystem TechWeaponSystem) (we
     return weaponAmbits
 }
 
-func (structType *StructType) GetWeaponTargets(weaponSystem TechWeaponSystem) (weaponTargets uint64) {
+func (structType StructType) GetWeaponTargets(weaponSystem TechWeaponSystem) (weaponTargets uint64) {
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:
             weaponTargets = structType.PrimaryWeaponTargets
@@ -103,7 +103,7 @@ func (structType *StructType) GetWeaponTargets(weaponSystem TechWeaponSystem) (w
     return weaponTargets
 }
 
-func (structType *StructType) GetWeaponShots(weaponSystem TechWeaponSystem) (weaponShots uint64) {
+func (structType StructType) GetWeaponShots(weaponSystem TechWeaponSystem) (weaponShots uint64) {
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:
             weaponShots = structType.PrimaryWeaponShots
@@ -114,7 +114,7 @@ func (structType *StructType) GetWeaponShots(weaponSystem TechWeaponSystem) (wea
     return weaponShots
 }
 
-func (structType *StructType) GetWeaponDamage(weaponSystem TechWeaponSystem) (weaponDamage uint64) {
+func (structType StructType) GetWeaponDamage(weaponSystem TechWeaponSystem) (weaponDamage uint64) {
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:
             weaponDamage = structType.PrimaryWeaponDamage
@@ -125,7 +125,7 @@ func (structType *StructType) GetWeaponDamage(weaponSystem TechWeaponSystem) (we
     return weaponDamage
 }
 
-func (structType *StructType) GetWeaponBlockable(weaponSystem TechWeaponSystem) (weaponBlockable bool) {
+func (structType StructType) GetWeaponBlockable(weaponSystem TechWeaponSystem) (weaponBlockable bool) {
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:
             weaponBlockable = structType.PrimaryWeaponBlockable
@@ -136,7 +136,7 @@ func (structType *StructType) GetWeaponBlockable(weaponSystem TechWeaponSystem) 
     return weaponBlockable
 }
 
-func (structType *StructType) GetWeaponCounterable(weaponSystem TechWeaponSystem) (weaponCounterable bool) {
+func (structType StructType) GetWeaponCounterable(weaponSystem TechWeaponSystem) (weaponCounterable bool) {
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:
             weaponCounterable = structType.PrimaryWeaponCounterable
@@ -147,7 +147,7 @@ func (structType *StructType) GetWeaponCounterable(weaponSystem TechWeaponSystem
     return weaponCounterable
 }
 
-func (structType *StructType) GetWeaponRecoilDamage(weaponSystem TechWeaponSystem) (weaponRecoilDamage uint64) {
+func (structType StructType) GetWeaponRecoilDamage(weaponSystem TechWeaponSystem) (weaponRecoilDamage uint64) {
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:
             weaponRecoilDamage = structType.PrimaryWeaponRecoilDamage
@@ -158,7 +158,7 @@ func (structType *StructType) GetWeaponRecoilDamage(weaponSystem TechWeaponSyste
     return weaponRecoilDamage
 }
 
-func (structType *StructType) GetWeaponShotSuccessRate(weaponSystem TechWeaponSystem) (weaponShotSuccessRate fraction.Fraction) {
+func (structType StructType) GetWeaponShotSuccessRate(weaponSystem TechWeaponSystem) (weaponShotSuccessRate fraction.Fraction) {
     switch weaponSystem {
         case TechWeaponSystem_primaryWeapon:
             weaponShotSuccessRate, _ = fraction.New(structType.PrimaryWeaponShotSuccessRateNumerator, structType.PrimaryWeaponShotSuccessRateDenominator)
@@ -169,18 +169,18 @@ func (structType *StructType) GetWeaponShotSuccessRate(weaponSystem TechWeaponSy
     return weaponShotSuccessRate
 }
 
-func (structType *StructType) GetUnguidedDefensiveSuccessRate() (unguidedDefensiveSuccessRate fraction.Fraction) {
+func (structType StructType) GetUnguidedDefensiveSuccessRate() (unguidedDefensiveSuccessRate fraction.Fraction) {
     unguidedDefensiveSuccessRate, _ = fraction.New(structType.UnguidedDefensiveSuccessRateNumerator, structType.UnguidedDefensiveSuccessRateDenominator)
     return unguidedDefensiveSuccessRate
 }
 
-func (structType *StructType) GetGuidedDefensiveSuccessRate() (guidedDefensiveSuccessRate fraction.Fraction) {
+func (structType StructType) GetGuidedDefensiveSuccessRate() (guidedDefensiveSuccessRate fraction.Fraction) {
     guidedDefensiveSuccessRate, _ = fraction.New(structType.GuidedDefensiveSuccessRateNumerator, structType.GuidedDefensiveSuccessRateDenominator)
     return guidedDefensiveSuccessRate
 }
 
 
-func (structType *StructType) GetCounterAttackDamage(sameAmbit bool) (uint64) {
+func (structType StructType) GetCounterAttackDamage(sameAmbit bool) (uint64) {
     if (sameAmbit) {
         return structType.CounterAttackSameAmbit
     }
@@ -189,7 +189,7 @@ func (structType *StructType) GetCounterAttackDamage(sameAmbit bool) (uint64) {
 
 
 
-func (structType *StructType) CanTargetAmbit(weaponSystem TechWeaponSystem, counterAmbit Ambit, targetAmbit Ambit) (bool) {
+func (structType StructType) CanTargetAmbit(weaponSystem TechWeaponSystem, counterAmbit Ambit, targetAmbit Ambit) (bool) {
 
     allAmbits := structType.GetWeaponAmbits(weaponSystem)
     // Is local anywhere in the ambits?
@@ -200,7 +200,7 @@ func (structType *StructType) CanTargetAmbit(weaponSystem TechWeaponSystem, coun
     return allAmbits&Ambit_flag[targetAmbit] != 0
 }
 
-func (structType *StructType) CanCounterTargetAmbit(counterAmbit Ambit, targetAmbit Ambit) (bool) {
+func (structType StructType) CanCounterTargetAmbit(counterAmbit Ambit, targetAmbit Ambit) (bool) {
     fmt.Printf("\n %s Checking on counter of primary %d secondary %d and ambit %d and ambit %d\n", structType.Type, structType.PrimaryWeaponAmbits, structType.SecondaryWeaponAmbits, Ambit_flag[targetAmbit], targetAmbit)
 
     allAmbits := structType.PrimaryWeaponAmbits | structType.SecondaryWeaponAmbits
@@ -213,6 +213,6 @@ func (structType *StructType) CanCounterTargetAmbit(counterAmbit Ambit, targetAm
     return allAmbits&Ambit_flag[targetAmbit] != 0
 }
 
-func (structType *StructType) CanBlockTargeting() (bool) {
+func (structType StructType) CanBlockTargeting() (bool) {
     return false
 }

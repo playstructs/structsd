@@ -43,7 +43,7 @@ func (k msgServer) PermissionSetOnObject(goCtx context.Context, msg *types.MsgPe
     }
 
     targetPlayerPermissionId := GetObjectPermissionIDBytes(msg.ObjectId, msg.PlayerId)
-    cc.SetPermissions(targetPlayerPermissionId, msg.Permissions)
+    cc.SetPermissions(targetPlayerPermissionId, types.Permission(msg.Permissions))
 
 	return &types.MsgPermissionResponse{}, nil
 }

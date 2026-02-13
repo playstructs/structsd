@@ -19,7 +19,7 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
 	connectPlayer := false
 
     // Make sure the allocation exists
-    allocation, allocationFound := k.GetAllocation(ctx, msg.AllocationId)
+    allocation, allocationFound := cc.GetAllocation(msg.AllocationId)
     if (!allocationFound) {
         return &types.MsgSubstationCreateResponse{}, types.NewObjectNotFoundError("allocation", msg.AllocationId)
     }
@@ -30,37 +30,39 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
 	// a player creation point, initiating their player account and connecting it to this newly
 	// formed substation later on in the function call.
 
-	allocationPlayerIndex   := k.GetPlayerIndexFromAddress(ctx, allocation.Controller)
+	allocationPlayerIndex   := k.GetPlayerIndexFromAddress(ctx, allocation.GetAllocation().Controller)
 	callingPlayerIndex      := k.GetPlayerIndexFromAddress(ctx, msg.Creator)
 
     _, AllocationPlayerFound := k.GetPlayerFromIndex(ctx, allocationPlayerIndex)
-    player := k.UpsertPlayer(ctx, msg.Creator)
+    player := cc.UpsertPlayer(msg.Creator)
 
     if (!AllocationPlayerFound) {
-        if (allocation.Controller == msg.Creator){
+        if (allocation.GetAllocation().Controller == msg.Creator){
             connectPlayer = true
         } else {
-            return &types.MsgSubstationCreateResponse{}, types.NewPermissionError("address", msg.Creator, "allocation", allocation.Id, uint64(types.PermissionAssets), "allocation_control")
+            return &types.MsgSubstationCreateResponse{}, types.NewPermissionError("address", msg.Creator, "allocation", allocation.GetAllocationId(), uint64(types.PermissionAssets), "allocation_control")
         }
     } else {
         if (allocationPlayerIndex != callingPlayerIndex) {
-            return &types.MsgSubstationCreateResponse{}, types.NewPermissionError("player", player.Id, "allocation", allocation.Id, uint64(types.PermissionAssets), "allocation_control")
+            return &types.MsgSubstationCreateResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "allocation", allocation.GetAllocationId(), uint64(types.PermissionAssets), "allocation_control")
         }
 
         addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
         // check that the account has energy management permissions
-        if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets)) {
+        if (!cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets)) {
             return &types.MsgSubstationCreateResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "energy_management")
         }
     }
 
-	_ = cc
 
-    substation, allocation, err := k.AppendSubstation(ctx, allocation, player)
-
-    if (connectPlayer) {
-        k.SubstationConnectPlayer(ctx, substation, player)
+    substation, err := cc.NewSubstation(msg.Creator, player, allocation)
+    if err != nil {
+        return &types.MsgSubstationCreateResponse{}, err
     }
 
-	return &types.MsgSubstationCreateResponse{SubstationId: substation.Id}, err
+    if (connectPlayer) {
+        player.MigrateSubstation(substation.GetSubstationId())
+    }
+
+	return &types.MsgSubstationCreateResponse{SubstationId: substation.GetSubstationId()}, err
 }
