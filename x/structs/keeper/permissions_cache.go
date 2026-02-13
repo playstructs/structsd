@@ -30,7 +30,7 @@ func (cache *PermissionsCache) Commit() {
         if cache.Deleted {
             cache.CC.k.ClearPermissions(cache.CC.ctx, cache.PermissionsId)
         } else {
-            cache.CC.k.SetPermissions(cache.CC.ctx, cache.PermissionsId, cache.Value)
+            cache.CC.k.SetPermissionsByBytes(cache.CC.ctx, []bytes(cache.PermissionsId), cache.Value)
         }
     }
 }

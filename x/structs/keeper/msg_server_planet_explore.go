@@ -27,14 +27,9 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
         return &types.MsgPlanetExploreResponse{}, permissionError
     }
 
-    if player.IsHalted() {
-        return &types.MsgPlanetExploreResponse{}, types.NewPlayerHaltedError(msg.PlayerId, "planet_explore")
-    }
-
     // Is the Player online?
     readinessError := player.ReadinessCheck()
     if (readinessError != nil) {
-        k.DischargePlayer(ctx, player.GetPlayerId())
         return &types.MsgPlanetExploreResponse{}, readinessError
     }
 
@@ -44,18 +39,15 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
     if (player.HasPlanet()){
         planetCompletionError := player.GetPlanet().AttemptComplete()
         if (planetCompletionError != nil) {
-            k.DischargePlayer(ctx, player.GetPlayerId())
             return &types.MsgPlanetExploreResponse{}, planetCompletionError
         }
     }
 
     planetExploreError := player.AttemptPlanetExplore()
     if (planetExploreError != nil) {
-        k.DischargePlayer(ctx, player.GetPlayerId())
         return &types.MsgPlanetExploreResponse{}, planetExploreError
     }
 
-    player.GetFleet().ManualLoadOwner(player)
     player.GetFleet().MigrateToNewPlanet(player.GetPlanet())
 
 	return &types.MsgPlanetExploreResponse{Planet: player.GetPlanet().GetPlanet()}, nil

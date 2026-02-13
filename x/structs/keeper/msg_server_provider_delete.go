@@ -24,7 +24,7 @@ func (k msgServer) ProviderDelete(goCtx context.Context, msg *types.MsgProviderD
         return &types.MsgProviderResponse{}, permissionError
     }
 
-    paramErr := provider.DeleteAndCommit()
+    paramErr := provider.Delete()
     if paramErr != nil {
         return &types.MsgProviderResponse{}, paramErr
     }

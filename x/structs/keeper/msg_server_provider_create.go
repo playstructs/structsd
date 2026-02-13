@@ -83,7 +83,7 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
         // Unset Load is zero
         // Unset CheckpointBlock is zero
 
-    cc.NewProvider(ctx, provider)
+    cc.NewProvider(provider)
 
 
 	return &types.MsgProviderResponse{}, nil

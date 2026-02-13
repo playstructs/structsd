@@ -36,7 +36,7 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 	k.AddressEmitActivity(ctx, msg.Creator)
 
 	// Load Fleet
-	fleet, fleetLoadError := cc.GetFleet(msg.FleetId)
+	fleet, fleetLoadError := cc.GetFleetById(msg.FleetId)
 	if fleetLoadError != nil {
 		return &types.MsgPlanetRaidCompleteResponse{}, fleetLoadError
 	}
@@ -48,10 +48,6 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 	       return &types.MsgPlanetRaidCompleteResponse{}, permissionError
 	   }
 	*/
-
-	if fleet.GetOwner().IsHalted() {
-		return &types.MsgPlanetRaidCompleteResponse{}, types.NewPlayerHaltedError(fleet.GetOwnerId(), "planet_raid_complete")
-	}
 
 	// check that the fleet is Away
 	if fleet.IsOnStation() {

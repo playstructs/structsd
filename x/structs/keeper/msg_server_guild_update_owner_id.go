@@ -22,30 +22,29 @@ func (k msgServer) GuildUpdateOwnerId(goCtx context.Context, msg *types.MsgGuild
 		return &types.MsgGuildUpdateResponse{}, types.NewPlayerRequiredError(msg.Creator, "guild_update_owner")
 	}
 
-	guild, guildFound := k.GetGuild(ctx, msg.GuildId)
-	if !guildFound {
+	guild := cc.GetGuild(msg.GuildId)
+	if guild.CheckGuild() != nil {
 		return &types.MsgGuildUpdateResponse{}, types.NewObjectNotFoundError("guild", msg.GuildId)
 	}
 
-	guildObjectPermissionId := GetObjectPermissionIDBytes(msg.GuildId, player.PlayerId)
+	guildObjectPermissionId := GetObjectPermissionIDBytes(msg.GuildId, player.GetPlayerId())
 	addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
 
-	if !k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.PermissionUpdate) {
-		return &types.MsgGuildUpdateResponse{}, types.NewPermissionError("player", player.PlayerId, "guild", msg.GuildId, uint64(types.PermissionUpdate), "guild_update")
+	if !cc.PermissionHasOneOf(guildObjectPermissionId, types.PermissionUpdate) {
+		return &types.MsgGuildUpdateResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "guild", msg.GuildId, uint64(types.PermissionUpdate), "guild_update")
 	}
 
 	// Make sure the address calling this has Associate permissions
-	if !k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets) {
+	if !cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets) {
 		return &types.MsgGuildUpdateResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "guild_management")
 	}
 
-	if guild.Owner != msg.Owner {
-		_, err = cc.GetPlayer(msg.Owner)
-		if err != nil {
+	if guild.GetGuild().Owner != msg.Owner {
+		newOwner, _ := cc.GetPlayer(msg.Owner)
+		if newOwner.CheckPlayer() != nil {
 			return &types.MsgGuildUpdateResponse{}, types.NewObjectNotFoundError("player", msg.Owner)
 		}
 		guild.SetOwner(msg.Owner)
-		k.SetGuild(ctx, guild)
 	}
 
 	return &types.MsgGuildUpdateResponse{}, nil

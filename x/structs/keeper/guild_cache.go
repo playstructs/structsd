@@ -356,7 +356,7 @@ func (cache *GuildCache) SetOwner(owner string) {
 }
 
 
-func (cache *GuildCache) SetJoinInfusionMinimumBypassByRequest(level types.guildJoinBypassLevel) {
+func (cache *GuildCache) SetJoinInfusionMinimumBypassByRequest(level types.GuildJoinBypassLevel) {
     if (!cache.GuildLoaded) {
         cache.LoadGuild()
     }
@@ -365,7 +365,7 @@ func (cache *GuildCache) SetJoinInfusionMinimumBypassByRequest(level types.guild
 }
 
 
-func (cache *GuildCache) SetJoinInfusionMinimumBypassByInvite(level types.guildJoinBypassLevel) {
+func (cache *GuildCache) SetJoinInfusionMinimumBypassByInvite(level types.GuildJoinBypassLevel) {
     if (!cache.GuildLoaded) {
         cache.LoadGuild()
     }

@@ -11,7 +11,6 @@ func (k msgServer) PermissionGrantOnAddress(goCtx context.Context, msg *types.Ms
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 	defer cc.CommitAll()
-	_ = cc
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -23,29 +22,30 @@ func (k msgServer) PermissionGrantOnAddress(goCtx context.Context, msg *types.Ms
         return &types.MsgPermissionResponse{}, types.NewParameterValidationError("permissions", 0, "below_minimum").WithRange(1, 0)
     }
 
-    player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
-    if (!playerFound) {
-        return nil, err
+    player, _ := cc.GetPlayerByAddress(msg.Creator)
+    err = player.CheckPlayer()
+    if err != nil {
+        return  &types.MsgPermissionResponse{}, err
     }
 
-    targetPlayer, targetPlayerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Address))
-    if (!targetPlayerFound) {
-         return nil, err
+    targetPlayer, _ := cc.GetPlayerByAddress(msg.Address)
+    err = targetPlayer.CheckPlayer()
+    if err != nil {
+         return  &types.MsgPermissionResponse{}, err
      }
 
-     if (targetPlayer.Id != player.Id) {
-        return nil, err // Can only set address permissions on your own player
+     if (targetPlayer.GetPlayerId() != player.GetPlayerId()) {
+        return  &types.MsgPermissionResponse{}, types.NewObjectNotFoundError("player", targetPlayer.GetPlayerId()) // Can only set address permissions on your own player
      }
-
 
     // Make sure the calling address has enough permissions to apply to another address
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-    if (!k.PermissionHasAll(ctx, addressPermissionId, types.Permission(msg.Permissions) | types.Permissions)) {
+    if (!cc.PermissionHasAll(addressPermissionId, types.Permission(msg.Permissions) | types.Permissions)) {
         return &types.MsgPermissionResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(msg.Permissions), "permission_grant")
     }
 
     targetAddressPermissionId := GetAddressPermissionIDBytes(msg.Address)
-    k.PermissionAdd(ctx, targetAddressPermissionId, types.Permission(msg.Permissions))
+    cc.PermissionAdd(targetAddressPermissionId, types.Permission(msg.Permissions))
 
 	return &types.MsgPermissionResponse{}, nil
 }
