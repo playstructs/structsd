@@ -25,6 +25,7 @@ func SimulateMsgStructBuildInitiate(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -42,7 +43,7 @@ func SimulateMsgStructBuildInitiate(
 		}
 
 		// Ensure player has explored a planet (which creates the fleet) before building structs
-		playerCache, err := k.GetPlayerCacheFromId(ctx, player.Id)
+		playerCache, err := cc.GetPlayer(player.Id)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildInitiate{}), "failed to get player cache"), nil, nil
 		}
@@ -55,7 +56,6 @@ func SimulateMsgStructBuildInitiate(
 				return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildInitiate{}), "failed to explore planet: "+exploreErr.Error()), nil, nil
 			}
 			// After exploring, the fleet needs to be set up
-			playerCache.GetFleet().ManualLoadOwner(&playerCache)
 			playerCache.GetFleet().MigrateToNewPlanet(playerCache.GetPlanet())
 			playerCache.Commit()
 		}
@@ -163,6 +163,7 @@ func SimulateMsgGuildCreate(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -199,7 +200,7 @@ func SimulateMsgGuildCreate(
 			// Find a substation the player has access to
 			for _, substation := range substations {
 				substationPermissionId := keeper.GetObjectPermissionIDBytes(substation.Id, player.Id)
-				if k.PermissionHasOneOf(ctx, substationPermissionId, types.PermissionGrid) {
+				if cc.PermissionHasOneOf(substationPermissionId, types.PermissionGrid) {
 					entrySubstationId = substation.Id
 					break
 				}
@@ -235,6 +236,7 @@ func SimulateMsgGuildBankMint(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -242,7 +244,7 @@ func SimulateMsgGuildBankMint(
 		}
 
 		// Get player cache
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankMint{}), "player not found"), nil, nil
 		}
@@ -253,8 +255,8 @@ func SimulateMsgGuildBankMint(
 		}
 
 		// Check bank administration permissions
-		guild := k.GetGuildCacheFromId(ctx, activePlayer.GetGuildId())
-		permissionError := guild.CanAdministrateBank(&activePlayer)
+		guild := cc.GetGuild(activePlayer.GetGuildId())
+		permissionError := guild.CanAdministrateBank(activePlayer)
 		if permissionError != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankMint{}), "no bank admin permission"), nil, nil
 		}
@@ -289,6 +291,7 @@ func SimulateMsgGuildBankRedeem(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -296,7 +299,7 @@ func SimulateMsgGuildBankRedeem(
 		}
 
 		// Get player cache
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankRedeem{}), "player not found"), nil, nil
 		}
@@ -348,6 +351,7 @@ func SimulateMsgGuildBankConfiscateAndBurn(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -355,7 +359,7 @@ func SimulateMsgGuildBankConfiscateAndBurn(
 		}
 
 		// Get player cache
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConfiscateAndBurn{}), "player not found"), nil, nil
 		}
@@ -366,8 +370,8 @@ func SimulateMsgGuildBankConfiscateAndBurn(
 		}
 
 		// Check bank administration permissions
-		guild := k.GetGuildCacheFromId(ctx, activePlayer.GetGuildId())
-		permissionError := guild.CanAdministrateBank(&activePlayer)
+		guild := cc.GetGuild(activePlayer.GetGuildId())
+		permissionError := guild.CanAdministrateBank(activePlayer)
 		if permissionError != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConfiscateAndBurn{}), "no bank admin permission"), nil, nil
 		}
@@ -405,6 +409,7 @@ func SimulateMsgAddressRegister(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		// Get a random account that will be the creator (must have a player)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
@@ -413,7 +418,7 @@ func SimulateMsgAddressRegister(
 		}
 
 		// Get or create player for the creator
-		player := k.UpsertPlayer(ctx, simAccount.Address.String())
+		player := cc.UpsertPlayer(simAccount.Address.String())
 
 		// Get a random account to register as a new address (different from creator)
 		newAccount, _ := simtypes.RandomAcc(r, accs)
@@ -430,7 +435,7 @@ func SimulateMsgAddressRegister(
 
 		// Generate proof signature (simplified for simulation - in real usage this would be cryptographic)
 		// For simulation, we'll use a simple approach: create a message hash and sign it
-		hashInput := fmt.Sprintf("PLAYER%sADDRESS%s", player.Id, newAccount.Address.String())
+		hashInput := fmt.Sprintf("PLAYER%sADDRESS%s", player.GetPlayerId(), newAccount.Address.String())
 		hashBytes := []byte(hashInput)
 
 		// Sign with the new account's private key
@@ -448,7 +453,7 @@ func SimulateMsgAddressRegister(
 
 		msg := &types.MsgAddressRegister{
 			Creator:        simAccount.Address.String(),
-			PlayerId:       player.Id,
+			PlayerId:       player.GetPlayerId(),
 			Address:        newAccount.Address.String(),
 			Permissions:    permissions,
 			ProofPubKey:    proofPubKey,
@@ -475,6 +480,7 @@ func SimulateMsgPlayerSend(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		// Get a random account that will send tokens
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
@@ -483,8 +489,8 @@ func SimulateMsgPlayerSend(
 		}
 
 		// Get or create player for the sender
-		player := k.UpsertPlayer(ctx, simAccount.Address.String())
-		playerCache, err := k.GetPlayerCacheFromId(ctx, player.Id)
+		player := cc.UpsertPlayer(simAccount.Address.String())
+		playerCache, err := cc.GetPlayer(player.GetPlayerId())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlayerSend{}), "failed to get player cache"), nil, nil
 		}
@@ -519,7 +525,7 @@ func SimulateMsgPlayerSend(
 
 		msg := &types.MsgPlayerSend{
 			Creator:     simAccount.Address.String(),
-			PlayerId:    player.Id,
+			PlayerId:    player.GetPlayerId(),
 			FromAddress: simAccount.Address.String(),
 			ToAddress:   recipientAccount.Address.String(),
 			Amount:      sendAmount,
@@ -545,6 +551,7 @@ func SimulateMsgGuildMembershipRequest(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -552,8 +559,8 @@ func SimulateMsgGuildMembershipRequest(
 		}
 
 		// Get or create player
-		player := k.UpsertPlayer(ctx, simAccount.Address.String())
-		playerCache, err := k.GetPlayerCacheFromId(ctx, player.Id)
+		player := cc.UpsertPlayer(simAccount.Address.String())
+		playerCache, err := cc.GetPlayer(player.GetPlayerId())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequest{}), "failed to get player cache"), nil, nil
 		}
@@ -574,7 +581,7 @@ func SimulateMsgGuildMembershipRequest(
 		msg := &types.MsgGuildMembershipRequest{
 			Creator:  simAccount.Address.String(),
 			GuildId:  targetGuild.Id,
-			PlayerId: player.Id,
+			PlayerId: player.GetPlayerId(),
 		}
 
 		// Execute the message using the message server
@@ -597,6 +604,7 @@ func SimulateMsgGuildMembershipJoin(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -604,8 +612,8 @@ func SimulateMsgGuildMembershipJoin(
 		}
 
 		// Get or create player
-		player := k.UpsertPlayer(ctx, simAccount.Address.String())
-		playerCache, err := k.GetPlayerCacheFromId(ctx, player.Id)
+		player := cc.UpsertPlayer(simAccount.Address.String())
+		playerCache, err := cc.GetPlayer(player.GetPlayerId())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipJoin{}), "failed to get player cache"), nil, nil
 		}
@@ -626,7 +634,7 @@ func SimulateMsgGuildMembershipJoin(
 		msg := &types.MsgGuildMembershipJoin{
 			Creator:  simAccount.Address.String(),
 			GuildId:  targetGuild.Id,
-			PlayerId: player.Id,
+			PlayerId: player.GetPlayerId(),
 			// InfusionId can be empty if guild doesn't require minimum infusion
 		}
 
@@ -650,6 +658,7 @@ func SimulateMsgPlanetExplore(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -657,11 +666,11 @@ func SimulateMsgPlanetExplore(
 		}
 
 		// Get or create player
-		player := k.UpsertPlayer(ctx, simAccount.Address.String())
+		player := cc.UpsertPlayer(simAccount.Address.String())
 
 		msg := &types.MsgPlanetExplore{
 			Creator:  simAccount.Address.String(),
-			PlayerId: player.Id,
+			PlayerId: player.GetPlayerId(),
 		}
 
 		// Execute the message using the message server
@@ -684,6 +693,7 @@ func SimulateMsgReactorInfuse(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -691,8 +701,8 @@ func SimulateMsgReactorInfuse(
 		}
 
 		// Get or create player
-		player := k.UpsertPlayer(ctx, simAccount.Address.String())
-		playerCache, err := k.GetPlayerCacheFromId(ctx, player.Id)
+		player := cc.UpsertPlayer(simAccount.Address.String())
+		playerCache, err := cc.GetPlayer(player.GetPlayerId())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorInfuse{}), "failed to get player cache"), nil, nil
 		}
@@ -709,7 +719,7 @@ func SimulateMsgReactorInfuse(
 		}
 
 		// Get the guild
-		guild := k.GetGuildCacheFromId(ctx, playerCache.GetGuildId())
+		guild := cc.GetGuild(playerCache.GetGuildId())
 		primaryReactorId := guild.GetPrimaryReactorId()
 		if primaryReactorId == "" {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorInfuse{}), "guild has no primary reactor"), nil, nil
@@ -771,6 +781,7 @@ func SimulateCommandShipBuildInitiate(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -778,8 +789,8 @@ func SimulateCommandShipBuildInitiate(
 		}
 
 		// Get or create player
-		player := k.UpsertPlayer(ctx, simAccount.Address.String())
-		playerCache, err := k.GetPlayerCacheFromId(ctx, player.Id)
+		player := cc.UpsertPlayer(simAccount.Address.String())
+		playerCache, err := cc.GetPlayer(player.GetPlayerId())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildInitiate{}), "failed to get player cache"), nil, nil
 		}
@@ -792,7 +803,6 @@ func SimulateCommandShipBuildInitiate(
 				return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildInitiate{}), "failed to explore planet: "+exploreErr.Error()), nil, nil
 			}
 			// After exploring, the fleet needs to be set up
-			playerCache.GetFleet().ManualLoadOwner(&playerCache)
 			playerCache.GetFleet().MigrateToNewPlanet(playerCache.GetPlanet())
 			playerCache.Commit()
 		}
@@ -816,7 +826,7 @@ func SimulateCommandShipBuildInitiate(
 
 		msg := &types.MsgStructBuildInitiate{
 			Creator:        simAccount.Address.String(),
-			PlayerId:       player.Id,
+			PlayerId:       player.GetPlayerId(),
 			StructTypeId:   types.CommandStructTypeId, // 1
 			OperatingAmbit: operatingAmbit,
 			Slot:           slot,
@@ -842,6 +852,7 @@ func SimulateCommandShipBuildComplete(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		// Get all structs that are being built
 		structs := k.GetAllStruct(ctx)
 		if len(structs) == 0 {
@@ -851,7 +862,7 @@ func SimulateCommandShipBuildComplete(
 		// Find a command ship (ID 1) that is being built
 		var targetStruct *types.Struct
 		for i := range structs {
-			structCache := k.GetStructCacheFromId(ctx, structs[i].Id)
+			structCache := cc.GetStruct(structs[i].Id)
 			if !structCache.LoadStruct() {
 				continue
 			}
@@ -866,7 +877,7 @@ func SimulateCommandShipBuildComplete(
 		}
 
 		// Get the struct cache to check difficulty
-		structCache := k.GetStructCacheFromId(ctx, targetStruct.Id)
+		structCache := cc.GetStruct(targetStruct.Id)
 		if !structCache.LoadStruct() {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildComplete{}), "struct not found"), nil, nil
 		}
@@ -975,6 +986,7 @@ func SimulateMsgAllocationCreate(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -982,7 +994,7 @@ func SimulateMsgAllocationCreate(
 		}
 
 		// Get player cache
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAllocationCreate{}), "player not found"), nil, nil
 		}
@@ -1005,7 +1017,7 @@ func SimulateMsgAllocationCreate(
 			allSubstations := k.GetAllSubstation(ctx)
 			validSubstations := make([]types.Substation, 0)
 			for _, substation := range allSubstations {
-				substationCache := k.GetSubstationCacheFromId(ctx, substation.Id)
+				substationCache := cc.GetSubstation(substation.Id)
 				if substationCache.GetOwnerId() == activePlayer.GetPlayerId() {
 					validSubstations = append(validSubstations, substation)
 				}
@@ -1059,6 +1071,7 @@ func SimulateMsgSubstationCreate(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -1066,7 +1079,7 @@ func SimulateMsgSubstationCreate(
 		}
 
 		// Get player cache
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationCreate{}), "player not found"), nil, nil
 		}
@@ -1120,6 +1133,7 @@ func SimulateMsgProviderCreate(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -1127,7 +1141,7 @@ func SimulateMsgProviderCreate(
 		}
 
 		// Get player cache
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderCreate{}), "player not found"), nil, nil
 		}
@@ -1136,8 +1150,8 @@ func SimulateMsgProviderCreate(
 		allSubstations := k.GetAllSubstation(ctx)
 		validSubstations := make([]types.Substation, 0)
 		for _, substation := range allSubstations {
-			substationCache := k.GetSubstationCacheFromId(ctx, substation.Id)
-			permissionError := substationCache.CanCreateAllocations(&activePlayer)
+			substationCache := cc.GetSubstation(substation.Id)
+			permissionError := substationCache.CanCreateAllocations(activePlayer)
 			if permissionError == nil {
 				validSubstations = append(validSubstations, substation)
 			}
@@ -1213,6 +1227,7 @@ func SimulateMsgAgreementOpen(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -1220,7 +1235,7 @@ func SimulateMsgAgreementOpen(
 		}
 
 		// Get player cache
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementOpen{}), "player not found"), nil, nil
 		}
@@ -1229,8 +1244,8 @@ func SimulateMsgAgreementOpen(
 		allProviders := k.GetAllProvider(ctx)
 		validProviders := make([]types.Provider, 0)
 		for _, provider := range allProviders {
-			providerCache := k.GetProviderCacheFromId(ctx, provider.Id)
-			permissionError := providerCache.CanOpenAgreement(&activePlayer)
+			providerCache := cc.GetProvider(provider.Id)
+			permissionError := providerCache.CanOpenAgreement(activePlayer)
 			if permissionError == nil {
 				validProviders = append(validProviders, provider)
 			}
@@ -1242,7 +1257,7 @@ func SimulateMsgAgreementOpen(
 
 		// Pick a random provider
 		provider := validProviders[r.Intn(len(validProviders))]
-		providerCache := k.GetProviderCacheFromId(ctx, provider.Id)
+		providerCache := cc.GetProvider(provider.Id)
 
 		// Get provider constraints
 		capacityMin := providerCache.GetCapacityMinimum()
@@ -1308,13 +1323,14 @@ func SimulateMsgAgreementClose(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementClose{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementClose{}), "player not found"), nil, nil
 		}
@@ -1322,8 +1338,8 @@ func SimulateMsgAgreementClose(
 		allAgreements := k.GetAllAgreement(ctx)
 		validAgreements := make([]types.Agreement, 0)
 		for _, agreement := range allAgreements {
-			agreementCache := k.GetAgreementCacheFromId(ctx, agreement.Id)
-			if agreementCache.CanUpdate(&activePlayer) == nil {
+			agreementCache := cc.GetAgreement(agreement.Id)
+			if agreementCache.CanUpdate(activePlayer) == nil {
 				validAgreements = append(validAgreements, agreement)
 			}
 		}
@@ -1357,13 +1373,14 @@ func SimulateMsgAgreementCapacityIncrease(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementCapacityIncrease{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementCapacityIncrease{}), "player not found"), nil, nil
 		}
@@ -1371,8 +1388,8 @@ func SimulateMsgAgreementCapacityIncrease(
 		allAgreements := k.GetAllAgreement(ctx)
 		validAgreements := make([]types.Agreement, 0)
 		for _, agreement := range allAgreements {
-			agreementCache := k.GetAgreementCacheFromId(ctx, agreement.Id)
-			if agreementCache.CanUpdate(&activePlayer) == nil {
+			agreementCache := cc.GetAgreement(agreement.Id)
+			if agreementCache.CanUpdate(activePlayer) == nil {
 				provider := agreementCache.GetProvider()
 				if agreement.Capacity < provider.GetCapacityMaximum() {
 					validAgreements = append(validAgreements, agreement)
@@ -1385,7 +1402,7 @@ func SimulateMsgAgreementCapacityIncrease(
 		}
 
 		agreement := validAgreements[r.Intn(len(validAgreements))]
-		agreementCache := k.GetAgreementCacheFromId(ctx, agreement.Id)
+		agreementCache := cc.GetAgreement(agreement.Id)
 		provider := agreementCache.GetProvider()
 
 		capacityIncrease := uint64(r.Int63n(100) + 1)
@@ -1421,13 +1438,14 @@ func SimulateMsgAgreementCapacityDecrease(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementCapacityDecrease{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementCapacityDecrease{}), "player not found"), nil, nil
 		}
@@ -1435,8 +1453,8 @@ func SimulateMsgAgreementCapacityDecrease(
 		allAgreements := k.GetAllAgreement(ctx)
 		validAgreements := make([]types.Agreement, 0)
 		for _, agreement := range allAgreements {
-			agreementCache := k.GetAgreementCacheFromId(ctx, agreement.Id)
-			if agreementCache.CanUpdate(&activePlayer) == nil {
+			agreementCache := cc.GetAgreement(agreement.Id)
+			if agreementCache.CanUpdate(activePlayer) == nil {
 				provider := agreementCache.GetProvider()
 				if agreement.Capacity > provider.GetCapacityMinimum() {
 					validAgreements = append(validAgreements, agreement)
@@ -1449,7 +1467,7 @@ func SimulateMsgAgreementCapacityDecrease(
 		}
 
 		agreement := validAgreements[r.Intn(len(validAgreements))]
-		agreementCache := k.GetAgreementCacheFromId(ctx, agreement.Id)
+		agreementCache := cc.GetAgreement(agreement.Id)
 		provider := agreementCache.GetProvider()
 
 		maxDecrease := agreement.Capacity - provider.GetCapacityMinimum()
@@ -1484,13 +1502,14 @@ func SimulateMsgAgreementDurationIncrease(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementDurationIncrease{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAgreementDurationIncrease{}), "player not found"), nil, nil
 		}
@@ -1498,8 +1517,8 @@ func SimulateMsgAgreementDurationIncrease(
 		allAgreements := k.GetAllAgreement(ctx)
 		validAgreements := make([]types.Agreement, 0)
 		for _, agreement := range allAgreements {
-			agreementCache := k.GetAgreementCacheFromId(ctx, agreement.Id)
-			if agreementCache.CanUpdate(&activePlayer) == nil {
+			agreementCache := cc.GetAgreement(agreement.Id)
+			if agreementCache.CanUpdate(activePlayer) == nil {
 				validAgreements = append(validAgreements, agreement)
 			}
 		}
@@ -1509,7 +1528,7 @@ func SimulateMsgAgreementDurationIncrease(
 		}
 
 		agreement := validAgreements[r.Intn(len(validAgreements))]
-		agreementCache := k.GetAgreementCacheFromId(ctx, agreement.Id)
+		agreementCache := cc.GetAgreement(agreement.Id)
 		provider := agreementCache.GetProvider()
 
 		durationIncrease := uint64(r.Int63n(50) + 1)
@@ -1558,13 +1577,14 @@ func SimulateMsgAllocationDelete(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAllocationDelete{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAllocationDelete{}), "player not found"), nil, nil
 		}
@@ -1611,13 +1631,14 @@ func SimulateMsgAllocationUpdate(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAllocationUpdate{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAllocationUpdate{}), "player not found"), nil, nil
 		}
@@ -1719,14 +1740,15 @@ func SimulateMsgFleetMove(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgFleetMove{}), "account not found"), nil, nil
 		}
 
-		player := k.UpsertPlayer(ctx, simAccount.Address.String())
-		playerCache, err := k.GetPlayerCacheFromId(ctx, player.Id)
+		player := cc.UpsertPlayer(simAccount.Address.String())
+		playerCache, err := cc.GetPlayer(player.GetPlayerId())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgFleetMove{}), "player not found"), nil, nil
 		}
@@ -1778,6 +1800,7 @@ func SimulateMsgStructBuildComplete(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -1787,7 +1810,7 @@ func SimulateMsgStructBuildComplete(
 		allStructs := k.GetAllStruct(ctx)
 		validStructs := make([]types.Struct, 0)
 		for _, structure := range allStructs {
-			structCache := k.GetStructCacheFromId(ctx, structure.Id)
+			structCache := cc.GetStruct(structure.Id)
 			if structCache.CanBePlayedBy(simAccount.Address.String()) == nil && !structCache.IsBuilt() {
 				validStructs = append(validStructs, structure)
 			}
@@ -1798,7 +1821,7 @@ func SimulateMsgStructBuildComplete(
 		}
 
 		structure := validStructs[r.Intn(len(validStructs))]
-		structCache := k.GetStructCacheFromId(ctx, structure.Id)
+		structCache := cc.GetStruct(structure.Id)
 
 		// Calculate proof of work if difficulty is low enough
 		currentAge := uint64(ctx.BlockHeight()) - structCache.GetBlockStartBuild()
@@ -1847,6 +1870,7 @@ func SimulateMsgStructBuildCancel(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -1856,7 +1880,7 @@ func SimulateMsgStructBuildCancel(
 		allStructs := k.GetAllStruct(ctx)
 		validStructs := make([]types.Struct, 0)
 		for _, structure := range allStructs {
-			structCache := k.GetStructCacheFromId(ctx, structure.Id)
+			structCache := cc.GetStruct(structure.Id)
 			if structCache.CanBePlayedBy(simAccount.Address.String()) == nil && !structCache.IsBuilt() {
 				validStructs = append(validStructs, structure)
 			}
@@ -1892,6 +1916,7 @@ func SimulateMsgStructActivate(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -1901,7 +1926,7 @@ func SimulateMsgStructActivate(
 		allStructs := k.GetAllStruct(ctx)
 		validStructs := make([]types.Struct, 0)
 		for _, structure := range allStructs {
-			structCache := k.GetStructCacheFromId(ctx, structure.Id)
+			structCache := cc.GetStruct(structure.Id)
 			if structCache.CanBePlayedBy(simAccount.Address.String()) == nil && structCache.IsBuilt() && structCache.IsOffline() {
 				validStructs = append(validStructs, structure)
 			}
@@ -1937,6 +1962,7 @@ func SimulateMsgStructDeactivate(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -1946,7 +1972,7 @@ func SimulateMsgStructDeactivate(
 		allStructs := k.GetAllStruct(ctx)
 		validStructs := make([]types.Struct, 0)
 		for _, structure := range allStructs {
-			structCache := k.GetStructCacheFromId(ctx, structure.Id)
+			structCache := cc.GetStruct(structure.Id)
 			if structCache.CanBePlayedBy(simAccount.Address.String()) == nil && structCache.IsBuilt() && !structCache.IsOffline() {
 				validStructs = append(validStructs, structure)
 			}
@@ -1986,13 +2012,14 @@ func SimulateMsgProviderWithdrawBalance(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderWithdrawBalance{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderWithdrawBalance{}), "player not found"), nil, nil
 		}
@@ -2000,8 +2027,8 @@ func SimulateMsgProviderWithdrawBalance(
 		allProviders := k.GetAllProvider(ctx)
 		validProviders := make([]types.Provider, 0)
 		for _, provider := range allProviders {
-			providerCache := k.GetProviderCacheFromId(ctx, provider.Id)
-			if providerCache.CanWithdrawBalance(&activePlayer) == nil {
+			providerCache := cc.GetProvider(provider.Id)
+			if providerCache.CanWithdrawBalance(activePlayer) == nil {
 				validProviders = append(validProviders, provider)
 			}
 		}
@@ -2038,13 +2065,14 @@ func SimulateMsgProviderUpdateCapacityMinimum(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateCapacityMinimum{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateCapacityMinimum{}), "player not found"), nil, nil
 		}
@@ -2052,7 +2080,7 @@ func SimulateMsgProviderUpdateCapacityMinimum(
 		allProviders := k.GetAllProvider(ctx)
 		validProviders := make([]types.Provider, 0)
 		for _, provider := range allProviders {
-			providerCache := k.GetProviderCacheFromId(ctx, provider.Id)
+			providerCache := cc.GetProvider(provider.Id)
 			if providerCache.GetOwnerId() == activePlayer.GetPlayerId() {
 				validProviders = append(validProviders, provider)
 			}
@@ -2063,7 +2091,7 @@ func SimulateMsgProviderUpdateCapacityMinimum(
 		}
 
 		provider := validProviders[r.Intn(len(validProviders))]
-		providerCache := k.GetProviderCacheFromId(ctx, provider.Id)
+		providerCache := cc.GetProvider(provider.Id)
 		newMin := uint64(r.Int63n(int64(providerCache.GetCapacityMaximum())) + 1)
 
 		msg := &types.MsgProviderUpdateCapacityMinimum{
@@ -2091,13 +2119,14 @@ func SimulateMsgProviderUpdateCapacityMaximum(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateCapacityMaximum{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateCapacityMaximum{}), "player not found"), nil, nil
 		}
@@ -2105,7 +2134,7 @@ func SimulateMsgProviderUpdateCapacityMaximum(
 		allProviders := k.GetAllProvider(ctx)
 		validProviders := make([]types.Provider, 0)
 		for _, provider := range allProviders {
-			providerCache := k.GetProviderCacheFromId(ctx, provider.Id)
+			providerCache := cc.GetProvider(provider.Id)
 			if providerCache.GetOwnerId() == activePlayer.GetPlayerId() {
 				validProviders = append(validProviders, provider)
 			}
@@ -2116,7 +2145,7 @@ func SimulateMsgProviderUpdateCapacityMaximum(
 		}
 
 		provider := validProviders[r.Intn(len(validProviders))]
-		providerCache := k.GetProviderCacheFromId(ctx, provider.Id)
+		providerCache := cc.GetProvider(provider.Id)
 		newMax := providerCache.GetCapacityMinimum() + uint64(r.Int63n(900)+1)
 
 		msg := &types.MsgProviderUpdateCapacityMaximum{
@@ -2144,13 +2173,14 @@ func SimulateMsgProviderUpdateDurationMinimum(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateDurationMinimum{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateDurationMinimum{}), "player not found"), nil, nil
 		}
@@ -2158,7 +2188,7 @@ func SimulateMsgProviderUpdateDurationMinimum(
 		allProviders := k.GetAllProvider(ctx)
 		validProviders := make([]types.Provider, 0)
 		for _, provider := range allProviders {
-			providerCache := k.GetProviderCacheFromId(ctx, provider.Id)
+			providerCache := cc.GetProvider(provider.Id)
 			if providerCache.GetOwnerId() == activePlayer.GetPlayerId() {
 				validProviders = append(validProviders, provider)
 			}
@@ -2169,7 +2199,7 @@ func SimulateMsgProviderUpdateDurationMinimum(
 		}
 
 		provider := validProviders[r.Intn(len(validProviders))]
-		providerCache := k.GetProviderCacheFromId(ctx, provider.Id)
+		providerCache := cc.GetProvider(provider.Id)
 		newMin := uint64(r.Int63n(int64(providerCache.GetDurationMaximum())) + 1)
 
 		msg := &types.MsgProviderUpdateDurationMinimum{
@@ -2197,13 +2227,14 @@ func SimulateMsgProviderUpdateDurationMaximum(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateDurationMaximum{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateDurationMaximum{}), "player not found"), nil, nil
 		}
@@ -2211,7 +2242,7 @@ func SimulateMsgProviderUpdateDurationMaximum(
 		allProviders := k.GetAllProvider(ctx)
 		validProviders := make([]types.Provider, 0)
 		for _, provider := range allProviders {
-			providerCache := k.GetProviderCacheFromId(ctx, provider.Id)
+			providerCache := cc.GetProvider(provider.Id)
 			if providerCache.GetOwnerId() == activePlayer.GetPlayerId() {
 				validProviders = append(validProviders, provider)
 			}
@@ -2222,7 +2253,7 @@ func SimulateMsgProviderUpdateDurationMaximum(
 		}
 
 		provider := validProviders[r.Intn(len(validProviders))]
-		providerCache := k.GetProviderCacheFromId(ctx, provider.Id)
+		providerCache := cc.GetProvider(provider.Id)
 		newMax := providerCache.GetDurationMinimum() + uint64(r.Int63n(90)+1)
 
 		msg := &types.MsgProviderUpdateDurationMaximum{
@@ -2250,13 +2281,14 @@ func SimulateMsgProviderUpdateAccessPolicy(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateAccessPolicy{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderUpdateAccessPolicy{}), "player not found"), nil, nil
 		}
@@ -2264,7 +2296,7 @@ func SimulateMsgProviderUpdateAccessPolicy(
 		allProviders := k.GetAllProvider(ctx)
 		validProviders := make([]types.Provider, 0)
 		for _, provider := range allProviders {
-			providerCache := k.GetProviderCacheFromId(ctx, provider.Id)
+			providerCache := cc.GetProvider(provider.Id)
 			if providerCache.GetOwnerId() == activePlayer.GetPlayerId() {
 				validProviders = append(validProviders, provider)
 			}
@@ -2307,13 +2339,14 @@ func SimulateMsgProviderGuildGrant(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderGuildGrant{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderGuildGrant{}), "player not found"), nil, nil
 		}
@@ -2321,7 +2354,7 @@ func SimulateMsgProviderGuildGrant(
 		allProviders := k.GetAllProvider(ctx)
 		validProviders := make([]types.Provider, 0)
 		for _, provider := range allProviders {
-			providerCache := k.GetProviderCacheFromId(ctx, provider.Id)
+			providerCache := cc.GetProvider(provider.Id)
 			if providerCache.GetOwnerId() == activePlayer.GetPlayerId() {
 				validProviders = append(validProviders, provider)
 			}
@@ -2364,13 +2397,14 @@ func SimulateMsgProviderGuildRevoke(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderGuildRevoke{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderGuildRevoke{}), "player not found"), nil, nil
 		}
@@ -2378,7 +2412,7 @@ func SimulateMsgProviderGuildRevoke(
 		allProviders := k.GetAllProvider(ctx)
 		validProviders := make([]types.Provider, 0)
 		for _, provider := range allProviders {
-			providerCache := k.GetProviderCacheFromId(ctx, provider.Id)
+			providerCache := cc.GetProvider(provider.Id)
 			if providerCache.GetOwnerId() == activePlayer.GetPlayerId() {
 				validProviders = append(validProviders, provider)
 			}
@@ -2421,13 +2455,14 @@ func SimulateMsgProviderDelete(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderDelete{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgProviderDelete{}), "player not found"), nil, nil
 		}
@@ -2435,7 +2470,7 @@ func SimulateMsgProviderDelete(
 		allProviders := k.GetAllProvider(ctx)
 		validProviders := make([]types.Provider, 0)
 		for _, provider := range allProviders {
-			providerCache := k.GetProviderCacheFromId(ctx, provider.Id)
+			providerCache := cc.GetProvider(provider.Id)
 			if providerCache.GetOwnerId() == activePlayer.GetPlayerId() {
 				validProviders = append(validProviders, provider)
 			}
@@ -2475,13 +2510,14 @@ func SimulateMsgSubstationAllocationConnect(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationAllocationConnect{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationAllocationConnect{}), "player not found"), nil, nil
 		}
@@ -2536,13 +2572,14 @@ func SimulateMsgSubstationAllocationDisconnect(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationAllocationDisconnect{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationAllocationDisconnect{}), "player not found"), nil, nil
 		}
@@ -2556,7 +2593,7 @@ func SimulateMsgSubstationAllocationDisconnect(
 		validAllocations := make([]types.Allocation, 0)
 		for _, allocation := range allAllocations {
 			if (allocation.Controller == simAccount.Address.String() && allocation.DestinationId != "") ||
-				(allocation.DestinationId != "" && k.PermissionHasOneOf(ctx, keeper.GetObjectPermissionIDBytes(allocation.DestinationId, activePlayer.GetPlayerId()), types.PermissionGrid)) {
+				(allocation.DestinationId != "" && cc.PermissionHasOneOf(keeper.GetObjectPermissionIDBytes(allocation.DestinationId, activePlayer.GetPlayerId()), types.PermissionGrid)) {
 				validAllocations = append(validAllocations, allocation)
 			}
 		}
@@ -2591,13 +2628,14 @@ func SimulateMsgSubstationPlayerConnect(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationPlayerConnect{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationPlayerConnect{}), "player not found"), nil, nil
 		}
@@ -2610,8 +2648,8 @@ func SimulateMsgSubstationPlayerConnect(
 		allSubstations := k.GetAllSubstation(ctx)
 		validSubstations := make([]types.Substation, 0)
 		for _, substation := range allSubstations {
-			substationCache := k.GetSubstationCacheFromId(ctx, substation.Id)
-			if substationCache.CanManagePlayerConnections(&activePlayer) == nil {
+			substationCache := cc.GetSubstation(substation.Id)
+			if substationCache.CanManagePlayerConnections(activePlayer) == nil {
 				validSubstations = append(validSubstations, substation)
 			}
 		}
@@ -2653,13 +2691,14 @@ func SimulateMsgSubstationPlayerDisconnect(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationPlayerDisconnect{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationPlayerDisconnect{}), "player not found"), nil, nil
 		}
@@ -2673,8 +2712,8 @@ func SimulateMsgSubstationPlayerDisconnect(
 		validPlayers := make([]types.Player, 0)
 		for _, player := range allPlayers {
 			if player.SubstationId != "" {
-				substationCache := k.GetSubstationCacheFromId(ctx, player.SubstationId)
-				if substationCache.CanManagePlayerConnections(&activePlayer) == nil {
+				substationCache := cc.GetSubstation(player.SubstationId)
+				if substationCache.CanManagePlayerConnections(activePlayer) == nil {
 					validPlayers = append(validPlayers, player)
 				}
 			}
@@ -2710,13 +2749,14 @@ func SimulateMsgSubstationPlayerMigrate(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationPlayerMigrate{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationPlayerMigrate{}), "player not found"), nil, nil
 		}
@@ -2729,8 +2769,8 @@ func SimulateMsgSubstationPlayerMigrate(
 		allSubstations := k.GetAllSubstation(ctx)
 		validSubstations := make([]types.Substation, 0)
 		for _, substation := range allSubstations {
-			substationCache := k.GetSubstationCacheFromId(ctx, substation.Id)
-			if substationCache.CanManagePlayerConnections(&activePlayer) == nil {
+			substationCache := cc.GetSubstation(substation.Id)
+			if substationCache.CanManagePlayerConnections(activePlayer) == nil {
 				validSubstations = append(validSubstations, substation)
 			}
 		}
@@ -2787,13 +2827,14 @@ func SimulateMsgSubstationDelete(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationDelete{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationDelete{}), "player not found"), nil, nil
 		}
@@ -2801,8 +2842,8 @@ func SimulateMsgSubstationDelete(
 		allSubstations := k.GetAllSubstation(ctx)
 		validSubstations := make([]types.Substation, 0)
 		for _, substation := range allSubstations {
-			substationCache := k.GetSubstationCacheFromId(ctx, substation.Id)
-			if substationCache.CanBeDeleteDBy(&activePlayer) == nil {
+			substationCache := cc.GetSubstation(substation.Id)
+			if substationCache.CanBeDeleteDBy(activePlayer) == nil {
 				validSubstations = append(validSubstations, substation)
 			}
 		}
@@ -2852,6 +2893,7 @@ func SimulateMsgAddressRevoke(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -2861,7 +2903,7 @@ func SimulateMsgAddressRevoke(
 		allAddressRecords := k.GetAllAddressExport(ctx)
 		validAddresses := make([]*types.AddressRecord, 0)
 		for _, addrRecord := range allAddressRecords {
-			player, err := k.GetPlayerCacheFromAddress(ctx, addrRecord.Address)
+			player, err := cc.GetPlayerByAddress(addrRecord.Address)
 			if err == nil {
 				if player.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionDelete) == nil {
 					if player.GetPrimaryAddress() != addrRecord.Address {
@@ -2905,13 +2947,14 @@ func SimulateMsgPlayerUpdatePrimaryAddress(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlayerUpdatePrimaryAddress{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlayerUpdatePrimaryAddress{}), "player not found"), nil, nil
 		}
@@ -2961,6 +3004,7 @@ func SimulateMsgPlayerUpdatePrimaryAddress(
 }
 
 // SimulateMsgPlayerResume generates a MsgPlayerResume with random values
+// NOTE: PlayerResume message handler has been removed from MsgServer, so this is a no-op
 func SimulateMsgPlayerResume(
 	k keeper.Keeper,
 	ak types.AccountKeeper,
@@ -2969,41 +3013,7 @@ func SimulateMsgPlayerResume(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
-		simAccount, _ := simtypes.RandomAcc(r, accs)
-		account := ak.GetAccount(ctx, simAccount.Address)
-		if account == nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlayerResume{}), "account not found"), nil, nil
-		}
-
-		allPlayers := k.GetAllPlayer(ctx)
-		haltedPlayers := make([]types.Player, 0)
-		for _, player := range allPlayers {
-			playerCache, err := k.GetPlayerCacheFromId(ctx, player.Id)
-			if err == nil && playerCache.IsHalted() {
-				if playerCache.CanBeUpdatedBy(simAccount.Address.String()) == nil {
-					haltedPlayers = append(haltedPlayers, player)
-				}
-			}
-		}
-
-		if len(haltedPlayers) == 0 {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlayerResume{}), "no resumable players"), nil, nil
-		}
-
-		player := haltedPlayers[r.Intn(len(haltedPlayers))]
-
-		msg := &types.MsgPlayerResume{
-			Creator:  simAccount.Address.String(),
-			PlayerId: player.Id,
-		}
-
-		msgServer := keeper.NewMsgServerImpl(k)
-		_, err := msgServer.PlayerResume(sdk.WrapSDKContext(ctx), msg)
-		if err != nil {
-			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
-		}
-
-		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+		return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlayerResume{}), "PlayerResume not implemented"), nil, nil
 	}
 }
 
@@ -3020,14 +3030,15 @@ func SimulateMsgPlanetRaidComplete(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlanetRaidComplete{}), "account not found"), nil, nil
 		}
 
-		player := k.UpsertPlayer(ctx, simAccount.Address.String())
-		playerCache, err := k.GetPlayerCacheFromId(ctx, player.Id)
+		player := cc.UpsertPlayer(simAccount.Address.String())
+		playerCache, err := cc.GetPlayer(player.GetPlayerId())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlanetRaidComplete{}), "player not found"), nil, nil
 		}
@@ -3075,13 +3086,14 @@ func SimulateMsgReactorDefuse(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorDefuse{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorDefuse{}), "player not found"), nil, nil
 		}
@@ -3128,13 +3140,14 @@ func SimulateMsgReactorBeginMigration(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorBeginMigration{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorBeginMigration{}), "player not found"), nil, nil
 		}
@@ -3192,13 +3205,14 @@ func SimulateMsgReactorCancelDefusion(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorCancelDefusion{}), "account not found"), nil, nil
 		}
 
-		activePlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorCancelDefusion{}), "player not found"), nil, nil
 		}
@@ -3248,13 +3262,14 @@ func SimulateMsgGuildMembershipInvite(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInvite{}), "account not found"), nil, nil
 		}
 
-		callingPlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		callingPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInvite{}), "player not found"), nil, nil
 		}
@@ -3303,13 +3318,14 @@ func SimulateMsgGuildMembershipInviteApprove(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInviteApprove{}), "account not found"), nil, nil
 		}
 
-		callingPlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		callingPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInviteApprove{}), "player not found"), nil, nil
 		}
@@ -3352,13 +3368,14 @@ func SimulateMsgGuildMembershipInviteDeny(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInviteDeny{}), "account not found"), nil, nil
 		}
 
-		callingPlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		callingPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInviteDeny{}), "player not found"), nil, nil
 		}
@@ -3395,13 +3412,14 @@ func SimulateMsgGuildMembershipInviteRevoke(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInviteRevoke{}), "account not found"), nil, nil
 		}
 
-		callingPlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		callingPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInviteRevoke{}), "player not found"), nil, nil
 		}
@@ -3449,13 +3467,14 @@ func SimulateMsgGuildMembershipJoinProxy(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipJoinProxy{}), "account not found"), nil, nil
 		}
 
-		proxyPlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		proxyPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipJoinProxy{}), "player not found"), nil, nil
 		}
@@ -3511,13 +3530,14 @@ func SimulateMsgGuildMembershipKick(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipKick{}), "account not found"), nil, nil
 		}
 
-		callingPlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		callingPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipKick{}), "player not found"), nil, nil
 		}
@@ -3565,13 +3585,14 @@ func SimulateMsgGuildMembershipRequestApprove(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequestApprove{}), "account not found"), nil, nil
 		}
 
-		callingPlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		callingPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequestApprove{}), "player not found"), nil, nil
 		}
@@ -3614,13 +3635,14 @@ func SimulateMsgGuildMembershipRequestDeny(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequestDeny{}), "account not found"), nil, nil
 		}
 
-		callingPlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		callingPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequestDeny{}), "player not found"), nil, nil
 		}
@@ -3657,13 +3679,14 @@ func SimulateMsgGuildMembershipRequestRevoke(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequestRevoke{}), "account not found"), nil, nil
 		}
 
-		callingPlayer, err := k.GetPlayerCacheFromAddress(ctx, simAccount.Address.String())
+		callingPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequestRevoke{}), "player not found"), nil, nil
 		}
@@ -3704,6 +3727,7 @@ func SimulateMsgGuildUpdateOwnerId(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -3720,8 +3744,8 @@ func SimulateMsgGuildUpdateOwnerId(
 		for _, guild := range allGuilds {
 			guildObjectPermissionId := keeper.GetObjectPermissionIDBytes(guild.Id, player.Id)
 			addressPermissionId := keeper.GetAddressPermissionIDBytes(simAccount.Address.String())
-			if k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.PermissionUpdate) &&
-				k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets) {
+			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermissionUpdate) &&
+				cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets) {
 				validGuilds = append(validGuilds, guild)
 			}
 		}
@@ -3763,6 +3787,7 @@ func SimulateMsgGuildUpdateEntrySubstationId(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -3779,8 +3804,8 @@ func SimulateMsgGuildUpdateEntrySubstationId(
 		for _, guild := range allGuilds {
 			guildObjectPermissionId := keeper.GetObjectPermissionIDBytes(guild.Id, player.Id)
 			addressPermissionId := keeper.GetAddressPermissionIDBytes(simAccount.Address.String())
-			if k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.PermissionUpdate) &&
-				k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets) {
+			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermissionUpdate) &&
+				cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets) {
 				validGuilds = append(validGuilds, guild)
 			}
 		}
@@ -3822,6 +3847,7 @@ func SimulateMsgGuildUpdateEndpoint(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -3838,8 +3864,8 @@ func SimulateMsgGuildUpdateEndpoint(
 		for _, guild := range allGuilds {
 			guildObjectPermissionId := keeper.GetObjectPermissionIDBytes(guild.Id, player.Id)
 			addressPermissionId := keeper.GetAddressPermissionIDBytes(simAccount.Address.String())
-			if k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.PermissionUpdate) &&
-				k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets) {
+			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermissionUpdate) &&
+				cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets) {
 				validGuilds = append(validGuilds, guild)
 			}
 		}
@@ -3876,6 +3902,7 @@ func SimulateMsgGuildUpdateJoinInfusionMinimum(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -3892,8 +3919,8 @@ func SimulateMsgGuildUpdateJoinInfusionMinimum(
 		for _, guild := range allGuilds {
 			guildObjectPermissionId := keeper.GetObjectPermissionIDBytes(guild.Id, player.Id)
 			addressPermissionId := keeper.GetAddressPermissionIDBytes(simAccount.Address.String())
-			if k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.PermissionUpdate) &&
-				k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets) {
+			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermissionUpdate) &&
+				cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets) {
 				validGuilds = append(validGuilds, guild)
 			}
 		}
@@ -3930,6 +3957,7 @@ func SimulateMsgGuildUpdateJoinInfusionMinimumBypassByInvite(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -3946,8 +3974,8 @@ func SimulateMsgGuildUpdateJoinInfusionMinimumBypassByInvite(
 		for _, guild := range allGuilds {
 			guildObjectPermissionId := keeper.GetObjectPermissionIDBytes(guild.Id, player.Id)
 			addressPermissionId := keeper.GetAddressPermissionIDBytes(simAccount.Address.String())
-			if k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.PermissionUpdate) &&
-				k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets) {
+			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermissionUpdate) &&
+				cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets) {
 				validGuilds = append(validGuilds, guild)
 			}
 		}
@@ -3989,6 +4017,7 @@ func SimulateMsgGuildUpdateJoinInfusionMinimumBypassByRequest(
 	return func(
 		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
 	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		cc := k.NewCurrentContext(ctx)
 		simAccount, _ := simtypes.RandomAcc(r, accs)
 		account := ak.GetAccount(ctx, simAccount.Address)
 		if account == nil {
@@ -4005,8 +4034,8 @@ func SimulateMsgGuildUpdateJoinInfusionMinimumBypassByRequest(
 		for _, guild := range allGuilds {
 			guildObjectPermissionId := keeper.GetObjectPermissionIDBytes(guild.Id, player.Id)
 			addressPermissionId := keeper.GetAddressPermissionIDBytes(simAccount.Address.String())
-			if k.PermissionHasOneOf(ctx, guildObjectPermissionId, types.PermissionUpdate) &&
-				k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets) {
+			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermissionUpdate) &&
+				cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets) {
 				validGuilds = append(validGuilds, guild)
 			}
 		}
