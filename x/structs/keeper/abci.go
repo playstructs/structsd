@@ -29,7 +29,7 @@ func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error)
     cc := k.NewCurrentContext(ctx)
     defer cc.CommitAll()
 
-	k.AgreementExpirations(ctx)
+	cc.AgreementExpirations()
 
 	/* Cascade all the possible failures across the grid
 	 *

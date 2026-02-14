@@ -2,6 +2,7 @@ package keeper
 
 import (
 	"structs/x/structs/types"
+    sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 // GetAgreement returns an AgreementCache by ID, loading from store if not already cached.
@@ -53,4 +54,22 @@ func (cc *CurrentContext) NewAgreement(agreement types.Agreement) (*AgreementCac
 
 
 	return cc.agreements[agreement.Id]
+}
+
+
+
+func (cc *CurrentContext) AgreementExpirations() {
+	cc.k.logger.Debug("Checking for Expired Agreements")
+
+	uctx := sdk.UnwrapSDKContext(cc.ctx)
+	currentBlock := uint64(uctx.BlockHeight())
+
+	// Get List of Agreements
+	agreements := cc.k.GetAllAgreementIdByExpirationIndex(cc.ctx, currentBlock)
+	for _, agreementId := range agreements {
+		cc.k.logger.Info("Expired Agreement", "agreementId", agreementId)
+		agreement := cc.GetAgreement(agreementId)
+		agreement.GetProvider().Checkpoint()
+		agreement.Expire()
+	}
 }

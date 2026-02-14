@@ -79,26 +79,6 @@ func (k Keeper) RemoveAgreement(ctx context.Context, agreement types.Agreement) 
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventDelete{ObjectId: agreement.Id})
 }
 
-func (k Keeper) AgreementExpirations(ctx context.Context) {
-	k.logger.Debug("Checking for Expired Agreements")
-
-	cc := k.NewCurrentContext(ctx)
-
-	uctx := sdk.UnwrapSDKContext(ctx)
-	currentBlock := uint64(uctx.BlockHeight())
-
-	// Get List of Agreements
-	agreements := k.GetAllAgreementIdByExpirationIndex(ctx, currentBlock)
-	for _, agreementId := range agreements {
-		k.logger.Info("Expired Agreement", "agreementId", agreementId)
-		agreement := cc.GetAgreement(agreementId)
-		agreement.GetProvider().Checkpoint()
-		agreement.Expire()
-	}
-
-	cc.CommitAll()
-}
-
 // GetAgreement returns a agreement from its id
 func (k Keeper) GetAgreement(ctx context.Context, agreementId string) (val types.Agreement, found bool) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.AgreementKey))
