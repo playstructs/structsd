@@ -13,7 +13,6 @@ import (
 func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgStructGeneratorInfuse) (*types.MsgStructGeneratorStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
 	// Add an Active Address record to the
 	// indexer for UI requirements
@@ -86,5 +85,6 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventAlphaInfuse{&types.EventAlphaInfuseDetail{PlayerId: callingPlayer.GetPlayerId(), PrimaryAddress: callingPlayer.GetPrimaryAddress(), Amount: infusionAmount[0].Amount.Uint64()}})
 
+	cc.CommitAll()
 	return &types.MsgStructGeneratorStatusResponse{}, nil
 }

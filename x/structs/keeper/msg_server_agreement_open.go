@@ -22,7 +22,6 @@ message MsgAgreementOpen {
 func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementOpen) (*types.MsgAgreementResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -104,5 +103,6 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
 
     provider.AgreementLoadIncrease(msg.Capacity)
 
+	cc.CommitAll()
 	return &types.MsgAgreementResponse{}, nil
 }

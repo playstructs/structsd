@@ -10,7 +10,6 @@ import (
 func (k msgServer) ProviderUpdateDurationMinimum(goCtx context.Context, msg *types.MsgProviderUpdateDurationMinimum) (*types.MsgProviderResponse, error) {
     ctx := sdk.UnwrapSDKContext(goCtx)
     cc := k.NewCurrentContext(ctx)
-    defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -29,5 +28,6 @@ func (k msgServer) ProviderUpdateDurationMinimum(goCtx context.Context, msg *typ
         return &types.MsgProviderResponse{}, paramErr
     }
 
+	cc.CommitAll()
 	return &types.MsgProviderResponse{}, nil
 }

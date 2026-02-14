@@ -10,7 +10,6 @@ import (
 func (k msgServer) AgreementClose(goCtx context.Context, msg *types.MsgAgreementClose) (*types.MsgAgreementResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -31,5 +30,6 @@ func (k msgServer) AgreementClose(goCtx context.Context, msg *types.MsgAgreement
         return &types.MsgAgreementResponse{}, errorParam
     }
 
+	cc.CommitAll()
 	return &types.MsgAgreementResponse{}, nil
 }

@@ -10,7 +10,6 @@ import (
 func (k msgServer) AgreementDurationIncrease(goCtx context.Context, msg *types.MsgAgreementDurationIncrease) (*types.MsgAgreementResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -50,5 +49,6 @@ func (k msgServer) AgreementDurationIncrease(goCtx context.Context, msg *types.M
         return &types.MsgAgreementResponse{}, errSend
     }
 
+	cc.CommitAll()
 	return &types.MsgAgreementResponse{}, nil
 }

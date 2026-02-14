@@ -11,7 +11,6 @@ import (
 func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStructBuildComplete) (*types.MsgStructStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
 	// Add an Active Address record to the
 	// indexer for UI requirements
@@ -82,6 +81,6 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 
     _ = ctx.EventManager().EmitTypedEvent(&types.EventHashSuccess{&types.EventHashSuccessDetail{CallerAddress: msg.Creator, Category: "build", Difficulty: achievedDifficulty, ObjectId: msg.StructId }})
 
-
+	cc.CommitAll()
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct()}, nil
 }

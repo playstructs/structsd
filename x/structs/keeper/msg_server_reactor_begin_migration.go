@@ -12,7 +12,6 @@ import (
 func (k msgServer) ReactorBeginMigration(goCtx context.Context, msg *types.MsgReactorBeginMigration) (*types.MsgReactorBeginMigrationResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -86,5 +85,6 @@ func (k msgServer) ReactorBeginMigration(goCtx context.Context, msg *types.MsgRe
 		),
 	})
 
+	cc.CommitAll()
 	return &types.MsgReactorBeginMigrationResponse{CompletionTime: completionTime,}, nil
 }

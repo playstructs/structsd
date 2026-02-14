@@ -24,7 +24,6 @@ message MsgStructDefenseSet {
 func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructDefenseSet) (*types.MsgStructStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -99,5 +98,6 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
 
     structure.GetOwner().Discharge()
 
+	cc.CommitAll()
 	return &types.MsgStructStatusResponse{}, nil
 }

@@ -29,7 +29,6 @@ import (
 func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlanetRaidComplete) (*types.MsgPlanetRaidCompleteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
 	// Add an Active Address record to the
 	// indexer for UI requirements
@@ -88,5 +87,6 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleet.GetFleetId(), PlanetId: raidedPlanet, Status: types.RaidStatus_raidSuccessful}})
     _ = ctx.EventManager().EmitTypedEvent(&types.EventHashSuccess{&types.EventHashSuccessDetail{CallerAddress: msg.Creator, Category: "raid", Difficulty: achievedDifficulty, ObjectId: msg.FleetId, PlanetId: raidedPlanet }})
 
+	cc.CommitAll()
 	return &types.MsgPlanetRaidCompleteResponse{Fleet: fleet.GetFleet(), Planet: fleet.GetPlanet().GetPlanet(), OreStolen: amountStolen}, nil
 }

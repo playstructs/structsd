@@ -9,7 +9,6 @@ import (
 func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*types.MsgFleetMoveResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -47,5 +46,6 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
 
     fleet.SetLocationToPlanet(destination)
 
+	cc.CommitAll()
 	return &types.MsgFleetMoveResponse{Fleet: &fleet.Fleet}, nil
 }

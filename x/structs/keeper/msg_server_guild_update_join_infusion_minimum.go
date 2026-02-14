@@ -10,7 +10,7 @@ import (
 func (k msgServer) GuildUpdateJoinInfusionMinimum(goCtx context.Context, msg *types.MsgGuildUpdateJoinInfusionMinimum) (*types.MsgGuildUpdateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
+
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -42,5 +42,6 @@ func (k msgServer) GuildUpdateJoinInfusionMinimum(goCtx context.Context, msg *ty
         guild.SetJoinInfusionMinimum(msg.JoinInfusionMinimum)
     }
 
+	cc.CommitAll()
 	return &types.MsgGuildUpdateResponse{}, nil
 }

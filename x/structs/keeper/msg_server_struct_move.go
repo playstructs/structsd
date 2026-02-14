@@ -30,7 +30,6 @@ message MsgStructMove {
 func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (*types.MsgStructStatusResponse, error) {
     ctx := sdk.UnwrapSDKContext(goCtx)
     cc := k.NewCurrentContext(ctx)
-    defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -57,5 +56,6 @@ func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (
 
     structure.GetOwner().Discharge()
 
+	cc.CommitAll()
 	return &types.MsgStructStatusResponse{}, nil
 }

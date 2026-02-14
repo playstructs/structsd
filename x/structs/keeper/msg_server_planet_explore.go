@@ -9,7 +9,6 @@ import (
 func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExplore) (*types.MsgPlanetExploreResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -50,5 +49,6 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
 
     player.GetFleet().MigrateToNewPlanet(player.GetPlanet())
 
+	cc.CommitAll()
 	return &types.MsgPlanetExploreResponse{Planet: player.GetPlanet().GetPlanet()}, nil
 }

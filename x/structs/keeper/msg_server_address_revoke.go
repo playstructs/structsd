@@ -11,7 +11,6 @@ import (
 func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRevoke) (*types.MsgAddressRevokeResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -64,5 +63,6 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
     // Clear Address Index
     k.RevokePlayerIndexForAddress(ctx, msg.Address, player.GetIndex())
 
+	cc.CommitAll()
 	return &types.MsgAddressRevokeResponse{}, nil
 }

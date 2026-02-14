@@ -9,15 +9,14 @@ import (
 func (k msgServer) SubstationPlayerMigrate(goCtx context.Context, msg *types.MsgSubstationPlayerMigrate) (*types.MsgSubstationPlayerMigrateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	player, _ := cc.GetPlayer(msg.Creator)
-    if player.CheckPlayer() != nil {
-        return &types.MsgSubstationPlayerMigrateResponse{}, player.CheckPlayer()
+	player, playerErr := cc.GetPlayerByAddress(msg.Creator)
+    if playerErr != nil {
+        return &types.MsgSubstationPlayerMigrateResponse{}, playerErr
     }
 
     substation := cc.GetSubstation(msg.SubstationId)
@@ -58,5 +57,6 @@ func (k msgServer) SubstationPlayerMigrate(goCtx context.Context, msg *types.Msg
         migratePlayer.MigrateSubstation(substation.GetSubstationId())
     }
 
+	cc.CommitAll()
 	return &types.MsgSubstationPlayerMigrateResponse{}, nil
 }

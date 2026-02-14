@@ -10,7 +10,7 @@ import (
 func (k msgServer) PermissionRevokeOnObject(goCtx context.Context, msg *types.MsgPermissionRevokeOnObject) (*types.MsgPermissionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
+
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -45,5 +45,6 @@ func (k msgServer) PermissionRevokeOnObject(goCtx context.Context, msg *types.Ms
     targetPlayerPermissionId := GetObjectPermissionIDBytes(msg.ObjectId, msg.PlayerId)
     cc.PermissionRemove(targetPlayerPermissionId, types.Permission(msg.Permissions))
 
+	cc.CommitAll()
 	return &types.MsgPermissionResponse{}, nil
 }

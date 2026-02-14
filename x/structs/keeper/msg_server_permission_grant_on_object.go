@@ -10,7 +10,7 @@ import (
 func (k msgServer) PermissionGrantOnObject(goCtx context.Context, msg *types.MsgPermissionGrantOnObject) (*types.MsgPermissionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
+
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -49,5 +49,6 @@ func (k msgServer) PermissionGrantOnObject(goCtx context.Context, msg *types.Msg
     targetPlayerPermissionId := GetObjectPermissionIDBytes(msg.ObjectId, msg.PlayerId)
     cc.PermissionAdd(targetPlayerPermissionId, types.Permission(msg.Permissions))
 
+	cc.CommitAll()
 	return &types.MsgPermissionResponse{}, nil
 }

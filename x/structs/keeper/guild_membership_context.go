@@ -13,6 +13,7 @@ func (cc *CurrentContext) GetGuildMembershipApp(guildId string, playerId string)
 
     cc.guildMembershipApps[appKey] = &GuildMembershipApplicationCache{
                                         GuildMembershipApplicationId: appKey,
+                                        CC: cc,
                                         Changed: false,
                                     }
 

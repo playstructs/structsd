@@ -10,7 +10,6 @@ import (
 func (k msgServer) ProviderUpdateAccessPolicy(goCtx context.Context, msg *types.MsgProviderUpdateAccessPolicy) (*types.MsgProviderResponse, error) {
     ctx := sdk.UnwrapSDKContext(goCtx)
     cc := k.NewCurrentContext(ctx)
-    defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -26,5 +25,6 @@ func (k msgServer) ProviderUpdateAccessPolicy(goCtx context.Context, msg *types.
 
     provider.SetAccessPolicy(msg.AccessPolicy)
 
+	cc.CommitAll()
 	return &types.MsgProviderResponse{}, nil
 }

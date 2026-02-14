@@ -13,7 +13,6 @@ import (
 func (k msgServer) ReactorCancelDefusion(goCtx context.Context, msg *types.MsgReactorCancelDefusion) (*types.MsgReactorCancelDefusionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -146,5 +145,6 @@ func (k msgServer) ReactorCancelDefusion(goCtx context.Context, msg *types.MsgRe
 //
 
 
+	cc.CommitAll()
 	return &types.MsgReactorCancelDefusionResponse{}, nil
 }

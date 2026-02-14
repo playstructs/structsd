@@ -9,7 +9,6 @@ import (
 func (k msgServer) AllocationTransfer(goCtx context.Context, msg *types.MsgAllocationTransfer) (*types.MsgAllocationTransferResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -33,6 +32,7 @@ func (k msgServer) AllocationTransfer(goCtx context.Context, msg *types.MsgAlloc
 
     allocation.SetController(msg.Controller)
 
+	cc.CommitAll()
 	return &types.MsgAllocationTransferResponse{
 		AllocationId: msg.AllocationId,
 	}, nil

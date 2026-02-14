@@ -11,7 +11,6 @@ import (
 func (k msgServer) StructStealthDeactivate(goCtx context.Context, msg *types.MsgStructStealthDeactivate) (*types.MsgStructStatusResponse, error) {
     ctx := sdk.UnwrapSDKContext(goCtx)
     cc := k.NewCurrentContext(ctx)
-    defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -55,6 +54,7 @@ func (k msgServer) StructStealthDeactivate(goCtx context.Context, msg *types.Msg
     // Set the struct status flag to include hidden
     structure.StatusRemoveHidden()
 
+	cc.CommitAll()
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct() }, nil
 
 }

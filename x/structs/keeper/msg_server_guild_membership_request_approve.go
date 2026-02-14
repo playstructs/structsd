@@ -11,7 +11,7 @@ import (
 func (k msgServer) GuildMembershipRequestApprove(goCtx context.Context, msg *types.MsgGuildMembershipRequestApprove) (*types.MsgGuildMembershipResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
+
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -55,5 +55,6 @@ func (k msgServer) GuildMembershipRequestApprove(goCtx context.Context, msg *typ
 
     guildMembershipApplicationError = guildMembershipApplication.ApproveRequest()
 
+	cc.CommitAll()
 	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication.GuildMembershipApplication}, nil
 }

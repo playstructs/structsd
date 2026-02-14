@@ -46,17 +46,20 @@ func (cache *AgreementCache) Commit() {
     	cache.CC.k.logger.Info("Updating Agreement From Cache", "agreementId", cache.AgreementId)
 
     	if cache.Deleted {
-    	    // TODO MAKE SURE THE INDEX IS DELETED
+    	    cache.CC.k.RemoveAgreementProviderIndex(cache.CC.ctx, cache.GetProviderId(), cache.GetAgreementId())
+    	    cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.GetEndBlock(), cache.GetAgreementId())
+    	    if cache.EndBlockChanged && cache.PreviousEndBlock > 0 {
+                cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.PreviousEndBlock, cache.GetAgreementId())
+            }
     	    cache.CC.k.ClearAgreement(cache.CC.ctx, cache.AgreementId)
     	} else {
     		cache.CC.k.SetAgreement(cache.CC.ctx, cache.Agreement)
-    	}
-
-    	if (cache.EndBlockChanged) {
-    		if cache.PreviousEndBlock > 0 {
-                cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.PreviousEndBlock, cache.GetAgreementId())
-            }
-            cache.CC.k.SetAgreementExpirationIndex(cache.CC.ctx, cache.GetEndBlock(), cache.GetAgreementId())
+    		if (cache.EndBlockChanged) {
+    		    if cache.PreviousEndBlock > 0 {
+                    cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.PreviousEndBlock, cache.GetAgreementId())
+                }
+                cache.CC.k.SetAgreementExpirationIndex(cache.CC.ctx, cache.GetEndBlock(), cache.GetAgreementId())
+    		}
     	}
 
         cache.Changed = false

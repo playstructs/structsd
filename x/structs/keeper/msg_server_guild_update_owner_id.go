@@ -11,7 +11,7 @@ import (
 func (k msgServer) GuildUpdateOwnerId(goCtx context.Context, msg *types.MsgGuildUpdateOwnerId) (*types.MsgGuildUpdateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
+
 
 	// Add an Active Address record to the
 	// indexer for UI requirements
@@ -47,5 +47,6 @@ func (k msgServer) GuildUpdateOwnerId(goCtx context.Context, msg *types.MsgGuild
 		guild.SetOwner(msg.Owner)
 	}
 
+	cc.CommitAll()
 	return &types.MsgGuildUpdateResponse{}, nil
 }

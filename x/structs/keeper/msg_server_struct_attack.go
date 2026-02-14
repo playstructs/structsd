@@ -11,7 +11,6 @@ import (
 func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttack) (*types.MsgStructAttackResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
 	// Add an Active Address record to the
 	// indexer for UI requirements
@@ -188,5 +187,6 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 	}
 	k.logger.Info("Attack Transaction Gas", "gasMeter", ctx.GasMeter().String(), "execMode", ctx.ExecMode())
 
+	cc.CommitAll()
 	return &types.MsgStructAttackResponse{}, nil
 }

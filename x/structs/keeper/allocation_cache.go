@@ -156,6 +156,7 @@ func (cache *AllocationCache) SetSource(sourceObjectId string) (error) {
     }
 
     cache.SetAllocationSourceObjectId(sourceObjectId)
+    cache.CC.k.SetAllocationSourceIndex(cache.CC.ctx, sourceObjectId, cache.ID())
     return nil
 }
 

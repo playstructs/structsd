@@ -10,7 +10,6 @@ import (
 func (k msgServer) AgreementCapacityIncrease(goCtx context.Context, msg *types.MsgAgreementCapacityIncrease) (*types.MsgAgreementResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -32,5 +31,6 @@ func (k msgServer) AgreementCapacityIncrease(goCtx context.Context, msg *types.M
         // which decreases duration
     agreement.CapacityIncrease(msg.CapacityIncrease)
 
+	cc.CommitAll()
 	return &types.MsgAgreementResponse{}, nil
 }

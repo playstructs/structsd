@@ -10,7 +10,6 @@ import (
 func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.MsgPlayerUpdatePrimaryAddress) (*types.MsgPlayerUpdatePrimaryAddressResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -70,5 +69,6 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
     // Finish up
     player.SetPrimaryAddress(msg.PrimaryAddress)
 
+	cc.CommitAll()
 	return &types.MsgPlayerUpdatePrimaryAddressResponse{}, nil
 }

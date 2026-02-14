@@ -13,7 +13,7 @@ import (
 func (k msgServer) GuildBankConfiscateAndBurn(goCtx context.Context, msg *types.MsgGuildBankConfiscateAndBurn) (*types.MsgGuildBankConfiscateAndBurnResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
+
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -31,5 +31,6 @@ func (k msgServer) GuildBankConfiscateAndBurn(goCtx context.Context, msg *types.
     amountTokenInt := math.NewIntFromUint64(msg.AmountToken)
     err := guild.BankConfiscateAndBurn(amountTokenInt, msg.Address);
 
+	cc.CommitAll()
 	return &types.MsgGuildBankConfiscateAndBurnResponse{}, err
 }

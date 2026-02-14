@@ -10,7 +10,6 @@ import (
 func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstationCreate) (*types.MsgSubstationCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -64,5 +63,6 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
         player.MigrateSubstation(substation.GetSubstationId())
     }
 
+	cc.CommitAll()
 	return &types.MsgSubstationCreateResponse{SubstationId: substation.GetSubstationId()}, err
 }

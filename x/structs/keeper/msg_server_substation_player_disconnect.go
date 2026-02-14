@@ -9,15 +9,14 @@ import (
 func (k msgServer) SubstationPlayerDisconnect(goCtx context.Context, msg *types.MsgSubstationPlayerDisconnect) (*types.MsgSubstationPlayerDisconnectResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	player, _ := cc.GetPlayer(msg.Creator)
-    if player.CheckPlayer() != nil {
-        return &types.MsgSubstationPlayerDisconnectResponse{}, player.CheckPlayer()
+	player, playerErr := cc.GetPlayerByAddress(msg.Creator)
+    if playerErr != nil {
+        return &types.MsgSubstationPlayerDisconnectResponse{}, playerErr
     }
 
 	targetPlayer, _ := cc.GetPlayer(msg.PlayerId)
@@ -44,5 +43,6 @@ func (k msgServer) SubstationPlayerDisconnect(goCtx context.Context, msg *types.
 	// This call handles the disconnection from other substations as well
     targetPlayer.DisconnectSubstation()
 
+	cc.CommitAll()
 	return &types.MsgSubstationPlayerDisconnectResponse{}, nil
 }

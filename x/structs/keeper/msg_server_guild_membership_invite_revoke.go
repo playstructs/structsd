@@ -11,7 +11,6 @@ import (
 func (k msgServer) GuildMembershipInviteRevoke(goCtx context.Context, msg *types.MsgGuildMembershipInviteRevoke) (*types.MsgGuildMembershipResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -48,5 +47,6 @@ func (k msgServer) GuildMembershipInviteRevoke(goCtx context.Context, msg *types
 
     guildMembershipApplicationError = guildMembershipApplication.RevokeInvite()
 
+	cc.CommitAll()
 	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication.GuildMembershipApplication}, nil
 }

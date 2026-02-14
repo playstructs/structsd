@@ -72,6 +72,8 @@ func (cc *CurrentContext) NewAllocation(
 
     allocation.Id               = GetObjectID(types.ObjectType_allocation, allocation.Index)
     allocation.Type             = allocationType
+    allocation.Creator          = creator
+    allocation.Controller       = controller
 
     allocationPowerAttributeId  := GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocation.Id)
     sourceCapacityAttributeId   := GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceObjectId)

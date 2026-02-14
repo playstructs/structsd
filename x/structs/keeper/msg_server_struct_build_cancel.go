@@ -10,7 +10,6 @@ import (
 func (k msgServer) StructBuildCancel(goCtx context.Context, msg *types.MsgStructBuildCancel) (*types.MsgStructStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -37,5 +36,6 @@ func (k msgServer) StructBuildCancel(goCtx context.Context, msg *types.MsgStruct
 
     structure.DestroyAndCommit()
 
+	cc.CommitAll()
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct()}, nil
 }

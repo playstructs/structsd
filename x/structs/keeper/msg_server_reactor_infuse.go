@@ -12,7 +12,6 @@ import (
 func (k msgServer) ReactorInfuse(goCtx context.Context, msg *types.MsgReactorInfuse) (*types.MsgReactorInfuseResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -78,5 +77,6 @@ func (k msgServer) ReactorInfuse(goCtx context.Context, msg *types.MsgReactorInf
 
 
 
+	cc.CommitAll()
 	return &types.MsgReactorInfuseResponse{}, nil
 }

@@ -131,17 +131,18 @@ func (cc *CurrentContext) GridCascade() {
             capacityAttributeId := GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId)
 
 			for cc.GetGridAttribute(loadAttributeId) > cc.GetGridAttribute(capacityAttributeId) {
+				if allocationPointer >= len(allocationList) {
+				    // Something is probably wrong here...
+				    cc.k.logger.Warn("Grid Queue problem", "objectId", objectId)
+				    break;
+				}
+
 				cc.k.logger.Info("Grid Queue (Brownout)", "objectId", objectId, "load", cc.GetGridAttribute(loadAttributeId), "capacity", cc.GetGridAttribute(capacityAttributeId))
 
 				allocationList[allocationPointer].Destroy()
 				cc.k.logger.Info("Grid Queue (Allocation Destroyed)", "allocationId", allocationList[allocationPointer].GetAllocationId())
 
 				allocationPointer++
-				if allocationPointer >= len(allocationList) {
-				    // Something is probably wrong here...
-				    cc.k.logger.Warn("Grid Queue problem", "objectId", objectId)
-				    break;
-				}
 			}
 		}
 	}

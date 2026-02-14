@@ -215,7 +215,29 @@ func (cc *CurrentContext) CommitAll() {
         planetAttributeCache.Commit()
     }
 
+    for _, agreementCache := range cc.agreements {
+        agreementCache.Commit()
+    }
 
+    for _, planetCache := range cc.planets {
+        planetCache.Commit()
+    }
+
+    for _, providerCache := range cc.providers {
+        providerCache.Commit()
+    }
+
+    for _, structCache := range cc.structs {
+        structCache.Commit()
+    }
+
+    for _, substationCache := range cc.substations {
+        substationCache.Commit()
+    }
+
+    for _, reactorCache := range cc.reactors {
+        reactorCache.Commit()
+    }
 
 	cc.committed = true
     /*

@@ -12,7 +12,6 @@ import (
 func (k msgServer) ReactorDefuse(goCtx context.Context, msg *types.MsgReactorDefuse) (*types.MsgReactorDefuseResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -78,6 +77,7 @@ func (k msgServer) ReactorDefuse(goCtx context.Context, msg *types.MsgReactorDef
 		),
 	})
 
+	cc.CommitAll()
 	return &types.MsgReactorDefuseResponse{
 			CompletionTime: completionTime,
     		Amount:         undelegatedCoin,

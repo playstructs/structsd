@@ -10,7 +10,6 @@ import (
 func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate) (*types.MsgGuildCreateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -64,5 +63,6 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
     player.SetGuild(guild.Id)
     reactor.SetGuild(guild.Id)
 
+	cc.CommitAll()
 	return &types.MsgGuildCreateResponse{GuildId: guild.Id}, nil
 }

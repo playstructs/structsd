@@ -12,7 +12,7 @@ import (
 func (k msgServer) GuildBankMint(goCtx context.Context, msg *types.MsgGuildBankMint) (*types.MsgGuildBankMintResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
+
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -32,5 +32,6 @@ func (k msgServer) GuildBankMint(goCtx context.Context, msg *types.MsgGuildBankM
 
     err := guild.BankMint(amountAlphaInt, amountTokenInt, activePlayer);
 
+	cc.CommitAll()
 	return &types.MsgGuildBankMintResponse{}, err
 }

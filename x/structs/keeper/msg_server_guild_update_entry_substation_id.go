@@ -10,7 +10,7 @@ import (
 func (k msgServer) GuildUpdateEntrySubstationId(goCtx context.Context, msg *types.MsgGuildUpdateEntrySubstationId) (*types.MsgGuildUpdateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
+
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -50,5 +50,6 @@ func (k msgServer) GuildUpdateEntrySubstationId(goCtx context.Context, msg *type
         guild.SetEntrySubstationId(msg.EntrySubstationId)
     }
 
+	cc.CommitAll()
 	return &types.MsgGuildUpdateResponse{}, nil
 }

@@ -10,7 +10,6 @@ import (
 func (k msgServer) SubstationDelete(goCtx context.Context, msg *types.MsgSubstationDelete) (*types.MsgSubstationDeleteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -33,7 +32,7 @@ func (k msgServer) SubstationDelete(goCtx context.Context, msg *types.MsgSubstat
 
     if (msg.MigrationSubstationId != "") {
         migrationSubstation := cc.GetSubstation(msg.MigrationSubstationId)
-        if migrationSubstation.CheckSubstation() == nil {
+        if migrationSubstation.CheckSubstation() != nil {
             return &types.MsgSubstationDeleteResponse{}, migrationSubstation.CheckSubstation()
         }
 
@@ -45,5 +44,6 @@ func (k msgServer) SubstationDelete(goCtx context.Context, msg *types.MsgSubstat
         substation.Delete("")
     }
 
+	cc.CommitAll()
 	return &types.MsgSubstationDeleteResponse{}, nil
 }

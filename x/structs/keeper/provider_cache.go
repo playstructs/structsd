@@ -266,6 +266,7 @@ func (cache *ProviderCache) Delete() (error) {
     cache.CC.ClearGridAttribute(cache.AgreementLoadAttributeId)
 
     cache.Deleted = true
+    cache.Changed = true
     return nil
 }
 
@@ -294,7 +295,7 @@ func (cache *ProviderCache) SetAccessPolicy(accessPolicy types.ProviderAccessPol
 
 func (cache *ProviderCache) SetCapacityMaximum(maximum uint64) (error){
     paramError := cache.Provider.SetCapacityMaximum(maximum)
-    if paramError != nil {
+    if paramError == nil {
         cache.Changed = true
     }
     return paramError
@@ -302,7 +303,7 @@ func (cache *ProviderCache) SetCapacityMaximum(maximum uint64) (error){
 
 func (cache *ProviderCache) SetCapacityMinimum(minimum uint64) (error){
     paramError := cache.Provider.SetCapacityMinimum(minimum)
-    if paramError != nil {
+    if paramError == nil {
         cache.Changed = true
     }
     return paramError
@@ -310,7 +311,7 @@ func (cache *ProviderCache) SetCapacityMinimum(minimum uint64) (error){
 
 func (cache *ProviderCache) SetDurationMaximum(maximum uint64) (error){
     paramError := cache.Provider.SetDurationMaximum(maximum)
-    if paramError != nil {
+    if paramError == nil {
         cache.Changed = true
     }
     return paramError
@@ -318,7 +319,7 @@ func (cache *ProviderCache) SetDurationMaximum(maximum uint64) (error){
 
 func (cache *ProviderCache) SetDurationMinimum(minimum uint64) (error){
     paramError := cache.Provider.SetDurationMinimum(minimum)
-    if paramError != nil {
+    if paramError == nil {
         cache.Changed = true
     }
     return paramError

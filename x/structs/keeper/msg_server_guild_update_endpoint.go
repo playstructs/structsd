@@ -10,7 +10,7 @@ import (
 func (k msgServer) GuildUpdateEndpoint(goCtx context.Context, msg *types.MsgGuildUpdateEndpoint) (*types.MsgGuildUpdateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
+
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -40,5 +40,6 @@ func (k msgServer) GuildUpdateEndpoint(goCtx context.Context, msg *types.MsgGuil
 
     guild.SetEndpoint(msg.Endpoint)
 
+	cc.CommitAll()
 	return &types.MsgGuildUpdateResponse{}, nil
 }

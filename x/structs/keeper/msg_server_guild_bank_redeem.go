@@ -12,7 +12,7 @@ import (
 func (k msgServer) GuildBankRedeem(goCtx context.Context, msg *types.MsgGuildBankRedeem) (*types.MsgGuildBankRedeemResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
+
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -36,5 +36,6 @@ func (k msgServer) GuildBankRedeem(goCtx context.Context, msg *types.MsgGuildBan
 
     err := guild.BankRedeem(msg.AmountToken.Amount, activePlayer);
 
+	cc.CommitAll()
 	return &types.MsgGuildBankRedeemResponse{}, err
 }

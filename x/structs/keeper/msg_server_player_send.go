@@ -9,7 +9,6 @@ import (
 func (k msgServer) PlayerSend(goCtx context.Context, msg *types.MsgPlayerSend) (*types.MsgPlayerSendResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -50,5 +49,6 @@ func (k msgServer) PlayerSend(goCtx context.Context, msg *types.MsgPlayerSend) (
         return &types.MsgPlayerSendResponse{}, err
     }
 
+	cc.CommitAll()
 	return &types.MsgPlayerSendResponse{}, nil
 }

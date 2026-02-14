@@ -10,7 +10,6 @@ import (
 func (k msgServer) SubstationAllocationDisconnect(goCtx context.Context, msg *types.MsgSubstationAllocationDisconnect) (*types.MsgSubstationAllocationDisconnectResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -48,5 +47,6 @@ func (k msgServer) SubstationAllocationDisconnect(goCtx context.Context, msg *ty
 
     allocation.SetDestination("")
 
+	cc.CommitAll()
 	return &types.MsgSubstationAllocationDisconnectResponse{}, err
 }

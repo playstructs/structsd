@@ -32,7 +32,6 @@ message MsgProviderCreate {
 func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderCreate) (*types.MsgProviderResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -86,5 +85,6 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
     cc.NewProvider(provider)
 
 
+	cc.CommitAll()
 	return &types.MsgProviderResponse{}, nil
 }

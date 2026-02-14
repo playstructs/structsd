@@ -19,7 +19,6 @@ message MsgProviderWithdrawBalance {
 func (k msgServer) ProviderWithdrawBalance(goCtx context.Context, msg *types.MsgProviderWithdrawBalance) (*types.MsgProviderResponse, error) {
     ctx := sdk.UnwrapSDKContext(goCtx)
     cc := k.NewCurrentContext(ctx)
-    defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -38,5 +37,6 @@ func (k msgServer) ProviderWithdrawBalance(goCtx context.Context, msg *types.Msg
         return &types.MsgProviderResponse{}, err
     }
 
+	cc.CommitAll()
 	return &types.MsgProviderResponse{}, nil
 }

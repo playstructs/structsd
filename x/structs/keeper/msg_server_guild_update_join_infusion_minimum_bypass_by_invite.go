@@ -10,7 +10,7 @@ import (
 func (k msgServer) GuildUpdateJoinInfusionMinimumBypassByInvite(goCtx context.Context, msg *types.MsgGuildUpdateJoinInfusionMinimumBypassByInvite) (*types.MsgGuildUpdateResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
+
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -42,5 +42,6 @@ func (k msgServer) GuildUpdateJoinInfusionMinimumBypassByInvite(goCtx context.Co
         guild.SetJoinInfusionMinimumBypassByInvite(msg.GuildJoinBypassLevel)
     }
 
+	cc.CommitAll()
 	return &types.MsgGuildUpdateResponse{}, nil
 }

@@ -11,7 +11,6 @@ import (
 func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructActivate) (*types.MsgStructStatusResponse, error) {
     ctx := sdk.UnwrapSDKContext(goCtx)
     cc := k.NewCurrentContext(ctx)
-    defer cc.CommitAll()
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -42,5 +41,6 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
 
     structure.GoOnline()
 
+	cc.CommitAll()
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct()}, nil
 }

@@ -16,7 +16,6 @@ import (
 func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.MsgGuildMembershipJoinProxy) (*types.MsgGuildMembershipResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-	defer cc.CommitAll()
 
 	// Add an Active Address record to the
 	// indexer for UI requirements
@@ -162,5 +161,6 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	// Increase the nonce of the player account to prevent replay of this signed message
 	cc.SetGridAttributeIncrement(GetGridAttributeIDByObjectId(types.GridAttributeType_proxyNonce, player.GetPlayerId()), 1)
 
+	cc.CommitAll()
 	return &types.MsgGuildMembershipResponse{}, nil
 }

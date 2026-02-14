@@ -53,7 +53,7 @@ func (k Keeper) GetInfusion(ctx context.Context, destinationId string, address s
 // GetInfusion returns a infusion from its id (destinationId-address)
 func (k Keeper) GetInfusionByID(ctx context.Context, infusionId string) (val types.Infusion, found bool) {
 	infusionIdSplit := strings.Split(infusionId, "-")
-	if len(infusionIdSplit) != 2 {
+	if len(infusionIdSplit) != 3 {
 		return types.Infusion{}, false
 	}
 	return k.GetInfusion(ctx, infusionIdSplit[0] + "-" + infusionIdSplit[1], infusionIdSplit[2])
