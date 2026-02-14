@@ -463,7 +463,7 @@ func (cache *StructCache) IsSuccessful(successRate fraction.Fraction) bool {
 	min := 1
 	max := int(successRate.Denominator())
 
-	randomnessCheck := (int(successRate.Numerator()) <= (randomnessOrb.Intn(max-min+1) + min))
+	randomnessCheck := ((randomnessOrb.Intn(max-min+1) + min) <= int(successRate.Numerator()))
 	cache.CC.k.logger.Info("Struct Success-Check Randomness", "structId", cache.GetStructId(), "seed", seed, "offset", cache.GetOwner().GetNextNonce(), "seedOffset", seedOffset, "numerator", successRate.Numerator(), "denominator", successRate.Denominator(), "success", randomnessCheck)
 
 	return randomnessCheck

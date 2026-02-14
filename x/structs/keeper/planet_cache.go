@@ -253,6 +253,12 @@ func (cache *PlanetCache) LowOrbitBallisticsInterceptorNetworkRecalculate() {
 
         cache.CC.SetPlanetAttribute(cache.LowOrbitBallisticsInterceptorNetworkSuccessRateNumeratorAttributeId, uint64(overallSuccessRate.Numerator()))
         cache.CC.SetPlanetAttribute(cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominatorAttributeId, uint64(overallSuccessRate.Denominator()))
+    } else {
+        // Clear the success rate when no interceptor networks remain
+        // Without this, stale success rate values linger and the planet
+        // continues to benefit from interception after all sources are destroyed.
+        cache.CC.SetPlanetAttribute(cache.LowOrbitBallisticsInterceptorNetworkSuccessRateNumeratorAttributeId, 0)
+        cache.CC.SetPlanetAttribute(cache.LowOrbitBallisticsInterceptorNetworkSuccessRateDenominatorAttributeId, 0)
     }
 }
 
@@ -297,7 +303,7 @@ func (cache *PlanetCache) IsSuccessful(successRate fraction.Fraction) bool {
 	min := 1
 	max := int(successRate.Denominator())
 
-    randomnessCheck := (int(successRate.Numerator()) <= (randomnessOrb.Intn(max-min+1) + min))
+    randomnessCheck := ((randomnessOrb.Intn(max-min+1) + min) <= int(successRate.Numerator()))
 
     cache.CC.k.logger.Info("Planetary Success-Check Randomness", "planetId", cache.GetPlanetId(), "seed", seed, "offset", cache.GetOwner().GetNextNonce(), "seedOffset", seedOffset, "numerator", successRate.Numerator(), "denominator", successRate.Denominator(), "success", randomnessCheck)
 	return randomnessCheck
