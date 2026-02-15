@@ -105,8 +105,8 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 		attackBlocked := false
 
 		// Check to make sure the attack is either counterable, blockable, or both. Otherwise skip this section
-		k.logger.Info("Struct Attacker Status", "structId", structure.GetStructId(), "blockable", (structure.GetStructType().GetWeaponBlockable(weaponSystem)), "counterable", (structure.GetStructType().GetWeaponCounterable(weaponSystem)))
-		if (structure.GetStructType().GetWeaponBlockable(weaponSystem)) || (structure.GetStructType().GetWeaponCounterable(weaponSystem)) {
+		k.logger.Info("Struct Attacker Status", "structId", structure.GetStructId(), "blockable", (structure.GetStructType().GetWeaponBlockable(weaponSystem)), "counterable", (structure.GetStructType().AttackCounterable && structure.GetStructType().GetWeaponCounterable(weaponSystem)))
+		if (structure.GetStructType().GetWeaponBlockable(weaponSystem)) || (structure.GetStructType().AttackCounterable && structure.GetStructType().GetWeaponCounterable(weaponSystem)) {
 
 			// Check the Defenders
 			defenders := targetStructure.GetDefenders()
@@ -129,7 +129,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 					}
 				}
 
-				if structure.GetStructType().GetWeaponCounterable(weaponSystem) {
+				if structure.GetStructType().AttackCounterable && structure.GetStructType().GetWeaponCounterable(weaponSystem) {
 					k.logger.Info("Defender trying to counter!.. ")
 					counterErrors := defender.CanCounterAttack(structure)
 					if counterErrors == nil {
@@ -149,7 +149,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 			k.logger.Info("Attack against target was blocked", "target", msg.TargetStructId[shot])
 		}
 
-		if structure.GetStructType().GetWeaponCounterable(weaponSystem) {
+		if structure.GetStructType().AttackCounterable && structure.GetStructType().GetWeaponCounterable(weaponSystem) {
 			k.logger.Info("Target trying to Counter now!")
 			counterErrors := targetStructure.CanCounterAttack(structure)
 			if counterErrors == nil {
@@ -164,13 +164,22 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 			targetWasPlanetary = true
 			targetWasOnPlanet = targetStructure.GetPlanet()
 		}
+
+		// If the attacker was destroyed during this shot (e.g. by counter-attacks),
+		// stop processing further targets immediately.
+		if structure.IsDestroyed() {
+			k.logger.Info("Attacker destroyed during combat, ending attack early", "structId", msg.OperatingStructId)
+			break
+		}
 	}
 
-	// Recoil Damage
-	structure.TakeRecoilDamage(weaponSystem)
+	// Recoil Damage - only if attacker survived all shots
+	if !structure.IsDestroyed() {
+		structure.TakeRecoilDamage(weaponSystem)
+	}
 
-	// Check for Planetary Damage, namely Defense Cannons
-	if targetWasPlanetary {
+	// Check for Planetary Damage, namely Defense Cannons - only if attacker survived
+	if !structure.IsDestroyed() && targetWasPlanetary {
 		targetWasOnPlanet.AttemptDefenseCannon(structure)
 	}
 
@@ -179,7 +188,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventAttack{EventAttackDetail: eventAttackDetail})
 
-    structure.GetOwner().Discharge()
+	structure.GetOwner().Discharge()
 
 	if ctx.ExecMode() == sdk.ExecModeCheck {
 		//ctx.GasMeter().RefundGas(ctx.GasMeter().GasConsumed(), "Walkin it back")

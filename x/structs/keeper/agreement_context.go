@@ -52,7 +52,6 @@ func (cc *CurrentContext) NewAgreement(agreement types.Agreement) (*AgreementCac
             CurrentBlockLoaded: false,
         }
 
-
 	return cc.agreements[agreement.Id]
 }
 

@@ -750,8 +750,8 @@ func (cache *StructCache) TakeAttackDamage(attackingStruct *StructCache, weaponS
 			cache.GetEventAttackShotDetail().SetDamageReduction(damageReduction, cache.GetStructType().UnitDefenses)
 		}
 
-		if damageReduction > damage {
-			damage = 0
+		if damageReduction >= damage {
+			damage = 1
 		} else {
 			damage = damage - damageReduction
 		}
