@@ -633,6 +633,11 @@ func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem type
 
 func (cache *StructCache) CanCounterAttack(attackerStruct *StructCache) (err error) {
 
+	readinessError := cache.ReadinessCheck()
+	if readinessError != nil {
+		return readinessError
+	}
+
 	if attackerStruct.IsDestroyed() || cache.IsDestroyed() {
 		cache.CC.k.logger.Info("Counter Struct or Attacker Struct is already destroyed", "counterStruct", cache.StructId, "target", attackerStruct.StructId)
 		err = types.NewCombatTargetingError(cache.StructId, attackerStruct.StructId, "counter", "destroyed").AsCounter()
