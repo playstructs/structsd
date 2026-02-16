@@ -102,7 +102,14 @@ func (cache *PlayerCache) GetPlanetId()     (string) { if (!cache.PlayerLoaded) 
 func (cache *PlayerCache) GetSubstationId() (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.SubstationId }
 
 func (cache *PlayerCache) GetFleet()        (*FleetCache)       {
-    fleet, _ := cache.CC.GetFleetById( cache.GetFleetId() )
+    fleetId := cache.GetFleetId()
+    if fleetId == "" {
+        // Player doesn't have a fleet yet; use the player index to
+        // create/load one through GetFleet which properly sets CC.
+        fleet, _ := cache.CC.GetFleet(cache.GetIndex())
+        return fleet
+    }
+    fleet, _ := cache.CC.GetFleetById(fleetId)
     return fleet
 }
 

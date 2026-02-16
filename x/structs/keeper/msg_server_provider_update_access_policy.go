@@ -23,7 +23,10 @@ func (k msgServer) ProviderUpdateAccessPolicy(goCtx context.Context, msg *types.
         return &types.MsgProviderResponse{}, permissionError
     }
 
-    provider.SetAccessPolicy(msg.AccessPolicy)
+    paramErr := provider.SetAccessPolicy(msg.AccessPolicy)
+    if paramErr != nil {
+        return &types.MsgProviderResponse{}, paramErr
+    }
 
 	cc.CommitAll()
 	return &types.MsgProviderResponse{}, nil

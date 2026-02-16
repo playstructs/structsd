@@ -52,11 +52,13 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
     provider.SetSubstationId(msg.SubstationId)
 
     // TODO Check Denom exists
-    provider.SetRate(msg.Rate)
-
     // TODO Rate Denom whitelist?
+    paramErr := provider.SetRate(msg.Rate)
+    if paramErr != nil {
+        return &types.MsgProviderResponse{}, paramErr
+    }
 
-    paramErr := provider.SetCapacityRange(msg.CapacityMinimum, msg.CapacityMaximum)
+    paramErr = provider.SetCapacityRange(msg.CapacityMinimum, msg.CapacityMaximum)
     if paramErr != nil {
         return &types.MsgProviderResponse{}, paramErr
     }
@@ -76,7 +78,10 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
         return &types.MsgProviderResponse{}, paramErr
     }
 
-    provider.SetAccessPolicy(msg.AccessPolicy)
+    paramErr = provider.SetAccessPolicy(msg.AccessPolicy)
+    if paramErr != nil {
+        return &types.MsgProviderResponse{}, paramErr
+    }
 
     // Provider Grid values are OK to leave uninitialized
         // Unset Load is zero

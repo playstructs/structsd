@@ -84,7 +84,7 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 	// Move the Fleet back to Station
 	fleet.SetLocationToPlanet(fleet.GetOwner().GetPlanet())
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleet.GetFleetId(), PlanetId: raidedPlanet, Status: types.RaidStatus_raidSuccessful}})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleet.GetFleetId(), PlanetId: raidedPlanet, Status: types.RaidStatus_raidSuccessful, SeizedOre: amountStolen}})
     _ = ctx.EventManager().EmitTypedEvent(&types.EventHashSuccess{&types.EventHashSuccessDetail{CallerAddress: msg.Creator, Category: "raid", Difficulty: achievedDifficulty, ObjectId: msg.FleetId, PlanetId: raidedPlanet }})
 
 	cc.CommitAll()

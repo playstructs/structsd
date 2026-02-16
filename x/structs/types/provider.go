@@ -21,7 +21,11 @@ func (provider *Provider) SetSubstationId(substationId string) error {
 }
 
 func (provider *Provider) SetRate(rate sdk.Coin) error {
+    if rate.Denom == "" {
+        return NewParameterValidationError("denom", 0, "blank_denom")
+    }
     provider.Rate = rate
+
 	return nil
 }
 
@@ -146,6 +150,14 @@ func (provider *Provider) SetConsumerCancellationPenalty(penalty math.LegacyDec)
 	return nil
 }
 
-func (provider *Provider) SetAccessPolicy(accessPolicy ProviderAccessPolicy) {
-    provider.AccessPolicy = accessPolicy
+func (provider *Provider) SetAccessPolicy(accessPolicy ProviderAccessPolicy) error {
+    switch accessPolicy {
+    case ProviderAccessPolicy_openMarket,
+         ProviderAccessPolicy_guildMarket,
+         ProviderAccessPolicy_closedMarket:
+        provider.AccessPolicy = accessPolicy
+        return nil
+    default:
+        return NewParameterValidationError("access_policy", uint64(accessPolicy), "invalid_policy")
+    }
 }

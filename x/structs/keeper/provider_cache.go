@@ -288,9 +288,13 @@ func (cache *ProviderCache) AgreementLoadDecrease(amount uint64) {
     cache.CC.SetGridAttributeDecrement(cache.AgreementLoadAttributeId, amount)
 }
 
-func (cache *ProviderCache) SetAccessPolicy(accessPolicy types.ProviderAccessPolicy) {
-    cache.Provider.SetAccessPolicy(accessPolicy)
+func (cache *ProviderCache) SetAccessPolicy(accessPolicy types.ProviderAccessPolicy) error {
+    err := cache.Provider.SetAccessPolicy(accessPolicy)
+    if err != nil {
+        return err
+    }
     cache.Changed = true
+    return nil
 }
 
 func (cache *ProviderCache) SetCapacityMaximum(maximum uint64) (error){

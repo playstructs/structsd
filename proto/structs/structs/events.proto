@@ -221,6 +221,7 @@ option go_package = "structs/x/structs/types";
     string      fleetId    = 1;
     string      planetId   = 2;
     raidStatus  status     = 3;
+    uint64      seized_ore = 4;
   }
 
   message EventHashSuccess { EventHashSuccessDetail eventHashSuccessDetail = 1;}
