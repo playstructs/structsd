@@ -61,7 +61,10 @@ func CmdPlanetRaidCompute() *cobra.Command {
 				Id: performingFleet.LocationId,
 			}
 
-			Planet_res, _ := queryClient.Planet(context.Background(), planet_params)
+			Planet_res, planet_err := queryClient.Planet(context.Background(), planet_params)
+			if planet_err != nil {
+				return planet_err
+			}
 			planet := Planet_res.Planet
 			planetAttributes := Planet_res.PlanetAttributes
 
@@ -70,7 +73,10 @@ func CmdPlanetRaidCompute() *cobra.Command {
 				return nil
 			}
 
-			currentBlockResponse, _ := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+			currentBlockResponse, currentBlock_err := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+			if currentBlock_err != nil {
+				return currentBlock_err
+			}
 			currentBlock := currentBlockResponse.BlockHeight
 			fmt.Printf("Raid process against planet %s activated on %d, current block is %d \n", planet.Id, planetAttributes.BlockStartRaid, currentBlock)
 			currentAge := currentBlock - planetAttributes.BlockStartRaid
@@ -91,7 +97,11 @@ func CmdPlanetRaidCompute() *cobra.Command {
 				i = i + 1
 
 				if (i % 20000) == 0 {
-					currentBlockResponse, _ = queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+					currentBlockResponse, blockErr := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+					if blockErr != nil {
+						fmt.Printf("Warning: failed to query block height: %s (retrying next cycle)\n", blockErr)
+						goto COMPUTE
+					}
 					currentBlock = currentBlockResponse.BlockHeight
 					currentAge = currentBlock - planetAttributes.BlockStartRaid
 					newDifficulty = types.CalculateDifficulty(float64(currentAge), planetAttributes.PlanetaryShield)

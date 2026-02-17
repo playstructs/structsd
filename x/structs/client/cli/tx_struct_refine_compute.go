@@ -64,7 +64,10 @@ func CmdStructRefineCompute() *cobra.Command {
 				AttributeType: "blockStartOreRefine",
 			}
 
-			refineStartBlock_res, _ := queryClient.StructAttribute(context.Background(), struct_attribute_block_start_params)
+			refineStartBlock_res, refineStartBlock_err := queryClient.StructAttribute(context.Background(), struct_attribute_block_start_params)
+			if refineStartBlock_err != nil {
+				return refineStartBlock_err
+			}
 			refineStartBlock := refineStartBlock_res.Attribute
 
 			if refineStartBlock == 0 {
@@ -76,10 +79,16 @@ func CmdStructRefineCompute() *cobra.Command {
 				Id: performingStructure.Type,
 			}
 
-			structType_res, _ := queryClient.StructType(context.Background(), struct_type_params)
+			structType_res, structType_err := queryClient.StructType(context.Background(), struct_type_params)
+			if structType_err != nil {
+				return structType_err
+			}
 			structType := structType_res.StructType
 
-			currentBlockResponse, _ := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+			currentBlockResponse, currentBlock_err := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+			if currentBlock_err != nil {
+				return currentBlock_err
+			}
 			currentBlock := currentBlockResponse.BlockHeight
 			fmt.Printf("Refining process activated on %d, current block is %d \n", refineStartBlock, currentBlock)
 			currentAge := currentBlock - refineStartBlock
@@ -100,7 +109,11 @@ func CmdStructRefineCompute() *cobra.Command {
 				i = i + 1
 
 				if (i % 20000) == 0 {
-					currentBlockResponse, _ = queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+					currentBlockResponse, blockErr := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+					if blockErr != nil {
+						fmt.Printf("Warning: failed to query block height: %s (retrying next cycle)\n", blockErr)
+						goto COMPUTE
+					}
 					currentBlock = currentBlockResponse.BlockHeight
 					currentAge = currentBlock - refineStartBlock
 					newDifficulty = types.CalculateDifficulty(float64(currentAge), structType.OreRefiningDifficulty)
