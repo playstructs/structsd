@@ -53,6 +53,23 @@ func (cc *CurrentContext) GetInfusion(destinationId string, address string) *Inf
     return cc.infusions[infusionKey]
 }
 
+func (cc *CurrentContext) GenesisImportInfusion(infusion types.Infusion) {
+	if infusion.DestinationType == types.ObjectType_reactor {
+		return
+	}
+	if infusion.Power == 0 {
+		return
+	}
+
+	cache := cc.GetInfusion(infusion.DestinationId, infusion.Address)
+	cache.Infusion = infusion
+	cache.InfusionLoaded = true
+	cache.Changed = true
+
+	cache.Infusion.Recalculate()
+	cache.applyGridDeltas(0, 0, 0)
+}
+
 func (cc *CurrentContext) GetAllInfusionByDestination(destinationId string) (infusions []*InfusionCache) {
     infusionIds := cc.k.GetAllInfusionIdsByDestination(cc.ctx, destinationId)
     for _, infusionId := range infusionIds {

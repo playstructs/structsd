@@ -30,6 +30,44 @@ func (cc *CurrentContext) GetAllocation(allocationId string) (*AllocationCache, 
 }
 
 
+func (cc *CurrentContext) GenesisImportAllocation(allocation types.Allocation, importedPower uint64) {
+	cc.allocations[allocation.Id] = &AllocationCache{
+		CC:           cc,
+		AllocationId: allocation.Id,
+		Allocation:   allocation,
+		Loaded:       true,
+		Changed:      true,
+
+		PowerAttributeId:          GetGridAttributeIDByObjectId(types.GridAttributeType_power, allocation.Id),
+		SourceCapacityAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, allocation.SourceObjectId),
+		SourceLoadAttributeId:     GetGridAttributeIDByObjectId(types.GridAttributeType_load, allocation.SourceObjectId),
+	}
+	cache := cc.allocations[allocation.Id]
+
+	cc.k.SetAllocationSourceIndex(cc.ctx, allocation.SourceObjectId, allocation.Id)
+	cc.k.SetAllocationDestinationIndex(cc.ctx, allocation.DestinationId, allocation.Id)
+
+	if allocation.Type == types.AllocationType_automated {
+		cc.k.SetAutoResizeAllocationSource(cc.ctx, allocation.Id, allocation.SourceObjectId)
+		sourceCapAttrId := GetGridAttributeIDByObjectId(
+			types.GridAttributeType_capacity, allocation.SourceObjectId)
+		importedPower = cc.GetGridAttribute(sourceCapAttrId)
+	}
+
+	if importedPower == 0 {
+		return
+	}
+
+	cc.SetGridAttribute(cache.PowerAttributeId, importedPower)
+	cc.SetGridAttributeIncrement(cache.SourceLoadAttributeId, importedPower)
+
+	destCapAttrId := GetGridAttributeIDByObjectId(
+		types.GridAttributeType_capacity, allocation.DestinationId)
+	cc.SetGridAttributeIncrement(destCapAttrId, importedPower)
+
+	cc.UpdateSubstationConnectionCapacity(allocation.DestinationId)
+}
+
 func (cc *CurrentContext) GetAllAllocationBySource(objectId string) (allocations []*AllocationCache) {
     allocationList := cc.k.GetAllAllocationIdBySourceIndex(cc.ctx, objectId)
 

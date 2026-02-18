@@ -20,6 +20,16 @@ func (cc *CurrentContext) GetPlayerIndexFromAddress(address string) uint64 {
 	return playerIndex
 }
 
+func (cc *CurrentContext) GenesisImportAddress(address string, playerIndex uint64) {
+	cc.addresses[address] = &AddressCache{
+		CC:          cc,
+		Address:     address,
+		PlayerIndex: playerIndex,
+		Loaded:      true,
+		Changed:     true,
+	}
+}
+
 // SetPlayerIndexForAddress sets the player index for an address (commits during CommitAll).
 // If the address was previously deleted, setting clears the deletion.
 func (cc *CurrentContext) SetPlayerIndexForAddress(address string, playerIndex uint64) {

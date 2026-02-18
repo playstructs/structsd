@@ -20,6 +20,16 @@ func (cc *CurrentContext) GetPermissions(permissionId []byte) types.Permission {
 	return value
 }
 
+func (cc *CurrentContext) GenesisImportPermission(permissionId []byte, value types.Permission) {
+	cc.permissions[string(permissionId)] = &PermissionsCache{
+		CC:           cc,
+		PermissionId: permissionId,
+		Value:        value,
+		Loaded:       true,
+		Changed:      true,
+	}
+}
+
 func (cc *CurrentContext) SetPermissions(permissionId []byte, value types.Permission) {
 	cc.permissions[string(permissionId)] = &PermissionsCache{
  	    CC:     cc,

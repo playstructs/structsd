@@ -264,10 +264,16 @@ func (cache *GuildCache) BankMint(amountAlpha math.Int, amountToken math.Int, pl
 	}
 
 	// Mint new Guild Token
-	cache.CC.k.bankKeeper.MintCoins(cache.CC.ctx, types.ModuleName, guildTokenCoins)
+	errMint := cache.CC.k.bankKeeper.MintCoins(cache.CC.ctx, types.ModuleName, guildTokenCoins)
+	if errMint != nil {
+		return errMint
+	}
 
 	// Move the new Guild Token to Player
-	cache.CC.k.bankKeeper.SendCoinsFromModuleToAccount(cache.CC.ctx, types.ModuleName, player.GetPrimaryAccount(), guildTokenCoins)
+	errTransfer := cache.CC.k.bankKeeper.SendCoinsFromModuleToAccount(cache.CC.ctx, types.ModuleName, player.GetPrimaryAccount(), guildTokenCoins)
+	if errTransfer != nil {
+		return errTransfer
+	}
 
 	ctxSDK := sdk.UnwrapSDKContext(cache.CC.ctx)
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildBankMint{&types.EventGuildBankMintDetail{GuildId: cache.GetGuildId(), AmountAlpha: amountAlpha.Uint64(), AmountToken: amountToken.Uint64(), PlayerId: player.GetPlayerId()}})
@@ -296,7 +302,10 @@ func (cache *GuildCache) BankRedeem(amountToken math.Int, player *PlayerCache) e
 	alphaAmount := amountTokenDec.Quo(guildTokenSupplyDec).Mul(alphaCollateralBalanceDec).TruncateInt()
 
 	// Move the new coins back to the module
-	cache.CC.k.bankKeeper.SendCoinsFromAccountToModule(cache.CC.ctx, player.GetPrimaryAccount(), types.ModuleName, guildTokenCoins)
+	errReturn := cache.CC.k.bankKeeper.SendCoinsFromAccountToModule(cache.CC.ctx, player.GetPrimaryAccount(), types.ModuleName, guildTokenCoins)
+	if errReturn != nil {
+		return errReturn
+	}
 	// Burn the Guild Token
 	errBurn := cache.CC.k.bankKeeper.BurnCoins(cache.CC.ctx, types.ModuleName, guildTokenCoins)
 	if errBurn != nil {
@@ -306,7 +315,10 @@ func (cache *GuildCache) BankRedeem(amountToken math.Int, player *PlayerCache) e
 	// Move the Alpha to Player
 	alphaAmountCoin := sdk.NewCoin("ualpha", alphaAmount)
 	alphaAmountCoins := sdk.NewCoins(alphaAmountCoin)
-	cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetBankCollateralPool(), player.GetPrimaryAccount(), alphaAmountCoins)
+	errAlpha := cache.CC.k.bankKeeper.SendCoins(cache.CC.ctx, cache.GetBankCollateralPool(), player.GetPrimaryAccount(), alphaAmountCoins)
+	if errAlpha != nil {
+		return errAlpha
+	}
 
 	ctxSDK := sdk.UnwrapSDKContext(cache.CC.ctx)
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildBankRedeem{&types.EventGuildBankRedeemDetail{GuildId: cache.GetGuildId(), AmountAlpha: alphaAmount.Uint64(), AmountToken: amountToken.Uint64(), PlayerId: player.GetPlayerId()}})
@@ -320,8 +332,14 @@ func (cache *GuildCache) BankConfiscateAndBurn(amountToken math.Int, address str
 	guildTokenCoins := sdk.NewCoins(guildTokenCoin)
 
 	// Confiscate
-	playerAcc, _ := sdk.AccAddressFromBech32(address)
-	cache.CC.k.bankKeeper.SendCoinsFromAccountToModule(cache.CC.ctx, playerAcc, types.ModuleName, guildTokenCoins)
+	playerAcc, errAddr := sdk.AccAddressFromBech32(address)
+	if errAddr != nil {
+		return errAddr
+	}
+	errConfiscate := cache.CC.k.bankKeeper.SendCoinsFromAccountToModule(cache.CC.ctx, playerAcc, types.ModuleName, guildTokenCoins)
+	if errConfiscate != nil {
+		return errConfiscate
+	}
 
 	// Burn the Guild Token
 	errBurn := cache.CC.k.bankKeeper.BurnCoins(cache.CC.ctx, types.ModuleName, guildTokenCoins)

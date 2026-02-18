@@ -28,7 +28,13 @@ func (cc *CurrentContext) GetProvider(providerId string) *ProviderCache {
 	return cc.providers[providerId]
 }
 
-// TODO HERE
+func (cc *CurrentContext) GenesisImportProvider(provider types.Provider) {
+	cache := cc.GetProvider(provider.Id)
+	cache.Provider = provider
+	cache.ProviderLoaded = true
+	cache.Changed = true
+}
+
 // AppendProvider appends a provider in the store with a new id
 func (cc *CurrentContext) NewProvider(provider types.Provider) (*ProviderCache) {
 

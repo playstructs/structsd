@@ -390,49 +390,51 @@ func (cache *StructCache) GoOnline() {
 }
 
 func (cache *StructCache) GoOffline() {
-	// Add to the players struct load
-	cache.GetOwner().StructsLoadDecrement(cache.GetStructType().PassiveDraw)
-	//k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.PassiveDraw)
+    if cache.IsOnline() {
+    // Add to the players struct load
+    	cache.GetOwner().StructsLoadDecrement(cache.GetStructType().PassiveDraw)
+    	//k.SetGridAttributeIncrement(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_structsLoad, sudoPlayer.Id), structType.PassiveDraw)
 
-	// Turn off the mining systems
-	if cache.GetStructType().HasOreMiningSystem() {
-		cache.ClearBlockStartOreMine()
-	}
+    	// Turn off the mining systems
+    	if cache.GetStructType().HasOreMiningSystem() {
+    		cache.ClearBlockStartOreMine()
+    	}
 
-	// Turn off the refinery
-	if cache.GetStructType().HasOreRefiningSystem() {
-		cache.ClearBlockStartOreRefine()
-	}
+    	// Turn off the refinery
+    	if cache.GetStructType().HasOreRefiningSystem() {
+    		cache.ClearBlockStartOreRefine()
+    	}
 
-	// Lower the planetary shields
-	if cache.GetStructType().HasOreReserveDefensesSystem() {
-		cache.GetPlanet().PlanetaryShieldDecrement(cache.GetStructType().PlanetaryShieldContribution)
-	}
+    	// Lower the planetary shields
+    	if cache.GetStructType().HasOreReserveDefensesSystem() {
+    		cache.GetPlanet().PlanetaryShieldDecrement(cache.GetStructType().PlanetaryShieldContribution)
+    	}
 
-	// TODO
-	// This is the least generic/abstracted part of the code for now.
-	// Prob need to clean this up down the road
-	if cache.GetStructType().HasPlanetaryDefensesSystem() {
-		switch cache.GetStructType().PlanetaryDefenses {
-		case types.TechPlanetaryDefenses_defensiveCannon:
-			cache.GetPlanet().DefensiveCannonQuantityDecrement(1)
-		case types.TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork:
-			cache.GetPlanet().LowOrbitBallisticsInterceptorNetworkQuantityDecrement(1)
-		}
-	}
+    	// TODO
+    	// This is the least generic/abstracted part of the code for now.
+    	// Prob need to clean this up down the road
+    	if cache.GetStructType().HasPlanetaryDefensesSystem() {
+    		switch cache.GetStructType().PlanetaryDefenses {
+    		case types.TechPlanetaryDefenses_defensiveCannon:
+    			cache.GetPlanet().DefensiveCannonQuantityDecrement(1)
+    		case types.TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork:
+    			cache.GetPlanet().LowOrbitBallisticsInterceptorNetworkQuantityDecrement(1)
+    		}
+    	}
 
-	if cache.GetStructType().HasPowerGenerationSystem() {
-		cache.GridStatusRemoveReady()
+    	if cache.GetStructType().HasPowerGenerationSystem() {
+    		cache.GridStatusRemoveReady()
 
-		// Remove all allocations
-		allocations := cache.CC.GetAllAllocationBySource(cache.StructId)
-		for _, allocation := range allocations {
-		    allocation.Destroy()
-		}
-	}
+    		// Remove all allocations
+    		allocations := cache.CC.GetAllAllocationBySource(cache.StructId)
+    		for _, allocation := range allocations {
+    		    allocation.Destroy()
+    		}
+    	}
 
-	// Set the struct status flag to include built
-	cache.StatusRemoveOnline()
+    	// Set the struct status flag to include built
+    	cache.StatusRemoveOnline()
+    }
 }
 
 func (cache *StructCache) ReadinessCheck() error {
@@ -900,6 +902,13 @@ func (cache *StructCache) AttemptBlock(attacker *StructCache, weaponSystem types
 }
 
 func (cache *StructCache) DestroyAndCommit() {
+
+	if !cache.IsBuilt() {
+		// Struct was still building — release the BuildDraw energy that was
+		// reserved during build initiation. GoOffline() won't handle this
+		// because the struct was never online.
+		cache.GetOwner().StructsLoadDecrement(cache.GetStructType().BuildDraw)
+	}
 
 	// Go Offline
 	// Most of the destruction process is handled during this sub-process

@@ -19,7 +19,10 @@ func (k msgServer) GuildBankConfiscateAndBurn(goCtx context.Context, msg *types.
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    activePlayer, _ := cc.GetPlayerByAddress(msg.Creator)
+    activePlayer, lookupErr := cc.GetPlayerByAddress(msg.Creator)
+    if lookupErr != nil {
+        return &types.MsgGuildBankConfiscateAndBurnResponse{}, types.NewPlayerRequiredError(msg.Creator, "guild_bank_confiscate")
+    }
 
     guild := cc.GetGuild(activePlayer.GetGuildId())
 
@@ -29,8 +32,11 @@ func (k msgServer) GuildBankConfiscateAndBurn(goCtx context.Context, msg *types.
     }
 
     amountTokenInt := math.NewIntFromUint64(msg.AmountToken)
-    err := guild.BankConfiscateAndBurn(amountTokenInt, msg.Address);
+    err := guild.BankConfiscateAndBurn(amountTokenInt, msg.Address)
+    if err != nil {
+        return &types.MsgGuildBankConfiscateAndBurnResponse{}, err
+    }
 
 	cc.CommitAll()
-	return &types.MsgGuildBankConfiscateAndBurnResponse{}, err
+	return &types.MsgGuildBankConfiscateAndBurnResponse{}, nil
 }

@@ -110,12 +110,8 @@ func (cache *ProviderCache) AgreementVerify(capacity uint64, duration uint64) (e
         return types.NewParameterValidationError("capacity", capacity, "above_maximum").WithRange(cache.GetCapacityMinimum(), cache.GetCapacityMaximum())
     }
 
-    // min < duration < max
-    if cache.GetDurationMinimum() > duration {
-        return types.NewParameterValidationError("duration", duration, "below_minimum").WithRange(cache.GetDurationMinimum(), cache.GetDurationMaximum())
-    }
-    if duration > cache.GetDurationMaximum() {
-        return types.NewParameterValidationError("duration", duration, "above_maximum").WithRange(cache.GetDurationMinimum(), cache.GetDurationMaximum())
+    if err := cache.AgreementDurationVerify(duration); err != nil {
+        return err
     }
 
     // Can the Substation support the added capacity
@@ -126,6 +122,16 @@ func (cache *ProviderCache) AgreementVerify(capacity uint64, duration uint64) (e
 
     return nil
 
+}
+
+func (cache *ProviderCache) AgreementDurationVerify(duration uint64) error {
+    if cache.GetDurationMinimum() > duration {
+        return types.NewParameterValidationError("duration", duration, "below_minimum").WithRange(cache.GetDurationMinimum(), cache.GetDurationMaximum())
+    }
+    if duration > cache.GetDurationMaximum() {
+        return types.NewParameterValidationError("duration", duration, "above_maximum").WithRange(cache.GetDurationMinimum(), cache.GetDurationMaximum())
+    }
+    return nil
 }
 
 

@@ -30,6 +30,19 @@ func (cc *CurrentContext) GetAgreement(agreementId string) *AgreementCache {
 }
 
 
+func (cc *CurrentContext) GenesisImportAgreement(agreement types.Agreement) {
+	cache := cc.GetAgreement(agreement.Id)
+	cache.Agreement = agreement
+	cache.AgreementLoaded = true
+	cache.Changed = true
+	cache.EndBlockChanged = true
+
+	cc.k.SetAgreementProviderIndex(cc.ctx, agreement.ProviderId, agreement.Id)
+
+	provider := cc.GetProvider(agreement.ProviderId)
+	cc.SetGridAttributeIncrement(provider.AgreementLoadAttributeId, agreement.Capacity)
+}
+
 // AppendAgreement appends a agreement in the store with the ID of the related Allocation
 func (cc *CurrentContext) NewAgreement(agreement types.Agreement) (*AgreementCache) {
 

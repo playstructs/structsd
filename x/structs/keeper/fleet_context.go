@@ -40,3 +40,17 @@ func (cc *CurrentContext) GetFleet(index uint64) (*FleetCache, error) {
 	return cc.fleets[index], nil
 }
 
+func (cc *CurrentContext) GenesisImportFleet(fleet types.Fleet, homePlanetId string) {
+	fleet.Status = types.FleetStatus_onStation
+	fleet.LocationType = types.ObjectType_planet
+	fleet.LocationId = homePlanetId
+	fleet.LocationListForward = ""
+	fleet.LocationListBackward = ""
+
+	cache, _ := cc.GetFleetById(fleet.Id)
+	cache.Fleet = fleet
+	cache.FleetLoaded = true
+	cache.Changed = true
+
+}
+

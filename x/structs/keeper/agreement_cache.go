@@ -495,7 +495,7 @@ func (cache *AgreementCache) CapacityDecrease(amount uint64) error {
 func (cache *AgreementCache) DurationIncrease(amount uint64) error {
 
 	newDuration := (cache.GetEndBlock() - cache.GetStartBlock()) + amount
-	verifyError := cache.GetProvider().AgreementVerify(cache.GetCapacity(), newDuration)
+	verifyError := cache.GetProvider().AgreementDurationVerify(newDuration)
 	if verifyError != nil {
 		return verifyError
 	}

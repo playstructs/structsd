@@ -23,6 +23,12 @@ func (cc *CurrentContext) GetSubstation(substationId string) *SubstationCache {
 	return cc.substations[substationId]
 }
 
+func (cc *CurrentContext) GenesisImportSubstation(substation types.Substation) {
+	cache := cc.GetSubstation(substation.Id)
+	cache.Substation = substation
+	cache.SubstationLoaded = true
+	cache.Changed = true
+}
 
 // Build this initial Substation Cache object
 // This does no validation on the provided substationId

@@ -34,6 +34,22 @@ func (cc *CurrentContext) GetPlayer(playerId string) (*PlayerCache, error) {
 	return cc.players[playerId], nil
 }
 
+func (cc *CurrentContext) GenesisImportPlayer(player types.Player) {
+	cache, _ := cc.GetPlayer(player.Id)
+	cache.Player = player
+	cache.PlayerLoaded = true
+	cache.Changed = true
+
+	cc.SetGridAttribute(cache.StructsLoadAttributeId, types.PlayerPassiveDraw)
+	cc.SetGridAttribute(cache.LastActionAttributeId, 0)
+
+	if player.SubstationId != "" {
+		cc.k.SetSubstationPlayerIndex(cc.ctx, player.SubstationId, player.Id)
+		substation := cc.GetSubstation(player.SubstationId)
+		cc.SetGridAttributeIncrement(substation.ConnectionCountAttributeId, 1)
+	}
+}
+
 // GetPlayerByAddress returns a PlayerCache by address, loading from store if not already cached.
 func (cc *CurrentContext) GetPlayerByAddress(address string) (*PlayerCache, error) {
 	playerIndex := cc.GetPlayerIndexFromAddress(address)

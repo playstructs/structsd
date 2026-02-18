@@ -33,6 +33,58 @@ func (cc *CurrentContext) GetStruct(structId string) *StructCache {
 	return cc.structs[structId]
 }
 
+func (cc *CurrentContext) GenesisImportStruct(
+	s types.Struct,
+	importedStatus uint64,
+) {
+	if importedStatus&uint64(types.StructStateMaterialized) == 0 {
+		return
+	}
+
+	cache := cc.GetStruct(s.Id)
+	cache.Structure = s
+	cache.StructureLoaded = true
+	cache.Changed = true
+
+	cc.SetStructAttribute(cache.StatusAttributeId, importedStatus)
+
+	if importedStatus&uint64(types.StructStateDestroyed) != 0 {
+		return
+	}
+
+	structTypeCache, _ := cc.GetStructType(s.Type)
+	structType := structTypeCache.GetStructType()
+
+	cc.SetStructAttribute(cache.HealthAttributeId, structType.MaxHealth)
+
+	typeCountAttrId := GetStructAttributeIDByObjectIdAndSubIndex(
+		types.StructAttributeType_typeCount, s.Owner, s.Type)
+	cc.SetStructAttributeIncrement(typeCountAttrId, 1)
+
+	isOnline := importedStatus&uint64(types.StructStateOnline) != 0
+	isBuilt := importedStatus&uint64(types.StructStateBuilt) != 0
+
+	if !isBuilt {
+		if isOnline {
+			ctxSDK := sdk.UnwrapSDKContext(cc.ctx)
+			cc.SetStructAttribute(cache.BlockStartBuildAttributeId, uint64(ctxSDK.BlockHeight()))
+		} else {
+			cc.SetStructAttribute(cache.BlockStartBuildAttributeId, 0)
+		}
+	}
+
+	if isOnline {
+		cache.GoOnline()
+	} else {
+		if structType.HasOreMiningSystem() {
+			cc.SetStructAttribute(cache.BlockStartOreMineAttributeId, 0)
+		}
+		if structType.HasOreRefiningSystem() {
+			cc.SetStructAttribute(cache.BlockStartOreRefineAttributeId, 0)
+		}
+	}
+}
+
 func (cc *CurrentContext) GetAllStructDefender(protectedStructId string) (defenders []*StructCache) {
     defenderList := cc.k.GetAllStructDefender(cc.ctx, protectedStructId)
     for _, defenderId := range defenderList {

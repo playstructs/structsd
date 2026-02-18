@@ -41,6 +41,21 @@ func (cc *CurrentContext) GetPlanet(planetId string) *PlanetCache {
 	return cc.planets[planetId]
 }
 
+func (cc *CurrentContext) GenesisImportPlanet(planet types.Planet) {
+	planet.LocationListStart = ""
+	planet.LocationListLast = ""
+
+	cache := cc.GetPlanet(planet.Id)
+	cache.Planet = planet
+	cache.PlanetLoaded = true
+	cache.Changed = true
+
+	if planet.Status == types.PlanetStatus_active {
+		cc.SetPlanetAttribute(cache.PlanetaryShieldAttributeId, types.PlanetaryShieldBase)
+		cc.SetGridAttribute(cache.BuriedOreAttributeId, types.PlanetStartingOre)
+	}
+}
+
 func (cc *CurrentContext) NewPlanet(creator string, playerId string) (*PlanetCache) {
     planet := types.CreateEmptyPlanet()
 

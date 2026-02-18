@@ -20,7 +20,12 @@ func (cc *CurrentContext) GetGuildMembershipApp(guildId string, playerId string)
 	return cc.guildMembershipApps[appKey]
 }
 
-
+func (cc *CurrentContext) GenesisImportGuildMembershipApplication(app types.GuildMembershipApplication) {
+	cache := cc.GetGuildMembershipApp(app.GuildId, app.PlayerId)
+	cache.GuildMembershipApplication = app
+	cache.GuildMembershipApplicationLoaded = true
+	cache.Changed = true
+}
 
 // Build this initial Guild Membership Application Cache object
 func (cc *CurrentContext) GetGuildMembershipApplicationCache(callingPlayer *PlayerCache, joinType types.GuildJoinType, guildId string, playerId string) (*GuildMembershipApplicationCache, error) {

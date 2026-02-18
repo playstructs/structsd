@@ -25,7 +25,8 @@
 #   --resume-from N    Skip phases before N and resume execution from phase N.
 #                      Recovers all IDs by querying the running chain.
 #                      Phase names: 1 2 3 3b 4 4b 4c 4d 4e 4f 4g 5 5b 6
-#                        7 7b 8 9 10 11 12 13 13b 14 15 15b 16 eb1-eb6
+#                        7 7b 8 9 10 11 12 13 13b 14 15 15b 16
+#                        17 17b 17c eb1-eb6
 #
 
 set -euo pipefail
@@ -307,6 +308,58 @@ CHARGE_MOVE=8
 CHARGE_DEFEND=1
 CHARGE_ACTIVATE=1
 
+# ─── Fleet / Planet / Struct Query Helpers ─────────────────────────────────────
+
+# query_fleet: return fleet JSON
+query_fleet() { query query structs fleet "$1"; }
+
+# query_planet: return planet JSON
+query_planet() { query query structs planet "$1"; }
+
+# get_fleet_field: extract a specific field from a fleet
+get_fleet_field() {
+    local fleet_id="$1" field="$2"
+    query_fleet "${fleet_id}" | jq -r ".Fleet.${field} // empty" 2>/dev/null || echo ""
+}
+
+# get_planet_field: extract a specific field from a planet
+get_planet_field() {
+    local planet_id="$1" field="$2"
+    query_planet "${planet_id}" | jq -r ".Planet.${field} // empty" 2>/dev/null || echo ""
+}
+
+# get_hp: query a struct's health (returns "0" for destroyed/wiped structs)
+get_hp() {
+    local sid="$1"
+    local hp
+    hp=$(query query structs struct "${sid}" 2>/dev/null | jq -r '.structAttributes.health // empty' 2>/dev/null || echo "")
+    if [ -z "${hp}" ]; then echo "0"; else echo "${hp}"; fi
+}
+
+# run_tx_expect_fail: execute a TX that we EXPECT to fail, and verify it does
+run_tx_expect_fail() {
+    local description="$1"
+    shift
+    info "${description}"
+    echo -e "  ${BOLD}structsd ${PARAMS_TX} $*${NC}"
+    local OUTPUT
+    OUTPUT=$(structsd ${PARAMS_TX} "$@" 2>&1) || true
+    if echo "${OUTPUT}" | grep -qi "error\|panic\|failed\|invalid\|unreachable"; then
+        echo -e "  ${GREEN}Correctly rejected${NC}"
+        echo "  $(echo "${OUTPUT}" | grep -i 'error\|unreachable' | head -1)"
+        return 0
+    else
+        local tx_code
+        tx_code=$(echo "${OUTPUT}" | jq -r '.code // empty' 2>/dev/null || echo "")
+        if [ -n "${tx_code}" ] && [ "${tx_code}" != "0" ]; then
+            echo -e "  ${GREEN}Correctly rejected (code=${tx_code})${NC}"
+            return 0
+        fi
+        echo -e "  ${RED}Expected failure but TX succeeded${NC}"
+        return 1
+    fi
+}
+
 # print_summary: final report
 print_summary() {
     echo ""
@@ -336,8 +389,9 @@ phase_order() {
         9) echo 900;; 10) echo 1000;; 11) echo 1100;;
         12) echo 1200;; 13) echo 1300;; 13b) echo 1350;;
         14) echo 1400;; 15) echo 1500;; 15b) echo 1550;; 16) echo 1600;;
-        eb1) echo 1700;; eb2) echo 1800;; eb3) echo 1900;;
-        eb4) echo 2000;; eb5) echo 2100;; eb6) echo 2200;;
+        17) echo 2300;; 17b) echo 2350;; 17c) echo 2400;;
+        eb1) echo 2500;; eb2) echo 2600;; eb3) echo 2700;;
+        eb4) echo 2800;; eb5) echo 2900;; eb6) echo 3000;;
         *) echo "Unknown phase: $1" >&2; exit 1;;
     esac
 }
@@ -452,6 +506,27 @@ recover_state() {
         echo "  P6: planet=${PLAYER_6_PLANET_ID:-?} fleet=${PLAYER_6_FLEET_ID:-?} CS=${P6_COMMAND_SHIP_ID:-?}"
     fi
 
+    # Fleet movement test players (fplayer_1 through fplayer_5)
+    for FP_NUM in 1 2 3 4 5; do
+        local FP_ADDR
+        FP_ADDR=$(structsd ${PARAMS_KEYS} keys show "fplayer_${FP_NUM}" 2>/dev/null | jq -r .address || echo "")
+        if [ -z "${FP_ADDR}" ]; then continue; fi
+        eval "FP_${FP_NUM}_ADDRESS=${FP_ADDR}"
+        local FP_PID
+        FP_PID=$(query query structs address "${FP_ADDR}" 2>/dev/null | jq -r '.playerId // empty' 2>/dev/null || echo "")
+        if [ -n "${FP_PID}" ]; then
+            eval "FP_${FP_NUM}_ID=${FP_PID}"
+            local FP_JSON
+            FP_JSON=$(query query structs player "${FP_PID}" 2>/dev/null || echo '{}')
+            eval "FP_${FP_NUM}_PLANET_ID=$(jqr "${FP_JSON}" '.Player.planetId')"
+            eval "FP_${FP_NUM}_FLEET_ID=$(jqr "${FP_JSON}" '.Player.fleetId')"
+            local FP_CS
+            FP_CS=$(find_struct_by_owner_type "${FP_PID}" 1 1 "${SA}")
+            eval "FP_CS_${FP_NUM}=${FP_CS}"
+            echo "  FP ${FP_NUM}: ${FP_PID} planet=${FP_JSON##*planetId} fleet=$(jqr "${FP_JSON}" '.Player.fleetId') CS=${FP_CS}"
+        fi
+    done
+
     info "State recovery complete"
 }
 
@@ -486,6 +561,9 @@ PLAYER_ME_JSON=$(query query structs player-me)
 PLAYER_1_ID=$(jqr "${PLAYER_ME_JSON}" '.Player.id')
 assert_not_empty "Player 1 ID" "${PLAYER_1_ID}"
 echo "  Player 1 ID: ${PLAYER_1_ID}"
+
+P1_PRIMARY=$(jqr "${PLAYER_ME_JSON}" '.Player.primaryAddress')
+assert_eq "Player 1 primaryAddress matches keyring" "${PLAYER_1_ADDRESS}" "${P1_PRIMARY}"
 
 # ─── Create Allocation from Player 1 ───
 PLAYER_1_CAPACITY=$(jqr "${PLAYER_ME_JSON}" '.gridAttributes.capacity')
@@ -535,6 +613,10 @@ REACTOR_ID=$(jqr "${GUILD_ALL_JSON}" '.Guild[0].primaryReactorId')
 assert_not_empty "Guild ID" "${GUILD_ID}"
 assert_not_empty "Reactor ID" "${REACTOR_ID}"
 echo "  Guild ID: ${GUILD_ID}  Reactor ID: ${REACTOR_ID}"
+
+REACTOR_JSON=$(query query structs reactor "${REACTOR_ID}")
+REACTOR_VAL=$(jqr "${REACTOR_JSON}" '.Reactor.validator')
+assert_eq "Reactor validator matches" "${VALIDATOR_ADDRESS}" "${REACTOR_VAL}"
 
 # Verify guild details
 GUILD_JSON=$(query query structs guild "${GUILD_ID}")
@@ -597,6 +679,28 @@ for PLAYER_NUM in 2 3 4 5; do
     assert_not_empty "Player ${PLAYER_NUM} ID" "${PID}"
     echo "  Player ${PLAYER_NUM} ID: ${PID}"
 done
+
+# ─── Verify player identity integrity ───
+info "Verifying player identity integrity"
+EXPECTED_INDEX=2
+for PLAYER_NUM in 2 3 4 5; do
+    eval "PID=\${PLAYER_${PLAYER_NUM}_ID}"
+    eval "PADDR=\${PLAYER_${PLAYER_NUM}_ADDRESS}"
+    assert_eq "Player ${PLAYER_NUM} sequential ID" "1-${EXPECTED_INDEX}" "${PID}"
+    P_JSON=$(query query structs player "${PID}")
+    P_PRIMARY=$(echo "${P_JSON}" | jq -r '.Player.primaryAddress')
+    assert_eq "Player ${PLAYER_NUM} primaryAddress matches keyring" "${PADDR}" "${P_PRIMARY}"
+    EXPECTED_INDEX=$((EXPECTED_INDEX + 1))
+done
+
+# Re-verify Player 1 and Reactor were not corrupted by new player creation
+P1_RECHECK=$(query query structs player "${PLAYER_1_ID}")
+P1_RECHECK_ADDR=$(jqr "${P1_RECHECK}" '.Player.primaryAddress')
+assert_eq "Player 1 primaryAddress intact after new players" "${PLAYER_1_ADDRESS}" "${P1_RECHECK_ADDR}"
+
+REACTOR_RECHECK=$(query query structs reactor "${REACTOR_ID}")
+REACTOR_RECHECK_VAL=$(jqr "${REACTOR_RECHECK}" '.Reactor.validator')
+assert_eq "Reactor validator intact after new players" "${VALIDATOR_ADDRESS}" "${REACTOR_RECHECK_VAL}"
 
 fi # phase 2
 
@@ -2617,6 +2721,464 @@ fi
 fi # phase 16
 
 
+if run_phase 2300; then
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  PHASE 17: Fleet Movement Setup — 5 Fleet Players with Planets
+# ═════════════════════════════════════════════════════════════════════════════
+#
+# Creates 5 dedicated fleet-test players (fplayer_1 through fplayer_5), each
+# with a planet, fleet, and command ship. These are separate from the main
+# test players to avoid state interactions from earlier phases.
+#
+# Fleet linked list structure (after Phase 17b moves to FP_1's planet):
+#
+#   Planet (locationListStart → F2, locationListLast → F5)
+#      ↕
+#   F2 (forward="", backward=F3)     ← first to arrive = front of list
+#      ↕
+#   F3 (forward=F2, backward=F4)
+#      ↕
+#   F4 (forward=F3, backward=F5)
+#      ↕
+#   F5 (forward=F4, backward="")     ← last to arrive = back of list
+#
+#   F1 is "on station" at its home planet — not in the list
+
+section "PHASE 17: Fleet Movement Setup"
+
+for FP_NUM in 1 2 3 4 5; do
+    FPLAYER_KEY="fplayer_${FP_NUM}"
+    info "Setting up ${FPLAYER_KEY}"
+
+    EXISTING=$(structsd ${PARAMS_KEYS} keys show "${FPLAYER_KEY}" 2>/dev/null | jq -r .address || echo "")
+    if [ -z "${EXISTING}" ]; then
+        ADDR=$(structsd ${PARAMS_KEYS} keys add "${FPLAYER_KEY}" | jq -r .address)
+        echo "  Created ${FPLAYER_KEY}: ${ADDR}"
+    else
+        ADDR="${EXISTING}"
+        echo "  Reusing ${FPLAYER_KEY}: ${ADDR}"
+    fi
+    eval "FP_${FP_NUM}_ADDRESS=${ADDR}"
+
+    run_tx "Funding ${FPLAYER_KEY}" \
+        tx bank send "${BOB_ADDRESS}" "${ADDR}" 10000000ualpha --from bob
+
+    run_tx "Delegating for ${FPLAYER_KEY}" \
+        tx staking delegate "${VALIDATOR_ADDRESS}" 5000000ualpha --from "${FPLAYER_KEY}"
+
+    ADDR_JSON=$(query query structs address "${ADDR}")
+    FP_PID=$(jqr "${ADDR_JSON}" '.playerId')
+    eval "FP_${FP_NUM}_ID=${FP_PID}"
+    assert_not_empty "Fleet Player ${FP_NUM} ID" "${FP_PID}"
+    echo "  Fleet Player ${FP_NUM} ID: ${FP_PID}"
+
+    PJSON=$(query query structs player "${FP_PID}")
+    PCAP=$(jqr "${PJSON}" '.gridAttributes.capacity')
+
+    run_tx "Creating allocation for fleet player ${FP_NUM}" \
+        tx structs allocation-create "${FP_PID}" "${PCAP}" \
+        --controller "${PLAYER_1_ADDRESS}" --allocation-type dynamic --from "${FPLAYER_KEY}"
+
+    FP_ALLOC_ID=$(get_latest_allocation_for_source "${FP_PID}")
+    eval "FP_${FP_NUM}_ALLOC_ID=${FP_ALLOC_ID}"
+
+    run_tx "Fleet player ${FP_NUM} joining guild" \
+        tx structs guild-membership-join "${GUILD_ID}" "${REACTOR_ID}-${ADDR}" --from "${FPLAYER_KEY}"
+
+    run_tx "Connecting fleet player ${FP_NUM} allocation to substation" \
+        tx structs substation-allocation-connect "${FP_ALLOC_ID}" "${SUBSTATION_ID}" --from alice
+done
+
+echo ""
+info "All fleet players:"
+for FP_NUM in 1 2 3 4 5; do
+    eval "echo \"  FP ${FP_NUM}: ID=\${FP_${FP_NUM}_ID} ADDR=\${FP_${FP_NUM}_ADDRESS}\""
+done
+
+# ─── Planet Exploration ───
+info "Fleet players exploring planets"
+for FP_NUM in 1 2 3 4 5; do
+    eval "FP_PID=\${FP_${FP_NUM}_ID}"
+    FPLAYER_KEY="fplayer_${FP_NUM}"
+
+    run_tx "Fleet Player ${FP_NUM} exploring planet" \
+        tx structs planet-explore "${FP_PID}" --from "${FPLAYER_KEY}"
+
+    PJSON=$(query query structs player "${FP_PID}")
+    PLANET_ID=$(jqr "${PJSON}" '.Player.planetId')
+    FLEET_ID=$(jqr "${PJSON}" '.Player.fleetId')
+    eval "FP_${FP_NUM}_PLANET_ID=${PLANET_ID}"
+    eval "FP_${FP_NUM}_FLEET_ID=${FLEET_ID}"
+    assert_not_empty "FP ${FP_NUM} planet" "${PLANET_ID}"
+    assert_not_empty "FP ${FP_NUM} fleet" "${FLEET_ID}"
+    echo "  FP ${FP_NUM}: planet=${PLANET_ID} fleet=${FLEET_ID}"
+done
+
+# ─── Verify Command Ships ───
+info "Verifying command ships"
+for FP_NUM in 1 2 3 4 5; do
+    eval "FLEET_ID=\${FP_${FP_NUM}_FLEET_ID}"
+    FLEET_JSON=$(query_fleet "${FLEET_ID}")
+    CMD_STRUCT=$(jqr "${FLEET_JSON}" '.Fleet.commandStruct')
+    eval "FP_CS_${FP_NUM}=${CMD_STRUCT}"
+    assert_not_empty "FP ${FP_NUM} command ship" "${CMD_STRUCT}"
+
+    STRUCT_JSON=$(query query structs struct "${CMD_STRUCT}")
+    BUILT=$(echo "${STRUCT_JSON}" | jq -r '.structAttributes.isBuilt // "false"' 2>/dev/null)
+    ONLINE=$(echo "${STRUCT_JSON}" | jq -r '.structAttributes.isOnline // "false"' 2>/dev/null)
+    HP=$(echo "${STRUCT_JSON}" | jq -r '.structAttributes.health // "0"' 2>/dev/null)
+    STYPE=$(echo "${STRUCT_JSON}" | jq -r '.Struct.type // ""' 2>/dev/null)
+    assert_eq "FP CS ${FP_NUM} type" "1" "${STYPE}"
+    assert_eq "FP CS ${FP_NUM} built" "true" "${BUILT}"
+    assert_eq "FP CS ${FP_NUM} online" "true" "${ONLINE}"
+    echo "  FP_CS_${FP_NUM}=${CMD_STRUCT}  HP=${HP}  built=${BUILT}  online=${ONLINE}"
+done
+
+# ─── Verify Initial Fleet State ───
+info "Verifying initial fleet state (each fleet on its own planet)"
+for FP_NUM in 1 2 3 4 5; do
+    eval "FLEET_ID=\${FP_${FP_NUM}_FLEET_ID}"
+    eval "PLANET_ID=\${FP_${FP_NUM}_PLANET_ID}"
+
+    FLEET_JSON=$(query_fleet "${FLEET_ID}")
+    LOC=$(jqr "${FLEET_JSON}" '.Fleet.locationId')
+    STATUS=$(jqr "${FLEET_JSON}" '.Fleet.status')
+    if [ -z "${STATUS}" ]; then STATUS="onStation"; fi
+    assert_eq "FP Fleet ${FP_NUM} location" "${PLANET_ID}" "${LOC}"
+    assert_eq "FP Fleet ${FP_NUM} status" "onStation" "${STATUS}"
+    echo "  Fleet ${FLEET_ID}: loc=${LOC} status=${STATUS}"
+done
+
+fi # phase 17
+
+
+if run_phase 2350; then
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  PHASE 17b: Fleet Linked List — Move Fleets & Verify Structure
+# ═════════════════════════════════════════════════════════════════════════════
+
+section "PHASE 17b: Fleet Linked List"
+
+FP_TARGET_PLANET="${FP_1_PLANET_ID}"
+info "Target planet: ${FP_TARGET_PLANET} (FP 1's home)"
+
+# Move fleets 2-5 to FP_1's planet (each appends to END of linked list)
+for FP_NUM in 2 3 4 5; do
+    eval "FP_PID=\${FP_${FP_NUM}_ID}"
+    eval "FLEET_ID=\${FP_${FP_NUM}_FLEET_ID}"
+    FPLAYER_KEY="fplayer_${FP_NUM}"
+
+    wait_for_charge "${FP_PID}" "${CHARGE_MOVE}"
+    run_tx "Moving FP Fleet ${FP_NUM} (${FLEET_ID}) to planet ${FP_TARGET_PLANET}" \
+        tx structs fleet-move "${FLEET_ID}" "${FP_TARGET_PLANET}" --from "${FPLAYER_KEY}"
+done
+
+info "Waiting for state to settle"
+sleep 3
+
+# Shorthand variables for linked list verification
+FP_F1="${FP_1_FLEET_ID}"
+FP_F2="${FP_2_FLEET_ID}"
+FP_F3="${FP_3_FLEET_ID}"
+FP_F4="${FP_4_FLEET_ID}"
+FP_F5="${FP_5_FLEET_ID}"
+
+info "Expected list on planet ${FP_TARGET_PLANET}:"
+echo "  Planet.start → ${FP_F2} ↔ ${FP_F3} ↔ ${FP_F4} ↔ ${FP_F5} ← Planet.last"
+echo "  ${FP_F1} is on station (home fleet, not in list)"
+echo ""
+
+# ─── Planet pointers ───
+info "Checking planet linked list pointers"
+FP_PLANET_START=$(get_planet_field "${FP_TARGET_PLANET}" "locationListStart")
+FP_PLANET_LAST=$(get_planet_field "${FP_TARGET_PLANET}" "locationListLast")
+assert_eq "Planet locationListStart" "${FP_F2}" "${FP_PLANET_START}"
+assert_eq "Planet locationListLast"  "${FP_F5}" "${FP_PLANET_LAST}"
+
+# ─── Fleet 1 (home, on station — not in the list) ───
+info "Fleet 1 (home fleet)"
+F1_JSON=$(query_fleet "${FP_F1}")
+F1_LOC=$(jqr "${F1_JSON}" '.Fleet.locationId')
+F1_STATUS=$(jqr "${F1_JSON}" '.Fleet.status')
+if [ -z "${F1_STATUS}" ]; then F1_STATUS="onStation"; fi
+assert_eq "FP Fleet 1 location" "${FP_1_PLANET_ID}" "${F1_LOC}"
+assert_eq "FP Fleet 1 status" "onStation" "${F1_STATUS}"
+echo "  F1: loc=${F1_LOC} status=${F1_STATUS}"
+
+# ─── Fleet 2 (front of list) ───
+info "Fleet 2 (front of list)"
+F2_JSON=$(query_fleet "${FP_F2}")
+F2_LOC=$(jqr "${F2_JSON}" '.Fleet.locationId')
+F2_STATUS=$(jqr "${F2_JSON}" '.Fleet.status')
+F2_FWD=$(jqr "${F2_JSON}" '.Fleet.locationListForward')
+F2_BWD=$(jqr "${F2_JSON}" '.Fleet.locationListBackward')
+assert_eq "FP Fleet 2 location" "${FP_TARGET_PLANET}" "${F2_LOC}"
+assert_eq "FP Fleet 2 status" "away" "${F2_STATUS}"
+assert_eq "FP Fleet 2 forward (toward planet)" "" "${F2_FWD}"
+assert_eq "FP Fleet 2 backward" "${FP_F3}" "${F2_BWD}"
+echo "  F2: loc=${F2_LOC} status=${F2_STATUS} fwd='${F2_FWD}' bwd='${F2_BWD}'"
+
+# ─── Fleet 3 ───
+info "Fleet 3 (second in list)"
+F3_JSON=$(query_fleet "${FP_F3}")
+F3_LOC=$(jqr "${F3_JSON}" '.Fleet.locationId')
+F3_STATUS=$(jqr "${F3_JSON}" '.Fleet.status')
+F3_FWD=$(jqr "${F3_JSON}" '.Fleet.locationListForward')
+F3_BWD=$(jqr "${F3_JSON}" '.Fleet.locationListBackward')
+assert_eq "FP Fleet 3 location" "${FP_TARGET_PLANET}" "${F3_LOC}"
+assert_eq "FP Fleet 3 status" "away" "${F3_STATUS}"
+assert_eq "FP Fleet 3 forward" "${FP_F2}" "${F3_FWD}"
+assert_eq "FP Fleet 3 backward" "${FP_F4}" "${F3_BWD}"
+echo "  F3: loc=${F3_LOC} status=${F3_STATUS} fwd='${F3_FWD}' bwd='${F3_BWD}'"
+
+# ─── Fleet 4 ───
+info "Fleet 4 (third in list)"
+F4_JSON=$(query_fleet "${FP_F4}")
+F4_LOC=$(jqr "${F4_JSON}" '.Fleet.locationId')
+F4_STATUS=$(jqr "${F4_JSON}" '.Fleet.status')
+F4_FWD=$(jqr "${F4_JSON}" '.Fleet.locationListForward')
+F4_BWD=$(jqr "${F4_JSON}" '.Fleet.locationListBackward')
+assert_eq "FP Fleet 4 location" "${FP_TARGET_PLANET}" "${F4_LOC}"
+assert_eq "FP Fleet 4 status" "away" "${F4_STATUS}"
+assert_eq "FP Fleet 4 forward" "${FP_F3}" "${F4_FWD}"
+assert_eq "FP Fleet 4 backward" "${FP_F5}" "${F4_BWD}"
+echo "  F4: loc=${F4_LOC} status=${F4_STATUS} fwd='${F4_FWD}' bwd='${F4_BWD}'"
+
+# ─── Fleet 5 (back of list) ───
+info "Fleet 5 (back of list)"
+F5_JSON=$(query_fleet "${FP_F5}")
+F5_LOC=$(jqr "${F5_JSON}" '.Fleet.locationId')
+F5_STATUS=$(jqr "${F5_JSON}" '.Fleet.status')
+F5_FWD=$(jqr "${F5_JSON}" '.Fleet.locationListForward')
+F5_BWD=$(jqr "${F5_JSON}" '.Fleet.locationListBackward')
+assert_eq "FP Fleet 5 location" "${FP_TARGET_PLANET}" "${F5_LOC}"
+assert_eq "FP Fleet 5 status" "away" "${F5_STATUS}"
+assert_eq "FP Fleet 5 forward" "${FP_F4}" "${F5_FWD}"
+assert_eq "FP Fleet 5 backward" "" "${F5_BWD}"
+echo "  F5: loc=${F5_LOC} status=${F5_STATUS} fwd='${F5_FWD}' bwd='${F5_BWD}'"
+
+echo ""
+info "Linked list verified:"
+echo "  Planet(${FP_TARGET_PLANET}).start=${FP_PLANET_START}"
+echo "    ${FP_F2} fwd='' bwd=${F2_BWD}"
+echo "    ${FP_F3} fwd=${F3_FWD} bwd=${F3_BWD}"
+echo "    ${FP_F4} fwd=${F4_FWD} bwd=${F4_BWD}"
+echo "    ${FP_F5} fwd=${F5_FWD} bwd=''"
+echo "  Planet(${FP_TARGET_PLANET}).last=${FP_PLANET_LAST}"
+echo "  (Home) ${FP_F1} status=${F1_STATUS}"
+
+fi # phase 17b
+
+
+if run_phase 2400; then
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  PHASE 17c: Fleet Range Combat — Adjacent, Planetary Reach, Destruction
+# ═════════════════════════════════════════════════════════════════════════════
+#
+# Range rules:
+#   Away fleets (middle/back): can only attack adjacent (forward/backward) fleets
+#   Away fleet (front, fwd=""): can attack ANY target on the same planet
+#   Home fleet (on station):   can only attack the first fleet (locationListStart)
+
+section "PHASE 17c: Fleet Range Combat"
+
+FP_TARGET_PLANET="${FP_1_PLANET_ID}"
+FP_F1="${FP_1_FLEET_ID}"; FP_F2="${FP_2_FLEET_ID}"; FP_F3="${FP_3_FLEET_ID}"
+FP_F4="${FP_4_FLEET_ID}"; FP_F5="${FP_5_FLEET_ID}"
+
+info "Recording initial health (all should be 6)"
+for FP_NUM in 1 2 3 4 5; do
+    eval "CS=\${FP_CS_${FP_NUM}}"
+    echo "  FP_CS_${FP_NUM} (${CS}): HP=$(get_hp "${CS}")"
+done
+
+# ─── Adjacent Attacks (Should Succeed) ───
+
+# Test 1: Home fleet (F1) → front of list (F2)
+info "Test 1: F1 (home) → F2 (front of list)"
+wait_for_charge "${FP_1_ID}" "${CHARGE_ATTACK_DEFAULT}"
+FP_CS2_HP_BEFORE=$(get_hp "${FP_CS_2}")
+run_tx "F1 (home) attacks FP_CS_2 on F2 (front of list)" \
+    tx structs struct-attack "${FP_CS_1}" "${FP_CS_2}" primaryWeapon --from fplayer_1
+FP_CS2_HP=$(get_hp "${FP_CS_2}")
+echo "  FP_CS_2 HP: ${FP_CS2_HP} (was ${FP_CS2_HP_BEFORE})"
+assert_eq "Home fleet hit front of list" "true" "$([ "${FP_CS2_HP}" -lt "${FP_CS2_HP_BEFORE}" ] && echo true || echo false)"
+
+# Test 2: F3 → forward neighbor F2
+info "Test 2: F3 → F2 (forward neighbor)"
+wait_for_charge "${FP_3_ID}" "${CHARGE_ATTACK_DEFAULT}"
+FP_CS2_HP_BEFORE=$(get_hp "${FP_CS_2}")
+run_tx "F3 attacks FP_CS_2 on F2 (forward neighbor)" \
+    tx structs struct-attack "${FP_CS_3}" "${FP_CS_2}" primaryWeapon --from fplayer_3
+FP_CS2_HP=$(get_hp "${FP_CS_2}")
+echo "  FP_CS_2 HP: ${FP_CS2_HP} (was ${FP_CS2_HP_BEFORE})"
+assert_eq "F3 hit forward neighbor F2" "true" "$([ "${FP_CS2_HP}" -lt "${FP_CS2_HP_BEFORE}" ] && echo true || echo false)"
+
+# Test 3: F5 → forward neighbor F4
+info "Test 3: F5 → F4 (forward neighbor)"
+wait_for_charge "${FP_5_ID}" "${CHARGE_ATTACK_DEFAULT}"
+FP_CS4_HP_BEFORE=$(get_hp "${FP_CS_4}")
+run_tx "F5 attacks FP_CS_4 on F4 (forward neighbor)" \
+    tx structs struct-attack "${FP_CS_5}" "${FP_CS_4}" primaryWeapon --from fplayer_5
+FP_CS4_HP=$(get_hp "${FP_CS_4}")
+echo "  FP_CS_4 HP: ${FP_CS4_HP} (was ${FP_CS4_HP_BEFORE})"
+assert_eq "F5 hit forward neighbor F4" "true" "$([ "${FP_CS4_HP}" -lt "${FP_CS4_HP_BEFORE}" ] && echo true || echo false)"
+
+info "Health after adjacent attacks"
+for FP_NUM in 1 2 3 4 5; do eval "CS=\${FP_CS_${FP_NUM}}"; echo "  FP_CS_${FP_NUM}: HP=$(get_hp "${CS}")"; done
+
+# ─── Front-of-List Planetary Reach ───
+
+# F2 has locationListForward="" → front of raid queue → can reach ANY target on the planet
+info "Test R1: F2 (front, fwd='') → F5 (non-adjacent, same planet)"
+wait_for_charge "${FP_2_ID}" "${CHARGE_ATTACK_DEFAULT}"
+FP_CS5_HP_BEFORE=$(get_hp "${FP_CS_5}")
+run_tx "F2 attacks FP_CS_5 on F5 (front-of-list reaches whole planet)" \
+    tx structs struct-attack "${FP_CS_2}" "${FP_CS_5}" primaryWeapon --from fplayer_2
+FP_CS5_HP=$(get_hp "${FP_CS_5}")
+echo "  FP_CS_5 HP: ${FP_CS5_HP} (was ${FP_CS5_HP_BEFORE})"
+assert_eq "Front-of-list F2 hit non-adjacent F5" "true" "$([ "${FP_CS5_HP}" -lt "${FP_CS5_HP_BEFORE}" ] && echo true || echo false)"
+
+# ─── Destruction & Linked List Collapse ───
+# Destroy CS_2 by attacking it until HP=0, then verify:
+#   - CS_2 wiped from chain
+#   - F2 returned to its home planet
+#   - List collapsed: Planet.start → F3, F3.forward = ""
+
+info "Current health before destruction test"
+for FP_NUM in 1 2 3 4 5; do eval "CS=\${FP_CS_${FP_NUM}}"; echo "  FP_CS_${FP_NUM}: HP=$(get_hp "${CS}")"; done
+
+FP_CS2_HP=$(get_hp "${FP_CS_2}")
+ATTACK_COUNT=0
+while [ "${FP_CS2_HP}" -gt 0 ] 2>/dev/null && [ "${ATTACK_COUNT}" -lt 5 ]; do
+    ATTACK_COUNT=$((ATTACK_COUNT + 1))
+    wait_for_charge "${FP_3_ID}" "${CHARGE_ATTACK_DEFAULT}"
+    run_tx "F3 attacks FP_CS_2 (#${ATTACK_COUNT}, HP=${FP_CS2_HP})" \
+        tx structs struct-attack "${FP_CS_3}" "${FP_CS_2}" primaryWeapon --from fplayer_3
+    FP_CS2_HP=$(get_hp "${FP_CS_2}")
+    echo "  FP_CS_2 HP after attack #${ATTACK_COUNT}: ${FP_CS2_HP}"
+done
+
+info "FP_CS_2 destruction result"
+echo "  Attacks required: ${ATTACK_COUNT}"
+
+sleep 6
+FP_CS2_QUERY=$(structsd ${PARAMS_QUERY} query structs struct "${FP_CS_2}" 2>&1 || true)
+FP_CS2_HP_CHECK=$(get_hp "${FP_CS_2}")
+if [ -z "${FP_CS2_QUERY}" ] || echo "${FP_CS2_QUERY}" | grep -qi "not found\|error\|object"; then
+    echo -e "  ${GREEN}PASS${NC}: FP_CS_2 (${FP_CS_2}) wiped from chain"
+    PASS_COUNT=$((PASS_COUNT + 1))
+elif [ "${FP_CS2_HP_CHECK}" = "0" ]; then
+    echo -e "  ${GREEN}PASS${NC}: FP_CS_2 (${FP_CS_2}) HP=0 (destroyed, pending cleanup)"
+    PASS_COUNT=$((PASS_COUNT + 1))
+else
+    echo -e "  ${RED}FAIL${NC}: FP_CS_2 (${FP_CS_2}) still exists on chain (HP=${FP_CS2_HP_CHECK})"
+    FAIL_COUNT=$((FAIL_COUNT + 1))
+fi
+
+# Verify F2 returned home
+info "Checking F2 returned home after CS_2 destruction"
+F2_JSON=$(query_fleet "${FP_F2}")
+F2_LOC=$(jqr "${F2_JSON}" '.Fleet.locationId')
+F2_STATUS=$(jqr "${F2_JSON}" '.Fleet.status')
+if [ -z "${F2_STATUS}" ]; then F2_STATUS="onStation"; fi
+assert_eq "F2 returned to home planet" "${FP_2_PLANET_ID}" "${F2_LOC}"
+assert_eq "F2 status after recall" "onStation" "${F2_STATUS}"
+echo "  F2: loc=${F2_LOC} status=${F2_STATUS}"
+
+# Verify linked list collapsed: F3 is now front
+info "Verifying linked list collapsed (F2 removed)"
+echo "  Expected: Planet.start → F3 ↔ F4 ↔ F5 ← Planet.last"
+
+FP_PLANET_START=$(get_planet_field "${FP_TARGET_PLANET}" "locationListStart")
+FP_PLANET_LAST=$(get_planet_field "${FP_TARGET_PLANET}" "locationListLast")
+assert_eq "Planet.start after F2 removal" "${FP_F3}" "${FP_PLANET_START}"
+assert_eq "Planet.last unchanged" "${FP_F5}" "${FP_PLANET_LAST}"
+
+F3_JSON=$(query_fleet "${FP_F3}")
+F3_FWD=$(jqr "${F3_JSON}" '.Fleet.locationListForward')
+F3_BWD=$(jqr "${F3_JSON}" '.Fleet.locationListBackward')
+assert_eq "F3 is now front (forward='')" "" "${F3_FWD}"
+assert_eq "F3 backward" "${FP_F4}" "${F3_BWD}"
+echo "  F3: fwd='${F3_FWD}' bwd='${F3_BWD}'"
+
+F4_JSON=$(query_fleet "${FP_F4}")
+F4_FWD=$(jqr "${F4_JSON}" '.Fleet.locationListForward')
+F4_BWD=$(jqr "${F4_JSON}" '.Fleet.locationListBackward')
+assert_eq "F4 forward" "${FP_F3}" "${F4_FWD}"
+assert_eq "F4 backward" "${FP_F5}" "${F4_BWD}"
+echo "  F4: fwd='${F4_FWD}' bwd='${F4_BWD}'"
+
+F5_JSON=$(query_fleet "${FP_F5}")
+F5_FWD=$(jqr "${F5_JSON}" '.Fleet.locationListForward')
+F5_BWD=$(jqr "${F5_JSON}" '.Fleet.locationListBackward')
+assert_eq "F5 forward" "${FP_F4}" "${F5_FWD}"
+assert_eq "F5 backward (still last)" "" "${F5_BWD}"
+echo "  F5: fwd='${F5_FWD}' bwd='${F5_BWD}'"
+
+info "Linked list after collapse:"
+echo "  Planet(${FP_TARGET_PLANET}).start=${FP_PLANET_START} .last=${FP_PLANET_LAST}"
+echo "  F3(fwd='', bwd=${F3_BWD}) ↔ F4(fwd=${F4_FWD}, bwd=${F4_BWD}) ↔ F5(fwd=${F5_FWD}, bwd='')"
+echo "  F2 → home (${F2_LOC}), F1 → home (on station)"
+
+# ─── Non-Adjacent Attacks (Should Fail) ───
+# Current list: F3 ↔ F4 ↔ F5 (F3 is front)
+# Should fail:
+#   F5 → F3 (F5 only sees F4, not F3)
+#   F1 (home) → F4 (home can only hit front = F3)
+#   F1 (home) → F5 (same)
+
+info "Health snapshot before negative tests"
+FP_CS3_HP=$(get_hp "${FP_CS_3}")
+FP_CS4_HP=$(get_hp "${FP_CS_4}")
+FP_CS5_HP=$(get_hp "${FP_CS_5}")
+echo "  FP_CS_3: HP=${FP_CS3_HP}, FP_CS_4: HP=${FP_CS4_HP}, FP_CS_5: HP=${FP_CS5_HP}"
+
+# Test N1: F5 → F3 (not adjacent, gap of 1)
+if [ "${FP_CS5_HP}" = "0" ]; then
+    info "SKIP N1: FP_CS_5 destroyed"
+else
+    info "Test N1: F5 → F3 (not adjacent — F5 only sees F4)"
+    wait_for_charge "${FP_5_ID}" "${CHARGE_ATTACK_DEFAULT}"
+    run_tx_expect_fail "F5 attacks FP_CS_3 on F3 (not adjacent)" \
+        tx structs struct-attack "${FP_CS_5}" "${FP_CS_3}" primaryWeapon --from fplayer_5
+    sleep "${SLEEP}"
+    FP_CS3_CHECK=$(get_hp "${FP_CS_3}")
+    assert_eq "FP_CS_3 HP unchanged after F5→F3" "${FP_CS3_HP}" "${FP_CS3_CHECK}"
+fi
+
+# Test N2: F1 (home) → F4 (not front of list)
+FP_CS1_HP=$(get_hp "${FP_CS_1}")
+if [ "${FP_CS1_HP}" = "0" ]; then
+    info "SKIP N2: FP_CS_1 destroyed"
+else
+    info "Test N2: F1 (home) → F4 (home can only hit front = F3)"
+    wait_for_charge "${FP_1_ID}" "${CHARGE_ATTACK_DEFAULT}"
+    run_tx_expect_fail "F1 (home) attacks FP_CS_4 on F4 (not front of list)" \
+        tx structs struct-attack "${FP_CS_1}" "${FP_CS_4}" primaryWeapon --from fplayer_1
+    sleep "${SLEEP}"
+    FP_CS4_CHECK=$(get_hp "${FP_CS_4}")
+    assert_eq "FP_CS_4 HP unchanged after F1→F4" "${FP_CS4_HP}" "${FP_CS4_CHECK}"
+fi
+
+# Test N3: F1 (home) → F5 (not front of list)
+if [ "${FP_CS1_HP}" = "0" ]; then
+    info "SKIP N3: FP_CS_1 destroyed"
+else
+    info "Test N3: F1 (home) → F5 (home can only hit front = F3)"
+    wait_for_charge "${FP_1_ID}" "${CHARGE_ATTACK_DEFAULT}"
+    run_tx_expect_fail "F1 (home) attacks FP_CS_5 on F5 (not front of list)" \
+        tx structs struct-attack "${FP_CS_1}" "${FP_CS_5}" primaryWeapon --from fplayer_1
+    sleep "${SLEEP}"
+    FP_CS5_CHECK=$(get_hp "${FP_CS_5}")
+    assert_eq "FP_CS_5 HP unchanged after F1→F5" "${FP_CS5_HP}" "${FP_CS5_CHECK}"
+fi
+
+fi # phase 17c
+
 
 # ═════════════════════════════════════════════════════════════════════════════
 #  EXTENDED BATTLE TESTING (--extended-battle)
@@ -2624,7 +3186,7 @@ fi # phase 16
 
 if [ "${EXTENDED_BATTLE}" = true ]; then
 
-if run_phase 1700; then
+if run_phase 2500; then
 
 # ═════════════════════════════════════════════════════════════════════════════
 #  PHASE EB1: Player 6 Setup (Third-Party Adversary)
@@ -2694,7 +3256,7 @@ echo "  Player 6 Command Ship: ${P6_COMMAND_SHIP_ID}"
 
 fi # phase EB1
 
-if run_phase 1800; then
+if run_phase 2600; then
 
 # ═════════════════════════════════════════════════════════════════════════════
 #  PHASE EB2: Build All 13 Fleet-Capable Struct Types
@@ -2714,6 +3276,10 @@ info "Types needed: 3(Starfighter), 4(Frigate), 5(Pursuit Fighter), 8(Mobile Art
 # ═══════════════════════════════════════════════════════════════
 
 info "Batch-initiating all extended battle builds"
+
+# P3's fleet may be away after Phase 17c combat — move home first
+run_tx "Moving P3 fleet home before building" \
+    tx structs fleet-move "${PLAYER_3_FLEET_ID}" "${PLAYER_3_PLANET_ID}" --from player_3
 
 # ─── P3: Pursuit Fighter (type 5, air, slot 1) ───
 wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
@@ -2857,7 +3423,7 @@ info "              Stealth Bomber, HAI, Mobile Artillery, Tank, SAM, Cruiser, D
 
 fi # phase EB2
 
-if run_phase 1900; then
+if run_phase 2700; then
 
 # ═════════════════════════════════════════════════════════════════════════════
 #  PHASE EB3: Fleet Assembly & Positioning
@@ -2926,7 +3492,7 @@ info "P3's fleet is now at P6's planet — battle positions set"
 
 fi # phase EB3
 
-if run_phase 2000; then
+if run_phase 2800; then
 
 # ═════════════════════════════════════════════════════════════════════════════
 #  PHASE EB4: Defense Configurations
@@ -2970,7 +3536,7 @@ info "Battleship #1 defender count: ${BB1_DEF_COUNT}"
 
 fi # phase EB4
 
-if run_phase 2100; then
+if run_phase 2900; then
 
 # ═════════════════════════════════════════════════════════════════════════════
 #  PHASE EB5: Comprehensive Attack Scenarios
@@ -3284,7 +3850,7 @@ fi
 
 fi # phase EB5
 
-if run_phase 2200; then
+if run_phase 3000; then
 
 # ═════════════════════════════════════════════════════════════════════════════
 #  PHASE EB6: Battle Results Review
