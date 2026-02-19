@@ -29,7 +29,7 @@ func TestSubstationQuerySingle(t *testing.T) {
 			request: &types.QueryGetSubstationRequest{Id: msgs[0].Id},
 			response: &types.QueryGetSubstationResponse{
 				Substation:     msgs[0],
-				GridAttributes: &types.GridAttributes{},
+				GridAttributes: &types.GridAttributes{Capacity: 100, ConnectionCapacity: 100},
 			},
 		},
 		{
@@ -37,7 +37,7 @@ func TestSubstationQuerySingle(t *testing.T) {
 			request: &types.QueryGetSubstationRequest{Id: msgs[1].Id},
 			response: &types.QueryGetSubstationResponse{
 				Substation:     msgs[1],
-				GridAttributes: &types.GridAttributes{},
+				GridAttributes: &types.GridAttributes{Capacity: 100, ConnectionCapacity: 100},
 			},
 		},
 		{

@@ -29915,10 +29915,11 @@ func (x *fastReflection_EventRaid) ProtoMethods() *protoiface.Methods {
 }
 
 var (
-	md_EventRaidDetail          protoreflect.MessageDescriptor
-	fd_EventRaidDetail_fleetId  protoreflect.FieldDescriptor
-	fd_EventRaidDetail_planetId protoreflect.FieldDescriptor
-	fd_EventRaidDetail_status   protoreflect.FieldDescriptor
+	md_EventRaidDetail            protoreflect.MessageDescriptor
+	fd_EventRaidDetail_fleetId    protoreflect.FieldDescriptor
+	fd_EventRaidDetail_planetId   protoreflect.FieldDescriptor
+	fd_EventRaidDetail_status     protoreflect.FieldDescriptor
+	fd_EventRaidDetail_seized_ore protoreflect.FieldDescriptor
 )
 
 func init() {
@@ -29927,6 +29928,7 @@ func init() {
 	fd_EventRaidDetail_fleetId = md_EventRaidDetail.Fields().ByName("fleetId")
 	fd_EventRaidDetail_planetId = md_EventRaidDetail.Fields().ByName("planetId")
 	fd_EventRaidDetail_status = md_EventRaidDetail.Fields().ByName("status")
+	fd_EventRaidDetail_seized_ore = md_EventRaidDetail.Fields().ByName("seized_ore")
 }
 
 var _ protoreflect.Message = (*fastReflection_EventRaidDetail)(nil)
@@ -30012,6 +30014,12 @@ func (x *fastReflection_EventRaidDetail) Range(f func(protoreflect.FieldDescript
 			return
 		}
 	}
+	if x.SeizedOre != uint64(0) {
+		value := protoreflect.ValueOfUint64(x.SeizedOre)
+		if !f(fd_EventRaidDetail_seized_ore, value) {
+			return
+		}
+	}
 }
 
 // Has reports whether a field is populated.
@@ -30033,6 +30041,8 @@ func (x *fastReflection_EventRaidDetail) Has(fd protoreflect.FieldDescriptor) bo
 		return x.PlanetId != ""
 	case "structs.structs.EventRaidDetail.status":
 		return x.Status != 0
+	case "structs.structs.EventRaidDetail.seized_ore":
+		return x.SeizedOre != uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventRaidDetail"))
@@ -30055,6 +30065,8 @@ func (x *fastReflection_EventRaidDetail) Clear(fd protoreflect.FieldDescriptor) 
 		x.PlanetId = ""
 	case "structs.structs.EventRaidDetail.status":
 		x.Status = 0
+	case "structs.structs.EventRaidDetail.seized_ore":
+		x.SeizedOre = uint64(0)
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventRaidDetail"))
@@ -30080,6 +30092,9 @@ func (x *fastReflection_EventRaidDetail) Get(descriptor protoreflect.FieldDescri
 	case "structs.structs.EventRaidDetail.status":
 		value := x.Status
 		return protoreflect.ValueOfEnum((protoreflect.EnumNumber)(value))
+	case "structs.structs.EventRaidDetail.seized_ore":
+		value := x.SeizedOre
+		return protoreflect.ValueOfUint64(value)
 	default:
 		if descriptor.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventRaidDetail"))
@@ -30106,6 +30121,8 @@ func (x *fastReflection_EventRaidDetail) Set(fd protoreflect.FieldDescriptor, va
 		x.PlanetId = value.Interface().(string)
 	case "structs.structs.EventRaidDetail.status":
 		x.Status = (RaidStatus)(value.Enum())
+	case "structs.structs.EventRaidDetail.seized_ore":
+		x.SeizedOre = value.Uint()
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventRaidDetail"))
@@ -30132,6 +30149,8 @@ func (x *fastReflection_EventRaidDetail) Mutable(fd protoreflect.FieldDescriptor
 		panic(fmt.Errorf("field planetId of message structs.structs.EventRaidDetail is not mutable"))
 	case "structs.structs.EventRaidDetail.status":
 		panic(fmt.Errorf("field status of message structs.structs.EventRaidDetail is not mutable"))
+	case "structs.structs.EventRaidDetail.seized_ore":
+		panic(fmt.Errorf("field seized_ore of message structs.structs.EventRaidDetail is not mutable"))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventRaidDetail"))
@@ -30151,6 +30170,8 @@ func (x *fastReflection_EventRaidDetail) NewField(fd protoreflect.FieldDescripto
 		return protoreflect.ValueOfString("")
 	case "structs.structs.EventRaidDetail.status":
 		return protoreflect.ValueOfEnum(0)
+	case "structs.structs.EventRaidDetail.seized_ore":
+		return protoreflect.ValueOfUint64(uint64(0))
 	default:
 		if fd.IsExtension() {
 			panic(fmt.Errorf("proto3 declared messages do not support extensions: structs.structs.EventRaidDetail"))
@@ -30231,6 +30252,9 @@ func (x *fastReflection_EventRaidDetail) ProtoMethods() *protoiface.Methods {
 		if x.Status != 0 {
 			n += 1 + runtime.Sov(uint64(x.Status))
 		}
+		if x.SeizedOre != 0 {
+			n += 1 + runtime.Sov(uint64(x.SeizedOre))
+		}
 		if x.unknownFields != nil {
 			n += len(x.unknownFields)
 		}
@@ -30259,6 +30283,11 @@ func (x *fastReflection_EventRaidDetail) ProtoMethods() *protoiface.Methods {
 		if x.unknownFields != nil {
 			i -= len(x.unknownFields)
 			copy(dAtA[i:], x.unknownFields)
+		}
+		if x.SeizedOre != 0 {
+			i = runtime.EncodeVarint(dAtA, i, uint64(x.SeizedOre))
+			i--
+			dAtA[i] = 0x20
 		}
 		if x.Status != 0 {
 			i = runtime.EncodeVarint(dAtA, i, uint64(x.Status))
@@ -30407,6 +30436,25 @@ func (x *fastReflection_EventRaidDetail) ProtoMethods() *protoiface.Methods {
 					b := dAtA[iNdEx]
 					iNdEx++
 					x.Status |= RaidStatus(b&0x7F) << shift
+					if b < 0x80 {
+						break
+					}
+				}
+			case 4:
+				if wireType != 0 {
+					return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, fmt.Errorf("proto: wrong wireType = %d for field SeizedOre", wireType)
+				}
+				x.SeizedOre = 0
+				for shift := uint(0); ; shift += 7 {
+					if shift >= 64 {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, runtime.ErrIntOverflow
+					}
+					if iNdEx >= l {
+						return protoiface.UnmarshalOutput{NoUnkeyedLiterals: input.NoUnkeyedLiterals, Flags: input.Flags}, io.ErrUnexpectedEOF
+					}
+					b := dAtA[iNdEx]
+					iNdEx++
+					x.SeizedOre |= uint64(b&0x7F) << shift
 					if b < 0x80 {
 						break
 					}
@@ -34301,9 +34349,10 @@ type EventRaidDetail struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	FleetId  string     `protobuf:"bytes,1,opt,name=fleetId,proto3" json:"fleetId,omitempty"`
-	PlanetId string     `protobuf:"bytes,2,opt,name=planetId,proto3" json:"planetId,omitempty"`
-	Status   RaidStatus `protobuf:"varint,3,opt,name=status,proto3,enum=structs.structs.RaidStatus" json:"status,omitempty"`
+	FleetId   string     `protobuf:"bytes,1,opt,name=fleetId,proto3" json:"fleetId,omitempty"`
+	PlanetId  string     `protobuf:"bytes,2,opt,name=planetId,proto3" json:"planetId,omitempty"`
+	Status    RaidStatus `protobuf:"varint,3,opt,name=status,proto3,enum=structs.structs.RaidStatus" json:"status,omitempty"`
+	SeizedOre uint64     `protobuf:"varint,4,opt,name=seized_ore,json=seizedOre,proto3" json:"seized_ore,omitempty"`
 }
 
 func (x *EventRaidDetail) Reset() {
@@ -34345,6 +34394,13 @@ func (x *EventRaidDetail) GetStatus() RaidStatus {
 		return x.Status
 	}
 	return RaidStatus_initiated
+}
+
+func (x *EventRaidDetail) GetSeizedOre() uint64 {
+	if x != nil {
+		return x.SeizedOre
+	}
+	return 0
 }
 
 type EventHashSuccess struct {
@@ -35114,15 +35170,17 @@ var file_structs_structs_events_proto_rawDesc = []byte{
 	0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x20, 0x2e, 0x73, 0x74, 0x72,
 	0x75, 0x63, 0x74, 0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x45, 0x76, 0x65,
 	0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x52, 0x0f, 0x65, 0x76,
-	0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x7c, 0x0a,
-	0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c,
-	0x12, 0x18, 0x0a, 0x07, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x07, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70, 0x6c,
-	0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70, 0x6c,
-	0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x12, 0x33, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73,
-	0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73,
-	0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x72, 0x61, 0x69, 0x64, 0x53, 0x74, 0x61,
-	0x74, 0x75, 0x73, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x22, 0x73, 0x0a, 0x10, 0x45,
+	0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x22, 0x9b, 0x01,
+	0x0a, 0x0f, 0x45, 0x76, 0x65, 0x6e, 0x74, 0x52, 0x61, 0x69, 0x64, 0x44, 0x65, 0x74, 0x61, 0x69,
+	0x6c, 0x12, 0x18, 0x0a, 0x07, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x49, 0x64, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x09, 0x52, 0x07, 0x66, 0x6c, 0x65, 0x65, 0x74, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x70,
+	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08, 0x70,
+	0x6c, 0x61, 0x6e, 0x65, 0x74, 0x49, 0x64, 0x12, 0x33, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75,
+	0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x0e, 0x32, 0x1b, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74,
+	0x73, 0x2e, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x73, 0x2e, 0x72, 0x61, 0x69, 0x64, 0x53, 0x74,
+	0x61, 0x74, 0x75, 0x73, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x1d, 0x0a, 0x0a,
+	0x73, 0x65, 0x69, 0x7a, 0x65, 0x64, 0x5f, 0x6f, 0x72, 0x65, 0x18, 0x04, 0x20, 0x01, 0x28, 0x04,
+	0x52, 0x09, 0x73, 0x65, 0x69, 0x7a, 0x65, 0x64, 0x4f, 0x72, 0x65, 0x22, 0x73, 0x0a, 0x10, 0x45,
 	0x76, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x53, 0x75, 0x63, 0x63, 0x65, 0x73, 0x73, 0x12,
 	0x5f, 0x0a, 0x16, 0x65, 0x76, 0x65, 0x6e, 0x74, 0x48, 0x61, 0x73, 0x68, 0x53, 0x75, 0x63, 0x63,
 	0x65, 0x73, 0x73, 0x44, 0x65, 0x74, 0x61, 0x69, 0x6c, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32,

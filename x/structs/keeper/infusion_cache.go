@@ -1,408 +1,239 @@
 package keeper
 
 import (
-	"context"
     "structs/x/structs/types"
 
     "cosmossdk.io/math"
-
 )
 
-
 type InfusionCache struct {
-    DestinationType types.ObjectType
-    DestinationId string
-    Address string
+    InfusionId      string
+    DestinationId   string
+    Address         string
 
-    K *Keeper
-    Ctx context.Context
+    CC *CurrentContext
 
-    AnyChange bool
-    Ready bool
+    Changed        bool
+    Deleted        bool
+    InfusionLoaded bool
+    Infusion       types.Infusion
 
-    InfusionLoaded  bool
-    InfusionChanged bool
-    Infusion  types.Infusion
-
-    InfusionSnapshot types.Infusion
-
-    OwnerLoaded bool
-    Owner *PlayerCache
-
-    DestinationFuelAttributeId string
-    DestinationFuelLoaded bool
-    DestinationFuelChanged bool
-    DestinationFuel uint64
-
+    DestinationFuelAttributeId     string
     DestinationCapacityAttributeId string
-    DestinationCapacityLoaded bool
-    DestinationCapacityChanged bool
-    DestinationCapacity uint64
-
-    PlayerCapacityAttributeId string
-    PlayerCapacityLoaded bool
-    PlayerCapacityChanged bool
-    PlayerCapacity uint64
-
 }
 
-func (k *Keeper) GetInfusionCache(ctx context.Context, destinationType types.ObjectType, destinationId string, address string) (InfusionCache) {
-    return InfusionCache{
-        DestinationType: destinationType,
-        DestinationId: destinationId,
-        Address: address,
+// =========================================================================
+// Committable
+// =========================================================================
 
-        K: k,
-        Ctx: ctx,
-
-        AnyChange: false,
-
-        InfusionLoaded: false,
-        InfusionChanged: false,
-        OwnerLoaded: false,
-
-        DestinationFuelAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_fuel, destinationId),
-        DestinationFuelLoaded: false,
-        DestinationFuelChanged: false,
-
-        DestinationCapacityAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, destinationId),
-        DestinationCapacityLoaded: false,
-        DestinationCapacityChanged: false,
-
-        //PlayerCapacityAttributeId: GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, destinationId),
-        PlayerCapacityLoaded: false,
-        PlayerCapacityChanged: false,
-
-    }
-}
-
-func (cache *InfusionCache) Commit() () {
-    cache.AnyChange = false
-
-    cache.K.logger.Info("Updating Infusion From Cache","destinationId",cache.DestinationId,"address",cache.Address)
-
-    if (cache.InfusionChanged) {
-        cache.K.SetInfusion(cache.Ctx, cache.Infusion)
-        cache.InfusionChanged = false
-    }
-
-    if (cache.Owner != nil && cache.GetOwner().IsChanged()) {
-        cache.GetOwner().Commit()
-    }
-
-    if (cache.DestinationFuelChanged) {
-        cache.K.SetGridAttribute(cache.Ctx, cache.DestinationFuelAttributeId, cache.DestinationFuel)
-        cache.DestinationFuelChanged = false
-    }
-
-    if (cache.DestinationCapacityChanged) {
-        cache.K.SetGridAttribute(cache.Ctx, cache.DestinationCapacityAttributeId, cache.DestinationCapacity)
-
-        // Further propagate these changes into the Allocation system
-        destinationAllocationId, destinationAutoResizeAllocationFound := cache.K.GetAutoResizeAllocationBySource(cache.Ctx, cache.DestinationId)
-        if (destinationAutoResizeAllocationFound) {
-            cache.K.AutoResizeAllocation(cache.Ctx, destinationAllocationId, cache.DestinationId, cache.GetSnapshotDestinationCapacity(), cache.GetDestinationCapacity())
+func (cache *InfusionCache) Commit() {
+    if cache.Changed {
+        if cache.Deleted {
+            cache.CC.k.RemoveInfusion(cache.CC.ctx, cache.DestinationId, cache.Address)
         } else {
-            if cache.GetSnapshotDestinationCapacity() > cache.GetDestinationCapacity() {
-                cache.K.AppendGridCascadeQueue(cache.Ctx, cache.DestinationId)
-            }
+            cache.CC.k.SetInfusion(cache.CC.ctx, cache.Infusion)
         }
-
-        cache.DestinationCapacityChanged = false
-    }
-
-    if (cache.PlayerCapacityChanged) {
-        cache.K.SetGridAttribute(cache.Ctx, cache.PlayerCapacityAttributeId, cache.PlayerCapacity)
-
-        // Further propagate these changes into the Allocation system
-        playerAllocationId, playerAutoResizeAllocationFound := cache.K.GetAutoResizeAllocationBySource(cache.Ctx, cache.GetOwnerId())
-        if (playerAutoResizeAllocationFound) {
-            cache.K.AutoResizeAllocation(cache.Ctx, playerAllocationId, cache.GetOwnerId(), cache.GetSnapshotPlayerCapacity(), cache.GetPlayerCapacity())
-        } else {
-            if cache.GetSnapshotPlayerCapacity() > cache.GetPlayerCapacity() {
-                cache.K.AppendGridCascadeQueue(cache.Ctx, cache.GetOwnerId())
-            }
-        }
-
-        cache.PlayerCapacityChanged = false
+        cache.Changed = false
     }
 
     if cache.IsEmpty() {
-        cache.K.AppendInfusionDestructionQueue(cache.Ctx, cache.GetInfusionId())
+        cache.CC.k.AppendInfusionDestructionQueue(cache.CC.ctx, cache.GetInfusionId())
     }
-
-    cache.Snapshot()
 }
 
-func (cache *InfusionCache) IsChanged() bool {
-    return cache.AnyChange
-}
+func (cache *InfusionCache) IsChanged() bool { return cache.Changed }
 
 func (cache *InfusionCache) ID() string {
-    return cache.DestinationId + "/" + cache.Address
+    return cache.InfusionId
 }
 
-func (cache *InfusionCache) Changed() {
-    cache.AnyChange = true
-}
+// =========================================================================
+// Loading
+// =========================================================================
 
-// Load the core Infusion data
-func (cache *InfusionCache) LoadInfusion() (bool) {
-    cache.Infusion, cache.InfusionLoaded = cache.K.GetInfusion(cache.Ctx, cache.DestinationId, cache.Address)
 
-    // Replacing the old Upsert methodology with this Load-or-Create
-    if !cache.InfusionLoaded {
-
-        cache.Infusion = types.Infusion{
-            DestinationType: cache.DestinationType,
-            DestinationId: cache.DestinationId,
-            Address: cache.Address,
-            PlayerId: cache.GetOwnerId(),
-            Commission: math.LegacyZeroDec(),
-            Fuel: 0,
-            Power: 0,
-            Ratio: 0,
-            Defusing: 0,
-        }
-
-        cache.InfusionLoaded = true
-    }
-
-    cache.Snapshot()
+func (cache *InfusionCache) LoadInfusion() bool {
+    cache.Infusion, cache.InfusionLoaded = cache.CC.k.GetInfusion(
+        cache.CC.ctx, cache.DestinationId, cache.Address,
+    )
 
     return cache.InfusionLoaded
 }
 
+// =========================================================================
+// Getters
+// =========================================================================
 
-// Load the Player data
-func (cache *InfusionCache) LoadOwner() (bool) {
-    newOwner, _ := cache.K.GetPlayerCacheFromId(cache.Ctx, cache.GetOwnerId())
-    cache.Owner = &newOwner
-    cache.OwnerLoaded = true
-    return cache.OwnerLoaded
-}
-
-
-func (cache *InfusionCache) LoadDestinationFuel() {
-    cache.DestinationFuel = cache.K.GetGridAttribute(cache.Ctx, cache.DestinationFuelAttributeId)
-    cache.DestinationFuelLoaded = true
-}
-
-func (cache *InfusionCache) LoadDestinationCapacity() {
-    cache.DestinationCapacity = cache.K.GetGridAttribute(cache.Ctx, cache.DestinationCapacityAttributeId)
-    cache.DestinationCapacityLoaded = true
-}
-
-func (cache *InfusionCache) LoadPlayerCapacity() {
-    // We don't have the PlayerId during object creation
-    // So we need to set the AttributeId here
-    if cache.PlayerCapacityAttributeId == "" {
-        cache.PlayerCapacityAttributeId = GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, cache.GetOwnerId())
-    }
-
-    cache.PlayerCapacity = cache.K.GetGridAttribute(cache.Ctx, cache.PlayerCapacityAttributeId)
-    cache.PlayerCapacityLoaded = true
-}
-
-/* Getters
- * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
- */
-
-func (cache *InfusionCache) GetOwnerId() (string) {
-    if (!cache.InfusionLoaded) {
-        // If the Infusion isn't loaded yet, we can get the playerId the old fashion way.
-        return GetObjectID(types.ObjectType_player, cache.K.GetPlayerIndexFromAddress(cache.Ctx, cache.Address))
+func (cache *InfusionCache) GetOwnerId() string {
+    if !cache.InfusionLoaded {
+        return GetObjectID(types.ObjectType_player, cache.CC.GetPlayerIndexFromAddress(cache.Address))
     }
     return cache.Infusion.PlayerId
 }
 
-func (cache *InfusionCache) GetOwner()          (*PlayerCache) { if (!cache.OwnerLoaded) { cache.LoadOwner() }; return cache.Owner }
-func (cache *InfusionCache) GetInfusion()       (types.Infusion) { if (!cache.InfusionLoaded) { cache.LoadInfusion() }; return cache.Infusion }
-func (cache *InfusionCache) GetInfusionId()     (string) { if (!cache.InfusionLoaded) { cache.LoadInfusion() }; return cache.Infusion.DestinationId + "-" + cache.Infusion.Address }
-
-
-func (cache *InfusionCache) GetDestinationFuel()        (uint64) { if (!cache.DestinationFuelLoaded) { cache.LoadDestinationFuel() }; return cache.DestinationFuel }
-func (cache *InfusionCache) GetDestinationCapacity()    (uint64) { if (!cache.DestinationCapacityLoaded) { cache.LoadDestinationCapacity() }; return cache.DestinationCapacity }
-func (cache *InfusionCache) GetPlayerCapacity()         (uint64) { if (!cache.PlayerCapacityLoaded) { cache.LoadPlayerCapacity() }; return cache.PlayerCapacity }
-
-func (cache *InfusionCache) GetDefusing()               (uint64) { if (!cache.InfusionLoaded) { cache.LoadInfusion() }; return cache.Infusion.Defusing }
-func (cache *InfusionCache) GetFuel()                   (uint64) { if (!cache.InfusionLoaded) { cache.LoadInfusion() }; return cache.Infusion.Fuel }
-func (cache *InfusionCache) GetPower()                  (uint64) { if (!cache.InfusionLoaded) { cache.LoadInfusion() }; return cache.Infusion.Power }
-func (cache *InfusionCache) GetSnapshotFuel()           (uint64) { if (!cache.InfusionLoaded) { cache.LoadInfusion() }; return cache.InfusionSnapshot.Fuel }
-func (cache *InfusionCache) GetSnapshotPower()          (uint64) { if (!cache.InfusionLoaded) { cache.LoadInfusion() }; return cache.InfusionSnapshot.Power }
-
-
-func (cache *InfusionCache) GetPendingPlayerCapacity() uint64 {
-    if (!cache.InfusionLoaded) {
-        cache.LoadInfusion()
-    }
-    return cache.GetPower() - cache.GetPendingDestinationCapacity()
-}
-
-func (cache *InfusionCache) GetPendingDestinationCapacity() uint64 {
-    if (!cache.InfusionLoaded) { cache.LoadInfusion() }
-    return cache.Infusion.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(cache.GetPower()))).RoundInt().Uint64()
-}
-
-func (cache *InfusionCache) GetSnapshotPlayerCapacity() (uint64) {
-    if (!cache.InfusionLoaded) {
-        cache.LoadInfusion()
-    }
-    return cache.GetSnapshotPower() - cache.GetSnapshotDestinationCapacity()
-}
-
-func (cache *InfusionCache) GetSnapshotDestinationCapacity() uint64 {
-    if (!cache.InfusionLoaded) { cache.LoadInfusion() }
-    return cache.InfusionSnapshot.Commission.Mul(math.LegacyNewDecFromInt(math.NewIntFromUint64(cache.GetSnapshotPower()))).RoundInt().Uint64()
-}
-
-
-func (cache *InfusionCache) IsEmpty() (bool) {
-    if (!cache.InfusionLoaded) {
-        cache.LoadInfusion()
-    }
-    return (cache.GetPower() == uint64(0) && cache.GetDefusing() == uint64(0))
-}
-
-
-
-
-/* Setters - SET DOES NOT COMMIT()
- * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
- */
-
-
-func (cache *InfusionCache) Snapshot() {
-    cache.InfusionSnapshot = cache.Infusion
-}
-
-func (cache *InfusionCache) SetCalculatedPower() {
-    cache.Infusion.Power = cache.Infusion.Ratio * cache.Infusion.Fuel
-}
-
-func (cache *InfusionCache) SetCalculatedDestinationFuel() {
-    // Update the Fuel record on the Destination
-    if cache.GetSnapshotFuel() != cache.GetFuel() {
-
-        var resetAmount uint64
-        if cache.GetSnapshotFuel() < cache.GetDestinationFuel() {
-            resetAmount = cache.GetDestinationFuel() - cache.GetSnapshotFuel()
+func (cache *InfusionCache) CheckInfusion() error  {
+    if !cache.InfusionLoaded {
+        if !cache.LoadInfusion() {
+            return types.NewObjectNotFoundError("infusion", cache.InfusionId)
         }
-
-        cache.DestinationFuel = resetAmount + cache.GetFuel()
-        cache.DestinationFuelChanged = true
     }
+    return nil
 }
 
-func (cache *InfusionCache) SetCalculatedDestinationCapacity() {
-    // Update the Capacity record on the Destination
-    if cache.GetSnapshotDestinationCapacity() != cache.GetPendingDestinationCapacity() {
+func (cache *InfusionCache) GetInfusion() types.Infusion { if !cache.InfusionLoaded { cache.LoadInfusion() }; return cache.Infusion }
+func (cache *InfusionCache) GetInfusionId() string       { if !cache.InfusionLoaded { cache.LoadInfusion() }; return cache.DestinationId + "-" + cache.Address }
+func (cache *InfusionCache) GetPower() uint64             { if !cache.InfusionLoaded { cache.LoadInfusion() }; return cache.Infusion.Power }
+func (cache *InfusionCache) GetFuel() uint64              { if !cache.InfusionLoaded { cache.LoadInfusion() }; return cache.Infusion.Fuel }
+func (cache *InfusionCache) GetDefusing() uint64          { if !cache.InfusionLoaded { cache.LoadInfusion() }; return cache.Infusion.Defusing }
 
-        var resetAmount uint64
-        if cache.GetSnapshotDestinationCapacity() < cache.GetDestinationCapacity() {
-            resetAmount = cache.GetDestinationCapacity() - cache.GetSnapshotDestinationCapacity()
+func (cache *InfusionCache) GetOwner() *PlayerCache {
+    player, _ := cache.CC.GetPlayer(cache.GetOwnerId())
+    return player
+}
+
+func (cache *InfusionCache) IsEmpty() bool {
+    if !cache.InfusionLoaded { cache.LoadInfusion() }
+
+    return cache.Infusion.Power == 0 && cache.Infusion.Defusing == 0
+}
+
+// =========================================================================
+// Internal: apply grid deltas + propagation
+// =========================================================================
+
+// applyGridDeltas applies the difference between old and new contributions
+// to the three affected grid attributes, and propagates auto-resize/cascade.
+// This mirrors how AllocationCache.SetPower handles grid changes inline.
+func (cache *InfusionCache) applyGridDeltas(oldFuel, oldDestCap, oldPlayerCap uint64) {
+    newFuel := cache.Infusion.Fuel
+    _, newDestCap, newPlayerCap := cache.Infusion.GetPowerDistribution()
+
+    // Destination fuel
+    if oldFuel != newFuel {
+        cache.CC.SetGridAttributeDelta(cache.DestinationFuelAttributeId, oldFuel, newFuel)
+    }
+
+    // Destination capacity
+    if oldDestCap != newDestCap {
+        cache.CC.SetGridAttributeDelta(cache.DestinationCapacityAttributeId, oldDestCap, newDestCap)
+
+        destAllocId, found := cache.CC.k.GetAutoResizeAllocationBySource(cache.CC.ctx, cache.DestinationId)
+        if found {
+            totalCap := cache.CC.GetGridAttribute(cache.DestinationCapacityAttributeId)
+            cache.CC.AutoResizeAllocation(destAllocId, totalCap)
+        } else if newDestCap < oldDestCap {
+            cache.CC.k.AppendGridCascadeQueue(cache.CC.ctx, cache.DestinationId)
         }
-
-        cache.DestinationCapacity = resetAmount + cache.GetPendingDestinationCapacity()
-        cache.DestinationCapacityChanged = true
     }
-}
 
+    // Player capacity
+    if oldPlayerCap != newPlayerCap {
+        playerId := cache.GetOwnerId()
+        playerCapAttrId := GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, playerId)
+        cache.CC.SetGridAttributeDelta(playerCapAttrId, oldPlayerCap, newPlayerCap)
 
-func (cache *InfusionCache) SetCalculatedPlayerCapacity() {
-    // Update the Capacity record on the Player
-    if cache.GetSnapshotPlayerCapacity() != cache.GetPendingPlayerCapacity() {
-
-        var resetAmount uint64
-        if cache.GetSnapshotPlayerCapacity() < cache.GetPlayerCapacity() {
-            resetAmount = cache.GetPlayerCapacity() - cache.GetSnapshotPlayerCapacity()
+        playerAllocId, found := cache.CC.k.GetAutoResizeAllocationBySource(cache.CC.ctx, playerId)
+        if found {
+            totalCap := cache.CC.GetGridAttribute(playerCapAttrId)
+            cache.CC.AutoResizeAllocation(playerAllocId, totalCap)
+        } else if newPlayerCap < oldPlayerCap {
+            cache.CC.k.AppendGridCascadeQueue(cache.CC.ctx, playerId)
         }
-
-        cache.PlayerCapacity = resetAmount + cache.GetPendingPlayerCapacity()
-        cache.PlayerCapacityChanged = true
     }
 }
+
+// =========================================================================
+// Setters
+// =========================================================================
 
 func (cache *InfusionCache) SetRatio(ratio uint64) {
-    if (!cache.InfusionLoaded) { cache.LoadInfusion() }
+    if !cache.InfusionLoaded { cache.LoadInfusion() }
+
+    oldFuel := cache.Infusion.Fuel
+    _, oldDestCap, oldPlayerCap := cache.Infusion.GetPowerDistribution()
 
     cache.Infusion.Ratio = ratio
+    cache.Infusion.Recalculate()
 
-    cache.SetCalculatedPower()
-    cache.SetCalculatedDestinationCapacity()
-    cache.SetCalculatedPlayerCapacity()
-
-    cache.InfusionChanged = true
-    cache.Changed()
-
+    cache.applyGridDeltas(oldFuel, oldDestCap, oldPlayerCap)
+    cache.Changed = true
 }
 
 func (cache *InfusionCache) SetCommission(commission math.LegacyDec) {
-    if (!cache.InfusionLoaded) { cache.LoadInfusion() }
+    if !cache.InfusionLoaded { cache.LoadInfusion() }
+
+    oldFuel := cache.Infusion.Fuel
+    _, oldDestCap, oldPlayerCap := cache.Infusion.GetPowerDistribution()
 
     cache.Infusion.Commission = commission
 
-    cache.SetCalculatedDestinationCapacity()
-    cache.SetCalculatedPlayerCapacity()
-
-    cache.InfusionChanged = true
-    cache.Changed()
+    cache.applyGridDeltas(oldFuel, oldDestCap, oldPlayerCap)
+    cache.Changed = true
 }
 
-func (cache *InfusionCache) SetFuel(fuel uint64) () {
-    if (!cache.InfusionLoaded) { cache.LoadInfusion() }
+func (cache *InfusionCache) SetFuel(fuel uint64) {
+    if !cache.InfusionLoaded { cache.LoadInfusion() }
+
+    oldFuel := cache.Infusion.Fuel
+    _, oldDestCap, oldPlayerCap := cache.Infusion.GetPowerDistribution()
 
     cache.Infusion.Fuel = fuel
+    cache.Infusion.Recalculate()
 
-    cache.SetCalculatedPower()
-    cache.SetCalculatedDestinationCapacity()
-    cache.SetCalculatedPlayerCapacity()
-
-    cache.InfusionChanged = true
-    cache.Changed()
+    cache.applyGridDeltas(oldFuel, oldDestCap, oldPlayerCap)
+    cache.Changed = true
 }
 
+func (cache *InfusionCache) AddFuel(additionalFuel uint64) {
+    if !cache.InfusionLoaded { cache.LoadInfusion() }
 
-func (cache *InfusionCache) AddFuel(additionalFuel uint64) () {
-    if (!cache.InfusionLoaded) { cache.LoadInfusion() }
+    oldFuel := cache.Infusion.Fuel
+    _, oldDestCap, oldPlayerCap := cache.Infusion.GetPowerDistribution()
 
-    cache.Infusion.Fuel = cache.Infusion.Fuel + additionalFuel
+    cache.Infusion.Fuel += additionalFuel
+    cache.Infusion.Recalculate()
 
-    cache.SetCalculatedPower()
-    cache.SetCalculatedDestinationCapacity()
-    cache.SetCalculatedPlayerCapacity()
-
-    cache.InfusionChanged = true
-    cache.Changed()
+    cache.applyGridDeltas(oldFuel, oldDestCap, oldPlayerCap)
+    cache.Changed = true
 }
 
-func (cache *InfusionCache) SetFuelAndCommission(fuel uint64, commission math.LegacyDec) () {
-    if (!cache.InfusionLoaded) { cache.LoadInfusion() }
+func (cache *InfusionCache) SetFuelAndCommission(fuel uint64, commission math.LegacyDec) {
+    if !cache.InfusionLoaded { cache.LoadInfusion() }
+
+    oldFuel := cache.Infusion.Fuel
+    _, oldDestCap, oldPlayerCap := cache.Infusion.GetPowerDistribution()
 
     cache.Infusion.Fuel = fuel
     cache.Infusion.Commission = commission
+    cache.Infusion.Recalculate()
 
-    cache.SetCalculatedPower()
-    cache.SetCalculatedDestinationCapacity()
-    cache.SetCalculatedPlayerCapacity()
-
-    cache.InfusionChanged = true
-    cache.Changed()
+    cache.applyGridDeltas(oldFuel, oldDestCap, oldPlayerCap)
+    cache.Changed = true
 }
 
-func (cache *InfusionCache) SetDefusing(defusing uint64) () {
-    if (!cache.InfusionLoaded) { cache.LoadInfusion() }
+func (cache *InfusionCache) SetDefusing(defusing uint64) {
+    if !cache.InfusionLoaded { cache.LoadInfusion() }
 
     cache.Infusion.Defusing = defusing
-
-    cache.InfusionChanged = true
-    cache.Changed()
+    cache.Changed = true
 }
 
-// Set the Owner data manually
-func (cache *InfusionCache) ManualLoadOwner(owner *PlayerCache) {
-    cache.Owner = owner
-    cache.OwnerLoaded = true
+func (cache *InfusionCache) Destroy() {
+    if !cache.InfusionLoaded { cache.LoadInfusion() }
+
+    // Capture current contributions
+    oldFuel := cache.Infusion.Fuel
+    _, oldDestCap, oldPlayerCap := cache.Infusion.GetPowerDistribution()
+
+    // Zero everything out
+    cache.Infusion.Fuel = 0
+    cache.Infusion.Power = 0
+    cache.Infusion.Defusing = 0
+
+    // Apply grid deltas (old → 0 for all three attributes)
+    cache.applyGridDeltas(oldFuel, oldDestCap, oldPlayerCap)
+
+    // Remove the infusion record
+    cache.Deleted = true
+    cache.Changed = true
 }
-
-

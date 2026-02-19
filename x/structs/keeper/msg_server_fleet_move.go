@@ -8,6 +8,7 @@ import (
 
 func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*types.MsgFleetMoveResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -15,7 +16,7 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
 
 
     // Load the fleet
-    fleet, fleetLookupErr := k.GetFleetCacheFromId(ctx, msg.FleetId)
+    fleet, fleetLookupErr := cc.GetFleetById(msg.FleetId)
     if (fleetLookupErr != nil) {
         return &types.MsgFleetMoveResponse{}, fleetLookupErr
     }
@@ -26,11 +27,7 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
         return &types.MsgFleetMoveResponse{}, permissionError
     }
 
-    if fleet.GetOwner().IsHalted() {
-        return &types.MsgFleetMoveResponse{}, types.NewPlayerHaltedError(fleet.GetOwnerId(), "fleet_move")
-    }
-
-    destination := k.GetPlanetCacheFromId(ctx, msg.DestinationLocationId)
+    destination := cc.GetPlanet(msg.DestinationLocationId)
     if (!destination.LoadPlanet()) {
         return &types.MsgFleetMoveResponse{}, types.NewObjectNotFoundError("planet", msg.DestinationLocationId)
     }
@@ -38,7 +35,6 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
     // Is the Fleet able to move?
     readinessError := fleet.PlanetMoveReadinessCheck()
     if (readinessError != nil) {
-        k.DischargePlayer(ctx, fleet.GetOwnerId())
         return &types.MsgFleetMoveResponse{}, readinessError
     }
 
@@ -48,9 +44,8 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
         }
     }
 
-    fleet.SetLocationToPlanet(&destination)
+    fleet.SetLocationToPlanet(destination)
 
-    fleet.Commit()
-
+	cc.CommitAll()
 	return &types.MsgFleetMoveResponse{Fleet: &fleet.Fleet}, nil
 }

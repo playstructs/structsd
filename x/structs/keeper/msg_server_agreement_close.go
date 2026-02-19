@@ -9,15 +9,16 @@ import (
 
 func (k msgServer) AgreementClose(goCtx context.Context, msg *types.MsgAgreementClose) (*types.MsgAgreementResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
-    activePlayer, _ := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    activePlayer, _ := cc.GetPlayerByAddress(msg.Creator)
 
-    agreement := k.GetAgreementCacheFromId(ctx, msg.AgreementId)
+    agreement := cc.GetAgreement(msg.AgreementId)
 
-    permissionError := agreement.CanUpdate(&activePlayer)
+    permissionError := agreement.CanUpdate(activePlayer)
     if (permissionError != nil) {
         return &types.MsgAgreementResponse{}, permissionError
     }
@@ -29,5 +30,6 @@ func (k msgServer) AgreementClose(goCtx context.Context, msg *types.MsgAgreement
         return &types.MsgAgreementResponse{}, errorParam
     }
 
+	cc.CommitAll()
 	return &types.MsgAgreementResponse{}, nil
 }

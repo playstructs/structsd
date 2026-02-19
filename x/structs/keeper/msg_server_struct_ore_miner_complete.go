@@ -13,12 +13,13 @@ import (
 
 func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgStructOreMinerComplete) (*types.MsgStructOreMinerStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
 
 	// Add an Active Address record to the
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	structure := k.GetStructCacheFromId(ctx, msg.StructId)
+	structure := cc.GetStruct(msg.StructId)
 
 	// Check to see if the caller has permissions to proceed
 	/*
@@ -28,20 +29,14 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 	   }
 	*/
 
-	if structure.GetOwner().IsHalted() {
-		return &types.MsgStructOreMinerStatusResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "ore_mine_complete").WithStruct(msg.StructId)
-	}
-
 	// Is the Struct & Owner online?
 	readinessError := structure.ReadinessCheck()
 	if readinessError != nil {
-		k.DischargePlayer(ctx, structure.GetOwnerId())
 		return &types.MsgStructOreMinerStatusResponse{}, readinessError
 	}
 
 	miningReadinessError := structure.CanOreMinePlanet()
 	if miningReadinessError != nil {
-		k.DischargePlayer(ctx, structure.GetOwnerId())
 		return &types.MsgStructOreMinerStatusResponse{}, miningReadinessError
 	}
 
@@ -50,17 +45,17 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 
 	currentAge := uint64(ctx.BlockHeight()) - structure.GetBlockStartOreMine()
 
-	valid, achievedDifficulty := types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().GetOreMiningDifficulty());
+	valid, achievedDifficulty := types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().OreMiningDifficulty);
 	if !valid {
 		return &types.MsgStructOreMinerStatusResponse{}, types.NewWorkFailureError("mine", structure.StructId, hashInput)
 	}
 
 	// Got this far, let's reward the player with some Ore
 	structure.OreMinePlanet()
-	structure.Commit()
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventOreMine{&types.EventOreMineDetail{PlayerId: structure.GetOwnerId(), PrimaryAddress: structure.GetOwner().GetPrimaryAddress(), Amount: 1}})
     _ = ctx.EventManager().EmitTypedEvent(&types.EventHashSuccess{&types.EventHashSuccessDetail{CallerAddress: msg.Creator, Category: "mine", Difficulty: achievedDifficulty, ObjectId: msg.StructId }})
 
+	cc.CommitAll()
 	return &types.MsgStructOreMinerStatusResponse{Struct: structure.GetStruct()}, nil
 }

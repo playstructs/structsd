@@ -72,45 +72,6 @@ func (k Keeper) SetGridAttribute(ctx context.Context, gridAttributeId string, am
 	k.logger.Info("Grid Change (Set)", "gridAttributeId", gridAttributeId, "amount", amount)
 }
 
-func (k Keeper) SetGridAttributeDelta(ctx context.Context, gridAttributeId string, oldAmount uint64, newAmount uint64) (amount uint64, err error) {
-	currentAmount := k.GetGridAttribute(ctx, gridAttributeId)
-
-	var resetAmount uint64
-	if oldAmount < currentAmount {
-		resetAmount = currentAmount - oldAmount
-	}
-
-	amount = resetAmount + newAmount
-
-	k.logger.Info("Grid Change (Delta)", "gridAttributeId", gridAttributeId, "oldAmount", oldAmount, "newAmount", newAmount)
-	k.SetGridAttribute(ctx, gridAttributeId, amount)
-
-	return
-}
-
-func (k Keeper) SetGridAttributeDecrement(ctx context.Context, gridAttributeId string, decrementAmount uint64) (amount uint64, err error) {
-	currentAmount := k.GetGridAttribute(ctx, gridAttributeId)
-
-	if decrementAmount < currentAmount {
-		amount = currentAmount - decrementAmount
-	}
-
-	k.logger.Info("Grid Change (Decrement)", "gridAttributeId", gridAttributeId, "decrementAmount", decrementAmount)
-	k.SetGridAttribute(ctx, gridAttributeId, amount)
-
-	return
-}
-
-func (k Keeper) SetGridAttributeIncrement(ctx context.Context, gridAttributeId string, incrementAmount uint64) (amount uint64) {
-	currentAmount := k.GetGridAttribute(ctx, gridAttributeId)
-
-	amount = currentAmount + incrementAmount
-
-	k.logger.Info("Grid Change (Increment)", "gridAttributeId", gridAttributeId, "incrementAmount", incrementAmount)
-	k.SetGridAttribute(ctx, gridAttributeId, amount)
-
-	return
-}
 
 func (k Keeper) GetGridCascadeQueue(ctx context.Context, clear bool) (queue []string) {
 	gridCascadeQueueStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GridCascadeQueue))
@@ -150,54 +111,6 @@ func (k Keeper) AppendGridCascadeQueue(ctx context.Context, queueId string) (err
 	return err
 }
 
-func (k Keeper) GridCascade(ctx context.Context) {
-
-	// This needs to be able to iterate until the queue is empty
-	// If there are no bugs, there should always be an end
-	// If there are bugs, Cisphyx will find it
-	for {
-		// Get Queue (and clear it in the process)
-		gridQueue := k.GetGridCascadeQueue(ctx, true)
-
-		if len(gridQueue) == 0 {
-			break
-		}
-
-		// For each Queue Item
-		for _, objectId := range gridQueue {
-
-			allocationList := k.GetAllAllocationIdBySourceIndex(ctx, objectId)
-			allocationPointer := 0
-
-			for k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)) > k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId)) {
-				k.logger.Info("Grid Queue (Brownout)", "objectId", objectId, "load", k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId)), "capacity", k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId)))
-
-				k.DestroyAllocation(ctx, allocationList[allocationPointer])
-				k.logger.Info("Grid Queue (Allocation Destroyed)", "allocationId", allocationList[allocationPointer])
-
-				allocationPointer++
-			}
-		}
-	}
-}
-
-func (k Keeper) UpdateGridConnectionCapacity(ctx context.Context, objectId string) {
-	capacity := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, objectId))
-	load := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_load, objectId))
-
-	if capacity > load {
-		availableCapacity := capacity - load
-
-		connectionCount := k.GetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCount, objectId))
-		if connectionCount == 0 {
-			connectionCount = 1
-		}
-
-		k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, objectId), availableCapacity/connectionCount)
-	} else {
-		k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_connectionCapacity, objectId), 0)
-	}
-}
 
 // GetAllGridExport returns all grid attributes
 func (k Keeper) GetAllGridExport(ctx context.Context) (list []*types.GridRecord) {

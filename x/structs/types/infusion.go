@@ -33,7 +33,9 @@ func CreateNewInfusion(destinationType ObjectType, destinationId string, playerA
 	}
 }
 
-
+func (a *Infusion) Recalculate() {
+    a.Power = a.Ratio * a.Fuel
+}
 
 /*
  * Only Reactors and Structs (Power Plants) can have Alpha infused

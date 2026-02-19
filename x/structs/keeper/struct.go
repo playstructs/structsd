@@ -59,41 +59,6 @@ func (k Keeper) SetStructCount(ctx context.Context, count uint64) {
   uint64  slot            = 8;
   */
 
-// AppendStruct appends a struct in the store with a new id and update the count
-func (k Keeper) AppendStruct(
-	ctx context.Context,
-	structure types.Struct,
-) (types.Struct) {
- 	ctxSDK := sdk.UnwrapSDKContext(ctx)
-
-	// Create the struct
-	count := k.GetStructCount(ctx)
-
-	// Set the ID of the appended value
-	structure.Id = GetObjectID(types.ObjectType_struct, count)
-	structure.Index = count
-
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructKey))
-	appendedValue := k.cdc.MustMarshal(&structure)
-	store.Set([]byte(structure.Id), appendedValue)
-
-	// Update struct count
-	k.SetStructCount(ctx, count+1)
-
-	// Emit the creation of the Struct object
-	// Do this first, since the next commands will also emit related events.
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventStruct{Structure: &structure})
-
-    // Set the Permissions
-    permissionId := GetObjectPermissionIDBytes(structure.Id, structure.Owner)
-    k.PermissionAdd(ctx, permissionId, types.PermissionAll)
-
-    // Block Start Build
-    k.SetStructAttribute(ctx, GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structure.Id),  uint64(ctxSDK.BlockHeight()))
-
-
-	return structure
-}
 
 // SetStruct set a specific struct in the store
 func (k Keeper) SetStruct(ctx context.Context, structure types.Struct) {

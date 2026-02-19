@@ -92,6 +92,7 @@ const (
 	SubstationKey       = "Substation/value/"
 	SubstationCountKey  = "Substation/count/"
 	SubstationStatusKey = "Substation/status/"
+    SubstationPlayerKey = "Substation/player/"
 )
 
 const (
@@ -124,7 +125,6 @@ const (
 const (
 	PlayerKey      = "Player/value/"
 	PlayerCountKey = "Player/count/"
-	PlayerHaltKey  = "Player/halt/"
 
     // 25,000 milliwatts
 	PlayerPassiveDraw = 25000

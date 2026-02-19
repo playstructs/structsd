@@ -28,13 +28,14 @@ import (
 
 func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlanetRaidComplete) (*types.MsgPlanetRaidCompleteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
 
 	// Add an Active Address record to the
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
 	// Load Fleet
-	fleet, fleetLoadError := k.GetFleetCacheFromId(ctx, msg.FleetId)
+	fleet, fleetLoadError := cc.GetFleetById(msg.FleetId)
 	if fleetLoadError != nil {
 		return &types.MsgPlanetRaidCompleteResponse{}, fleetLoadError
 	}
@@ -46,10 +47,6 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 	       return &types.MsgPlanetRaidCompleteResponse{}, permissionError
 	   }
 	*/
-
-	if fleet.GetOwner().IsHalted() {
-		return &types.MsgPlanetRaidCompleteResponse{}, types.NewPlayerHaltedError(fleet.GetOwnerId(), "planet_raid_complete")
-	}
 
 	// check that the fleet is Away
 	if fleet.IsOnStation() {
@@ -86,10 +83,10 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 
 	// Move the Fleet back to Station
 	fleet.SetLocationToPlanet(fleet.GetOwner().GetPlanet())
-	fleet.Commit()
 
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleet.GetFleetId(), PlanetId: raidedPlanet, Status: types.RaidStatus_raidSuccessful}})
+	_ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleet.GetFleetId(), PlanetId: raidedPlanet, Status: types.RaidStatus_raidSuccessful, SeizedOre: amountStolen}})
     _ = ctx.EventManager().EmitTypedEvent(&types.EventHashSuccess{&types.EventHashSuccessDetail{CallerAddress: msg.Creator, Category: "raid", Difficulty: achievedDifficulty, ObjectId: msg.FleetId, PlanetId: raidedPlanet }})
 
+	cc.CommitAll()
 	return &types.MsgPlanetRaidCompleteResponse{Fleet: fleet.GetFleet(), Planet: fleet.GetPlanet().GetPlanet(), OreStolen: amountStolen}, nil
 }

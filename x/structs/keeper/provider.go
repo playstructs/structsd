@@ -8,7 +8,7 @@ import (
 	"cosmossdk.io/store/prefix"
 	storetypes "cosmossdk.io/store/types"
 	"github.com/cosmos/cosmos-sdk/runtime"
-	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
+
 
 	"structs/x/structs/types"
 
@@ -40,54 +40,6 @@ func (k Keeper) SetProviderCount(ctx context.Context, count uint64) {
 	store.Set(byteKey, bz)
 }
 
-// AppendProvider appends a provider in the store with a new id
-func (k Keeper) AppendProvider(ctx context.Context, provider types.Provider) (types.Provider, error) {
-
-	// Define the provider id
-	count := k.GetProviderCount(ctx)
-
-	// Set the ID of the appended value
-	provider.Id = GetObjectID(types.ObjectType_provider, count)
-	provider.Index = count
-
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.ProviderKey))
-	appendedValue := k.cdc.MustMarshal(&provider)
-	store.Set([]byte(provider.Id), appendedValue)
-
-	k.SetProviderCount(ctx, count+1)
-
-	ctxSDK := sdk.UnwrapSDKContext(ctx)
-
-	// Set the Checkpoint to current block
-	k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_checkpointBlock, provider.Id), uint64(ctxSDK.BlockHeight()))
-
-	// Create the Collateral Pool
-	providerCollateralDetails := types.ProviderCollateralPool+provider.Id
-	providerCollateralAddress := authtypes.NewModuleAddress(providerCollateralDetails)
-	providerCollateralAccount := k.accountKeeper.NewAccountWithAddress(ctx, providerCollateralAddress)
-	k.accountKeeper.SetAccount(ctx, providerCollateralAccount)
-
-	// Create the Earnings Pool
-	providerEarningsDetails := types.ProviderEarningsPool+provider.Id
-	providerEarningsAddress := authtypes.NewModuleAddress(providerEarningsDetails)
-	providerEarningsAccount := k.accountKeeper.NewAccountWithAddress(ctx, providerEarningsAddress)
-	k.accountKeeper.SetAccount(ctx, providerEarningsAccount)
-
-	providerCollateralAddressStr := providerCollateralAddress.String()
-	providerEarningsAddressStr := providerEarningsAddress.String()
-
-	k.logger.Info("Provider Created",
-		"providerId", provider.Id,
-		"collateralPoolDetails", providerCollateralDetails,
-		"collateralPoolAddress", providerCollateralAddressStr,
-		"earningsPoolDetails", providerEarningsDetails,
-		"earningsPoolAddress", providerEarningsAddressStr)
-
-	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProvider{Provider: &provider})
-	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventProviderAddress{&types.EventProviderAddressDetail{ProviderId: provider.Id, CollateralPool: providerCollateralAddressStr, EarningPool: providerEarningsAddressStr}})
-
-	return provider, nil
-}
 
 func (k Keeper) SetProvider(ctx context.Context, provider types.Provider) (types.Provider, error) {
 
@@ -121,20 +73,6 @@ func (k Keeper) RemoveProvider(ctx context.Context, providerId string) {
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
 	_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventDelete{ObjectId: providerId})
-}
-
-// DestroyProvider updates grid attributes before calling RemoveProvider
-func (k Keeper) DestroyProvider(ctx context.Context, providerId string) (destroyed bool) {
-	provider, providerFound := k.GetProvider(ctx, providerId)
-
-	_ = provider
-	if providerFound {
-		destroyed = true
-	} else {
-		destroyed = false
-	}
-
-	return
 }
 
 // GetProvider returns a provider from its id

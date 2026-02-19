@@ -14,24 +14,24 @@ import (
 
 func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressRegister) (*types.MsgAddressRegisterResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
 
-    player, err := k.GetPlayerCacheFromId(ctx, msg.PlayerId)
+    player, err := cc.GetPlayer(msg.PlayerId)
     if err != nil {
        return &types.MsgAddressRegisterResponse{}, err
     }
 
-    if !player.LoadPlayer() {
+    if player.CheckPlayer() != nil {
         return &types.MsgAddressRegisterResponse{}, types.NewObjectNotFoundError("player", msg.PlayerId)
     }
 
-
 	// Is the address associated with an account yet
-    playerFoundForAddress := k.GetPlayerIndexFromAddress(ctx, msg.Address)
+    playerFoundForAddress := cc.GetPlayerIndexFromAddress(msg.Address)
     if (playerFoundForAddress > 0) {
         return &types.MsgAddressRegisterResponse{}, types.NewAddressValidationError(msg.Address, "already_registered")
     }
@@ -45,7 +45,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
 	// Does this creator address have the permissions to do this
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
     // The calling address must have a minimum of the same permission level
-    if (!k.PermissionHasAll(ctx, addressPermissionId, types.Permission(msg.Permissions))) {
+    if (!cc.PermissionHasAll(addressPermissionId, types.Permission(msg.Permissions))) {
         return &types.MsgAddressRegisterResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(msg.Permissions), "address_association")
     }
 
@@ -82,11 +82,11 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     }
 
 	// Add the address and player index to the keeper
-    k.SetPlayerIndexForAddress(ctx, msg.Address, player.GetIndex())
+    cc.SetPlayerIndexForAddress(msg.Address, player.GetIndex())
 
 	// Add the permission to the new address
     newAddressPermissionId := GetAddressPermissionIDBytes(msg.Address)
-    k.PermissionAdd(ctx, newAddressPermissionId, types.Permission(msg.Permissions))
+    cc.PermissionAdd(newAddressPermissionId, types.Permission(msg.Permissions))
 
 
     // Move Funds
@@ -112,5 +112,6 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     }
 
 
+	cc.CommitAll()
 	return &types.MsgAddressRegisterResponse{}, nil
 }

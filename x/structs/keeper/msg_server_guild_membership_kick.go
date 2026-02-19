@@ -10,13 +10,15 @@ import (
 
 func (k msgServer) GuildMembershipKick(goCtx context.Context, msg *types.MsgGuildMembershipKick) (*types.MsgGuildMembershipResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
 
-    callingPlayer, err := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
         return &types.MsgGuildMembershipResponse{}, err
     }
@@ -31,7 +33,7 @@ func (k msgServer) GuildMembershipKick(goCtx context.Context, msg *types.MsgGuil
 		msg.GuildId = callingPlayer.GetGuildId()
 	}
 
-    guildMembershipApplication, guildMembershipApplicationError := k.GetGuildMembershipKickCache(ctx, &callingPlayer, msg.GuildId, msg.PlayerId)
+    guildMembershipApplication, guildMembershipApplicationError := cc.GetGuildMembershipKickCache(callingPlayer, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
         return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
     }
@@ -41,7 +43,6 @@ func (k msgServer) GuildMembershipKick(goCtx context.Context, msg *types.MsgGuil
         return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
     }
 
-	guildMembershipApplication.Commit()
-
+	cc.CommitAll()
 	return &types.MsgGuildMembershipResponse{GuildMembershipApplication: &guildMembershipApplication.GuildMembershipApplication}, nil
 }

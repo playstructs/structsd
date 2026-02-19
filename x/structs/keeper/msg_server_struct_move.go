@@ -29,12 +29,13 @@ message MsgStructMove {
 */
 func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (*types.MsgStructStatusResponse, error) {
     ctx := sdk.UnwrapSDKContext(goCtx)
+    cc := k.NewCurrentContext(ctx)
 
     // Add an Active Address record to the
     // indexer for UI requirements
     k.AddressEmitActivity(ctx, msg.Creator)
 
-    structure := k.GetStructCacheFromId(ctx, msg.StructId)
+    structure := cc.GetStruct(msg.StructId)
 
     // Check to see if the caller has permissions to proceed
     permissionError := structure.CanBePlayedBy(msg.Creator)
@@ -42,15 +43,9 @@ func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (
         return &types.MsgStructStatusResponse{}, permissionError
     }
 
-    if structure.GetOwner().IsHalted() {
-        return &types.MsgStructStatusResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "struct_move").WithStruct(msg.StructId)
-    }
-
     // Check Player Charge
-    if structure.GetOwner().GetCharge() < structure.GetStructType().GetMoveCharge() {
-        err := types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().GetMoveCharge(), structure.GetOwner().GetCharge(), "move").WithStructType(structure.GetStructType().GetId())
-        structure.GetOwner().Discharge()
-        structure.GetOwner().Commit()
+    if structure.GetOwner().GetCharge() < structure.GetStructType().MoveCharge {
+        err := types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().MoveCharge, structure.GetOwner().GetCharge(), "move").WithStructType(structure.GetTypeId())
         return &types.MsgStructStatusResponse{}, err
     }
 
@@ -60,7 +55,7 @@ func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (
     }
 
     structure.GetOwner().Discharge()
-    structure.Commit()
 
+	cc.CommitAll()
 	return &types.MsgStructStatusResponse{}, nil
 }

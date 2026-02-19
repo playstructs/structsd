@@ -31,16 +31,17 @@ message MsgProviderCreate {
 
 func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderCreate) (*types.MsgProviderResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
-    activePlayer, _ := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    activePlayer, _ := cc.GetPlayerByAddress(msg.Creator)
 
-    substation := k.GetSubstationCacheFromId(ctx, msg.SubstationId)
+    substation := cc.GetSubstation(msg.SubstationId)
 
 
-    permissionError := substation.CanCreateAllocations(&activePlayer)
+    permissionError := substation.CanCreateAllocations(activePlayer)
     if (permissionError != nil) {
         return &types.MsgProviderResponse{}, permissionError
     }
@@ -51,11 +52,13 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
     provider.SetSubstationId(msg.SubstationId)
 
     // TODO Check Denom exists
-    provider.SetRate(msg.Rate)
-
     // TODO Rate Denom whitelist?
+    paramErr := provider.SetRate(msg.Rate)
+    if paramErr != nil {
+        return &types.MsgProviderResponse{}, paramErr
+    }
 
-    paramErr := provider.SetCapacityRange(msg.CapacityMinimum, msg.CapacityMaximum)
+    paramErr = provider.SetCapacityRange(msg.CapacityMinimum, msg.CapacityMaximum)
     if paramErr != nil {
         return &types.MsgProviderResponse{}, paramErr
     }
@@ -75,16 +78,18 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
         return &types.MsgProviderResponse{}, paramErr
     }
 
-    provider.SetAccessPolicy(msg.AccessPolicy)
-
+    paramErr = provider.SetAccessPolicy(msg.AccessPolicy)
+    if paramErr != nil {
+        return &types.MsgProviderResponse{}, paramErr
+    }
 
     // Provider Grid values are OK to leave uninitialized
         // Unset Load is zero
         // Unset CheckpointBlock is zero
 
-    // Pass it to the Keeper
-    k.AppendProvider(ctx, provider)
+    cc.NewProvider(provider)
 
 
+	cc.CommitAll()
 	return &types.MsgProviderResponse{}, nil
 }

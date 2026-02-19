@@ -563,12 +563,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "primaryAddress"}},
                  },
                  {
-                     RpcMethod:      "PlayerResume",
-                     Use:            "player-resume [player id]",
-                     Short:          "Resume a Halted Player",
-                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"}},
-                 },
-                 {
                     RpcMethod:      "PlayerSend",
                     Use:            "player-send [player id] [from address] [to address] [1coin, 2coin, ...coin]",
                     Short:          "Send tokens from any player-owned address",

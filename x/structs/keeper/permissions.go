@@ -37,7 +37,6 @@ func (k Keeper) GetPermissionsByBytes(ctx context.Context, permissionId []byte) 
 
 	bz := store.Get(permissionId)
 
-	// Player Capacity Not in Memory: no element
 	if bz == nil {
 		return types.Permissionless
 	}
@@ -71,27 +70,6 @@ func (k Keeper) PermissionClearAll(ctx context.Context, permissionId []byte) {
 
 }
 
-func (k Keeper) PermissionAdd(ctx context.Context, permissionId []byte, flag types.Permission) types.Permission {
-    currentPermission := k.GetPermissionsByBytes(ctx, permissionId)
-    newPermissions := k.SetPermissionsByBytes(ctx, permissionId, currentPermission | flag)
-	return newPermissions
-}
-
-func (k Keeper) PermissionRemove(ctx context.Context, permissionId []byte, flag types.Permission) types.Permission {
-    currentPermission := k.GetPermissionsByBytes(ctx, permissionId)
-    newPermissions := k.SetPermissionsByBytes(ctx, permissionId, currentPermission &^ flag)
-	return newPermissions
-}
-
-func (k Keeper) PermissionHasAll(ctx context.Context, permissionId []byte, flag types.Permission) bool {
-    currentPermission := k.GetPermissionsByBytes(ctx, permissionId)
-	return currentPermission&flag == flag
-}
-
-func (k Keeper) PermissionHasOneOf(ctx context.Context, permissionId []byte, flag types.Permission) bool {
-    currentPermission := k.GetPermissionsByBytes(ctx, permissionId)
-	return currentPermission&flag != 0
-}
 
 
 func (k Keeper) GetPermissionsByObject(ctx context.Context, objectId string) (list []types.PermissionRecord) {

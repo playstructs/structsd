@@ -38,38 +38,6 @@ func (k Keeper) SetPlanetCount(ctx context.Context, count uint64) {
 	store.Set(byteKey, bz)
 }
 
-// AppendPlanet appends a planet in the store with a new id and update the count
-func (k Keeper) AppendPlanet(
-	ctx context.Context,
-	//planet types.Planet,
-	player types.Player,
-) (planetId string) {
-    planet := types.CreateEmptyPlanet()
-
-	// Create the planet
-	count := k.GetPlanetCount(ctx)
-
-	// Set the ID of the appended value
-	planet.Id = GetObjectID(types.ObjectType_planet, count)
-	planet.SetCreator(player.Creator)
-	planet.SetOwner(player.Id)
-
-
-    k.SetGridAttribute(ctx, GetGridAttributeIDByObjectId(types.GridAttributeType_ore, planet.Id), types.PlanetStartingOre)
-    k.SetPlanetAttribute(ctx, GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_planetaryShield, planet.Id), types.PlanetaryShieldBase)
-
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PlanetKey))
-	appendedValue := k.cdc.MustMarshal(&planet)
-	store.Set([]byte(planet.Id), appendedValue)
-
-	// Update planet count
-	k.SetPlanetCount(ctx, count+1)
-
-	ctxSDK := sdk.UnwrapSDKContext(ctx)
-    _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPlanet{Planet: &planet})
-
-	return planet.Id
-}
 
 // SetPlanet set a specific planet in the store
 func (k Keeper) SetPlanet(ctx context.Context, planet types.Planet) {

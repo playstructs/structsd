@@ -26,8 +26,10 @@ func (k *Keeper) BeginBlocker(ctx context.Context) {
 // Called every block, update validator set
 func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error) {
 	k.logger.Debug("End Block Processes")
+    cc := k.NewCurrentContext(ctx)
+    defer cc.CommitAll()
 
-	k.AgreementExpirations(ctx)
+	cc.AgreementExpirations()
 
 	/* Cascade all the possible failures across the grid
 	 *
@@ -35,8 +37,9 @@ func (k *Keeper) EndBlocker(ctx context.Context) ([]abci.ValidatorUpdate, error)
 	 * devices have one last block of power before shutting down
 	 * but I think that's ok. We'll see how it goes in practice.
 	 */
-	k.GridCascade(ctx)
-	k.ProcessInfusionDestructionQueue(ctx)
+	cc.GridCascade()
+
+    cc.ProcessInfusionDestructionQueue()
 
     k.logger.Debug("End Block Complete")
 
@@ -190,12 +193,6 @@ func (k *Keeper) EventAllGenesis(ctx context.Context) {
     apps := k.GetAllGuildMembershipApplicationExport(ctx)
     for _, app := range apps {
         _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventGuildMembershipApplication{GuildMembershipApplication: &app})
-    }
-
-    // Halted players
-    halted := k.GetAllHaltedPlayerId(ctx)
-    for _, playerId := range halted {
-        _ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPlayerHalted{PlayerId: playerId})
     }
 
 }

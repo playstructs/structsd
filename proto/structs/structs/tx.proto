@@ -78,7 +78,6 @@ service Msg {
   rpc PlanetRaidComplete             (MsgPlanetRaidComplete            ) returns (MsgPlanetRaidCompleteResponse           );
 
   rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse   );
-  rpc PlayerResume                   (MsgPlayerResume                  ) returns (MsgPlayerResumeResponse                 );
 
   rpc PlayerSend                     (MsgPlayerSend                    ) returns (MsgPlayerSendResponse);
 

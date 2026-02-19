@@ -15,12 +15,12 @@ import (
 
 
 
-func CreateBaseStruct(structType *StructType, creator string, owner string, locationType ObjectType, ambit Ambit) (Struct) {
+func CreateBaseStruct(structTypeId uint64, creator string, owner string, locationType ObjectType, ambit Ambit) (Struct) {
     return Struct{
         Creator: creator,
         Owner: owner,
 
-        Type: structType.Id,
+        Type: structTypeId,
 
         LocationType: locationType,
         OperatingAmbit: ambit,

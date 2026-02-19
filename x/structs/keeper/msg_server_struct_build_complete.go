@@ -10,13 +10,14 @@ import (
 
 func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStructBuildComplete) (*types.MsgStructStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
 
 	// Add an Active Address record to the
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
 	// load struct
-	structure := k.GetStructCacheFromId(ctx, msg.StructId)
+	structure := cc.GetStruct(msg.StructId)
 
 	// Check to see if the caller has permissions to proceed
 	/*
@@ -28,10 +29,6 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 
 	if !structure.LoadStruct() {
 		return &types.MsgStructStatusResponse{}, types.NewObjectNotFoundError("struct", msg.StructId)
-	}
-
-	if structure.GetOwner().IsHalted() {
-		return &types.MsgStructStatusResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "struct_build_complete").WithStruct(msg.StructId)
 	}
 
 	if structure.IsBuilt() {
@@ -81,10 +78,9 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 
 	structure.StatusAddBuilt()
 	structure.GoOnline()
-	structure.Commit()
 
     _ = ctx.EventManager().EmitTypedEvent(&types.EventHashSuccess{&types.EventHashSuccessDetail{CallerAddress: msg.Creator, Category: "build", Difficulty: achievedDifficulty, ObjectId: msg.StructId }})
 
-
+	cc.CommitAll()
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct()}, nil
 }

@@ -23,13 +23,14 @@ message MsgStructDefenseSet {
 
 func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructDefenseSet) (*types.MsgStructStatusResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
     // load struct
-    structure := k.GetStructCacheFromId(ctx, msg.DefenderStructId)
+    structure := cc.GetStruct(msg.DefenderStructId)
 
     // Check to see if the caller has permissions to proceed
     permissionError := structure.CanBePlayedBy(msg.Creator)
@@ -41,26 +42,17 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
         return &types.MsgStructStatusResponse{}, types.NewObjectNotFoundError("struct", msg.DefenderStructId)
     }
 
-    if structure.GetOwner().IsHalted() {
-        return &types.MsgStructStatusResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "defense_set").WithStruct(msg.DefenderStructId)
-    }
-
     if structure.IsOffline() {
-        structure.GetOwner().Discharge()
-        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.DefenderStructId, "offline", "online", "defense_set")
     }
 
     if !structure.IsCommandable() {
-        k.DischargePlayer(ctx, structure.GetOwnerId())
         return &types.MsgStructStatusResponse{}, types.NewFleetCommandError(structure.GetStructId(), "no_command_struct")
     }
 
     // Check Player Charge
     if (structure.GetOwner().GetCharge() < structure.GetStructType().DefendChangeCharge) {
         err := types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().DefendChangeCharge, structure.GetOwner().GetCharge(), "defend").WithStructType(structure.GetStructType().Id)
-        structure.GetOwner().Discharge()
-        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, err
     }
 
@@ -99,16 +91,13 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
     }
 
     if (!inRange) {
-        structure.GetOwner().Discharge()
-        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, types.NewStructLocationError(structure.GetStructType().Id, "", "not_in_range").WithStruct(structure.GetStructId()).WithLocation("struct", msg.ProtectedStructId)
     }
-
 
     k.SetStructDefender(ctx, msg.ProtectedStructId, protectedStructure.Index, structure.GetStructId())
 
     structure.GetOwner().Discharge()
-    structure.Commit()
 
+	cc.CommitAll()
 	return &types.MsgStructStatusResponse{}, nil
 }

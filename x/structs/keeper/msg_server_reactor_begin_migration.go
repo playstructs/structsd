@@ -11,13 +11,15 @@ import (
 
 func (k msgServer) ReactorBeginMigration(goCtx context.Context, msg *types.MsgReactorBeginMigration) (*types.MsgReactorBeginMigrationResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
     // Load the player related to the specified address
     // Normally the address specified should be the PrimaryAddress
-    player, err := k.GetPlayerCacheFromAddress(ctx, msg.DelegatorAddress)
+    player, err := cc.GetPlayerByAddress(msg.DelegatorAddress)
     if err != nil {
        return &types.MsgReactorBeginMigrationResponse{}, err
     }
@@ -83,5 +85,6 @@ func (k msgServer) ReactorBeginMigration(goCtx context.Context, msg *types.MsgRe
 		),
 	})
 
+	cc.CommitAll()
 	return &types.MsgReactorBeginMigrationResponse{CompletionTime: completionTime,}, nil
 }

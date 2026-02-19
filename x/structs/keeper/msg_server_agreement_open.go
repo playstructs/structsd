@@ -21,15 +21,19 @@ message MsgAgreementOpen {
 
 func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementOpen) (*types.MsgAgreementResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
-    activePlayer, _ := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+        return &types.MsgAgreementResponse{}, err
+    }
 
-    provider := k.GetProviderCacheFromId(ctx, msg.ProviderId)
+    provider := cc.GetProvider(msg.ProviderId)
 
-    permissionError := provider.CanOpenAgreement(&activePlayer)
+    permissionError := provider.CanOpenAgreement(activePlayer)
     if (permissionError != nil) {
         return &types.MsgAgreementResponse{}, permissionError
     }
@@ -63,25 +67,42 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
         return &types.MsgAgreementResponse{}, errSend
     }
 
-    // Create the allocation
-    allocation := types.CreateAllocationStub(types.AllocationType_providerAgreement, provider.GetSubstationId(), msg.Creator, activePlayer.GetPlayerId())
-    allocation, _ , _ = k.AppendAllocation(ctx, allocation, msg.Capacity)
-
-    // Build the Agreement range
-    startBlock := uint64(ctx.BlockHeight()) + uint64(1)
-    endBlock := startBlock + msg.Duration
-
-    agreement := types.CreateBaseAgreement(msg.Creator, activePlayer.GetPlayerId(), msg.ProviderId, msg.Capacity, startBlock, endBlock, allocation.Id)
-    // Append the Agreement using the Allocations Id Index
-    agreement.Id = GetObjectID(types.ObjectType_agreement, allocation.Index)
-    k.AppendAgreement(ctx, agreement)
-
     checkpointError := provider.Checkpoint()
     if checkpointError != nil {
         return &types.MsgAgreementResponse{}, checkpointError
     }
-    provider.AgreementLoadIncrease(msg.Capacity)
-    provider.Commit()
 
+    // Create the allocation through context
+    allocation, allocationErr := cc.NewAllocation(
+        types.AllocationType_providerAgreement,
+        provider.GetSubstationId(),
+        "",
+        msg.Creator,
+        activePlayer.GetPlayerId(),
+        msg.Capacity,
+    )
+    if allocationErr != nil {
+        return &types.MsgAgreementResponse{}, allocationErr
+    }
+
+    // Build the Agreement through context
+    startBlock := uint64(ctx.BlockHeight()) + 1
+    endBlock := startBlock + msg.Duration
+
+    agreementRecord := types.CreateBaseAgreement(
+        msg.Creator,
+        activePlayer.GetPlayerId(),
+        msg.ProviderId,
+        msg.Capacity,
+        startBlock,
+        endBlock,
+        allocation.GetAllocation().Id,
+    )
+    agreementRecord.Id = GetObjectID(types.ObjectType_agreement, allocation.GetAllocation().Index)
+    cc.NewAgreement(agreementRecord)
+
+    provider.AgreementLoadIncrease(msg.Capacity)
+
+	cc.CommitAll()
 	return &types.MsgAgreementResponse{}, nil
 }

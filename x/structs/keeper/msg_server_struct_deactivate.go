@@ -10,13 +10,14 @@ import (
 
 func (k msgServer) StructDeactivate(goCtx context.Context, msg *types.MsgStructDeactivate) (*types.MsgStructStatusResponse, error) {
     ctx := sdk.UnwrapSDKContext(goCtx)
+    cc := k.NewCurrentContext(ctx)
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
     // load struct
-    structure := k.GetStructCacheFromId(ctx, msg.StructId)
+    structure := cc.GetStruct(msg.StructId)
 
     // Check to see if the caller has permissions to proceed
     permissionError := structure.CanBePlayedBy(msg.Creator)
@@ -24,23 +25,15 @@ func (k msgServer) StructDeactivate(goCtx context.Context, msg *types.MsgStructD
         return &types.MsgStructStatusResponse{}, permissionError
     }
 
-    if structure.GetOwner().IsHalted() {
-        return &types.MsgStructStatusResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "struct_deactivate").WithStruct(msg.StructId)
-    }
-
     if !structure.LoadStruct(){
         return &types.MsgStructStatusResponse{}, types.NewObjectNotFoundError("struct", msg.StructId)
     }
 
     if !structure.IsBuilt() {
-        structure.GetOwner().Discharge()
-        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.StructId, "building", "built", "deactivate")
     }
 
     if structure.IsOffline() {
-        structure.GetOwner().Discharge()
-        structure.GetOwner().Commit()
         return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.StructId, "offline", "online", "deactivate")
     }
 
@@ -50,7 +43,7 @@ func (k msgServer) StructDeactivate(goCtx context.Context, msg *types.MsgStructD
 
 
     structure.GoOffline()
-    structure.Commit()
 
+	cc.CommitAll()
 	return &types.MsgStructStatusResponse{Struct: structure.GetStruct()}, nil
 }

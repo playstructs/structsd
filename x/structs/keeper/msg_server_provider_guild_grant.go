@@ -9,15 +9,16 @@ import (
 
 func (k msgServer) ProviderGuildGrant(goCtx context.Context, msg *types.MsgProviderGuildGrant) (*types.MsgProviderResponse, error) {
     ctx := sdk.UnwrapSDKContext(goCtx)
+    cc := k.NewCurrentContext(ctx)
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
-    activePlayer, _ := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    activePlayer, _ := cc.GetPlayerByAddress(msg.Creator)
 
-    provider := k.GetProviderCacheFromId(ctx, msg.ProviderId)
+    provider := cc.GetProvider(msg.ProviderId)
 
-    permissionError := provider.CanUpdate(&activePlayer)
+    permissionError := provider.CanUpdate(activePlayer)
     if (permissionError != nil) {
         return &types.MsgProviderResponse{}, permissionError
     }
@@ -27,5 +28,6 @@ func (k msgServer) ProviderGuildGrant(goCtx context.Context, msg *types.MsgProvi
         return &types.MsgProviderResponse{}, paramErr
     }
 
+	cc.CommitAll()
 	return &types.MsgProviderResponse{}, nil
 }

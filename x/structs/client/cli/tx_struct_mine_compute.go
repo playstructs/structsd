@@ -64,7 +64,10 @@ func CmdStructMineCompute() *cobra.Command {
 				AttributeType: "blockStartOreMine",
 			}
 
-			mineStartBlock_res, _ := queryClient.StructAttribute(context.Background(), struct_attribute_block_start_params)
+			mineStartBlock_res, mineStartBlock_err := queryClient.StructAttribute(context.Background(), struct_attribute_block_start_params)
+			if mineStartBlock_err != nil {
+				return mineStartBlock_err
+			}
 			mineStartBlock := mineStartBlock_res.Attribute
 
 			if mineStartBlock == 0 {
@@ -76,10 +79,16 @@ func CmdStructMineCompute() *cobra.Command {
 				Id: performingStructure.Type,
 			}
 
-			structType_res, _ := queryClient.StructType(context.Background(), struct_type_params)
+			structType_res, structType_err := queryClient.StructType(context.Background(), struct_type_params)
+			if structType_err != nil {
+				return structType_err
+			}
 			structType := structType_res.StructType
 
-			currentBlockResponse, _ := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+			currentBlockResponse, currentBlock_err := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+			if currentBlock_err != nil {
+				return currentBlock_err
+			}
 			currentBlock := currentBlockResponse.BlockHeight
 			fmt.Printf("Mining process activated on %d, current block is %d \n", mineStartBlock, currentBlock)
 			currentAge := currentBlock - mineStartBlock
@@ -100,7 +109,11 @@ func CmdStructMineCompute() *cobra.Command {
 				i = i + 1
 
 				if (i % 20000) == 0 {
-					currentBlockResponse, _ = queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+					currentBlockResponse, blockErr := queryClient.GetBlockHeight(context.Background(), &types.QueryBlockHeight{})
+					if blockErr != nil {
+						fmt.Printf("Warning: failed to query block height: %s (retrying next cycle)\n", blockErr)
+						goto COMPUTE
+					}
 					currentBlock = currentBlockResponse.BlockHeight
 					currentAge = currentBlock - mineStartBlock
 					newDifficulty = types.CalculateDifficulty(float64(currentAge), structType.OreMiningDifficulty)

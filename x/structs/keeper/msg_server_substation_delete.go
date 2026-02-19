@@ -9,33 +9,41 @@ import (
 
 func (k msgServer) SubstationDelete(goCtx context.Context, msg *types.MsgSubstationDelete) (*types.MsgSubstationDeleteResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
-    if (!playerFound) {
-        return &types.MsgSubstationDeleteResponse{}, types.NewPlayerRequiredError(msg.Creator, "substation_delete")
+	player, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+        return &types.MsgSubstationDeleteResponse{}, err
     }
 
-
-    substationObjectPermissionId := GetObjectPermissionIDBytes(msg.SubstationId, player.Id)
-	// check that the player has reactor permissions
-    if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.PermissionDelete)) {
-        return &types.MsgSubstationDeleteResponse{}, types.NewPermissionError("player", player.Id, "substation", msg.SubstationId, uint64(types.PermissionDelete), "substation_delete")
+    substation := cc.GetSubstation(msg.SubstationId)
+    if substation.CheckSubstation() != nil {
+        return &types.MsgSubstationDeleteResponse{}, substation.CheckSubstation()
     }
 
-
-    // check that the account has energy management permissions
-    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionAssets)) {
-        return &types.MsgSubstationDeleteResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "energy_management")
+    permissionErr := substation.CanBeDeleteDBy(player)
+    if permissionErr != nil {
+        return &types.MsgSubstationDeleteResponse{}, permissionErr
     }
 
+    if (msg.MigrationSubstationId != "") {
+        migrationSubstation := cc.GetSubstation(msg.MigrationSubstationId)
+        if migrationSubstation.CheckSubstation() != nil {
+            return &types.MsgSubstationDeleteResponse{}, migrationSubstation.CheckSubstation()
+        }
 
+        if migrationSubstation.CanManagePlayerConnections(player) != nil {
+            return &types.MsgSubstationDeleteResponse{}, migrationSubstation.CanManagePlayerConnections(player)
+        }
+        substation.Delete(msg.MigrationSubstationId)
+    } else {
+        substation.Delete("")
+    }
 
-	k.RemoveSubstation(ctx, msg.SubstationId, msg.MigrationSubstationId)
-
+	cc.CommitAll()
 	return &types.MsgSubstationDeleteResponse{}, nil
 }

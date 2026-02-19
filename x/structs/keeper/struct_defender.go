@@ -110,22 +110,6 @@ func (k Keeper) GetAllStructDefender(ctx context.Context, protectedStructId stri
 	return
 }
 
-// GetAllStructCacheDefender returns all struct defenders for a specific struct
-func (k Keeper) GetAllStructCacheDefender(ctx context.Context, protectedStructId string) (list []*StructCache) {
-	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), DefenderKeyPrefix(protectedStructId))
-	iterator := storetypes.KVStorePrefixIterator(store, []byte{})
-
-	defer iterator.Close()
-
-	for ; iterator.Valid(); iterator.Next() {
-		var val types.StructDefender
-		k.cdc.MustUnmarshal(iterator.Value(), &val)
-		newCache := k.GetStructCacheFromId(ctx, val.DefendingStructId)
-		list = append(list, &newCache)
-	}
-
-	return
-}
 
 func (k Keeper) GetAllStructDefenderExport(ctx context.Context) (list []*types.StructDefender) {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.StructDefenderKey))

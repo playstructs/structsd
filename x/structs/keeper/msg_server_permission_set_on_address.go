@@ -9,6 +9,8 @@ import (
 
 func (k msgServer) PermissionSetOnAddress(goCtx context.Context, msg *types.MsgPermissionSetOnAddress) (*types.MsgPermissionResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -16,29 +18,30 @@ func (k msgServer) PermissionSetOnAddress(goCtx context.Context, msg *types.MsgP
 
     var err error
 
-    player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
-    if (!playerFound) {
-        return nil, err
+    player, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+        return  &types.MsgPermissionResponse{}, err
     }
 
-    targetPlayer, targetPlayerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Address))
-    if (!targetPlayerFound) {
-         return nil, err
+    targetPlayer, err := cc.GetPlayerByAddress(msg.Address)
+    if err != nil {
+         return  &types.MsgPermissionResponse{}, err
      }
 
-     if (targetPlayer.Id != player.Id) {
-        return nil, err // Can only set address permissions on your own player
+     if (targetPlayer.GetPlayerId() != player.GetPlayerId()) {
+        return  &types.MsgPermissionResponse{}, types.NewObjectNotFoundError("player", targetPlayer.GetPlayerId()) // Can only set address permissions on your own player
      }
 
 
     // Make sure the calling address has enough permissions to apply to another address
     addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-    if (!k.PermissionHasAll(ctx, addressPermissionId, types.Permission(msg.Permissions) | types.Permissions)) {
+    if (!cc.PermissionHasAll(addressPermissionId, types.Permission(msg.Permissions) | types.Permissions)) {
         return &types.MsgPermissionResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(msg.Permissions), "permission_set")
     }
 
     targetAddressPermissionId := GetAddressPermissionIDBytes(msg.Address)
-    k.SetPermissionsByBytes(ctx, targetAddressPermissionId, types.Permission(msg.Permissions))
+    cc.SetPermissions(targetAddressPermissionId, types.Permission(msg.Permissions))
 
+	cc.CommitAll()
 	return &types.MsgPermissionResponse{}, nil
 }

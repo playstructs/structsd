@@ -19,6 +19,16 @@ func GetGuildMembershipApplicationID(guildId string, playerId string) string {
 	return playerId + "@" + guildId
 }
 
+func (k Keeper) GetGuildMembershipApplicationById(ctx context.Context, appKey string) (val types.GuildMembershipApplication, found bool)  {
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GuildMembershipApplicationKey))
+	b := store.Get([]byte(appKey))
+	if b == nil {
+		return val, false
+	}
+	k.cdc.MustUnmarshal(b, &val)
+	return val, true
+}
+
 func (k Keeper) GetGuildMembershipApplication(ctx context.Context, guildId string, playerId string) (val types.GuildMembershipApplication, found bool)  {
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GuildMembershipApplicationKey))
 	b := store.Get([]byte(GetGuildMembershipApplicationID(guildId, playerId)))

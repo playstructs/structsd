@@ -11,12 +11,14 @@ import (
 
 func (k msgServer) GuildBankRedeem(goCtx context.Context, msg *types.MsgGuildBankRedeem) (*types.MsgGuildBankRedeemResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
+
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    activePlayer, lookupErr := k.GetPlayerCacheFromAddress(ctx, msg.Creator)
+    activePlayer, lookupErr := cc.GetPlayerByAddress(msg.Creator)
     if lookupErr != nil {
         return &types.MsgGuildBankRedeemResponse{}, types.NewPlayerRequiredError(msg.Creator, "guild_bank_redeem")
     }
@@ -27,12 +29,13 @@ func (k msgServer) GuildBankRedeem(goCtx context.Context, msg *types.MsgGuildBan
         return &types.MsgGuildBankRedeemResponse{}, types.NewParameterValidationError("denom", 0, "invalid_format")
     }
 
-    guild := k.GetGuildCacheFromId(ctx, denomSlice[1])
+    guild := cc.GetGuild(denomSlice[1])
     if !guild.LoadGuild() {
         return &types.MsgGuildBankRedeemResponse{}, types.NewObjectNotFoundError("guild", guild.GetGuildId())
     }
 
-    err := guild.BankRedeem(msg.AmountToken.Amount, &activePlayer);
+    err := guild.BankRedeem(msg.AmountToken.Amount, activePlayer);
 
+	cc.CommitAll()
 	return &types.MsgGuildBankRedeemResponse{}, err
 }

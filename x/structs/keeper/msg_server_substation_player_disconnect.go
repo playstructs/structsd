@@ -8,47 +8,41 @@ import (
 
 func (k msgServer) SubstationPlayerDisconnect(goCtx context.Context, msg *types.MsgSubstationPlayerDisconnect) (*types.MsgSubstationPlayerDisconnectResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
 
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, msg.Creator))
-    if (!playerFound) {
-        return &types.MsgSubstationPlayerDisconnectResponse{}, types.NewPlayerRequiredError(msg.Creator, "substation_player_disconnect")
+	player, playerErr := cc.GetPlayerByAddress(msg.Creator)
+    if playerErr != nil {
+        return &types.MsgSubstationPlayerDisconnectResponse{}, playerErr
     }
 
-	targetPlayer, targetPlayerFound := k.GetPlayer(ctx, msg.PlayerId)
-    if (!targetPlayerFound) {
-        return &types.MsgSubstationPlayerDisconnectResponse{}, types.NewObjectNotFoundError("player", msg.PlayerId)
+	targetPlayer, _ := cc.GetPlayer(msg.PlayerId)
+    if targetPlayer.CheckPlayer() != nil {
+        return &types.MsgSubstationPlayerDisconnectResponse{}, targetPlayer.CheckPlayer()
     }
 
-    // Check if the Calling Player isn't Target Player
-    // If they aren't they'll either need Grid Permission on the Player or on the Substation
-    if (player.Id != msg.PlayerId) {
-        // check that the Calling Player has Grid Permissions on the Substation
-        substationObjectPermissionId := GetObjectPermissionIDBytes(player.SubstationId, player.Id)
-        if (!k.PermissionHasOneOf(ctx, substationObjectPermissionId, types.PermissionGrid)) {
+    substation := cc.GetSubstation(targetPlayer.GetSubstationId())
+    if substation.CheckSubstation() != nil {
+        return &types.MsgSubstationPlayerDisconnectResponse{}, types.NewObjectNotFoundError("substation", targetPlayer.GetSubstationId())
+    }
 
-            // Check that the Calling Player has Grid Permissions on the Target Player
-            playerObjectPermissionId := GetObjectPermissionIDBytes(msg.PlayerId, player.Id)
-            if (!k.PermissionHasOneOf(ctx, playerObjectPermissionId, types.PermissionGrid)) {
-
-                // Calling Player has no authority over this process
-                return &types.MsgSubstationPlayerDisconnectResponse{}, types.NewPermissionError("player", player.Id, "player", targetPlayer.Id, uint64(types.PermissionGrid), "player_disconnect")
-            }
+    permissionSubstationErr := substation.CanManagePlayerConnections(player)
+    if permissionSubstationErr != nil {
+        // It might be ok if they don't have permissions on the substation
+        // as long as they have permissions on themselves.
+        permissionPlayerErr := targetPlayer.CanManageGridBy(msg.Creator)
+        if permissionPlayerErr != nil {
+            return &types.MsgSubstationPlayerDisconnectResponse{}, permissionPlayerErr
         }
     }
 
-    // check that the account has energy management permissions
-    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
-    if (!k.PermissionHasOneOf(ctx, addressPermissionId, types.PermissionGrid)) {
-       return &types.MsgSubstationPlayerDisconnectResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionGrid), "energy_management")
-    }
-
-	// connect to new substation
+    // connect to new substation
 	// This call handles the disconnection from other substations as well
-    k.SubstationDisconnectPlayer(ctx, targetPlayer)
+    targetPlayer.DisconnectSubstation()
 
+	cc.CommitAll()
 	return &types.MsgSubstationPlayerDisconnectResponse{}, nil
 }

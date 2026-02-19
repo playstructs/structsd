@@ -10,22 +10,19 @@ import (
 
 func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttack) (*types.MsgStructAttackResponse, error) {
 	ctx := sdk.UnwrapSDKContext(goCtx)
+	cc := k.NewCurrentContext(ctx)
 
 	// Add an Active Address record to the
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	structure := k.GetStructCacheFromId(ctx, msg.OperatingStructId)
+	structure := cc.GetStruct(msg.OperatingStructId)
 
 	k.logger.Info("Attack Action", "structId", msg.OperatingStructId)
 	// Check to see if the caller has permissions to proceed
 	permissionError := structure.CanBePlayedBy(msg.Creator)
 	if permissionError != nil {
 		return &types.MsgStructAttackResponse{}, permissionError
-	}
-
-	if structure.GetOwner().IsHalted() {
-		return &types.MsgStructAttackResponse{}, types.NewPlayerHaltedError(structure.GetOwnerId(), "struct_attack").WithStruct(msg.OperatingStructId)
 	}
 
 	// Is the Struct & Owner online?
@@ -48,9 +45,8 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 		return &types.MsgStructAttackResponse{}, weaponSystemError
 	}
 
-	playerCharge := k.GetPlayerCharge(ctx, structure.GetOwnerId())
-	if playerCharge < structure.GetStructType().GetWeaponCharge(weaponSystem) {
-		return &types.MsgStructAttackResponse{}, types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().GetWeaponCharge(weaponSystem), playerCharge, "attack").WithStructType(structure.GetTypeId())
+	if structure.GetOwner().GetCharge() < structure.GetStructType().GetWeaponCharge(weaponSystem) {
+		return &types.MsgStructAttackResponse{}, types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().GetWeaponCharge(weaponSystem), structure.GetOwner().GetCharge(), "attack").WithStructType(structure.GetTypeId())
 	}
 
 	// Jump out of Stealth Mode for the attack
@@ -69,26 +65,13 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 		return &types.MsgStructAttackResponse{}, types.NewCombatTargetingError(structure.GetStructId(), "", msg.WeaponSystem, "incomplete_targeting")
 	}
 
-	structCacheMap := make(map[string]*StructCache)
-	structCacheMap[structure.GetStructId()] = &structure
-	pendingCommits := make([]*StructCache, 0, 32)
-	pendingCommits = append(pendingCommits, &structure)
-
 	// Begin taking shots. Most weapons only use a single shot but some perform multiple.
 	for shot := uint64(0); shot < (structure.GetStructType().GetWeaponTargets(weaponSystem)); shot++ {
 		k.logger.Info("Attack Action", "structId", msg.OperatingStructId, "shot", shot, "shots", structure.GetStructType().GetWeaponTargets(weaponSystem), "target", msg.TargetStructId[shot])
 
-		var targetStructure *StructCache
-		if cached, exists := structCacheMap[msg.TargetStructId[shot]]; exists {
-			targetStructure = cached
-		} else {
-			newTarget := k.GetStructCacheFromId(ctx, msg.TargetStructId[shot])
-			targetStructure = &newTarget
-			if !targetStructure.LoadStruct() {
-				return &types.MsgStructAttackResponse{}, types.NewObjectNotFoundError("struct", msg.TargetStructId[shot])
-			}
-			structCacheMap[msg.TargetStructId[shot]] = targetStructure
-			pendingCommits = append(pendingCommits, targetStructure)
+		targetStructure := cc.GetStruct(msg.TargetStructId[shot])
+		if !targetStructure.LoadStruct() {
+			return &types.MsgStructAttackResponse{}, types.NewObjectNotFoundError("struct", msg.TargetStructId[shot])
 		}
 
 		targetStructure.ManualLoadEventAttackDetail(eventAttackDetail)
@@ -113,7 +96,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
 		k.logger.Info("Struct Targetable", "target", msg.TargetStructId[shot])
 
-		if targetStructure.CanEvade(&structure, weaponSystem) {
+		if targetStructure.CanEvade(structure, weaponSystem) {
 			k.logger.Info("Struct Evaded", "target", msg.TargetStructId[shot])
 			structure.GetEventAttackDetail().AppendShot(targetStructure.FlushEventAttackShotDetail())
 			continue
@@ -122,24 +105,18 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 		attackBlocked := false
 
 		// Check to make sure the attack is either counterable, blockable, or both. Otherwise skip this section
-		k.logger.Info("Struct Attacker Status", "structId", structure.GetStructId(), "blockable", (structure.GetStructType().GetWeaponBlockable(weaponSystem)), "counterable", (structure.GetStructType().GetWeaponCounterable(weaponSystem)))
-		if (structure.GetStructType().GetWeaponBlockable(weaponSystem)) || (structure.GetStructType().GetWeaponCounterable(weaponSystem)) {
+		k.logger.Info("Struct Attacker Status", "structId", structure.GetStructId(), "blockable", (structure.GetStructType().GetWeaponBlockable(weaponSystem)), "counterable", (structure.GetStructType().AttackCounterable && structure.GetStructType().GetWeaponCounterable(weaponSystem)))
+		if (structure.GetStructType().GetWeaponBlockable(weaponSystem)) || (structure.GetStructType().AttackCounterable && structure.GetStructType().GetWeaponCounterable(weaponSystem)) {
 
 			// Check the Defenders
-			defenderPlayer := targetStructure.GetOwner()
 			defenders := targetStructure.GetDefenders()
 			for _, defender := range defenders {
 				k.logger.Info("Defender at Location", "defender", defender.GetStructId(), "locationId", defender.GetLocationId())
 
-				if cachedDefender, exists := structCacheMap[defender.GetStructId()]; exists {
-					defender = cachedDefender
-				} else {
-					structCacheMap[defender.GetStructId()] = defender
-					pendingCommits = append(pendingCommits, defender)
-				}
+				// Use CC for deduplication - if this struct was already loaded, reuse that instance
+				defender = cc.GetStruct(defender.GetStructId())
 
 				defender.Defender = true
-				defender.ManualLoadOwner(defenderPlayer)
 				defender.ManualLoadEventAttackDetail(eventAttackDetail)
 				defender.ManualLoadEventAttackShotDetail(eventAttackShotDetail)
 
@@ -148,20 +125,18 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 					k.logger.Info("Defender seems ready to defend")
 					if !attackBlocked && (structure.GetStructType().GetWeaponBlockable(weaponSystem)) {
 						k.logger.Info("Defender to attempt a block!")
-						attackBlocked = defender.AttemptBlock(&structure, weaponSystem, targetStructure)
+						attackBlocked = defender.AttemptBlock(structure, weaponSystem, targetStructure)
 					}
-
 				}
 
-				if structure.GetStructType().GetWeaponCounterable(weaponSystem) {
+				if structure.GetStructType().AttackCounterable && structure.GetStructType().GetWeaponCounterable(weaponSystem) {
 					k.logger.Info("Defender trying to counter!.. ")
-					counterErrors := defender.CanCounterAttack(&structure)
+					counterErrors := defender.CanCounterAttack(structure)
 					if counterErrors == nil {
 						k.logger.Info("Defender counter-attacking!")
 						structure.TakeCounterAttackDamage(defender)
 					}
 				}
-				//defender.Commit()
 			}
 		}
 
@@ -169,14 +144,14 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 		// Turns out, my Struct wasn't attacking because I forgot the part of Attack that attacks.
 		if !attackBlocked && structure.IsOnline() {
 			k.logger.Info("Moving forward with the attack", "target", msg.TargetStructId[shot])
-			targetStructure.TakeAttackDamage(&structure, weaponSystem)
+			targetStructure.TakeAttackDamage(structure, weaponSystem)
 		} else {
 			k.logger.Info("Attack against target was blocked", "target", msg.TargetStructId[shot])
 		}
 
-		if structure.GetStructType().GetWeaponCounterable(weaponSystem) {
+		if structure.GetStructType().AttackCounterable && structure.GetStructType().GetWeaponCounterable(weaponSystem) {
 			k.logger.Info("Target trying to Counter now!")
-			counterErrors := targetStructure.CanCounterAttack(&structure)
+			counterErrors := targetStructure.CanCounterAttack(structure)
 			if counterErrors == nil {
 				k.logger.Info("Target Countering!")
 				structure.TakeCounterAttackDamage(targetStructure)
@@ -185,20 +160,27 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
 		structure.GetEventAttackDetail().AppendShot(targetStructure.FlushEventAttackShotDetail())
 
-		if targetStructure.GetStructType().GetCategory() == types.ObjectType_planet {
+		if targetStructure.GetStructType().Category == types.ObjectType_planet {
 			targetWasPlanetary = true
 			targetWasOnPlanet = targetStructure.GetPlanet()
 		}
 
-		//targetStructure.Commit()
+		// If the attacker was destroyed during this shot (e.g. by counter-attacks),
+		// stop processing further targets immediately.
+		if structure.IsDestroyed() {
+			k.logger.Info("Attacker destroyed during combat, ending attack early", "structId", msg.OperatingStructId)
+			break
+		}
 	}
 
-	// Recoil Damage
-	structure.TakeRecoilDamage(weaponSystem)
+	// Recoil Damage - only if attacker survived all shots
+	if !structure.IsDestroyed() {
+		structure.TakeRecoilDamage(weaponSystem)
+	}
 
-	// Check for Planetary Damage, namely Defense Cannons
-	if targetWasPlanetary {
-		targetWasOnPlanet.AttemptDefenseCannon(&structure)
+	// Check for Planetary Damage, namely Defense Cannons - only if attacker survived
+	if !structure.IsDestroyed() && targetWasPlanetary {
+		targetWasOnPlanet.AttemptDefenseCannon(structure)
 	}
 
 	// Set attacker's final health after all damage sources have resolved
@@ -206,15 +188,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
 	_ = ctx.EventManager().EmitTypedEvent(&types.EventAttack{EventAttackDetail: eventAttackDetail})
 
-	//structure.Commit()
-	// Commit Struct caches
-	for _, pendingStruct := range pendingCommits {
-		if pendingStruct.IsChanged() {
-			pendingStruct.Commit()
-		}
-	}
-
-	k.DischargePlayer(ctx, structure.GetOwnerId())
+	structure.GetOwner().Discharge()
 
 	if ctx.ExecMode() == sdk.ExecModeCheck {
 		//ctx.GasMeter().RefundGas(ctx.GasMeter().GasConsumed(), "Walkin it back")
@@ -222,5 +196,6 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 	}
 	k.logger.Info("Attack Transaction Gas", "gasMeter", ctx.GasMeter().String(), "execMode", ctx.ExecMode())
 
+	cc.CommitAll()
 	return &types.MsgStructAttackResponse{}, nil
 }
