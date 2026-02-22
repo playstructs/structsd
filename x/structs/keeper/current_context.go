@@ -167,21 +167,24 @@ func (cc *CurrentContext) CommitAll() {
 		return
 	}
 
-
 	// Actually Implemented Shit (AIS)
 
-	for _, addressCache := range cc.addresses {
-        addressCache.Commit()
-	}
-
-	for _, allocationCache := range cc.allocations {
-        allocationCache.Commit()
-	}
 
     for _, playerCache := range cc.players {
         playerCache.Commit()
     }
 
+	for _, addressCache := range cc.addresses {
+        addressCache.Commit()
+	}
+
+    for _, infusionCache := range cc.infusions {
+        infusionCache.Commit()
+    }
+
+	for _, allocationCache := range cc.allocations {
+        allocationCache.Commit()
+	}
 
     for _, guildCache := range cc.guilds {
         guildCache.Commit()
@@ -193,26 +196,6 @@ func (cc *CurrentContext) CommitAll() {
 
     for _, fleetCache := range cc.fleets {
         fleetCache.Commit()
-    }
-
-    for _, infusionCache := range cc.infusions {
-        infusionCache.Commit()
-    }
-
-	for _, permissionsCache := range cc.permissions {
-	    permissionsCache.Commit()
-	}
-
-    for _, gridAttributeCache := range cc.gridAttributes {
-        gridAttributeCache.Commit()
-    }
-
-    for _, structAttributeCache := range cc.structAttributes {
-        structAttributeCache.Commit()
-    }
-
-    for _, planetAttributeCache := range cc.planetAttributes {
-        planetAttributeCache.Commit()
     }
 
     for _, agreementCache := range cc.agreements {
@@ -238,6 +221,22 @@ func (cc *CurrentContext) CommitAll() {
     for _, reactorCache := range cc.reactors {
         reactorCache.Commit()
     }
+
+    for _, gridAttributeCache := range cc.gridAttributes {
+        gridAttributeCache.Commit()
+    }
+
+    for _, planetAttributeCache := range cc.planetAttributes {
+        planetAttributeCache.Commit()
+    }
+
+    for _, structAttributeCache := range cc.structAttributes {
+        structAttributeCache.Commit()
+    }
+
+	for _, permissionsCache := range cc.permissions {
+	    permissionsCache.Commit()
+	}
 
 	cc.committed = true
     /*
