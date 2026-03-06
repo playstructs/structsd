@@ -320,7 +320,6 @@ func (cache *AllocationCache) Destroy() (error) {
 
 
     // Check for a related Agreement and close it
-    // TODO change to CC
     agreement := cache.CC.GetAgreement(GetObjectID(types.ObjectType_agreement, cache.GetAllocation().Index))
     if agreement.LoadAgreement() {
         agreement.PrematureCloseByAllocation()

@@ -937,7 +937,6 @@ func (cache *StructCache) DestroyAndCommit() {
 	// Clear Defensive Relationships
 	cache.CC.k.DestroyStructDefender(cache.CC.ctx, cache.GetStructId())
 
-	// TODO clean this up to be more function based.. but it's fine
 	if cache.GetStructType().HasPowerGenerationSystem() {
 		// Clear out infusions
 		infusions := cache.CC.GetAllInfusionByDestination(cache.StructId)

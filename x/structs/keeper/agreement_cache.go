@@ -35,8 +35,6 @@ type AgreementCache struct {
 	CurrentBlock       uint64
 	CurrentBlockLoaded bool
 
-	// TODO allocationCache
-
 }
 
 
@@ -184,7 +182,6 @@ func (cache *AgreementCache) GetAllocationId() string {
 	return cache.Agreement.AllocationId
 }
 
-// TODO func GetAllocation()
 func (cache *AgreementCache) GetAllocation() (*AllocationCache, bool) {
 	return cache.CC.GetAllocation(cache.GetAllocationId())
 }
