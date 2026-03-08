@@ -21,8 +21,7 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
        return &types.MsgAddressRevokeResponse{}, err
     }
 
-    // Check if msg.Creator has PermissionDelete on the Address and Account
-    err = player.CanBeAdministratedBy(msg.Creator, types.PermissionDelete)
+    err = player.CanRevokeAddress(msg.Creator)
     if err != nil {
        return &types.MsgAddressRevokeResponse{}, err
     }

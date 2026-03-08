@@ -24,6 +24,6 @@ message Agreement {
   uint64 endBlock     = 6;
 
   string creator      = 7;
-  string owner        = 8;
+  string owner        = 8; // Deprecating as of 110b
 
 }

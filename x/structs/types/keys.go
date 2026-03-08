@@ -72,6 +72,7 @@ func KeyPrefix(p string) []byte {
 
 const (
     PermissionKey = "Permission/value/"
+    PermissionGuildRank = "Permission/guildRank/"
 )
 
 const (

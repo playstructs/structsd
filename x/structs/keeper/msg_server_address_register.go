@@ -19,6 +19,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
+	k.AddressEmitActivity(ctx, msg.PlayerId)
 
 
     player, err := cc.GetPlayer(msg.PlayerId)
@@ -36,17 +37,9 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
         return &types.MsgAddressRegisterResponse{}, types.NewAddressValidationError(msg.Address, "already_registered")
     }
 
-     // Check if msg.Creator has PermissionAssociations on the Address and Account
-    err = player.CanBeAdministratedBy(msg.Creator, types.PermissionAssociations)
+    err = player.CanRegisterAddress(msg.Creator, types.Permission(msg.Permissions));
     if err != nil {
        return &types.MsgAddressRegisterResponse{}, err
-    }
-
-	// Does this creator address have the permissions to do this
-    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-    // The calling address must have a minimum of the same permission level
-    if (!cc.PermissionHasAll(addressPermissionId, types.Permission(msg.Permissions))) {
-        return &types.MsgAddressRegisterResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(msg.Permissions), "address_association")
     }
 
 	// Does the signature verify in the proof

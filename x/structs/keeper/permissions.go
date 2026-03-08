@@ -116,3 +116,82 @@ func (k Keeper) GetAllPermissionExport(ctx context.Context) (list []*types.Permi
 
 	return
 }
+
+
+/*
+ * Permission Guild Rank System
+ *
+ */
+
+func GuildRankKeyPrefix(objectId string, guildId string) []byte {
+    return []byte(types.PermissionGuildRank + objectId + "/" + guildId + "/")
+}
+
+func ObjectOnlyGuildRankKeyPrefix(objectId string) []byte {
+    return []byte(types.PermissionGuildRank + objectId + "/" )
+}
+
+func (k Keeper) SetHighestGuildRankPermission(ctx context.Context, objectId string, guildId string, permissionType types.Permission, highestRank uint64) (err error) {
+    guildRankStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), GuildRankKeyPrefix(objectId, guildId))
+
+    binaryPermission := make([]byte, 8)
+    binary.BigEndian.PutUint64(binaryPermission, uint64(permissionType))
+
+    binaryRank := make([]byte, 8)
+    binary.BigEndian.PutUint64(binaryRank, highestRank)
+
+    guildRankStore.Set(binaryPermission, binaryRank)
+
+    return err
+}
+
+func (k Keeper) RemoveGuildRankPermission(ctx context.Context, objectId string, guildId string, permissionType types.Permission) (err error) {
+    guildRankStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), GuildRankKeyPrefix(objectId, guildId))
+
+    binaryPermission := make([]byte, 8)
+    binary.BigEndian.PutUint64(binaryPermission, uint64(permissionType))
+
+    guildRankStore.Delete(binaryPermission)
+
+    return err
+}
+
+
+func (k Keeper) GetHighestGuildRankForPermission(ctx context.Context, objectId string, guildId string, permissionType types.Permission) (uint64) {
+    guildRankStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), GuildRankKeyPrefix(objectId, guildId))
+
+    binaryPermission := make([]byte, 8)
+    binary.BigEndian.PutUint64(binaryPermission, uint64(permissionType))
+
+    binaryHighestRank := guildRankStore.Get(binaryPermission)
+
+	if binaryHighestRank == nil {
+		return 0
+	}
+
+	highestRank := binary.BigEndian.Uint64(binaryHighestRank)
+
+	return highestRank
+}
+
+func (k Keeper) GetAllGuildRankPermissions(ctx context.Context, objectId string, guildId string) (list []byte) {
+    guildRankStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)),  GuildRankKeyPrefix(objectId, guildId))
+    iterator := storetypes.KVStorePrefixIterator(guildRankStore, []byte{})
+
+    defer iterator.Close()
+
+    for ; iterator.Valid(); iterator.Next() {
+        list = append(list, iterator.Key())
+    }
+
+    return
+}
+
+func (k Keeper) ClearAllGuildRankPermissions(ctx context.Context, objectId string, guildId string, list []byte) {
+    guildRankStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), GuildRankKeyPrefix(objectId, guildId))
+    for _, key := range list {
+        guildRankStore.Delete(key)
+    }
+}
+
+

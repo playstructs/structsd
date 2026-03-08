@@ -45,7 +45,7 @@ message Provider {
   ];
 
   string creator  = 12;
-  string owner    = 13;
+  string owner    = 13; // Deprecating as of 110b
 
 }
 

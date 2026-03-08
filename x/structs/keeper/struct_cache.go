@@ -25,7 +25,7 @@ type StructCache struct {
 
 	HealthAttributeId string
 	StatusAttributeId string
-//	Status            types.StructState
+
 	BlockStartBuildAttributeId string
 	BlockStartOreMineAttributeId string
 	BlockStartOreRefineAttributeId string

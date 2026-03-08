@@ -20,7 +20,7 @@ message Allocation {
 
   // Who does this currently belong to
   string      creator             = 6;
-  string      controller          = 7;
+  string      controller          = 7; // Deprecating as of 110b
 
   // Locking will be needed for IBC
   bool        locked              = 8;

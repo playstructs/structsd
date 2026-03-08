@@ -1,45 +1,136 @@
 package types
 
-import (
-	//sdk "github.com/cosmos/cosmos-sdk/types"
-)
-
 type Permission uint64
 
+/*
+	Play is....
+		All Struct Actions
+		All Fleet Actions
+		All Planetary Actions
+
+	Admin is Owner (this let's us have multiple owners)
+
+*/
 
 const (
-    // 1
-	PermissionPlay Permission = 1 << iota
-	// 2
-	PermissionUpdate
-	// 4
-	PermissionDelete
-	// 8
-	PermissionAssets
-	// 16
-	PermissionAssociations
-	// 32
-	PermissionGrid
-	// 64
-	Permissions
-    // 128
-    PermissionHash
+	PermPlay    Permission = 1 << iota // 1
+	PermAdmin                          // 2
+
+	PermUpdate                         // 4
+	PermDelete                         // 8
+
+	PermTokenTransfer // 16
+	PermTokenInfuse   // 32
+	PermTokenMigrate  // 64
+	PermTokenDefuse   // 128
+
+	// 256 - Create, Update, Delete, Incl Provider Create
+	PermSourceAllocation
+
+	// 512 — Guild Membership (Player), Guild membership (Guild)
+	PermGuildMembership
+
+    // Substation Connection (Player, Substation)
+    PermSubstationConnection
+
+	// Substation / Allocation
+	PermAllocationConnection
+
+	// Guild — Banking
+	PermGuildTokenBurn // Burn & confiscate tokens
+	PermGuildTokenMint // Mint guild tokens
+
+	// Guild — Settings
+	PermGuildEndpointUpdate // Update guild endpoint
+	PermGuildJoinConstraintsUpdate // Update join infusion minimum and bypass settings
+	PermGuildSubstationUpdate // Update entry substation
+
+	// Provider
+	PermProviderWithdraw // Withdraw provider balance
+	PermProviderOpen // Agreement restriction
+
+	// Reactor
+	PermReactorGuildCreate // Create a guild from a reactor
+
+	// Hash (proof-of-work submitted by address)
+	PermHashBuild  // Struct build completion
+	PermHashMine   // Ore miner completion
+	PermHashRefine // Ore refinery completion
+	PermHashRaid   // Planet raid completion
 )
 
+// ── Composites ──────────────────────────────────────────
 const (
-    Permissionless Permission = 0 << iota
-	PermissionAll = PermissionPlay | PermissionUpdate | PermissionDelete | PermissionAssets | PermissionAssociations | PermissionGrid | Permissions | PermissionHash
+	Permissionless Permission = 0
+
+	PermAssets = PermTokenTransfer | PermTokenInfuse | PermTokenMigrate | PermTokenDefuse
+
+	PermHashAll = PermHashBuild | PermHashMine | PermHashRefine | PermHashRaid
+
+    // 2^23 - 1 (8,388,607)
+    PermAll =   PermPlay | PermAdmin | PermUpdate | PermDelete |
+                PermTokenTransfer | PermTokenInfuse | PermTokenMigrate | PermTokenDefuse |
+                PermSourceAllocation | PermMembership |
+                PermAllocationConnection |
+                PermGuildTokenBurn | PermGuildTokenMint |
+                PermGuildEndpointUpdate | PermGuildJoinConstraintsUpdate | PermGuildSubstationUpdate |
+                PermProviderWithdraw | PermProviderOpen |
+                PermReactorGuildCreate |
+                PermHashBuild | PermHashMine | PermHashRefine | PermHashRaid
+
 )
 
-var Permission_enum = map[string]Permission {
-	"permissionless":   Permissionless,
-    "play":             PermissionPlay,
-    "update":           PermissionUpdate,
-    "delete":           PermissionDelete,
-    "assets":           PermissionAssets,
-	"associations":     PermissionAssociations,
-    "grid":             PermissionGrid,
-    "permissions":      Permissions,
-    "hash":             PermissionHash,
-	"all":              PermissionAll,
+
+var PermissionLabel = map[Permission]string{
+	Permissionless:                 "permissionless",
+	PermPlay:                       "play",
+	PermAdmin:                      "admin",
+	PermUpdate:                     "update",
+	PermDelete:                     "delete",
+	PermTokenTransfer:              "token_transfer",
+	PermTokenInfuse:                "token_infuse",
+	PermTokenMigrate:               "token_migrate",
+	PermTokenDefuse:                "token_defuse",
+	PermSourceAllocation:           "source_allocation",
+	PermMembership:                 "membership",
+	PermAllocationConnection:       "allocation_connection",
+	PermGuildTokenBurn:             "guild_token_burn",
+	PermGuildTokenMint:             "guild_token_mint",
+	PermGuildEndpointUpdate:        "guild_endpoint_update",
+	PermGuildJoinConstraintsUpdate: "guild_join_constraints_update",
+	PermGuildSubstationUpdate:      "guild_substation_update",
+	PermProviderWithdraw:           "provider_withdraw",
+	PermProviderOpen:               "provider_open",
+	PermReactorGuildCreate:         "reactor_guild_create",
+	PermHashBuild:                  "hash_build",
+	PermHashMine:                   "hash_mine",
+	PermHashRefine:                 "hash_refine",
+	PermHashRaid:                   "hash_raid",
+}
+
+var Permission_enum = map[string]Permission{
+	"permissionless":                 Permissionless,
+	"play":                           PermPlay,
+	"admin":                          PermAdmin,
+	"update":                         PermUpdate,
+	"delete":                         PermDelete,
+	"token_transfer":                 PermTokenTransfer,
+	"token_infuse":                   PermTokenInfuse,
+	"token_migrate":                  PermTokenMigrate,
+	"token_defuse":                   PermTokenDefuse,
+	"source_allocation":              PermSourceAllocation,
+	"membership":                     PermMembership,
+	"allocation_connection":          PermAllocationConnection,
+	"guild_token_burn":               PermGuildTokenBurn,
+	"guild_token_mint":               PermGuildTokenMint,
+	"guild_endpoint_update":          PermGuildEndpointUpdate,
+	"guild_join_constraints_update":  PermGuildJoinConstraintsUpdate,
+	"guild_substation_update":        PermGuildSubstationUpdate,
+	"provider_withdraw":              PermProviderWithdraw,
+	"provider_open":                  PermProviderOpen,
+	"reactor_guild_create":           PermReactorGuildCreate,
+	"hash_build":                     PermHashBuild,
+	"hash_mine":                      PermHashMine,
+	"hash_refine":                    PermHashRefine,
+	"hash_raid":                      PermHashRaid,
 }

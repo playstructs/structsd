@@ -14,7 +14,7 @@ message Guild {
   string endpoint           = 3;
 
   string creator            = 4;
-  string owner              = 5;
+  string owner              = 5; // Deprecating as of 110b
 
   uint64 joinInfusionMinimum = 6;
   guildJoinBypassLevel joinInfusionMinimumBypassByRequest   = 7 [(amino.dont_omitempty) = true];
@@ -22,6 +22,7 @@ message Guild {
 
   string primaryReactorId    = 9;
   string entrySubstationId   = 10;
+  uint64 entryRank           = 11;
 }
 
 

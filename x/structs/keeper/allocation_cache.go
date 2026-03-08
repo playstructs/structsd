@@ -67,6 +67,10 @@ func (cache *AllocationCache) GetAllocation() types.Allocation {
 	return cache.Allocation
 }
 
+func (cache *AllocationCache) GetSourceId() string {
+    return cache.GetAllocation().SourceObjectId
+}
+
 func (cache *AllocationCache) IsAutomated() bool {
     return cache.GetAllocation().Type == types.AllocationType_automated
 }
@@ -330,14 +334,47 @@ func (cache *AllocationCache) Destroy() (error) {
     return nil
 }
 
+/* Permissions */
+//TODO
+func (cache *AllocationCache) CanBeUpdatedBySource(address string) error {
 
-func (cache *AllocationCache) CanBeUpdatedBySource() bool {
-    // TODO
-    return true
+    cache.GetSourceId()
+    // What would they need on the substation?
+    // Grid? Asset Management?
+
+
+	// Make sure the address calling this has Play permissions
+	if !cache.CC.PermissionHasOneOf(GetAddressPermissionIDBytes(address), types.PermissionPlay) {
+		return types.NewPermissionError("address", address, "", "", uint64(types.PermissionPlay), "play")
+	}
+
+	callingPlayer, err := cache.CC.GetPlayerByAddress(address)
+	if err != nil {
+		return err
+	}
+	if callingPlayer.GetPlayerId() != cache.GetOwnerId() {
+		if !cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.GetPlayerId()), types.PermissionPlay) {
+			return types.NewPermissionError("player", callingPlayer.GetPlayerId(), "player", cache.GetOwnerId(), uint64(types.PermissionPlay), "play")
+		}
+	}
+	return nil
 }
 
-func (cache *AllocationCache) CanBeUpdatedByController() bool {
-    // TODO
-    return true
-}
+//TODO
+func (cache *AllocationCache) CanBeUpdatedByController(address string) error {
+	// Make sure the address calling this has Play permissions
+	if !cache.CC.PermissionHasOneOf(GetAddressPermissionIDBytes(address), types.PermissionPlay) {
+		return types.NewPermissionError("address", address, "", "", uint64(types.PermissionPlay), "play")
+	}
 
+	callingPlayer, err := cache.CC.GetPlayerByAddress(address)
+	if err != nil {
+		return err
+	}
+	if callingPlayer.GetPlayerId() != cache.GetOwnerId() {
+		if !cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.GetPlayerId()), types.PermissionPlay) {
+			return types.NewPermissionError("player", callingPlayer.GetPlayerId(), "player", cache.GetOwnerId(), uint64(types.PermissionPlay), "play")
+		}
+	}
+	return nil
+}

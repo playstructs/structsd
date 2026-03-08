@@ -4,6 +4,19 @@ import (
 	"structs/x/structs/types"
 )
 
+// PermissionedObject represents any cache within the permission system
+type PermissionedObject interface {
+	// ID returns the unique identifier for this cache
+	ID() string
+
+	// Ownership Details
+	GetOwnerId() string
+	GetOwner() PlayerCache
+
+    // Rank Details
+
+}
+
 // GetPermission returns a struct attribute value, caching the result.
 func (cc *CurrentContext) GetPermissions(permissionId []byte) types.Permission {
 	if cache, exists := cc.permissions[string(permissionId)]; exists {
@@ -77,3 +90,21 @@ func (cc *CurrentContext) PermissionHasOneOf(permissionId []byte, flag types.Per
 	return currentFlags&flag != 0
 }
 
+
+
+func (cache *CurrentContext) PermissionCheck(object *PermissionedObject, activePlayer *PlayerCache, permission types.Permission) (error) {
+
+    // Make sure the address calling this has request permissions
+    if (!cache.PermissionHasAll(activePlayer.GetActiveAddressPermissionID(), permission)) {
+        return types.NewPermissionError("address", activePlayer.GetActiveAddress(), "", "", uint64(permission), "administrate")
+    }
+
+    // If the player isn't the owner, check deeper
+    if (object.GetOwnerId() != activePlayer.ID()) {
+        if (!cache.PermissionHasAll(GetObjectPermissionIDBytes(object.ID(), activePlayer.GetPlayerId()), permission)) {
+           return types.NewPermissionError("player", activePlayer.GetPlayerId(), "object", object.ID(), uint64(permission), "administrate")
+        }
+    }
+
+    return nil
+}

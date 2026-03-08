@@ -94,6 +94,7 @@ func (cache *PlayerCache) GetPlayerId()         (string) { return cache.PlayerId
 func (cache *PlayerCache) GetPrimaryAddress()   (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.PrimaryAddress }
 func (cache *PlayerCache) GetPrimaryAccount()   (sdk.AccAddress) { acc, _ := sdk.AccAddressFromBech32(cache.GetPrimaryAddress()); return acc }
 func (cache *PlayerCache) GetActiveAddress()    (string) { return cache.ActiveAddress }
+func (cache *PlayerCache) GetActiveAddressPermissionID() ([]byte) { return GetAddressPermissionIDBytes(cache.ActiveAddress) }
 func (cache *PlayerCache) GetIndex()            (uint64) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.Index }
 
 func (cache *PlayerCache) GetFleetId()      (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.FleetId }
@@ -272,44 +273,72 @@ func (cache *PlayerCache) HasStoredOre() (bool) {
 }
 
 /* Permissions */
-func (cache *PlayerCache) CanBePlayedBy(address string) (err error) {
-    return cache.CanBeAdministratedBy(address, types.PermissionPlay)
+
+func (cache *PlayerCache) CanBePlayedBy(activePlayer *PlayerCache) (err error) {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermPlay)
 }
 
-func (cache *PlayerCache) CanBeHashedBy(address string) (err error) {
-    return cache.CanBeAdministratedBy(address, types.PermissionHash)
+func (cache *PlayerCache) CanRaidHashedBy(activePlayer *PlayerCache) (err error) {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermHashRaid)
 }
 
-func (cache *PlayerCache) CanBeUpdatedBy(address string) (err error) {
-    return cache.CanBeAdministratedBy(address, types.PermissionUpdate)
+func (cache *PlayerCache) CanBuildHashedBy(activePlayer *PlayerCache) (err error) {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermHashBuild)
 }
 
-func (cache *PlayerCache) CanManageGridBy(address string) (err error) {
-    return cache.CanBeAdministratedBy(address, types.PermissionGrid)
+func (cache *PlayerCache) CanMineHashedBy(activePlayer *PlayerCache) (err error) {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermHashMine)
 }
 
-func (cache *PlayerCache) CanBeAdministratedBy(address string, permission types.Permission) (error) {
-
-    // Make sure the address calling this has request permissions
-    if (!cache.CC.PermissionHasOneOf(GetAddressPermissionIDBytes(address), permission)) {
-        return types.NewPermissionError("address", address, "", "", uint64(permission), "administrate")
-    }
-
-    if (cache.GetPrimaryAddress() != address) {
-        callingPlayer, err := cache.CC.GetPlayerByAddress(address)
-        if (err != nil) {
-            return err
-        }
-
-        if (callingPlayer.GetPlayerId() != cache.GetPlayerId()) {
-            if (!cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetPlayerId(), callingPlayer.GetPlayerId()), permission)) {
-               return types.NewPermissionError("player", callingPlayer.GetPlayerId(), "player", cache.GetPlayerId(), uint64(permission), "administrate")
-            }
-        }
-    }
-
-    return nil
+func (cache *PlayerCache) CanRefineHashedBy(activePlayer *PlayerCache) (err error) {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermHashRefine)
 }
+
+func (cache *PlayerCache) CanBeUpdatedBy(activePlayer *PlayerCache) (err error) {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermUpdate)
+}
+
+func (cache *PlayerCache) CanManageSubstationConnectionBy(activePlayer *PlayerCache) (err error) {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermSubstationConnection)
+}
+
+func (cache *PlayerCache) CanManageAllocationBy(activePlayer *PlayerCache) (err error) {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermSourceAllocation)
+}
+
+func (cache *PlayerCache) CanRegisterAddressBy(activePlayer *PlayerCache, permissionLevel types.Permission ) (error) {
+    return cache.CC.PermissionCheck(cache, activePlayer, permissionLevel)
+}
+
+func (cache *PlayerCache) CanRevokeAddressBy(activePlayer *PlayerCache) (error) {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermDelete)
+}
+
+func (cache *PlayerCache) CanBeAdministeredBy(activePlayer *PlayerCache) (err error) {
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermAdmin)
+}
+
+func (cache *PlayerCache) CanTransferTokensBy(activePlayer *PlayerCache) (err error) {
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermTokenTransfer)
+}
+
+func (cache *PlayerCache) CanInfuseTokensBy(activePlayer *PlayerCache) (err error) {
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermTokenInfuse)
+}
+
+func (cache *PlayerCache) CanMigrateTokensBy(activePlayer *PlayerCache) (err error) {
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermTokenMigrate)
+}
+
+func (cache *PlayerCache) CanDefuseTokensBy(activePlayer *PlayerCache) (err error) {
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermTokenDefuse)
+}
+
+func (cache *PlayerCache) CanManageGuildMembershipBy(activePlayer *PlayerCache) (err error) {
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildMembership)
+}
+
+
 
 func (cache *PlayerCache) ReadinessCheck() (error) {
     if (cache.IsOffline()) {
