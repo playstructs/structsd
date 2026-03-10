@@ -11,7 +11,7 @@ type PermissionedObject interface {
 
 	// Ownership Details
 	GetOwnerId() string
-	GetOwner() PlayerCache
+	GetOwner() *PlayerCache
 
     // Rank Details
 
@@ -91,20 +91,89 @@ func (cc *CurrentContext) PermissionHasOneOf(permissionId []byte, flag types.Per
 }
 
 
+// GetPermissionsGuildRank returns highestRank, caching the result.
+func (cc *CurrentContext) GetPermissionsGuildRank(object PermissionedObject, activePlayer *PlayerCache, permissionType types.Permission) uint64 {
+    id := GuildRankPermissionID(object.ID(), activePlayer.GetPlayerId(), permissionType)
 
-func (cache *CurrentContext) PermissionCheck(object *PermissionedObject, activePlayer *PlayerCache, permission types.Permission) (error) {
+	if cache, exists := cc.permissionsGuildRank[id]; exists {
+		return cc.permissionsGuildRank[id].HighestRank
+	}
+
+	highestRank := cc.k.GetHighestGuildRankForPermission(cc.ctx, object.ID(), activePlayer.GetPlayerId(), permissionType)
+
+	cc.permissions[id] = &PermissionsGuildRankCache{
+	    CC:                     cc,
+	    PermissionGuildRankID:  id,
+        ObjectId:               object.ID(),
+        PlayerId:               activePlayer.GetPlayerId(),
+        Permission:             permissionType,
+      	HighestRank:            highestRank,
+	    Loaded:                 true,
+    }
+
+	return cc.permissions[id].HighestRank
+}
+
+
+
+// SetPermissionsGuildRank returns highestRank, caching the result.
+func (cc *CurrentContext) SetPermissionsGuildRank(object PermissionedObject, activePlayer *PlayerCache, permissionType types.Permission, highestRank uint64) *PermissionsGuildRankCache {
+    id := GuildRankPermissionID(object.ID(), activePlayer.GetPlayerId(), permissionType)
+
+	cc.permissions[id] = &PermissionsGuildRankCache{
+	    CC:                     cc,
+	    PermissionGuildRankID:  id,
+        ObjectId:               object.ID(),
+        PlayerId:               activePlayer.GetPlayerId(),
+        Permission:             permissionType,
+      	HighestRank:            highestRank,
+	    Loaded:                 true,
+	    Changed:                true,
+    }
+
+	return cc.permissions[id]
+}
+
+
+
+
+func (cc *CurrentContext) PermissionCheck(object PermissionedObject, activePlayer *PlayerCache, permission types.Permission) error {
+
+    // Really shouldn't have got here but let's do a quick check
+    if object == nil || activePlayer == nil {
+        return types.NewPermissionError("player", "", "object", "", uint64(permission), "administrate")
+    }
+
+    // A check with Permissionless should always return an error
+    if permission == types.Permissionless {
+        return types.NewPermissionError("player", activePlayer.GetPlayerId(), "object", object.ID(), uint64(permission), "administrate")
+    }
+
+    // Check the Active Player exists
+    if !activePlayer.HasPlayerAccount() {
+        return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "administrate")
+    }
 
     // Make sure the address calling this has request permissions
-    if (!cache.PermissionHasAll(activePlayer.GetActiveAddressPermissionID(), permission)) {
+    if !cc.PermissionHasAll(activePlayer.GetActiveAddressPermissionID(), permission) {
         return types.NewPermissionError("address", activePlayer.GetActiveAddress(), "", "", uint64(permission), "administrate")
     }
 
-    // If the player isn't the owner, check deeper
-    if (object.GetOwnerId() != activePlayer.ID()) {
-        if (!cache.PermissionHasAll(GetObjectPermissionIDBytes(object.ID(), activePlayer.GetPlayerId()), permission)) {
-           return types.NewPermissionError("player", activePlayer.GetPlayerId(), "object", object.ID(), uint64(permission), "administrate")
+    // If the player is the owner, it's an easy yes
+    if object.GetOwnerId() == activePlayer.ID() {
+        return nil
+    }
+
+    if cc.PermissionHasAll(GetObjectPermissionIDBytes(object.ID(), activePlayer.GetPlayerId()), permission) {
+        return nil
+    }
+
+    // rank(object / activePlayer.GetGuild() / permission) => activePlayer.GetGuildRank()
+    if activePlayer.GetGuildId() != "" {
+        if cc.GetHighestGuildRankForPermission(object.ID(), activePlayer.GetGuildId(), permission) >= activePlayer.GetGuildRank() {
+            return nil
         }
     }
 
-    return nil
+    return types.NewPermissionError("player", activePlayer.GetPlayerId(), "object", object.ID(), uint64(permission), "administrate")
 }

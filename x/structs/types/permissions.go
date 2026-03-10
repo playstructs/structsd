@@ -67,19 +67,24 @@ const (
 
 	PermHashAll = PermHashBuild | PermHashMine | PermHashRefine | PermHashRaid
 
-    // 2^23 - 1 (8,388,607)
-    PermAll =   PermPlay | PermAdmin | PermUpdate | PermDelete |
-                PermTokenTransfer | PermTokenInfuse | PermTokenMigrate | PermTokenDefuse |
-                PermSourceAllocation | PermMembership |
-                PermAllocationConnection |
-                PermGuildTokenBurn | PermGuildTokenMint |
-                PermGuildEndpointUpdate | PermGuildJoinConstraintsUpdate | PermGuildSubstationUpdate |
-                PermProviderWithdraw | PermProviderOpen |
-                PermReactorGuildCreate |
-                PermHashBuild | PermHashMine | PermHashRefine | PermHashRaid
+    PermGuildAll = PermAdmin | PermUpdate | PermDelete | PermGuildMembership |
+                    PermGuildEndpointUpdate | PermGuildJoinConstraintsUpdate | PermGuildSubstationUpdate |
+                    PermGuildTokenBurn | PermGuildTokenMint
+
+
+    // 2^24 - 1 (16,777,215)
+	PermAll = PermPlay | PermAdmin | PermUpdate | PermDelete |
+		PermTokenTransfer | PermTokenInfuse | PermTokenMigrate | PermTokenDefuse |
+		PermSourceAllocation | PermGuildMembership | PermSubstationConnection |
+		PermAllocationConnection |
+		PermGuildTokenBurn | PermGuildTokenMint |
+		PermGuildEndpointUpdate | PermGuildJoinConstraintsUpdate | PermGuildSubstationUpdate |
+		PermProviderWithdraw | PermProviderOpen |
+		PermReactorGuildCreate |
+		PermHashBuild | PermHashMine | PermHashRefine | PermHashRaid
+
 
 )
-
 
 var PermissionLabel = map[Permission]string{
 	Permissionless:                 "permissionless",
@@ -92,7 +97,8 @@ var PermissionLabel = map[Permission]string{
 	PermTokenMigrate:               "token_migrate",
 	PermTokenDefuse:                "token_defuse",
 	PermSourceAllocation:           "source_allocation",
-	PermMembership:                 "membership",
+	PermGuildMembership:            "guild_membership",
+	PermSubstationConnection:       "substation_connection",
 	PermAllocationConnection:       "allocation_connection",
 	PermGuildTokenBurn:             "guild_token_burn",
 	PermGuildTokenMint:             "guild_token_mint",
@@ -106,6 +112,7 @@ var PermissionLabel = map[Permission]string{
 	PermHashMine:                   "hash_mine",
 	PermHashRefine:                 "hash_refine",
 	PermHashRaid:                   "hash_raid",
+	PermAll:                        "all",
 }
 
 var Permission_enum = map[string]Permission{
@@ -116,21 +123,23 @@ var Permission_enum = map[string]Permission{
 	"delete":                         PermDelete,
 	"token_transfer":                 PermTokenTransfer,
 	"token_infuse":                   PermTokenInfuse,
-	"token_migrate":                  PermTokenMigrate,
-	"token_defuse":                   PermTokenDefuse,
-	"source_allocation":              PermSourceAllocation,
-	"membership":                     PermMembership,
-	"allocation_connection":          PermAllocationConnection,
-	"guild_token_burn":               PermGuildTokenBurn,
-	"guild_token_mint":               PermGuildTokenMint,
-	"guild_endpoint_update":          PermGuildEndpointUpdate,
-	"guild_join_constraints_update":  PermGuildJoinConstraintsUpdate,
-	"guild_substation_update":        PermGuildSubstationUpdate,
-	"provider_withdraw":              PermProviderWithdraw,
-	"provider_open":                  PermProviderOpen,
-	"reactor_guild_create":           PermReactorGuildCreate,
-	"hash_build":                     PermHashBuild,
-	"hash_mine":                      PermHashMine,
-	"hash_refine":                    PermHashRefine,
-	"hash_raid":                      PermHashRaid,
+	"token_migrate":                 PermTokenMigrate,
+	"token_defuse":                  PermTokenDefuse,
+	"source_allocation":             PermSourceAllocation,
+	"guild_membership":              PermGuildMembership,
+	"substation_connection":         PermSubstationConnection,
+	"allocation_connection":         PermAllocationConnection,
+	"guild_token_burn":              PermGuildTokenBurn,
+	"guild_token_mint":              PermGuildTokenMint,
+	"guild_endpoint_update":         PermGuildEndpointUpdate,
+	"guild_join_constraints_update": PermGuildJoinConstraintsUpdate,
+	"guild_substation_update":       PermGuildSubstationUpdate,
+	"provider_withdraw":             PermProviderWithdraw,
+	"provider_open":                 PermProviderOpen,
+	"reactor_guild_create":          PermReactorGuildCreate,
+	"hash_build":                    PermHashBuild,
+	"hash_mine":                     PermHashMine,
+	"hash_refine":                   PermHashRefine,
+	"hash_raid":                     PermHashRaid,
+	"all":                           PermAll,
 }

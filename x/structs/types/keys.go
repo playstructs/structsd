@@ -54,6 +54,8 @@ const (
     // Rubble Length (blocks)
     StructSweepDelay = 5
 
+    DefaultEntryRank = 101 // Literally could be anything. Lower Rank is better
+
 )
 
 var (

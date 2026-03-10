@@ -62,7 +62,8 @@ type CurrentContext struct {
   	structAttributes map[string]*StructAttributeCache
   	planetAttributes map[string]*PlanetAttributeCache
 
-	permissions     map[string]*PermissionsCache
+	permissions             map[string]*PermissionsCache
+	permissionsGuildRank    map[string]*PermissionsGuildRankCache
 
 	players             map[string]*PlayerCache
 	fleets              map[uint64]*FleetCache
@@ -110,7 +111,9 @@ func (k *Keeper) NewCurrentContext(ctx context.Context) *CurrentContext {
 		structAttributes: make(map[string]*StructAttributeCache),
 		planetAttributes: make(map[string]*PlanetAttributeCache),
 
-		permissions:     make(map[string]*PermissionsCache),
+		permissions:            make(map[string]*PermissionsCache),
+		permissionsGuildRank:   make(map[string]*PermissionsGuildRankCache),
+
 
 		players:             make(map[string]*PlayerCache),
 		fleets:              make(map[uint64]*FleetCache),
@@ -238,6 +241,10 @@ func (cc *CurrentContext) CommitAll() {
 
 	for _, permissionsCache := range cc.permissions {
 	    permissionsCache.Commit()
+	}
+
+	for _, permissionsGuildRankCache := range cc.permissionsGuildRank {
+	    permissionsGuildRankCache.Commit()
 	}
 
 	cc.committed = true

@@ -2,6 +2,9 @@ package keeper
 
 import (
 	"structs/x/structs/types"
+
+	"strings"
+	"strconv"
 )
 
 type AllocationCache struct {
@@ -67,8 +70,50 @@ func (cache *AllocationCache) GetAllocation() types.Allocation {
 	return cache.Allocation
 }
 
+func (cache *AllocationCache) GetOwnerId() string {
+	return cache.GetAllocation().Controller
+}
+
+func (cache *AllocationCache) GetOwner() *PlayerCache {
+	player, _ :=  cache.CC.GetPlayer(cache.GetAllocation().Controller)
+	return player
+}
+
 func (cache *AllocationCache) GetSourceId() string {
     return cache.GetAllocation().SourceObjectId
+}
+
+func (cache *AllocationCache) GetSource() PermissionedObject {
+	sourceId := cache.GetSourceId()
+	if sourceId == "" {
+		return nil
+	}
+	parts := strings.Split(sourceId, "-")
+	if len(parts) < 2 {
+		return nil
+	}
+	typeNum, err := strconv.ParseUint(parts[0], 10, 32)
+	if err != nil {
+		return nil
+	}
+	switch types.ObjectType(typeNum) {
+	case types.ObjectType_player:
+		player, err := cache.CC.GetPlayer(sourceId)
+		if err != nil {
+			return nil
+		}
+		return player
+	case types.ObjectType_reactor:
+		return cache.CC.GetReactor(sourceId)
+	case types.ObjectType_substation:
+		return cache.CC.GetSubstation(sourceId)
+	default:
+		return nil
+	}
+}
+
+func (cache *AllocationCache) GetDestination() *SubstationCache {
+	return cache.CC.GetSubstation(cache.GetAllocation().DestinationId)
 }
 
 func (cache *AllocationCache) IsAutomated() bool {
@@ -336,45 +381,21 @@ func (cache *AllocationCache) Destroy() (error) {
 
 /* Permissions */
 //TODO
-func (cache *AllocationCache) CanBeUpdatedBySource(address string) error {
-
-    cache.GetSourceId()
-    // What would they need on the substation?
-    // Grid? Asset Management?
-
-
-	// Make sure the address calling this has Play permissions
-	if !cache.CC.PermissionHasOneOf(GetAddressPermissionIDBytes(address), types.PermissionPlay) {
-		return types.NewPermissionError("address", address, "", "", uint64(types.PermissionPlay), "play")
-	}
-
-	callingPlayer, err := cache.CC.GetPlayerByAddress(address)
-	if err != nil {
-		return err
-	}
-	if callingPlayer.GetPlayerId() != cache.GetOwnerId() {
-		if !cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.GetPlayerId()), types.PermissionPlay) {
-			return types.NewPermissionError("player", callingPlayer.GetPlayerId(), "player", cache.GetOwnerId(), uint64(types.PermissionPlay), "play")
-		}
-	}
-	return nil
+func (cache *AllocationCache) CanSourceDetailsBeUpdatedBy(activePlayer *PlayerCache) error {
+    return cache.CC.PermissionCheck(cache.GetSource(), activePlayer, types.PermSourceAllocation)
 }
 
-//TODO
-func (cache *AllocationCache) CanBeUpdatedByController(address string) error {
-	// Make sure the address calling this has Play permissions
-	if !cache.CC.PermissionHasOneOf(GetAddressPermissionIDBytes(address), types.PermissionPlay) {
-		return types.NewPermissionError("address", address, "", "", uint64(types.PermissionPlay), "play")
-	}
+func (cache *AllocationCache) CanBeConnectedBy(activePlayer *PlayerCache) error {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermAllocationConnection)
+}
 
-	callingPlayer, err := cache.CC.GetPlayerByAddress(address)
-	if err != nil {
-		return err
-	}
-	if callingPlayer.GetPlayerId() != cache.GetOwnerId() {
-		if !cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.GetPlayerId()), types.PermissionPlay) {
-			return types.NewPermissionError("player", callingPlayer.GetPlayerId(), "player", cache.GetOwnerId(), uint64(types.PermissionPlay), "play")
-		}
-	}
-	return nil
+func (cache *AllocationCache) CanBeDisconnectedBy(activePlayer *PlayerCache) error {
+    err := cache.CC.PermissionCheck(cache, activePlayer, types.PermAllocationConnection)
+
+    // success on first try
+    if err == nil {
+        return nil
+    }
+
+    return cache.CC.PermissionCheck(cache.GetDestination(), activePlayer, types.PermAllocationConnection)
 }

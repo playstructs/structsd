@@ -65,6 +65,7 @@ func (k Keeper) AppendGuild(
 	guild.Owner = player.Id
 	guild.PrimaryReactorId = reactor.Id
 	guild.EntrySubstationId = substationId
+	guild.EntryRank = types.DefaultEntryRank
 
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.GuildKey))
 	appendedValue := k.cdc.MustMarshal(&guild)
@@ -74,7 +75,7 @@ func (k Keeper) AppendGuild(
 	k.SetGuildCount(ctx, count+1)
 
 	permissionId := GetObjectPermissionIDBytes(guild.Id, player.Id)
-	k.SetPermissionsByBytes(ctx, permissionId, types.PermissionAll)
+	k.SetPermissionsByBytes(ctx, permissionId, types.PermGuildAll)
 
 	// Setup the Guild Token
 	guildDenomMetadata := banktypes.Metadata{

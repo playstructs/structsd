@@ -12,3 +12,10 @@ message PermissionRecord {
   string permissionId = 1;
   uint64 value = 2;
 }
+
+message GuildRankPermissionRecord {
+  string objectId     = 1;
+  string guildId      = 2;
+  uint64 permissions  = 3;
+  uint64 rank         = 4;
+}

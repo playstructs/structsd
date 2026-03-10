@@ -123,6 +123,11 @@ func (k Keeper) GetAllPermissionExport(ctx context.Context) (list []*types.Permi
  *
  */
 
+
+func GuildRankPermissionID(objectId string, playerId string, permission types.Permission) string {
+    return fmt.Sprintf("%s/%s/%d", objectId, playerId, permission)
+}
+
 func GuildRankKeyPrefix(objectId string, guildId string) []byte {
     return []byte(types.PermissionGuildRank + objectId + "/" + guildId + "/")
 }

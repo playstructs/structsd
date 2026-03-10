@@ -112,25 +112,7 @@ func (cache *AgreementCache) LoadDuration() bool {
 
 // Update Permission
 func (cache *AgreementCache) CanUpdate(activePlayer *PlayerCache) error {
-	return cache.PermissionCheck(types.PermissionUpdate, activePlayer)
-}
-
-func (cache *AgreementCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) error {
-	// Make sure the address calling this has permissions
-	if !cache.CC.PermissionHasOneOf(GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission) {
-		return types.NewPermissionError("address", activePlayer.GetActiveAddress(), "", "", uint64(permission), "agreement_action")
-	}
-
-	if !activePlayer.HasPlayerAccount() {
-		return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "agreement_action")
-	} else {
-		if activePlayer.GetPlayerId() != cache.GetOwnerId() {
-			if !cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetAgreementId(), activePlayer.GetPlayerId()), permission) {
-				return types.NewPermissionError("player", activePlayer.GetPlayerId(), "agreement", cache.GetAgreementId(), uint64(permission), "agreement_action")
-			}
-		}
-	}
-	return nil
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermUpdate)
 }
 
 /* Getters

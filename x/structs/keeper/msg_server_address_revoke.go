@@ -16,12 +16,17 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return &types.MsgAddressRegisterResponse{}, err
+    }
+
     player, err := cc.GetPlayerByAddress(msg.Address)
     if err != nil {
        return &types.MsgAddressRevokeResponse{}, err
     }
 
-    err = player.CanRevokeAddress(msg.Creator)
+    err = player.CanRevokeAddressBy(activePlayer)
     if err != nil {
        return &types.MsgAddressRevokeResponse{}, err
     }

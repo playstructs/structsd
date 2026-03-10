@@ -63,6 +63,14 @@ func (cache *ReactorCache) GetReactorId() string {
 	return cache.ReactorId
 }
 
+func (cache *ReactorCache) GetOwnerId()  (string) { return cache.GetReactor().Owner }
+func (cache *ReactorCache) GetOwner()    (*PlayerCache) {
+    player, err := cache.CC.GetPlayer(cache.GetOwnerId())
+    return player
+}
+
+
+
 func (cache *ReactorCache) SetGuild(guildId string) {
 	if !cache.ReactorLoaded {
 		cache.LoadReactor()

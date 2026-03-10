@@ -19,7 +19,11 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     // Add an Active Address record to the
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
-	k.AddressEmitActivity(ctx, msg.PlayerId)
+
+    activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return &types.MsgAddressRegisterResponse{}, err
+    }
 
 
     player, err := cc.GetPlayer(msg.PlayerId)
@@ -37,7 +41,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
         return &types.MsgAddressRegisterResponse{}, types.NewAddressValidationError(msg.Address, "already_registered")
     }
 
-    err = player.CanRegisterAddress(msg.Creator, types.Permission(msg.Permissions));
+    err = player.CanRegisterAddressBy(activePlayer, types.Permission(msg.Permissions));
     if err != nil {
        return &types.MsgAddressRegisterResponse{}, err
     }

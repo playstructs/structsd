@@ -22,6 +22,8 @@ message Reactor {
     (gogoproto.nullable)   = false
   ];
 
-  bytes   rawAddress                = 5;
+  bytes  rawAddress                 = 5;
+
+  string owner                      = 6;
 
 }

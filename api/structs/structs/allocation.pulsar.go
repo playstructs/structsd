@@ -866,7 +866,7 @@ type Allocation struct {
 	DestinationId  string `protobuf:"bytes,5,opt,name=destinationId,proto3" json:"destinationId,omitempty"`
 	// Who does this currently belong to
 	Creator    string `protobuf:"bytes,6,opt,name=creator,proto3" json:"creator,omitempty"`
-	Controller string `protobuf:"bytes,7,opt,name=controller,proto3" json:"controller,omitempty"`
+	Controller string `protobuf:"bytes,7,opt,name=controller,proto3" json:"controller,omitempty"` // Deprecating as of 110b
 	// Locking will be needed for IBC
 	Locked bool `protobuf:"varint,8,opt,name=locked,proto3" json:"locked,omitempty"`
 }
