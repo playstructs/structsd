@@ -85,7 +85,3 @@ func (cc *CurrentContext) GenesisImportReactorInfusions(reactor types.Reactor) {
 		}
 	}
 }
-
-func (cache *ReactorCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
-    return cache.CC.PermissionCheck(cache, activePlayer, types.PermSourceAllocation)
-}

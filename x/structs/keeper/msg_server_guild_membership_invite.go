@@ -17,22 +17,17 @@ func (k msgServer) GuildMembershipInvite(goCtx context.Context, msg *types.MsgGu
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
         return &types.MsgGuildMembershipResponse{}, err
     }
 
-    // Use cache permission methods
-    callingPlayerPermissionError := callingPlayer.CanBeAdministratedBy(msg.Creator, types.PermissionAssociations)
-    if callingPlayerPermissionError != nil {
-        return &types.MsgGuildMembershipResponse{}, callingPlayerPermissionError
-    }
-
 	if msg.GuildId == "" {
-		msg.GuildId = callingPlayer.GetGuildId()
+		msg.GuildId = activePlayer.GetGuildId()
 	}
 
-    guildMembershipApplication, guildMembershipApplicationError := cc.GetGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
+    // TODO Confirm permissions are being handled properly within.
+    guildMembershipApplication, guildMembershipApplicationError := cc.GetGuildMembershipApplicationCache(activePlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
         return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
     }

@@ -15,6 +15,13 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    player, playerErr := cc.GetPlayerByAddress(msg.Creator)
+    if playerErr != nil {
+        return &types.MsgGuildCreateResponse{}, types.NewPlayerRequiredError(msg.Creator, "guild_create")
+    }
+
+    // Need to change this to be more open.
+    // TODO should probably accept a reactor ID instead of using this method for figuring it out
     var playerAddress sdk.AccAddress
     playerAddress, _ = sdk.AccAddressFromBech32(msg.Creator)
 
@@ -28,32 +35,21 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
         return &types.MsgGuildCreateResponse{}, types.NewReactorError("guild_create", "required").WithAddress(msg.Creator, "validator")
     }
 
-    // Currently, no real reason to do permission checks that the player can
-    // add the reactor, since the player account IS the reactor
-        // TODO
-        // Although, this should be changed so that if an account
-        // that includes a validator as an associated address, it's able to perform this step
-
-
-    player, playerErr := cc.GetPlayerByAddress(msg.Creator)
-    if playerErr != nil {
-        // should really never get here as player creation is triggered
-        // during reactor initialization
-        return &types.MsgGuildCreateResponse{}, types.NewPlayerRequiredError(msg.Creator, "guild_create")
+    reactorPermissionCheck := reactor.CanCreateGuildBy(player)
+    if reactorPermissionCheck != nil {
+        return &types.MsgGuildCreateResponse{}, reactorPermissionCheck
     }
 
     if (msg.EntrySubstationId != "") {
-
         // Check that the Substation exists
         substation := cc.GetSubstation(msg.EntrySubstationId)
         if substation.CheckSubstation() != nil {
             return &types.MsgGuildCreateResponse{}, types.NewObjectNotFoundError("substation", msg.EntrySubstationId)
         }
 
-        // check that the calling player has substation permissions
-        substationObjectPermissionId := GetObjectPermissionIDBytes(msg.EntrySubstationId, player.GetPlayerId())
-        if (!cc.PermissionHasOneOf(substationObjectPermissionId, types.PermissionGrid)) {
-            return &types.MsgGuildCreateResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "substation", msg.EntrySubstationId, uint64(types.PermissionGrid), "substation_connect")
+        substationPermissionErr := substation.CanManageConnectionsBy(player)
+        if substationPermissionErr != nil {
+            return &types.MsgGuildCreateResponse{}, substationPermissionErr
         }
     }
 

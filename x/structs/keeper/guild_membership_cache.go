@@ -125,7 +125,7 @@ func (cache *GuildMembershipApplicationCache) SetSubstationIdOverride(substation
 			return types.NewObjectNotFoundError("substation", substationId)
 		}
 
-		substationPermissionError := substation.CanManagePlayerConnections(cache.CallingPlayer)
+		substationPermissionError := substation.CanManageConnectionsBy(cache.CallingPlayer)
 		if substationPermissionError != nil {
 			return substationPermissionError
 		}
@@ -228,10 +228,8 @@ func (cache *GuildMembershipApplicationCache) RevokeRequest() error {
 func (cache *GuildMembershipApplicationCache) Kick() error {
 	cache.GetPlayer().LeaveGuild()
 
-	substationPermissionCheck := cache.GetPlayer().GetSubstation().CanManagePlayerConnections(cache.CallingPlayer)
+	substationPermissionCheck := cache.GetPlayer().GetSubstation().CanManageConnectionsBy(cache.CallingPlayer)
 	if substationPermissionCheck == nil {
-		cache.GetPlayer().DisconnectSubstation()
-	} else if cache.GetPlayer().GetSubstation().GetOwnerId() == cache.GetGuild().GetOwnerId() {
 		cache.GetPlayer().DisconnectSubstation()
 	}
 
