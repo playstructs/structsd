@@ -363,3 +363,8 @@ func (cache *ProviderCache) Checkpoint() (error) {
 
     return nil
 }
+
+
+func (cache *ProviderCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    return types.NewAllocationError(cache.ID(), "unacceptable_source")
+}

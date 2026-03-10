@@ -278,6 +278,10 @@ func (cache *PlayerCache) HasStoredOre() (bool) {
 }
 
 /* Permissions */
+func (cache *PlayerCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermSourceAllocation)
+}
+
 
 func (cache *PlayerCache) CanBePlayedBy(activePlayer *PlayerCache) (err error) {
     return cache.CC.PermissionCheck(cache, activePlayer, types.PermPlay)

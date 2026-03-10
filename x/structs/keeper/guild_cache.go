@@ -190,6 +190,10 @@ func (cache *GuildCache) CanMintTokenBy(activePlayer *PlayerCache) error {
 	return cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildTokenMint)
 }
 
+func (cache *GuildCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    return types.NewAllocationError(cache.ID(), "unacceptable_source")
+}
+
 // Associations Permission
 func (cache *GuildCache) CanAddMembersByProxy(activePlayer *PlayerCache) error {
 	return cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildMembership)

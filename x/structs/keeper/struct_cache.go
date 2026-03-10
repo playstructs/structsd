@@ -491,6 +491,10 @@ func (cache *StructCache) CanBePlayedBy(address string) error {
 	return nil
 }
 
+func (cache *StructCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    return types.NewAllocationError(cache.ID(), "unacceptable_source")
+}
+
 func (cache *StructCache) CanBeHashedBy(address string) (string, bool, error) {
 	owner := true
 	// Make sure the address calling this has Hash permissions

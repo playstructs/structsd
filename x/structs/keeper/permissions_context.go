@@ -13,6 +13,9 @@ type PermissionedObject interface {
 	GetOwnerId() string
 	GetOwner() *PlayerCache
 
+    // Grid stuff
+    CanAllocateAsSourceBy(*PlayerCache) error
+
     // Rank Details
 
 }

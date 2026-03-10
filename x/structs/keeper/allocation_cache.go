@@ -97,19 +97,19 @@ func (cache *AllocationCache) GetSource() PermissionedObject {
 		return nil
 	}
 	switch types.ObjectType(typeNum) {
-	case types.ObjectType_player:
-		player, err := cache.CC.GetPlayer(sourceId)
-		if err != nil {
-			return nil
-		}
-		return player
-	case types.ObjectType_reactor:
-		return cache.CC.GetReactor(sourceId)
-	case types.ObjectType_substation:
-		return cache.CC.GetSubstation(sourceId)
-	default:
-		return nil
-	}
+        case types.ObjectType_player:
+            player, err := cache.CC.GetPlayer(sourceId)
+            if err != nil {
+                return nil
+            }
+            return player
+        case types.ObjectType_reactor:
+            return cache.CC.GetReactor(sourceId)
+        case types.ObjectType_substation:
+            return cache.CC.GetSubstation(sourceId)
+        default:
+            return nil
+        }
 }
 
 func (cache *AllocationCache) GetDestination() *SubstationCache {
@@ -398,4 +398,8 @@ func (cache *AllocationCache) CanBeDisconnectedBy(activePlayer *PlayerCache) err
     }
 
     return cache.CC.PermissionCheck(cache.GetDestination(), activePlayer, types.PermAllocationConnection)
+}
+
+func (cache *AllocationCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    return types.NewAllocationError(cache.ID(), "unacceptable_source")
 }

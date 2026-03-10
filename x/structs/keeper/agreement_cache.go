@@ -115,6 +115,11 @@ func (cache *AgreementCache) CanUpdate(activePlayer *PlayerCache) error {
 	return cache.CC.PermissionCheck(cache, activePlayer, types.PermUpdate)
 }
 
+func (cache *AgreementCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    return types.NewAllocationError(cache.ID(), "unacceptable_source")
+}
+
+
 /* Getters
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
  */

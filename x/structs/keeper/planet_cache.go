@@ -499,3 +499,7 @@ func (cache *PlanetCache) AttemptDefenseCannon(attacker *StructCache) (cannoned 
     }
     return
 }
+
+func (cache *PlanetCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    return types.NewAllocationError(cache.ID(), "unacceptable_source")
+}

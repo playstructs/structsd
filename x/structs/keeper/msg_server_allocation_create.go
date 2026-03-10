@@ -4,6 +4,9 @@ import (
 	"context"
 	"structs/x/structs/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
+
+	"strings"
+	"strconv"
 )
 
 func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocationCreate) (*types.MsgAllocationCreateResponse, error) {
@@ -14,32 +17,47 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return &types.MsgAllocationCreateResponse{}, err
+    }
+
     // If no controller set, then make it the Creator
     if (msg.Controller == ""){
-        msg.Controller = msg.Creator
-    }
-
-    player, playerErr := cc.GetPlayerByAddress(msg.Creator)
-    if playerErr != nil {
-        return &types.MsgAllocationCreateResponse{}, types.NewPlayerRequiredError(msg.Creator, "allocation_create")
-    }
-
-    sourceObjectPermissionId := GetObjectPermissionIDBytes(msg.SourceObjectId, player.GetPlayerId())
-    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-
-    // Ignore the one case where it's a player creating an allocation on themselves.
-    // Surely that doesn't need a lookup.
-    if (player.GetPlayerId() != msg.SourceObjectId) {
-        // check that the player has permissions
-        if (!cc.PermissionHasOneOf(sourceObjectPermissionId, types.PermissionAssets)) {
-            return &types.MsgAllocationCreateResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "allocation", msg.SourceObjectId, uint64(types.PermissionAssets), "allocation_create")
-        }
+        msg.Controller = activePlayer.GetPlayerId()
     }
 
 
-    // check that the account has energy management permissions
-    if (!cc.PermissionHasOneOf(addressPermissionId, types.Permission(types.PermissionAssets))) {
-        return &types.MsgAllocationCreateResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "energy_management")
+    var sourceObject PermissionedObject
+
+	parts := strings.Split(msg.SourceObjectId, "-")
+	if len(parts) < 2 {
+	    return &types.MsgAllocationCreateResponse{}, types.NewAllocationError(msg.SourceObjectId, "unacceptable_source")
+	}
+
+	typeNum, err := strconv.ParseUint(parts[0], 10, 32)
+	if err != nil {
+        return &types.MsgAllocationCreateResponse{}, types.NewAllocationError(msg.SourceObjectId, "unacceptable_source")
+	}
+
+	switch types.ObjectType(typeNum) {
+        case types.ObjectType_player:
+            player, err := cc.GetPlayer(msg.SourceObjectId)
+            if err != nil {
+                return &types.MsgAllocationCreateResponse{}, err
+            }
+            sourceObject = player
+        case types.ObjectType_reactor:
+            sourceObject = cc.GetReactor(msg.SourceObjectId)
+        case types.ObjectType_substation:
+            sourceObject = cc.GetSubstation(msg.SourceObjectId)
+        default:
+            return &types.MsgAllocationCreateResponse{}, types.NewAllocationError(msg.SourceObjectId, "unacceptable_source")
+	}
+
+    permissionErr := sourceObject.CanAllocateAsSourceBy(activePlayer)
+    if permissionErr != nil {
+            return &types.MsgAllocationCreateResponse{}, permissionErr
     }
 
     allocation, err := cc.NewAllocation(

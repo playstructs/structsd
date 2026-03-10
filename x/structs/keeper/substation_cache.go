@@ -197,3 +197,7 @@ func (cache *SubstationCache) PlayerIncrease() {
 func (cache *SubstationCache) PlayerDecrease(){
     cache.ConnectionCountDecrement(1)
 }
+
+func (cache *SubstationCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermSourceAllocation)
+}

@@ -439,3 +439,7 @@ func (cache *FleetCache) MigrateToNewPlanet(destination *PlanetCache) {
 
     cache.Changed = true
 }
+
+func (cache *FleetCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+    return types.NewAllocationError(cache.ID(), "unacceptable_source")
+}
