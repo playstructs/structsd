@@ -150,18 +150,12 @@ func (cache *GuildMembershipApplicationCache) VerifyInviteAsGuild() error {
 	return nil
 }
 
-func (cache *GuildMembershipApplicationCache) VerifyInviteAsPlayer() error {
-	if cache.GetPlayerId() != cache.CallingPlayer.GetPlayerId() {
-		if !cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetPlayerId(), cache.CallingPlayer.GetPlayerId()), types.PermissionAssociations) {
-			return types.NewPermissionError("player", cache.CallingPlayer.GetPlayerId(), "player", cache.GetPlayerId(), uint64(types.PermissionAssociations), "guild_register")
-		}
-	}
-
+func (cache *GuildMembershipApplicationCache) VerifyInviteAsPlayer(activePlayer *PlayerCache) error {
 	if cache.GetJoinType() != types.GuildJoinType_invite {
 		return types.NewGuildMembershipError(cache.GetGuildId(), cache.GetPlayerId(), "wrong_join_type").WithJoinType("invite")
 	}
 
-	return nil
+    return cache.CC.PermissionCheck(cache.GetPlayer(), activePlayer, types.PermGuildMembership)
 }
 
 func (cache *GuildMembershipApplicationCache) ApproveInvite() error {
@@ -200,18 +194,12 @@ func (cache *GuildMembershipApplicationCache) VerifyRequestAsGuild() error {
 	return nil
 }
 
-func (cache *GuildMembershipApplicationCache) VerifyRequestAsPlayer() error {
-	if cache.GetPlayerId() != cache.CallingPlayer.GetPlayerId() {
-		if !cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetPlayerId(), cache.CallingPlayer.GetPlayerId()), types.PermissionAssociations) {
-			return types.NewPermissionError("player", cache.CallingPlayer.GetPlayerId(), "player", cache.GetPlayerId(), uint64(types.PermissionAssociations), "guild_register")
-		}
-	}
-
+func (cache *GuildMembershipApplicationCache) VerifyRequestAsPlayer(activePlayer *PlayerCache) error {
 	if cache.GetJoinType() != types.GuildJoinType_request {
 		return types.NewGuildMembershipError(cache.GetGuildId(), cache.GetPlayerId(), "wrong_join_type").WithJoinType("request")
 	}
 
-	return nil
+	return cache.CC.PermissionCheck(cache.GetPlayer(), activePlayer, types.PermGuildMembership)
 }
 
 func (cache *GuildMembershipApplicationCache) ApproveRequest() error {
@@ -252,13 +240,8 @@ func (cache *GuildMembershipApplicationCache) Kick() error {
 	return nil
 }
 
-func (cache *GuildMembershipApplicationCache) VerifyDirectJoin() error {
-	if cache.GetPlayerId() != cache.CallingPlayer.GetPlayerId() {
-		if !cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetPlayerId(), cache.CallingPlayer.GetPlayerId()), types.PermissionAssociations) {
-			return types.NewPermissionError("player", cache.CallingPlayer.GetPlayerId(), "player", cache.GetPlayerId(), uint64(types.PermissionAssociations), "guild_register")
-		}
-	}
-	return nil
+func (cache *GuildMembershipApplicationCache) VerifyDirectJoin(activePlayer *PlayerCache) error {
+    return cache.CC.PermissionCheck(cache.GetPlayer(), activePlayer, types.PermGuildMembership)
 }
 
 func (cache *GuildMembershipApplicationCache) DirectJoin() error {

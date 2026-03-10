@@ -18,7 +18,7 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
 
     activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-       return &types.MsgAddressRegisterResponse{}, err
+       return &types.MsgAddressRevokeResponse{}, err
     }
 
     player, err := cc.GetPlayerByAddress(msg.Address)
