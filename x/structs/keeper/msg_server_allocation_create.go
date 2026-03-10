@@ -27,7 +27,6 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
         msg.Controller = activePlayer.GetPlayerId()
     }
 
-
     var sourceObject PermissionedObject
 
 	parts := strings.Split(msg.SourceObjectId, "-")
