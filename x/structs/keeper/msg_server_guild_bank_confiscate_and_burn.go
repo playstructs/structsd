@@ -26,7 +26,7 @@ func (k msgServer) GuildBankConfiscateAndBurn(goCtx context.Context, msg *types.
 
     guild := cc.GetGuild(activePlayer.GetGuildId())
 
-    permissionError := guild.CanAdministrateBank(activePlayer)
+    permissionError := guild.CanBurnTokenBy(activePlayer)
     if (permissionError != nil) {
         return &types.MsgGuildBankConfiscateAndBurnResponse{}, permissionError
     }

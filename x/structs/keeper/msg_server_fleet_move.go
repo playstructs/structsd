@@ -14,6 +14,10 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+        return &types.MsgFleetMoveResponse{}, types.NewPlayerRequiredError(msg.Creator, "fleet_move")
+    }
 
     // Load the fleet
     fleet, fleetLookupErr := cc.GetFleetById(msg.FleetId)
@@ -22,7 +26,7 @@ func (k msgServer) FleetMove(goCtx context.Context, msg *types.MsgFleetMove) (*t
     }
 
     // Check address play permissions
-    permissionError := fleet.GetOwner().CanBePlayedBy(msg.Creator)
+    permissionError := fleet.GetOwner().CanBePlayedBy(activePlayer)
     if (permissionError != nil) {
         return &types.MsgFleetMoveResponse{}, permissionError
     }

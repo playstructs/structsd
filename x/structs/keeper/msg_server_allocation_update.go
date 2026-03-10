@@ -29,7 +29,7 @@ func (k msgServer) AllocationUpdate(goCtx context.Context, msg *types.MsgAllocat
         return &types.MsgAllocationUpdateResponse{}, permissionErr
     }
 
-    setErr := allocation.SetDynamicPower(msg.Power)
+    _, setErr := allocation.SetDynamicPower(msg.Power)
     if setErr != nil {
         return &types.MsgAllocationUpdateResponse{}, setErr
     }

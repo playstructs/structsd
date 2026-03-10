@@ -25,7 +25,7 @@ func (k msgServer) GuildBankMint(goCtx context.Context, msg *types.MsgGuildBankM
 
     guild := cc.GetGuild(activePlayer.GetGuildId())
 
-    permissionError := guild.CanAdministrateBank(activePlayer)
+    permissionError := guild.CanMintTokenBy(activePlayer)
     if (permissionError != nil) {
         return &types.MsgGuildBankMintResponse{}, permissionError
     }
