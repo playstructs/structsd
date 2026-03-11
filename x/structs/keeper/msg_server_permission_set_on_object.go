@@ -8,6 +8,7 @@ import (
 )
 
 func (k msgServer) PermissionSetOnObject(goCtx context.Context, msg *types.MsgPermissionSetOnObject) (*types.MsgPermissionResponse, error) {
+    emptyResponse := &types.MsgPermissionResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -20,17 +21,17 @@ func (k msgServer) PermissionSetOnObject(goCtx context.Context, msg *types.MsgPe
 
     player, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return  &types.MsgPermissionResponse{}, err
+        return emptyResponse, err
     }
 
     permissionedObject := cc.GetPermissionedObject(msg.ObjectId)
     if permissionedObject == nil {
-        return  &types.MsgPermissionResponse{},  types.NewPermissionError("player", player.GetPlayerId(), "object", msg.ObjectId, uint64(msg.Permissions), "permission_grant")
+        return emptyResponse, types.NewPermissionError("player", player.GetPlayerId(), "object", msg.ObjectId, uint64(msg.Permissions), "permission_grant")
     }
 
     permissionErr := cc.PermissionCheck(permissionedObject, player, types.Permission(msg.Permissions))
     if permissionErr != nil {
-        return  &types.MsgPermissionResponse{}, permissionErr
+        return emptyResponse, permissionErr
     }
 
     targetPlayerPermissionId := GetObjectPermissionIDBytes(msg.ObjectId, msg.PlayerId)

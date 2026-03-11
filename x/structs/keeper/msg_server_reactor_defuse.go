@@ -10,6 +10,7 @@ import (
 )
 
 func (k msgServer) ReactorDefuse(goCtx context.Context, msg *types.MsgReactorDefuse) (*types.MsgReactorDefuseResponse, error) {
+    emptyResponse := &types.MsgReactorDefuseResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -19,54 +20,54 @@ func (k msgServer) ReactorDefuse(goCtx context.Context, msg *types.MsgReactorDef
 
     callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-       return &types.MsgReactorDefuseResponse{}, err
+       return emptyResponse, err
     }
 
     // Load the player related to the specified address
     // Normally the address specified should be the PrimaryAddress
     player, err := cc.GetPlayerByAddress(msg.DelegatorAddress)
     if err != nil {
-       return &types.MsgReactorDefuseResponse{}, err
+       return emptyResponse, err
     }
 
     err = player.CanDefuseTokensBy(callingPlayer)
     if err != nil {
-       return &types.MsgReactorDefuseResponse{}, err
+       return emptyResponse, err
     }
 
     delegatorAddress, delegatorAddressErr := sdk.AccAddressFromBech32(msg.DelegatorAddress)
  	if delegatorAddressErr != nil {
- 		return &types.MsgReactorDefuseResponse{}, types.NewAddressValidationError(msg.DelegatorAddress, "invalid_delegator")
+ 		return emptyResponse, types.NewAddressValidationError(msg.DelegatorAddress, "invalid_delegator")
  	}
 
     valAddr, valErr := sdk.ValAddressFromBech32(msg.ValidatorAddress)
 	if valErr != nil {
-		return &types.MsgReactorDefuseResponse{}, types.NewAddressValidationError(msg.ValidatorAddress, "invalid_validator")
+		return emptyResponse, types.NewAddressValidationError(msg.ValidatorAddress, "invalid_validator")
 	}
 
 	if !msg.Amount.IsValid() || !msg.Amount.Amount.IsPositive() {
-		return &types.MsgReactorDefuseResponse{}, types.NewReactorError("defuse", "invalid_amount")
+		return emptyResponse, types.NewReactorError("defuse", "invalid_amount")
 	}
 
 	bondDenom, err := k.stakingKeeper.BondDenom(ctx)
 	if err != nil {
-		return &types.MsgReactorDefuseResponse{}, err
+		return emptyResponse, err
 	}
 
 	if msg.Amount.Denom != bondDenom {
-		return &types.MsgReactorDefuseResponse{}, types.NewReactorError("defuse", "invalid_denom").WithDenom(msg.Amount.Denom, bondDenom)
+		return emptyResponse, types.NewReactorError("defuse", "invalid_denom").WithDenom(msg.Amount.Denom, bondDenom)
 	}
 
 	shares, err := k.stakingKeeper.ValidateUnbondAmount(
 		ctx, delegatorAddress, valAddr, msg.Amount.Amount,
 	)
 	if err != nil {
-		return &types.MsgReactorDefuseResponse{}, err
+		return emptyResponse, err
 	}
 
 	completionTime, undelegatedAmt, err := k.stakingKeeper.Undelegate(ctx, delegatorAddress, valAddr, shares)
 	if err != nil {
-		return &types.MsgReactorDefuseResponse{}, err
+		return emptyResponse, err
 	}
 
 	undelegatedCoin := sdk.NewCoin(msg.Amount.Denom, undelegatedAmt)

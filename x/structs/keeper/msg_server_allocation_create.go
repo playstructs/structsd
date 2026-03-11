@@ -10,6 +10,7 @@ import (
 )
 
 func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocationCreate) (*types.MsgAllocationCreateResponse, error) {
+    emptyResponse := &types.MsgAllocationCreateResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -19,7 +20,7 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
 
     activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-       return &types.MsgAllocationCreateResponse{}, err
+       return emptyResponse, err
     }
 
     // If no controller set, then make it the Creator
@@ -31,19 +32,19 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
 
 	parts := strings.Split(msg.SourceObjectId, "-")
 	if len(parts) < 2 {
-	    return &types.MsgAllocationCreateResponse{}, types.NewAllocationError(msg.SourceObjectId, "unacceptable_source")
+	    return emptyResponse, types.NewAllocationError(msg.SourceObjectId, "unacceptable_source")
 	}
 
 	typeNum, err := strconv.ParseUint(parts[0], 10, 32)
 	if err != nil {
-        return &types.MsgAllocationCreateResponse{}, types.NewAllocationError(msg.SourceObjectId, "unacceptable_source")
+        return emptyResponse, types.NewAllocationError(msg.SourceObjectId, "unacceptable_source")
 	}
 
 	switch types.ObjectType(typeNum) {
         case types.ObjectType_player:
             player, err := cc.GetPlayer(msg.SourceObjectId)
             if err != nil {
-                return &types.MsgAllocationCreateResponse{}, err
+                return emptyResponse, err
             }
             sourceObject = player
         case types.ObjectType_reactor:
@@ -51,12 +52,12 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
         case types.ObjectType_substation:
             sourceObject = cc.GetSubstation(msg.SourceObjectId)
         default:
-            return &types.MsgAllocationCreateResponse{}, types.NewAllocationError(msg.SourceObjectId, "unacceptable_source")
+            return emptyResponse, types.NewAllocationError(msg.SourceObjectId, "unacceptable_source")
 	}
 
     permissionErr := sourceObject.CanAllocateAsSourceBy(activePlayer)
     if permissionErr != nil {
-            return &types.MsgAllocationCreateResponse{}, permissionErr
+            return emptyResponse, permissionErr
     }
 
     allocation, err := cc.NewAllocation(

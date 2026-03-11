@@ -8,6 +8,7 @@ import (
 )
 
 func (k msgServer) StructBuildCancel(goCtx context.Context, msg *types.MsgStructBuildCancel) (*types.MsgStructStatusResponse, error) {
+    emptyResponse := &types.MsgStructStatusResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -17,7 +18,7 @@ func (k msgServer) StructBuildCancel(goCtx context.Context, msg *types.MsgStruct
 
     callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-       return &types.MsgStructStatusResponse{}, err
+       return emptyResponse, err
     }
 
     // load struct
@@ -26,16 +27,16 @@ func (k msgServer) StructBuildCancel(goCtx context.Context, msg *types.MsgStruct
     // Check to see if the caller has permissions to proceed
     permissionError := structure.CanBePlayedBy(callingPlayer)
     if (permissionError != nil) {
-        return &types.MsgStructStatusResponse{}, permissionError
+        return emptyResponse, permissionError
     }
 
     if !structure.LoadStruct(){
-        return &types.MsgStructStatusResponse{}, types.NewObjectNotFoundError("struct", msg.StructId)
+        return emptyResponse, types.NewObjectNotFoundError("struct", msg.StructId)
     }
 
     if structure.IsBuilt() {
         structure.GetOwner().Discharge()
-        return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.StructId, "built", "building", "build_cancel")
+        return emptyResponse, types.NewStructStateError(msg.StructId, "built", "building", "build_cancel")
     }
 
     structure.DestroyAndCommit()

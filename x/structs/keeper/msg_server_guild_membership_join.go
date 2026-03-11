@@ -10,6 +10,7 @@ import (
 )
 
 func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuildMembershipJoin) (*types.MsgGuildMembershipResponse, error) {
+    emptyResponse := &types.MsgGuildMembershipResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -19,7 +20,7 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 
     callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return &types.MsgGuildMembershipResponse{}, err
+        return emptyResponse, err
     }
 
     if (msg.PlayerId == "") {
@@ -32,12 +33,12 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 
     guildMembershipApplication, guildMembershipApplicationError := cc.GetGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_direct, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
-        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
+        return emptyResponse, guildMembershipApplicationError
     }
 
     guildMembershipApplicationError = guildMembershipApplication.VerifyDirectJoin()
     if guildMembershipApplicationError != nil {
-        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
+        return emptyResponse, guildMembershipApplicationError
     }
 
     var infusionMigrationList []types.Infusion
@@ -47,7 +48,7 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 
     destinationReactor, destinationReactorFound := k.GetReactor(ctx, guildMembershipApplication.GetGuild().GetPrimaryReactorId())
     if (!destinationReactorFound) {
-        return &types.MsgGuildMembershipResponse{}, types.NewObjectNotFoundError("reactor", guildMembershipApplication.GetGuild().GetPrimaryReactorId())
+        return emptyResponse, types.NewObjectNotFoundError("reactor", guildMembershipApplication.GetGuild().GetPrimaryReactorId())
     }
     destinationValidatorAccount, _ := sdk.ValAddressFromBech32(destinationReactor.Validator)
 
@@ -70,20 +71,20 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
 
             infusion, infusionFound := k.GetInfusionByID(ctx, infusionId)
             if (!infusionFound) {
-                return &types.MsgGuildMembershipResponse{}, types.NewObjectNotFoundError("infusion", infusionId)
+                return emptyResponse, types.NewObjectNotFoundError("infusion", infusionId)
             }
 
             if (infusion.PlayerId != msg.PlayerId) {
-                return &types.MsgGuildMembershipResponse{}, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "infusion_ownership").WithInfusion(infusionId)
+                return emptyResponse, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "infusion_ownership").WithInfusion(infusionId)
             }
 
             if (infusion.DestinationType != types.ObjectType_reactor) {
-                return &types.MsgGuildMembershipResponse{}, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "invalid_infusion_type").WithInfusion(infusionId)
+                return emptyResponse, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "invalid_infusion_type").WithInfusion(infusionId)
             }
 
             sourceReactor, sourceReactorFound := k.GetReactor(ctx, infusion.DestinationId)
             if (!sourceReactorFound) {
-                return &types.MsgGuildMembershipResponse{}, types.NewObjectNotFoundError("reactor", infusion.DestinationId)
+                return emptyResponse, types.NewObjectNotFoundError("reactor", infusion.DestinationId)
             }
 
             if (sourceReactor.GuildId != msg.GuildId) {
@@ -108,7 +109,7 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
                     ctx, infusionAccount, sourceValidatorAccount, redelegateAmount,
                 )
                 if validationErr != nil {
-                    return &types.MsgGuildMembershipResponse{}, validationErr
+                    return emptyResponse, validationErr
                 }
 
                 // The actual redelegation process will only start after all values are checked
@@ -125,14 +126,14 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
         }
 
         if (currentFuel < guildMembershipApplication.GetGuild().GetJoinInfusionMinimum()) {
-            return &types.MsgGuildMembershipResponse{}, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "minimum_not_met").WithMinimum(guildMembershipApplication.GetGuild().GetJoinInfusionMinimum(), currentFuel)
+            return emptyResponse, types.NewGuildMembershipError(msg.GuildId, msg.PlayerId, "minimum_not_met").WithMinimum(guildMembershipApplication.GetGuild().GetJoinInfusionMinimum(), currentFuel)
         }
     }
 
 	if msg.SubstationId != "" {
 	    substationOverrideError := guildMembershipApplication.SetSubstationIdOverride(msg.SubstationId)
 	    if substationOverrideError != nil {
-	        return &types.MsgGuildMembershipResponse{}, substationOverrideError
+	        return emptyResponse, substationOverrideError
 	    }
 	}
 
@@ -153,7 +154,7 @@ func (k msgServer) GuildMembershipJoin(goCtx context.Context, msg *types.MsgGuil
         // This is kinda a problem by now tbh
         // Maybe tell an adult if this happens
         if redelegationErr != nil {
-            return &types.MsgGuildMembershipResponse{}, redelegationErr
+            return emptyResponse, redelegationErr
         }
 
         ctx.EventManager().EmitEvents(sdk.Events{

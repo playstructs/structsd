@@ -8,9 +8,9 @@ import (
 )
 
 func (k msgServer) PermissionSetOnAddress(goCtx context.Context, msg *types.MsgPermissionSetOnAddress) (*types.MsgPermissionResponse, error) {
+    emptyResponse := &types.MsgPermissionResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
-
 
     // Add an Active Address record to the
     // indexer for UI requirements
@@ -20,17 +20,17 @@ func (k msgServer) PermissionSetOnAddress(goCtx context.Context, msg *types.MsgP
 
     callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return  &types.MsgPermissionResponse{}, err
+        return  emptyResponse, err
     }
 
     targetPlayer, err := cc.GetPlayerByAddress(msg.Address)
     if err != nil {
-         return  &types.MsgPermissionResponse{}, err
+         return  emptyResponse, err
      }
 
     permissionErr := targetPlayer.CanRegisterAddressBy(callingPlayer, types.Permission(msg.Permissions))
     if permissionErr != nil {
-        return  &types.MsgPermissionResponse{}, permissionErr
+        return  emptyResponse, permissionErr
     }
 
     targetAddressPermissionId := GetAddressPermissionIDBytes(msg.Address)

@@ -7,6 +7,7 @@ import (
 )
 
 func (k msgServer) SubstationPlayerDisconnect(goCtx context.Context, msg *types.MsgSubstationPlayerDisconnect) (*types.MsgSubstationPlayerDisconnectResponse, error) {
+    emptyResponse := &types.MsgSubstationPlayerDisconnectResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -14,28 +15,26 @@ func (k msgServer) SubstationPlayerDisconnect(goCtx context.Context, msg *types.
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	player, playerErr := cc.GetPlayerByAddress(msg.Creator)
+	callingPlayer, playerErr := cc.GetPlayerByAddress(msg.Creator)
     if playerErr != nil {
-        return &types.MsgSubstationPlayerDisconnectResponse{}, playerErr
+        return emptyResponse, playerErr
     }
 
 	targetPlayer, _ := cc.GetPlayer(msg.PlayerId)
     if targetPlayer.CheckPlayer() != nil {
-        return &types.MsgSubstationPlayerDisconnectResponse{}, targetPlayer.CheckPlayer()
+        return emptyResponse, targetPlayer.CheckPlayer()
     }
 
     substation := cc.GetSubstation(targetPlayer.GetSubstationId())
     if substation.CheckSubstation() != nil {
-        return &types.MsgSubstationPlayerDisconnectResponse{}, types.NewObjectNotFoundError("substation", targetPlayer.GetSubstationId())
+        return emptyResponse, types.NewObjectNotFoundError("substation", targetPlayer.GetSubstationId())
     }
 
-    permissionSubstationErr := substation.CanManagePlayerConnections(player)
-    if permissionSubstationErr != nil {
-        // It might be ok if they don't have permissions on the substation
-        // as long as they have permissions on themselves.
-        permissionPlayerErr := targetPlayer.CanManageGridBy(msg.Creator)
-        if permissionPlayerErr != nil {
-            return &types.MsgSubstationPlayerDisconnectResponse{}, permissionPlayerErr
+    permissionPlayerErr := targetPlayer.CanManageSubstationConnectionBy(callingPlayer)
+    if permissionPlayerErr != nil {
+        substationPermissionErr := substation.CanManageConnectionsBy(callingPlayer)
+        if substationPermissionErr != nil {
+            return emptyResponse, substationPermissionErr
         }
     }
 

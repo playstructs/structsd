@@ -14,6 +14,7 @@ import (
 )
 
 func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.MsgGuildMembershipJoinProxy) (*types.MsgGuildMembershipResponse, error) {
+    emptyResponse := &types.MsgGuildMembershipResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -27,7 +28,7 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	// look up destination guild
 	guild := cc.GetGuild(proxyPlayer.GetGuildId())
 	if guild.CheckGuild() != nil {
-		return &types.MsgGuildMembershipResponse{}, types.NewObjectNotFoundError("guild", proxyPlayer.GetGuildId())
+		return emptyResponse, types.NewObjectNotFoundError("guild", proxyPlayer.GetGuildId())
 	}
 
 	// Decode the PubKey from hex Encoding
@@ -42,7 +43,7 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	address := types.PubKeyToBech32(decodedProofPubKey)
 
 	if address != msg.Address {
-		return &types.MsgGuildMembershipResponse{}, types.NewAddressValidationError(msg.Address, "proof_mismatch").WithPlayers(address, msg.Address)
+		return emptyResponse, types.NewAddressValidationError(msg.Address, "proof_mismatch").WithPlayers(address, msg.Address)
 	}
 
 	pubKey := crypto.PubKey{}
@@ -78,12 +79,12 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 
 	// Proof needs to only be 64 characters. Some systems provide a checksum bit on the end that ruins it all
 	if !pubKey.VerifySignature([]byte(hashInput), decodedProofSignature[:64]) {
-		return &types.MsgGuildMembershipResponse{}, types.NewAddressValidationError(msg.Address, "signature_invalid")
+		return emptyResponse, types.NewAddressValidationError(msg.Address, "signature_invalid")
 	}
 
     guildPermissionErr := guild.CanAddMembersByProxy(proxyPlayer)
     if guildPermissionErr != nil {
-    	return &types.MsgGuildMembershipResponse{}, nil
+    	return emptyResponse, nil
     }
 
 	var substation *SubstationCache
@@ -101,14 +102,14 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	if msg.SubstationId != "" {
 		substation = cc.GetSubstation(msg.SubstationId)
 		if substation.CheckSubstation() != nil {
-			return &types.MsgGuildMembershipResponse{}, types.NewObjectNotFoundError("substation", msg.SubstationId).WithContext("override substation")
+			return emptyResponse, types.NewObjectNotFoundError("substation", msg.SubstationId).WithContext("override substation")
 		}
 
 		// Since the Guild Entry Substation is being overridden, let's make
 		// sure the ProxyPlayer actually have authority over this substation
 		substationPermissionErr := substation.CanManageConnectionsBy(proxyPlayer)
 		if substationPermissionErr != nil {
-			return &types.MsgGuildMembershipResponse{}, substationPermissionErr
+			return emptyResponse, substationPermissionErr
 		}
 		substationSet = true
 	}
@@ -116,7 +117,7 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	if !substationSet {
 		substation = cc.GetSubstation(guild.GetEntrySubstationId())
 		if substation.CheckSubstation() != nil {
-			return &types.MsgGuildMembershipResponse{}, types.NewObjectNotFoundError("substation", guild.GetEntrySubstationId()).WithContext("guild entry substation for " + guild.GetGuildId())
+			return emptyResponse, types.NewObjectNotFoundError("substation", guild.GetEntrySubstationId()).WithContext("guild entry substation for " + guild.GetGuildId())
 		}
 	}
 

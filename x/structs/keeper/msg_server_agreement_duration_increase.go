@@ -8,6 +8,7 @@ import (
 )
 
 func (k msgServer) AgreementDurationIncrease(goCtx context.Context, msg *types.MsgAgreementDurationIncrease) (*types.MsgAgreementResponse, error) {
+    emptyResponse := &types.MsgAgreementResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -20,18 +21,18 @@ func (k msgServer) AgreementDurationIncrease(goCtx context.Context, msg *types.M
 
     permissionError := agreement.CanUpdate(activePlayer)
     if (permissionError != nil) {
-        return &types.MsgAgreementResponse{}, permissionError
+        return emptyResponse, permissionError
     }
 
     // increase duration by adding more collateral
     paramError := agreement.DurationIncrease(msg.DurationIncrease)
     if paramError != nil {
-        return &types.MsgAgreementResponse{}, paramError
+        return emptyResponse, paramError
     }
 
     sourceAcc, errParam := sdk.AccAddressFromBech32(activePlayer.GetPrimaryAddress())
     if errParam != nil {
-        return &types.MsgAgreementResponse{}, errParam
+        return emptyResponse, errParam
     }
 
     // Amount to be sent
@@ -40,13 +41,13 @@ func (k msgServer) AgreementDurationIncrease(goCtx context.Context, msg *types.M
 
 
     if !k.bankKeeper.HasBalance(ctx, sourceAcc, collateralAmountCoin) {
-        return &types.MsgAgreementResponse{}, types.NewPlayerAffordabilityError(activePlayer.GetPlayerId(), "agreement_duration_increase", collateralAmountCoin.String())
+        return emptyResponse, types.NewPlayerAffordabilityError(activePlayer.GetPlayerId(), "agreement_duration_increase", collateralAmountCoin.String())
     }
 
     // move the funds from user to provider collateral pool
     errSend := k.bankKeeper.SendCoins(ctx, sourceAcc, agreement.GetProvider().GetCollateralPoolLocation(), collateralAmountCoins)
     if errSend != nil {
-        return &types.MsgAgreementResponse{}, errSend
+        return emptyResponse, errSend
     }
 
 	cc.CommitAll()

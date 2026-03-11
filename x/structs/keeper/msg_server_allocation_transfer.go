@@ -7,6 +7,7 @@ import (
 )
 
 func (k msgServer) AllocationTransfer(goCtx context.Context, msg *types.MsgAllocationTransfer) (*types.MsgAllocationTransferResponse, error) {
+    emptyResponse := &types.MsgAllocationTransferResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -16,24 +17,24 @@ func (k msgServer) AllocationTransfer(goCtx context.Context, msg *types.MsgAlloc
 
     activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return &types.MsgAllocationTransferResponse{}, types.NewPlayerRequiredError(msg.Creator, "allocation_delete")
+        return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "allocation_delete")
     }
 
     _, err = cc.GetPlayerByAddress(msg.Controller)
     if err != nil {
-        return &types.MsgAllocationTransferResponse{}, types.NewPlayerRequiredError(msg.Controller, "allocation_delete")
+        return emptyResponse, types.NewPlayerRequiredError(msg.Controller, "allocation_delete")
     }
 
 
     // Check permissions on the substation
 	allocation, allocationFound := cc.GetAllocation(msg.AllocationId)
 	if (!allocationFound) {
-		return &types.MsgAllocationTransferResponse{}, types.NewObjectNotFoundError("allocation", msg.AllocationId)
+		return emptyResponse, types.NewObjectNotFoundError("allocation", msg.AllocationId)
 	}
 
     permissionErr := allocation.CanBeTransferBy(activePlayer)
     if permissionErr != nil {
-        return &types.MsgAllocationTransferResponse{}, permissionErr
+        return emptyResponse, permissionErr
     }
 
     allocation.SetController(msg.Controller)

@@ -8,6 +8,7 @@ import (
 )
 
 func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.MsgPlayerUpdatePrimaryAddress) (*types.MsgPlayerUpdatePrimaryAddressResponse, error) {
+    emptyResponse := &types.MsgPlayerUpdatePrimaryAddressResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -17,22 +18,22 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
 
     callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, err
+        return emptyResponse, err
     }
 
     player, err := cc.GetPlayerByAddress(msg.PrimaryAddress)
     if err != nil {
-       return &types.MsgPlayerUpdatePrimaryAddressResponse{}, err
+       return emptyResponse, err
     }
 
     err = player.CanBeAdministeredBy(callingPlayer)
     if err != nil {
-       return &types.MsgPlayerUpdatePrimaryAddressResponse{}, err
+       return emptyResponse, err
     }
 
     _ , addressValidationError := sdk.AccAddressFromBech32(msg.PrimaryAddress)
     if (addressValidationError != nil){
-        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, types.NewAddressValidationError(msg.PrimaryAddress, "invalid_format")
+        return emptyResponse, types.NewAddressValidationError(msg.PrimaryAddress, "invalid_format")
     }
 
     // Move Funds
@@ -45,7 +46,7 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
     // Transfer
     err = k.bankKeeper.SendCoins(ctx, oldAcc, newAcc, balances)
     if err != nil {
-        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, err
+        return emptyResponse, err
     }
 
     // Move Reactor Infusions over

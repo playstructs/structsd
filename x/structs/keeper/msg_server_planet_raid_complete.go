@@ -27,6 +27,7 @@ import (
 */
 
 func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlanetRaidComplete) (*types.MsgPlanetRaidCompleteResponse, error) {
+    emptyResponse := &types.MsgPlanetRaidCompleteResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -37,30 +38,30 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 	// Load Fleet
 	fleet, fleetLoadError := cc.GetFleetById(msg.FleetId)
 	if fleetLoadError != nil {
-		return &types.MsgPlanetRaidCompleteResponse{}, fleetLoadError
+		return emptyResponse, fleetLoadError
 	}
 
 	// Check calling address can use Fleet
 	/*
 	   permissionError := fleet.GetOwner().CanBeHashedBy(msg.Creator)
 	   if (permissionError != nil) {
-	       return &types.MsgPlanetRaidCompleteResponse{}, permissionError
+	       return emptyResponse, permissionError
 	   }
 	*/
 
 	// check that the fleet is Away
 	if fleet.IsOnStation() {
-		return &types.MsgPlanetRaidCompleteResponse{}, types.NewFleetStateError(fleet.GetFleetId(), "on_station", "raid_complete")
+		return emptyResponse, types.NewFleetStateError(fleet.GetFleetId(), "on_station", "raid_complete")
 	}
 
 	// check that forward pointer for the fleet is ""
 	if fleet.GetFleet().LocationListForward != "" {
-		return &types.MsgPlanetRaidCompleteResponse{}, types.NewFleetStateError(fleet.GetFleetId(), "not_first_in_queue", "raid_complete").WithPosition(0)
+		return emptyResponse, types.NewFleetStateError(fleet.GetFleetId(), "not_first_in_queue", "raid_complete").WithPosition(0)
 	}
 
 	// check that the player is online
 	if fleet.GetOwner().IsOffline() {
-		return &types.MsgPlanetRaidCompleteResponse{}, types.NewPlayerPowerError(fleet.GetOwnerId(), "offline")
+		return emptyResponse, types.NewPlayerPowerError(fleet.GetOwnerId(), "offline")
 	}
 
 	raidedPlanet := fleet.GetPlanet().GetPlanetId()
@@ -71,7 +72,7 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 	valid, achievedDifficulty := types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, fleet.GetPlanet().GetPlanetaryShield());
 	if !valid {
 		//_ = ctx.EventManager().EmitTypedEvent(&types.EventRaid{&types.EventRaidDetail{FleetId: fleet.GetFleetId(), PlanetId: raidedPlanet, Status: types.RaidStatus_ongoing}})
-		return &types.MsgPlanetRaidCompleteResponse{}, types.NewWorkFailureError("raid", fleet.GetFleetId(), hashInput).WithPlanet(fleet.GetPlanet().GetPlanetId())
+		return emptyResponse, types.NewWorkFailureError("raid", fleet.GetFleetId(), hashInput).WithPlanet(fleet.GetPlanet().GetPlanetId())
 	}
 
 	// Award the Ore from the defender to attacker

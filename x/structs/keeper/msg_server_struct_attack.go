@@ -9,6 +9,7 @@ import (
 )
 
 func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttack) (*types.MsgStructAttackResponse, error) {
+    emptyResponse := &types.MsgStructAttackResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -18,7 +19,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
     callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-       return &types.MsgStructAttackResponse{}, err
+       return emptyResponse, err
     }
 
 	structure := cc.GetStruct(msg.OperatingStructId)
@@ -27,31 +28,31 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 	// Check to see if the caller has permissions to proceed
 	permissionError := structure.CanBePlayedBy(callingPlayer)
 	if permissionError != nil {
-		return &types.MsgStructAttackResponse{}, permissionError
+		return emptyResponse, permissionError
 	}
 
 	// Is the Struct & Owner online?
 	readinessError := structure.ReadinessCheck()
 	if readinessError != nil {
-		return &types.MsgStructAttackResponse{}, readinessError
+		return emptyResponse, readinessError
 	}
 
 	if !structure.IsCommandable() {
-		return &types.MsgStructAttackResponse{}, types.NewFleetCommandError(structure.GetFleet().GetFleetId(), "command_offline").WithStructId(structure.GetStructId())
+		return emptyResponse, types.NewFleetCommandError(structure.GetFleet().GetFleetId(), "command_offline").WithStructId(structure.GetStructId())
 	}
 
 	weaponSystem, weaponSystemExists := types.TechWeaponSystem_enum[msg.WeaponSystem]
 	if !weaponSystemExists {
-		return &types.MsgStructAttackResponse{}, types.NewParameterValidationError("weapon_system", 0, "invalid")
+		return emptyResponse, types.NewParameterValidationError("weapon_system", 0, "invalid")
 	}
 
 	weaponSystemError := structure.GetStructType().VerifyWeaponSystem(weaponSystem)
 	if weaponSystemError != nil {
-		return &types.MsgStructAttackResponse{}, weaponSystemError
+		return emptyResponse, weaponSystemError
 	}
 
 	if structure.GetOwner().GetCharge() < structure.GetStructType().GetWeaponCharge(weaponSystem) {
-		return &types.MsgStructAttackResponse{}, types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().GetWeaponCharge(weaponSystem), structure.GetOwner().GetCharge(), "attack").WithStructType(structure.GetTypeId())
+		return emptyResponse, types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().GetWeaponCharge(weaponSystem), structure.GetOwner().GetCharge(), "attack").WithStructType(structure.GetTypeId())
 	}
 
 	// Jump out of Stealth Mode for the attack
@@ -67,7 +68,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 	var targetWasOnPlanet *PlanetCache
 
 	if uint64(len(msg.TargetStructId)) != structure.GetStructType().GetWeaponTargets(weaponSystem) {
-		return &types.MsgStructAttackResponse{}, types.NewCombatTargetingError(structure.GetStructId(), "", msg.WeaponSystem, "incomplete_targeting")
+		return emptyResponse, types.NewCombatTargetingError(structure.GetStructId(), "", msg.WeaponSystem, "incomplete_targeting")
 	}
 
 	// Begin taking shots. Most weapons only use a single shot but some perform multiple.
@@ -76,7 +77,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
 		targetStructure := cc.GetStruct(msg.TargetStructId[shot])
 		if !targetStructure.LoadStruct() {
-			return &types.MsgStructAttackResponse{}, types.NewObjectNotFoundError("struct", msg.TargetStructId[shot])
+			return emptyResponse, types.NewObjectNotFoundError("struct", msg.TargetStructId[shot])
 		}
 
 		targetStructure.ManualLoadEventAttackDetail(eventAttackDetail)
@@ -96,7 +97,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 		// This includes both a weapon<->ambit check, and a fleet<->planet
 		targetingError := structure.CanAttack(targetStructure, weaponSystem)
 		if targetingError != nil {
-			return &types.MsgStructAttackResponse{}, targetingError
+			return emptyResponse, targetingError
 		}
 
 		k.logger.Info("Struct Targetable", "target", msg.TargetStructId[shot])

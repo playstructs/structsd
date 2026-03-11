@@ -7,6 +7,7 @@ import (
 )
 
 func (k msgServer) SubstationPlayerMigrate(goCtx context.Context, msg *types.MsgSubstationPlayerMigrate) (*types.MsgSubstationPlayerMigrateResponse, error) {
+    emptyResponse := &types.MsgSubstationPlayerMigrateResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -14,19 +15,19 @@ func (k msgServer) SubstationPlayerMigrate(goCtx context.Context, msg *types.Msg
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	player, playerErr := cc.GetPlayerByAddress(msg.Creator)
+	callingPlayer, playerErr := cc.GetPlayerByAddress(msg.Creator)
     if playerErr != nil {
-        return &types.MsgSubstationPlayerMigrateResponse{}, playerErr
+        return emptyResponse, playerErr
     }
 
     substation := cc.GetSubstation(msg.SubstationId)
     if substation.CheckSubstation() != nil {
-        return &types.MsgSubstationPlayerMigrateResponse{}, types.NewObjectNotFoundError("substation", msg.SubstationId)
+        return emptyResponse, types.NewObjectNotFoundError("substation", msg.SubstationId)
     }
 
-    permissionSubstationErr := substation.CanManagePlayerConnections(player)
-    if permissionSubstationErr != nil {
-        return &types.MsgSubstationPlayerMigrateResponse{}, permissionSubstationErr
+    substationPermissionErr := substation.CanManageConnectionsBy(callingPlayer)
+    if substationPermissionErr != nil {
+        return emptyResponse, substationPermissionErr
     }
 
     var targetPlayers []*PlayerCache
@@ -34,17 +35,16 @@ func (k msgServer) SubstationPlayerMigrate(goCtx context.Context, msg *types.Msg
 
         targetPlayer, err := cc.GetPlayer(targetPlayerId)
         if err != nil {
-            return &types.MsgSubstationPlayerMigrateResponse{}, err
+            return emptyResponse, err
         }
         if targetPlayer.CheckPlayer() != nil {
-            return &types.MsgSubstationPlayerMigrateResponse{}, types.NewObjectNotFoundError("player", targetPlayerId)
+            return emptyResponse, types.NewObjectNotFoundError("player", targetPlayerId)
         }
 
         // check permissions
-        if (player.GetPlayerId() != targetPlayerId) {
-            if targetPlayer.CanManageGridBy(msg.Creator) != nil {
-                return &types.MsgSubstationPlayerMigrateResponse{}, targetPlayer.CanManageGridBy(msg.Creator)
-            }
+        permissionPlayerErr := targetPlayer.CanManageSubstationConnectionBy(callingPlayer)
+        if permissionPlayerErr != nil {
+            return emptyResponse, permissionPlayerErr
         }
 
         targetPlayers = append(targetPlayers, targetPlayer)

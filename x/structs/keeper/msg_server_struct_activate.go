@@ -9,7 +9,8 @@ import (
 )
 
 func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructActivate) (*types.MsgStructStatusResponse, error) {
-    ctx := sdk.UnwrapSDKContext(goCtx)
+    emptyResponse := &types.MsgStructStatusResponse{}
+	ctx := sdk.UnwrapSDKContext(goCtx)
     cc := k.NewCurrentContext(ctx)
 
     // Add an Active Address record to the
@@ -18,7 +19,7 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
 
     callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-       return &types.MsgStructStatusResponse{}, err
+       return emptyResponse, err
     }
 
     // load struct
@@ -27,7 +28,7 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
     // Check to see if the caller has permissions to proceed
     permissionError := structure.CanBePlayedBy(callingPlayer)
     if (permissionError != nil) {
-        return &types.MsgStructStatusResponse{}, permissionError
+        return emptyResponse, permissionError
     }
 
     // Check Activation Readiness
@@ -37,11 +38,11 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
         // Check Player capacity
     readinessError := structure.ActivationReadinessCheck()
     if (readinessError != nil) {
-        return &types.MsgStructStatusResponse{}, readinessError
+        return emptyResponse, readinessError
     }
 
     if structure.GetOwner().GetCharge() < structure.GetStructType().ActivateCharge {
-        return &types.MsgStructStatusResponse{}, types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().ActivateCharge, structure.GetOwner().GetCharge(), "activate").WithStructType(structure.GetTypeId()).WithStructId(msg.StructId)
+        return emptyResponse, types.NewInsufficientChargeError(structure.GetOwnerId(), structure.GetStructType().ActivateCharge, structure.GetOwner().GetCharge(), "activate").WithStructType(structure.GetTypeId()).WithStructId(msg.StructId)
     }
 
     structure.GoOnline()

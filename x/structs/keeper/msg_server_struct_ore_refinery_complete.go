@@ -11,6 +11,7 @@ import (
 )
 
 func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.MsgStructOreRefineryComplete) (*types.MsgStructOreRefineryStatusResponse, error) {
+    emptyResponse := &types.MsgStructOreRefineryStatusResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -20,7 +21,7 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
 
     callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-       return &types.MsgStructOreRefineryStatusResponse{}, err
+       return emptyResponse, err
     }
 
 	structure := cc.GetStruct(msg.StructId)
@@ -28,19 +29,19 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
     // Check to see if the caller has permissions to proceed
     permissionError := structure.CanBeHashedBy(callingPlayer)
     if (permissionError != nil) {
-        return &types.MsgStructOreRefineryStatusResponse{}, permissionError
+        return emptyResponse, permissionError
     }
 
 
     // Is the Struct & Owner online?
     readinessError := structure.ReadinessCheck()
     if (readinessError != nil) {
-        return &types.MsgStructOreRefineryStatusResponse{}, readinessError
+        return emptyResponse, readinessError
     }
 
     refiningReadinessError := structure.CanOreRefine()
     if (refiningReadinessError != nil) {
-        return &types.MsgStructOreRefineryStatusResponse{}, refiningReadinessError
+        return emptyResponse, refiningReadinessError
     }
 
     activeOreRefiningSystemBlockString := strconv.FormatUint(structure.GetBlockStartOreRefine() , 10)
@@ -49,7 +50,7 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
     currentAge := uint64(ctx.BlockHeight()) - structure.GetBlockStartOreRefine()
     valid, achievedDifficulty := types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().OreRefiningDifficulty)
     if !valid {
-       return &types.MsgStructOreRefineryStatusResponse{}, types.NewWorkFailureError("refine", structure.StructId, hashInput)
+       return emptyResponse, types.NewWorkFailureError("refine", structure.StructId, hashInput)
     }
 
     structure.OreRefine()

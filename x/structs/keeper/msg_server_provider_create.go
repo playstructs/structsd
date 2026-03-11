@@ -30,6 +30,7 @@ message MsgProviderCreate {
 */
 
 func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderCreate) (*types.MsgProviderResponse, error) {
+    emptyResponse := &types.MsgProviderResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -42,7 +43,7 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
 
     permissionError := substation.CanAllocateAsSourceBy(activePlayer)
     if (permissionError != nil) {
-        return &types.MsgProviderResponse{}, permissionError
+        return emptyResponse, permissionError
     }
 
     // Create a Provider Object
@@ -53,37 +54,37 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
 
     // TODO Rate Denom whitelist?
     if msg.Rate.Denom == "" {
-        return &types.MsgProviderResponse{}, types.NewObjectNotFoundError("denom", "")
+        return emptyResponse, types.NewObjectNotFoundError("denom", "")
     }
 
     paramErr := provider.SetRate(msg.Rate)
     if paramErr != nil {
-        return &types.MsgProviderResponse{}, paramErr
+        return emptyResponse, paramErr
     }
 
     paramErr = provider.SetCapacityRange(msg.CapacityMinimum, msg.CapacityMaximum)
     if paramErr != nil {
-        return &types.MsgProviderResponse{}, paramErr
+        return emptyResponse, paramErr
     }
 
     paramErr = provider.SetDurationRange(msg.DurationMinimum, msg.DurationMaximum )
     if paramErr != nil {
-        return &types.MsgProviderResponse{}, paramErr
+        return emptyResponse, paramErr
     }
 
     paramErr = provider.SetProviderCancellationPenalty(msg.ProviderCancellationPenalty)
     if paramErr != nil {
-        return &types.MsgProviderResponse{}, paramErr
+        return emptyResponse, paramErr
     }
 
     paramErr = provider.SetConsumerCancellationPenalty(msg.ConsumerCancellationPenalty)
     if paramErr != nil {
-        return &types.MsgProviderResponse{}, paramErr
+        return emptyResponse, paramErr
     }
 
     paramErr = provider.SetAccessPolicy(msg.AccessPolicy)
     if paramErr != nil {
-        return &types.MsgProviderResponse{}, paramErr
+        return emptyResponse, paramErr
     }
 
     // Provider Grid values are OK to leave uninitialized

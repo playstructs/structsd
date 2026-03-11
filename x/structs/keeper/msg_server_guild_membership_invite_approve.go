@@ -9,6 +9,7 @@ import (
 )
 
 func (k msgServer) GuildMembershipInviteApprove(goCtx context.Context, msg *types.MsgGuildMembershipInviteApprove) (*types.MsgGuildMembershipResponse, error) {
+    emptyResponse := &types.MsgGuildMembershipResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -18,7 +19,7 @@ func (k msgServer) GuildMembershipInviteApprove(goCtx context.Context, msg *type
 
     callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return &types.MsgGuildMembershipResponse{}, err
+        return emptyResponse, err
     }
 
     if (msg.PlayerId == "") {
@@ -31,18 +32,18 @@ func (k msgServer) GuildMembershipInviteApprove(goCtx context.Context, msg *type
 
     guildMembershipApplication, guildMembershipApplicationError := cc.GetGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
-        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
+        return emptyResponse, guildMembershipApplicationError
     }
 
     guildMembershipApplicationError = guildMembershipApplication.VerifyInviteAsPlayer()
     if guildMembershipApplicationError != nil {
-        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
+        return emptyResponse, guildMembershipApplicationError
     }
 
 	if msg.SubstationId != "" {
 	    substationOverrideError := guildMembershipApplication.SetSubstationIdOverride(msg.SubstationId)
 	    if substationOverrideError != nil {
-	        return &types.MsgGuildMembershipResponse{}, substationOverrideError
+	        return emptyResponse, substationOverrideError
 	    }
 	}
 

@@ -8,6 +8,7 @@ import (
 )
 
 func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate) (*types.MsgGuildCreateResponse, error) {
+    emptyResponse := &types.MsgGuildCreateResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -17,7 +18,7 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
 
     player, playerErr := cc.GetPlayerByAddress(msg.Creator)
     if playerErr != nil {
-        return &types.MsgGuildCreateResponse{}, types.NewPlayerRequiredError(msg.Creator, "guild_create")
+        return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_create")
     }
 
     // Need to change this to be more open.
@@ -32,24 +33,24 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
     reactor := cc.GetReactor(string(reactorBytes))
 
     if reactor.CheckReactor() != nil {
-        return &types.MsgGuildCreateResponse{}, types.NewReactorError("guild_create", "required").WithAddress(msg.Creator, "validator")
+        return emptyResponse, types.NewReactorError("guild_create", "required").WithAddress(msg.Creator, "validator")
     }
 
     reactorPermissionCheck := reactor.CanCreateGuildBy(player)
     if reactorPermissionCheck != nil {
-        return &types.MsgGuildCreateResponse{}, reactorPermissionCheck
+        return emptyResponse, reactorPermissionCheck
     }
 
     if (msg.EntrySubstationId != "") {
         // Check that the Substation exists
         substation := cc.GetSubstation(msg.EntrySubstationId)
         if substation.CheckSubstation() != nil {
-            return &types.MsgGuildCreateResponse{}, types.NewObjectNotFoundError("substation", msg.EntrySubstationId)
+            return emptyResponse, types.NewObjectNotFoundError("substation", msg.EntrySubstationId)
         }
 
         substationPermissionErr := substation.CanManageConnectionsBy(player)
         if substationPermissionErr != nil {
-            return &types.MsgGuildCreateResponse{}, substationPermissionErr
+            return emptyResponse, substationPermissionErr
         }
     }
 

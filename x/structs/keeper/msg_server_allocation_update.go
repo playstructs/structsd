@@ -7,6 +7,7 @@ import (
 )
 
 func (k msgServer) AllocationUpdate(goCtx context.Context, msg *types.MsgAllocationUpdate) (*types.MsgAllocationUpdateResponse, error) {
+    emptyResponse := &types.MsgAllocationUpdateResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -16,22 +17,22 @@ func (k msgServer) AllocationUpdate(goCtx context.Context, msg *types.MsgAllocat
 
     activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return &types.MsgAllocationUpdateResponse{}, types.NewPlayerRequiredError(msg.Creator, "allocation_update")
+        return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "allocation_update")
     }
 
 	allocation, allocationFound := cc.GetAllocation(msg.AllocationId)
 	if (!allocationFound) {
-		return &types.MsgAllocationUpdateResponse{}, types.NewObjectNotFoundError("allocation", msg.AllocationId)
+		return emptyResponse, types.NewObjectNotFoundError("allocation", msg.AllocationId)
 	}
 
     permissionErr := allocation.CanSourceDetailsBeUpdatedBy(activePlayer)
     if permissionErr != nil {
-        return &types.MsgAllocationUpdateResponse{}, permissionErr
+        return emptyResponse, permissionErr
     }
 
     _, setErr := allocation.SetDynamicPower(msg.Power)
     if setErr != nil {
-        return &types.MsgAllocationUpdateResponse{}, setErr
+        return emptyResponse, setErr
     }
 
 	cc.CommitAll()

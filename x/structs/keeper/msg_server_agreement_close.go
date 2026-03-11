@@ -8,6 +8,7 @@ import (
 )
 
 func (k msgServer) AgreementClose(goCtx context.Context, msg *types.MsgAgreementClose) (*types.MsgAgreementResponse, error) {
+    emptyResponse := &types.MsgAgreementResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -20,14 +21,14 @@ func (k msgServer) AgreementClose(goCtx context.Context, msg *types.MsgAgreement
 
     permissionError := agreement.CanUpdate(activePlayer)
     if (permissionError != nil) {
-        return &types.MsgAgreementResponse{}, permissionError
+        return emptyResponse, permissionError
     }
 
     // Checkpoint
     agreement.GetProvider().Checkpoint()
     errorParam := agreement.PrematureCloseByConsumer()
     if (errorParam != nil) {
-        return &types.MsgAgreementResponse{}, errorParam
+        return emptyResponse, errorParam
     }
 
 	cc.CommitAll()

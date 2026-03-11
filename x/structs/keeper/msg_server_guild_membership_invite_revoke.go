@@ -9,6 +9,7 @@ import (
 )
 
 func (k msgServer) GuildMembershipInviteRevoke(goCtx context.Context, msg *types.MsgGuildMembershipInviteRevoke) (*types.MsgGuildMembershipResponse, error) {
+    emptyResponse := &types.MsgGuildMembershipResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -18,7 +19,7 @@ func (k msgServer) GuildMembershipInviteRevoke(goCtx context.Context, msg *types
 
     callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return &types.MsgGuildMembershipResponse{}, err
+        return emptyResponse, err
     }
 
     if (msg.PlayerId == "") {
@@ -31,12 +32,12 @@ func (k msgServer) GuildMembershipInviteRevoke(goCtx context.Context, msg *types
 
     guildMembershipApplication, guildMembershipApplicationError := cc.GetGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_invite, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
-        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
+        return emptyResponse, guildMembershipApplicationError
     }
 
     guildMembershipApplicationError = guildMembershipApplication.VerifyInviteAsGuild()
     if guildMembershipApplicationError != nil {
-        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
+        return emptyResponse, guildMembershipApplicationError
     }
 
     guildMembershipApplicationError = guildMembershipApplication.RevokeInvite()

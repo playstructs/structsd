@@ -8,6 +8,7 @@ import (
 )
 
 func (k msgServer) PermissionGrantOnAddress(goCtx context.Context, msg *types.MsgPermissionGrantOnAddress) (*types.MsgPermissionResponse, error) {
+    emptyResponse := &types.MsgPermissionResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -19,24 +20,24 @@ func (k msgServer) PermissionGrantOnAddress(goCtx context.Context, msg *types.Ms
     var err error
 
     if msg.Permissions == 0 {
-        return &types.MsgPermissionResponse{}, types.NewParameterValidationError("permissions", 0, "below_minimum").WithRange(1, 0)
+        return emptyResponse, types.NewParameterValidationError("permissions", 0, "below_minimum").WithRange(1, 0)
     }
 
     callingPlayer, _ := cc.GetPlayerByAddress(msg.Creator)
     err = callingPlayer.CheckPlayer()
     if err != nil {
-        return  &types.MsgPermissionResponse{}, err
+        return emptyResponse, err
     }
 
     targetPlayer, _ := cc.GetPlayerByAddress(msg.Address)
     err = targetPlayer.CheckPlayer()
     if err != nil {
-         return  &types.MsgPermissionResponse{}, err
+         return emptyResponse, err
     }
 
     permissionErr := targetPlayer.CanRegisterAddressBy(callingPlayer, types.Permission(msg.Permissions))
     if permissionErr != nil {
-        return  &types.MsgPermissionResponse{}, permissionErr
+        return emptyResponse, permissionErr
     }
 
     targetAddressPermissionId := GetAddressPermissionIDBytes(msg.Address)

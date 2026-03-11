@@ -12,6 +12,7 @@ import (
 )
 
 func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgStructOreMinerComplete) (*types.MsgStructOreMinerStatusResponse, error) {
+    emptyResponse := &types.MsgStructOreMinerStatusResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -21,7 +22,7 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 
     callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-       return &types.MsgStructOreMinerStatusResponse{}, err
+       return emptyResponse, err
     }
 
 	structure := cc.GetStruct(msg.StructId)
@@ -29,18 +30,18 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 	// Check to see if the caller has permissions to proceed
     permissionError := structure.CanBeHashedBy(callingPlayer)
     if (permissionError != nil) {
-       return &types.MsgStructOreMinerStatusResponse{}, permissionError
+       return emptyResponse, permissionError
     }
 
 	// Is the Struct & Owner online?
 	readinessError := structure.ReadinessCheck()
 	if readinessError != nil {
-		return &types.MsgStructOreMinerStatusResponse{}, readinessError
+		return emptyResponse, readinessError
 	}
 
 	miningReadinessError := structure.CanOreMinePlanet()
 	if miningReadinessError != nil {
-		return &types.MsgStructOreMinerStatusResponse{}, miningReadinessError
+		return emptyResponse, miningReadinessError
 	}
 
 	activeOreMiningSystemBlockString := strconv.FormatUint(structure.GetBlockStartOreMine(), 10)
@@ -50,7 +51,7 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 
 	valid, achievedDifficulty := types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().OreMiningDifficulty);
 	if !valid {
-		return &types.MsgStructOreMinerStatusResponse{}, types.NewWorkFailureError("mine", structure.StructId, hashInput)
+		return emptyResponse, types.NewWorkFailureError("mine", structure.StructId, hashInput)
 	}
 
 	// Got this far, let's reward the player with some Ore

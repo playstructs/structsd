@@ -7,6 +7,7 @@ import (
 )
 
 func (k msgServer) AllocationDelete(goCtx context.Context, msg *types.MsgAllocationDelete) (*types.MsgAllocationDeleteResponse, error) {
+    emptyResponse := &types.MsgAllocationDeleteResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -16,21 +17,21 @@ func (k msgServer) AllocationDelete(goCtx context.Context, msg *types.MsgAllocat
 
     activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return &types.MsgAllocationDeleteResponse{}, types.NewPlayerRequiredError(msg.Creator, "allocation_delete")
+        return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "allocation_delete")
     }
 
 	allocation, allocationFound := cc.GetAllocation(msg.AllocationId)
 	if (!allocationFound) {
-		return &types.MsgAllocationDeleteResponse{}, types.NewObjectNotFoundError("allocation", msg.AllocationId)
+		return emptyResponse, types.NewObjectNotFoundError("allocation", msg.AllocationId)
 	}
 
     permissionErr := allocation.CanSourceDetailsBeUpdatedBy(activePlayer)
     if permissionErr != nil {
-        return &types.MsgAllocationDeleteResponse{}, permissionErr
+        return emptyResponse, permissionErr
     }
 
     if (allocation.GetAllocation().Type != types.AllocationType_dynamic) {
-        return &types.MsgAllocationDeleteResponse{}, types.NewAllocationError(allocation.GetAllocation().SourceObjectId, "immutable_type").WithFieldChange("type", allocation.GetAllocation().Type.String(), "dynamic")
+        return emptyResponse, types.NewAllocationError(allocation.GetAllocation().SourceObjectId, "immutable_type").WithFieldChange("type", allocation.GetAllocation().Type.String(), "dynamic")
     }
 
     allocation.Destroy()

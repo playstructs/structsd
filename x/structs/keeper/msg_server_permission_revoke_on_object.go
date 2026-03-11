@@ -8,6 +8,7 @@ import (
 )
 
 func (k msgServer) PermissionRevokeOnObject(goCtx context.Context, msg *types.MsgPermissionRevokeOnObject) (*types.MsgPermissionResponse, error) {
+    emptyResponse := &types.MsgPermissionResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -20,7 +21,7 @@ func (k msgServer) PermissionRevokeOnObject(goCtx context.Context, msg *types.Ms
 
     player, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return &types.MsgPermissionResponse{}, err
+        return emptyResponse, err
     }
 
     permissionedObject := cc.GetPermissionedObject(msg.ObjectId)

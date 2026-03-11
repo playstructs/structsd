@@ -8,6 +8,7 @@ import (
 )
 
 func (k msgServer) GuildUpdateJoinInfusionMinimumBypassByInvite(goCtx context.Context, msg *types.MsgGuildUpdateJoinInfusionMinimumBypassByInvite) (*types.MsgGuildUpdateResponse, error) {
+    emptyResponse := &types.MsgGuildUpdateResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -18,17 +19,17 @@ func (k msgServer) GuildUpdateJoinInfusionMinimumBypassByInvite(goCtx context.Co
 
     player, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return &types.MsgGuildUpdateResponse{}, types.NewPlayerRequiredError(msg.Creator, "guild_update_join_bypass_invite")
+        return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_update_join_bypass_invite")
     }
 
     guild := cc.GetGuild(msg.GuildId)
     if guild.CheckGuild() != nil {
-            return &types.MsgGuildUpdateResponse{}, types.NewObjectNotFoundError("guild", msg.GuildId)
+            return emptyResponse, types.NewObjectNotFoundError("guild", msg.GuildId)
     }
 
     permissionErr := guild.CanUpdateJoinConstraintsBy(player)
     if permissionErr != nil {
-        return &types.MsgGuildUpdateResponse{}, permissionErr
+        return emptyResponse, permissionErr
     }
 
     if (msg.GuildJoinBypassLevel != guild.GetGuild().JoinInfusionMinimumBypassByInvite) {

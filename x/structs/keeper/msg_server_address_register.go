@@ -13,6 +13,7 @@ import (
 )
 
 func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressRegister) (*types.MsgAddressRegisterResponse, error) {
+    emptyResponse := &types.MsgAddressRegisterResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -22,28 +23,28 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
 
     activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-       return &types.MsgAddressRegisterResponse{}, err
+       return emptyResponse, err
     }
 
 
     player, err := cc.GetPlayer(msg.PlayerId)
     if err != nil {
-       return &types.MsgAddressRegisterResponse{}, err
+       return emptyResponse, err
     }
 
     if player.CheckPlayer() != nil {
-        return &types.MsgAddressRegisterResponse{}, types.NewObjectNotFoundError("player", msg.PlayerId)
+        return emptyResponse, types.NewObjectNotFoundError("player", msg.PlayerId)
     }
 
 	// Is the address associated with an account yet
     playerFoundForAddress := cc.GetPlayerIndexFromAddress(msg.Address)
     if (playerFoundForAddress > 0) {
-        return &types.MsgAddressRegisterResponse{}, types.NewAddressValidationError(msg.Address, "already_registered")
+        return emptyResponse, types.NewAddressValidationError(msg.Address, "already_registered")
     }
 
     err = player.CanRegisterAddressBy(activePlayer, types.Permission(msg.Permissions));
     if err != nil {
-       return &types.MsgAddressRegisterResponse{}, err
+       return emptyResponse, err
     }
 
 	// Does the signature verify in the proof
@@ -57,7 +58,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     // Convert provided pub key into a bech32 string (i.e., an address)
 	address := types.PubKeyToBech32(decodedProofPubKey)
     if (address != msg.Address) {
-         return &types.MsgAddressRegisterResponse{}, types.NewAddressValidationError(msg.Address, "proof_mismatch").WithPlayers(address, msg.Address)
+         return emptyResponse, types.NewAddressValidationError(msg.Address, "proof_mismatch").WithPlayers(address, msg.Address)
     }
 
     pubKey := crypto.PubKey{}
@@ -75,7 +76,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
 
     // Proof needs to only be 64 characters. Some systems provide a checksum bit on the end that ruins it all
     if (!pubKey.VerifySignature([]byte(hashInput), decodedProofSignature[:64])) {
-         return &types.MsgAddressRegisterResponse{}, types.NewAddressValidationError(msg.Address, "signature_invalid")
+         return emptyResponse, types.NewAddressValidationError(msg.Address, "signature_invalid")
     }
 
 	// Add the address and player index to the keeper
@@ -96,7 +97,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     // Transfer
     err = k.bankKeeper.SendCoins(ctx, newAcc, primaryAcc, balances)
     if err != nil {
-        return &types.MsgAddressRegisterResponse{}, err
+        return emptyResponse, err
     }
 
     // Move Reactor Infusions over

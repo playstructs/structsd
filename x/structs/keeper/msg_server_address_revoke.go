@@ -9,6 +9,7 @@ import (
 )
 
 func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRevoke) (*types.MsgAddressRevokeResponse, error) {
+    emptyResponse := &types.MsgAddressRevokeResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -18,22 +19,22 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
 
     activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-       return &types.MsgAddressRevokeResponse{}, err
+       return emptyResponse, err
     }
 
     player, err := cc.GetPlayerByAddress(msg.Address)
     if err != nil {
-       return &types.MsgAddressRevokeResponse{}, err
+       return emptyResponse, err
     }
 
     err = player.CanRevokeAddressBy(activePlayer)
     if err != nil {
-       return &types.MsgAddressRevokeResponse{}, err
+       return emptyResponse, err
     }
 
     // Check is msg.Address is the current Primary Address
     if player.GetPrimaryAddress() == msg.Address {
-        return &types.MsgAddressRevokeResponse{}, types.NewAddressValidationError(msg.Address, "primary_address")
+        return emptyResponse, types.NewAddressValidationError(msg.Address, "primary_address")
     }
 
     /* Got this far, make it so... */
@@ -47,7 +48,7 @@ func (k msgServer) AddressRevoke(goCtx context.Context, msg *types.MsgAddressRev
     // Transfer
     err = k.bankKeeper.SendCoins(ctx, oldAcc, primaryAcc, balances)
     if err != nil {
-        return &types.MsgAddressRevokeResponse{}, err
+        return emptyResponse, err
     }
 
     // Move Reactor Infusions over

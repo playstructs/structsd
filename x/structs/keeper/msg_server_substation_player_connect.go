@@ -7,6 +7,7 @@ import (
 )
 
 func (k msgServer) SubstationPlayerConnect(goCtx context.Context, msg *types.MsgSubstationPlayerConnect) (*types.MsgSubstationPlayerConnectResponse, error) {
+    emptyResponse := &types.MsgSubstationPlayerConnectResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -14,29 +15,29 @@ func (k msgServer) SubstationPlayerConnect(goCtx context.Context, msg *types.Msg
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	player, playerErr := cc.GetPlayerByAddress(msg.Creator)
+	callingPlayer, playerErr := cc.GetPlayerByAddress(msg.Creator)
     if playerErr != nil {
-        return &types.MsgSubstationPlayerConnectResponse{}, playerErr
+        return emptyResponse, playerErr
     }
 
 	targetPlayer, _ := cc.GetPlayer(msg.PlayerId)
     if targetPlayer.CheckPlayer() != nil {
-        return &types.MsgSubstationPlayerConnectResponse{}, targetPlayer.CheckPlayer()
+        return emptyResponse, targetPlayer.CheckPlayer()
     }
 
     substation := cc.GetSubstation(msg.SubstationId)
     if substation.CheckSubstation() != nil {
-        return &types.MsgSubstationPlayerConnectResponse{}, types.NewObjectNotFoundError("substation", msg.SubstationId)
+        return emptyResponse, types.NewObjectNotFoundError("substation", msg.SubstationId)
     }
 
-    permissionSubstationErr := substation.CanManagePlayerConnections(player)
-    if permissionSubstationErr != nil {
-        return &types.MsgSubstationPlayerConnectResponse{}, permissionSubstationErr
+    substationPermissionErr := substation.CanManageConnectionsBy(callingPlayer)
+    if substationPermissionErr != nil {
+        return emptyResponse, substationPermissionErr
     }
 
-    permissionPlayerErr := targetPlayer.CanManageGridBy(msg.Creator)
+    permissionPlayerErr := targetPlayer.CanManageSubstationConnectionBy(callingPlayer)
     if permissionPlayerErr != nil {
-        return &types.MsgSubstationPlayerConnectResponse{}, permissionPlayerErr
+        return emptyResponse, permissionPlayerErr
     }
 
     // connect to new substation

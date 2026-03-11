@@ -8,6 +8,7 @@ import (
 )
 
 func (k msgServer) PermissionGrantOnObject(goCtx context.Context, msg *types.MsgPermissionGrantOnObject) (*types.MsgPermissionResponse, error) {
+    emptyResponse := &types.MsgPermissionResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -19,22 +20,22 @@ func (k msgServer) PermissionGrantOnObject(goCtx context.Context, msg *types.Msg
    var err error
 
     if msg.Permissions == 0 {
-        return &types.MsgPermissionResponse{}, types.NewParameterValidationError("permissions", 0, "below_minimum").WithRange(1, 0)
+        return emptyResponse, types.NewParameterValidationError("permissions", 0, "below_minimum").WithRange(1, 0)
     }
 
     player, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return  &types.MsgPermissionResponse{}, err
+        return emptyResponse, err
     }
 
     permissionedObject := cc.GetPermissionedObject(msg.ObjectId)
     if permissionedObject == nil {
-        return  &types.MsgPermissionResponse{},  types.NewPermissionError("player", player.GetPlayerId(), "object", msg.ObjectId, uint64(msg.Permissions), "permission_grant")
+        return emptyResponse, types.NewPermissionError("player", player.GetPlayerId(), "object", msg.ObjectId, uint64(msg.Permissions), "permission_grant")
     }
 
     permissionErr := cc.PermissionCheck(permissionedObject, player, types.Permission(msg.Permissions))
     if permissionErr != nil {
-        return  &types.MsgPermissionResponse{}, permissionErr
+        return emptyResponse, permissionErr
     }
 
     targetPlayerPermissionId := GetObjectPermissionIDBytes(msg.ObjectId, msg.PlayerId)

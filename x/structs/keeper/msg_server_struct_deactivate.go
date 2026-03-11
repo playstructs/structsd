@@ -9,7 +9,8 @@ import (
 )
 
 func (k msgServer) StructDeactivate(goCtx context.Context, msg *types.MsgStructDeactivate) (*types.MsgStructStatusResponse, error) {
-    ctx := sdk.UnwrapSDKContext(goCtx)
+    emptyResponse := &types.MsgStructStatusResponse{}
+	ctx := sdk.UnwrapSDKContext(goCtx)
     cc := k.NewCurrentContext(ctx)
 
     // Add an Active Address record to the
@@ -18,7 +19,7 @@ func (k msgServer) StructDeactivate(goCtx context.Context, msg *types.MsgStructD
 
     callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-       return &types.MsgStructStatusResponse{}, err
+       return emptyResponse, err
     }
 
     // load struct
@@ -27,23 +28,23 @@ func (k msgServer) StructDeactivate(goCtx context.Context, msg *types.MsgStructD
     // Check to see if the caller has permissions to proceed
     permissionError := structure.CanBePlayedBy(callingPlayer)
     if (permissionError != nil) {
-        return &types.MsgStructStatusResponse{}, permissionError
+        return emptyResponse, permissionError
     }
 
     if !structure.LoadStruct(){
-        return &types.MsgStructStatusResponse{}, types.NewObjectNotFoundError("struct", msg.StructId)
+        return emptyResponse, types.NewObjectNotFoundError("struct", msg.StructId)
     }
 
     if !structure.IsBuilt() {
-        return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.StructId, "building", "built", "deactivate")
+        return emptyResponse, types.NewStructStateError(msg.StructId, "building", "built", "deactivate")
     }
 
     if structure.IsOffline() {
-        return &types.MsgStructStatusResponse{}, types.NewStructStateError(msg.StructId, "offline", "online", "deactivate")
+        return emptyResponse, types.NewStructStateError(msg.StructId, "offline", "online", "deactivate")
     }
 
     if structure.GetOwner().IsOffline(){
-        return &types.MsgStructStatusResponse{}, types.NewPlayerPowerError(structure.GetOwnerId(), "offline")
+        return emptyResponse, types.NewPlayerPowerError(structure.GetOwnerId(), "offline")
     }
 
 

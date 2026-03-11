@@ -8,6 +8,7 @@ import (
 )
 
 func (k msgServer) GuildUpdateEntrySubstationId(goCtx context.Context, msg *types.MsgGuildUpdateEntrySubstationId) (*types.MsgGuildUpdateResponse, error) {
+    emptyResponse := &types.MsgGuildUpdateResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -18,28 +19,28 @@ func (k msgServer) GuildUpdateEntrySubstationId(goCtx context.Context, msg *type
 
     player, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-     return &types.MsgGuildUpdateResponse{}, types.NewPlayerRequiredError(msg.Creator, "guild_update_entry_substation")
+     return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_update_entry_substation")
     }
 
     guild := cc.GetGuild(msg.GuildId)
     if guild.CheckGuild() != nil {
-         return &types.MsgGuildUpdateResponse{}, types.NewObjectNotFoundError("guild", msg.GuildId)
+         return emptyResponse, types.NewObjectNotFoundError("guild", msg.GuildId)
     }
 
     permissionErr := guild.CanUpdateSubstationBy(player)
     if permissionErr != nil {
-        return &types.MsgGuildUpdateResponse{}, permissionErr
+        return emptyResponse, permissionErr
     }
 
     if (msg.EntrySubstationId != "") {
         substation := cc.GetSubstation(msg.EntrySubstationId)
         if substation.CheckSubstation() != nil {
-            return &types.MsgGuildUpdateResponse{}, types.NewObjectNotFoundError("substation", msg.EntrySubstationId)
+            return emptyResponse, types.NewObjectNotFoundError("substation", msg.EntrySubstationId)
         }
 
         substationPermissionErr := substation.CanManageConnectionsBy(player)
         if substationPermissionErr != nil {
-            return &types.MsgGuildUpdateResponse{}, substationPermissionErr
+            return emptyResponse, substationPermissionErr
         }
 
         guild.SetEntrySubstationId(msg.EntrySubstationId)

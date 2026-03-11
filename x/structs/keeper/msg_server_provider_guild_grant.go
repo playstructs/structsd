@@ -8,7 +8,8 @@ import (
 )
 
 func (k msgServer) ProviderGuildGrant(goCtx context.Context, msg *types.MsgProviderGuildGrant) (*types.MsgProviderResponse, error) {
-    ctx := sdk.UnwrapSDKContext(goCtx)
+    emptyResponse := &types.MsgProviderResponse{}
+	ctx := sdk.UnwrapSDKContext(goCtx)
     cc := k.NewCurrentContext(ctx)
 
     // Add an Active Address record to the
@@ -20,12 +21,12 @@ func (k msgServer) ProviderGuildGrant(goCtx context.Context, msg *types.MsgProvi
 
     permissionError := provider.CanBeUpdatedBy(activePlayer)
     if (permissionError != nil) {
-        return &types.MsgProviderResponse{}, permissionError
+        return emptyResponse, permissionError
     }
 
     paramErr := provider.GrantGuildsAndCommit(msg.GuildId)
     if paramErr != nil {
-        return &types.MsgProviderResponse{}, paramErr
+        return emptyResponse, paramErr
     }
 
 	cc.CommitAll()
