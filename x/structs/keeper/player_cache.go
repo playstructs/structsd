@@ -236,6 +236,10 @@ func (cache *PlayerCache) SetFleetId(fleetId string) {
 
 func (cache *PlayerCache) SetPrimaryAddress(address string) {
     if (!cache.PlayerLoaded) { cache.LoadPlayer() }
+
+    // When setting to the primary address, the address upgraded to full rights
+    cache.CC.SetPermissions(GetAddressPermissionIDBytes(address), types.PermAll)
+
     cache.Player.PrimaryAddress = address
     cache.Changed = true
 }

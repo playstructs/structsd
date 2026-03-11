@@ -18,7 +18,7 @@ func (k msgServer) ProviderUpdateAccessPolicy(goCtx context.Context, msg *types.
 
     provider := cc.GetProvider(msg.ProviderId)
 
-    permissionError := provider.CanUpdate(activePlayer)
+    permissionError := provider.CanBeUpdatedBy(activePlayer)
     if (permissionError != nil) {
         return &types.MsgProviderResponse{}, permissionError
     }

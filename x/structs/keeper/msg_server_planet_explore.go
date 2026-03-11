@@ -14,6 +14,11 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+        return &types.MsgPlanetExploreResponse{}, err
+    }
+
     // Load the Player record
     player, playerLookupErr := cc.GetPlayer(msg.PlayerId)
     if (playerLookupErr != nil) {
@@ -21,7 +26,7 @@ func (k msgServer) PlanetExplore(goCtx context.Context, msg *types.MsgPlanetExpl
     }
 
     // Check address play permissions
-    permissionError := player.CanBePlayedBy(msg.Creator)
+    permissionError := player.CanBePlayedBy(callingPlayer)
     if (permissionError != nil) {
         return &types.MsgPlanetExploreResponse{}, permissionError
     }

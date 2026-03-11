@@ -138,38 +138,20 @@ func (cache *ProviderCache) AgreementDurationVerify(duration uint64) error {
 /* Permissions */
 
 // Delete Permission
-func (cache *ProviderCache) CanDelete(activePlayer *PlayerCache) (error) {
-    return cache.PermissionCheck(types.PermissionDelete, activePlayer)
+func (cache *ProviderCache) CanBeDeletedBy(activePlayer *PlayerCache) (error) {
+    return cache.CC.PermissionCheck(cache, activePlayer,types.PermDelete)
 }
 
 // Update Permission
-func (cache *ProviderCache) CanUpdate(activePlayer *PlayerCache) (error) {
-    return cache.PermissionCheck(types.PermissionUpdate, activePlayer)
+func (cache *ProviderCache) CanBeUpdatedBy(activePlayer *PlayerCache) (error) {
+    return cache.CC.PermissionCheck(cache, activePlayer,types.PermUpdate)
 }
 
 // Assets Permission
-func (cache *ProviderCache) CanWithdrawBalance(activePlayer *PlayerCache) (error) {
-    return cache.PermissionCheck(types.PermissionAssets, activePlayer)
+func (cache *ProviderCache) CanWithdrawBalanceBy(activePlayer *PlayerCache) (error) {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermProviderWithdraw)
 }
 
-
-func (cache *ProviderCache) PermissionCheck(permission types.Permission, activePlayer *PlayerCache) (error) {
-    // Make sure the address calling this has permissions
-    if (!cache.CC.PermissionHasOneOf(GetAddressPermissionIDBytes(activePlayer.GetActiveAddress()), permission)) {
-        return types.NewPermissionError("address", activePlayer.GetActiveAddress(), "", "", uint64(permission), "provider_action")
-    }
-
-    if !activePlayer.HasPlayerAccount() {
-        return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "provider_action")
-    } else {
-        if (activePlayer.GetPlayerId() != cache.GetOwnerId()) {
-            if (!cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetProviderId(), activePlayer.GetPlayerId()), permission)) {
-               return types.NewPermissionError("player", activePlayer.GetPlayerId(), "provider", cache.GetProviderId(), uint64(permission), "provider_action")
-            }
-        }
-    }
-    return nil
-}
 
 func (cache *ProviderCache) CanOpenAgreement(activePlayer *PlayerCache) (error) {
 
@@ -178,6 +160,7 @@ func (cache *ProviderCache) CanOpenAgreement(activePlayer *PlayerCache) (error) 
             return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "agreement_open")
         }
 
+    // TODO Change to Guild Rank
     } else if cache.GetAccessPolicy() == types.ProviderAccessPolicy_guildMarket {
         if !cache.CC.k.ProviderGuildAccessAllowed(cache.CC.ctx, cache.GetProviderId(), activePlayer.GetGuildId()) {
             return types.NewProviderAccessError(cache.GetProviderId(), "guild_not_allowed").WithGuild(activePlayer.GetGuildId()).WithPlayer(activePlayer.GetPlayerId())

@@ -27,7 +27,7 @@ func (k msgServer) ProviderWithdrawBalance(goCtx context.Context, msg *types.Msg
 
     provider := cc.GetProvider(msg.ProviderId)
 
-    permissionError := provider.CanWithdrawBalance(activePlayer)
+    permissionError := provider.CanWithdrawBalanceBy(activePlayer)
     if (permissionError != nil) {
         return &types.MsgProviderResponse{}, permissionError
     }

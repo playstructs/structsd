@@ -18,7 +18,7 @@ func (k msgServer) ProviderGuildRevoke(goCtx context.Context, msg *types.MsgProv
 
     provider := cc.GetProvider(msg.ProviderId)
 
-    permissionError := provider.CanUpdate(activePlayer)
+    permissionError := provider.CanBeUpdatedBy(activePlayer)
     if (permissionError != nil) {
         return &types.MsgProviderResponse{}, permissionError
     }

@@ -40,8 +40,7 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
 
     substation := cc.GetSubstation(msg.SubstationId)
 
-
-    permissionError := substation.CanCreateAllocations(activePlayer)
+    permissionError := substation.CanAllocateAsSourceBy(activePlayer)
     if (permissionError != nil) {
         return &types.MsgProviderResponse{}, permissionError
     }
@@ -51,8 +50,12 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
 
     provider.SetSubstationId(msg.SubstationId)
 
-    // TODO Check Denom exists
+
     // TODO Rate Denom whitelist?
+    if msg.Rate.Denom == "" {
+        return &types.MsgProviderResponse{}, types.NewObjectNotFoundError("denom", "")
+    }
+
     paramErr := provider.SetRate(msg.Rate)
     if paramErr != nil {
         return &types.MsgProviderResponse{}, paramErr

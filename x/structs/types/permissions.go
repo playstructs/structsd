@@ -67,6 +67,8 @@ const (
 
 	PermHashAll = PermHashBuild | PermHashMine | PermHashRefine | PermHashRaid
 
+    PermProviderAll = PermAdmin | PermUpdate | PermDelete |	PermProviderWithdraw |	PermProviderOpen
+
     PermGuildAll = PermAdmin | PermUpdate | PermDelete | PermGuildMembership |
                     PermGuildEndpointUpdate | PermGuildJoinConstraintsUpdate | PermGuildSubstationUpdate |
                     PermGuildTokenBurn | PermGuildTokenMint

@@ -15,13 +15,17 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    player, err := cc.GetPlayer(msg.PlayerId)
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, err
+    }
+
+    player, err := cc.GetPlayerByAddress(msg.PrimaryAddress)
     if err != nil {
        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, err
     }
 
-    // Check if msg.Creator has PermissionDelete on the Address and Account
-    err = player.CanBeAdministratedBy(msg.Creator, types.PermissionAssets)
+    err = player.CanBeAdministeredBy(callingPlayer)
     if err != nil {
        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, err
     }
@@ -30,16 +34,6 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
     if (addressValidationError != nil){
         return &types.MsgPlayerUpdatePrimaryAddressResponse{}, types.NewAddressValidationError(msg.PrimaryAddress, "invalid_format")
     }
-
-    relatedPlayerIndex := k.GetPlayerIndexFromAddress(ctx, msg.PrimaryAddress)
-    if (relatedPlayerIndex == 0) {
-        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, types.NewAddressValidationError(msg.PrimaryAddress, "not_registered")
-    }
-
-    if relatedPlayerIndex != player.GetIndex() {
-        return &types.MsgPlayerUpdatePrimaryAddressResponse{}, types.NewAddressValidationError(msg.PrimaryAddress, "wrong_player").WithPlayers(player.GetPlayerId(), "")
-    }
-
 
     // Move Funds
     oldAcc, _   := sdk.AccAddressFromBech32(player.GetPrimaryAddress())
@@ -67,6 +61,7 @@ func (k msgServer) PlayerUpdatePrimaryAddress(goCtx context.Context, msg *types.
     _ = ctx.EventManager().EmitTypedEvent(&types.EventOreMigrate{&types.EventOreMigrateDetail{PlayerId: player.GetPlayerId(), PrimaryAddress: msg.PrimaryAddress, OldPrimaryAddress: player.GetPrimaryAddress(), Amount: player.GetStoredOre()}})
 
     // Finish up
+    // This process sets the primary address and upgrades the new address to full rights (careful!)
     player.SetPrimaryAddress(msg.PrimaryAddress)
 
 	cc.CommitAll()

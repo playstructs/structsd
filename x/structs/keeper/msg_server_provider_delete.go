@@ -18,7 +18,7 @@ func (k msgServer) ProviderDelete(goCtx context.Context, msg *types.MsgProviderD
 
     provider := cc.GetProvider(msg.ProviderId)
 
-    permissionError := provider.CanDelete(activePlayer)
+    permissionError := provider.CanBeDeletedBy(activePlayer)
     if (permissionError != nil) {
         return &types.MsgProviderResponse{}, permissionError
     }

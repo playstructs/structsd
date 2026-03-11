@@ -18,7 +18,7 @@ func (k msgServer) ProviderUpdateCapacityMinimum(goCtx context.Context, msg *typ
 
     provider := cc.GetProvider(msg.ProviderId)
 
-    permissionError := provider.CanUpdate(activePlayer)
+    permissionError := provider.CanBeUpdatedBy(activePlayer)
     if (permissionError != nil) {
         return &types.MsgProviderResponse{}, permissionError
     }
