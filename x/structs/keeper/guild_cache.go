@@ -169,6 +169,10 @@ func (cache *GuildCache) CanUpdateBy(activePlayer *PlayerCache) error {
 	return cache.CC.PermissionCheck(cache, activePlayer, types.PermUpdate)
 }
 
+// Update Permission
+func (cache *GuildCache) CanTransferOwnershipBy(activePlayer *PlayerCache) error {
+	return cache.CC.PermissionCheck(cache, activePlayer, types.PermAdmin)
+}
 
 func (cache *GuildCache) CanUpdateEndpointBy(activePlayer *PlayerCache) error {
 	return cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildEndpointUpdate)
@@ -221,20 +225,20 @@ func (cache *GuildCache) CanInviteMembers(activePlayer *PlayerCache) (err error)
 
 func (cache *GuildCache) CanApproveMembershipRequest(activePlayer *PlayerCache) (err error) {
 	switch cache.GetJoinInfusionMinimumBypassByRequest() {
-	// Invites are currently closed
-	case types.GuildJoinBypassLevel_closed:
-		err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_allowed").WithJoinType("request")
+        // Invites are currently closed
+        case types.GuildJoinBypassLevel_closed:
+            err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_allowed").WithJoinType("request")
 
-	// Only specific players can request
-	case types.GuildJoinBypassLevel_permissioned:
-		err = cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildMembership)
+        // Only specific players can request
+        case types.GuildJoinBypassLevel_permissioned:
+            err = cache.CC.PermissionCheck(cache, activePlayer, types.PermGuildMembership)
 
-	// All Guild Members can Invite
-	case types.GuildJoinBypassLevel_member:
-		if activePlayer.GetGuildId() != cache.GetGuildId() {
-			err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_member")
-		}
-	}
+        // All Guild Members can Invite
+        case types.GuildJoinBypassLevel_member:
+            if activePlayer.GetGuildId() != cache.GetGuildId() {
+                err = types.NewGuildMembershipError(cache.GetGuildId(), activePlayer.GetPlayerId(), "not_member")
+            }
+        }
 	return
 }
 
@@ -377,6 +381,8 @@ func (cache *GuildCache) SetOwner(owner string) {
     if (!cache.GuildLoaded) {
         cache.LoadGuild()
     }
+
+    cache.CC.PermissionAdd(GetObjectPermissionIDBytes(cache.ID(), owner), types.PermGuildAll)
     cache.Guild.Owner = owner
     cache.Changed = true
 }

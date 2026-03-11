@@ -81,18 +81,10 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 		return &types.MsgGuildMembershipResponse{}, types.NewAddressValidationError(msg.Address, "signature_invalid")
 	}
 
-	guildObjectPermissionId := GetObjectPermissionIDBytes(guild.GetGuildId(), proxyPlayer.GetPlayerId())
-	addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-
-	// Check to make sure the player has permissions on the guild
-	if !cc.PermissionHasOneOf(guildObjectPermissionId, types.PermissionAssociations) {
-		return &types.MsgGuildMembershipResponse{}, types.NewPermissionError("player", proxyPlayer.GetPlayerId(), "guild", guild.GetGuildId(), uint64(types.PermissionAssociations), "register_player")
-	}
-
-	// Make sure the address calling this has Associate permissions
-	if !cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssociations) {
-		return &types.MsgGuildMembershipResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssociations), "guild_management")
-	}
+    guildPermissionErr := guild.CanAddMembersByProxy(proxyPlayer)
+    if guildPermissionErr != nil {
+    	return &types.MsgGuildMembershipResponse{}, nil
+    }
 
 	var substation *SubstationCache
     substationSet := false
@@ -114,9 +106,9 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 
 		// Since the Guild Entry Substation is being overridden, let's make
 		// sure the ProxyPlayer actually have authority over this substation
-		substationObjectPermissionId := GetObjectPermissionIDBytes(substation.GetSubstationId(), proxyPlayer.GetPlayerId())
-		if !cc.PermissionHasOneOf(substationObjectPermissionId, types.PermissionGrid) {
-			return &types.MsgGuildMembershipResponse{}, types.NewPermissionError("player", proxyPlayer.GetPlayerId(), "substation", substation.GetSubstationId(), uint64(types.PermissionGrid), "player_connect")
+		substationPermissionErr := substation.CanManageConnectionsBy(proxyPlayer)
+		if substationPermissionErr != nil {
+			return &types.MsgGuildMembershipResponse{}, substationPermissionErr
 		}
 		substationSet = true
 	}

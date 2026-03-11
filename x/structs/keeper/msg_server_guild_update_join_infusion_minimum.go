@@ -26,16 +26,9 @@ func (k msgServer) GuildUpdateJoinInfusionMinimum(goCtx context.Context, msg *ty
             return &types.MsgGuildUpdateResponse{}, types.NewObjectNotFoundError("guild", msg.GuildId)
     }
 
-    guildObjectPermissionId := GetObjectPermissionIDBytes(msg.GuildId, player.GetPlayerId())
-    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
-
-    if (!cc.PermissionHasOneOf(guildObjectPermissionId, types.PermissionUpdate)) {
-        return &types.MsgGuildUpdateResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "guild", msg.GuildId, uint64(types.PermissionUpdate), "guild_update")
-    }
-
-    // Make sure the address calling this has Associate permissions
-    if (!cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets)) {
-        return &types.MsgGuildUpdateResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "guild_management")
+    permissionErr := guild.CanUpdateJoinConstraintsBy(player)
+    if permissionErr != nil {
+        return &types.MsgGuildUpdateResponse{}, permissionErr
     }
 
     if (msg.JoinInfusionMinimum != guild.GetGuild().JoinInfusionMinimum) {

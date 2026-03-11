@@ -26,25 +26,20 @@ func (k msgServer) GuildUpdateEntrySubstationId(goCtx context.Context, msg *type
          return &types.MsgGuildUpdateResponse{}, types.NewObjectNotFoundError("guild", msg.GuildId)
     }
 
-    guildObjectPermissionId := GetObjectPermissionIDBytes(msg.GuildId, player.GetPlayerId())
-    addressPermissionId     := GetAddressPermissionIDBytes(msg.Creator)
-
-    if (!cc.PermissionHasOneOf(guildObjectPermissionId, types.PermissionUpdate)) {
-        return &types.MsgGuildUpdateResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "guild", msg.GuildId, uint64(types.PermissionUpdate), "guild_update")
-    }
-
-    // Make sure the address calling this has Associate permissions
-    if (!cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets)) {
-        return &types.MsgGuildUpdateResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "guild_management")
+    permissionErr := guild.CanUpdateSubstationBy(player)
+    if permissionErr != nil {
+        return &types.MsgGuildUpdateResponse{}, permissionErr
     }
 
     if (msg.EntrySubstationId != "") {
+        substation := cc.GetSubstation(msg.EntrySubstationId)
+        if substation.CheckSubstation() != nil {
+            return &types.MsgGuildUpdateResponse{}, types.NewObjectNotFoundError("substation", msg.EntrySubstationId)
+        }
 
-        substationObjectPermissionId    := GetObjectPermissionIDBytes(msg.EntrySubstationId, player.GetPlayerId())
-
-        // check that the calling player has substation permissions
-        if (!cc.PermissionHasOneOf(substationObjectPermissionId, types.PermissionGrid)) {
-            return &types.MsgGuildUpdateResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "substation", msg.EntrySubstationId, uint64(types.PermissionGrid), "substation_connect")
+        substationPermissionErr := substation.CanManageConnectionsBy(player)
+        if substationPermissionErr != nil {
+            return &types.MsgGuildUpdateResponse{}, substationPermissionErr
         }
 
         guild.SetEntrySubstationId(msg.EntrySubstationId)

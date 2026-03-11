@@ -27,23 +27,17 @@ func (k msgServer) GuildUpdateOwnerId(goCtx context.Context, msg *types.MsgGuild
 		return &types.MsgGuildUpdateResponse{}, types.NewObjectNotFoundError("guild", msg.GuildId)
 	}
 
-	guildObjectPermissionId := GetObjectPermissionIDBytes(msg.GuildId, player.GetPlayerId())
-	addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-
-	if !cc.PermissionHasOneOf(guildObjectPermissionId, types.PermissionUpdate) {
-		return &types.MsgGuildUpdateResponse{}, types.NewPermissionError("player", player.GetPlayerId(), "guild", msg.GuildId, uint64(types.PermissionUpdate), "guild_update")
-	}
-
-	// Make sure the address calling this has Associate permissions
-	if !cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets) {
-		return &types.MsgGuildUpdateResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "guild_management")
-	}
+    permissionErr := guild.CanTransferOwnershipBy(player)
+    if permissionErr != nil {
+        return &types.MsgGuildUpdateResponse{}, permissionErr
+    }
 
 	if guild.GetGuild().Owner != msg.Owner {
 		newOwner, _ := cc.GetPlayer(msg.Owner)
 		if newOwner.CheckPlayer() != nil {
 			return &types.MsgGuildUpdateResponse{}, types.NewObjectNotFoundError("player", msg.Owner)
 		}
+
 		guild.SetOwner(msg.Owner)
 	}
 

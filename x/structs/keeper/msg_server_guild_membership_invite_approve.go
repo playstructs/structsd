@@ -21,12 +21,6 @@ func (k msgServer) GuildMembershipInviteApprove(goCtx context.Context, msg *type
         return &types.MsgGuildMembershipResponse{}, err
     }
 
-    // Use cache permission methods
-    callingPlayerPermissionError := callingPlayer.CanBeAdministratedBy(msg.Creator, types.PermissionAssociations)
-    if callingPlayerPermissionError != nil {
-        return &types.MsgGuildMembershipResponse{}, callingPlayerPermissionError
-    }
-
     if (msg.PlayerId == "") {
         msg.PlayerId = callingPlayer.GetPlayerId()
     }

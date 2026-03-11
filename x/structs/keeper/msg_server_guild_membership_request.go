@@ -22,12 +22,6 @@ func (k msgServer) GuildMembershipRequest(goCtx context.Context, msg *types.MsgG
         return &types.MsgGuildMembershipResponse{}, err
     }
 
-    // Use cache permission methods
-    callingPlayerPermissionError := callingPlayer.CanBeAdministratedBy(msg.Creator, types.PermissionAssociations)
-    if callingPlayerPermissionError != nil {
-        return &types.MsgGuildMembershipResponse{}, callingPlayerPermissionError
-    }
-
 	if msg.PlayerId == "" {
 		msg.PlayerId = callingPlayer.GetPlayerId()
 	}
@@ -39,6 +33,11 @@ func (k msgServer) GuildMembershipRequest(goCtx context.Context, msg *types.MsgG
     guildMembershipApplication, guildMembershipApplicationError := cc.GetGuildMembershipApplicationCache(callingPlayer, types.GuildJoinType_request, msg.GuildId, msg.PlayerId)
     if guildMembershipApplicationError != nil {
         return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationError
+    }
+
+    guildMembershipApplicationPermissionError := guildMembershipApplication.VerifyRequestAsPlayer()
+    if guildMembershipApplicationPermissionError != nil {
+        return &types.MsgGuildMembershipResponse{}, guildMembershipApplicationPermissionError
     }
 
 	/*
