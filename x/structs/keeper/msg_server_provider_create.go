@@ -91,8 +91,10 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
         // Unset Load is zero
         // Unset CheckpointBlock is zero
 
-    cc.NewProvider(provider)
+    newProvider := cc.NewProvider(provider)
 
+    providerPermissionId := GetObjectPermissionIDBytes(newProvider.ID(), activePlayer.ID())
+    cc.k.SetPermissions(providerPermissionId, types.PermProviderAll)
 
 	cc.CommitAll()
 	return &types.MsgProviderResponse{}, nil

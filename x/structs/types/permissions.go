@@ -63,15 +63,23 @@ const (
 const (
 	Permissionless Permission = 0
 
-	PermAssets = PermTokenTransfer | PermTokenInfuse | PermTokenMigrate | PermTokenDefuse
+	PermAssetsAll = PermTokenTransfer | PermTokenInfuse | PermTokenMigrate | PermTokenDefuse
 
 	PermHashAll = PermHashBuild | PermHashMine | PermHashRefine | PermHashRaid
+
+    PermAgreementAll = PermAdmin | PermUpdate | PermDelete
 
     PermProviderAll = PermAdmin | PermUpdate | PermDelete |	PermProviderWithdraw |	PermProviderOpen
 
     PermGuildAll = PermAdmin | PermUpdate | PermDelete | PermGuildMembership |
                     PermGuildEndpointUpdate | PermGuildJoinConstraintsUpdate | PermGuildSubstationUpdate |
-                    PermGuildTokenBurn | PermGuildTokenMint
+                    PermGuildTokenBurn | PermGuildTokenMint | PermProviderOpen
+
+    PermSubstationAll = PermAdmin | PermUpdate | PermDelete | PermSubstationConnection | PermSourceAllocation
+
+    PermReactorAll = PermAdmin | PermUpdate | PermDelete | PermSourceAllocation | PermReactorGuildCreate
+
+    PermAllocationAll = PermAdmin | PermUpdate | PermDelete | PermAllocationConnection
 
 
     // 2^24 - 1 (16,777,215)
@@ -85,6 +93,7 @@ const (
 		PermReactorGuildCreate |
 		PermHashBuild | PermHashMine | PermHashRefine | PermHashRaid
 
+    PermPlayerAll = PermAll
 
 )
 

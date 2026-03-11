@@ -385,6 +385,15 @@ func (cache *AllocationCache) CanSourceDetailsBeUpdatedBy(activePlayer *PlayerCa
     return cache.CC.PermissionCheck(cache.GetSource(), activePlayer, types.PermSourceAllocation)
 }
 
+func (cache *AllocationCache) CanBeUpdatedBy(activePlayer *PlayerCache) error {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermUpdate)
+}
+
+
+func (cache *AllocationCache) CanBeDeletedBy(activePlayer *PlayerCache) error {
+    return cache.CC.PermissionCheck(cache, activePlayer, types.PermDelete)
+}
+
 func (cache *AllocationCache) CanBeTransferBy(activePlayer *PlayerCache) error {
     return cache.CC.PermissionCheck(cache, activePlayer, types.PermAdmin)
 }

@@ -18,14 +18,14 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-    activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
        return emptyResponse, err
     }
 
     // If no controller set, then make it the Creator
     if (msg.Controller == ""){
-        msg.Controller = activePlayer.GetPlayerId()
+        msg.Controller = callingPlayer.GetPlayerId()
     }
 
     var sourceObject PermissionedObject
@@ -55,7 +55,7 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
             return emptyResponse, types.NewAllocationError(msg.SourceObjectId, "unacceptable_source")
 	}
 
-    permissionErr := sourceObject.CanAllocateAsSourceBy(activePlayer)
+    permissionErr := sourceObject.CanAllocateAsSourceBy(callingPlayer)
     if permissionErr != nil {
             return emptyResponse, permissionErr
     }
@@ -68,6 +68,28 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
     	msg.Controller,
     	msg.Power,
     )
+
+
+    var creatorPermissions types.Permission
+    if allocation.IsAutomated() {
+        creatorPermissions = types.PermDelete 
+    }
+
+    if allocation.IsDynamic() {
+        creatorPermissions = types.PermUpdate | types.PermDelete
+    }
+
+    if callingPlayer.ID() == msg.Controller {
+        creatorPermissions = creatorPermissions | types.PermAllocationConnection
+    } else {
+        allocationPermissionId := GetObjectPermissionIDBytes(allocation.ID(), msg.Controller)
+        cc.k.SetPermissions(allocationPermissionId, types.PermAllocationConnection)
+    }
+    
+    if creatorPermissions != types.Permissionless {
+        allocationPermissionId := GetObjectPermissionIDBytes(allocation.ID(), callingPlayer.ID())
+        cc.k.SetPermissions(allocationPermissionId, creatorPermissions)
+    }
 
 	cc.CommitAll()
 	return &types.MsgAllocationCreateResponse{

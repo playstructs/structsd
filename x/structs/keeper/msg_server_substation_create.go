@@ -37,6 +37,10 @@ func (k msgServer) SubstationCreate(goCtx context.Context, msg *types.MsgSubstat
         return emptyResponse, err
     }
 
+    substationPermissionId := GetObjectPermissionIDBytes(substation.ID(), activePlayer.ID())
+    cc.k.SetPermissions(substationPermissionId, types.PermSubstationAll)
+
+
     /*
         Maybe make this an option...
         player.MigrateSubstation(substation.GetSubstationId())

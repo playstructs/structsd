@@ -473,7 +473,7 @@ func (cache *StructCache) IsSuccessful(successRate fraction.Fraction) bool {
 
 /* Permissions */
 func (cache *StructCache) CanBePlayedBy(callingPlayer *PlayerCache) error {
-    return cache.CC.PermissionCheck(cache, callingPlayer, types.PermPlay)
+    return cache.CC.PermissionCheck(cache.GetOwner(), callingPlayer, types.PermPlay)
 }
 
 func (cache *StructCache) CanAllocateAsSourceBy(_ *PlayerCache) error {

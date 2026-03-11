@@ -18,8 +18,6 @@ import (
 	"strings"
 )
 
-
-
 // GetObjectPermissionIDBytes returns the byte representation of the object and player id pair
 func GetObjectPermissionIDBytes(objectId string, playerId string) []byte {
 	 id := fmt.Sprintf("%s@%s", objectId, playerId)
@@ -179,7 +177,7 @@ func (k Keeper) GetHighestGuildRankForPermission(ctx context.Context, objectId s
 	return highestRank
 }
 
-func (k Keeper) GetAllGuildRankPermissions(ctx context.Context, objectId string, guildId string) (list []byte) {
+func (k Keeper) GetAllGuildRankPermissions(ctx context.Context, objectId string, guildId string) (list [][]byte) {
     guildRankStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)),  GuildRankKeyPrefix(objectId, guildId))
     iterator := storetypes.KVStorePrefixIterator(guildRankStore, []byte{})
 
@@ -192,7 +190,7 @@ func (k Keeper) GetAllGuildRankPermissions(ctx context.Context, objectId string,
     return
 }
 
-func (k Keeper) ClearAllGuildRankPermissions(ctx context.Context, objectId string, guildId string, list []byte) {
+func (k Keeper) ClearAllGuildRankPermissions(ctx context.Context, objectId string, guildId string, list [][]byte) {
     guildRankStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), GuildRankKeyPrefix(objectId, guildId))
     for _, key := range list {
         guildRankStore.Delete(key)
