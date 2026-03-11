@@ -22,8 +22,8 @@ func (k msgServer) PermissionGrantOnAddress(goCtx context.Context, msg *types.Ms
         return &types.MsgPermissionResponse{}, types.NewParameterValidationError("permissions", 0, "below_minimum").WithRange(1, 0)
     }
 
-    player, _ := cc.GetPlayerByAddress(msg.Creator)
-    err = player.CheckPlayer()
+    callingPlayer, _ := cc.GetPlayerByAddress(msg.Creator)
+    err = callingPlayer.CheckPlayer()
     if err != nil {
         return  &types.MsgPermissionResponse{}, err
     }
@@ -32,16 +32,11 @@ func (k msgServer) PermissionGrantOnAddress(goCtx context.Context, msg *types.Ms
     err = targetPlayer.CheckPlayer()
     if err != nil {
          return  &types.MsgPermissionResponse{}, err
-     }
+    }
 
-     if (targetPlayer.GetPlayerId() != player.GetPlayerId()) {
-        return  &types.MsgPermissionResponse{}, types.NewObjectNotFoundError("player", targetPlayer.GetPlayerId()) // Can only set address permissions on your own player
-     }
-
-    // Make sure the calling address has enough permissions to apply to another address
-    addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-    if (!cc.PermissionHasAll(addressPermissionId, types.Permission(msg.Permissions) | types.Permissions)) {
-        return &types.MsgPermissionResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(msg.Permissions), "permission_grant")
+    permissionErr := targetPlayer.CanRegisterAddressBy(callingPlayer, types.Permission(msg.Permissions))
+    if permissionErr != nil {
+        return  &types.MsgPermissionResponse{}, permissionErr
     }
 
     targetAddressPermissionId := GetAddressPermissionIDBytes(msg.Address)

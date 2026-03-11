@@ -2,6 +2,9 @@ package keeper
 
 import (
 	"structs/x/structs/types"
+
+	"strings"
+	"strconv"
 )
 
 // PermissionedObject represents any cache within the permission system
@@ -138,7 +141,56 @@ func (cc *CurrentContext) SetPermissionsGuildRank(object PermissionedObject, act
 }
 
 
-
+func (cc *CurrentContext) GetPermissionedObject(objectId string) PermissionedObject {
+	if objectId == "" {
+		return nil
+	}
+	parts := strings.Split(objectId, "-")
+	if len(parts) < 2 {
+		return nil
+	}
+	typeNum, err := strconv.ParseUint(parts[0], 10, 32)
+	if err != nil {
+		return nil
+	}
+	switch types.ObjectType(typeNum) {
+        case types.ObjectType_guild:
+            return cc.GetGuild(objectId)
+        case types.ObjectType_player:
+            player, err := cc.GetPlayer(objectId)
+            if err != nil {
+                return nil
+            }
+            return player
+        case types.ObjectType_planet:
+            return cc.GetPlanet(objectId)
+        case types.ObjectType_reactor:
+            return cc.GetReactor(objectId)
+        case types.ObjectType_substation:
+            return cc.GetSubstation(objectId)
+        case types.ObjectType_struct:
+            return cc.GetStruct(objectId)
+        case types.ObjectType_allocation:
+            allocation, found := cc.GetAllocation(objectId)
+            if !found {
+                return nil
+            }
+            return allocation
+        case types.ObjectType_fleet:
+            fleet, err := cc.GetFleetById(objectId)
+            if err != nil {
+                return nil
+            }
+            return fleet
+        case types.ObjectType_provider:
+            return cc.GetProvider(objectId)
+        case types.ObjectType_agreement:
+            return cc.GetAgreement(objectId)
+        default:
+            return nil
+	}
+	return nil
+}
 
 func (cc *CurrentContext) PermissionCheck(object PermissionedObject, activePlayer *PlayerCache, permission types.Permission) error {
 
@@ -180,3 +232,4 @@ func (cc *CurrentContext) PermissionCheck(object PermissionedObject, activePlaye
 
     return types.NewPermissionError("player", activePlayer.GetPlayerId(), "object", object.ID(), uint64(permission), "administrate")
 }
+
