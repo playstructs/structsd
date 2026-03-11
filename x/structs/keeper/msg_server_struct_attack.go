@@ -16,11 +16,16 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return &types.MsgStructAttackResponse{}, err
+    }
+
 	structure := cc.GetStruct(msg.OperatingStructId)
 
 	k.logger.Info("Attack Action", "structId", msg.OperatingStructId)
 	// Check to see if the caller has permissions to proceed
-	permissionError := structure.CanBePlayedBy(msg.Creator)
+	permissionError := structure.CanBePlayedBy(callingPlayer)
 	if permissionError != nil {
 		return &types.MsgStructAttackResponse{}, permissionError
 	}

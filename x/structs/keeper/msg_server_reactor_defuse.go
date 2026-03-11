@@ -17,6 +17,11 @@ func (k msgServer) ReactorDefuse(goCtx context.Context, msg *types.MsgReactorDef
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return &types.MsgReactorDefuseResponse{}, err
+    }
+
     // Load the player related to the specified address
     // Normally the address specified should be the PrimaryAddress
     player, err := cc.GetPlayerByAddress(msg.DelegatorAddress)
@@ -24,8 +29,7 @@ func (k msgServer) ReactorDefuse(goCtx context.Context, msg *types.MsgReactorDef
        return &types.MsgReactorDefuseResponse{}, err
     }
 
-    // Check if msg.Creator has PermissionAssets on the Address and Account
-    err = player.CanBeAdministratedBy(msg.Creator, types.PermissionAssets)
+    err = player.CanDefuseTokensBy(callingPlayer)
     if err != nil {
        return &types.MsgReactorDefuseResponse{}, err
     }

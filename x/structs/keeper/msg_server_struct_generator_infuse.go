@@ -23,13 +23,10 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 		return &types.MsgStructGeneratorStatusResponse{}, types.NewPlayerRequiredError(msg.Creator, "struct_generator_infuse")
 	}
 
-	addressPermissionId := GetAddressPermissionIDBytes(msg.Creator)
-	// Make sure the address calling this has Assets permissions
-	if !cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets) {
-		return &types.MsgStructGeneratorStatusResponse{}, types.NewPermissionError("address", msg.Creator, "", "", uint64(types.PermissionAssets), "assets")
+	permissionErr := callingPlayer.CanInfuseTokensBy(callingPlayer)
+	if permissionErr != nil {
+		return &types.MsgStructGeneratorStatusResponse{}, permissionErr
 	}
-
-	structStatusAttributeId := GetStructAttributeIDByObjectId(types.StructAttributeType_status, msg.StructId)
 
 	structure := cc.GetStruct(msg.StructId)
 	if structure.CheckStruct() != nil {
@@ -37,7 +34,7 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 	}
 
 	// Is the Struct online?
-	if cc.StructAttributeFlagHasOneOf(structStatusAttributeId, uint64(types.StructStateOnline)) {
+	if structure.IsOnline() {
 		return &types.MsgStructGeneratorStatusResponse{}, types.NewStructStateError(msg.StructId, "offline", "online", "generator_infuse")
 	}
 

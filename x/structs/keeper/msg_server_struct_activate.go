@@ -16,11 +16,16 @@ func (k msgServer) StructActivate(goCtx context.Context, msg *types.MsgStructAct
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return &types.MsgStructStatusResponse{}, err
+    }
+
     // load struct
     structure := cc.GetStruct(msg.StructId)
 
     // Check to see if the caller has permissions to proceed
-    permissionError := structure.CanBePlayedBy(msg.Creator)
+    permissionError := structure.CanBePlayedBy(callingPlayer)
     if (permissionError != nil) {
         return &types.MsgStructStatusResponse{}, permissionError
     }

@@ -22,6 +22,11 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return &types.MsgStructStatusResponse{}, err
+    }
+
     // Load the Owner Player
     owner, err := cc.GetPlayer(msg.PlayerId)
     if (err != nil) {
@@ -29,7 +34,7 @@ func (k msgServer) StructBuildInitiate(goCtx context.Context, msg *types.MsgStru
     }
 
     // Check address play permissions
-    permissionError := owner.CanBePlayedBy(msg.Creator)
+    permissionError := owner.CanBePlayedBy(callingPlayer)
     if (permissionError != nil) {
         return &types.MsgStructStatusResponse{}, permissionError
     }

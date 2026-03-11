@@ -19,15 +19,18 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return &types.MsgStructOreMinerStatusResponse{}, err
+    }
+
 	structure := cc.GetStruct(msg.StructId)
 
 	// Check to see if the caller has permissions to proceed
-	/*
-	   callerID, isOwner, permissionError := structure.CanBeHashedBy(msg.Creator)
-	   if (permissionError != nil) {
-	       return &types.MsgStructOreMinerStatusResponse{}, permissionError
-	   }
-	*/
+    permissionError := structure.CanBeHashedBy(callingPlayer)
+    if (permissionError != nil) {
+       return &types.MsgStructOreMinerStatusResponse{}, permissionError
+    }
 
 	// Is the Struct & Owner online?
 	readinessError := structure.ReadinessCheck()

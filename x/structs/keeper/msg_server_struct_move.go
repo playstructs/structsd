@@ -35,10 +35,15 @@ func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (
     // indexer for UI requirements
     k.AddressEmitActivity(ctx, msg.Creator)
 
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return &types.MsgStructStatusResponse{}, err
+    }
+
     structure := cc.GetStruct(msg.StructId)
 
     // Check to see if the caller has permissions to proceed
-    permissionError := structure.CanBePlayedBy(msg.Creator)
+    permissionError := structure.CanBePlayedBy(callingPlayer)
     if (permissionError != nil) {
         return &types.MsgStructStatusResponse{}, permissionError
     }
@@ -49,9 +54,9 @@ func (k msgServer) StructMove(goCtx context.Context, msg *types.MsgStructMove) (
         return &types.MsgStructStatusResponse{}, err
     }
 
-    err := structure.AttemptMove( msg.LocationType, msg.Ambit, msg.Slot)
-    if (err != nil) {
-        return &types.MsgStructStatusResponse{}, err
+    moveErr := structure.AttemptMove( msg.LocationType, msg.Ambit, msg.Slot)
+    if (moveErr != nil) {
+        return &types.MsgStructStatusResponse{}, moveErr
     }
 
     structure.GetOwner().Discharge()

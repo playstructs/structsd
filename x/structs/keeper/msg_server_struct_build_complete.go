@@ -12,6 +12,11 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return &types.MsgStructStatusResponse{}, err
+    }
+
 	// Add an Active Address record to the
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
@@ -20,12 +25,11 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 	structure := cc.GetStruct(msg.StructId)
 
 	// Check to see if the caller has permissions to proceed
-	/*
-	   callerID, isOwner, permissionError := structure.CanBeHashedBy(msg.Creator)
-	   if (permissionError != nil) {
-	       return &types.MsgStructStatusResponse{}, permissionError
-	   }
-	*/
+    permissionError := structure.CanBeHashedBy(callingPlayer)
+    if (permissionError != nil) {
+       return &types.MsgStructStatusResponse{}, permissionError
+    }
+
 
 	if !structure.LoadStruct() {
 		return &types.MsgStructStatusResponse{}, types.NewObjectNotFoundError("struct", msg.StructId)

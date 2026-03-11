@@ -472,48 +472,16 @@ func (cache *StructCache) IsSuccessful(successRate fraction.Fraction) bool {
 }
 
 /* Permissions */
-func (cache *StructCache) CanBePlayedBy(address string) error {
-
-	// Make sure the address calling this has Play permissions
-	if !cache.CC.PermissionHasOneOf(GetAddressPermissionIDBytes(address), types.PermissionPlay) {
-		return types.NewPermissionError("address", address, "", "", uint64(types.PermissionPlay), "play")
-	}
-
-	callingPlayer, err := cache.CC.GetPlayerByAddress(address)
-	if err != nil {
-		return err
-	}
-	if callingPlayer.GetPlayerId() != cache.GetOwnerId() {
-		if !cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.GetPlayerId()), types.PermissionPlay) {
-			return types.NewPermissionError("player", callingPlayer.GetPlayerId(), "player", cache.GetOwnerId(), uint64(types.PermissionPlay), "play")
-		}
-	}
-	return nil
+func (cache *StructCache) CanBePlayedBy(callingPlayer *PlayerCache) error {
+    return cache.CC.PermissionCheck(cache, callingPlayer, types.PermPlay)
 }
 
-func (cache *StructCache) CanAllocateAsSourceBy(activePlayer *PlayerCache) error {
+func (cache *StructCache) CanAllocateAsSourceBy(_ *PlayerCache) error {
     return types.NewAllocationError(cache.ID(), "unacceptable_source")
 }
 
-func (cache *StructCache) CanBeHashedBy(address string) (string, bool, error) {
-	owner := true
-	// Make sure the address calling this has Hash permissions
-	if !cache.CC.PermissionHasOneOf(GetAddressPermissionIDBytes(address), types.PermissionHash) {
-		return "", owner, types.NewPermissionError("address", address, "", "", uint64(types.PermissionHash), "hash")
-	}
-
-	callingPlayer, err := cache.CC.GetPlayerByAddress(address)
-	if err != nil {
-		return "", owner, err
-	}
-	if callingPlayer.GetPlayerId() != cache.GetOwnerId() {
-		owner = false
-		if !cache.CC.PermissionHasOneOf(GetObjectPermissionIDBytes(cache.GetOwnerId(), callingPlayer.GetPlayerId()), types.PermissionHash) {
-			return callingPlayer.PlayerId, owner, types.NewPermissionError("player", callingPlayer.PlayerId, "player", cache.GetOwnerId(), uint64(types.PermissionHash), "hash")
-		}
-	}
-
-	return cache.GetOwnerId(), owner, nil
+func (cache *StructCache) CanBeHashedBy(callingPlayer *PlayerCache) (error) {
+    return cache.CC.PermissionCheck(cache, callingPlayer, types.PermHashAll)
 }
 
 /* Game Functions */

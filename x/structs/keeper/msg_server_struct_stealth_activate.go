@@ -16,10 +16,14 @@ func (k msgServer) StructStealthActivate(goCtx context.Context, msg *types.MsgSt
     // indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+       return &types.MsgStructStatusResponse{}, err
+    }
 
     structure := cc.GetStruct(msg.StructId)
 
-    permissionError := structure.CanBePlayedBy(msg.Creator)
+    permissionError := structure.CanBePlayedBy(callingPlayer)
     if (permissionError != nil) {
         return &types.MsgStructStatusResponse{}, permissionError
     }
