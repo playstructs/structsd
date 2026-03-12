@@ -413,6 +413,14 @@ func (cache *PlayerCache) CanSupportLoadAddition(additionalLoad uint64) bool {
 	return ((totalCapacity - totalLoad) >= additionalLoad)
 }
 
+func (cache *PlayerCache) SetGuildRank(rank uint64) {
+	if !cache.PlayerLoaded {
+		cache.LoadPlayer()
+	}
+	cache.Player.GuildRank = rank
+	cache.Changed = true
+}
+
 func (cache *PlayerCache) SetGuild(guildId string) {
 	if !cache.PlayerLoaded {
 		cache.LoadPlayer()

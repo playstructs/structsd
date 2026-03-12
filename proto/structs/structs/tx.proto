@@ -81,6 +81,7 @@ service Msg {
 
   rpc PlayerUpdatePrimaryAddress     (MsgPlayerUpdatePrimaryAddress    ) returns (MsgPlayerUpdatePrimaryAddressResponse   );
 
+  rpc PlayerGuildRankSet             (MsgPlayerGuildRankSet            ) returns (MsgPlayerGuildRankSetResponse);
   rpc PlayerSend                     (MsgPlayerSend                    ) returns (MsgPlayerSendResponse);
 
   rpc ProviderCreate                 (MsgProviderCreate                ) returns (MsgProviderResponse);
@@ -567,6 +568,16 @@ message MsgPlayerResume {
 }
 
 message MsgPlayerResumeResponse {}
+
+message MsgPlayerGuildRankSet {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator      = 1;
+  string playerId     = 2;
+  uint64 guildRank    = 3;
+}
+
+message MsgPlayerGuildRankSetResponse {}
 
 
 // MsgReactorInfuse defines a SDK message for performing a delegation of coins

@@ -182,6 +182,18 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"}},
                 },
 				{
+                    RpcMethod:      "GuildRankPermissionByObject",
+                    Use:            "guild-rank-permission-by-object [object id]",
+                    Short:          "List guild rank permissions for an object",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "object_id"}},
+                },
+				{
+                    RpcMethod:      "GuildRankPermissionByObjectAndGuild",
+                    Use:            "guild-rank-permission-by-object-and-guild [object id] [guild id]",
+                    Short:          "List guild rank permissions for an object and guild",
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "object_id"},{ProtoField: "guild_id"}},
+                },
+				{
                     RpcMethod:      "Planet",
                     Use:            "planet [planet id]",
                     Short:          "Show the details of a specific Planet",
@@ -545,6 +557,18 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "address"},{ProtoField: "permissions"}},
                  },
                  {
+                     RpcMethod:      "PermissionGuildRankSet",
+                     Use:            "permission-guild-rank-set [object id] [guild id] [permission] [highest rank]",
+                     Short:          "Set guild rank requirement for a permission on an object",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "objectId"},{ProtoField: "guildId"},{ProtoField: "permission"},{ProtoField: "highestRank"}},
+                 },
+                 {
+                     RpcMethod:      "PermissionGuildRankRevoke",
+                     Use:            "permission-guild-rank-revoke [object id] [guild id] [permission]",
+                     Short:          "Revoke guild rank permission on an object",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "objectId"},{ProtoField: "guildId"},{ProtoField: "permission"}},
+                 },
+                 {
                      RpcMethod:      "PlanetExplore",
                      Use:            "planet-explore [player id]",
                      Short:          "Explore a new planet",
@@ -561,6 +585,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      Use:            "player-update-primary-address [address]",
                      Short:          "Update the primary address for a player",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "primaryAddress"}},
+                 },
+                 {
+                     RpcMethod:      "PlayerGuildRankSet",
+                     Use:            "player-guild-rank-set [player id] [guild rank]",
+                     Short:          "Set the guild rank of a player in your guild",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"},{ProtoField: "guildRank"}},
                  },
                  {
                     RpcMethod:      "PlayerSend",
