@@ -65,7 +65,7 @@ const (
 	Msg_PlanetExplore_FullMethodName                                 = "/structs.structs.Msg/PlanetExplore"
 	Msg_PlanetRaidComplete_FullMethodName                            = "/structs.structs.Msg/PlanetRaidComplete"
 	Msg_PlayerUpdatePrimaryAddress_FullMethodName                    = "/structs.structs.Msg/PlayerUpdatePrimaryAddress"
-	Msg_PlayerGuildRankSet_FullMethodName                            = "/structs.structs.Msg/PlayerGuildRankSet"
+	Msg_PlayerUpdateGuildRank_FullMethodName                         = "/structs.structs.Msg/PlayerUpdateGuildRank"
 	Msg_PlayerSend_FullMethodName                                    = "/structs.structs.Msg/PlayerSend"
 	Msg_ProviderCreate_FullMethodName                                = "/structs.structs.Msg/ProviderCreate"
 	Msg_ProviderWithdrawBalance_FullMethodName                       = "/structs.structs.Msg/ProviderWithdrawBalance"
@@ -158,7 +158,7 @@ type MsgClient interface {
 	PlanetExplore(ctx context.Context, in *MsgPlanetExplore, opts ...grpc.CallOption) (*MsgPlanetExploreResponse, error)
 	PlanetRaidComplete(ctx context.Context, in *MsgPlanetRaidComplete, opts ...grpc.CallOption) (*MsgPlanetRaidCompleteResponse, error)
 	PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlayerUpdatePrimaryAddress, opts ...grpc.CallOption) (*MsgPlayerUpdatePrimaryAddressResponse, error)
-	PlayerGuildRankSet(ctx context.Context, in *MsgPlayerGuildRankSet, opts ...grpc.CallOption) (*MsgPlayerGuildRankSetResponse, error)
+	PlayerUpdateGuildRank(ctx context.Context, in *MsgPlayerUpdateGuildRank, opts ...grpc.CallOption) (*MsgPlayerUpdateGuildRankResponse, error)
 	PlayerSend(ctx context.Context, in *MsgPlayerSend, opts ...grpc.CallOption) (*MsgPlayerSendResponse, error)
 	ProviderCreate(ctx context.Context, in *MsgProviderCreate, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ProviderWithdrawBalance(ctx context.Context, in *MsgProviderWithdrawBalance, opts ...grpc.CallOption) (*MsgProviderResponse, error)
@@ -665,10 +665,10 @@ func (c *msgClient) PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlaye
 	return out, nil
 }
 
-func (c *msgClient) PlayerGuildRankSet(ctx context.Context, in *MsgPlayerGuildRankSet, opts ...grpc.CallOption) (*MsgPlayerGuildRankSetResponse, error) {
+func (c *msgClient) PlayerUpdateGuildRank(ctx context.Context, in *MsgPlayerUpdateGuildRank, opts ...grpc.CallOption) (*MsgPlayerUpdateGuildRankResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MsgPlayerGuildRankSetResponse)
-	err := c.cc.Invoke(ctx, Msg_PlayerGuildRankSet_FullMethodName, in, out, cOpts...)
+	out := new(MsgPlayerUpdateGuildRankResponse)
+	err := c.cc.Invoke(ctx, Msg_PlayerUpdateGuildRank_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1089,7 +1089,7 @@ type MsgServer interface {
 	PlanetExplore(context.Context, *MsgPlanetExplore) (*MsgPlanetExploreResponse, error)
 	PlanetRaidComplete(context.Context, *MsgPlanetRaidComplete) (*MsgPlanetRaidCompleteResponse, error)
 	PlayerUpdatePrimaryAddress(context.Context, *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error)
-	PlayerGuildRankSet(context.Context, *MsgPlayerGuildRankSet) (*MsgPlayerGuildRankSetResponse, error)
+	PlayerUpdateGuildRank(context.Context, *MsgPlayerUpdateGuildRank) (*MsgPlayerUpdateGuildRankResponse, error)
 	PlayerSend(context.Context, *MsgPlayerSend) (*MsgPlayerSendResponse, error)
 	ProviderCreate(context.Context, *MsgProviderCreate) (*MsgProviderResponse, error)
 	ProviderWithdrawBalance(context.Context, *MsgProviderWithdrawBalance) (*MsgProviderResponse, error)
@@ -1274,8 +1274,8 @@ func (UnimplementedMsgServer) PlanetRaidComplete(context.Context, *MsgPlanetRaid
 func (UnimplementedMsgServer) PlayerUpdatePrimaryAddress(context.Context, *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlayerUpdatePrimaryAddress not implemented")
 }
-func (UnimplementedMsgServer) PlayerGuildRankSet(context.Context, *MsgPlayerGuildRankSet) (*MsgPlayerGuildRankSetResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method PlayerGuildRankSet not implemented")
+func (UnimplementedMsgServer) PlayerUpdateGuildRank(context.Context, *MsgPlayerUpdateGuildRank) (*MsgPlayerUpdateGuildRankResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PlayerUpdateGuildRank not implemented")
 }
 func (UnimplementedMsgServer) PlayerSend(context.Context, *MsgPlayerSend) (*MsgPlayerSendResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlayerSend not implemented")
@@ -2234,20 +2234,20 @@ func _Msg_PlayerUpdatePrimaryAddress_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_PlayerGuildRankSet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgPlayerGuildRankSet)
+func _Msg_PlayerUpdateGuildRank_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgPlayerUpdateGuildRank)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MsgServer).PlayerGuildRankSet(ctx, in)
+		return srv.(MsgServer).PlayerUpdateGuildRank(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Msg_PlayerGuildRankSet_FullMethodName,
+		FullMethod: Msg_PlayerUpdateGuildRank_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).PlayerGuildRankSet(ctx, req.(*MsgPlayerGuildRankSet))
+		return srv.(MsgServer).PlayerUpdateGuildRank(ctx, req.(*MsgPlayerUpdateGuildRank))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3092,8 +3092,8 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Msg_PlayerUpdatePrimaryAddress_Handler,
 		},
 		{
-			MethodName: "PlayerGuildRankSet",
-			Handler:    _Msg_PlayerGuildRankSet_Handler,
+			MethodName: "PlayerUpdateGuildRank",
+			Handler:    _Msg_PlayerUpdateGuildRank_Handler,
 		},
 		{
 			MethodName: "PlayerSend",

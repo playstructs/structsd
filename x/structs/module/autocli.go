@@ -593,9 +593,9 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "primaryAddress"}},
                  },
                  {
-                     RpcMethod:      "PlayerGuildRankSet",
-                     Use:            "player-guild-rank-set [player id] [guild rank]",
-                     Short:          "Set the guild rank of a player in your guild",
+                     RpcMethod:      "PlayerUpdateGuildRank",
+                     Use:            "player-update-guild-rank [player id] [guild rank]",
+                     Short:          "Update the guild rank of a player in your guild",
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "playerId"},{ProtoField: "guildRank"}},
                  },
                  {

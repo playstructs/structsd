@@ -577,14 +577,14 @@ echo "  Guild rank records after revoke: ${RECORDS_AFTER}"
 
 section "PHASE 7: Player guild rank"
 
-PLAYER_GUILD_RANK_SET_OK=false
-if structsd tx structs --help 2>&1 | grep -q "player-guild-rank-set"; then
-    PLAYER_GUILD_RANK_SET_OK=true
+PLAYER_UPDATE_GUILD_RANK_OK=false
+if structsd tx structs --help 2>&1 | grep -q "player-update-guild-rank"; then
+    PLAYER_UPDATE_GUILD_RANK_OK=true
 fi
-if [ "${PLAYER_GUILD_RANK_SET_OK}" != true ]; then
-    info "player-guild-rank-set not available; skipping all rank tests"
+if [ "${PLAYER_UPDATE_GUILD_RANK_OK}" != true ]; then
+    info "player-update-guild-rank not available; skipping all rank tests"
 else
-    info "player-guild-rank-set available; running comprehensive rank tests"
+    info "player-update-guild-rank available; running comprehensive rank tests"
 
     if [ "${#EXTRA_PLAYER_IDS[@]}" -lt 10 ]; then
         info "Fewer than 10 extra players; skipping bulk rank tests (re-run without --skip-setup)"
@@ -600,7 +600,7 @@ else
         PID="${EXTRA_PLAYER_IDS[$i]}"
         DESIRED_RANK=$(( i + 1 ))
         run_tx "Alice sets ${EXTRA_PLAYER_KEYS[$i]} to rank ${DESIRED_RANK}" \
-            tx structs player-guild-rank-set "${PID}" "${DESIRED_RANK}" --from alice
+            tx structs player-update-guild-rank "${PID}" "${DESIRED_RANK}" --from alice
     done
 
     # Verify all ranks read back correctly
@@ -625,8 +625,8 @@ else
     PASS_COUNT=$(( PASS_COUNT + RANK_VERIFY_PASS ))
 
     # Also set player_2 and player_3 to known ranks for later tests
-    run_tx "Set player_2 to rank 2" tx structs player-guild-rank-set "${PLAYER_2_ID}" 2 --from alice
-    run_tx "Set player_3 to rank 5" tx structs player-guild-rank-set "${PLAYER_3_ID}" 5 --from alice
+    run_tx "Set player_2 to rank 2" tx structs player-update-guild-rank "${PLAYER_2_ID}" 2 --from alice
+    run_tx "Set player_3 to rank 5" tx structs player-update-guild-rank "${PLAYER_3_ID}" 5 --from alice
 
     # ── 7b: Guild rank permission threshold sweep ────────────────────────────
     section "PHASE 7b: Guild rank permission threshold sweep"
@@ -691,51 +691,51 @@ else
 
     # Test: player_2 (rank 2) can modify extra[9] (rank 10) → rank 7 (promote partially)
     run_tx "player_2 (rank 2) promotes extra[9] (rank 10) to rank 7" \
-        tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[9]}" 7 --from player_2
+        tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[9]}" 7 --from player_2
     RANK=$(get_player_guild_rank "${EXTRA_PLAYER_IDS[9]}")
     assert_eq "extra[9] rank after partial promote" "7" "${RANK}"
 
     # Test: player_2 (rank 2) can demote extra[14] (rank 15) to rank 18
     run_tx "player_2 (rank 2) demotes extra[14] (rank 15) to rank 18" \
-        tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[14]}" 18 --from player_2
+        tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[14]}" 18 --from player_2
     RANK=$(get_player_guild_rank "${EXTRA_PLAYER_IDS[14]}")
     assert_eq "extra[14] rank after demotion" "18" "${RANK}"
 
     # Test: player_2 (rank 2) can promote extra[19] (rank 20) to rank 2 (own level)
     run_tx "player_2 (rank 2) promotes extra[19] (rank 20) to rank 2 (own level)" \
-        tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[19]}" 2 --from player_2
+        tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[19]}" 2 --from player_2
     RANK=$(get_player_guild_rank "${EXTRA_PLAYER_IDS[19]}")
     assert_eq "extra[19] rank after promote to own level" "2" "${RANK}"
 
     # Test: player_2 (rank 2) CANNOT promote extra[9] (now rank 7) to rank 1 (better than self)
     run_tx_expect_permission_denied "player_2 (rank 2) cannot promote to rank 1 (above self)" \
-        tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[9]}" 1 --from player_2
+        tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[9]}" 1 --from player_2
 
     # Test: player_3 (rank 5) CANNOT modify player_2 (rank 2, better rank)
     run_tx_expect_permission_denied "player_3 (rank 5) cannot modify player_2 (rank 2)" \
-        tx structs player-guild-rank-set "${PLAYER_2_ID}" 10 --from player_3
+        tx structs player-update-guild-rank "${PLAYER_2_ID}" 10 --from player_3
 
     # Test: player_3 (rank 5) CANNOT modify extra[0] (rank 1, better rank)
     run_tx_expect_permission_denied "player_3 (rank 5) cannot modify extra[0] (rank 1)" \
-        tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[0]}" 10 --from player_3
+        tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[0]}" 10 --from player_3
 
     # Test: player_3 (rank 5) CANNOT modify extra[4] (rank 5, equal rank)
     run_tx_expect_permission_denied "player_3 (rank 5) cannot modify equal rank (5)" \
-        tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[4]}" 10 --from player_3
+        tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[4]}" 10 --from player_3
 
     # Test: extra[19] (now rank 2, same as player_2) CANNOT modify player_2 (equal rank)
     run_tx_expect_permission_denied "extra[19] (rank 2) cannot modify player_2 (rank 2, equal)" \
-        tx structs player-guild-rank-set "${PLAYER_2_ID}" 10 --from "${EXTRA_PLAYER_KEYS[19]}"
+        tx structs player-update-guild-rank "${PLAYER_2_ID}" 10 --from "${EXTRA_PLAYER_KEYS[19]}"
 
     # Test: player_3 (rank 5) CAN modify extra[9] (rank 7, worse rank) → rank 6
     run_tx "player_3 (rank 5) promotes extra[9] (rank 7) to rank 6" \
-        tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[9]}" 6 --from player_3
+        tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[9]}" 6 --from player_3
     RANK=$(get_player_guild_rank "${EXTRA_PLAYER_IDS[9]}")
     assert_eq "extra[9] rank after player_3 promotes to 6" "6" "${RANK}"
 
     # Test: player_3 (rank 5) CAN demote extra[9] (rank 6) to rank 100
     run_tx "player_3 (rank 5) demotes extra[9] (rank 6) to rank 100" \
-        tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[9]}" 100 --from player_3
+        tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[9]}" 100 --from player_3
     RANK=$(get_player_guild_rank "${EXTRA_PLAYER_IDS[9]}")
     assert_eq "extra[9] rank after demotion to 100" "100" "${RANK}"
 
@@ -743,29 +743,29 @@ else
     section "PHASE 7d: Chain of rank modification"
 
     # Reset some players for chain test
-    run_tx "Alice sets extra[5] to rank 2" tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[5]}" 2 --from alice
-    run_tx "Alice sets extra[6] to rank 10" tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[6]}" 10 --from alice
-    run_tx "Alice sets extra[7] to rank 15" tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[7]}" 15 --from alice
+    run_tx "Alice sets extra[5] to rank 2" tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[5]}" 2 --from alice
+    run_tx "Alice sets extra[6] to rank 10" tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[6]}" 10 --from alice
+    run_tx "Alice sets extra[7] to rank 15" tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[7]}" 15 --from alice
 
     # Chain: extra[5](rank 2) → promotes extra[6](rank 10) to rank 4
     run_tx "Chain step 1: extra[5] (rank 2) sets extra[6] (rank 10) to rank 4" \
-        tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[6]}" 4 --from "${EXTRA_PLAYER_KEYS[5]}"
+        tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[6]}" 4 --from "${EXTRA_PLAYER_KEYS[5]}"
     RANK=$(get_player_guild_rank "${EXTRA_PLAYER_IDS[6]}")
     assert_eq "Chain step 1: extra[6] is now rank 4" "4" "${RANK}"
 
     # Chain: extra[6](rank 4) → promotes extra[7](rank 15) to rank 5
     run_tx "Chain step 2: extra[6] (rank 4) sets extra[7] (rank 15) to rank 5" \
-        tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[7]}" 5 --from "${EXTRA_PLAYER_KEYS[6]}"
+        tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[7]}" 5 --from "${EXTRA_PLAYER_KEYS[6]}"
     RANK=$(get_player_guild_rank "${EXTRA_PLAYER_IDS[7]}")
     assert_eq "Chain step 2: extra[7] is now rank 5" "5" "${RANK}"
 
     # Chain: extra[7](rank 5) CANNOT modify extra[6](rank 4, better rank)
     run_tx_expect_permission_denied "Chain: extra[7] (rank 5) cannot modify extra[6] (rank 4)" \
-        tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[6]}" 10 --from "${EXTRA_PLAYER_KEYS[7]}"
+        tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[6]}" 10 --from "${EXTRA_PLAYER_KEYS[7]}"
 
     # Chain: extra[6](rank 4) can demote extra[7](rank 5) back to rank 15
     run_tx "Chain step 3: extra[6] (rank 4) demotes extra[7] (rank 5) to rank 15" \
-        tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[7]}" 15 --from "${EXTRA_PLAYER_KEYS[6]}"
+        tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[7]}" 15 --from "${EXTRA_PLAYER_KEYS[6]}"
     RANK=$(get_player_guild_rank "${EXTRA_PLAYER_IDS[7]}")
     assert_eq "Chain step 3: extra[7] back to rank 15" "15" "${RANK}"
 
@@ -775,7 +775,7 @@ else
     # Alice shuffles all extra player ranks to inverse order
     for i in "${!EXTRA_PLAYER_IDS[@]}"; do
         NEW_RANK=$(( ${#EXTRA_PLAYER_IDS[@]} - i ))
-        structsd ${PARAMS_TX} tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[$i]}" "${NEW_RANK}" --from alice 2>&1 || true
+        structsd ${PARAMS_TX} tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[$i]}" "${NEW_RANK}" --from alice 2>&1 || true
         sleep 1
     done
 
@@ -799,12 +799,12 @@ else
     # After shuffle: extra[0]=rank 20, extra[19]=rank 1
     # extra[19] (rank 1) should be able to modify extra[0] (rank 20) but not vice versa
     run_tx "extra[19] (rank 1) sets extra[0] (rank 20) to rank 10" \
-        tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[0]}" 10 --from "${EXTRA_PLAYER_KEYS[19]}"
+        tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[0]}" 10 --from "${EXTRA_PLAYER_KEYS[19]}"
     RANK=$(get_player_guild_rank "${EXTRA_PLAYER_IDS[0]}")
     assert_eq "extra[0] rank after shuffle-based modify" "10" "${RANK}"
 
     run_tx_expect_permission_denied "extra[0] (rank 10) cannot modify extra[19] (rank 1)" \
-        tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[19]}" 15 --from "${EXTRA_PLAYER_KEYS[0]}"
+        tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[19]}" 15 --from "${EXTRA_PLAYER_KEYS[0]}"
 
     # ── 7f: Edge cases ───────────────────────────────────────────────────────
     section "PHASE 7f: Edge cases"
@@ -813,40 +813,40 @@ else
     # actorRank (2) is NOT < targetRank (2), so denied via rank path
     # player_2 doesn't have PermAdmin on guild, so denied overall
     run_tx_expect_permission_denied "player_2 cannot self-modify rank (equal = denied)" \
-        tx structs player-guild-rank-set "${PLAYER_2_ID}" 0 --from player_2
+        tx structs player-update-guild-rank "${PLAYER_2_ID}" 0 --from player_2
 
     # alice (owner) CAN self-modify because she has PermAdmin bypass
     run_tx "alice (admin) can change own rank" \
-        tx structs player-guild-rank-set "${PLAYER_1_ID}" 3 --from alice
+        tx structs player-update-guild-rank "${PLAYER_1_ID}" 3 --from alice
     RANK=$(get_player_guild_rank "${PLAYER_1_ID}")
     assert_eq "alice rank after self-set" "3" "${RANK}"
     # Restore alice to rank 0
     run_tx "alice restores own rank to 0" \
-        tx structs player-guild-rank-set "${PLAYER_1_ID}" 0 --from alice
+        tx structs player-update-guild-rank "${PLAYER_1_ID}" 0 --from alice
 
     # Setting rank to very large number
     run_tx "Alice sets extra[0] to max-ish rank (999999)" \
-        tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[0]}" 999999 --from alice
+        tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[0]}" 999999 --from alice
     RANK=$(get_player_guild_rank "${EXTRA_PLAYER_IDS[0]}")
     assert_eq "extra[0] rank after set to 999999" "999999" "${RANK}"
 
     # Setting rank back to 0 (best)
     run_tx "Alice sets extra[0] back to rank 0" \
-        tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[0]}" 0 --from alice
+        tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[0]}" 0 --from alice
     RANK=$(get_player_guild_rank "${EXTRA_PLAYER_IDS[0]}")
     assert_eq "extra[0] rank after set back to 0" "0" "${RANK}"
 
     # ── Clean up all ranks ───────────────────────────────────────────────────
     info "Resetting all player ranks to 0"
-    run_tx "Reset player_2 to rank 0" tx structs player-guild-rank-set "${PLAYER_2_ID}" 0 --from alice
-    run_tx "Reset player_3 to rank 0" tx structs player-guild-rank-set "${PLAYER_3_ID}" 0 --from alice
+    run_tx "Reset player_2 to rank 0" tx structs player-update-guild-rank "${PLAYER_2_ID}" 0 --from alice
+    run_tx "Reset player_3 to rank 0" tx structs player-update-guild-rank "${PLAYER_3_ID}" 0 --from alice
     for i in "${!EXTRA_PLAYER_IDS[@]}"; do
-        structsd ${PARAMS_TX} tx structs player-guild-rank-set "${EXTRA_PLAYER_IDS[$i]}" 0 --from alice 2>&1 || true
+        structsd ${PARAMS_TX} tx structs player-update-guild-rank "${EXTRA_PLAYER_IDS[$i]}" 0 --from alice 2>&1 || true
         sleep 1
     done
 
   fi # end extra players guard
-fi # end player-guild-rank-set available
+fi # end player-update-guild-rank available
 
 # ═════════════════════════════════════════════════════════════════════════════
 #  PHASE 8: Grant/revoke ordering and multiple objects

@@ -66,7 +66,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlanetRaidComplete{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerUpdatePrimaryAddress{},)
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerGuildRankSet{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerUpdateGuildRank{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgPlayerSend{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderCreate{},)

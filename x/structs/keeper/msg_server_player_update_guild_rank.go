@@ -7,8 +7,8 @@ import (
 	"structs/x/structs/types"
 )
 
-func (k msgServer) PlayerGuildRankSet(goCtx context.Context, msg *types.MsgPlayerGuildRankSet) (*types.MsgPlayerGuildRankSetResponse, error) {
-	emptyResponse := &types.MsgPlayerGuildRankSetResponse{}
+func (k msgServer) PlayerUpdateGuildRank(goCtx context.Context, msg *types.MsgPlayerUpdateGuildRank) (*types.MsgPlayerUpdateGuildRankResponse, error) {
+	emptyResponse := &types.MsgPlayerUpdateGuildRankResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	cc := k.NewCurrentContext(ctx)
 
@@ -52,14 +52,14 @@ func (k msgServer) PlayerGuildRankSet(goCtx context.Context, msg *types.MsgPlaye
 		targetRank := targetPlayer.GetGuildRank()
 
 		if actorRank >= targetRank {
-			return emptyResponse, types.NewPermissionError("player", callingPlayer.GetPlayerId(), "guild", guild.GetGuildId(), uint64(types.PermAdmin), "player_guild_rank_set")
+			return emptyResponse, types.NewPermissionError("player", callingPlayer.GetPlayerId(), "guild", guild.GetGuildId(), uint64(types.PermAdmin), "player_update_guild_rank")
 		}
 		if msg.GuildRank < actorRank {
-			return emptyResponse, types.NewPermissionError("player", callingPlayer.GetPlayerId(), "guild", guild.GetGuildId(), uint64(types.PermAdmin), "player_guild_rank_set")
+			return emptyResponse, types.NewPermissionError("player", callingPlayer.GetPlayerId(), "guild", guild.GetGuildId(), uint64(types.PermAdmin), "player_update_guild_rank")
 		}
 	}
 
 	targetPlayer.SetGuildRank(msg.GuildRank)
 	cc.CommitAll()
-	return &types.MsgPlayerGuildRankSetResponse{}, nil
+	return &types.MsgPlayerUpdateGuildRankResponse{}, nil
 }
