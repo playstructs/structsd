@@ -92,8 +92,6 @@ service Msg {
   rpc ProviderUpdateDurationMinimum  (MsgProviderUpdateDurationMinimum ) returns (MsgProviderResponse);
   rpc ProviderUpdateDurationMaximum  (MsgProviderUpdateDurationMaximum ) returns (MsgProviderResponse);
   rpc ProviderUpdateAccessPolicy     (MsgProviderUpdateAccessPolicy    ) returns (MsgProviderResponse);
-  rpc ProviderGuildGrant             (MsgProviderGuildGrant            ) returns (MsgProviderResponse);
-  rpc ProviderGuildRevoke            (MsgProviderGuildRevoke           ) returns (MsgProviderResponse);
   rpc ProviderDelete                 (MsgProviderDelete                ) returns (MsgProviderResponse);
 
 
@@ -1039,22 +1037,6 @@ message MsgProviderUpdateAccessPolicy {
   string creator                    = 1;
   string providerId                 = 2;
   providerAccessPolicy accessPolicy = 3;
-}
-
-message MsgProviderGuildGrant {
-  option (cosmos.msg.v1.signer) = "creator";
-
-  string creator            = 1;
-  string providerId         = 2;
-  repeated string guildId   = 3;
-}
-
-message MsgProviderGuildRevoke {
-  option (cosmos.msg.v1.signer) = "creator";
-
-  string creator            = 1;
-  string providerId         = 2;
-  repeated string guildId   = 3;
 }
 
 message MsgProviderDelete {

@@ -124,9 +124,6 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 	for _, provider := range genState.ProviderList {
 		cc.GenesisImportProvider(provider)
 	}
-	for _, elem := range genState.ProviderGuildAccessList {
-		k.ProviderGrantGuild(ctx, elem.ProviderId, elem.GuildId)
-	}
 
 	// Permissions
 	for _, elem := range genState.PermissionList {

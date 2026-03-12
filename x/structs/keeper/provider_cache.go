@@ -159,12 +159,8 @@ func (cache *ProviderCache) CanOpenAgreement(activePlayer *PlayerCache) (error) 
         if !activePlayer.HasPlayerAccount() {
             return types.NewPlayerRequiredError(activePlayer.GetActiveAddress(), "agreement_open")
         }
-
-    // TODO Change to Guild Rank
     } else if cache.GetAccessPolicy() == types.ProviderAccessPolicy_guildMarket {
-        if !cache.CC.k.ProviderGuildAccessAllowed(cache.CC.ctx, cache.GetProviderId(), activePlayer.GetGuildId()) {
-            return types.NewProviderAccessError(cache.GetProviderId(), "guild_not_allowed").WithGuild(activePlayer.GetGuildId()).WithPlayer(activePlayer.GetPlayerId())
-        }
+        return cache.CC.PermissionCheck(cache, activePlayer, types.PermProviderOpen)
 
     } else if cache.GetAccessPolicy() == types.ProviderAccessPolicy_closedMarket {
         return types.NewProviderAccessError(cache.GetProviderId(), "closed_market").WithPlayer(activePlayer.GetPlayerId())
@@ -224,23 +220,6 @@ func (cache *ProviderCache) WithdrawBalanceAndCommit(destinationAddress string) 
 
 
 
-func (cache *ProviderCache) GrantGuildsAndCommit(guildIdSet []string) (error) {
-    for _, guildId := range guildIdSet {
-        guild := cache.CC.GetGuild(guildId)
-        if !guild.LoadGuild() {
-            return types.NewObjectNotFoundError("guild", guildId)
-        }
-        cache.CC.k.ProviderGrantGuild(cache.CC.ctx, cache.GetProviderId(), guildId)
-    }
-    return nil
-}
-
-func (cache *ProviderCache) RevokeGuildsAndCommit(guildIdSet []string) (error) {
-    for _, guildId := range guildIdSet {
-        cache.CC.k.ProviderRevokeGuild(cache.CC.ctx, cache.GetProviderId(), guildId)
-    }
-    return nil
-}
 
 func (cache *ProviderCache) Delete() (error) {
 

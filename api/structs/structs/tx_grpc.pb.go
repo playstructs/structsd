@@ -74,8 +74,6 @@ const (
 	Msg_ProviderUpdateDurationMinimum_FullMethodName                 = "/structs.structs.Msg/ProviderUpdateDurationMinimum"
 	Msg_ProviderUpdateDurationMaximum_FullMethodName                 = "/structs.structs.Msg/ProviderUpdateDurationMaximum"
 	Msg_ProviderUpdateAccessPolicy_FullMethodName                    = "/structs.structs.Msg/ProviderUpdateAccessPolicy"
-	Msg_ProviderGuildGrant_FullMethodName                            = "/structs.structs.Msg/ProviderGuildGrant"
-	Msg_ProviderGuildRevoke_FullMethodName                           = "/structs.structs.Msg/ProviderGuildRevoke"
 	Msg_ProviderDelete_FullMethodName                                = "/structs.structs.Msg/ProviderDelete"
 	Msg_ReactorInfuse_FullMethodName                                 = "/structs.structs.Msg/ReactorInfuse"
 	Msg_ReactorDefuse_FullMethodName                                 = "/structs.structs.Msg/ReactorDefuse"
@@ -167,8 +165,6 @@ type MsgClient interface {
 	ProviderUpdateDurationMinimum(ctx context.Context, in *MsgProviderUpdateDurationMinimum, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ProviderUpdateDurationMaximum(ctx context.Context, in *MsgProviderUpdateDurationMaximum, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ProviderUpdateAccessPolicy(ctx context.Context, in *MsgProviderUpdateAccessPolicy, opts ...grpc.CallOption) (*MsgProviderResponse, error)
-	ProviderGuildGrant(ctx context.Context, in *MsgProviderGuildGrant, opts ...grpc.CallOption) (*MsgProviderResponse, error)
-	ProviderGuildRevoke(ctx context.Context, in *MsgProviderGuildRevoke, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ProviderDelete(ctx context.Context, in *MsgProviderDelete, opts ...grpc.CallOption) (*MsgProviderResponse, error)
 	ReactorInfuse(ctx context.Context, in *MsgReactorInfuse, opts ...grpc.CallOption) (*MsgReactorInfuseResponse, error)
 	ReactorDefuse(ctx context.Context, in *MsgReactorDefuse, opts ...grpc.CallOption) (*MsgReactorDefuseResponse, error)
@@ -755,26 +751,6 @@ func (c *msgClient) ProviderUpdateAccessPolicy(ctx context.Context, in *MsgProvi
 	return out, nil
 }
 
-func (c *msgClient) ProviderGuildGrant(ctx context.Context, in *MsgProviderGuildGrant, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MsgProviderResponse)
-	err := c.cc.Invoke(ctx, Msg_ProviderGuildGrant_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *msgClient) ProviderGuildRevoke(ctx context.Context, in *MsgProviderGuildRevoke, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
-	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(MsgProviderResponse)
-	err := c.cc.Invoke(ctx, Msg_ProviderGuildRevoke_FullMethodName, in, out, cOpts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *msgClient) ProviderDelete(ctx context.Context, in *MsgProviderDelete, opts ...grpc.CallOption) (*MsgProviderResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgProviderResponse)
@@ -1098,8 +1074,6 @@ type MsgServer interface {
 	ProviderUpdateDurationMinimum(context.Context, *MsgProviderUpdateDurationMinimum) (*MsgProviderResponse, error)
 	ProviderUpdateDurationMaximum(context.Context, *MsgProviderUpdateDurationMaximum) (*MsgProviderResponse, error)
 	ProviderUpdateAccessPolicy(context.Context, *MsgProviderUpdateAccessPolicy) (*MsgProviderResponse, error)
-	ProviderGuildGrant(context.Context, *MsgProviderGuildGrant) (*MsgProviderResponse, error)
-	ProviderGuildRevoke(context.Context, *MsgProviderGuildRevoke) (*MsgProviderResponse, error)
 	ProviderDelete(context.Context, *MsgProviderDelete) (*MsgProviderResponse, error)
 	ReactorInfuse(context.Context, *MsgReactorInfuse) (*MsgReactorInfuseResponse, error)
 	ReactorDefuse(context.Context, *MsgReactorDefuse) (*MsgReactorDefuseResponse, error)
@@ -1300,12 +1274,6 @@ func (UnimplementedMsgServer) ProviderUpdateDurationMaximum(context.Context, *Ms
 }
 func (UnimplementedMsgServer) ProviderUpdateAccessPolicy(context.Context, *MsgProviderUpdateAccessPolicy) (*MsgProviderResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProviderUpdateAccessPolicy not implemented")
-}
-func (UnimplementedMsgServer) ProviderGuildGrant(context.Context, *MsgProviderGuildGrant) (*MsgProviderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ProviderGuildGrant not implemented")
-}
-func (UnimplementedMsgServer) ProviderGuildRevoke(context.Context, *MsgProviderGuildRevoke) (*MsgProviderResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ProviderGuildRevoke not implemented")
 }
 func (UnimplementedMsgServer) ProviderDelete(context.Context, *MsgProviderDelete) (*MsgProviderResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ProviderDelete not implemented")
@@ -2396,42 +2364,6 @@ func _Msg_ProviderUpdateAccessPolicy_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Msg_ProviderGuildGrant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgProviderGuildGrant)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).ProviderGuildGrant(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_ProviderGuildGrant_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).ProviderGuildGrant(ctx, req.(*MsgProviderGuildGrant))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _Msg_ProviderGuildRevoke_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(MsgProviderGuildRevoke)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(MsgServer).ProviderGuildRevoke(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Msg_ProviderGuildRevoke_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MsgServer).ProviderGuildRevoke(ctx, req.(*MsgProviderGuildRevoke))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Msg_ProviderDelete_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(MsgProviderDelete)
 	if err := dec(in); err != nil {
@@ -3126,14 +3058,6 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ProviderUpdateAccessPolicy",
 			Handler:    _Msg_ProviderUpdateAccessPolicy_Handler,
-		},
-		{
-			MethodName: "ProviderGuildGrant",
-			Handler:    _Msg_ProviderGuildGrant_Handler,
-		},
-		{
-			MethodName: "ProviderGuildRevoke",
-			Handler:    _Msg_ProviderGuildRevoke_Handler,
 		},
 		{
 			MethodName: "ProviderDelete",

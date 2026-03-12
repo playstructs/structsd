@@ -2606,10 +2606,6 @@ if [ -n "${PROVIDER_ID}" ]; then
     run_tx "Setting provider access policy back to 'guild-market'" \
         tx structs provider-update-access-policy "${PROVIDER_ID}" "guild-market" --from alice
 
-    # ─── provider-guild-grant: grant guild access ───
-    run_tx "Granting guild ${GUILD_ID} access to provider" \
-        tx structs provider-guild-grant "${PROVIDER_ID}" "${GUILD_ID}" --from alice
-
     # ─── provider-update-capacity-minimum / maximum ───
     run_tx "Updating provider capacity minimum to 50000" \
         tx structs provider-update-capacity-minimum "${PROVIDER_ID}" 50000 --from alice
@@ -2756,10 +2752,6 @@ if [ -n "${PROVIDER_ID}" ]; then
 
     run_tx "Withdrawing provider balance to alice" \
         tx structs provider-withdraw-balance "${PROVIDER_ID}" "${PLAYER_1_ADDRESS}" --from alice
-
-    # ─── provider-guild-revoke ───
-    run_tx "Revoking guild access from provider" \
-        tx structs provider-guild-revoke "${PROVIDER_ID}" "${GUILD_ID}" --from alice
 
     # ─── provider-delete ───
     run_tx "Deleting provider" \

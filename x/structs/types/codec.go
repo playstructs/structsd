@@ -76,8 +76,6 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderUpdateDurationMinimum{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderUpdateDurationMaximum{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderUpdateAccessPolicy{},)
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderGuildGrant{},)
-    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderGuildRevoke{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgProviderDelete{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgReactorInfuse{},)

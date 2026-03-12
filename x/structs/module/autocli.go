@@ -617,18 +617,6 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"}},
                  },
                  {
-                    RpcMethod:      "ProviderGuildGrant",
-                    Use:            "provider-guild-grant [provider id] [guild Id, guild Id 2,...]",
-                    Short:          "Grant a list of Guilds access to open Agreements with a Provider",
-                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"},{ProtoField: "guildId"}},
-                 },
-                 {
-                    RpcMethod:      "ProviderGuildRevoke",
-                    Use:            "provider-guild-revoke [provider id] [guild Id, guild Id 2,...]",
-                    Short:          "Revoke a list of Guilds from being able to open Agreements with a Provider",
-                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "providerId"},{ProtoField: "guildId"}},
-                 },
-                 {
                     RpcMethod:      "ProviderUpdateAccessPolicy",
                     Use:            "provider-update-access-policy [provider id] [access policy]",
                     Short:          "Update the Access Policy of a Provider",
