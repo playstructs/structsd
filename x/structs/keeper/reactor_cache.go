@@ -65,7 +65,7 @@ func (cache *ReactorCache) GetReactorId() string {
 
 func (cache *ReactorCache) GetOwnerId()  (string) { return cache.GetReactor().Owner }
 func (cache *ReactorCache) GetOwner()    (*PlayerCache) {
-    player, err := cache.CC.GetPlayer(cache.GetOwnerId())
+    player, _ := cache.CC.GetPlayer(cache.GetOwnerId())
     return player
 }
 

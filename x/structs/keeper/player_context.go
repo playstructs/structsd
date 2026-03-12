@@ -127,10 +127,10 @@ func (cc *CurrentContext) NewPlayer(address string) *PlayerCache {
 
     //Add permissions
 	addressPermissionId := GetAddressPermissionIDBytes(player.Creator)
-	cc.PermissionAdd(addressPermissionId, types.PermAll)
+	cc.SetPermissions(addressPermissionId, types.PermAll)
 
     playerPermissionId := GetObjectPermissionIDBytes(playerId, playerId)
-    cc.k.SetPermissions(playerPermissionId, types.PermAll)
+    cc.SetPermissions(playerPermissionId, types.PermAll)
 
 
     // Add the initial Player Load

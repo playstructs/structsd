@@ -96,48 +96,47 @@ func (cc *CurrentContext) PermissionHasOneOf(permissionId []byte, flag types.Per
 	return currentFlags&flag != 0
 }
 
-
 // GetPermissionsGuildRank returns highestRank, caching the result.
-func (cc *CurrentContext) GetPermissionsGuildRank(object PermissionedObject, activePlayer *PlayerCache, permissionType types.Permission) uint64 {
-    id := GuildRankPermissionID(object.ID(), activePlayer.GetPlayerId(), permissionType)
+func (cc *CurrentContext) GetPermissionsGuildRank(object PermissionedObject, guild *GuildCache, permissionType types.Permission) uint64 {
+    id := GuildRankPermissionID(object.ID(), guild.ID(), permissionType)
 
-	if cache, exists := cc.permissionsGuildRank[id]; exists {
+	if _, exists := cc.permissionsGuildRank[id]; exists {
 		return cc.permissionsGuildRank[id].HighestRank
 	}
 
-	highestRank := cc.k.GetHighestGuildRankForPermission(cc.ctx, object.ID(), activePlayer.GetPlayerId(), permissionType)
+	highestRank := cc.k.GetHighestGuildRankForPermission(cc.ctx, object.ID(), guild.ID(), permissionType)
 
-	cc.permissions[id] = &PermissionsGuildRankCache{
+	cc.permissionsGuildRank[id] = &PermissionsGuildRankCache{
 	    CC:                     cc,
 	    PermissionGuildRankID:  id,
         ObjectId:               object.ID(),
-        PlayerId:               activePlayer.GetPlayerId(),
+        GuildId:                guild.ID(),
         Permission:             permissionType,
       	HighestRank:            highestRank,
 	    Loaded:                 true,
     }
 
-	return cc.permissions[id].HighestRank
+	return cc.permissionsGuildRank[id].HighestRank
 }
 
 
 
 // SetPermissionsGuildRank returns highestRank, caching the result.
-func (cc *CurrentContext) SetPermissionsGuildRank(object PermissionedObject, activePlayer *PlayerCache, permissionType types.Permission, highestRank uint64) *PermissionsGuildRankCache {
-    id := GuildRankPermissionID(object.ID(), activePlayer.GetPlayerId(), permissionType)
+func (cc *CurrentContext) SetPermissionsGuildRank(object PermissionedObject, guild *GuildCache, permissionType types.Permission, highestRank uint64) *PermissionsGuildRankCache {
+    id := GuildRankPermissionID(object.ID(), guild.ID(), permissionType)
 
-	cc.permissions[id] = &PermissionsGuildRankCache{
+	cc.permissionsGuildRank[id] = &PermissionsGuildRankCache{
 	    CC:                     cc,
 	    PermissionGuildRankID:  id,
         ObjectId:               object.ID(),
-        PlayerId:               activePlayer.GetPlayerId(),
+        GuildId:                guild.ID(),
         Permission:             permissionType,
       	HighestRank:            highestRank,
 	    Loaded:                 true,
 	    Changed:                true,
     }
 
-	return cc.permissions[id]
+	return cc.permissionsGuildRank[id]
 }
 
 
@@ -225,7 +224,7 @@ func (cc *CurrentContext) PermissionCheck(object PermissionedObject, activePlaye
 
     // rank(object / activePlayer.GetGuild() / permission) => activePlayer.GetGuildRank()
     if activePlayer.GetGuildId() != "" {
-        if cc.GetHighestGuildRankForPermission(object.ID(), activePlayer.GetGuildId(), permission) >= activePlayer.GetGuildRank() {
+        if cc.GetPermissionsGuildRank(object, activePlayer.GetGuild(), permission) >= activePlayer.GetGuildRank() {
             return nil
         }
     }

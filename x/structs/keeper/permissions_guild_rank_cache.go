@@ -2,14 +2,13 @@ package keeper
 
 import (
 	"structs/x/structs/types"
-    "fmt"
 )
 
 type PermissionsGuildRankCache struct {
     CC              *CurrentContext
     PermissionGuildRankID string
     ObjectId        string
-    PlayerId        string
+    GuildId         string
     Permission      types.Permission
 	HighestRank     uint64
 	Loaded          bool

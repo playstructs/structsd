@@ -51,7 +51,6 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
 
     provider.SetSubstationId(msg.SubstationId)
 
-
     // TODO Rate Denom whitelist?
     if msg.Rate.Denom == "" {
         return emptyResponse, types.NewObjectNotFoundError("denom", "")
@@ -94,7 +93,7 @@ func (k msgServer) ProviderCreate(goCtx context.Context, msg *types.MsgProviderC
     newProvider := cc.NewProvider(provider)
 
     providerPermissionId := GetObjectPermissionIDBytes(newProvider.ID(), activePlayer.ID())
-    cc.k.SetPermissions(providerPermissionId, types.PermProviderAll)
+    cc.SetPermissions(providerPermissionId, types.PermProviderAll)
 
 	cc.CommitAll()
 	return &types.MsgProviderResponse{}, nil

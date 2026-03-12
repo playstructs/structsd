@@ -30,7 +30,7 @@ func (k msgServer) AllocationDelete(goCtx context.Context, msg *types.MsgAllocat
         return emptyResponse, permissionErr
     }
 
-    permissionErr := allocation.CanBeDeletedBy(activePlayer)
+    permissionErr = allocation.CanBeDeletedBy(activePlayer)
     if permissionErr != nil {
         return emptyResponse, permissionErr
     }

@@ -96,6 +96,7 @@ func (cache *PlayerCache) GetPlayerId()         (string) { return cache.PlayerId
 func (cache *PlayerCache) GetOwnerId()         (string) { return cache.PlayerId }
 func (cache *PlayerCache) GetOwner()            (*PlayerCache) { return cache }
 
+func (cache *PlayerCache) GetGuildRank()   (uint64) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.GuildRank }
 func (cache *PlayerCache) GetPrimaryAddress()   (string) { if (!cache.PlayerLoaded) { cache.LoadPlayer() }; return cache.Player.PrimaryAddress }
 func (cache *PlayerCache) GetPrimaryAccount()   (sdk.AccAddress) { acc, _ := sdk.AccAddressFromBech32(cache.GetPrimaryAddress()); return acc }
 func (cache *PlayerCache) GetActiveAddress()    (string) { return cache.ActiveAddress }

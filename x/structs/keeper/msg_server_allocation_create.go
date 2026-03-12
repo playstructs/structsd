@@ -83,12 +83,12 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
         creatorPermissions = creatorPermissions | types.PermAllocationConnection
     } else {
         allocationPermissionId := GetObjectPermissionIDBytes(allocation.ID(), msg.Controller)
-        cc.k.SetPermissions(allocationPermissionId, types.PermAllocationConnection)
+        cc.SetPermissions(allocationPermissionId, types.PermAllocationConnection)
     }
     
     if creatorPermissions != types.Permissionless {
         allocationPermissionId := GetObjectPermissionIDBytes(allocation.ID(), callingPlayer.ID())
-        cc.k.SetPermissions(allocationPermissionId, creatorPermissions)
+        cc.SetPermissions(allocationPermissionId, creatorPermissions)
     }
 
 	cc.CommitAll()

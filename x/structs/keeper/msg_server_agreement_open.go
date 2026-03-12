@@ -87,7 +87,7 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
     }
 
     allocationPermissionId := GetObjectPermissionIDBytes(allocation.ID(), activePlayer.ID())
-    cc.k.SetPermissions(allocationPermissionId, types.PermAllocationConnection)
+    cc.SetPermissions(allocationPermissionId, types.PermAllocationConnection)
 
     // Build the Agreement through context
     startBlock := uint64(ctx.BlockHeight()) + 1
@@ -106,7 +106,7 @@ func (k msgServer) AgreementOpen(goCtx context.Context, msg *types.MsgAgreementO
     agreement := cc.NewAgreement(agreementRecord)
 
     agreementPermissionId := GetObjectPermissionIDBytes(agreement.ID(), activePlayer.ID())
-    cc.k.SetPermissions(agreementPermissionId, types.PermAgreementAll)
+    cc.SetPermissions(agreementPermissionId, types.PermAgreementAll)
 
     provider.AgreementLoadIncrease(msg.Capacity)
 
