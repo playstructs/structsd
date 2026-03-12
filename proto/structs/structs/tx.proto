@@ -52,6 +52,7 @@ service Msg {
   rpc GuildUpdateJoinInfusionMinimum                (MsgGuildUpdateJoinInfusionMinimum                ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateJoinInfusionMinimumBypassByInvite  (MsgGuildUpdateJoinInfusionMinimumBypassByInvite  ) returns (MsgGuildUpdateResponse );
   rpc GuildUpdateJoinInfusionMinimumBypassByRequest (MsgGuildUpdateJoinInfusionMinimumBypassByRequest ) returns (MsgGuildUpdateResponse );
+  rpc GuildUpdateEntryRank                          (MsgGuildUpdateEntryRank                          ) returns (MsgGuildUpdateResponse );
 
   rpc GuildMembershipInvite           (MsgGuildMembershipInvite        ) returns (MsgGuildMembershipResponse );
   rpc GuildMembershipInviteApprove    (MsgGuildMembershipInviteApprove ) returns (MsgGuildMembershipResponse );
@@ -344,6 +345,13 @@ message MsgGuildUpdateJoinInfusionMinimumBypassByInvite {
 }
 
 
+message MsgGuildUpdateEntryRank {
+  option (cosmos.msg.v1.signer) = "creator";
+
+  string creator       = 1;
+  uint64 newEntryRank  = 2;
+}
+
 message MsgGuildUpdateResponse{}
 
 
@@ -554,8 +562,7 @@ message MsgPlayerUpdatePrimaryAddress {
   option (cosmos.msg.v1.signer) = "creator";
 
   string creator        = 1;
-  string playerId       = 2;
-  string primaryAddress = 3;
+  string primaryAddress = 2;
 }
 
 message MsgPlayerUpdatePrimaryAddressResponse {}
@@ -1064,10 +1071,9 @@ message MsgPlayerSend {
   option (gogoproto.equal) = false;
   option (cosmos.msg.v1.signer) = "creator";
   string creator        = 1;
-  string player_id      = 2;
-  string from_address   = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  string to_address     = 4 [(cosmos_proto.scalar) = "cosmos.AddressString"];
-  repeated cosmos.base.v1beta1.Coin amount = 5 [
+  string from_address   = 2 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  string to_address     = 3 [(cosmos_proto.scalar) = "cosmos.AddressString"];
+  repeated cosmos.base.v1beta1.Coin amount = 4 [
     (gogoproto.nullable) = false,
     (gogoproto.castrepeated) = "github.com/cosmos/cosmos-sdk/types.Coins",
     (amino.encoding) = "legacy_coins",

@@ -526,7 +526,6 @@ func SimulateMsgPlayerSend(
 
 		msg := &types.MsgPlayerSend{
 			Creator:     simAccount.Address.String(),
-			PlayerId:    player.GetPlayerId(),
 			FromAddress: simAccount.Address.String(),
 			ToAddress:   recipientAccount.Address.String(),
 			Amount:      sendAmount,
@@ -3002,7 +3001,6 @@ func SimulateMsgPlayerUpdatePrimaryAddress(
 
 		msg := &types.MsgPlayerUpdatePrimaryAddress{
 			Creator:        simAccount.Address.String(),
-			PlayerId:       activePlayer.GetPlayerId(),
 			PrimaryAddress: newPrimary,
 		}
 
@@ -4064,6 +4062,47 @@ func SimulateMsgGuildUpdateJoinInfusionMinimumBypassByRequest(
 
 		msgServer := keeper.NewMsgServerImpl(k)
 		_, err := msgServer.GuildUpdateJoinInfusionMinimumBypassByRequest(sdk.WrapSDKContext(ctx), msg)
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
+		}
+
+		return simtypes.NewOperationMsg(msg, true, ""), nil, nil
+	}
+}
+
+// SimulateMsgGuildUpdateEntryRank generates a MsgGuildUpdateEntryRank with random values
+func SimulateMsgGuildUpdateEntryRank(
+	k keeper.Keeper,
+	ak types.AccountKeeper,
+	bk types.BankKeeper,
+) simtypes.Operation {
+	return func(
+		r *rand.Rand, app *baseapp.BaseApp, ctx sdk.Context, accs []simtypes.Account, chainID string,
+	) (simtypes.OperationMsg, []simtypes.FutureOperation, error) {
+		simAccount, _ := simtypes.RandomAcc(r, accs)
+		account := ak.GetAccount(ctx, simAccount.Address)
+		if account == nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildUpdateEntryRank{}), "account not found"), nil, nil
+		}
+
+		player, playerFound := k.GetPlayerFromIndex(ctx, k.GetPlayerIndexFromAddress(ctx, simAccount.Address.String()))
+		if !playerFound {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildUpdateEntryRank{}), "player not found"), nil, nil
+		}
+
+		if player.GuildId == "" {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildUpdateEntryRank{}), "player not in guild"), nil, nil
+		}
+
+		newEntryRank := player.GuildRank + uint64(r.Int63n(100))
+
+		msg := &types.MsgGuildUpdateEntryRank{
+			Creator:      simAccount.Address.String(),
+			NewEntryRank: newEntryRank,
+		}
+
+		msgServer := keeper.NewMsgServerImpl(k)
+		_, err := msgServer.GuildUpdateEntryRank(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}

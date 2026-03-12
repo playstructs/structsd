@@ -42,6 +42,7 @@ const (
 	Msg_GuildUpdateJoinInfusionMinimum_FullMethodName                = "/structs.structs.Msg/GuildUpdateJoinInfusionMinimum"
 	Msg_GuildUpdateJoinInfusionMinimumBypassByInvite_FullMethodName  = "/structs.structs.Msg/GuildUpdateJoinInfusionMinimumBypassByInvite"
 	Msg_GuildUpdateJoinInfusionMinimumBypassByRequest_FullMethodName = "/structs.structs.Msg/GuildUpdateJoinInfusionMinimumBypassByRequest"
+	Msg_GuildUpdateEntryRank_FullMethodName                          = "/structs.structs.Msg/GuildUpdateEntryRank"
 	Msg_GuildMembershipInvite_FullMethodName                         = "/structs.structs.Msg/GuildMembershipInvite"
 	Msg_GuildMembershipInviteApprove_FullMethodName                  = "/structs.structs.Msg/GuildMembershipInviteApprove"
 	Msg_GuildMembershipInviteDeny_FullMethodName                     = "/structs.structs.Msg/GuildMembershipInviteDeny"
@@ -134,6 +135,7 @@ type MsgClient interface {
 	GuildUpdateJoinInfusionMinimum(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimum, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateJoinInfusionMinimumBypassByInvite(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimumBypassByInvite, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildUpdateJoinInfusionMinimumBypassByRequest(ctx context.Context, in *MsgGuildUpdateJoinInfusionMinimumBypassByRequest, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
+	GuildUpdateEntryRank(ctx context.Context, in *MsgGuildUpdateEntryRank, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error)
 	GuildMembershipInvite(ctx context.Context, in *MsgGuildMembershipInvite, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error)
 	GuildMembershipInviteApprove(ctx context.Context, in *MsgGuildMembershipInviteApprove, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error)
 	GuildMembershipInviteDeny(ctx context.Context, in *MsgGuildMembershipInviteDeny, opts ...grpc.CallOption) (*MsgGuildMembershipResponse, error)
@@ -427,6 +429,16 @@ func (c *msgClient) GuildUpdateJoinInfusionMinimumBypassByRequest(ctx context.Co
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgGuildUpdateResponse)
 	err := c.cc.Invoke(ctx, Msg_GuildUpdateJoinInfusionMinimumBypassByRequest_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) GuildUpdateEntryRank(ctx context.Context, in *MsgGuildUpdateEntryRank, opts ...grpc.CallOption) (*MsgGuildUpdateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgGuildUpdateResponse)
+	err := c.cc.Invoke(ctx, Msg_GuildUpdateEntryRank_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1054,6 +1066,7 @@ type MsgServer interface {
 	GuildUpdateJoinInfusionMinimum(context.Context, *MsgGuildUpdateJoinInfusionMinimum) (*MsgGuildUpdateResponse, error)
 	GuildUpdateJoinInfusionMinimumBypassByInvite(context.Context, *MsgGuildUpdateJoinInfusionMinimumBypassByInvite) (*MsgGuildUpdateResponse, error)
 	GuildUpdateJoinInfusionMinimumBypassByRequest(context.Context, *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) (*MsgGuildUpdateResponse, error)
+	GuildUpdateEntryRank(context.Context, *MsgGuildUpdateEntryRank) (*MsgGuildUpdateResponse, error)
 	GuildMembershipInvite(context.Context, *MsgGuildMembershipInvite) (*MsgGuildMembershipResponse, error)
 	GuildMembershipInviteApprove(context.Context, *MsgGuildMembershipInviteApprove) (*MsgGuildMembershipResponse, error)
 	GuildMembershipInviteDeny(context.Context, *MsgGuildMembershipInviteDeny) (*MsgGuildMembershipResponse, error)
@@ -1191,6 +1204,9 @@ func (UnimplementedMsgServer) GuildUpdateJoinInfusionMinimumBypassByInvite(conte
 }
 func (UnimplementedMsgServer) GuildUpdateJoinInfusionMinimumBypassByRequest(context.Context, *MsgGuildUpdateJoinInfusionMinimumBypassByRequest) (*MsgGuildUpdateResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildUpdateJoinInfusionMinimumBypassByRequest not implemented")
+}
+func (UnimplementedMsgServer) GuildUpdateEntryRank(context.Context, *MsgGuildUpdateEntryRank) (*MsgGuildUpdateResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildUpdateEntryRank not implemented")
 }
 func (UnimplementedMsgServer) GuildMembershipInvite(context.Context, *MsgGuildMembershipInvite) (*MsgGuildMembershipResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GuildMembershipInvite not implemented")
@@ -1800,6 +1816,24 @@ func _Msg_GuildUpdateJoinInfusionMinimumBypassByRequest_Handler(srv interface{},
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).GuildUpdateJoinInfusionMinimumBypassByRequest(ctx, req.(*MsgGuildUpdateJoinInfusionMinimumBypassByRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_GuildUpdateEntryRank_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgGuildUpdateEntryRank)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).GuildUpdateEntryRank(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_GuildUpdateEntryRank_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).GuildUpdateEntryRank(ctx, req.(*MsgGuildUpdateEntryRank))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2964,6 +2998,10 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GuildUpdateJoinInfusionMinimumBypassByRequest",
 			Handler:    _Msg_GuildUpdateJoinInfusionMinimumBypassByRequest_Handler,
+		},
+		{
+			MethodName: "GuildUpdateEntryRank",
+			Handler:    _Msg_GuildUpdateEntryRank_Handler,
 		},
 		{
 			MethodName: "GuildMembershipInvite",

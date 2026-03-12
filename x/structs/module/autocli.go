@@ -521,6 +521,12 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                      PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "guildId"},{ProtoField: "owner"}},
                  },
                  {
+                     RpcMethod:      "GuildUpdateEntryRank",
+                     Use:            "guild-update-entry-rank [new entry rank]",
+                     Short:          "Update the entry rank for your guild",
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "newEntryRank"}},
+                 },
+                 {
                      RpcMethod:      "PermissionGrantOnObject",
                      Use:            "permission-grant-on-object [object id] [player id] [permissions]",
                      Short:          "Grant a set of permissions on an object to a player",
@@ -594,9 +600,9 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                  },
                  {
                     RpcMethod:      "PlayerSend",
-                    Use:            "player-send [player id] [from address] [to address] [1coin, 2coin, ...coin]",
+                    Use:            "player-send [from address] [to address] [1coin, 2coin, ...coin]",
                     Short:          "Send tokens from any player-owned address",
-                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "player_id"},{ProtoField: "from_address"},{ProtoField: "to_address"},{ProtoField: "amount"}},
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "from_address"},{ProtoField: "to_address"},{ProtoField: "amount"}},
                  },
                  {
                     RpcMethod:      "ProviderCreate",

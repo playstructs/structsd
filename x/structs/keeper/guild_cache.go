@@ -132,6 +132,13 @@ func (cache *GuildCache) GetSubstation() (substation *SubstationCache) {
 	return
 }
 
+func (cache *GuildCache) GetEntryRank() uint64 {
+	if !cache.GuildLoaded {
+		cache.LoadGuild()
+	}
+	return cache.Guild.EntryRank
+}
+
 func (cache *GuildCache) GetPrimaryReactorId() string {
 	if !cache.GuildLoaded {
 		cache.LoadGuild()
@@ -419,6 +426,14 @@ func (cache *GuildCache) SetEntrySubstationId(substationId string) {
         cache.LoadGuild()
     }
     cache.Guild.EntrySubstationId = substationId
+    cache.Changed = true
+}
+
+func (cache *GuildCache) SetEntryRank(entryRank uint64) {
+    if !cache.GuildLoaded {
+        cache.LoadGuild()
+    }
+    cache.Guild.EntryRank = entryRank
     cache.Changed = true
 }
 

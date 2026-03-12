@@ -39,6 +39,7 @@ func RegisterInterfaces(registry cdctypes.InterfaceRegistry) {
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateJoinInfusionMinimumBypassByInvite{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateJoinInfusionMinimumBypassByRequest{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateOwnerId{},)
+    registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildUpdateEntryRank{},)
 
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildMembershipInvite{},)
     registry.RegisterImplementations((*sdk.Msg)(nil), &MsgGuildMembershipInviteApprove{},)

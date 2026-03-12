@@ -112,6 +112,7 @@ const (
 	OpWeightMsgGuildUpdateJoinInfusionMin           = "op_weight_msg_guild_update_join_infusion_min"
 	OpWeightMsgGuildUpdateJoinInfusionBypassInvite  = "op_weight_msg_guild_update_join_infusion_bypass_invite"
 	OpWeightMsgGuildUpdateJoinInfusionBypassRequest = "op_weight_msg_guild_update_join_infusion_bypass_request"
+	OpWeightMsgGuildUpdateEntryRank                 = "op_weight_msg_guild_update_entry_rank"
 )
 
 // GenerateGenesisState creates a randomized GenState of the module.
@@ -1087,6 +1088,10 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 	simState.AppParams.GetOrGenerate(OpWeightMsgGuildUpdateJoinInfusionBypassRequest, &weightMsgGuildUpdateJoinInfusionBypassRequest, nil,
 		func(_ *rand.Rand) { weightMsgGuildUpdateJoinInfusionBypassRequest = 5 },
 	)
+	var weightMsgGuildUpdateEntryRank int
+	simState.AppParams.GetOrGenerate(OpWeightMsgGuildUpdateEntryRank, &weightMsgGuildUpdateEntryRank, nil,
+		func(_ *rand.Rand) { weightMsgGuildUpdateEntryRank = 5 },
+	)
 
 	operations = append(operations,
 		simulation.NewWeightedOperation(
@@ -1226,6 +1231,7 @@ func (am AppModule) WeightedOperations(simState module.SimulationState) []simtyp
 		simulation.NewWeightedOperation(weightMsgGuildUpdateJoinInfusionMin, structssimulation.SimulateMsgGuildUpdateJoinInfusionMinimum(am.keeper, am.accountKeeper, am.bankKeeper)),
 		simulation.NewWeightedOperation(weightMsgGuildUpdateJoinInfusionBypassInvite, structssimulation.SimulateMsgGuildUpdateJoinInfusionMinimumBypassByInvite(am.keeper, am.accountKeeper, am.bankKeeper)),
 		simulation.NewWeightedOperation(weightMsgGuildUpdateJoinInfusionBypassRequest, structssimulation.SimulateMsgGuildUpdateJoinInfusionMinimumBypassByRequest(am.keeper, am.accountKeeper, am.bankKeeper)),
+		simulation.NewWeightedOperation(weightMsgGuildUpdateEntryRank, structssimulation.SimulateMsgGuildUpdateEntryRank(am.keeper, am.accountKeeper, am.bankKeeper)),
 	)
 
 	return operations
