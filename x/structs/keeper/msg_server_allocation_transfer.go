@@ -17,12 +17,12 @@ func (k msgServer) AllocationTransfer(goCtx context.Context, msg *types.MsgAlloc
 
     activePlayer, err := cc.GetPlayerByAddress(msg.Creator)
     if err != nil {
-        return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "allocation_delete")
+        return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "allocation_transfer")
     }
 
     _, err = cc.GetPlayerByAddress(msg.Controller)
     if err != nil {
-        return emptyResponse, types.NewPlayerRequiredError(msg.Controller, "allocation_delete")
+        return emptyResponse, types.NewPlayerRequiredError(msg.Controller, "allocation_transfer")
     }
 
 
@@ -36,6 +36,12 @@ func (k msgServer) AllocationTransfer(goCtx context.Context, msg *types.MsgAlloc
     if permissionErr != nil {
         return emptyResponse, permissionErr
     }
+
+    oldControllerPermissionId := GetObjectPermissionIDBytes(allocation.ID(), allocation.GetAllocation().Controller)
+    cc.PermissionRemove(oldControllerPermissionId, types.PermAllocationConnection)
+
+    newControllerPermissionId := GetObjectPermissionIDBytes(allocation.ID(), msg.Controller)
+    cc.SetPermissions(newControllerPermissionId, types.PermAllocationConnection)
 
     allocation.SetController(msg.Controller)
 

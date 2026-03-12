@@ -146,11 +146,11 @@ func (cache *AllocationCache) GetObjectLoad(objectId string) (uint64) {
     return cache.CC.GetGridAttribute(objectLoadAttributeId)
 }
 
-func (cache *AllocationCache) SetController(address string) () {
+func (cache *AllocationCache) SetController(playerId string) () {
     if !cache.Loaded {
         cache.LoadAllocation()
     }
-    cache.Allocation.Controller = address
+    cache.Allocation.Controller = playerId
     cache.Changed = true
 }
 
