@@ -19,7 +19,7 @@ func TestMsgStructAttack(t *testing.T) {
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Set up player capacity to be online
 	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id)
@@ -49,7 +49,7 @@ func TestMsgStructAttack(t *testing.T) {
 		LocationId:   "planet1",
 		LocationType: types.ObjectType_planet,
 	}
-	attackerStruct = k.AppendStruct(ctx, attackerStruct)
+	attackerStruct = testAppendStruct(k, ctx, attackerStruct)
 
 	// Create target struct
 	targetStruct := types.Struct{
@@ -59,12 +59,12 @@ func TestMsgStructAttack(t *testing.T) {
 		LocationId:   "planet1",
 		LocationType: types.ObjectType_planet,
 	}
-	targetStruct = k.AppendStruct(ctx, targetStruct)
+	targetStruct = testAppendStruct(k, ctx, targetStruct)
 
 	// Mark structs as built and online
 	statusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, attackerStruct.Id)
 	builtFlag := uint64(types.StructStateBuilt)
-	k.SetStructAttributeFlagAdd(ctx, statusAttrId, builtFlag)
+	testSetStructAttributeFlagAdd(k, ctx, statusAttrId, builtFlag)
 
 	testCases := []struct {
 		name      string

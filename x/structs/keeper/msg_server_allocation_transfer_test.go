@@ -20,14 +20,14 @@ func TestMsgAllocationTransfer(t *testing.T) {
 		Creator:        ownerAcc.String(),
 		PrimaryAddress: ownerAcc.String(),
 	}
-	owner = k.AppendPlayer(ctx, owner)
+	owner = testAppendPlayer(k, ctx, owner)
 
 	controllerAcc := sdk.AccAddress("controller123456789012345678901234567890")
 	newController := types.Player{
 		Creator:        controllerAcc.String(),
 		PrimaryAddress: controllerAcc.String(),
 	}
-	newController = k.AppendPlayer(ctx, newController)
+	newController = testAppendPlayer(k, ctx, newController)
 
 	// Set up source capacity
 	sourceObjectId := "source-object"
@@ -39,9 +39,9 @@ func TestMsgAllocationTransfer(t *testing.T) {
 		SourceObjectId: sourceObjectId,
 		DestinationId:  "", // Must be empty for transfer
 		Type:           types.AllocationType_static,
-		Controller:     owner.Creator,
+		Controller: owner.Id,
 	}
-	createdAllocation, _, err := k.AppendAllocation(ctx, allocation, 100)
+	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
 	require.NoError(t, err)
 
 	testCases := []struct {
@@ -56,7 +56,7 @@ func TestMsgAllocationTransfer(t *testing.T) {
 			input: &types.MsgAllocationTransfer{
 				Creator:      owner.Creator,
 				AllocationId: createdAllocation.Id,
-				Controller:   newController.Creator,
+				Controller: newController.Id,
 			},
 			expErr: false,
 		},
@@ -65,7 +65,7 @@ func TestMsgAllocationTransfer(t *testing.T) {
 			input: &types.MsgAllocationTransfer{
 				Creator:      owner.Creator,
 				AllocationId: "invalid-allocation",
-				Controller:   newController.Creator,
+				Controller: newController.Id,
 			},
 			expErr:    true,
 			expErrMsg: "allocation not found",
@@ -76,7 +76,7 @@ func TestMsgAllocationTransfer(t *testing.T) {
 			input: &types.MsgAllocationTransfer{
 				Creator:      sdk.AccAddress("notcontroller123456789012345678901234567890").String(),
 				AllocationId: createdAllocation.Id,
-				Controller:   newController.Creator,
+				Controller: newController.Id,
 			},
 			expErr:    true,
 			expErrMsg: "not controller",
@@ -87,7 +87,7 @@ func TestMsgAllocationTransfer(t *testing.T) {
 			input: &types.MsgAllocationTransfer{
 				Creator:      owner.Creator,
 				AllocationId: createdAllocation.Id, // This will be replaced with connected allocation ID
-				Controller:   newController.Creator,
+				Controller: newController.Id,
 			},
 			expErr:    true,
 			expErrMsg: "must not be connected",
@@ -104,11 +104,11 @@ func TestMsgAllocationTransfer(t *testing.T) {
 			// Recreate allocation if needed
 			if tc.name == "valid allocation transfer" {
 				allocation.DestinationId = ""
-				createdAllocation, _, _ = k.AppendAllocation(ctx, allocation, 100)
+				createdAllocation, _ = testAppendAllocation(k, ctx, allocation, 100)
 				tc.input.AllocationId = createdAllocation.Id
 			} else if tc.name == "allocation connected to substation" {
 				allocation.DestinationId = "substation-1"
-				connectedAlloc, _, err := k.AppendAllocation(ctx, allocation, 100)
+				connectedAlloc, err := testAppendAllocation(k, ctx, allocation, 100)
 				require.NoError(t, err)
 				tc.input.AllocationId = connectedAlloc.Id
 			}

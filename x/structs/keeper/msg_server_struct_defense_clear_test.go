@@ -19,7 +19,7 @@ func TestMsgStructDefenseClear(t *testing.T) {
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Set up player capacity to be online
 	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id)
@@ -44,7 +44,7 @@ func TestMsgStructDefenseClear(t *testing.T) {
 		Owner:   player.Id,
 		Type:    structType.Id,
 	}
-	defenderStruct = k.AppendStruct(ctx, defenderStruct)
+	defenderStruct = testAppendStruct(k, ctx, defenderStruct)
 
 	// Create protected struct
 	protectedStruct := types.Struct{
@@ -52,12 +52,12 @@ func TestMsgStructDefenseClear(t *testing.T) {
 		Owner:   player.Id,
 		Type:    structType.Id,
 	}
-	protectedStruct = k.AppendStruct(ctx, protectedStruct)
+	protectedStruct = testAppendStruct(k, ctx, protectedStruct)
 
 	// Mark structs as built and online
 	statusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, defenderStruct.Id)
 	builtFlag := uint64(types.StructStateBuilt)
-	k.SetStructAttributeFlagAdd(ctx, statusAttrId, builtFlag)
+	testSetStructAttributeFlagAdd(k, ctx, statusAttrId, builtFlag)
 
 	testCases := []struct {
 		name      string

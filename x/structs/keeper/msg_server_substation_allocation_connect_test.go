@@ -19,7 +19,7 @@ func TestMsgSubstationAllocationConnect(t *testing.T) {
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Set up source capacity
 	sourceObjectId := "source-object"
@@ -31,9 +31,9 @@ func TestMsgSubstationAllocationConnect(t *testing.T) {
 		SourceObjectId: sourceObjectId,
 		DestinationId:  "", // Must be empty for connection
 		Type:           types.AllocationType_dynamic,
-		Controller:     player.Creator,
+		Controller: player.Id,
 	}
-	createdAllocation, _, err := k.AppendAllocation(ctx, allocation, 100)
+	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
 	require.NoError(t, err)
 
 	// Create a substation
@@ -41,20 +41,20 @@ func TestMsgSubstationAllocationConnect(t *testing.T) {
 		SourceObjectId: sourceObjectId,
 		DestinationId:  "",
 		Type:           types.AllocationType_static,
-		Controller:     player.Creator,
+		Controller: player.Id,
 	}
-	substationAlloc, _, err := k.AppendAllocation(ctx, substationAllocation, 100)
+	substationAlloc, err := testAppendAllocation(k, ctx, substationAllocation, 100)
 	require.NoError(t, err)
 
-	substation, _, err := k.AppendSubstation(ctx, substationAlloc, player)
+	substation, _, err := testAppendSubstation(k, ctx, substationAlloc, player)
 	require.NoError(t, err)
 
 	// Grant permissions
 	substationPermissionId := keeperlib.GetObjectPermissionIDBytes(substation.Id, player.Id)
-	k.PermissionAdd(ctx, substationPermissionId, types.PermissionGrid)
+	testPermissionAdd(k, ctx, substationPermissionId, types.PermSubstationConnection)
 
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionGrid)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermSubstationConnection)
 
 	testCases := []struct {
 		name      string
@@ -108,12 +108,12 @@ func TestMsgSubstationAllocationConnect(t *testing.T) {
 			// Recreate allocation if needed
 			if tc.name == "valid allocation connection" {
 				allocation.DestinationId = ""
-				createdAllocation, _, _ = k.AppendAllocation(ctx, allocation, 100)
+				createdAllocation, _ = testAppendAllocation(k, ctx, allocation, 100)
 				tc.input.AllocationId = createdAllocation.Id
 			} else if tc.name == "source equals destination" {
 				// Set source to be the substation
 				allocation.SourceObjectId = substation.Id
-				createdAllocation, _, _ = k.AppendAllocation(ctx, allocation, 100)
+				createdAllocation, _ = testAppendAllocation(k, ctx, allocation, 100)
 				tc.input.AllocationId = createdAllocation.Id
 			}
 

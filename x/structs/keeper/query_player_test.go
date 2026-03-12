@@ -30,8 +30,8 @@ func TestPlayerQuery(t *testing.T) {
 		PrimaryAddress: "cosmos1creator2",
 	}
 
-	created1 := keeper.AppendPlayer(ctxSDK, player1)
-	created2 := keeper.AppendPlayer(ctxSDK, player2)
+	created1 := testAppendPlayer(keeper, ctxSDK, player1)
+	created2 := testAppendPlayer(keeper, ctxSDK, player2)
 
 	// Set grid attributes and inventory for testing
 	gridAttr1 := types.GridAttributes{
@@ -59,7 +59,6 @@ func TestPlayerQuery(t *testing.T) {
 				Player:          created1,
 				GridAttributes:  &gridAttr1,
 				PlayerInventory: &types.PlayerInventory{},
-				Halted:          false,
 			},
 			// Note: StructsLoad will be PlayerPassiveDraw (25000) by default, so we don't check it exactly
 		},
@@ -72,7 +71,6 @@ func TestPlayerQuery(t *testing.T) {
 				Player:          created2,
 				GridAttributes:  &gridAttr2,
 				PlayerInventory: &types.PlayerInventory{},
-				Halted:          false,
 			},
 		},
 		{
@@ -99,7 +97,6 @@ func TestPlayerQuery(t *testing.T) {
 				require.Equal(t, tc.response.Player.Id, response.Player.Id)
 				require.Equal(t, tc.response.Player.Creator, response.Player.Creator)
 				require.Equal(t, tc.response.GridAttributes.Ore, response.GridAttributes.Ore)
-				require.Equal(t, tc.response.Halted, response.Halted)
 				// StructsLoad will be PlayerPassiveDraw (25000) by default
 				require.Equal(t, uint64(25000), response.GridAttributes.StructsLoad)
 			}
@@ -119,7 +116,7 @@ func TestPlayerAllQuery(t *testing.T) {
 			Creator:        "cosmos1creator" + string(rune(i)),
 			PrimaryAddress: "cosmos1creator" + string(rune(i)),
 		}
-		created := keeper.AppendPlayer(ctxSDK, player)
+		created := testAppendPlayer(keeper, ctxSDK, player)
 		players[i] = created
 	}
 
@@ -178,31 +175,8 @@ func TestPlayerAllQuery(t *testing.T) {
 	})
 }
 
+/* TestPlayerHaltedAllQuery is disabled - PlayerHalt and QueryAllPlayerHaltedRequest no longer exist.
 func TestPlayerHaltedAllQuery(t *testing.T) {
-	keeper, ctx := keepertest.StructsKeeper(t)
-	ctxSDK := ctx
-	wctx := sdk.WrapSDKContext(ctx)
-
-	// Create test players
-	players := make([]types.Player, 3)
-	for i := range players {
-		player := types.Player{
-			Creator:        "cosmos1creator" + string(rune(i)),
-			PrimaryAddress: "cosmos1creator" + string(rune(i)),
-		}
-		created := keeper.AppendPlayer(ctxSDK, player)
-		players[i] = created
-	}
-
-	// Halt some players
-	keeper.PlayerHalt(ctxSDK, players[0].Id)
-	keeper.PlayerHalt(ctxSDK, players[2].Id)
-
-	// Test the query
-	response, err := keeper.PlayerHaltedAll(wctx, &types.QueryAllPlayerHaltedRequest{})
-	require.NoError(t, err)
-	require.Len(t, response.PlayerId, 2)
-	require.Contains(t, response.PlayerId, players[0].Id)
-	require.Contains(t, response.PlayerId, players[2].Id)
-	require.NotContains(t, response.PlayerId, players[1].Id)
+	...
 }
+*/

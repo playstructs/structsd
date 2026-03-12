@@ -20,7 +20,7 @@ func TestMsgPlanetExplore(t *testing.T) {
 		Creator:        playerAcc.String(),
 		PrimaryAddress: playerAcc.String(),
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Set up player capacity to be online
 	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id)
@@ -86,27 +86,15 @@ func TestMsgPlanetExplore(t *testing.T) {
 			}
 
 			// Recreate planet and fleet setup for each test case to ensure clean state
-			planetId := k.AppendPlanet(ctx, player)
+			planet := testAppendPlanet(k, ctx, types.Planet{Creator: player.Creator, Owner: player.Id})
 
-			playerCache, err := k.GetPlayerCacheFromId(ctx, player.Id)
-			require.NoError(t, err)
-			testFleet := k.AppendFleet(ctx, &playerCache)
+			testFleet := testAppendFleet(k, ctx, types.Fleet{Owner: player.Id})
 
 			// Set fleet location to the planet
-			fleetCache, _ := k.GetFleetCacheFromId(ctx, testFleet.Id)
-			fleetCache.LoadFleet()
-			fleetCache.Fleet.LocationId = planetId
-			fleetCache.Fleet.LocationType = types.ObjectType_planet
-			fleetCache.FleetChanged = true
-			fleetCache.Commit()
-
-			// Set up player state for each test
-			if tc.name == "player is halted" {
-				k.PlayerHalt(ctx, player.Id)
-			} else {
-				// Ensure player is not halted
-				k.PlayerResume(ctx, player.Id)
-			}
+			fleetObj, _ := k.GetFleet(ctx, testFleet.Id)
+			fleetObj.LocationId = planet.Id
+			fleetObj.LocationType = types.ObjectType_planet
+			k.SetFleet(ctx, fleetObj)
 
 			resp, err := ms.PlanetExplore(wctx, tc.input)
 

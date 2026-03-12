@@ -19,7 +19,7 @@ func TestMsgStructBuildComplete(t *testing.T) {
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Set up player capacity to be online
 	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id)
@@ -42,7 +42,7 @@ func TestMsgStructBuildComplete(t *testing.T) {
 		Owner:   player.Id,
 		Type:    structType.Id,
 	}
-	structObj = k.AppendStruct(ctx, structObj)
+	structObj = testAppendStruct(k, ctx, structObj)
 
 	// Set block start build
 	blockStartAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartBuild, structObj.Id)
@@ -106,11 +106,11 @@ func TestMsgStructBuildComplete(t *testing.T) {
 				// Ensure struct is not built
 				statusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structObj.Id)
 				builtFlag := uint64(types.StructStateBuilt)
-				k.SetStructAttributeFlagRemove(ctx, statusAttrId, builtFlag)
+				testSetStructAttributeFlagRemove(k, ctx, statusAttrId, builtFlag)
 			} else if tc.name == "struct already built" {
 				statusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structObj.Id)
 				builtFlag := uint64(types.StructStateBuilt)
-				k.SetStructAttributeFlagAdd(ctx, statusAttrId, builtFlag)
+				testSetStructAttributeFlagAdd(k, ctx, statusAttrId, builtFlag)
 			}
 
 			resp, err := ms.StructBuildComplete(wctx, tc.input)

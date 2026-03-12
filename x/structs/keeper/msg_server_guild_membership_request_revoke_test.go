@@ -20,7 +20,7 @@ func TestMsgGuildMembershipRequestRevoke(t *testing.T) {
 		Creator:        requesterAcc.String(),
 		PrimaryAddress: requesterAcc.String(),
 	}
-	requester = k.AppendPlayer(ctx, requester)
+	requester = testAppendPlayer(k, ctx, requester)
 
 	// Create reactor and guild
 	validatorAddress := sdk.ValAddress(requesterAcc.Bytes())
@@ -34,14 +34,13 @@ func TestMsgGuildMembershipRequestRevoke(t *testing.T) {
 	// Don't add requester to guild yet - they need to request membership first
 
 	// Configure guild to allow membership requests (set bypass level to member so all members can approve)
-	guildCache := k.GetGuildCacheFromId(ctx, guild.Id)
-	guildCache.LoadGuild()
-	guildCache.Guild.JoinInfusionMinimumBypassByRequest = types.GuildJoinBypassLevel_member
-	k.SetGuild(ctx, guildCache.Guild)
+	guildObj, _ := k.GetGuild(ctx, guild.Id)
+	guildObj.JoinInfusionMinimumBypassByRequest = types.GuildJoinBypassLevel_member
+	k.SetGuild(ctx, guildObj)
 
 	// Grant permissions
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(requester.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionAssociations)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermGuildMembership)
 
 	testCases := []struct {
 		name      string

@@ -19,7 +19,7 @@ func TestMsgStructStealthActivate(t *testing.T) {
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Set up player capacity to be online
 	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id)
@@ -45,12 +45,12 @@ func TestMsgStructStealthActivate(t *testing.T) {
 		Owner:   player.Id,
 		Type:    structType.Id,
 	}
-	structObj = k.AppendStruct(ctx, structObj)
+	structObj = testAppendStruct(k, ctx, structObj)
 
 	// Mark struct as built and online
 	statusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structObj.Id)
 	builtFlag := uint64(types.StructStateBuilt)
-	k.SetStructAttributeFlagAdd(ctx, statusAttrId, builtFlag)
+	testSetStructAttributeFlagAdd(k, ctx, statusAttrId, builtFlag)
 
 	testCases := []struct {
 		name      string
@@ -110,10 +110,10 @@ func TestMsgStructStealthActivate(t *testing.T) {
 			if tc.name == "valid stealth activation" {
 				// Ensure struct is not hidden
 				hiddenFlag := uint64(types.StructStateHidden)
-				k.SetStructAttributeFlagRemove(ctx, statusAttrId, hiddenFlag)
+				testSetStructAttributeFlagRemove(k, ctx, statusAttrId, hiddenFlag)
 			} else if tc.name == "already in stealth" {
 				hiddenFlag := uint64(types.StructStateHidden)
-				k.SetStructAttributeFlagAdd(ctx, statusAttrId, hiddenFlag)
+				testSetStructAttributeFlagAdd(k, ctx, statusAttrId, hiddenFlag)
 			} else if tc.name == "no stealth system" {
 				// Create struct type without stealth
 				// Note: This test may not work if all struct types have stealth

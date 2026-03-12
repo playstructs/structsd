@@ -20,7 +20,7 @@ func TestMsgAllocationCreate(t *testing.T) {
 		Creator:        playerAcc.String(),
 		PrimaryAddress: playerAcc.String(),
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Set up source object with capacity
 	sourceObjectId := "source-object"
@@ -29,11 +29,11 @@ func TestMsgAllocationCreate(t *testing.T) {
 
 	// Grant address permissions for energy management
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionAssets)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermAssetsAll)
 
 	// Grant object permissions on source object for allocation creation
 	sourceObjectPermissionId := keeperlib.GetObjectPermissionIDBytes(sourceObjectId, player.Id)
-	k.PermissionAdd(ctx, sourceObjectPermissionId, types.PermissionAssets)
+	testPermissionAdd(k, ctx, sourceObjectPermissionId, types.PermAssetsAll)
 
 	testCases := []struct {
 		name      string

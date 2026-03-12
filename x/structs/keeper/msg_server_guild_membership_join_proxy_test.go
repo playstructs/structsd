@@ -23,7 +23,7 @@ func TestMsgGuildMembershipJoinProxy(t *testing.T) {
 		Creator:        proxyAcc.String(),
 		PrimaryAddress: proxyAcc.String(),
 	}
-	proxyPlayer = k.AppendPlayer(ctx, proxyPlayer)
+	proxyPlayer = testAppendPlayer(k, ctx, proxyPlayer)
 
 	// Create reactor and guild
 	validatorAddress := sdk.ValAddress(proxyAcc.Bytes())
@@ -39,10 +39,10 @@ func TestMsgGuildMembershipJoinProxy(t *testing.T) {
 
 	// Grant permissions
 	guildPermissionId := keeperlib.GetObjectPermissionIDBytes(guild.Id, proxyPlayer.Id)
-	k.PermissionAdd(ctx, guildPermissionId, types.PermissionAssociations)
+	testPermissionAdd(k, ctx, guildPermissionId, types.PermGuildMembership)
 
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(proxyPlayer.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionAssociations)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermGuildMembership)
 
 	// Generate key pair for new address
 	privKey := secp256k1.GenPrivKey()
@@ -106,12 +106,12 @@ func TestMsgGuildMembershipJoinProxy(t *testing.T) {
 			// Re-grant permissions if needed
 			if tc.name == "valid proxy join" {
 				guildPermissionId := keeperlib.GetObjectPermissionIDBytes(guild.Id, proxyPlayer.Id)
-				k.PermissionAdd(ctx, guildPermissionId, types.PermissionAssociations)
+				testPermissionAdd(k, ctx, guildPermissionId, types.PermGuildMembership)
 				addressPermissionId := keeperlib.GetAddressPermissionIDBytes(proxyPlayer.Creator)
-				k.PermissionAdd(ctx, addressPermissionId, types.PermissionAssociations)
+				testPermissionAdd(k, ctx, addressPermissionId, types.PermGuildMembership)
 			} else if tc.name == "no guild permissions" {
 				// Remove permissions
-				k.PermissionRemove(ctx, guildPermissionId, types.PermissionAssociations)
+				testPermissionRemove(k, ctx, guildPermissionId, types.PermGuildMembership)
 			}
 
 			resp, err := ms.GuildMembershipJoinProxy(wctx, tc.input)

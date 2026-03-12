@@ -21,7 +21,7 @@ func TestFleetQuery(t *testing.T) {
 		Creator: "test-creator",
 	}
 	playerCache, _ := keeper.GetPlayerCacheFromId(ctx, player.Id)
-	fleet := keeper.AppendFleet(ctx, &playerCache)
+	fleet := testAppendFleet(k, ctx, &playerCache)
 
 	req = &types.QueryGetFleetRequest{
 		Id: fleet.Id,
@@ -49,7 +49,7 @@ func TestFleetAllQuery(t *testing.T) {
 	playerCache, _ := keeper.GetPlayerCacheFromId(ctx, player.Id)
 	fleets := make([]types.Fleet, 5)
 	for i := range fleets {
-		fleets[i] = keeper.AppendFleet(ctx, &playerCache)
+		fleets[i] = testAppendFleet(k, ctx, &playerCache)
 	}
 
 	// Test pagination
@@ -100,7 +100,7 @@ func TestFleetByIndexQuery(t *testing.T) {
 		Creator: "test-creator",
 	}
 	playerCache, _ := keeper.GetPlayerCacheFromId(ctx, player.Id)
-	fleet := keeper.AppendFleet(ctx, &playerCache)
+	fleet := testAppendFleet(k, ctx, &playerCache)
 
 	// Extract index from fleet ID (assuming format "fleet-{index}")
 	fleetIndex := uint64(1) // This should match the index used in AppendFleet

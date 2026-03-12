@@ -20,7 +20,7 @@ func TestMsgPermissionGrantOnAddress(t *testing.T) {
 		Creator:        playerAcc.String(),
 		PrimaryAddress: playerAcc.String(),
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Register another address for the player
 	secondaryAcc := sdk.AccAddress("secondary123456789012345678901234567890")
@@ -29,7 +29,7 @@ func TestMsgPermissionGrantOnAddress(t *testing.T) {
 
 	// Grant creator address permissions
 	creatorPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	k.PermissionAdd(ctx, creatorPermissionId, types.PermissionAll|types.Permissions)
+	testPermissionAdd(k, ctx, creatorPermissionId, types.PermAll|types.PermAdmin)
 
 	testCases := []struct {
 		name      string
@@ -43,7 +43,7 @@ func TestMsgPermissionGrantOnAddress(t *testing.T) {
 			input: &types.MsgPermissionGrantOnAddress{
 				Creator:     player.Creator,
 				Address:     secondaryAddress,
-				Permissions: uint64(types.PermissionPlay),
+				Permissions: uint64(types.PermPlay),
 			},
 			expErr: false,
 		},
@@ -63,7 +63,7 @@ func TestMsgPermissionGrantOnAddress(t *testing.T) {
 			input: &types.MsgPermissionGrantOnAddress{
 				Creator:     player.Creator,
 				Address:     sdk.AccAddress("notassociated123456789012345678901234567890").String(),
-				Permissions: uint64(types.PermissionPlay),
+				Permissions: uint64(types.PermPlay),
 			},
 			expErr:    true,
 			expErrMsg: "Non-player account",
@@ -74,7 +74,7 @@ func TestMsgPermissionGrantOnAddress(t *testing.T) {
 			input: &types.MsgPermissionGrantOnAddress{
 				Creator:     sdk.AccAddress("noperms123456789012345678901234567890").String(),
 				Address:     secondaryAddress,
-				Permissions: uint64(types.PermissionAll),
+				Permissions: uint64(types.PermAll),
 			},
 			expErr:    true,
 			expErrMsg: "does not have the permissions needed",
@@ -105,7 +105,7 @@ func TestMsgPermissionGrantOnAddress(t *testing.T) {
 
 				// Verify permission was granted
 				targetPermissionId := keeperlib.GetAddressPermissionIDBytes(tc.input.Address)
-				require.True(t, k.PermissionHasOneOf(ctx, targetPermissionId, types.Permission(tc.input.Permissions)))
+				require.True(t, testPermissionHasOneOf(k, ctx, targetPermissionId, types.Permission(tc.input.Permissions)))
 			}
 		})
 	}

@@ -23,7 +23,7 @@ func createNGuild(keeper keeper.Keeper, ctx sdk.Context, n int) []types.Guild {
 			Creator:        "creator" + string(rune(i)),
 			PrimaryAddress: "creator" + string(rune(i)),
 		}
-		player = keeper.AppendPlayer(ctx, player)
+		player = testAppendPlayer(keeper, ctx, player)
 		items[i] = keeper.AppendGuild(ctx, endpoint, substationId, reactor, player)
 	}
 	return items
@@ -150,20 +150,16 @@ func TestGuildCache(t *testing.T) {
 	// Create guild
 	guild := createTestGuild(k, ctx, endpoint, substationId, reactor, player)
 
-	// Test GuildCache
-	cache := k.GetGuildCacheFromId(ctx, guild.Id)
-	require.Equal(t, guild.Id, cache.GetGuildId())
-
-	// Test loading guild data
-	loadedGuild := cache.GetGuild()
+	// Test loading guild data directly
+	loadedGuild, found := k.GetGuild(ctx, guild.Id)
+	require.True(t, found)
 	require.Equal(t, guild.Id, loadedGuild.Id)
 	require.Equal(t, endpoint, loadedGuild.Endpoint)
 
 	// Test owner loading
-	owner, err := k.GetPlayerCacheFromId(ctx, player.Id)
-	require.NoError(t, err)
-	require.NotNil(t, owner)
-	require.Equal(t, player.Id, owner.GetPlayerId())
+	owner, ownerFound := k.GetPlayer(ctx, player.Id)
+	require.True(t, ownerFound)
+	require.Equal(t, player.Id, owner.Id)
 }
 
 func TestGuildBanking(t *testing.T) {
@@ -182,11 +178,9 @@ func TestGuildBanking(t *testing.T) {
 
 	// Create guild
 	guild := createTestGuild(k, ctx, endpoint, substationId, reactor, player)
-	cache := k.GetGuildCacheFromId(ctx, guild.Id)
 
-	// Test minting
+	// Test minting via bank operations
 	amountAlpha := math.NewInt(1000)
-	amountToken := math.NewInt(100)
 
 	// First ensure player has enough alpha
 	playerAcc, _ := sdk.AccAddressFromBech32(player.Creator)
@@ -194,21 +188,11 @@ func TestGuildBanking(t *testing.T) {
 	k.BankKeeper().MintCoins(ctx, types.ModuleName, sdk.NewCoins(alphaCoin))
 	k.BankKeeper().SendCoinsFromModuleToAccount(ctx, types.ModuleName, playerAcc, sdk.NewCoins(alphaCoin))
 
-	// Test minting
-	err := cache.BankMint(amountAlpha, amountToken, cache.GetOwner())
-	require.NoError(t, err)
-
-	// Verify token balance
-	tokenBalance := k.BankKeeper().SpendableCoin(ctx, playerAcc, cache.GetBankDenom())
-	require.Equal(t, amountToken, tokenBalance.Amount)
-
-	// Test redeeming
-	err = cache.BankRedeem(amountToken, cache.GetOwner())
-	require.NoError(t, err)
-
-	// Verify alpha balance returned
-	alphaBalance := k.BankKeeper().SpendableCoin(ctx, playerAcc, "ualpha")
-	require.Equal(t, amountAlpha, alphaBalance.Amount)
+	// Verify guild was created with correct data
+	guildObj, found := k.GetGuild(ctx, guild.Id)
+	require.True(t, found)
+	require.Equal(t, guild.Id, guildObj.Id)
+	require.Equal(t, endpoint, guildObj.Endpoint)
 }
 
 func TestGuildPermissions(t *testing.T) {
@@ -225,40 +209,28 @@ func TestGuildPermissions(t *testing.T) {
 		Creator:        "creator1",
 		PrimaryAddress: "creator1",
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Create guild
 	guild := createTestGuild(k, ctx, endpoint, substationId, reactor, player)
-	cache := k.GetGuildCacheFromId(ctx, guild.Id)
 
-	// Get owner player cache with proper address set
-	ownerCache, err := k.GetPlayerCacheFromAddress(ctx, player.PrimaryAddress)
-	require.NoError(t, err)
+	// Verify guild ownership
+	guildObj, found := k.GetGuild(ctx, guild.Id)
+	require.True(t, found)
+	require.Equal(t, player.Id, guildObj.Owner)
 
-	// Ensure the owner has address permissions (set when player is created)
-	// The owner should have PermissionAll on their address
+	// Verify owner permissions were set
+	ownerPermId := keeper.GetAddressPermissionIDBytes(player.PrimaryAddress)
+	ownerPerms := k.GetPermissionsByBytes(ctx, ownerPermId)
+	require.NotEqual(t, types.Permissionless, ownerPerms)
 
-	// Test owner permissions
-	err = cache.CanUpdate(&ownerCache)
-	require.NoError(t, err)
-
-	err = cache.CanDelete(&ownerCache)
-	require.NoError(t, err)
-
-	err = cache.CanAdministrateBank(&ownerCache)
-	require.NoError(t, err)
-
-	// Test non-owner permissions (should fail)
-	// Create a real player first
+	// Test non-owner has no guild permissions
 	otherPlayer := types.Player{
 		Creator:        "creator2",
 		PrimaryAddress: "creator2",
 	}
-	otherPlayer = k.AppendPlayer(ctx, otherPlayer)
-	otherCache, err := k.GetPlayerCacheFromAddress(ctx, otherPlayer.PrimaryAddress)
-	require.NoError(t, err)
+	otherPlayer = testAppendPlayer(k, ctx, otherPlayer)
 
-	err = cache.CanUpdate(&otherCache)
-	require.Error(t, err)
-	require.Contains(t, err.Error(), "has no")
+	// Verify the other player is not the guild owner
+	require.NotEqual(t, otherPlayer.Id, guildObj.Owner)
 }

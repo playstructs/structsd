@@ -19,7 +19,7 @@ func TestMsgStructDeactivate(t *testing.T) {
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Set up player capacity to be online
 	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id)
@@ -31,12 +31,12 @@ func TestMsgStructDeactivate(t *testing.T) {
 		Owner:   player.Id,
 		Type:    1,
 	}
-	structObj = k.AppendStruct(ctx, structObj)
+	structObj = testAppendStruct(k, ctx, structObj)
 
 	// Mark struct as built and online
 	statusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structObj.Id)
 	builtFlag := uint64(types.StructStateBuilt)
-	k.SetStructAttributeFlagAdd(ctx, statusAttrId, builtFlag)
+	testSetStructAttributeFlagAdd(k, ctx, statusAttrId, builtFlag)
 
 	testCases := []struct {
 		name      string
@@ -86,10 +86,10 @@ func TestMsgStructDeactivate(t *testing.T) {
 			// Set up struct state for each test
 			if tc.name == "valid struct deactivation" {
 				// Ensure struct is built and online
-				k.SetStructAttributeFlagAdd(ctx, statusAttrId, builtFlag)
+				testSetStructAttributeFlagAdd(k, ctx, statusAttrId, builtFlag)
 			} else if tc.name == "struct not built" {
 				// Clear built flag
-				k.SetStructAttributeFlagRemove(ctx, statusAttrId, builtFlag)
+				testSetStructAttributeFlagRemove(k, ctx, statusAttrId, builtFlag)
 			} else if tc.name == "struct already offline" {
 				// Struct is offline by default, just ensure it's built
 				// The deactivate will check if it's already offline

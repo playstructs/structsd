@@ -20,7 +20,7 @@ func TestMsgGuildUpdateJoinInfusionMinimumBypassByInvite(t *testing.T) {
 		Creator:        playerAcc.String(),
 		PrimaryAddress: playerAcc.String(),
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Create reactor for guild
 	validatorAddress := sdk.ValAddress(playerAcc.Bytes())
@@ -37,10 +37,10 @@ func TestMsgGuildUpdateJoinInfusionMinimumBypassByInvite(t *testing.T) {
 
 	// Grant permissions
 	guildPermissionId := keeperlib.GetObjectPermissionIDBytes(guild.Id, player.Id)
-	k.PermissionAdd(ctx, guildPermissionId, types.PermissionUpdate)
+	testPermissionAdd(k, ctx, guildPermissionId, types.PermUpdate)
 
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionAssets)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermAssetsAll)
 
 	testCases := []struct {
 		name      string

@@ -721,7 +721,7 @@ for PLAYER_NUM in 2 3 4; do
 
     run_tx "Creating allocation from Player ${PLAYER_NUM} (controller=alice)" \
         tx structs allocation-create "${PID}" "${PCAP}" \
-        --controller "${PLAYER_1_ADDRESS}" --allocation-type dynamic --from "player_${PLAYER_NUM}"
+        --controller "${PLAYER_1_ID}" --allocation-type dynamic --from "player_${PLAYER_NUM}"
 
     # Discover the allocation ID dynamically
     ALLOC_ID=$(get_latest_allocation_for_source "${PID}")
@@ -764,7 +764,7 @@ info "Player 5 (${PLAYER_5_ID}) capacity: ${P5_CAP}"
 # Create with half capacity so we have room to test updates
 run_tx "Creating allocation from Player 5 (${HALF_CAP} of ${P5_CAP})" \
     tx structs allocation-create "${PLAYER_5_ID}" "${HALF_CAP}" \
-    --controller "${PLAYER_5_ADDRESS}" --allocation-type dynamic --from player_5
+    --controller "${PLAYER_5_ID}" --allocation-type dynamic --from player_5
 
 P5_ALLOC_ID=$(get_latest_allocation_for_source "${PLAYER_5_ID}")
 assert_not_empty "Player 5 allocation ID" "${P5_ALLOC_ID}"
@@ -782,15 +782,15 @@ assert_eq "Allocation power updated" "${QUARTER_CAP}" "${ALLOC_POWER}"
 # ─── allocation-transfer: transfer controller to alice ───
 info "Transferring allocation controller from player_5 to alice"
 run_tx "Transferring allocation ${P5_ALLOC_ID} controller to alice" \
-    tx structs allocation-transfer "${P5_ALLOC_ID}" "${PLAYER_1_ADDRESS}" --from player_5
+    tx structs allocation-transfer "${P5_ALLOC_ID}" "${PLAYER_1_ID}" --from player_5
 
 ALLOC_JSON=$(query query structs allocation "${P5_ALLOC_ID}")
 ALLOC_CTRL=$(jqr "${ALLOC_JSON}" '.Allocation.controller')
-assert_eq "Allocation controller transferred" "${PLAYER_1_ADDRESS}" "${ALLOC_CTRL}"
+assert_eq "Allocation controller transferred" "${PLAYER_1_ID}" "${ALLOC_CTRL}"
 
 # Transfer back to player_5 so they can delete it
 run_tx "Transferring allocation back to player_5" \
-    tx structs allocation-transfer "${P5_ALLOC_ID}" "${PLAYER_5_ADDRESS}" --from alice
+    tx structs allocation-transfer "${P5_ALLOC_ID}" "${PLAYER_5_ID}" --from alice
 
 # ─── allocation-delete ───
 run_tx "Deleting allocation ${P5_ALLOC_ID}" \
@@ -809,7 +809,7 @@ echo "  Allocations connected to substation: $(echo "${ALLOC_BY_DEST}" | jq '.Al
 # ─── Re-create allocation for Player 5 for later phases ───
 run_tx "Re-creating allocation for Player 5" \
     tx structs allocation-create "${PLAYER_5_ID}" "${P5_CAP}" \
-    --controller "${PLAYER_5_ADDRESS}" --allocation-type dynamic --from player_5
+    --controller "${PLAYER_5_ID}" --allocation-type dynamic --from player_5
 
 P5_ALLOC_ID=$(get_latest_allocation_for_source "${PLAYER_5_ID}")
 assert_not_empty "Player 5 re-created allocation ID" "${P5_ALLOC_ID}"
@@ -1307,7 +1307,9 @@ if run_phase 480; then
 
 section "PHASE 4e: Permission System"
 
-# Permission constants: Play=1, Update=2, Delete=4, Assets=8, Associations=16, Grid=32, Permissions=64
+# Permission constants (1<<iota): Play=1, Admin=2, Update=4, Delete=8,
+# TokenTransfer=16, TokenInfuse=32, TokenMigrate=64, TokenDefuse=128,
+# SourceAllocation=256, GuildMembership=512, SubstationConnection=1024, AllocationConnection=2048
 
 # ─── permission-grant-on-object: grant Player 5 Grid permission on substation ───
 run_tx "Granting Player 5 Grid permission (32) on substation ${SUBSTATION_ID}" \
@@ -1336,8 +1338,8 @@ run_tx "Clearing Player 5 permissions on substation" \
 
 # ─── permission-grant-on-address / permission-revoke-on-address ───
 # Address permissions can only be managed on your OWN player's addresses.
-# Player 5 grants PermissionAssets (8) on their own address.
-run_tx "Player 5 granting own address PermissionAssets (8)" \
+# Player 5 grants PermDelete (8) on their own address (already has it, but tests the grant path).
+run_tx "Player 5 granting own address PermDelete (8)" \
     tx structs permission-grant-on-address "${PLAYER_5_ADDRESS}" 8 --from player_5
 
 # Query permissions by player
@@ -1345,18 +1347,22 @@ PERM_BY_PLAYER=$(query query structs permission-by-player "${PLAYER_5_ID}" 2>/de
 info "Permissions for Player 5 after address grant:"
 echo "${PERM_BY_PLAYER}" | jq -r '.permissionRecord[]? | "  obj=\(.objectId) val=\(.value)"' 2>/dev/null | head -5 || echo "  (no records)"
 
-# Revoke
-run_tx "Player 5 revoking own address PermissionAssets" \
+# Revoke PermDelete (8) from Player 5's address
+run_tx "Player 5 revoking own address PermDelete (8)" \
     tx structs permission-revoke-on-address "${PLAYER_5_ADDRESS}" 8 --from player_5
 
 # ─── permission-set-on-address ───
 # NOTE: permission-set-on-address prevents privilege escalation — the caller
-# needs ALL bits of the target value (plus Permissions=64). After revoking
-# PermissionAssets (8), the address has 247. We demonstrate set by setting
-# to 247 (proving the command works). Restoring to 255 is impossible because
-# the address no longer holds bit 8 and the system blocks escalation.
-run_tx "Player 5 setting own address permissions to 247 (all except PermissionAssets)" \
-    tx structs permission-set-on-address "${PLAYER_5_ADDRESS}" 247 --from player_5
+# needs ALL bits of the target value. After revoking PermDelete (8),
+# the address has PermAll minus PermDelete = 16777207. We demonstrate set
+# by setting to that value (proving the command works).
+run_tx "Player 5 setting own address permissions to 16777207 (PermAll minus PermDelete)" \
+    tx structs permission-set-on-address "${PLAYER_5_ADDRESS}" 16777207 --from player_5
+
+# Restore Player 5 address to full permissions for later phases.
+# Player 5 can't re-grant PermDelete (escalation prevention), so Alice does it.
+run_tx "Alice restoring Player 5 address PermDelete" \
+    tx structs permission-grant-on-address "${PLAYER_5_ADDRESS}" 8 --from alice
 
 # ─── General permission query ───
 info "All permissions sample:"
@@ -1372,9 +1378,9 @@ if run_phase 490; then
 
 section "PHASE 4f: Substation Management"
 
-# Grant Player 5 PermissionGrid (32) on the substation for allocation connect/disconnect
-run_tx "Granting Player 5 PermissionGrid on substation for allocation ops" \
-    tx structs permission-grant-on-object "${SUBSTATION_ID}" "${PLAYER_5_ID}" 32 --from alice
+# Grant Player 5 PermSubstationConnection (1024) on the substation for connection ops
+run_tx "Granting Player 5 PermSubstationConnection on substation for connection ops" \
+    tx structs permission-grant-on-object "${SUBSTATION_ID}" "${PLAYER_5_ID}" 1024 --from alice
 
 # Allocation operations: Player 5 is the allocation controller, so they must sign
 run_tx "Connecting Player 5 allocation to substation" \
@@ -1403,11 +1409,11 @@ SECOND_SUB_ID=$(echo "${SUB_ALL_JSON}" | jq -r '.Substation[-1].id // empty' 2>/
 if [ -n "${SECOND_SUB_ID}" ] && [ "${SECOND_SUB_ID}" != "${SUBSTATION_ID}" ]; then
     info "Second substation for migration: ${SECOND_SUB_ID}"
 
-    # Grant Player 5 PermissionAssociations (16) on both substations so they can connect themselves
-    run_tx "Granting Player 5 PermissionAssociations on original substation" \
-        tx structs permission-grant-on-object "${SUBSTATION_ID}" "${PLAYER_5_ID}" 16 --from alice
-    run_tx "Granting Player 5 PermissionAssociations on second substation" \
-        tx structs permission-grant-on-object "${SECOND_SUB_ID}" "${PLAYER_5_ID}" 16 --from alice
+    # Grant Player 5 PermSubstationConnection (1024) on both substations so they can connect themselves
+    run_tx "Granting Player 5 PermSubstationConnection on original substation" \
+        tx structs permission-grant-on-object "${SUBSTATION_ID}" "${PLAYER_5_ID}" 1024 --from alice
+    run_tx "Granting Player 5 PermSubstationConnection on second substation" \
+        tx structs permission-grant-on-object "${SECOND_SUB_ID}" "${PLAYER_5_ID}" 1024 --from alice
 
     # ─── substation-player-connect: connect Player 5 to second substation ───
     run_tx "Connecting Player 5 to second substation" \
@@ -2653,6 +2659,55 @@ if [ -n "${PROVIDER_ID}" ]; then
         AGREE_END_BEFORE=$(jqr "${AGREE_JSON}" '.Agreement.endBlock' '0')
         info "Agreement capacity: ${AGREE_CAP_CURRENT}, endBlock: ${AGREE_END_BEFORE}"
 
+        # ─── Verify agreement allocation is created and connect to substation ───
+        AGREE_ALLOC_ID=$(jqr "${AGREE_JSON}" '.Agreement.allocationId' '')
+        assert_not_empty "Agreement allocation ID exists" "${AGREE_ALLOC_ID}"
+        info "Agreement allocation ID: ${AGREE_ALLOC_ID}"
+
+        AGREE_ALLOC_JSON=$(query query structs allocation "${AGREE_ALLOC_ID}" 2>/dev/null || echo '{}')
+        AGREE_ALLOC_SRC=$(jqr "${AGREE_ALLOC_JSON}" '.Allocation.sourceObjectId' '')
+        AGREE_ALLOC_DST=$(jqr "${AGREE_ALLOC_JSON}" '.Allocation.destinationId' '')
+        AGREE_ALLOC_TYPE=$(jqr "${AGREE_ALLOC_JSON}" '.Allocation.type' '')
+        assert_eq "Agreement allocation source is provider substation" "${SUBSTATION_ID}" "${AGREE_ALLOC_SRC}"
+        assert_eq "Agreement allocation destination initially empty" "" "${AGREE_ALLOC_DST}"
+        info "Agreement allocation: src=${AGREE_ALLOC_SRC}, dst=${AGREE_ALLOC_DST}, type=${AGREE_ALLOC_TYPE}"
+
+        # Create a fresh substation to test connecting the agreement allocation.
+        # The original SECOND_SUB_ID may have been deleted in Phase 4f.
+        run_tx "Creating substation for agreement allocation connect test" \
+            tx structs substation-create "${PLAYER_1_ID}" "${P1_ALLOC_ID}" --from alice
+
+        AGREE_TEST_SUB_JSON=$(query query structs substation-all 2>/dev/null || echo '{}')
+        AGREE_TEST_SUB_ID=$(echo "${AGREE_TEST_SUB_JSON}" | jq -r '.Substation[-1].id // empty' 2>/dev/null || echo "")
+
+        if [ -n "${AGREE_TEST_SUB_ID}" ] && [ "${AGREE_TEST_SUB_ID}" != "${SUBSTATION_ID}" ]; then
+            info "Created test substation for agreement allocation: ${AGREE_TEST_SUB_ID}"
+
+            # Grant Player 2 PermAllocationConnection on the agreement allocation
+            # so they can connect it (Player 2 already has PermAll on address)
+            run_tx "Connecting agreement allocation to test substation" \
+                tx structs substation-allocation-connect "${AGREE_ALLOC_ID}" "${AGREE_TEST_SUB_ID}" --from player_2
+
+            AGREE_ALLOC_JSON=$(query query structs allocation "${AGREE_ALLOC_ID}" 2>/dev/null || echo '{}')
+            AGREE_ALLOC_DST_AFTER=$(jqr "${AGREE_ALLOC_JSON}" '.Allocation.destinationId' '')
+            assert_eq "Agreement allocation connected to substation" "${AGREE_TEST_SUB_ID}" "${AGREE_ALLOC_DST_AFTER}"
+            info "Agreement allocation now connected: dst=${AGREE_ALLOC_DST_AFTER}"
+
+            # Disconnect so it doesn't interfere with later tests
+            run_tx "Disconnecting agreement allocation from test substation" \
+                tx structs substation-allocation-disconnect "${AGREE_ALLOC_ID}" --from player_2
+
+            AGREE_ALLOC_JSON=$(query query structs allocation "${AGREE_ALLOC_ID}" 2>/dev/null || echo '{}')
+            AGREE_ALLOC_DST_DISCONN=$(jqr "${AGREE_ALLOC_JSON}" '.Allocation.destinationId' '')
+            assert_eq "Agreement allocation disconnected" "" "${AGREE_ALLOC_DST_DISCONN}"
+
+            # Clean up the test substation
+            run_tx "Deleting agreement test substation" \
+                tx structs substation-delete "${AGREE_TEST_SUB_ID}" "${SUBSTATION_ID}" --from alice
+        else
+            info "SKIP: Could not create substation for agreement allocation connect test"
+        fi
+
         # ─── agreement-capacity-increase ───
         run_tx "Increasing agreement capacity by 25000" \
             tx structs agreement-capacity-increase "${AGREE_ID}" 25000 --from player_2
@@ -2778,7 +2833,7 @@ for FP_NUM in 1 2 3 4 5; do
 
     run_tx "Creating allocation for fleet player ${FP_NUM}" \
         tx structs allocation-create "${FP_PID}" "${PCAP}" \
-        --controller "${PLAYER_1_ADDRESS}" --allocation-type dynamic --from "${FPLAYER_KEY}"
+        --controller "${PLAYER_1_ID}" --allocation-type dynamic --from "${FPLAYER_KEY}"
 
     FP_ALLOC_ID=$(get_latest_allocation_for_source "${FP_PID}")
     eval "FP_${FP_NUM}_ALLOC_ID=${FP_ALLOC_ID}"
@@ -3224,7 +3279,7 @@ echo "  Player 6 capacity: ${P6_CAP}"
 
 run_tx "Creating allocation from Player 6 (controller=alice)" \
     tx structs allocation-create "${PLAYER_6_ID}" "${P6_CAP}" \
-    --controller "${PLAYER_1_ADDRESS}" --allocation-type dynamic --from player_6
+    --controller "${PLAYER_1_ID}" --allocation-type dynamic --from player_6
 
 P6_ALLOC_ID=$(get_latest_allocation_for_source "${PLAYER_6_ID}")
 assert_not_empty "Player 6 allocation ID" "${P6_ALLOC_ID}"

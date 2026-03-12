@@ -19,14 +19,14 @@ func TestMsgPermissionGuildRankRevoke(t *testing.T) {
 		Creator:        ownerAcc.String(),
 		PrimaryAddress: ownerAcc.String(),
 	}
-	owner = k.AppendPlayer(ctx, owner)
+	owner = testAppendPlayer(k, ctx, owner)
 
 	structObj := types.Struct{
 		Creator: owner.Creator,
 		Owner:   owner.Id,
 		Type:    1,
 	}
-	structObj = k.AppendStruct(ctx, structObj)
+	structObj = testAppendStruct(k, ctx, structObj)
 
 	validatorAddress := sdk.ValAddress(ownerAcc.Bytes())
 	reactor := types.Reactor{RawAddress: validatorAddress.Bytes()}
@@ -40,7 +40,7 @@ func TestMsgPermissionGuildRankRevoke(t *testing.T) {
 	require.Equal(t, uint64(2), rank)
 
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(owner.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermAdmin)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermAdmin)
 
 	resp, err := ms.PermissionGuildRankRevoke(wctx, &types.MsgPermissionGuildRankRevoke{
 		Creator:    owner.Creator,

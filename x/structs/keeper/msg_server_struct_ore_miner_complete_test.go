@@ -19,14 +19,14 @@ func TestMsgStructOreMinerComplete(t *testing.T) {
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Set up player capacity to be online
 	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id)
 	k.SetGridAttribute(ctx, capacityAttrId, uint64(100000))
 
 	// Create a planet
-	planetId := k.AppendPlanet(ctx, player)
+	planet := testAppendPlanet(k, ctx, types.Planet{Creator: player.Creator, Owner: player.Id})
 
 	// Create a struct type
 	structType := types.StructType{
@@ -42,15 +42,15 @@ func TestMsgStructOreMinerComplete(t *testing.T) {
 		Creator:      player.Creator,
 		Owner:        player.Id,
 		Type:         structType.Id,
-		LocationId:   planetId,
+		LocationId:   planet.Id,
 		LocationType: types.ObjectType_planet,
 	}
-	structObj = k.AppendStruct(ctx, structObj)
+	structObj = testAppendStruct(k, ctx, structObj)
 
 	// Mark struct as built and online
 	statusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structObj.Id)
 	builtFlag := uint64(types.StructStateBuilt)
-	k.SetStructAttributeFlagAdd(ctx, statusAttrId, builtFlag)
+	testSetStructAttributeFlagAdd(k, ctx, statusAttrId, builtFlag)
 
 	// Set block start ore mine
 	blockStartAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_blockStartOreMine, structObj.Id)

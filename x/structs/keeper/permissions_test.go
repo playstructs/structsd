@@ -50,22 +50,25 @@ func TestPermissionBitOperations(t *testing.T) {
 	flag2 := types.Permission(0b0010)
 
 	// Add first flag
-	newPermission := keeper.PermissionAdd(ctx, permissionId, flag1)
+	testPermissionAdd(keeper, ctx, permissionId, flag1)
+	newPermission := keeper.GetPermissionsByBytes(ctx, permissionId)
 	require.Equal(t, flag1, newPermission)
 
 	// Add second flag
-	newPermission = keeper.PermissionAdd(ctx, permissionId, flag2)
+	testPermissionAdd(keeper, ctx, permissionId, flag2)
+	newPermission = keeper.GetPermissionsByBytes(ctx, permissionId)
 	require.Equal(t, types.Permission(0b0011), newPermission)
 
 	// Test removing permissions
-	newPermission = keeper.PermissionRemove(ctx, permissionId, flag1)
+	testPermissionRemove(keeper, ctx, permissionId, flag1)
+	newPermission = keeper.GetPermissionsByBytes(ctx, permissionId)
 	require.Equal(t, flag2, newPermission)
 
 	// Test permission checks
-	require.True(t, keeper.PermissionHasAll(ctx, permissionId, flag2))
-	require.False(t, keeper.PermissionHasAll(ctx, permissionId, flag1))
-	require.True(t, keeper.PermissionHasOneOf(ctx, permissionId, types.Permission(0b0011)))
-	require.False(t, keeper.PermissionHasOneOf(ctx, permissionId, types.Permission(0b0100)))
+	require.True(t, testPermissionHasAll(keeper, ctx, permissionId, flag2))
+	require.False(t, testPermissionHasAll(keeper, ctx, permissionId, flag1))
+	require.True(t, testPermissionHasOneOf(keeper, ctx, permissionId, types.Permission(0b0011)))
+	require.False(t, testPermissionHasOneOf(keeper, ctx, permissionId, types.Permission(0b0100)))
 }
 
 func TestGetPermissionsByObject(t *testing.T) {
@@ -201,8 +204,8 @@ func TestAddressPermissionIDBytes(t *testing.T) {
 	require.Equal(t, testPermission, retrievedPermission)
 
 	// Test permission operations
-	require.True(t, keeper.PermissionHasAll(ctx, permissionId, testPermission))
-	require.False(t, keeper.PermissionHasAll(ctx, permissionId, types.Permission(0b0101)))
+	require.True(t, testPermissionHasAll(keeper, ctx, permissionId, testPermission))
+	require.False(t, testPermissionHasAll(keeper, ctx, permissionId, types.Permission(0b0101)))
 }
 
 func TestGetHighestGuildRankForPermission(t *testing.T) {

@@ -24,7 +24,7 @@ func TestQueryAllocation(t *testing.T) {
 	keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceId), uint64(200))
 
 	allocation := createTestAllocation(sourceId, destId, types.AllocationType_static)
-	alloc, _, err := keeper.AppendAllocation(ctx, allocation, power)
+	alloc, err := testAppendAllocation(keeper, ctx, allocation, power)
 	require.NoError(t, err)
 
 	resp, err := keeper.Allocation(wctx, &types.QueryGetAllocationRequest{Id: alloc.Id})
@@ -52,7 +52,7 @@ func TestQueryAllocationAll(t *testing.T) {
 	for i := 0; i < 5; i++ {
 		destId := "dest" + string(rune(i))
 		allocation := createTestAllocation(sourceId, destId, types.AllocationType_static)
-		_, _, err := keeper.AppendAllocation(ctx, allocation, power)
+		_, err := testAppendAllocation(keeper, ctx, allocation, power)
 		require.NoError(t, err)
 	}
 
@@ -92,7 +92,7 @@ func TestQueryAllocationAllBySource(t *testing.T) {
 	for i := 0; i < 3; i++ {
 		destId := "dest" + string(rune(i))
 		allocation := createTestAllocation(sourceId, destId, types.AllocationType_static)
-		_, _, err := keeper.AppendAllocation(ctx, allocation, power)
+		_, err := testAppendAllocation(keeper, ctx, allocation, power)
 		require.NoError(t, err)
 	}
 
@@ -130,7 +130,7 @@ func TestQueryAllocationAllByDestination(t *testing.T) {
 		keeper.SetGridAttribute(ctx, keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, sourceId), uint64(1000))
 
 		allocation := createTestAllocation(sourceId, destId, types.AllocationType_static)
-		_, _, err := keeper.AppendAllocation(ctx, allocation, power)
+		_, err := testAppendAllocation(keeper, ctx, allocation, power)
 		require.NoError(t, err)
 	}
 

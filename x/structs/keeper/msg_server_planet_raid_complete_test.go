@@ -20,16 +20,14 @@ func TestMsgPlanetRaidComplete(t *testing.T) {
 		Creator:        playerAcc.String(),
 		PrimaryAddress: playerAcc.String(),
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Set up player capacity to be online
 	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id)
 	k.SetGridAttribute(ctx, capacityAttrId, uint64(100000))
 
 	// Create fleet
-	playerCache, err := k.GetPlayerCacheFromId(ctx, player.Id)
-	require.NoError(t, err)
-	fleet := k.AppendFleet(ctx, &playerCache)
+	fleet := testAppendFleet(k, ctx, types.Fleet{Owner: player.Id})
 
 	// Note: Planet is determined from the fleet's location
 
@@ -96,7 +94,7 @@ func TestMsgPlanetRaidComplete(t *testing.T) {
 
 			// Recreate fleet if needed
 			if tc.name == "valid raid complete" {
-				fleet = k.AppendFleet(ctx, &playerCache)
+				fleet = testAppendFleet(k, ctx, types.Fleet{Owner: player.Id})
 				tc.input.FleetId = fleet.Id
 			}
 

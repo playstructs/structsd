@@ -19,14 +19,14 @@ func TestMsgPermissionGuildRankSet(t *testing.T) {
 		Creator:        ownerAcc.String(),
 		PrimaryAddress: ownerAcc.String(),
 	}
-	owner = k.AppendPlayer(ctx, owner)
+	owner = testAppendPlayer(k, ctx, owner)
 
 	structObj := types.Struct{
 		Creator: owner.Creator,
 		Owner:   owner.Id,
 		Type:    1,
 	}
-	structObj = k.AppendStruct(ctx, structObj)
+	structObj = testAppendStruct(k, ctx, structObj)
 
 	validatorAddress := sdk.ValAddress(ownerAcc.Bytes())
 	reactor := types.Reactor{RawAddress: validatorAddress.Bytes()}
@@ -35,7 +35,7 @@ func TestMsgPermissionGuildRankSet(t *testing.T) {
 	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, owner)
 
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(owner.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermAdmin)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermAdmin)
 
 	// Success: set guild rank permission
 	resp, err := ms.PermissionGuildRankSet(wctx, &types.MsgPermissionGuildRankSet{

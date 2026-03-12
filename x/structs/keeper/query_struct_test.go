@@ -24,7 +24,7 @@ func createNStructForQuery(keeper keeper.Keeper, ctx sdk.Context, n int) []types
 			Owner:   "cosmos1owner" + string(rune(i)),
 			Type:    uint64(i % 3), // Different types for variety
 		}
-		items[i] = keeper.AppendStruct(ctx, items[i])
+		items[i] = testAppendStruct(keeper, ctx, items[i])
 	}
 	return items
 }

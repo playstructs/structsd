@@ -20,14 +20,14 @@ func TestMsgGuildMembershipKick(t *testing.T) {
 		Creator:        guildOwnerAcc.String(),
 		PrimaryAddress: guildOwnerAcc.String(),
 	}
-	guildOwner = k.AppendPlayer(ctx, guildOwner)
+	guildOwner = testAppendPlayer(k, ctx, guildOwner)
 
 	memberAcc := sdk.AccAddress("member123456789012345678901234567890")
 	member := types.Player{
 		Creator:        memberAcc.String(),
 		PrimaryAddress: memberAcc.String(),
 	}
-	member = k.AppendPlayer(ctx, member)
+	member = testAppendPlayer(k, ctx, member)
 
 	// Create reactor and guild
 	validatorAddress := sdk.ValAddress(guildOwnerAcc.Bytes())
@@ -45,7 +45,7 @@ func TestMsgGuildMembershipKick(t *testing.T) {
 
 	// Grant permissions
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(guildOwner.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionAssociations)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermGuildMembership)
 
 	testCases := []struct {
 		name      string

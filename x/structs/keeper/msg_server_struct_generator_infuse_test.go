@@ -20,10 +20,10 @@ func TestMsgStructGeneratorInfuse(t *testing.T) {
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Create a planet
-	planetId := k.AppendPlanet(ctx, player)
+	planet := testAppendPlanet(k, ctx, types.Planet{Creator: player.Creator, Owner: player.Id})
 
 	// Create a struct type with power generation
 	// Note: PowerGeneration is an enum, use a valid value
@@ -40,19 +40,19 @@ func TestMsgStructGeneratorInfuse(t *testing.T) {
 		Creator:      player.Creator,
 		Owner:        player.Id,
 		Type:         structType.Id,
-		LocationId:   planetId,
+		LocationId:   planet.Id,
 		LocationType: types.ObjectType_planet,
 	}
-	structObj = k.AppendStruct(ctx, structObj)
+	structObj = testAppendStruct(k, ctx, structObj)
 
 	// Mark struct as built and online
 	statusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structObj.Id)
 	builtFlag := uint64(types.StructStateBuilt)
-	k.SetStructAttributeFlagAdd(ctx, statusAttrId, builtFlag)
+	testSetStructAttributeFlagAdd(k, ctx, statusAttrId, builtFlag)
 
 	// Grant permissions
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionAssets)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermAssetsAll)
 
 	// Set up balances
 	playerAcc, _ := sdk.AccAddressFromBech32(player.Creator)
@@ -123,11 +123,11 @@ func TestMsgStructGeneratorInfuse(t *testing.T) {
 			if tc.name == "valid generator infuse" {
 				// Ensure struct is online
 				onlineFlag := uint64(types.StructStateOnline)
-				k.SetStructAttributeFlagAdd(ctx, statusAttrId, onlineFlag)
+				testSetStructAttributeFlagAdd(k, ctx, statusAttrId, onlineFlag)
 			} else if tc.name == "struct offline" {
 				// Ensure struct is offline
 				onlineFlag := uint64(types.StructStateOnline)
-				k.SetStructAttributeFlagRemove(ctx, statusAttrId, onlineFlag)
+				testSetStructAttributeFlagRemove(k, ctx, statusAttrId, onlineFlag)
 			} else if tc.name == "no power generation" {
 				// Create struct type without power generation
 				noGenType := types.StructType{

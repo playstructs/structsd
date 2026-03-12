@@ -19,7 +19,7 @@ func TestMsgStructMove(t *testing.T) {
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Set up player capacity to be online
 	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id)
@@ -44,7 +44,7 @@ func TestMsgStructMove(t *testing.T) {
 		Owner:   player.Id,
 		Type:    structType.Id,
 	}
-	structObj = k.AppendStruct(ctx, structObj)
+	structObj = testAppendStruct(k, ctx, structObj)
 
 	// Note: LocationId is determined from the struct's current location
 

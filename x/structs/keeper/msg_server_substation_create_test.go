@@ -19,7 +19,7 @@ func TestMsgSubstationCreate(t *testing.T) {
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Set up source capacity for allocation
 	sourceObjectId := "source-object"
@@ -28,16 +28,16 @@ func TestMsgSubstationCreate(t *testing.T) {
 
 	// Grant permissions
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionAssets)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermAssetsAll)
 
 	// Create an allocation
 	allocation := types.Allocation{
 		SourceObjectId: sourceObjectId,
 		DestinationId:  "",
 		Type:           types.AllocationType_static,
-		Controller:     player.Creator,
+		Controller: player.Id,
 	}
-	createdAllocation, _, err := k.AppendAllocation(ctx, allocation, 100)
+	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
 	require.NoError(t, err)
 
 	testCases := []struct {

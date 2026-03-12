@@ -21,7 +21,7 @@ func TestMsgAgreementOpen(t *testing.T) {
 		Creator:        playerAcc.String(),
 		PrimaryAddress: playerAcc.String(),
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Create substation
 	sourceObjectId := "source-object"
@@ -32,12 +32,12 @@ func TestMsgAgreementOpen(t *testing.T) {
 		SourceObjectId: sourceObjectId,
 		DestinationId:  "",
 		Type:           types.AllocationType_static,
-		Controller:     player.Creator,
+		Controller: player.Id,
 	}
-	createdAllocation, _, err := k.AppendAllocation(ctx, allocation, 100)
+	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
 	require.NoError(t, err)
 
-	substation, _, err := k.AppendSubstation(ctx, createdAllocation, player)
+	substation, _, err := testAppendSubstation(k, ctx, createdAllocation, player)
 	require.NoError(t, err)
 
 	// Create a provider
@@ -54,7 +54,7 @@ func TestMsgAgreementOpen(t *testing.T) {
 		ProviderCancellationPenalty: math.LegacyNewDec(1),
 		ConsumerCancellationPenalty: math.LegacyNewDec(1),
 	}
-	provider, _ = k.AppendProvider(ctx, provider)
+	provider = testAppendProvider(k, ctx, provider)
 
 	// Set up player balance for collateral
 	collateralAmount := math.NewInt(100).Mul(math.NewInt(5)).Mul(math.NewInt(100)) // capacity * duration * rate

@@ -19,13 +19,13 @@ func TestMsgSubstationPlayerMigrate(t *testing.T) {
 		Creator:        "cosmos1owner",
 		PrimaryAddress: "cosmos1owner",
 	}
-	owner = k.AppendPlayer(ctx, owner)
+	owner = testAppendPlayer(k, ctx, owner)
 
 	targetPlayer := types.Player{
 		Creator:        "cosmos1target",
 		PrimaryAddress: "cosmos1target",
 	}
-	targetPlayer = k.AppendPlayer(ctx, targetPlayer)
+	targetPlayer = testAppendPlayer(k, ctx, targetPlayer)
 
 	// Create substation
 	sourceObjectId := "source-object"
@@ -36,20 +36,20 @@ func TestMsgSubstationPlayerMigrate(t *testing.T) {
 		SourceObjectId: sourceObjectId,
 		DestinationId:  "",
 		Type:           types.AllocationType_static,
-		Controller:     owner.Creator,
+		Controller: owner.Id,
 	}
-	createdAllocation, _, err := k.AppendAllocation(ctx, allocation, 100)
+	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
 	require.NoError(t, err)
 
-	substation, _, err := k.AppendSubstation(ctx, createdAllocation, owner)
+	substation, _, err := testAppendSubstation(k, ctx, createdAllocation, owner)
 	require.NoError(t, err)
 
 	// Grant permissions
 	substationPermissionId := keeperlib.GetObjectPermissionIDBytes(substation.Id, owner.Id)
-	k.PermissionAdd(ctx, substationPermissionId, types.PermissionGrid)
+	testPermissionAdd(k, ctx, substationPermissionId, types.PermSubstationConnection)
 
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(owner.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionGrid)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermSubstationConnection)
 
 	testCases := []struct {
 		name      string

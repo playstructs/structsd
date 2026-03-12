@@ -20,7 +20,7 @@ func TestMsgGuildCreate(t *testing.T) {
 		Creator:        playerAcc.String(),
 		PrimaryAddress: playerAcc.String(),
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Create a reactor for the player
 	// The handler converts player address to validator address: validatorAddress = playerAddress.Bytes()

@@ -20,7 +20,7 @@ func TestMsgPlayerUpdatePrimaryAddress(t *testing.T) {
 		Creator:        playerAcc.String(),
 		PrimaryAddress: playerAcc.String(),
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Register another address for the player
 	newPrimaryAcc := sdk.AccAddress("newprimary123456789012345678901234567890")
@@ -29,7 +29,7 @@ func TestMsgPlayerUpdatePrimaryAddress(t *testing.T) {
 
 	// Grant permissions
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionAssets)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermAssetsAll)
 
 	testCases := []struct {
 		name      string

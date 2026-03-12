@@ -19,7 +19,7 @@ func TestMsgSubstationDelete(t *testing.T) {
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Create substation
 	sourceObjectId := "source-object"
@@ -30,20 +30,20 @@ func TestMsgSubstationDelete(t *testing.T) {
 		SourceObjectId: sourceObjectId,
 		DestinationId:  "",
 		Type:           types.AllocationType_static,
-		Controller:     player.Creator,
+		Controller: player.Id,
 	}
-	createdAllocation, _, err := k.AppendAllocation(ctx, allocation, 100)
+	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
 	require.NoError(t, err)
 
-	substation, _, err := k.AppendSubstation(ctx, createdAllocation, player)
+	substation, _, err := testAppendSubstation(k, ctx, createdAllocation, player)
 	require.NoError(t, err)
 
 	// Grant permissions
 	substationPermissionId := keeperlib.GetObjectPermissionIDBytes(substation.Id, player.Id)
-	k.PermissionAdd(ctx, substationPermissionId, types.PermissionDelete)
+	testPermissionAdd(k, ctx, substationPermissionId, types.PermDelete)
 
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionAssets)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermAssetsAll)
 
 	testCases := []struct {
 		name      string
@@ -86,8 +86,8 @@ func TestMsgSubstationDelete(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			// Recreate substation if needed
 			if tc.name == "valid substation deletion" {
-				substation, _, _ = k.AppendSubstation(ctx, createdAllocation, player)
-				k.PermissionAdd(ctx, keeperlib.GetObjectPermissionIDBytes(substation.Id, player.Id), types.PermissionDelete)
+				substation, _, _ = testAppendSubstation(k, ctx, createdAllocation, player)
+				testPermissionAdd(k, ctx, keeperlib.GetObjectPermissionIDBytes(substation.Id, player.Id), types.PermDelete)
 				tc.input.SubstationId = substation.Id
 			} else if tc.name == "no energy management permissions" {
 				k.PermissionClearAll(ctx, addressPermissionId)

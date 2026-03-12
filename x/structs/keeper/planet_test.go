@@ -14,12 +14,10 @@ import (
 func createNPlanet(keeper kpr.Keeper, ctx sdk.Context, n int) []types.Planet {
 	items := make([]types.Planet, n)
 	for i := range items {
-		player := types.Player{
-			Id:      "player" + string(rune(i)),
+		planet := testAppendPlanet(keeper, ctx, types.Planet{
 			Creator: "address" + string(rune(i)),
-		}
-		planetId := keeper.AppendPlanet(ctx, player)
-		planet, _ := keeper.GetPlanet(ctx, planetId)
+			Owner:   "player" + string(rune(i)),
+		})
 		items[i] = planet
 	}
 	return items
@@ -54,41 +52,34 @@ func TestPlanetCount(t *testing.T) {
 	require.Equal(t, types.KeeperStartValue, initialCount)
 
 	// Create a planet and check count
-	player := types.Player{
-		Id:      "player1",
-		Creator: "address1",
-	}
-	_ = keeper.AppendPlanet(ctx, player)
+	_ = testAppendPlanet(keeper, ctx, types.Planet{Creator: "address1", Owner: "player1"})
 	newCount := keeper.GetPlanetCount(ctx)
 	require.Equal(t, initialCount+1, newCount)
 }
 
 func TestPlanetAttributes(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
-	player := types.Player{
-		Id:      "player1",
-		Creator: "address1",
-	}
-	planetId := keeper.AppendPlanet(ctx, player)
+	planet := testAppendPlanet(keeper, ctx, types.Planet{Creator: "address1", Owner: "player1"})
 
 	// Test initial attributes
-	attributes := keeper.GetPlanetAttributesByObject(ctx, planetId)
+	attributes := keeper.GetPlanetAttributesByObject(ctx, planet.Id)
 	require.Equal(t, uint64(types.PlanetaryShieldBase), attributes.PlanetaryShield)
 	require.Equal(t, uint64(0), attributes.RepairNetworkQuantity)
 	require.Equal(t, uint64(0), attributes.DefensiveCannonQuantity)
 
 	// Test setting attributes
-	attributeId := kpr.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_planetaryShield, planetId)
+	attributeId := kpr.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_planetaryShield, planet.Id)
 	keeper.SetPlanetAttribute(ctx, attributeId, 100)
 	value := keeper.GetPlanetAttribute(ctx, attributeId)
 	require.Equal(t, uint64(100), value)
 
-	// Test increment
-	newValue := keeper.SetPlanetAttributeIncrement(ctx, attributeId, 50)
+	// Test increment (via CurrentContext)
+	cc := keeper.NewCurrentContext(ctx)
+	newValue := cc.SetPlanetAttributeIncrement(attributeId, 50)
 	require.Equal(t, uint64(150), newValue)
 
 	// Test decrement
-	value, _ = keeper.SetPlanetAttributeDecrement(ctx, attributeId, 30)
+	value = cc.SetPlanetAttributeDecrement(attributeId, 30)
 	require.Equal(t, uint64(120), value)
 
 	// Test clear
@@ -99,23 +90,19 @@ func TestPlanetAttributes(t *testing.T) {
 
 func TestPlanetCache(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
-	player := types.Player{
-		Id:      "player1",
-		Creator: "address1",
-	}
-	planetId := keeper.AppendPlanet(ctx, player)
+	planet := testAppendPlanet(keeper, ctx, types.Planet{Creator: "address1", Owner: "player1"})
 
-	// Test cache creation and loading
-	cache := keeper.GetPlanetCacheFromId(ctx, planetId)
-	require.Equal(t, planetId, cache.GetPlanetId())
+	// Test cache creation and loading via CurrentContext
+	cc := keeper.NewCurrentContext(ctx)
+	cache := cc.GetPlanet(planet.Id)
+	require.Equal(t, planet.Id, cache.GetPlanetId())
 
 	// Test cache operations
 	cache.LoadPlanet()
-	planet := cache.GetPlanet()
-	require.Equal(t, planetId, planet.Id)
+	loadedPlanet := cache.GetPlanet()
+	require.Equal(t, planet.Id, loadedPlanet.Id)
 
 	// Test attribute operations through cache
-	cache.LoadPlanetaryShield()
 	initialShield := cache.GetPlanetaryShield()
 	require.Equal(t, uint64(types.PlanetaryShieldBase), initialShield)
 
@@ -127,18 +114,18 @@ func TestPlanetCache(t *testing.T) {
 
 	// Test commit
 	cache.Commit()
-	attributes := keeper.GetPlanetAttributesByObject(ctx, planetId)
+	attributes := keeper.GetPlanetAttributesByObject(ctx, planet.Id)
 	require.Equal(t, uint64(types.PlanetaryShieldBase+30), attributes.PlanetaryShield)
 }
 
 func TestPlanetStatus(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
-	player := types.Player{
-		Id:      "player1",
-		Creator: "address1",
-	}
-	planetId := keeper.AppendPlanet(ctx, player)
-	cache := keeper.GetPlanetCacheFromId(ctx, planetId)
+	planet := testAppendPlanet(keeper, ctx, types.Planet{Creator: "address1", Owner: "player1"})
+
+	// Test cache creation via CurrentContext
+	cc := keeper.NewCurrentContext(ctx)
+	cache := cc.GetPlanet(planet.Id)
+	cache.LoadPlanet()
 
 	// Test initial status
 	require.True(t, cache.IsActive())
@@ -150,6 +137,6 @@ func TestPlanetStatus(t *testing.T) {
 
 	// Test commit
 	cache.Commit()
-	planet, _ := keeper.GetPlanet(ctx, planetId)
-	require.Equal(t, types.PlanetStatus_complete, planet.Status)
+	updatedPlanet, _ := keeper.GetPlanet(ctx, planet.Id)
+	require.Equal(t, types.PlanetStatus_complete, updatedPlanet.Status)
 }

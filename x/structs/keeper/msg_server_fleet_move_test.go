@@ -20,7 +20,7 @@ func TestMsgFleetMove(t *testing.T) {
 		Creator:        playerAcc.String(),
 		PrimaryAddress: playerAcc.String(),
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Set up player capacity to be online
 	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id)
@@ -32,12 +32,10 @@ func TestMsgFleetMove(t *testing.T) {
 	k.SetGridAttribute(ctx, lastActionAttrId, uint64(uctx.BlockHeight())-100)
 
 	// Create initial planet for fleet location (player's home planet)
-	initialPlanetId := k.AppendPlanet(ctx, player)
+	initialPlanet := testAppendPlanet(k, ctx, types.Planet{Creator: player.Creator, Owner: player.Id})
 
 	// Create fleet
-	playerCache, err := k.GetPlayerCacheFromId(ctx, player.Id)
-	require.NoError(t, err)
-	fleet := k.AppendFleet(ctx, &playerCache)
+	fleet := testAppendFleet(k, ctx, types.Fleet{Owner: player.Id})
 
 	// Create a command struct type
 	structType := types.StructType{
@@ -48,7 +46,7 @@ func TestMsgFleetMove(t *testing.T) {
 	k.SetStructType(ctx, structType)
 
 	// Create destination planet
-	planet2Id := k.AppendPlanet(ctx, player)
+	planet2 := testAppendPlanet(k, ctx, types.Planet{Creator: player.Creator, Owner: player.Id})
 
 	testCases := []struct {
 		name      string
@@ -62,7 +60,7 @@ func TestMsgFleetMove(t *testing.T) {
 			input: &types.MsgFleetMove{
 				Creator:               player.Creator,
 				FleetId:               fleet.Id,
-				DestinationLocationId: planet2Id,
+				DestinationLocationId: planet2.Id,
 			},
 			expErr: false,
 		},
@@ -71,7 +69,7 @@ func TestMsgFleetMove(t *testing.T) {
 			input: &types.MsgFleetMove{
 				Creator:               player.Creator,
 				FleetId:               "invalid-fleet",
-				DestinationLocationId: planet2Id,
+				DestinationLocationId: planet2.Id,
 			},
 			expErr:    true,
 			expErrMsg: "not found",
@@ -93,7 +91,7 @@ func TestMsgFleetMove(t *testing.T) {
 			input: &types.MsgFleetMove{
 				Creator:               sdk.AccAddress("noperms123456789012345678901234567890").String(),
 				FleetId:               fleet.Id,
-				DestinationLocationId: planet2Id,
+				DestinationLocationId: planet2.Id,
 			},
 			expErr:    true,
 			expErrMsg: "has no",
@@ -109,19 +107,14 @@ func TestMsgFleetMove(t *testing.T) {
 
 			// Recreate fleet if needed
 			if tc.name == "valid fleet move" {
-				fleet = k.AppendFleet(ctx, &playerCache)
+				fleet = testAppendFleet(k, ctx, types.Fleet{Owner: player.Id})
 				tc.input.FleetId = fleet.Id
 
-				// Set fleet initial location directly (set before command struct to avoid nil planet issues)
-				fleetCache, _ := k.GetFleetCacheFromId(ctx, fleet.Id)
-				fleetCache.LoadFleet()
-				fleetCache.Fleet.LocationId = initialPlanetId
-				fleetCache.Fleet.LocationType = types.ObjectType_planet
-				fleetCache.FleetChanged = true
-				fleetCache.Commit()
-
-				// Reload fleet cache to get the updated location
-				fleetCache, _ = k.GetFleetCacheFromId(ctx, fleet.Id)
+				// Set fleet initial location directly
+				fleetObj, _ := k.GetFleet(ctx, fleet.Id)
+				fleetObj.LocationId = initialPlanet.Id
+				fleetObj.LocationType = types.ObjectType_planet
+				k.SetFleet(ctx, fleetObj)
 
 				// Create and activate a command struct for the fleet
 				commandStruct := types.Struct{
@@ -129,18 +122,19 @@ func TestMsgFleetMove(t *testing.T) {
 					Owner:   fleet.Id,
 					Type:    structType.Id,
 				}
-				commandStruct = k.AppendStruct(ctx, commandStruct)
+				commandStruct = testAppendStruct(k, ctx, commandStruct)
 
 				// Mark struct as built and online
 				statusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, commandStruct.Id)
 				builtFlag := uint64(types.StructStateBuilt)
 				onlineFlag := uint64(types.StructStateOnline)
-				k.SetStructAttributeFlagAdd(ctx, statusAttrId, builtFlag)
-				k.SetStructAttributeFlagAdd(ctx, statusAttrId, onlineFlag)
+				testSetStructAttributeFlagAdd(k, ctx, statusAttrId, builtFlag)
+				testSetStructAttributeFlagAdd(k, ctx, statusAttrId, onlineFlag)
 
 				// Set command struct on fleet
-				fleetCache.SetCommandStruct(commandStruct)
-				fleetCache.Commit()
+				fleetObj, _ = k.GetFleet(ctx, fleet.Id)
+				fleetObj.CommandStruct = commandStruct.Id
+				k.SetFleet(ctx, fleetObj)
 			}
 
 			resp, err := ms.FleetMove(wctx, tc.input)

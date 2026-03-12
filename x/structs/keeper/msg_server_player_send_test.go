@@ -20,7 +20,7 @@ func TestMsgPlayerSend(t *testing.T) {
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Create valid bech32 addresses for testing
 	// Using proper bech32 format addresses
@@ -31,7 +31,7 @@ func TestMsgPlayerSend(t *testing.T) {
 
 	// Grant permissions (will be set up per test case)
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionAssets)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermAssetsAll)
 
 	testCases := []struct {
 		name      string

@@ -20,14 +20,14 @@ func TestMsgGuildMembershipInviteApprove(t *testing.T) {
 		Creator:        inviterAcc.String(),
 		PrimaryAddress: inviterAcc.String(),
 	}
-	inviter = k.AppendPlayer(ctx, inviter)
+	inviter = testAppendPlayer(k, ctx, inviter)
 
 	targetAcc := sdk.AccAddress("target123456789012345678901234567890")
 	targetPlayer := types.Player{
 		Creator:        targetAcc.String(),
 		PrimaryAddress: targetAcc.String(),
 	}
-	targetPlayer = k.AppendPlayer(ctx, targetPlayer)
+	targetPlayer = testAppendPlayer(k, ctx, targetPlayer)
 
 	// Create reactor and guild
 	validatorAddress := sdk.ValAddress(inviterAcc.Bytes())
@@ -42,14 +42,13 @@ func TestMsgGuildMembershipInviteApprove(t *testing.T) {
 	k.SetPlayer(ctx, inviter)
 
 	// Configure guild to allow invitations (set bypass level to member so all members can invite)
-	guildCache := k.GetGuildCacheFromId(ctx, guild.Id)
-	guildCache.LoadGuild()
-	guildCache.Guild.JoinInfusionMinimumBypassByInvite = types.GuildJoinBypassLevel_member
-	k.SetGuild(ctx, guildCache.Guild)
+	guildObj, _ := k.GetGuild(ctx, guild.Id)
+	guildObj.JoinInfusionMinimumBypassByInvite = types.GuildJoinBypassLevel_member
+	k.SetGuild(ctx, guildObj)
 
 	// Grant permissions
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(targetPlayer.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionAssociations)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermGuildMembership)
 
 	testCases := []struct {
 		name      string
@@ -88,7 +87,7 @@ func TestMsgGuildMembershipInviteApprove(t *testing.T) {
 
 			// Create invite first
 			inviterAddressPermissionId := keeperlib.GetAddressPermissionIDBytes(inviter.Creator)
-			k.PermissionAdd(ctx, inviterAddressPermissionId, types.PermissionAssociations)
+			testPermissionAdd(k, ctx, inviterAddressPermissionId, types.PermGuildMembership)
 			_, _ = ms.GuildMembershipInvite(wctx, &types.MsgGuildMembershipInvite{
 				Creator:  inviter.Creator,
 				GuildId:  guild.Id,

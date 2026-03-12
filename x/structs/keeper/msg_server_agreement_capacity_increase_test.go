@@ -20,7 +20,7 @@ func TestMsgAgreementCapacityIncrease(t *testing.T) {
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Create substation
 	sourceObjectId := "source-object"
@@ -31,12 +31,12 @@ func TestMsgAgreementCapacityIncrease(t *testing.T) {
 		SourceObjectId: sourceObjectId,
 		DestinationId:  "",
 		Type:           types.AllocationType_static,
-		Controller:     player.Creator,
+		Controller: player.Id,
 	}
-	createdAllocation, _, err := k.AppendAllocation(ctx, allocation, 100)
+	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
 	require.NoError(t, err)
 
-	substation, _, err := k.AppendSubstation(ctx, createdAllocation, player)
+	substation, _, err := testAppendSubstation(k, ctx, createdAllocation, player)
 	require.NoError(t, err)
 
 	// Create a provider
@@ -53,7 +53,7 @@ func TestMsgAgreementCapacityIncrease(t *testing.T) {
 		ProviderCancellationPenalty: math.LegacyNewDec(1),
 		ConsumerCancellationPenalty: math.LegacyNewDec(1),
 	}
-	provider, _ = k.AppendProvider(ctx, provider)
+	provider = testAppendProvider(k, ctx, provider)
 
 	// Create an agreement
 	agreement := types.CreateBaseAgreement(player.Creator, player.Id, provider.Id, 100, 1, 100, "allocation-1")

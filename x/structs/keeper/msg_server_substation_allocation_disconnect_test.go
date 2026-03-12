@@ -19,7 +19,7 @@ func TestMsgSubstationAllocationDisconnect(t *testing.T) {
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = k.AppendPlayer(ctx, player)
+	player = testAppendPlayer(k, ctx, player)
 
 	// Set up source capacity
 	sourceObjectId := "source-object"
@@ -31,12 +31,12 @@ func TestMsgSubstationAllocationDisconnect(t *testing.T) {
 		SourceObjectId: sourceObjectId,
 		DestinationId:  "",
 		Type:           types.AllocationType_static,
-		Controller:     player.Creator,
+		Controller: player.Id,
 	}
-	substationAlloc, _, err := k.AppendAllocation(ctx, substationAllocation, 100)
+	substationAlloc, err := testAppendAllocation(k, ctx, substationAllocation, 100)
 	require.NoError(t, err)
 
-	substation, _, err := k.AppendSubstation(ctx, substationAlloc, player)
+	substation, _, err := testAppendSubstation(k, ctx, substationAlloc, player)
 	require.NoError(t, err)
 
 	// Create an allocation connected to substation
@@ -44,14 +44,14 @@ func TestMsgSubstationAllocationDisconnect(t *testing.T) {
 		SourceObjectId: sourceObjectId,
 		DestinationId:  substation.Id,
 		Type:           types.AllocationType_dynamic,
-		Controller:     player.Creator,
+		Controller: player.Id,
 	}
-	createdAllocation, _, err := k.AppendAllocation(ctx, allocation, 100)
+	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
 	require.NoError(t, err)
 
 	// Grant permissions
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionGrid)
+	testPermissionAdd(k, ctx, addressPermissionId, types.PermSubstationConnection)
 
 	testCases := []struct {
 		name      string
@@ -92,7 +92,7 @@ func TestMsgSubstationAllocationDisconnect(t *testing.T) {
 			// Recreate connected allocation if needed
 			if tc.name == "valid allocation disconnection" {
 				allocation.DestinationId = substation.Id
-				createdAllocation, _, _ = k.AppendAllocation(ctx, allocation, 100)
+				createdAllocation, _ = testAppendAllocation(k, ctx, allocation, 100)
 				tc.input.AllocationId = createdAllocation.Id
 			}
 

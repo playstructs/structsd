@@ -21,14 +21,14 @@ func TestMsgProviderGuildRevoke(t *testing.T) {
 		Creator:        providerOwnerAcc.String(),
 		PrimaryAddress: providerOwnerAcc.String(),
 	}
-	providerOwner = k.AppendPlayer(ctx, providerOwner)
+	providerOwner = testAppendPlayer(k, ctx, providerOwner)
 
 	guildOwnerAcc := sdk.AccAddress("guildowner123456789012345678901234567890")
 	guildOwner := types.Player{
 		Creator:        guildOwnerAcc.String(),
 		PrimaryAddress: guildOwnerAcc.String(),
 	}
-	guildOwner = k.AppendPlayer(ctx, guildOwner)
+	guildOwner = testAppendPlayer(k, ctx, guildOwner)
 
 	// Create reactor and guild
 	validatorAddress := sdk.ValAddress(guildOwnerAcc.Bytes())
@@ -49,12 +49,12 @@ func TestMsgProviderGuildRevoke(t *testing.T) {
 		SourceObjectId: sourceObjectId,
 		DestinationId:  "",
 		Type:           types.AllocationType_static,
-		Controller:     providerOwner.Creator,
+		Controller: providerOwner.Id,
 	}
-	createdAllocation, _, err := k.AppendAllocation(ctx, allocation, 100)
+	createdAllocation, err := testAppendAllocation(k, ctx, allocation, 100)
 	require.NoError(t, err)
 
-	substation, _, err := k.AppendSubstation(ctx, createdAllocation, providerOwner)
+	substation, _, err := testAppendSubstation(k, ctx, createdAllocation, providerOwner)
 	require.NoError(t, err)
 
 	// Create a provider
@@ -71,7 +71,7 @@ func TestMsgProviderGuildRevoke(t *testing.T) {
 		ProviderCancellationPenalty: math.LegacyNewDec(1),
 		ConsumerCancellationPenalty: math.LegacyNewDec(1),
 	}
-	provider, _ = k.AppendProvider(ctx, provider)
+	provider = testAppendProvider(k, ctx, provider)
 
 	testCases := []struct {
 		name      string
@@ -121,7 +121,7 @@ func TestMsgProviderGuildRevoke(t *testing.T) {
 
 			// Recreate provider if needed
 			if tc.name == "valid guild revoke" {
-				provider, _ = k.AppendProvider(ctx, provider)
+				provider = testAppendProvider(k, ctx, provider)
 				tc.input.ProviderId = provider.Id
 				tc.input.GuildId = []string{guild.Id}
 				// Grant guild first
