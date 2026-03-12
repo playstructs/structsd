@@ -19,60 +19,62 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Query_GetBlockHeight_FullMethodName                = "/structs.structs.Query/GetBlockHeight"
-	Query_Params_FullMethodName                        = "/structs.structs.Query/Params"
-	Query_Address_FullMethodName                       = "/structs.structs.Query/Address"
-	Query_AddressAll_FullMethodName                    = "/structs.structs.Query/AddressAll"
-	Query_AddressAllByPlayer_FullMethodName            = "/structs.structs.Query/AddressAllByPlayer"
-	Query_Agreement_FullMethodName                     = "/structs.structs.Query/Agreement"
-	Query_AgreementAll_FullMethodName                  = "/structs.structs.Query/AgreementAll"
-	Query_AgreementAllByProvider_FullMethodName        = "/structs.structs.Query/AgreementAllByProvider"
-	Query_Allocation_FullMethodName                    = "/structs.structs.Query/Allocation"
-	Query_AllocationAll_FullMethodName                 = "/structs.structs.Query/AllocationAll"
-	Query_AllocationAllBySource_FullMethodName         = "/structs.structs.Query/AllocationAllBySource"
-	Query_AllocationAllByDestination_FullMethodName    = "/structs.structs.Query/AllocationAllByDestination"
-	Query_Fleet_FullMethodName                         = "/structs.structs.Query/Fleet"
-	Query_FleetByIndex_FullMethodName                  = "/structs.structs.Query/FleetByIndex"
-	Query_FleetAll_FullMethodName                      = "/structs.structs.Query/FleetAll"
-	Query_Grid_FullMethodName                          = "/structs.structs.Query/Grid"
-	Query_GridAll_FullMethodName                       = "/structs.structs.Query/GridAll"
-	Query_Guild_FullMethodName                         = "/structs.structs.Query/Guild"
-	Query_GuildAll_FullMethodName                      = "/structs.structs.Query/GuildAll"
-	Query_GuildBankCollateralAddress_FullMethodName    = "/structs.structs.Query/GuildBankCollateralAddress"
-	Query_GuildBankCollateralAddressAll_FullMethodName = "/structs.structs.Query/GuildBankCollateralAddressAll"
-	Query_GuildMembershipApplication_FullMethodName    = "/structs.structs.Query/GuildMembershipApplication"
-	Query_GuildMembershipApplicationAll_FullMethodName = "/structs.structs.Query/GuildMembershipApplicationAll"
-	Query_Infusion_FullMethodName                      = "/structs.structs.Query/Infusion"
-	Query_InfusionAll_FullMethodName                   = "/structs.structs.Query/InfusionAll"
-	Query_InfusionAllByDestination_FullMethodName      = "/structs.structs.Query/InfusionAllByDestination"
-	Query_Permission_FullMethodName                    = "/structs.structs.Query/Permission"
-	Query_PermissionByObject_FullMethodName            = "/structs.structs.Query/PermissionByObject"
-	Query_PermissionByPlayer_FullMethodName            = "/structs.structs.Query/PermissionByPlayer"
-	Query_PermissionAll_FullMethodName                 = "/structs.structs.Query/PermissionAll"
-	Query_Player_FullMethodName                        = "/structs.structs.Query/Player"
-	Query_PlayerAll_FullMethodName                     = "/structs.structs.Query/PlayerAll"
-	Query_Planet_FullMethodName                        = "/structs.structs.Query/Planet"
-	Query_PlanetAll_FullMethodName                     = "/structs.structs.Query/PlanetAll"
-	Query_PlanetAllByPlayer_FullMethodName             = "/structs.structs.Query/PlanetAllByPlayer"
-	Query_PlanetAttribute_FullMethodName               = "/structs.structs.Query/PlanetAttribute"
-	Query_PlanetAttributeAll_FullMethodName            = "/structs.structs.Query/PlanetAttributeAll"
-	Query_Provider_FullMethodName                      = "/structs.structs.Query/Provider"
-	Query_ProviderAll_FullMethodName                   = "/structs.structs.Query/ProviderAll"
-	Query_ProviderCollateralAddress_FullMethodName     = "/structs.structs.Query/ProviderCollateralAddress"
-	Query_ProviderCollateralAddressAll_FullMethodName  = "/structs.structs.Query/ProviderCollateralAddressAll"
-	Query_ProviderEarningsAddress_FullMethodName       = "/structs.structs.Query/ProviderEarningsAddress"
-	Query_ProviderEarningsAddressAll_FullMethodName    = "/structs.structs.Query/ProviderEarningsAddressAll"
-	Query_Reactor_FullMethodName                       = "/structs.structs.Query/Reactor"
-	Query_ReactorAll_FullMethodName                    = "/structs.structs.Query/ReactorAll"
-	Query_Struct_FullMethodName                        = "/structs.structs.Query/Struct"
-	Query_StructAll_FullMethodName                     = "/structs.structs.Query/StructAll"
-	Query_StructAttribute_FullMethodName               = "/structs.structs.Query/StructAttribute"
-	Query_StructAttributeAll_FullMethodName            = "/structs.structs.Query/StructAttributeAll"
-	Query_StructType_FullMethodName                    = "/structs.structs.Query/StructType"
-	Query_StructTypeAll_FullMethodName                 = "/structs.structs.Query/StructTypeAll"
-	Query_Substation_FullMethodName                    = "/structs.structs.Query/Substation"
-	Query_SubstationAll_FullMethodName                 = "/structs.structs.Query/SubstationAll"
-	Query_ValidateSignature_FullMethodName             = "/structs.structs.Query/ValidateSignature"
+	Query_GetBlockHeight_FullMethodName                      = "/structs.structs.Query/GetBlockHeight"
+	Query_Params_FullMethodName                              = "/structs.structs.Query/Params"
+	Query_Address_FullMethodName                             = "/structs.structs.Query/Address"
+	Query_AddressAll_FullMethodName                          = "/structs.structs.Query/AddressAll"
+	Query_AddressAllByPlayer_FullMethodName                  = "/structs.structs.Query/AddressAllByPlayer"
+	Query_Agreement_FullMethodName                           = "/structs.structs.Query/Agreement"
+	Query_AgreementAll_FullMethodName                        = "/structs.structs.Query/AgreementAll"
+	Query_AgreementAllByProvider_FullMethodName              = "/structs.structs.Query/AgreementAllByProvider"
+	Query_Allocation_FullMethodName                          = "/structs.structs.Query/Allocation"
+	Query_AllocationAll_FullMethodName                       = "/structs.structs.Query/AllocationAll"
+	Query_AllocationAllBySource_FullMethodName               = "/structs.structs.Query/AllocationAllBySource"
+	Query_AllocationAllByDestination_FullMethodName          = "/structs.structs.Query/AllocationAllByDestination"
+	Query_Fleet_FullMethodName                               = "/structs.structs.Query/Fleet"
+	Query_FleetByIndex_FullMethodName                        = "/structs.structs.Query/FleetByIndex"
+	Query_FleetAll_FullMethodName                            = "/structs.structs.Query/FleetAll"
+	Query_Grid_FullMethodName                                = "/structs.structs.Query/Grid"
+	Query_GridAll_FullMethodName                             = "/structs.structs.Query/GridAll"
+	Query_Guild_FullMethodName                               = "/structs.structs.Query/Guild"
+	Query_GuildAll_FullMethodName                            = "/structs.structs.Query/GuildAll"
+	Query_GuildBankCollateralAddress_FullMethodName          = "/structs.structs.Query/GuildBankCollateralAddress"
+	Query_GuildBankCollateralAddressAll_FullMethodName       = "/structs.structs.Query/GuildBankCollateralAddressAll"
+	Query_GuildMembershipApplication_FullMethodName          = "/structs.structs.Query/GuildMembershipApplication"
+	Query_GuildMembershipApplicationAll_FullMethodName       = "/structs.structs.Query/GuildMembershipApplicationAll"
+	Query_Infusion_FullMethodName                            = "/structs.structs.Query/Infusion"
+	Query_InfusionAll_FullMethodName                         = "/structs.structs.Query/InfusionAll"
+	Query_InfusionAllByDestination_FullMethodName            = "/structs.structs.Query/InfusionAllByDestination"
+	Query_Permission_FullMethodName                          = "/structs.structs.Query/Permission"
+	Query_PermissionByObject_FullMethodName                  = "/structs.structs.Query/PermissionByObject"
+	Query_PermissionByPlayer_FullMethodName                  = "/structs.structs.Query/PermissionByPlayer"
+	Query_PermissionAll_FullMethodName                       = "/structs.structs.Query/PermissionAll"
+	Query_GuildRankPermissionByObject_FullMethodName         = "/structs.structs.Query/GuildRankPermissionByObject"
+	Query_GuildRankPermissionByObjectAndGuild_FullMethodName = "/structs.structs.Query/GuildRankPermissionByObjectAndGuild"
+	Query_Player_FullMethodName                              = "/structs.structs.Query/Player"
+	Query_PlayerAll_FullMethodName                           = "/structs.structs.Query/PlayerAll"
+	Query_Planet_FullMethodName                              = "/structs.structs.Query/Planet"
+	Query_PlanetAll_FullMethodName                           = "/structs.structs.Query/PlanetAll"
+	Query_PlanetAllByPlayer_FullMethodName                   = "/structs.structs.Query/PlanetAllByPlayer"
+	Query_PlanetAttribute_FullMethodName                     = "/structs.structs.Query/PlanetAttribute"
+	Query_PlanetAttributeAll_FullMethodName                  = "/structs.structs.Query/PlanetAttributeAll"
+	Query_Provider_FullMethodName                            = "/structs.structs.Query/Provider"
+	Query_ProviderAll_FullMethodName                         = "/structs.structs.Query/ProviderAll"
+	Query_ProviderCollateralAddress_FullMethodName           = "/structs.structs.Query/ProviderCollateralAddress"
+	Query_ProviderCollateralAddressAll_FullMethodName        = "/structs.structs.Query/ProviderCollateralAddressAll"
+	Query_ProviderEarningsAddress_FullMethodName             = "/structs.structs.Query/ProviderEarningsAddress"
+	Query_ProviderEarningsAddressAll_FullMethodName          = "/structs.structs.Query/ProviderEarningsAddressAll"
+	Query_Reactor_FullMethodName                             = "/structs.structs.Query/Reactor"
+	Query_ReactorAll_FullMethodName                          = "/structs.structs.Query/ReactorAll"
+	Query_Struct_FullMethodName                              = "/structs.structs.Query/Struct"
+	Query_StructAll_FullMethodName                           = "/structs.structs.Query/StructAll"
+	Query_StructAttribute_FullMethodName                     = "/structs.structs.Query/StructAttribute"
+	Query_StructAttributeAll_FullMethodName                  = "/structs.structs.Query/StructAttributeAll"
+	Query_StructType_FullMethodName                          = "/structs.structs.Query/StructType"
+	Query_StructTypeAll_FullMethodName                       = "/structs.structs.Query/StructTypeAll"
+	Query_Substation_FullMethodName                          = "/structs.structs.Query/Substation"
+	Query_SubstationAll_FullMethodName                       = "/structs.structs.Query/SubstationAll"
+	Query_ValidateSignature_FullMethodName                   = "/structs.structs.Query/ValidateSignature"
 )
 
 // QueryClient is the client API for Query service.
@@ -124,6 +126,10 @@ type QueryClient interface {
 	PermissionByPlayer(ctx context.Context, in *QueryAllPermissionByPlayerRequest, opts ...grpc.CallOption) (*QueryAllPermissionResponse, error)
 	// Queries a list of all Permissions
 	PermissionAll(ctx context.Context, in *QueryAllPermissionRequest, opts ...grpc.CallOption) (*QueryAllPermissionResponse, error)
+	// Queries guild rank permissions by object
+	GuildRankPermissionByObject(ctx context.Context, in *QueryGuildRankPermissionByObjectRequest, opts ...grpc.CallOption) (*QueryGuildRankPermissionByObjectResponse, error)
+	// Queries guild rank permissions by object and guild
+	GuildRankPermissionByObjectAndGuild(ctx context.Context, in *QueryGuildRankPermissionByObjectAndGuildRequest, opts ...grpc.CallOption) (*QueryGuildRankPermissionByObjectAndGuildResponse, error)
 	// Queries a list of Player items.
 	Player(ctx context.Context, in *QueryGetPlayerRequest, opts ...grpc.CallOption) (*QueryGetPlayerResponse, error)
 	PlayerAll(ctx context.Context, in *QueryAllPlayerRequest, opts ...grpc.CallOption) (*QueryAllPlayerResponse, error)
@@ -471,6 +477,26 @@ func (c *queryClient) PermissionAll(ctx context.Context, in *QueryAllPermissionR
 	return out, nil
 }
 
+func (c *queryClient) GuildRankPermissionByObject(ctx context.Context, in *QueryGuildRankPermissionByObjectRequest, opts ...grpc.CallOption) (*QueryGuildRankPermissionByObjectResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryGuildRankPermissionByObjectResponse)
+	err := c.cc.Invoke(ctx, Query_GuildRankPermissionByObject_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *queryClient) GuildRankPermissionByObjectAndGuild(ctx context.Context, in *QueryGuildRankPermissionByObjectAndGuildRequest, opts ...grpc.CallOption) (*QueryGuildRankPermissionByObjectAndGuildResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(QueryGuildRankPermissionByObjectAndGuildResponse)
+	err := c.cc.Invoke(ctx, Query_GuildRankPermissionByObjectAndGuild_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *queryClient) Player(ctx context.Context, in *QueryGetPlayerRequest, opts ...grpc.CallOption) (*QueryGetPlayerResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(QueryGetPlayerResponse)
@@ -760,6 +786,10 @@ type QueryServer interface {
 	PermissionByPlayer(context.Context, *QueryAllPermissionByPlayerRequest) (*QueryAllPermissionResponse, error)
 	// Queries a list of all Permissions
 	PermissionAll(context.Context, *QueryAllPermissionRequest) (*QueryAllPermissionResponse, error)
+	// Queries guild rank permissions by object
+	GuildRankPermissionByObject(context.Context, *QueryGuildRankPermissionByObjectRequest) (*QueryGuildRankPermissionByObjectResponse, error)
+	// Queries guild rank permissions by object and guild
+	GuildRankPermissionByObjectAndGuild(context.Context, *QueryGuildRankPermissionByObjectAndGuildRequest) (*QueryGuildRankPermissionByObjectAndGuildResponse, error)
 	// Queries a list of Player items.
 	Player(context.Context, *QueryGetPlayerRequest) (*QueryGetPlayerResponse, error)
 	PlayerAll(context.Context, *QueryAllPlayerRequest) (*QueryAllPlayerResponse, error)
@@ -896,6 +926,12 @@ func (UnimplementedQueryServer) PermissionByPlayer(context.Context, *QueryAllPer
 }
 func (UnimplementedQueryServer) PermissionAll(context.Context, *QueryAllPermissionRequest) (*QueryAllPermissionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PermissionAll not implemented")
+}
+func (UnimplementedQueryServer) GuildRankPermissionByObject(context.Context, *QueryGuildRankPermissionByObjectRequest) (*QueryGuildRankPermissionByObjectResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildRankPermissionByObject not implemented")
+}
+func (UnimplementedQueryServer) GuildRankPermissionByObjectAndGuild(context.Context, *QueryGuildRankPermissionByObjectAndGuildRequest) (*QueryGuildRankPermissionByObjectAndGuildResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GuildRankPermissionByObjectAndGuild not implemented")
 }
 func (UnimplementedQueryServer) Player(context.Context, *QueryGetPlayerRequest) (*QueryGetPlayerResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Player not implemented")
@@ -1530,6 +1566,42 @@ func _Query_PermissionAll_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Query_GuildRankPermissionByObject_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGuildRankPermissionByObjectRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GuildRankPermissionByObject(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_GuildRankPermissionByObject_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GuildRankPermissionByObject(ctx, req.(*QueryGuildRankPermissionByObjectRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Query_GuildRankPermissionByObjectAndGuild_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(QueryGuildRankPermissionByObjectAndGuildRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(QueryServer).GuildRankPermissionByObjectAndGuild(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Query_GuildRankPermissionByObjectAndGuild_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(QueryServer).GuildRankPermissionByObjectAndGuild(ctx, req.(*QueryGuildRankPermissionByObjectAndGuildRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _Query_Player_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(QueryGetPlayerRequest)
 	if err := dec(in); err != nil {
@@ -2088,6 +2160,14 @@ var Query_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PermissionAll",
 			Handler:    _Query_PermissionAll_Handler,
+		},
+		{
+			MethodName: "GuildRankPermissionByObject",
+			Handler:    _Query_GuildRankPermissionByObject_Handler,
+		},
+		{
+			MethodName: "GuildRankPermissionByObjectAndGuild",
+			Handler:    _Query_GuildRankPermissionByObjectAndGuild_Handler,
 		},
 		{
 			MethodName: "Player",

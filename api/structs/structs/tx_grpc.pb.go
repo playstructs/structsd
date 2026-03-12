@@ -59,6 +59,8 @@ const (
 	Msg_PermissionRevokeOnObject_FullMethodName                      = "/structs.structs.Msg/PermissionRevokeOnObject"
 	Msg_PermissionSetOnAddress_FullMethodName                        = "/structs.structs.Msg/PermissionSetOnAddress"
 	Msg_PermissionSetOnObject_FullMethodName                         = "/structs.structs.Msg/PermissionSetOnObject"
+	Msg_PermissionGuildRankSet_FullMethodName                        = "/structs.structs.Msg/PermissionGuildRankSet"
+	Msg_PermissionGuildRankRevoke_FullMethodName                     = "/structs.structs.Msg/PermissionGuildRankRevoke"
 	Msg_PlanetExplore_FullMethodName                                 = "/structs.structs.Msg/PlanetExplore"
 	Msg_PlanetRaidComplete_FullMethodName                            = "/structs.structs.Msg/PlanetRaidComplete"
 	Msg_PlayerUpdatePrimaryAddress_FullMethodName                    = "/structs.structs.Msg/PlayerUpdatePrimaryAddress"
@@ -148,6 +150,8 @@ type MsgClient interface {
 	PermissionRevokeOnObject(ctx context.Context, in *MsgPermissionRevokeOnObject, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
 	PermissionSetOnAddress(ctx context.Context, in *MsgPermissionSetOnAddress, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
 	PermissionSetOnObject(ctx context.Context, in *MsgPermissionSetOnObject, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
+	PermissionGuildRankSet(ctx context.Context, in *MsgPermissionGuildRankSet, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
+	PermissionGuildRankRevoke(ctx context.Context, in *MsgPermissionGuildRankRevoke, opts ...grpc.CallOption) (*MsgPermissionResponse, error)
 	PlanetExplore(ctx context.Context, in *MsgPlanetExplore, opts ...grpc.CallOption) (*MsgPlanetExploreResponse, error)
 	PlanetRaidComplete(ctx context.Context, in *MsgPlanetRaidComplete, opts ...grpc.CallOption) (*MsgPlanetRaidCompleteResponse, error)
 	PlayerUpdatePrimaryAddress(ctx context.Context, in *MsgPlayerUpdatePrimaryAddress, opts ...grpc.CallOption) (*MsgPlayerUpdatePrimaryAddressResponse, error)
@@ -597,6 +601,26 @@ func (c *msgClient) PermissionSetOnObject(ctx context.Context, in *MsgPermission
 	return out, nil
 }
 
+func (c *msgClient) PermissionGuildRankSet(ctx context.Context, in *MsgPermissionGuildRankSet, opts ...grpc.CallOption) (*MsgPermissionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgPermissionResponse)
+	err := c.cc.Invoke(ctx, Msg_PermissionGuildRankSet_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *msgClient) PermissionGuildRankRevoke(ctx context.Context, in *MsgPermissionGuildRankRevoke, opts ...grpc.CallOption) (*MsgPermissionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MsgPermissionResponse)
+	err := c.cc.Invoke(ctx, Msg_PermissionGuildRankRevoke_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *msgClient) PlanetExplore(ctx context.Context, in *MsgPlanetExplore, opts ...grpc.CallOption) (*MsgPlanetExploreResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(MsgPlanetExploreResponse)
@@ -1035,6 +1059,8 @@ type MsgServer interface {
 	PermissionRevokeOnObject(context.Context, *MsgPermissionRevokeOnObject) (*MsgPermissionResponse, error)
 	PermissionSetOnAddress(context.Context, *MsgPermissionSetOnAddress) (*MsgPermissionResponse, error)
 	PermissionSetOnObject(context.Context, *MsgPermissionSetOnObject) (*MsgPermissionResponse, error)
+	PermissionGuildRankSet(context.Context, *MsgPermissionGuildRankSet) (*MsgPermissionResponse, error)
+	PermissionGuildRankRevoke(context.Context, *MsgPermissionGuildRankRevoke) (*MsgPermissionResponse, error)
 	PlanetExplore(context.Context, *MsgPlanetExplore) (*MsgPlanetExploreResponse, error)
 	PlanetRaidComplete(context.Context, *MsgPlanetRaidComplete) (*MsgPlanetRaidCompleteResponse, error)
 	PlayerUpdatePrimaryAddress(context.Context, *MsgPlayerUpdatePrimaryAddress) (*MsgPlayerUpdatePrimaryAddressResponse, error)
@@ -1203,6 +1229,12 @@ func (UnimplementedMsgServer) PermissionSetOnAddress(context.Context, *MsgPermis
 }
 func (UnimplementedMsgServer) PermissionSetOnObject(context.Context, *MsgPermissionSetOnObject) (*MsgPermissionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PermissionSetOnObject not implemented")
+}
+func (UnimplementedMsgServer) PermissionGuildRankSet(context.Context, *MsgPermissionGuildRankSet) (*MsgPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PermissionGuildRankSet not implemented")
+}
+func (UnimplementedMsgServer) PermissionGuildRankRevoke(context.Context, *MsgPermissionGuildRankRevoke) (*MsgPermissionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method PermissionGuildRankRevoke not implemented")
 }
 func (UnimplementedMsgServer) PlanetExplore(context.Context, *MsgPlanetExplore) (*MsgPlanetExploreResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method PlanetExplore not implemented")
@@ -2058,6 +2090,42 @@ func _Msg_PermissionSetOnObject_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(MsgServer).PermissionSetOnObject(ctx, req.(*MsgPermissionSetOnObject))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_PermissionGuildRankSet_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgPermissionGuildRankSet)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).PermissionGuildRankSet(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_PermissionGuildRankSet_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).PermissionGuildRankSet(ctx, req.(*MsgPermissionGuildRankSet))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Msg_PermissionGuildRankRevoke_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MsgPermissionGuildRankRevoke)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MsgServer).PermissionGuildRankRevoke(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Msg_PermissionGuildRankRevoke_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MsgServer).PermissionGuildRankRevoke(ctx, req.(*MsgPermissionGuildRankRevoke))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2930,6 +2998,14 @@ var Msg_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "PermissionSetOnObject",
 			Handler:    _Msg_PermissionSetOnObject_Handler,
+		},
+		{
+			MethodName: "PermissionGuildRankSet",
+			Handler:    _Msg_PermissionGuildRankSet_Handler,
+		},
+		{
+			MethodName: "PermissionGuildRankRevoke",
+			Handler:    _Msg_PermissionGuildRankRevoke_Handler,
 		},
 		{
 			MethodName: "PlanetExplore",

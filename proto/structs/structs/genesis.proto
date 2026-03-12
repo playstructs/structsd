@@ -70,8 +70,9 @@ message GenesisState {
   repeated  Substation substationList   =  19 [(gogoproto.nullable) = false];
             uint64     substationCount  =  20;
 
-  repeated  PermissionRecord    permissionList  = 21;
-  repeated  GridRecord          gridList        = 22;
+  repeated  PermissionRecord           permissionList         = 21;
+  repeated  GuildRankPermissionRecord  guild_rank_permission_list = 34;
+  repeated  GridRecord                 gridList               = 22;
   repeated  string              gridCascadeQueue = 31;
 
   repeated  AddressRecord       addressList     = 23;

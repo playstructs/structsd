@@ -72,15 +72,20 @@ func (cc *CurrentContext) ClearPermissions(permissionId []byte) {
 }
 
 func (cc *CurrentContext) ClearPermissionsForObject(objectId string) {
-    deletedKeys := cc.k.ClearPermissionByObject(cc.ctx, objectId)
+	deletedKeys := cc.k.ClearPermissionByObject(cc.ctx, objectId)
 
-    // Shouldn't be a problem, but remove cached objects
-    for _, deleted := range deletedKeys {
-        delete(cc.permissions, deleted)
-    }
+	for _, deleted := range deletedKeys {
+		delete(cc.permissions, deleted)
+	}
 
-    // Add Guild Ranks too
+	cc.k.ClearPermissionGuildRankByObject(cc.ctx, objectId)
 
+	prefix := objectId + "/"
+	for id := range cc.permissionsGuildRank {
+		if strings.HasPrefix(id, prefix) {
+			delete(cc.permissionsGuildRank, id)
+		}
+	}
 }
 
 
@@ -108,49 +113,67 @@ func (cc *CurrentContext) PermissionHasOneOf(permissionId []byte, flag types.Per
 	return currentFlags&flag != 0
 }
 
-// GetPermissionsGuildRank returns highestRank, caching the result.
-func (cc *CurrentContext) GetPermissionsGuildRank(object PermissionedObject, guild *GuildCache, permissionType types.Permission) uint64 {
-    id := GuildRankPermissionID(object.ID(), guild.ID(), permissionType)
+// GetPermissionsGuildRank returns (highestRank, exists). exists is false when no record is stored or after revoke.
+func (cc *CurrentContext) GetPermissionsGuildRank(object PermissionedObject, guild *GuildCache, permissionType types.Permission) (uint64, bool) {
+	id := GuildRankPermissionID(object.ID(), guild.ID(), permissionType)
 
-	if _, exists := cc.permissionsGuildRank[id]; exists {
-		return cc.permissionsGuildRank[id].HighestRank
+	if c, exists := cc.permissionsGuildRank[id]; exists {
+		return c.HighestRank, c.Exists
 	}
 
-	highestRank := cc.k.GetHighestGuildRankForPermission(cc.ctx, object.ID(), guild.ID(), permissionType)
+	highestRank, ok := cc.k.GetHighestGuildRankForPermission(cc.ctx, object.ID(), guild.ID(), permissionType)
 
 	cc.permissionsGuildRank[id] = &PermissionsGuildRankCache{
-	    CC:                     cc,
-	    PermissionGuildRankID:  id,
-        ObjectId:               object.ID(),
-        GuildId:                guild.ID(),
-        Permission:             permissionType,
-      	HighestRank:            highestRank,
-	    Loaded:                 true,
-    }
+		CC:                   cc,
+		PermissionGuildRankID: id,
+		ObjectId:             object.ID(),
+		GuildId:              guild.ID(),
+		Permission:           permissionType,
+		HighestRank:          highestRank,
+		Loaded:               true,
+		Exists:               ok,
+	}
 
-	return cc.permissionsGuildRank[id].HighestRank
+	return highestRank, ok
 }
 
 
 
-// SetPermissionsGuildRank returns highestRank, caching the result.
+// SetPermissionsGuildRank caches the guild rank permission for commit.
 func (cc *CurrentContext) SetPermissionsGuildRank(object PermissionedObject, guild *GuildCache, permissionType types.Permission, highestRank uint64) *PermissionsGuildRankCache {
-    id := GuildRankPermissionID(object.ID(), guild.ID(), permissionType)
+	id := GuildRankPermissionID(object.ID(), guild.ID(), permissionType)
 
 	cc.permissionsGuildRank[id] = &PermissionsGuildRankCache{
-	    CC:                     cc,
-	    PermissionGuildRankID:  id,
-        ObjectId:               object.ID(),
-        GuildId:                guild.ID(),
-        Permission:             permissionType,
-      	HighestRank:            highestRank,
-	    Loaded:                 true,
-	    Changed:                true,
-    }
+		CC:                   cc,
+		PermissionGuildRankID: id,
+		ObjectId:             object.ID(),
+		GuildId:              guild.ID(),
+		Permission:           permissionType,
+		HighestRank:          highestRank,
+		Loaded:               true,
+		Changed:              true,
+		Exists:               true,
+	}
 
 	return cc.permissionsGuildRank[id]
 }
 
+// RemovePermissionsGuildRank marks the guild rank permission as deleted in the cache; Commit() will call RemoveGuildRankPermission.
+func (cc *CurrentContext) RemovePermissionsGuildRank(object PermissionedObject, guild *GuildCache, permissionType types.Permission) {
+	id := GuildRankPermissionID(object.ID(), guild.ID(), permissionType)
+
+	cc.permissionsGuildRank[id] = &PermissionsGuildRankCache{
+		CC:                   cc,
+		PermissionGuildRankID: id,
+		ObjectId:             object.ID(),
+		GuildId:              guild.ID(),
+		Permission:           permissionType,
+		Loaded:               true,
+		Changed:              true,
+		Deleted:              true,
+		Exists:               false,
+	}
+}
 
 func (cc *CurrentContext) GetPermissionedObject(objectId string) PermissionedObject {
 	if objectId == "" {
@@ -234,12 +257,13 @@ func (cc *CurrentContext) PermissionCheck(object PermissionedObject, activePlaye
         return nil
     }
 
-    // rank(object / activePlayer.GetGuild() / permission) => activePlayer.GetGuildRank()
-    if activePlayer.GetGuildId() != "" {
-        if cc.GetPermissionsGuildRank(object, activePlayer.GetGuild(), permission) >= activePlayer.GetGuildRank() {
-            return nil
-        }
-    }
+	// rank(object / activePlayer.GetGuild() / permission) => activePlayer.GetGuildRank(); only grant if a record exists
+	if activePlayer.GetGuildId() != "" {
+		rank, exists := cc.GetPermissionsGuildRank(object, activePlayer.GetGuild(), permission)
+		if exists && rank >= activePlayer.GetGuildRank() {
+			return nil
+		}
+	}
 
     return types.NewPermissionError("player", activePlayer.GetPlayerId(), "object", object.ID(), uint64(permission), "administrate")
 }

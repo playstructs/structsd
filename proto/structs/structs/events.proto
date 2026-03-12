@@ -63,6 +63,7 @@ option go_package = "structs/x/structs/types";
   }
 
   message EventPermission { PermissionRecord permissionRecord = 1; }
+  message EventGuildRankPermission { GuildRankPermissionRecord guildRankPermissionRecord = 1; }
   message EventGrid { GridRecord gridRecord = 1; }
 
   message EventProviderAddress { EventProviderAddressDetail eventProviderAddressDetail = 1;}

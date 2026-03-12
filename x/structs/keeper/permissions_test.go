@@ -204,3 +204,59 @@ func TestAddressPermissionIDBytes(t *testing.T) {
 	require.True(t, keeper.PermissionHasAll(ctx, permissionId, testPermission))
 	require.False(t, keeper.PermissionHasAll(ctx, permissionId, types.Permission(0b0101)))
 }
+
+func TestGetHighestGuildRankForPermission(t *testing.T) {
+	keeper, ctx := keepertest.StructsKeeper(t)
+
+	objectId := "1-1"
+	guildId := "2-2"
+	perm := types.Permission(1)
+
+	// When key is missing, returns (0, false)
+	rank, ok := keeper.GetHighestGuildRankForPermission(ctx, objectId, guildId, perm)
+	require.False(t, ok)
+	require.Equal(t, uint64(0), rank)
+
+	// Set a rank
+	err := keeper.SetHighestGuildRankPermission(ctx, objectId, guildId, perm, 5)
+	require.NoError(t, err)
+
+	rank, ok = keeper.GetHighestGuildRankForPermission(ctx, objectId, guildId, perm)
+	require.True(t, ok)
+	require.Equal(t, uint64(5), rank)
+
+	// Rank 0 is valid (only rank 0 can use)
+	err = keeper.SetHighestGuildRankPermission(ctx, objectId, guildId, types.Permission(2), 0)
+	require.NoError(t, err)
+	rank, ok = keeper.GetHighestGuildRankForPermission(ctx, objectId, guildId, types.Permission(2))
+	require.True(t, ok)
+	require.Equal(t, uint64(0), rank)
+}
+
+func TestClearPermissionGuildRankByObject(t *testing.T) {
+	keeper, ctx := keepertest.StructsKeeper(t)
+
+	objectId := "1-10"
+	guild1 := "2-1"
+	guild2 := "2-2"
+
+	keeper.SetHighestGuildRankPermission(ctx, objectId, guild1, types.Permission(1), 3)
+	keeper.SetHighestGuildRankPermission(ctx, objectId, guild2, types.Permission(2), 1)
+
+	rank1, ok1 := keeper.GetHighestGuildRankForPermission(ctx, objectId, guild1, types.Permission(1))
+	require.True(t, ok1)
+	require.Equal(t, uint64(3), rank1)
+
+	list := keeper.ClearPermissionGuildRankByObject(ctx, objectId)
+	require.Len(t, list, 2)
+
+	// After clear, entries are gone
+	_, ok1 = keeper.GetHighestGuildRankForPermission(ctx, objectId, guild1, types.Permission(1))
+	require.False(t, ok1)
+	_, ok2 := keeper.GetHighestGuildRankForPermission(ctx, objectId, guild2, types.Permission(2))
+	require.False(t, ok2)
+
+	// Clear empty object returns empty list
+	empty := keeper.ClearPermissionGuildRankByObject(ctx, "nonexistent")
+	require.Empty(t, empty)
+}

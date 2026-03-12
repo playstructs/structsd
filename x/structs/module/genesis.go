@@ -133,6 +133,14 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		cc.GenesisImportPermission([]byte(elem.PermissionId), types.Permission(elem.Value))
 	}
 
+	// Guild rank permissions (store only, no events; EventAllGenesis will emit)
+	for _, rec := range genState.GuildRankPermissionList {
+		if rec == nil {
+			continue
+		}
+		k.SetHighestGuildRankPermissionStoreOnly(ctx, rec.ObjectId, rec.GuildId, types.Permission(rec.Permissions), rec.Rank)
+	}
+
 	// Addresses
 	for _, elem := range genState.AddressList {
 		cc.GenesisImportAddress(elem.Address, elem.PlayerIndex)
@@ -250,6 +258,7 @@ func ExportGenesis(ctx sdk.Context, k keeper.Keeper) *types.GenesisState {
 	genesis.GridCascadeQueue = k.GetGridCascadeQueueExport(ctx)
 
 	genesis.PermissionList = k.GetAllPermissionExport(ctx)
+	genesis.GuildRankPermissionList = k.GetAllGuildRankPermissionExport(ctx)
 
 	// this line is used by starport scaffolding # genesis/module/export
 

@@ -167,6 +167,16 @@ service Query {
     option (google.api.http).get = "/structs/permission";
   }
 
+  // Queries guild rank permissions by object
+  rpc GuildRankPermissionByObject (QueryGuildRankPermissionByObjectRequest) returns (QueryGuildRankPermissionByObjectResponse) {
+    option (google.api.http).get = "/structs/guild_rank_permission/object/{object_id}";
+  }
+
+  // Queries guild rank permissions by object and guild
+  rpc GuildRankPermissionByObjectAndGuild (QueryGuildRankPermissionByObjectAndGuildRequest) returns (QueryGuildRankPermissionByObjectAndGuildResponse) {
+    option (google.api.http).get = "/structs/guild_rank_permission/object/{object_id}/guild/{guild_id}";
+  }
+
   // Queries a list of Player items.
   rpc Player    (QueryGetPlayerRequest) returns (QueryGetPlayerResponse) {
     option (google.api.http).get = "/structs/player/{id}";
@@ -529,6 +539,26 @@ message QueryAllPermissionResponse {
   cosmos.base.query.v1beta1.PageResponse pagination = 2;
 }
 
+message QueryGuildRankPermissionByObjectRequest {
+  string object_id = 1;
+  cosmos.base.query.v1beta1.PageRequest pagination = 2;
+}
+
+message QueryGuildRankPermissionByObjectResponse {
+  repeated GuildRankPermissionRecord guild_rank_permission_records = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
+
+message QueryGuildRankPermissionByObjectAndGuildRequest {
+  string object_id = 1;
+  string guild_id = 2;
+  cosmos.base.query.v1beta1.PageRequest pagination = 3;
+}
+
+message QueryGuildRankPermissionByObjectAndGuildResponse {
+  repeated GuildRankPermissionRecord guild_rank_permission_records = 1;
+  cosmos.base.query.v1beta1.PageResponse pagination = 2;
+}
 
 message QueryGetPlanetRequest {
   string id = 1;
