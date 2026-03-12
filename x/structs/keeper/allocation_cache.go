@@ -178,14 +178,14 @@ func (cache *AllocationCache) SetAllocationDestinationId(destinationId string) (
     return true
 }
 
-func (cache *AllocationCache) SetAllocationController(address string) (bool) {
+func (cache *AllocationCache) SetAllocationController(playerId string) (bool) {
     if ! cache.Loaded {
         if ! cache.LoadAllocation() {
             return false
         }
     }
 
-    cache.Allocation.Controller = address
+    cache.Allocation.Controller = playerId
     cache.Changed = true
     return true
 }

@@ -20,11 +20,10 @@ func (k msgServer) AllocationTransfer(goCtx context.Context, msg *types.MsgAlloc
         return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "allocation_transfer")
     }
 
-    _, err = cc.GetPlayerByAddress(msg.Controller)
+    _, err = cc.GetPlayer(msg.Controller)
     if err != nil {
         return emptyResponse, types.NewPlayerRequiredError(msg.Controller, "allocation_transfer")
     }
-
 
     // Check permissions on the substation
 	allocation, allocationFound := cc.GetAllocation(msg.AllocationId)

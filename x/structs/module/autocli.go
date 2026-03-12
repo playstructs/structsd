@@ -348,7 +348,7 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                 },
                 {
                     RpcMethod:      "AllocationTransfer",
-                    Use:            "allocation-transfer [allocation id] [new controller address]",
+                    Use:            "allocation-transfer [allocation id] [new controller playerId]",
                     Short:          "Transfer an Allocation to a different account",
                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "allocationId"}, {ProtoField: "controller"}},
                 },
