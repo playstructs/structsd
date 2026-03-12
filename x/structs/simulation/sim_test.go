@@ -57,7 +57,7 @@ func registerPlayerWithAllPermissions(t *testing.T, k structskeeper.Keeper, ctx 
 
 	// Set address permissions
 	addressPermissionId := structskeeper.GetAddressPermissionIDBytes(address)
-	k.PermissionAdd(ctx, addressPermissionId, types.PermissionPlay)
+	k.PermissionAdd(ctx, addressPermissionId, types.PermPlay)
 
 	// Set player as primary address for itself
 	playerCache, err := k.GetPlayerCacheFromId(ctx, player.Id)
@@ -109,7 +109,7 @@ func setupEnergyGridForSim(t *testing.T, k structskeeper.Keeper, ctx sdk.Context
 	// Set up reactor permissions for the owner
 	player := k.UpsertPlayer(ctx, reactorOwnerAddr)
 	reactorPermissionId := structskeeper.GetObjectPermissionIDBytes(reactor.Id, player.Id)
-	k.PermissionAdd(ctx, reactorPermissionId, types.PermissionAll)
+	k.PermissionAdd(ctx, reactorPermissionId, types.PermAll)
 
 	// Set the reactor's grid capacity to a high value
 	capacity := uint64(10000000) // 10 million, more than enough

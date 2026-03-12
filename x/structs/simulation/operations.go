@@ -200,7 +200,7 @@ func SimulateMsgGuildCreate(
 			// Find a substation the player has access to
 			for _, substation := range substations {
 				substationPermissionId := keeper.GetObjectPermissionIDBytes(substation.Id, player.Id)
-				if cc.PermissionHasOneOf(substationPermissionId, types.PermissionGrid) {
+				if cc.PermissionHasOneOf(substationPermissionId, types.PermSubstationAll) {
 					entrySubstationId = substation.Id
 					break
 				}
@@ -254,10 +254,9 @@ func SimulateMsgGuildBankMint(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankMint{}), "player not in guild"), nil, nil
 		}
 
-		// Check bank administration permissions
+		// Check bank administration permissions (mint)
 		guild := cc.GetGuild(activePlayer.GetGuildId())
-		permissionError := guild.CanAdministrateBank(activePlayer)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(guild, activePlayer, types.PermGuildTokenMint); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankMint{}), "no bank admin permission"), nil, nil
 		}
 
@@ -369,10 +368,9 @@ func SimulateMsgGuildBankConfiscateAndBurn(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConfiscateAndBurn{}), "player not in guild"), nil, nil
 		}
 
-		// Check bank administration permissions
+		// Check bank administration permissions (burn/confiscate)
 		guild := cc.GetGuild(activePlayer.GetGuildId())
-		permissionError := guild.CanAdministrateBank(activePlayer)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(guild, activePlayer, types.PermGuildTokenBurn); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildBankConfiscateAndBurn{}), "no bank admin permission"), nil, nil
 		}
 
@@ -449,7 +447,7 @@ func SimulateMsgAddressRegister(
 		proofSignature := hex.EncodeToString(signature)
 
 		// Set permissions (use basic play permissions for simulation)
-		permissions := uint64(types.PermissionPlay)
+		permissions := uint64(types.PermPlay)
 
 		msg := &types.MsgAddressRegister{
 			Creator:        simAccount.Address.String(),
@@ -496,8 +494,11 @@ func SimulateMsgPlayerSend(
 		}
 
 		// Check if sender has assets permission
-		permissionError := playerCache.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionAssets)
-		if permissionError != nil {
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlayerSend{}), "player not found"), nil, nil
+		}
+		if err := cc.PermissionCheck(playerCache, activePlayer, types.PermAssetsAll); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgPlayerSend{}), "no assets permission"), nil, nil
 		}
 
@@ -713,8 +714,11 @@ func SimulateMsgReactorInfuse(
 		}
 
 		// Check if player has assets permission
-		permissionError := playerCache.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionAssets)
-		if permissionError != nil {
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorInfuse{}), "player not found"), nil, nil
+		}
+		if err := cc.PermissionCheck(playerCache, activePlayer, types.PermAssetsAll); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorInfuse{}), "no assets permission"), nil, nil
 		}
 
@@ -893,8 +897,11 @@ func SimulateCommandShipBuildComplete(
 
 		// Find a random account that can play this struct
 		simAccount, _ := simtypes.RandomAcc(r, accs)
-		permissionError := structCache.CanBePlayedBy(simAccount.Address.String())
-		if permissionError != nil {
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildComplete{}), "player not found"), nil, nil
+		}
+		if err := structCache.CanBePlayedBy(activePlayer); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildComplete{}), "no permission"), nil, nil
 		}
 
@@ -931,7 +938,7 @@ func SimulateCommandShipBuildComplete(
 
 		// Execute the message using the message server
 		msgServer := keeper.NewMsgServerImpl(k)
-		_, err := msgServer.StructBuildComplete(sdk.WrapSDKContext(ctx), msg)
+		_, err = msgServer.StructBuildComplete(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
@@ -1000,8 +1007,7 @@ func SimulateMsgAllocationCreate(
 		}
 
 		// Check if player has assets permission
-		permissionError := activePlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionAssets)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(activePlayer, activePlayer, types.PermAssetsAll); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAllocationCreate{}), "no assets permission"), nil, nil
 		}
 
@@ -1085,8 +1091,7 @@ func SimulateMsgSubstationCreate(
 		}
 
 		// Check if player has assets permission
-		permissionError := activePlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionAssets)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(activePlayer, activePlayer, types.PermAssetsAll); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationCreate{}), "no assets permission"), nil, nil
 		}
 
@@ -1151,8 +1156,7 @@ func SimulateMsgProviderCreate(
 		validSubstations := make([]types.Substation, 0)
 		for _, substation := range allSubstations {
 			substationCache := cc.GetSubstation(substation.Id)
-			permissionError := substationCache.CanCreateAllocations(activePlayer)
-			if permissionError == nil {
+			if substationCache.CanAllocateAsSourceBy(activePlayer) == nil {
 				validSubstations = append(validSubstations, substation)
 			}
 		}
@@ -1589,8 +1593,7 @@ func SimulateMsgAllocationDelete(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAllocationDelete{}), "player not found"), nil, nil
 		}
 
-		permissionError := activePlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionAssets)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(activePlayer, activePlayer, types.PermAssetsAll); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAllocationDelete{}), "no assets permission"), nil, nil
 		}
 
@@ -1643,8 +1646,7 @@ func SimulateMsgAllocationUpdate(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAllocationUpdate{}), "player not found"), nil, nil
 		}
 
-		permissionError := activePlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionAssets)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(activePlayer, activePlayer, types.PermAssetsAll); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAllocationUpdate{}), "no assets permission"), nil, nil
 		}
 
@@ -1806,12 +1808,15 @@ func SimulateMsgStructBuildComplete(
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildComplete{}), "account not found"), nil, nil
 		}
-
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildComplete{}), "player not found"), nil, nil
+		}
 		allStructs := k.GetAllStruct(ctx)
 		validStructs := make([]types.Struct, 0)
 		for _, structure := range allStructs {
 			structCache := cc.GetStruct(structure.Id)
-			if structCache.CanBePlayedBy(simAccount.Address.String()) == nil && !structCache.IsBuilt() {
+			if structCache.CanBePlayedBy(activePlayer) == nil && !structCache.IsBuilt() {
 				validStructs = append(validStructs, structure)
 			}
 		}
@@ -1852,7 +1857,7 @@ func SimulateMsgStructBuildComplete(
 		}
 
 		msgServer := keeper.NewMsgServerImpl(k)
-		_, err := msgServer.StructBuildComplete(sdk.WrapSDKContext(ctx), msg)
+		_, err = msgServer.StructBuildComplete(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
@@ -1876,12 +1881,15 @@ func SimulateMsgStructBuildCancel(
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildCancel{}), "account not found"), nil, nil
 		}
-
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructBuildCancel{}), "player not found"), nil, nil
+		}
 		allStructs := k.GetAllStruct(ctx)
 		validStructs := make([]types.Struct, 0)
 		for _, structure := range allStructs {
 			structCache := cc.GetStruct(structure.Id)
-			if structCache.CanBePlayedBy(simAccount.Address.String()) == nil && !structCache.IsBuilt() {
+			if structCache.CanBePlayedBy(activePlayer) == nil && !structCache.IsBuilt() {
 				validStructs = append(validStructs, structure)
 			}
 		}
@@ -1898,7 +1906,7 @@ func SimulateMsgStructBuildCancel(
 		}
 
 		msgServer := keeper.NewMsgServerImpl(k)
-		_, err := msgServer.StructBuildCancel(sdk.WrapSDKContext(ctx), msg)
+		_, err = msgServer.StructBuildCancel(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
@@ -1922,12 +1930,15 @@ func SimulateMsgStructActivate(
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructActivate{}), "account not found"), nil, nil
 		}
-
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructActivate{}), "player not found"), nil, nil
+		}
 		allStructs := k.GetAllStruct(ctx)
 		validStructs := make([]types.Struct, 0)
 		for _, structure := range allStructs {
 			structCache := cc.GetStruct(structure.Id)
-			if structCache.CanBePlayedBy(simAccount.Address.String()) == nil && structCache.IsBuilt() && structCache.IsOffline() {
+			if structCache.CanBePlayedBy(activePlayer) == nil && structCache.IsBuilt() && structCache.IsOffline() {
 				validStructs = append(validStructs, structure)
 			}
 		}
@@ -1944,7 +1955,7 @@ func SimulateMsgStructActivate(
 		}
 
 		msgServer := keeper.NewMsgServerImpl(k)
-		_, err := msgServer.StructActivate(sdk.WrapSDKContext(ctx), msg)
+		_, err = msgServer.StructActivate(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
@@ -1968,12 +1979,15 @@ func SimulateMsgStructDeactivate(
 		if account == nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructDeactivate{}), "account not found"), nil, nil
 		}
-
+		activePlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgStructDeactivate{}), "player not found"), nil, nil
+		}
 		allStructs := k.GetAllStruct(ctx)
 		validStructs := make([]types.Struct, 0)
 		for _, structure := range allStructs {
 			structCache := cc.GetStruct(structure.Id)
-			if structCache.CanBePlayedBy(simAccount.Address.String()) == nil && structCache.IsBuilt() && !structCache.IsOffline() {
+			if structCache.CanBePlayedBy(activePlayer) == nil && structCache.IsBuilt() && !structCache.IsOffline() {
 				validStructs = append(validStructs, structure)
 			}
 		}
@@ -1990,7 +2004,7 @@ func SimulateMsgStructDeactivate(
 		}
 
 		msgServer := keeper.NewMsgServerImpl(k)
-		_, err := msgServer.StructDeactivate(sdk.WrapSDKContext(ctx), msg)
+		_, err = msgServer.StructDeactivate(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
@@ -2028,7 +2042,7 @@ func SimulateMsgProviderWithdrawBalance(
 		validProviders := make([]types.Provider, 0)
 		for _, provider := range allProviders {
 			providerCache := cc.GetProvider(provider.Id)
-			if providerCache.CanWithdrawBalance(activePlayer) == nil {
+			if providerCache.CanWithdrawBalanceBy(activePlayer) == nil {
 				validProviders = append(validProviders, provider)
 			}
 		}
@@ -2522,8 +2536,7 @@ func SimulateMsgSubstationAllocationConnect(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationAllocationConnect{}), "player not found"), nil, nil
 		}
 
-		permissionError := activePlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionGrid)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(activePlayer, activePlayer, types.PermSubstationAll); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationAllocationConnect{}), "no grid permission"), nil, nil
 		}
 
@@ -2584,8 +2597,7 @@ func SimulateMsgSubstationAllocationDisconnect(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationAllocationDisconnect{}), "player not found"), nil, nil
 		}
 
-		permissionError := activePlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionGrid)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(activePlayer, activePlayer, types.PermSubstationAll); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationAllocationDisconnect{}), "no grid permission"), nil, nil
 		}
 
@@ -2593,7 +2605,7 @@ func SimulateMsgSubstationAllocationDisconnect(
 		validAllocations := make([]types.Allocation, 0)
 		for _, allocation := range allAllocations {
 			if (allocation.Controller == simAccount.Address.String() && allocation.DestinationId != "") ||
-				(allocation.DestinationId != "" && cc.PermissionHasOneOf(keeper.GetObjectPermissionIDBytes(allocation.DestinationId, activePlayer.GetPlayerId()), types.PermissionGrid)) {
+				(allocation.DestinationId != "" && cc.PermissionHasOneOf(keeper.GetObjectPermissionIDBytes(allocation.DestinationId, activePlayer.GetPlayerId()), types.PermSubstationAll)) {
 				validAllocations = append(validAllocations, allocation)
 			}
 		}
@@ -2640,8 +2652,7 @@ func SimulateMsgSubstationPlayerConnect(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationPlayerConnect{}), "player not found"), nil, nil
 		}
 
-		permissionError := activePlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionGrid)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(activePlayer, activePlayer, types.PermSubstationAll); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationPlayerConnect{}), "no grid permission"), nil, nil
 		}
 
@@ -2649,7 +2660,7 @@ func SimulateMsgSubstationPlayerConnect(
 		validSubstations := make([]types.Substation, 0)
 		for _, substation := range allSubstations {
 			substationCache := cc.GetSubstation(substation.Id)
-			if substationCache.CanManagePlayerConnections(activePlayer) == nil {
+			if substationCache.CanManageConnectionsBy(activePlayer) == nil {
 				validSubstations = append(validSubstations, substation)
 			}
 		}
@@ -2703,8 +2714,7 @@ func SimulateMsgSubstationPlayerDisconnect(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationPlayerDisconnect{}), "player not found"), nil, nil
 		}
 
-		permissionError := activePlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionGrid)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(activePlayer, activePlayer, types.PermSubstationAll); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationPlayerDisconnect{}), "no grid permission"), nil, nil
 		}
 
@@ -2713,7 +2723,7 @@ func SimulateMsgSubstationPlayerDisconnect(
 		for _, player := range allPlayers {
 			if player.SubstationId != "" {
 				substationCache := cc.GetSubstation(player.SubstationId)
-				if substationCache.CanManagePlayerConnections(activePlayer) == nil {
+				if substationCache.CanManageConnectionsBy(activePlayer) == nil {
 					validPlayers = append(validPlayers, player)
 				}
 			}
@@ -2761,8 +2771,7 @@ func SimulateMsgSubstationPlayerMigrate(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationPlayerMigrate{}), "player not found"), nil, nil
 		}
 
-		permissionError := activePlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionGrid)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(activePlayer, activePlayer, types.PermSubstationAll); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgSubstationPlayerMigrate{}), "no grid permission"), nil, nil
 		}
 
@@ -2770,7 +2779,7 @@ func SimulateMsgSubstationPlayerMigrate(
 		validSubstations := make([]types.Substation, 0)
 		for _, substation := range allSubstations {
 			substationCache := cc.GetSubstation(substation.Id)
-			if substationCache.CanManagePlayerConnections(activePlayer) == nil {
+			if substationCache.CanManageConnectionsBy(activePlayer) == nil {
 				validSubstations = append(validSubstations, substation)
 			}
 		}
@@ -2900,12 +2909,16 @@ func SimulateMsgAddressRevoke(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAddressRevoke{}), "account not found"), nil, nil
 		}
 
+		revokerPlayer, err := cc.GetPlayerByAddress(simAccount.Address.String())
+		if err != nil {
+			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgAddressRevoke{}), "player not found"), nil, nil
+		}
 		allAddressRecords := k.GetAllAddressExport(ctx)
 		validAddresses := make([]*types.AddressRecord, 0)
 		for _, addrRecord := range allAddressRecords {
 			player, err := cc.GetPlayerByAddress(addrRecord.Address)
 			if err == nil {
-				if player.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionDelete) == nil {
+				if cc.PermissionCheck(player, revokerPlayer, types.PermDelete) == nil {
 					if player.GetPrimaryAddress() != addrRecord.Address {
 						validAddresses = append(validAddresses, addrRecord)
 					}
@@ -2925,7 +2938,7 @@ func SimulateMsgAddressRevoke(
 		}
 
 		msgServer := keeper.NewMsgServerImpl(k)
-		_, err := msgServer.AddressRevoke(sdk.WrapSDKContext(ctx), msg)
+		_, err = msgServer.AddressRevoke(sdk.WrapSDKContext(ctx), msg)
 		if err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(msg), err.Error()), nil, nil
 		}
@@ -3098,8 +3111,7 @@ func SimulateMsgReactorDefuse(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorDefuse{}), "player not found"), nil, nil
 		}
 
-		permissionError := activePlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionAssets)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(activePlayer, activePlayer, types.PermAssetsAll); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorDefuse{}), "no assets permission"), nil, nil
 		}
 
@@ -3152,8 +3164,7 @@ func SimulateMsgReactorBeginMigration(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorBeginMigration{}), "player not found"), nil, nil
 		}
 
-		permissionError := activePlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionAssets)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(activePlayer, activePlayer, types.PermAssetsAll); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorBeginMigration{}), "no assets permission"), nil, nil
 		}
 
@@ -3217,8 +3228,7 @@ func SimulateMsgReactorCancelDefusion(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorCancelDefusion{}), "player not found"), nil, nil
 		}
 
-		permissionError := activePlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionAssets)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(activePlayer, activePlayer, types.PermAssetsAll); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgReactorCancelDefusion{}), "no assets permission"), nil, nil
 		}
 
@@ -3274,8 +3284,7 @@ func SimulateMsgGuildMembershipInvite(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInvite{}), "player not found"), nil, nil
 		}
 
-		permissionError := callingPlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionAssociations)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(callingPlayer, callingPlayer, types.PermGuildMembership); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInvite{}), "no associations permission"), nil, nil
 		}
 
@@ -3330,8 +3339,7 @@ func SimulateMsgGuildMembershipInviteApprove(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInviteApprove{}), "player not found"), nil, nil
 		}
 
-		permissionError := callingPlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionAssociations)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(callingPlayer, callingPlayer, types.PermGuildMembership); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInviteApprove{}), "no associations permission"), nil, nil
 		}
 
@@ -3424,8 +3432,7 @@ func SimulateMsgGuildMembershipInviteRevoke(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInviteRevoke{}), "player not found"), nil, nil
 		}
 
-		permissionError := callingPlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionAssociations)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(callingPlayer, callingPlayer, types.PermGuildMembership); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipInviteRevoke{}), "no associations permission"), nil, nil
 		}
 
@@ -3479,8 +3486,7 @@ func SimulateMsgGuildMembershipJoinProxy(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipJoinProxy{}), "player not found"), nil, nil
 		}
 
-		permissionError := proxyPlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionAssociations)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(proxyPlayer, proxyPlayer, types.PermGuildMembership); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipJoinProxy{}), "no associations permission"), nil, nil
 		}
 
@@ -3542,8 +3548,7 @@ func SimulateMsgGuildMembershipKick(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipKick{}), "player not found"), nil, nil
 		}
 
-		permissionError := callingPlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionAssociations)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(callingPlayer, callingPlayer, types.PermGuildMembership); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipKick{}), "no associations permission"), nil, nil
 		}
 
@@ -3597,8 +3602,7 @@ func SimulateMsgGuildMembershipRequestApprove(
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequestApprove{}), "player not found"), nil, nil
 		}
 
-		permissionError := callingPlayer.CanBeAdministratedBy(simAccount.Address.String(), types.PermissionAssociations)
-		if permissionError != nil {
+		if err := cc.PermissionCheck(callingPlayer, callingPlayer, types.PermGuildMembership); err != nil {
 			return simtypes.NoOpMsg(types.ModuleName, sdk.MsgTypeURL(&types.MsgGuildMembershipRequestApprove{}), "no associations permission"), nil, nil
 		}
 
@@ -3744,8 +3748,8 @@ func SimulateMsgGuildUpdateOwnerId(
 		for _, guild := range allGuilds {
 			guildObjectPermissionId := keeper.GetObjectPermissionIDBytes(guild.Id, player.Id)
 			addressPermissionId := keeper.GetAddressPermissionIDBytes(simAccount.Address.String())
-			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermissionUpdate) &&
-				cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets) {
+			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermUpdate) &&
+				cc.PermissionHasOneOf(addressPermissionId, types.PermAssetsAll) {
 				validGuilds = append(validGuilds, guild)
 			}
 		}
@@ -3804,8 +3808,8 @@ func SimulateMsgGuildUpdateEntrySubstationId(
 		for _, guild := range allGuilds {
 			guildObjectPermissionId := keeper.GetObjectPermissionIDBytes(guild.Id, player.Id)
 			addressPermissionId := keeper.GetAddressPermissionIDBytes(simAccount.Address.String())
-			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermissionUpdate) &&
-				cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets) {
+			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermUpdate) &&
+				cc.PermissionHasOneOf(addressPermissionId, types.PermAssetsAll) {
 				validGuilds = append(validGuilds, guild)
 			}
 		}
@@ -3864,8 +3868,8 @@ func SimulateMsgGuildUpdateEndpoint(
 		for _, guild := range allGuilds {
 			guildObjectPermissionId := keeper.GetObjectPermissionIDBytes(guild.Id, player.Id)
 			addressPermissionId := keeper.GetAddressPermissionIDBytes(simAccount.Address.String())
-			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermissionUpdate) &&
-				cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets) {
+			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermUpdate) &&
+				cc.PermissionHasOneOf(addressPermissionId, types.PermAssetsAll) {
 				validGuilds = append(validGuilds, guild)
 			}
 		}
@@ -3919,8 +3923,8 @@ func SimulateMsgGuildUpdateJoinInfusionMinimum(
 		for _, guild := range allGuilds {
 			guildObjectPermissionId := keeper.GetObjectPermissionIDBytes(guild.Id, player.Id)
 			addressPermissionId := keeper.GetAddressPermissionIDBytes(simAccount.Address.String())
-			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermissionUpdate) &&
-				cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets) {
+			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermUpdate) &&
+				cc.PermissionHasOneOf(addressPermissionId, types.PermAssetsAll) {
 				validGuilds = append(validGuilds, guild)
 			}
 		}
@@ -3974,8 +3978,8 @@ func SimulateMsgGuildUpdateJoinInfusionMinimumBypassByInvite(
 		for _, guild := range allGuilds {
 			guildObjectPermissionId := keeper.GetObjectPermissionIDBytes(guild.Id, player.Id)
 			addressPermissionId := keeper.GetAddressPermissionIDBytes(simAccount.Address.String())
-			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermissionUpdate) &&
-				cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets) {
+			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermUpdate) &&
+				cc.PermissionHasOneOf(addressPermissionId, types.PermAssetsAll) {
 				validGuilds = append(validGuilds, guild)
 			}
 		}
@@ -4034,8 +4038,8 @@ func SimulateMsgGuildUpdateJoinInfusionMinimumBypassByRequest(
 		for _, guild := range allGuilds {
 			guildObjectPermissionId := keeper.GetObjectPermissionIDBytes(guild.Id, player.Id)
 			addressPermissionId := keeper.GetAddressPermissionIDBytes(simAccount.Address.String())
-			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermissionUpdate) &&
-				cc.PermissionHasOneOf(addressPermissionId, types.PermissionAssets) {
+			if cc.PermissionHasOneOf(guildObjectPermissionId, types.PermUpdate) &&
+				cc.PermissionHasOneOf(addressPermissionId, types.PermAssetsAll) {
 				validGuilds = append(validGuilds, guild)
 			}
 		}
