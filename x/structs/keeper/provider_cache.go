@@ -254,6 +254,8 @@ func (cache *ProviderCache) Delete() (error) {
     cache.CC.ClearGridAttribute(cache.CheckpointBlockAttributeId)
     cache.CC.ClearGridAttribute(cache.AgreementLoadAttributeId)
 
+    cache.CC.ClearPermissionsForObject(cache.ID())
+
     cache.Deleted = true
     cache.Changed = true
     return nil

@@ -374,6 +374,8 @@ func (cache *AllocationCache) Destroy() (error) {
         agreement.PrematureCloseByAllocation()
     }
 
+    cache.CC.ClearPermissionsForObject(cache.ID())
+
     cache.Changed = true
     cache.Deleted = true
     return nil

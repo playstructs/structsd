@@ -130,6 +130,8 @@ func (cache *SubstationCache) Delete(migrationSubstationId string) {
 	cache.CC.ClearGridAttribute(cache.ConnectionCountAttributeId)
 	cache.CC.ClearGridAttribute(cache.ConnectionCapacityAttributeId)
 
+    cache.CC.ClearPermissionsForObject(cache.ID())
+
     cache.Deleted = true
     cache.Changed = true
 }

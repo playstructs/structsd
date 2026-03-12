@@ -115,6 +115,27 @@ func (k Keeper) GetAllPermissionExport(ctx context.Context) (list []*types.Permi
 	return
 }
 
+// ClearPermissionByObject deletes all permission entries for the given objectId
+// (all keys objectId@*). Uses prefix iteration so cost is O(players with permissions on this object).
+func (k Keeper) ClearPermissionByObject(ctx context.Context, objectId string) (list []string) {
+	if objectId == "" {
+		return
+	}
+	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PermissionKey))
+	prefixBytes := []byte(objectId + "@")
+	iterator := storetypes.KVStorePrefixIterator(store, prefixBytes)
+	defer iterator.Close()
+
+	ctxSDK := sdk.UnwrapSDKContext(ctx)
+	for ; iterator.Valid(); iterator.Next() {
+		key := iterator.Key()
+		store.Delete(key)
+		list = append(list, string(key))
+		_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPermission{&types.PermissionRecord{PermissionId: string(key), Value: 0}})
+	}
+
+	return
+}
 
 /*
  * Permission Guild Rank System

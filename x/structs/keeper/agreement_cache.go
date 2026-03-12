@@ -309,6 +309,8 @@ func (cache *AgreementCache) PrematureCloseByProvider() error {
 	cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.GetEndBlock(), cache.GetAgreementId())
 	cache.CC.k.RemoveAgreement(cache.CC.ctx, cache.GetAgreement())
 
+    cache.CC.ClearPermissionsForObject(cache.ID())
+
 	return nil
 }
 
@@ -329,6 +331,8 @@ func (cache *AgreementCache) PrematureCloseByConsumer() error {
 	cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.GetEndBlock(), cache.GetAgreementId())
 	cache.CC.k.RemoveAgreement(cache.CC.ctx, cache.GetAgreement())
 
+    cache.CC.ClearPermissionsForObject(cache.ID())
+
 	return nil
 
 }
@@ -344,6 +348,8 @@ func (cache *AgreementCache) PrematureCloseByAllocation() error {
 	// Destroy the Agreement
 	cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.GetEndBlock(), cache.GetAgreementId())
 	cache.CC.k.RemoveAgreement(cache.CC.ctx, cache.GetAgreement())
+
+    cache.CC.ClearPermissionsForObject(cache.ID())
 
 	return nil
 
@@ -364,6 +370,8 @@ func (cache *AgreementCache) Expire() error {
 	// Destroy the Agreement
 	cache.CC.k.RemoveAgreementExpirationIndex(cache.CC.ctx, cache.GetEndBlock(), cache.GetAgreementId())
 	cache.CC.k.RemoveAgreement(cache.CC.ctx, cache.GetAgreement())
+
+    cache.CC.ClearPermissionsForObject(cache.ID())
 
 	return nil
 

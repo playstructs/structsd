@@ -71,6 +71,18 @@ func (cc *CurrentContext) ClearPermissions(permissionId []byte) {
 	}
 }
 
+func (cc *CurrentContext) ClearPermissionsForObject(objectId string) {
+    deletedKeys := cc.k.ClearPermissionByObject(cc.ctx, objectId)
+
+    // Shouldn't be a problem, but remove cached objects
+    for _, deleted := range deletedKeys {
+        delete(cc.permissions, deleted)
+    }
+
+    // Add Guild Ranks too
+
+}
+
 
 func (cc *CurrentContext) PermissionAdd(permissionId []byte, flag types.Permission) types.Permission {
     currentFlags    := cc.GetPermissions(permissionId)
