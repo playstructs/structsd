@@ -28,6 +28,11 @@ func (k msgServer) GuildUpdateEntryRank(goCtx context.Context, msg *types.MsgGui
 		return emptyResponse, types.NewObjectNotFoundError("guild", player.GetGuildId())
 	}
 
+    guildPermissionErr := guild.CanUpdateBy(player)
+    if guildPermissionErr != nil {
+        return emptyResponse, guildPermissionErr
+    }
+
 	// Player can only set entry rank equal to or worse (numerically higher) than their own
 	if msg.NewEntryRank < player.GetGuildRank() {
 		return emptyResponse, types.NewPermissionError(

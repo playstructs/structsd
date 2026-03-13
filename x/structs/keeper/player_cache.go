@@ -478,6 +478,7 @@ func (cache *PlayerCache) LeaveGuild() {
 		cache.LoadPlayer()
 	}
 
+    cache.Player.GuildRank = types.DefaultEntryRank
 	cache.Player.GuildId = ""
 	cache.Changed = true
 }

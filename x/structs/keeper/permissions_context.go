@@ -259,8 +259,8 @@ func (cc *CurrentContext) PermissionCheck(object PermissionedObject, activePlaye
 
 	// rank(object / activePlayer.GetGuild() / permission) => activePlayer.GetGuildRank(); only grant if a record exists
 	if activePlayer.GetGuildId() != "" {
-		rank, exists := cc.GetPermissionsGuildRank(object, activePlayer.GetGuild(), permission)
-		if exists && rank >= activePlayer.GetGuildRank() {
+		worstAllowedRank, exists := cc.GetPermissionsGuildRank(object, activePlayer.GetGuild(), permission)
+		if exists && worstAllowedRank > 0 && worstAllowedRank >= activePlayer.GetGuildRank() {
 			return nil
 		}
 	}

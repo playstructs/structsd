@@ -84,7 +84,7 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 
     guildPermissionErr := guild.CanAddMembersByProxy(proxyPlayer)
     if guildPermissionErr != nil {
-    	return emptyResponse, nil
+    	return emptyResponse, guildPermissionErr
     }
 
 	var substation *SubstationCache
