@@ -172,9 +172,6 @@ func (cc *CurrentContext) CommitAll() {
 		return
 	}
 
-	// Actually Implemented Shit (AIS)
-
-
     for _, playerCache := range cc.players {
         playerCache.Commit()
     }
