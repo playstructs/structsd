@@ -129,20 +129,22 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 				defenderReadinessError := defender.ReadinessCheck()
 				if defenderReadinessError == nil {
 					k.logger.Info("Defender seems ready to defend")
+
+                    // Counter-Attack happens before Block to see if the shot kills
+                    if structure.GetStructType().AttackCounterable && structure.GetStructType().GetWeaponCounterable(weaponSystem) {
+                        k.logger.Info("Defender trying to counter!.. ")
+                        counterErrors := defender.CanCounterAttack(structure)
+                        if counterErrors == nil {
+                            k.logger.Info("Defender counter-attacking!")
+                            structure.TakeCounterAttackDamage(defender)
+                        }
+                    }
+
 					if !attackBlocked && (structure.GetStructType().GetWeaponBlockable(weaponSystem)) {
 						k.logger.Info("Defender to attempt a block!")
 						attackBlocked = defender.AttemptBlock(structure, weaponSystem, targetStructure)
 					}
-				}
-
-				if structure.GetStructType().AttackCounterable && structure.GetStructType().GetWeaponCounterable(weaponSystem) {
-					k.logger.Info("Defender trying to counter!.. ")
-					counterErrors := defender.CanCounterAttack(structure)
-					if counterErrors == nil {
-						k.logger.Info("Defender counter-attacking!")
-						structure.TakeCounterAttackDamage(defender)
-					}
-				}
+                }
 			}
 		}
 
