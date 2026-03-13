@@ -60,7 +60,7 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
     player.SetGuild(guild.Id)
     player.SetGuildRank(1)
 
-    if reactor.GetReactor().Guild == "" {
+    if reactor.GetReactor().GuildId == "" {
         reactor.SetGuild(guild.Id)
     }
 
