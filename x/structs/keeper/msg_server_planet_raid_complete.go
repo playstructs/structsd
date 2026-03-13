@@ -35,6 +35,11 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
+    callingPlayer, err := cc.GetPlayerByAddress(msg.Creator)
+    if err != nil {
+        return emptyResponse, err
+    }
+
 	// Load Fleet
 	fleet, fleetLoadError := cc.GetFleetById(msg.FleetId)
 	if fleetLoadError != nil {
@@ -42,12 +47,10 @@ func (k msgServer) PlanetRaidComplete(goCtx context.Context, msg *types.MsgPlane
 	}
 
 	// Check calling address can use Fleet
-	/*
-	   permissionError := fleet.GetOwner().CanBeHashedBy(msg.Creator)
-	   if (permissionError != nil) {
-	       return emptyResponse, permissionError
-	   }
-	*/
+    permissionError := fleet.GetOwner().CanRaidHashedBy(callingPlayer)
+    if (permissionError != nil) {
+        return emptyResponse, permissionError
+    }
 
 	// check that the fleet is Away
 	if fleet.IsOnStation() {
