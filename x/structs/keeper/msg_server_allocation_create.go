@@ -4,9 +4,6 @@ import (
 	"context"
 	"structs/x/structs/types"
 	sdk "github.com/cosmos/cosmos-sdk/types"
-
-	"strings"
-	"strconv"
 )
 
 func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocationCreate) (*types.MsgAllocationCreateResponse, error) {
@@ -28,32 +25,10 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
         msg.Controller = callingPlayer.GetPlayerId()
     }
 
-    var sourceObject PermissionedObject
-
-	parts := strings.Split(msg.SourceObjectId, "-")
-	if len(parts) < 2 {
-	    return emptyResponse, types.NewAllocationError(msg.SourceObjectId, "unacceptable_source")
-	}
-
-	typeNum, err := strconv.ParseUint(parts[0], 10, 32)
-	if err != nil {
+    sourceObject := cc.GetPermissionedObject(msg.SourceObjectId)
+    if sourceObject == nil {
         return emptyResponse, types.NewAllocationError(msg.SourceObjectId, "unacceptable_source")
-	}
-
-	switch types.ObjectType(typeNum) {
-        case types.ObjectType_player:
-            player, err := cc.GetPlayer(msg.SourceObjectId)
-            if err != nil {
-                return emptyResponse, err
-            }
-            sourceObject = player
-        case types.ObjectType_reactor:
-            sourceObject = cc.GetReactor(msg.SourceObjectId)
-        case types.ObjectType_substation:
-            sourceObject = cc.GetSubstation(msg.SourceObjectId)
-        default:
-            return emptyResponse, types.NewAllocationError(msg.SourceObjectId, "unacceptable_source")
-	}
+    }
 
     permissionErr := sourceObject.CanAllocateAsSourceBy(callingPlayer)
     if permissionErr != nil {

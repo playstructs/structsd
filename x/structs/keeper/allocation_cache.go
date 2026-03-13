@@ -2,9 +2,6 @@ package keeper
 
 import (
 	"structs/x/structs/types"
-
-	"strings"
-	"strconv"
 )
 
 type AllocationCache struct {
@@ -84,32 +81,7 @@ func (cache *AllocationCache) GetSourceId() string {
 }
 
 func (cache *AllocationCache) GetSource() PermissionedObject {
-	sourceId := cache.GetSourceId()
-	if sourceId == "" {
-		return nil
-	}
-	parts := strings.Split(sourceId, "-")
-	if len(parts) < 2 {
-		return nil
-	}
-	typeNum, err := strconv.ParseUint(parts[0], 10, 32)
-	if err != nil {
-		return nil
-	}
-	switch types.ObjectType(typeNum) {
-        case types.ObjectType_player:
-            player, err := cache.CC.GetPlayer(sourceId)
-            if err != nil {
-                return nil
-            }
-            return player
-        case types.ObjectType_reactor:
-            return cache.CC.GetReactor(sourceId)
-        case types.ObjectType_substation:
-            return cache.CC.GetSubstation(sourceId)
-        default:
-            return nil
-        }
+	return cache.CC.GetPermissionedObject(cache.GetSourceId())
 }
 
 func (cache *AllocationCache) GetDestination() *SubstationCache {
