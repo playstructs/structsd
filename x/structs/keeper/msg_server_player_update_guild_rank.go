@@ -22,9 +22,6 @@ func (k msgServer) PlayerUpdateGuildRank(goCtx context.Context, msg *types.MsgPl
 	if msg.PlayerId == "" {
 		return emptyResponse, types.NewParameterValidationError("player_id", 0, "required")
 	}
-	if len(msg.PlayerId) > maxIDLength {
-		return emptyResponse, types.NewParameterValidationError("player_id", 0, "exceeds_max_length")
-	}
 
 	if msg.GuildRank == 0 {
 		return emptyResponse, types.NewParameterValidationError("rank", 0, "zero")

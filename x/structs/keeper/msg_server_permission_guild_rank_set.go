@@ -7,8 +7,6 @@ import (
 	"structs/x/structs/types"
 )
 
-const maxIDLength = 256
-
 func (k msgServer) PermissionGuildRankSet(goCtx context.Context, msg *types.MsgPermissionGuildRankSet) (*types.MsgPermissionResponse, error) {
 	emptyResponse := &types.MsgPermissionResponse{}
 	ctx := sdk.UnwrapSDKContext(goCtx)
@@ -19,14 +17,8 @@ func (k msgServer) PermissionGuildRankSet(goCtx context.Context, msg *types.MsgP
 	if msg.ObjectId == "" {
 		return emptyResponse, types.NewParameterValidationError("object_id", 0, "required")
 	}
-	if len(msg.ObjectId) > maxIDLength {
-		return emptyResponse, types.NewParameterValidationError("object_id", 0, "exceeds_max_length")
-	}
 	if msg.GuildId == "" {
 		return emptyResponse, types.NewParameterValidationError("guild_id", 0, "required")
-	}
-	if len(msg.GuildId) > maxIDLength {
-		return emptyResponse, types.NewParameterValidationError("guild_id", 0, "exceeds_max_length")
 	}
 	if msg.Permission == 0 {
 		return emptyResponse, types.NewParameterValidationError("permission", 0, "below_minimum").WithRange(1, 0)
