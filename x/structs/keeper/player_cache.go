@@ -469,6 +469,7 @@ func (cache *PlayerCache) MigrateGuild(guild *GuildCache) {
 	}
 
 	cache.Player.GuildId = guild.GetGuildId()
+	cache.Player.GuildRank = guild.GetEntryRank()
 	cache.Changed = true
 }
 

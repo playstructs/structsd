@@ -58,7 +58,11 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
     guild := k.AppendGuild(ctx, msg.Endpoint, msg.EntrySubstationId, reactor.GetReactor(), player.GetPlayer())
 
     player.SetGuild(guild.Id)
-    reactor.SetGuild(guild.Id)
+    player.SetGuildRank(1)
+
+    if reactor.GetReactor().Guild == "" {
+        reactor.SetGuild(guild.Id)
+    }
 
 	cc.CommitAll()
 	return &types.MsgGuildCreateResponse{GuildId: guild.Id}, nil
