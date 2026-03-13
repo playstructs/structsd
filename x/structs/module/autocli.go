@@ -564,9 +564,9 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                  },
                  {
                      RpcMethod:      "PermissionGuildRankSet",
-                     Use:            "permission-guild-rank-set [object id] [guild id] [permission] [highest rank]",
+                     Use:            "permission-guild-rank-set [object id] [guild id] [permission] [rank]",
                      Short:          "Set guild rank requirement for a permission on an object",
-                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "objectId"},{ProtoField: "guildId"},{ProtoField: "permission"},{ProtoField: "highestRank"}},
+                     PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "objectId"},{ProtoField: "guildId"},{ProtoField: "permission"},{ProtoField: "rank"}},
                  },
                  {
                      RpcMethod:      "PermissionGuildRankRevoke",

@@ -159,24 +159,24 @@ func ObjectOnlyGuildRankKeyPrefix(objectId string) []byte {
     return []byte(types.PermissionGuildRank + objectId + "/" )
 }
 
-// SetHighestGuildRankPermissionStoreOnly writes the guild rank permission to the store without emitting an event. Used in InitGenesis.
-func (k Keeper) SetHighestGuildRankPermissionStoreOnly(ctx context.Context, objectId string, guildId string, permissionType types.Permission, highestRank uint64) {
+// SetGuildRankPermissionStoreOnly writes the guild rank permission to the store without emitting an event. Used in InitGenesis.
+func (k Keeper) SetGuildRankPermissionStoreOnly(ctx context.Context, objectId string, guildId string, permissionType types.Permission, worstAllowedRank uint64) {
 	guildRankStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), GuildRankKeyPrefix(objectId, guildId))
 	binaryPermission := make([]byte, 8)
 	binary.BigEndian.PutUint64(binaryPermission, uint64(permissionType))
 	binaryRank := make([]byte, 8)
-	binary.BigEndian.PutUint64(binaryRank, highestRank)
+	binary.BigEndian.PutUint64(binaryRank, worstAllowedRank)
 	guildRankStore.Set(binaryPermission, binaryRank)
 }
 
-func (k Keeper) SetHighestGuildRankPermission(ctx context.Context, objectId string, guildId string, permissionType types.Permission, highestRank uint64) (err error) {
+func (k Keeper) SetGuildRankPermission(ctx context.Context, objectId string, guildId string, permissionType types.Permission, worstAllowedRank uint64) (err error) {
 	guildRankStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), GuildRankKeyPrefix(objectId, guildId))
 
 	binaryPermission := make([]byte, 8)
 	binary.BigEndian.PutUint64(binaryPermission, uint64(permissionType))
 
 	binaryRank := make([]byte, 8)
-	binary.BigEndian.PutUint64(binaryRank, highestRank)
+	binary.BigEndian.PutUint64(binaryRank, worstAllowedRank)
 
 	guildRankStore.Set(binaryPermission, binaryRank)
 
@@ -186,7 +186,7 @@ func (k Keeper) SetHighestGuildRankPermission(ctx context.Context, objectId stri
             ObjectId:    objectId,
             GuildId:     guildId,
             Permissions:  uint64(permissionType),
-            Rank:         highestRank,
+            Rank:         worstAllowedRank,
         },
     })
 
@@ -215,20 +215,20 @@ func (k Keeper) RemoveGuildRankPermission(ctx context.Context, objectId string, 
 }
 
 
-func (k Keeper) GetHighestGuildRankForPermission(ctx context.Context, objectId string, guildId string, permissionType types.Permission) (uint64, bool) {
+func (k Keeper) GetGuildRankForPermission(ctx context.Context, objectId string, guildId string, permissionType types.Permission) (uint64, bool) {
 	guildRankStore := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), GuildRankKeyPrefix(objectId, guildId))
 
 	binaryPermission := make([]byte, 8)
 	binary.BigEndian.PutUint64(binaryPermission, uint64(permissionType))
 
-	binaryHighestRank := guildRankStore.Get(binaryPermission)
+	binaryRank := guildRankStore.Get(binaryPermission)
 
-	if binaryHighestRank == nil {
+	if binaryRank == nil {
 		return 0, false
 	}
 
-	highestRank := binary.BigEndian.Uint64(binaryHighestRank)
-	return highestRank, true
+	worstAllowedRank := binary.BigEndian.Uint64(binaryRank)
+	return worstAllowedRank, true
 }
 
 func (k Keeper) GetAllGuildRankPermissions(ctx context.Context, objectId string, guildId string) (list [][]byte) {

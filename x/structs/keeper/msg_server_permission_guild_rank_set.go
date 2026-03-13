@@ -32,6 +32,10 @@ func (k msgServer) PermissionGuildRankSet(goCtx context.Context, msg *types.MsgP
 		return emptyResponse, types.NewParameterValidationError("permission", 0, "below_minimum").WithRange(1, 0)
 	}
 
+	if msg.Rank == 0 {
+		return emptyResponse, types.NewParameterValidationError("rank", 0, "below_minimum").WithRange(1, 0)
+	}
+
 	player, err := cc.GetPlayerByAddress(msg.Creator)
 	if err != nil {
 		return emptyResponse, err
@@ -52,7 +56,7 @@ func (k msgServer) PermissionGuildRankSet(goCtx context.Context, msg *types.MsgP
 		return emptyResponse, permissionErr
 	}
 
-	cc.SetPermissionsGuildRank(permissionedObject, guild, types.Permission(msg.Permission), msg.HighestRank)
+	cc.SetPermissionsGuildRank(permissionedObject, guild, types.Permission(msg.Permission), msg.Rank)
 	cc.CommitAll()
 	return &types.MsgPermissionResponse{}, nil
 }

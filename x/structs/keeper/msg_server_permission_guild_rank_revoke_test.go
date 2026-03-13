@@ -34,8 +34,8 @@ func TestMsgPermissionGuildRankRevoke(t *testing.T) {
 
 	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, owner)
 
-	k.SetHighestGuildRankPermission(ctx, structObj.Id, guild.Id, types.Permission(1), 2)
-	rank, ok := k.GetHighestGuildRankForPermission(ctx, structObj.Id, guild.Id, types.Permission(1))
+	k.SetGuildRankPermission(ctx, structObj.Id, guild.Id, types.Permission(1), 2)
+	rank, ok := k.GetGuildRankForPermission(ctx, structObj.Id, guild.Id, types.Permission(1))
 	require.True(t, ok)
 	require.Equal(t, uint64(2), rank)
 
@@ -51,7 +51,7 @@ func TestMsgPermissionGuildRankRevoke(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, resp)
 
-	_, ok = k.GetHighestGuildRankForPermission(ctx, structObj.Id, guild.Id, types.Permission(1))
+	_, ok = k.GetGuildRankForPermission(ctx, structObj.Id, guild.Id, types.Permission(1))
 	require.False(t, ok)
 
 	// Validation: empty object_id

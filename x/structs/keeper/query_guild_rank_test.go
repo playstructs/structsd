@@ -21,8 +21,8 @@ func TestGuildRankPermissionByObjectQuery(t *testing.T) {
 	guild1 := "2-1"
 	guild2 := "2-2"
 
-	keeper.SetHighestGuildRankPermission(ctx, objectId, guild1, types.Permission(1), 3)
-	keeper.SetHighestGuildRankPermission(ctx, objectId, guild2, types.Permission(2), 1)
+	keeper.SetGuildRankPermission(ctx, objectId, guild1, types.Permission(1), 3)
+	keeper.SetGuildRankPermission(ctx, objectId, guild2, types.Permission(2), 1)
 
 	// Valid request
 	resp, err := keeper.GuildRankPermissionByObject(wctx, &types.QueryGuildRankPermissionByObjectRequest{
@@ -69,8 +69,8 @@ func TestGuildRankPermissionByObjectAndGuildQuery(t *testing.T) {
 	objectId := "1-6"
 	guildId := "2-3"
 
-	keeper.SetHighestGuildRankPermission(ctx, objectId, guildId, types.Permission(1), 2)
-	keeper.SetHighestGuildRankPermission(ctx, objectId, guildId, types.Permission(4), 0)
+	keeper.SetGuildRankPermission(ctx, objectId, guildId, types.Permission(1), 2)
+	keeper.SetGuildRankPermission(ctx, objectId, guildId, types.Permission(4), 0)
 
 	resp, err := keeper.GuildRankPermissionByObjectAndGuild(wctx, &types.QueryGuildRankPermissionByObjectAndGuildRequest{
 		ObjectId: objectId,

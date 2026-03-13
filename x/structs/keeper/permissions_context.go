@@ -109,15 +109,15 @@ func (cc *CurrentContext) PermissionHasOneOf(permissionId []byte, flag types.Per
 	return currentFlags&flag != 0
 }
 
-// GetPermissionsGuildRank returns (highestRank, exists). exists is false when no record is stored or after revoke.
+// GetPermissionsGuildRank returns (worstAllowedRank, exists). exists is false when no record is stored or after revoke.
 func (cc *CurrentContext) GetPermissionsGuildRank(object PermissionedObject, guild *GuildCache, permissionType types.Permission) (uint64, bool) {
 	id := GuildRankPermissionID(object.ID(), guild.ID(), permissionType)
 
 	if c, exists := cc.permissionsGuildRank[id]; exists {
-		return c.HighestRank, c.Exists
+		return c.WorstAllowedRank, c.Exists
 	}
 
-	highestRank, ok := cc.k.GetHighestGuildRankForPermission(cc.ctx, object.ID(), guild.ID(), permissionType)
+	worstAllowedRank, ok := cc.k.GetGuildRankForPermission(cc.ctx, object.ID(), guild.ID(), permissionType)
 
 	cc.permissionsGuildRank[id] = &PermissionsGuildRankCache{
 		CC:                    cc,
@@ -125,16 +125,16 @@ func (cc *CurrentContext) GetPermissionsGuildRank(object PermissionedObject, gui
 		ObjectId:              object.ID(),
 		GuildId:               guild.ID(),
 		Permission:            permissionType,
-		HighestRank:           highestRank,
+		WorstAllowedRank:      worstAllowedRank,
 		Loaded:                true,
 		Exists:                ok,
 	}
 
-	return highestRank, ok
+	return worstAllowedRank, ok
 }
 
 // SetPermissionsGuildRank caches the guild rank permission for commit.
-func (cc *CurrentContext) SetPermissionsGuildRank(object PermissionedObject, guild *GuildCache, permissionType types.Permission, highestRank uint64) *PermissionsGuildRankCache {
+func (cc *CurrentContext) SetPermissionsGuildRank(object PermissionedObject, guild *GuildCache, permissionType types.Permission, worstAllowedRank uint64) *PermissionsGuildRankCache {
 	id := GuildRankPermissionID(object.ID(), guild.ID(), permissionType)
 
 	cc.permissionsGuildRank[id] = &PermissionsGuildRankCache{
@@ -143,7 +143,7 @@ func (cc *CurrentContext) SetPermissionsGuildRank(object PermissionedObject, gui
 		ObjectId:              object.ID(),
 		GuildId:               guild.ID(),
 		Permission:            permissionType,
-		HighestRank:           highestRank,
+		WorstAllowedRank:      worstAllowedRank,
 		Loaded:                true,
 		Changed:               true,
 		Exists:                true,

@@ -43,12 +43,12 @@ func TestMsgPermissionGuildRankSet(t *testing.T) {
 		ObjectId:    structObj.Id,
 		GuildId:     guild.Id,
 		Permission:  uint64(types.Permission(1)),
-		HighestRank: 2,
+		Rank: 2,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, resp)
 
-	rank, ok := k.GetHighestGuildRankForPermission(ctx, structObj.Id, guild.Id, types.Permission(1))
+	rank, ok := k.GetGuildRankForPermission(ctx, structObj.Id, guild.Id, types.Permission(1))
 	require.True(t, ok)
 	require.Equal(t, uint64(2), rank)
 
@@ -58,7 +58,7 @@ func TestMsgPermissionGuildRankSet(t *testing.T) {
 		ObjectId:    "",
 		GuildId:     guild.Id,
 		Permission:  1,
-		HighestRank: 0,
+		Rank: 0,
 	})
 	require.Error(t, err)
 
@@ -68,7 +68,7 @@ func TestMsgPermissionGuildRankSet(t *testing.T) {
 		ObjectId:    structObj.Id,
 		GuildId:     "",
 		Permission:  1,
-		HighestRank: 0,
+		Rank: 0,
 	})
 	require.Error(t, err)
 
@@ -78,7 +78,7 @@ func TestMsgPermissionGuildRankSet(t *testing.T) {
 		ObjectId:    structObj.Id,
 		GuildId:     guild.Id,
 		Permission:  0,
-		HighestRank: 0,
+		Rank: 0,
 	})
 	require.Error(t, err)
 
@@ -88,7 +88,7 @@ func TestMsgPermissionGuildRankSet(t *testing.T) {
 		ObjectId:    structObj.Id,
 		GuildId:     "2-99999",
 		Permission:  1,
-		HighestRank: 0,
+		Rank: 0,
 	})
 	require.Error(t, err)
 }

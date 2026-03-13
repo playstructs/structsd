@@ -135,7 +135,7 @@ func InitGenesis(ctx sdk.Context, k keeper.Keeper, genState types.GenesisState) 
 		if rec == nil {
 			continue
 		}
-		k.SetHighestGuildRankPermissionStoreOnly(ctx, rec.ObjectId, rec.GuildId, types.Permission(rec.Permissions), rec.Rank)
+		k.SetGuildRankPermissionStoreOnly(ctx, rec.ObjectId, rec.GuildId, types.Permission(rec.Permissions), rec.Rank)
 	}
 
 	// Addresses

@@ -10,7 +10,7 @@ type PermissionsGuildRankCache struct {
 	ObjectId              string
 	GuildId               string
 	Permission            types.Permission
-	HighestRank           uint64
+	WorstAllowedRank      uint64
 	Loaded                bool
 	Changed               bool
 	Deleted               bool
@@ -29,12 +29,12 @@ func (cache *PermissionsGuildRankCache) ID() string {
 func (cache *PermissionsGuildRankCache) Commit() {
     if cache.Loaded && cache.Changed {
         cache.Changed = false
-    	cache.CC.k.logger.Info("Updating Guild Rank Permission From Cache", "PermissionsId", cache.ID(), "value", cache.HighestRank)
+    	cache.CC.k.logger.Info("Updating Guild Rank Permission From Cache", "PermissionsId", cache.ID(), "value", cache.WorstAllowedRank)
 
         if cache.Deleted {
             cache.CC.k.RemoveGuildRankPermission(cache.CC.ctx, cache.ObjectId, cache.GuildId, cache.Permission)
         } else {
-            cache.CC.k.SetHighestGuildRankPermission(cache.CC.ctx, cache.ObjectId, cache.GuildId, cache.Permission, cache.HighestRank)
+            cache.CC.k.SetGuildRankPermission(cache.CC.ctx, cache.ObjectId, cache.GuildId, cache.Permission, cache.WorstAllowedRank)
         }
     }
 }

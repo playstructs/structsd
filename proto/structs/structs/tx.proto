@@ -516,7 +516,7 @@ message MsgPermissionGuildRankSet {
   string objectId   = 2;
   string guildId    = 3;
   uint64 permission  = 4;
-  uint64 highestRank = 5;
+  uint64 rank = 5;
 }
 
 message MsgPermissionGuildRankRevoke {
