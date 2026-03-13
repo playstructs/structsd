@@ -18,9 +18,6 @@ type PermissionedObject interface {
 
 	// Grid stuff
 	CanAllocateAsSourceBy(*PlayerCache) error
-
-	// Rank Details
-
 }
 
 // GetPermission returns a struct attribute value, caching the result.

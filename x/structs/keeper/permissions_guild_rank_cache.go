@@ -38,10 +38,3 @@ func (cache *PermissionsGuildRankCache) Commit() {
         }
     }
 }
-
-
-
-
-
-
-
