@@ -602,21 +602,25 @@ SUB_JSON=$(query query structs substation "${SUBSTATION_ID}")
 SUB_CHECK=$(jqr "${SUB_JSON}" '.Substation.id')
 assert_eq "Substation exists" "${SUBSTATION_ID}" "${SUB_CHECK}"
 
+# ─── Discover Reactor (created during validator setup) ───
+info "Looking up reactor"
+REACTOR_ALL_JSON=$(query query structs reactor-all)
+REACTOR_ID=$(jqr "${REACTOR_ALL_JSON}" '.Reactor[0].id')
+assert_not_empty "Reactor ID" "${REACTOR_ID}"
+echo "  Reactor ID: ${REACTOR_ID}"
+
+REACTOR_VAL=$(jqr "${REACTOR_ALL_JSON}" '.Reactor[0].validator')
+assert_eq "Reactor validator matches" "${VALIDATOR_ADDRESS}" "${REACTOR_VAL}"
+
 # ─── Create Guild ───
 run_tx "Creating Guild" \
-    tx structs guild-create "oh.energy" "${SUBSTATION_ID}" --from alice
+    tx structs guild-create "${REACTOR_ID}" "oh.energy" "${SUBSTATION_ID}" --from alice
 
-# Discover guild and reactor IDs
+# Discover guild ID
 GUILD_ALL_JSON=$(query query structs guild-all)
 GUILD_ID=$(jqr "${GUILD_ALL_JSON}" '.Guild[0].id')
-REACTOR_ID=$(jqr "${GUILD_ALL_JSON}" '.Guild[0].primaryReactorId')
 assert_not_empty "Guild ID" "${GUILD_ID}"
-assert_not_empty "Reactor ID" "${REACTOR_ID}"
-echo "  Guild ID: ${GUILD_ID}  Reactor ID: ${REACTOR_ID}"
-
-REACTOR_JSON=$(query query structs reactor "${REACTOR_ID}")
-REACTOR_VAL=$(jqr "${REACTOR_JSON}" '.Reactor.validator')
-assert_eq "Reactor validator matches" "${VALIDATOR_ADDRESS}" "${REACTOR_VAL}"
+echo "  Guild ID: ${GUILD_ID}"
 
 # Verify guild details
 GUILD_JSON=$(query query structs guild "${GUILD_ID}")
@@ -1112,6 +1116,11 @@ P5_JSON=$(query query structs player "${PLAYER_5_ID}")
 P5_GUILD=$(jqr "${P5_JSON}" '.Player.guildId' '')
 assert_eq "Player 5 joined guild via request" "${GUILD_ID}" "${P5_GUILD}"
 
+# Verify Player 5 receives default entry rank on joining
+P5_RANK_ON_JOIN=$(jqr "${P5_JSON}" '.Player.guildRank' '0')
+info "Player 5 guild rank after joining: ${P5_RANK_ON_JOIN}"
+assert_eq "Player 5 gets default entry rank (101) on join" "101" "${P5_RANK_ON_JOIN}"
+
 # ─── Test 4: Kick ───────────────────────────────────────────────────────────
 info "--- Test 4: Kick ---"
 
@@ -1121,6 +1130,11 @@ run_tx "Alice kicks Player 5 from guild" \
 P5_JSON=$(query query structs player "${PLAYER_5_ID}")
 P5_GUILD=$(jqr "${P5_JSON}" '.Player.guildId' '')
 assert_eq "Player 5 removed after kick" "" "${P5_GUILD}"
+
+# Verify guild rank resets after kick
+P5_RANK_AFTER_KICK=$(jqr "${P5_JSON}" '.Player.guildRank' '0')
+info "Player 5 guild rank after kick: ${P5_RANK_AFTER_KICK}"
+assert_eq "Guild rank resets to default (101) after kick" "101" "${P5_RANK_AFTER_KICK}"
 
 # ─── Test 5: Request → Deny ────────────────────────────────────────────────
 info "--- Test 5: Request Flow (deny) ---"
@@ -1297,6 +1311,92 @@ GUILD_JSON=$(query query structs guild "${GUILD_ID}")
 GUILD_EP_AFTER=$(jqr "${GUILD_JSON}" '.Guild.endpoint')
 assert_eq "Guild endpoint unchanged after unauthorized update" "oh.energy" "${GUILD_EP_AFTER}"
 
+# ─── guild-update-entry-rank ─────────────────────────────────────────────────
+info "--- Guild Entry Rank Lifecycle ---"
+
+# Check guild creator (Player 1) has rank 1
+P1_JSON=$(query query structs player "${PLAYER_1_ID}")
+P1_RANK=$(jqr "${P1_JSON}" '.Player.guildRank' '0')
+assert_eq "Guild creator (Player 1) has rank 1" "1" "${P1_RANK}"
+
+# Check current guild entry rank (should be DefaultEntryRank = 101)
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+GUILD_ENTRY_RANK_BEFORE=$(jqr "${GUILD_JSON}" '.Guild.entryRank' '0')
+info "Guild entry rank before update: ${GUILD_ENTRY_RANK_BEFORE}"
+
+# Update entry rank to 50
+run_tx "Updating guild entry rank to 50" \
+    tx structs guild-update-entry-rank 50 --from alice
+
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+GUILD_ENTRY_RANK_SET=$(jqr "${GUILD_JSON}" '.Guild.entryRank' '0')
+assert_eq "Guild entry rank updated to 50" "50" "${GUILD_ENTRY_RANK_SET}"
+
+# Negative: non-admin Player 3 tries to update entry rank
+run_tx "Player 3 tries to update entry rank (should fail)" \
+    tx structs guild-update-entry-rank 10 --from player_3
+
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+GUILD_ENTRY_RANK_UNCHANGED=$(jqr "${GUILD_JSON}" '.Guild.entryRank' '0')
+assert_eq "Entry rank unchanged after unauthorized attempt" "50" "${GUILD_ENTRY_RANK_UNCHANGED}"
+
+# Reset entry rank to default
+run_tx "Resetting guild entry rank to 101" \
+    tx structs guild-update-entry-rank 101 --from alice
+
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+assert_eq "Guild entry rank reset to 101" "101" "$(jqr "${GUILD_JSON}" '.Guild.entryRank' '0')"
+
+# ─── player-update-guild-rank ────────────────────────────────────────────────
+info "--- Player Guild Rank Management ---"
+
+# Set Player 2 to rank 5
+run_tx "Setting Player 2 guild rank to 5" \
+    tx structs player-update-guild-rank "${PLAYER_2_ID}" 5 --from alice
+
+P2_JSON=$(query query structs player "${PLAYER_2_ID}")
+P2_RANK=$(jqr "${P2_JSON}" '.Player.guildRank' '0')
+assert_eq "Player 2 guild rank set to 5" "5" "${P2_RANK}"
+
+# Set Player 3 to rank 10
+run_tx "Setting Player 3 guild rank to 10" \
+    tx structs player-update-guild-rank "${PLAYER_3_ID}" 10 --from alice
+
+P3_JSON=$(query query structs player "${PLAYER_3_ID}")
+P3_RANK=$(jqr "${P3_JSON}" '.Player.guildRank' '0')
+assert_eq "Player 3 guild rank set to 10" "10" "${P3_RANK}"
+
+# Negative: setting rank to 0 should fail
+run_tx "Setting Player 2 rank to 0 (should fail — rank 0 is forbidden)" \
+    tx structs player-update-guild-rank "${PLAYER_2_ID}" 0 --from alice
+
+P2_JSON=$(query query structs player "${PLAYER_2_ID}")
+P2_RANK_AFTER_ZERO=$(jqr "${P2_JSON}" '.Player.guildRank' '0')
+assert_eq "Player 2 rank unchanged after rank=0 attempt" "5" "${P2_RANK_AFTER_ZERO}"
+
+# Negative: Player 3 (rank 10) tries to update Player 2 (rank 5) — must have strictly better rank
+run_tx "Player 3 (rank 10) tries to update Player 2 rank (should fail)" \
+    tx structs player-update-guild-rank "${PLAYER_2_ID}" 3 --from player_3
+
+P2_JSON=$(query query structs player "${PLAYER_2_ID}")
+P2_RANK_UNCHANGED=$(jqr "${P2_JSON}" '.Player.guildRank' '0')
+assert_eq "Player 2 rank unchanged after unauthorized change" "5" "${P2_RANK_UNCHANGED}"
+
+# Positive: Player 2 (rank 5) sets Player 3 (rank 10) to rank 8
+# Actor rank 5 < target rank 10, and new rank 8 >= actor rank 5
+run_tx "Player 2 (rank 5) sets Player 3 (rank 10) to rank 8" \
+    tx structs player-update-guild-rank "${PLAYER_3_ID}" 8 --from player_2
+
+P3_JSON=$(query query structs player "${PLAYER_3_ID}")
+P3_RANK_AFTER=$(jqr "${P3_JSON}" '.Player.guildRank' '0')
+assert_eq "Player 3 rank updated to 8 by Player 2" "8" "${P3_RANK_AFTER}"
+
+# Reset ranks for later phases
+run_tx "Resetting Player 2 guild rank to 101" \
+    tx structs player-update-guild-rank "${PLAYER_2_ID}" 101 --from alice
+run_tx "Resetting Player 3 guild rank to 101" \
+    tx structs player-update-guild-rank "${PLAYER_3_ID}" 101 --from alice
+
 fi # phase 4d
 
 if run_phase 480; then
@@ -1368,6 +1468,75 @@ run_tx "Alice restoring Player 5 address PermDelete" \
 info "All permissions sample:"
 query query structs permission-all 2>/dev/null | jq -r '.permissionRecord[:5]? | .[]? | "  \(.objectId) = \(.value)"' || echo "  (none)"
 
+# ─── Guild rank permission lifecycle ─────────────────────────────────────────
+info "--- Guild Rank Permission Lifecycle ---"
+
+# Permission constants: PermGuildEndpointUpdate = 1<<14 = 16384
+#                       PermAllocationConnection = 1<<11 = 2048
+
+# Set guild rank permission: PermGuildEndpointUpdate (16384) on guild, rank <= 3
+run_tx "Setting guild rank perm: PermGuildEndpointUpdate (rank 3) on guild" \
+    tx structs permission-guild-rank-set "${GUILD_ID}" "${GUILD_ID}" 16384 3 --from alice
+
+GRANK_JSON=$(query query structs guild-rank-permission-by-object "${GUILD_ID}" 2>/dev/null || echo '{}')
+info "Guild rank permissions on guild after set:"
+echo "${GRANK_JSON}" | jq '.' 2>/dev/null | head -10 || echo "  (raw: ${GRANK_JSON})"
+
+# Set Player 4 to rank 2 (within threshold) and Player 5 to rank 5 (outside threshold)
+run_tx "Setting Player 4 rank to 2 for guild rank perm test" \
+    tx structs player-update-guild-rank "${PLAYER_4_ID}" 2 --from alice
+run_tx "Setting Player 5 rank to 5 for guild rank perm test" \
+    tx structs player-update-guild-rank "${PLAYER_5_ID}" 5 --from alice
+
+# Positive: Player 4 (rank 2 <= 3) updates guild endpoint
+run_tx "Player 4 (rank 2) updates guild endpoint via guild rank permission" \
+    tx structs guild-update-endpoint "${GUILD_ID}" "rank-test.energy" --from player_4
+
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+GUILD_EP_RANK_POS=$(jqr "${GUILD_JSON}" '.Guild.endpoint')
+assert_eq "Guild endpoint updated by rank-2 player" "rank-test.energy" "${GUILD_EP_RANK_POS}"
+
+# Negative: Player 5 (rank 5 > 3) tries to update guild endpoint
+run_tx "Player 5 (rank 5) tries to update guild endpoint (should fail)" \
+    tx structs guild-update-endpoint "${GUILD_ID}" "hacked.energy" --from player_5
+
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+GUILD_EP_RANK_NEG=$(jqr "${GUILD_JSON}" '.Guild.endpoint')
+assert_eq "Guild endpoint unchanged by rank-5 player" "rank-test.energy" "${GUILD_EP_RANK_NEG}"
+
+# Reset guild endpoint
+run_tx "Resetting guild endpoint to oh.energy" \
+    tx structs guild-update-endpoint "${GUILD_ID}" "oh.energy" --from alice
+
+# Revoke guild rank permission
+run_tx "Revoking guild rank PermGuildEndpointUpdate on guild" \
+    tx structs permission-guild-rank-revoke "${GUILD_ID}" "${GUILD_ID}" 16384 --from alice
+
+GRANK_AFTER_REVOKE=$(query query structs guild-rank-permission-by-object-and-guild "${GUILD_ID}" "${GUILD_ID}" 2>/dev/null || echo '{}')
+info "Guild rank permissions on guild after revoke:"
+echo "${GRANK_AFTER_REVOKE}" | jq '.' 2>/dev/null | head -5 || echo "  (empty/revoked)"
+
+# Reset player ranks
+run_tx "Resetting Player 4 rank to 101" \
+    tx structs player-update-guild-rank "${PLAYER_4_ID}" 101 --from alice
+run_tx "Resetting Player 5 rank to 101" \
+    tx structs player-update-guild-rank "${PLAYER_5_ID}" 101 --from alice
+
+# ─── Guild rank permission on substation ─────────────────────────────────────
+info "--- Guild Rank Permission on Substation ---"
+
+# Set guild rank permission: PermAllocationConnection (2048) on substation, rank <= 2
+run_tx "Setting guild rank perm: PermAllocationConnection (2048, rank 2) on substation" \
+    tx structs permission-guild-rank-set "${SUBSTATION_ID}" "${GUILD_ID}" 2048 2 --from alice
+
+GRANK_SUB_JSON=$(query query structs guild-rank-permission-by-object "${SUBSTATION_ID}" 2>/dev/null || echo '{}')
+GRANK_SUB_COUNT=$(echo "${GRANK_SUB_JSON}" | jq -r '.guild_rank_permission_records | length' 2>/dev/null || echo "0")
+assert_gt "Guild rank perm records exist on substation" 0 "${GRANK_SUB_COUNT}"
+
+# Revoke
+run_tx "Revoking guild rank PermAllocationConnection on substation" \
+    tx structs permission-guild-rank-revoke "${SUBSTATION_ID}" "${GUILD_ID}" 2048 --from alice
+
 fi # phase 4e
 
 if run_phase 490; then
@@ -1396,6 +1565,22 @@ assert_eq "Allocation disconnected" "" "${ALLOC_DST}"
 
 # Reconnect for later use
 run_tx "Reconnecting Player 5 allocation" \
+    tx structs substation-allocation-connect "${P5_ALLOC_ID}" "${SUBSTATION_ID}" --from player_5
+
+# ─── Dual-path disconnect: substation owner disconnects player's allocation ───
+# CanBeDisconnectedBy checks PermAllocationConnection on allocation first,
+# then falls back to PermAllocationConnection on destination (substation).
+# Alice (substation owner) should succeed via the destination path.
+info "Testing allocation disconnect via substation owner (dual-path)"
+run_tx "Alice disconnects Player 5 allocation via substation ownership" \
+    tx structs substation-allocation-disconnect "${P5_ALLOC_ID}" --from alice
+
+ALLOC_JSON=$(query query structs allocation "${P5_ALLOC_ID}")
+ALLOC_DST_DUAL=$(jqr "${ALLOC_JSON}" '.Allocation.destinationId' '')
+assert_eq "Allocation disconnected by substation owner (dual-path)" "" "${ALLOC_DST_DUAL}"
+
+# Reconnect after dual-path test
+run_tx "Reconnecting Player 5 allocation after dual-path test" \
     tx structs substation-allocation-connect "${P5_ALLOC_ID}" "${SUBSTATION_ID}" --from player_5
 
 # ─── Create a second substation for player migration tests ───
@@ -1451,6 +1636,15 @@ if [ -n "${SECOND_SUB_ID}" ] && [ "${SECOND_SUB_ID}" != "${SUBSTATION_ID}" ]; th
     P5_SUB=$(jqr "${P5_JSON}" '.Player.substationId' '')
     assert_eq "Player 5 back on original substation" "${SUBSTATION_ID}" "${P5_SUB}"
 
+    # ─── Permission cleanup on substation delete ───
+    # Grant a permission on the second substation, then delete it and verify cleanup
+    run_tx "Granting Player 3 PermUpdate (4) on second substation (pre-delete)" \
+        tx structs permission-grant-on-object "${SECOND_SUB_ID}" "${PLAYER_3_ID}" 4 --from alice
+
+    # Set a guild rank permission on the second substation too
+    run_tx "Setting guild rank perm on second substation (pre-delete)" \
+        tx structs permission-guild-rank-set "${SECOND_SUB_ID}" "${GUILD_ID}" 4 2 --from alice
+
     # ─── substation-delete: delete second substation ───
     run_tx "Deleting second substation (migrate to original)" \
         tx structs substation-delete "${SECOND_SUB_ID}" "${SUBSTATION_ID}" --from alice
@@ -1459,6 +1653,17 @@ if [ -n "${SECOND_SUB_ID}" ] && [ "${SECOND_SUB_ID}" != "${SUBSTATION_ID}" ]; th
     DEL_SUB_JSON=$(query query structs substation "${SECOND_SUB_ID}" 2>/dev/null || echo '{}')
     DEL_SUB_ID=$(jqr "${DEL_SUB_JSON}" '.Substation.id' '')
     assert_eq "Second substation deleted" "" "${DEL_SUB_ID}"
+
+    # Verify permissions were cleaned up with the substation
+    PERM_CLEANUP_JSON=$(query query structs permission-by-object "${SECOND_SUB_ID}" 2>/dev/null || echo '{}')
+    PERM_CLEANUP_COUNT=$(echo "${PERM_CLEANUP_JSON}" | jq -r '.permissionRecord | length' 2>/dev/null || echo "0")
+    info "Object permissions on deleted substation: ${PERM_CLEANUP_COUNT} records"
+    assert_eq "Object permissions cleaned up after substation delete" "0" "${PERM_CLEANUP_COUNT}"
+
+    GRANK_CLEANUP_JSON=$(query query structs guild-rank-permission-by-object "${SECOND_SUB_ID}" 2>/dev/null || echo '{}')
+    GRANK_CLEANUP_COUNT=$(echo "${GRANK_CLEANUP_JSON}" | jq -r '.guild_rank_permission_records | length' 2>/dev/null || echo "0")
+    info "Guild rank permissions on deleted substation: ${GRANK_CLEANUP_COUNT} records"
+    assert_eq "Guild rank permissions cleaned up after substation delete" "0" "${GRANK_CLEANUP_COUNT}"
 else
     info "SKIP: Could not create second substation for migration tests"
 fi
@@ -2518,7 +2723,7 @@ info "Player 3 ualpha before send: ${P3_BALANCE_BEFORE}"
 
 SEND_AMOUNT="100000"
 run_tx "Player 2 sending ${SEND_AMOUNT}ualpha to Player 3 via player-send" \
-    tx structs player-send "${PLAYER_2_ID}" "${PLAYER_2_ADDRESS}" "${PLAYER_3_ADDRESS}" "${SEND_AMOUNT}ualpha" --from player_2
+    tx structs player-send "${PLAYER_2_ADDRESS}" "${PLAYER_3_ADDRESS}" "${SEND_AMOUNT}ualpha" --from player_2
 
 P2_BALANCE_AFTER=$(get_balance "${PLAYER_2_ADDRESS}" "ualpha")
 P3_BALANCE_AFTER=$(get_balance "${PLAYER_3_ADDRESS}" "ualpha")
