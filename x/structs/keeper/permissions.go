@@ -124,11 +124,15 @@ func (k Keeper) ClearPermissionByObject(ctx context.Context, objectId string) (l
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PermissionKey))
 	prefixBytes := []byte(objectId + "@")
 	iterator := storetypes.KVStorePrefixIterator(store, prefixBytes)
-	defer iterator.Close()
+
+	var keysToDelete [][]byte
+	for ; iterator.Valid(); iterator.Next() {
+		keysToDelete = append(keysToDelete, append([]byte(nil), iterator.Key()...))
+	}
+	iterator.Close()
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
-	for ; iterator.Valid(); iterator.Next() {
-		key := iterator.Key()
+	for _, key := range keysToDelete {
 		store.Delete(key)
 		list = append(list, string(key))
 		_ = ctxSDK.EventManager().EmitTypedEvent(&types.EventPermission{&types.PermissionRecord{PermissionId: string(key), Value: 0}})
@@ -257,19 +261,22 @@ func (k Keeper) ClearPermissionGuildRankByObject(ctx context.Context, objectId s
 	store := prefix.NewStore(runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx)), types.KeyPrefix(types.PermissionGuildRank))
 	prefixBytes := []byte(objectId + "/")
 	iterator := storetypes.KVStorePrefixIterator(store, prefixBytes)
-	defer iterator.Close()
+
+	var keysToDelete [][]byte
+	for ; iterator.Valid(); iterator.Next() {
+		keysToDelete = append(keysToDelete, append([]byte(nil), iterator.Key()...))
+	}
+	iterator.Close()
 
 	ctxSDK := sdk.UnwrapSDKContext(ctx)
-	for ; iterator.Valid(); iterator.Next() {
-		key := iterator.Key()
+	for _, key := range keysToDelete {
 		store.Delete(key)
 		list = append(list, string(key))
 
-		// Decode key: objectId + "/" + guildId + "/" + 8-byte permission; rest = guildId + "/" + 8 bytes
 		if len(key) > len(prefixBytes) {
 			rest := key[len(prefixBytes):]
-			if len(rest) >= 9 { // at least "x/"+ 8 bytes
-				guildId := string(rest[:len(rest)-9]) // guildId + "/"
+			if len(rest) >= 9 {
+				guildId := string(rest[:len(rest)-9])
 				guildId = strings.TrimSuffix(guildId, "/")
 				permBytes := rest[len(rest)-8:]
 				permVal := binary.BigEndian.Uint64(permBytes)
@@ -278,7 +285,7 @@ func (k Keeper) ClearPermissionGuildRankByObject(ctx context.Context, objectId s
 						ObjectId:    objectId,
 						GuildId:     guildId,
 						Permissions: permVal,
-						Rank:        0, // removal
+						Rank:        0,
 					},
 				})
 			}
