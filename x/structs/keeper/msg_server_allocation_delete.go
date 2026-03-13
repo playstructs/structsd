@@ -27,14 +27,11 @@ func (k msgServer) AllocationDelete(goCtx context.Context, msg *types.MsgAllocat
 
     permissionErr := allocation.CanSourceDetailsBeUpdatedBy(activePlayer)
     if permissionErr != nil {
-        return emptyResponse, permissionErr
+        permissionErr = allocation.CanBeDeletedBy(activePlayer)
+        if permissionErr != nil {
+            return emptyResponse, permissionErr
+        }
     }
-
-    permissionErr = allocation.CanBeDeletedBy(activePlayer)
-    if permissionErr != nil {
-        return emptyResponse, permissionErr
-    }
-
 
     if (allocation.GetAllocation().Type != types.AllocationType_dynamic) {
         return emptyResponse, types.NewAllocationError(allocation.GetAllocation().SourceObjectId, "immutable_type").WithFieldChange("type", allocation.GetAllocation().Type.String(), "dynamic")
