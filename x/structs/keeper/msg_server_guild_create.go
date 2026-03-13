@@ -21,17 +21,7 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
         return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_create")
     }
 
-    // Need to change this to be more open.
-    // TODO should probably accept a reactor ID instead of using this method for figuring it out
-    var playerAddress sdk.AccAddress
-    playerAddress, _ = sdk.AccAddressFromBech32(msg.Creator)
-
-    var validatorAddress sdk.ValAddress
-    validatorAddress = playerAddress.Bytes()
-
-    reactorBytes, _ := k.GetReactorBytesFromValidator(ctx, validatorAddress.Bytes())
-    reactor := cc.GetReactor(string(reactorBytes))
-
+    reactor := cc.GetReactor(msg.ReactorId)
     if reactor.CheckReactor() != nil {
         return emptyResponse, types.NewReactorError("guild_create", "required").WithAddress(msg.Creator, "validator")
     }

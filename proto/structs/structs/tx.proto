@@ -286,9 +286,10 @@ message MsgGuildBankConfiscateAndBurnResponse { }
 message MsgGuildCreate {
   option (cosmos.msg.v1.signer) = "creator";
 
-  string creator  = 1;
-  string endpoint = 2;
-  string entrySubstationId = 3;
+  string creator            = 1;
+  string reactorId          = 2;
+  string endpoint           = 3;
+  string entrySubstationId  = 4;
 }
 
 message MsgGuildCreateResponse { string guildId = 1; }

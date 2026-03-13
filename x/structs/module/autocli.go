@@ -414,9 +414,9 @@ func (am AppModule) AutoCLIOptions() *autocliv1.ModuleOptions {
                 },
                 {
                     RpcMethod:      "GuildCreate",
-                    Use:            "guild-create [endpoint] [substation id]",
+                    Use:            "guild-create [reactor id] [endpoint] [substation id]",
                     Short:          "Create a guild from an account with an associated Reactor",
-                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "endpoint"},{ProtoField: "entrySubstationId"}},
+                    PositionalArgs: []*autocliv1.PositionalArgDescriptor{{ProtoField: "reactorId"},{ProtoField: "endpoint"},{ProtoField: "entrySubstationId"}},
                 },
                 {
                     RpcMethod:      "GuildMembershipInvite",

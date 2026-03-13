@@ -36,8 +36,6 @@ func (k Keeper) ReactorInitialize(ctx context.Context, validatorAddress sdk.ValA
 		reactor.DefaultCommission, _ = math.LegacyNewDecFromStr("0.04")
 		reactor = k.AppendReactor(ctx, reactor)
 
-		k.SetReactorValidatorBytes(ctx, reactor.Id, validatorAddress.Bytes())
-
 		/*
 		 * Convert the sdk.ValAddress into a regular sdk.AccAddress
 		 *
