@@ -48,9 +48,8 @@ func TestMsgPermissionGuildRankSet(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, resp)
 
-	rank, ok := k.GetGuildRankForPermission(ctx, structObj.Id, guild.Id, types.Permission(1))
-	require.True(t, ok)
-	require.Equal(t, uint64(2), rank)
+	reg := k.ReadGuildRankRegister(ctx, structObj.Id, guild.Id)
+	require.Equal(t, uint64(2), reg[0]) // bit 0 = PermPlay (Permission(1))
 
 	// Validation: empty object_id
 	_, err = ms.PermissionGuildRankSet(wctx, &types.MsgPermissionGuildRankSet{

@@ -42,7 +42,6 @@ func TestMsgPlayerUpdatePrimaryAddress(t *testing.T) {
 			name: "valid primary address update",
 			input: &types.MsgPlayerUpdatePrimaryAddress{
 				Creator:        player.Creator,
-				PlayerId:       player.Id,
 				PrimaryAddress: newPrimaryAddress,
 			},
 			expErr: false,
@@ -51,7 +50,6 @@ func TestMsgPlayerUpdatePrimaryAddress(t *testing.T) {
 			name: "invalid player id",
 			input: &types.MsgPlayerUpdatePrimaryAddress{
 				Creator:        player.Creator,
-				PlayerId:       "invalid-player",
 				PrimaryAddress: newPrimaryAddress,
 			},
 			expErr:    true,
@@ -62,7 +60,6 @@ func TestMsgPlayerUpdatePrimaryAddress(t *testing.T) {
 			name: "invalid address format",
 			input: &types.MsgPlayerUpdatePrimaryAddress{
 				Creator:        player.Creator,
-				PlayerId:       player.Id,
 				PrimaryAddress: "invalid-address",
 			},
 			expErr:    true,
@@ -73,7 +70,6 @@ func TestMsgPlayerUpdatePrimaryAddress(t *testing.T) {
 			name: "address not associated with player",
 			input: &types.MsgPlayerUpdatePrimaryAddress{
 				Creator:        player.Creator,
-				PlayerId:       player.Id,
 				PrimaryAddress: sdk.AccAddress("notassociated123456789012345678901234567890").String(),
 			},
 			expErr:    true,
@@ -84,7 +80,6 @@ func TestMsgPlayerUpdatePrimaryAddress(t *testing.T) {
 			name: "no permissions",
 			input: &types.MsgPlayerUpdatePrimaryAddress{
 				Creator:        sdk.AccAddress("noperms123456789012345678901234567890").String(),
-				PlayerId:       player.Id,
 				PrimaryAddress: newPrimaryAddress,
 			},
 			expErr:    true,

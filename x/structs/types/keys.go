@@ -75,6 +75,9 @@ func KeyPrefix(p string) []byte {
 const (
     PermissionKey = "Permission/value/"
     PermissionGuildRank = "Permission/guildRank/"
+
+    PermissionBitCount     = 24
+    PermissionRegisterSize = PermissionBitCount * 8 // 192 bytes
 )
 
 const (

@@ -3,7 +3,6 @@ package keeper
 import (
 	"context"
 	"encoding/binary"
-	"strings"
 
 	"github.com/cosmos/cosmos-sdk/runtime"
 	"cosmossdk.io/store/prefix"
@@ -29,24 +28,26 @@ func (k Keeper) GuildRankPermissionByObject(goCtx context.Context, req *types.Qu
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
 	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
-	// Store keys: objectId + "/" + guildId + "/" + 8-byte permission; value: 8-byte rank
 	objectPrefix := append(types.KeyPrefix(types.PermissionGuildRank), []byte(req.ObjectId+"/")...)
 	prefixStore := prefix.NewStore(store, objectPrefix)
 
 	var records []*types.GuildRankPermissionRecord
 	pageRes, err := query.Paginate(prefixStore, req.Pagination, func(key []byte, value []byte) error {
-		if len(key) < 9 { // at least "x/"+ 8 bytes
+		if len(value) != types.PermissionRegisterSize {
 			return nil
 		}
-		guildId := strings.TrimSuffix(string(key[:len(key)-9]), "/")
-		permVal := binary.BigEndian.Uint64(key[len(key)-8:])
-		rank := binary.BigEndian.Uint64(value)
-		records = append(records, &types.GuildRankPermissionRecord{
-			ObjectId:    req.ObjectId,
-			GuildId:     guildId,
-			Permissions: permVal,
-			Rank:        rank,
-		})
+		guildId := string(key)
+		for bit := 0; bit < types.PermissionBitCount; bit++ {
+			rank := binary.BigEndian.Uint64(value[bit*8 : bit*8+8])
+			if rank != 0 {
+				records = append(records, &types.GuildRankPermissionRecord{
+					ObjectId:    req.ObjectId,
+					GuildId:     guildId,
+					Permissions: 1 << bit,
+					Rank:        rank,
+				})
+			}
+		}
 		return nil
 	})
 	if err != nil {
@@ -73,30 +74,21 @@ func (k Keeper) GuildRankPermissionByObjectAndGuild(goCtx context.Context, req *
 	}
 
 	ctx := sdk.UnwrapSDKContext(goCtx)
-	store := runtime.KVStoreAdapter(k.storeService.OpenKVStore(ctx))
-	guildRankStore := prefix.NewStore(store, GuildRankKeyPrefix(req.ObjectId, req.GuildId))
-	// Keys in this store: 8-byte permission; value: 8-byte rank
+	register := k.ReadGuildRankRegister(ctx, req.ObjectId, req.GuildId)
 
 	var records []*types.GuildRankPermissionRecord
-	pageRes, err := query.Paginate(guildRankStore, req.Pagination, func(key []byte, value []byte) error {
-		if len(key) != 8 {
-			return nil
+	for bit := 0; bit < types.PermissionBitCount; bit++ {
+		if register[bit] != 0 {
+			records = append(records, &types.GuildRankPermissionRecord{
+				ObjectId:    req.ObjectId,
+				GuildId:     req.GuildId,
+				Permissions: 1 << bit,
+				Rank:        register[bit],
+			})
 		}
-		permVal := binary.BigEndian.Uint64(key)
-		rank := binary.BigEndian.Uint64(value)
-		records = append(records, &types.GuildRankPermissionRecord{
-			ObjectId:    req.ObjectId,
-			GuildId:     req.GuildId,
-			Permissions: permVal,
-			Rank:        rank,
-		})
-		return nil
-	})
-	if err != nil {
-		return nil, err
 	}
+
 	return &types.QueryGuildRankPermissionByObjectAndGuildResponse{
 		GuildRankPermissionRecords: records,
-		Pagination:                 pageRes,
 	}, nil
 }

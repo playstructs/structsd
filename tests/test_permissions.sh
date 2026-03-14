@@ -572,6 +572,140 @@ RECORDS_AFTER=$(echo "${GRANK_AFTER}" | jq -r '.guild_rank_permission_records | 
 echo "  Guild rank records after revoke: ${RECORDS_AFTER}"
 
 # ═════════════════════════════════════════════════════════════════════════════
+#  PHASE 6b: Combined bitmask guild rank permissions
+# ═════════════════════════════════════════════════════════════════════════════
+
+section "PHASE 6b: Combined bitmask guild rank permissions"
+
+# ── Combined mask lifecycle ──────────────────────────────────────────────────
+info "--- Combined mask set and query ---"
+
+# PermUpdate=4 (1<<2), PermDelete=8 (1<<3), combined = 12
+run_tx "Set combined mask (PermUpdate|PermDelete = 12, rank 3) on substation" \
+    tx structs permission-guild-rank-set "${SUBSTATION_ID}" "${GUILD_ID}" 12 3 --from alice
+
+GRANK_COMB=$(get_guild_rank_permission_by_object_and_guild "${SUBSTATION_ID}" "${GUILD_ID}")
+GRANK_COMB_COUNT=$(echo "${GRANK_COMB}" | jq -r '.guild_rank_permission_records | length' 2>/dev/null || echo "0")
+assert_eq "Combined mask decomposed into 2 records" "2" "${GRANK_COMB_COUNT}"
+
+GRANK_HAS_4=$(echo "${GRANK_COMB}" | jq -r '[.guild_rank_permission_records[]? | select(.permissions == "4")] | length' 2>/dev/null || echo "0")
+GRANK_HAS_8=$(echo "${GRANK_COMB}" | jq -r '[.guild_rank_permission_records[]? | select(.permissions == "8")] | length' 2>/dev/null || echo "0")
+assert_eq "Record for PermUpdate (4) exists" "1" "${GRANK_HAS_4}"
+assert_eq "Record for PermDelete (8) exists" "1" "${GRANK_HAS_8}"
+
+RANK_FOR_4=$(echo "${GRANK_COMB}" | jq -r '[.guild_rank_permission_records[]? | select(.permissions == "4")] | .[0].rank // empty' 2>/dev/null || echo "")
+RANK_FOR_8=$(echo "${GRANK_COMB}" | jq -r '[.guild_rank_permission_records[]? | select(.permissions == "8")] | .[0].rank // empty' 2>/dev/null || echo "")
+assert_eq "PermUpdate rank is 3" "3" "${RANK_FOR_4}"
+assert_eq "PermDelete rank is 3" "3" "${RANK_FOR_8}"
+
+# ── Partial revoke ───────────────────────────────────────────────────────────
+info "--- Partial revoke of combined mask ---"
+
+run_tx "Revoke only PermUpdate (4) from combined mask" \
+    tx structs permission-guild-rank-revoke "${SUBSTATION_ID}" "${GUILD_ID}" 4 --from alice
+
+GRANK_PART=$(get_guild_rank_permission_by_object_and_guild "${SUBSTATION_ID}" "${GUILD_ID}")
+GRANK_PART_COUNT=$(echo "${GRANK_PART}" | jq -r '.guild_rank_permission_records | length' 2>/dev/null || echo "0")
+assert_eq "After partial revoke, 1 record remains" "1" "${GRANK_PART_COUNT}"
+
+GRANK_PART_PERM=$(echo "${GRANK_PART}" | jq -r '.guild_rank_permission_records[0].permissions // empty' 2>/dev/null || echo "")
+assert_eq "Remaining record is PermDelete (8)" "8" "${GRANK_PART_PERM}"
+
+GRANK_PART_RANK=$(echo "${GRANK_PART}" | jq -r '.guild_rank_permission_records[0].rank // empty' 2>/dev/null || echo "")
+assert_eq "Remaining record rank is still 3" "3" "${GRANK_PART_RANK}"
+
+run_tx "Revoke remaining PermDelete (8)" \
+    tx structs permission-guild-rank-revoke "${SUBSTATION_ID}" "${GUILD_ID}" 8 --from alice
+
+GRANK_EMPTY=$(get_guild_rank_permission_by_object_and_guild "${SUBSTATION_ID}" "${GUILD_ID}")
+GRANK_EMPTY_COUNT=$(echo "${GRANK_EMPTY}" | jq -r '.guild_rank_permission_records | length' 2>/dev/null || echo "0")
+assert_eq "After full revoke, 0 records remain" "0" "${GRANK_EMPTY_COUNT}"
+
+# ── Per-bit rank independence ────────────────────────────────────────────────
+info "--- Per-bit rank independence ---"
+
+run_tx "Set PermUpdate (4) rank 2 on substation" \
+    tx structs permission-guild-rank-set "${SUBSTATION_ID}" "${GUILD_ID}" 4 2 --from alice
+run_tx "Set PermDelete (8) rank 5 on substation" \
+    tx structs permission-guild-rank-set "${SUBSTATION_ID}" "${GUILD_ID}" 8 5 --from alice
+
+GRANK_INDEP=$(get_guild_rank_permission_by_object_and_guild "${SUBSTATION_ID}" "${GUILD_ID}")
+GRANK_INDEP_COUNT=$(echo "${GRANK_INDEP}" | jq -r '.guild_rank_permission_records | length' 2>/dev/null || echo "0")
+assert_eq "Two records with independent ranks" "2" "${GRANK_INDEP_COUNT}"
+
+RANK_INDEP_4=$(echo "${GRANK_INDEP}" | jq -r '[.guild_rank_permission_records[]? | select(.permissions == "4")] | .[0].rank // empty' 2>/dev/null || echo "")
+RANK_INDEP_8=$(echo "${GRANK_INDEP}" | jq -r '[.guild_rank_permission_records[]? | select(.permissions == "8")] | .[0].rank // empty' 2>/dev/null || echo "")
+assert_eq "PermUpdate rank is 2" "2" "${RANK_INDEP_4}"
+assert_eq "PermDelete rank is 5" "5" "${RANK_INDEP_8}"
+
+# Overwrite PermUpdate to rank 10, verify PermDelete unchanged
+run_tx "Overwrite PermUpdate (4) to rank 10 on substation" \
+    tx structs permission-guild-rank-set "${SUBSTATION_ID}" "${GUILD_ID}" 4 10 --from alice
+
+GRANK_OVR=$(get_guild_rank_permission_by_object_and_guild "${SUBSTATION_ID}" "${GUILD_ID}")
+RANK_OVR_4=$(echo "${GRANK_OVR}" | jq -r '[.guild_rank_permission_records[]? | select(.permissions == "4")] | .[0].rank // empty' 2>/dev/null || echo "")
+RANK_OVR_8=$(echo "${GRANK_OVR}" | jq -r '[.guild_rank_permission_records[]? | select(.permissions == "8")] | .[0].rank // empty' 2>/dev/null || echo "")
+assert_eq "PermUpdate rank overwritten to 10" "10" "${RANK_OVR_4}"
+assert_eq "PermDelete rank unchanged at 5" "5" "${RANK_OVR_8}"
+
+# Clean up
+run_tx "Revoke PermUpdate on substation" \
+    tx structs permission-guild-rank-revoke "${SUBSTATION_ID}" "${GUILD_ID}" 4 --from alice
+run_tx "Revoke PermDelete on substation" \
+    tx structs permission-guild-rank-revoke "${SUBSTATION_ID}" "${GUILD_ID}" 8 --from alice
+
+# ── Combined mask with action test ──────────────────────────────────────────
+info "--- Combined mask action test ---"
+
+# PermUpdate|PermGuildEndpointUpdate = 4|16384 = 16388
+run_tx "Set combined mask (16388, rank 3) on guild" \
+    tx structs permission-guild-rank-set "${GUILD_ID}" "${GUILD_ID}" 16388 3 --from alice
+
+# Revoke explicit permissions on guild for P2 and P3 so only guild-rank path is tested
+run_tx "Revoke any explicit P2 perms on guild" \
+    tx structs permission-revoke-on-object "${GUILD_ID}" "${PLAYER_2_ID}" "${PERM_GUILD_ENDPOINT_UPDATE}" --from alice
+run_tx "Revoke any explicit P3 perms on guild" \
+    tx structs permission-revoke-on-object "${GUILD_ID}" "${PLAYER_3_ID}" "${PERM_GUILD_ENDPOINT_UPDATE}" --from alice
+
+run_tx "Set Player 2 rank to 2" tx structs player-update-guild-rank "${PLAYER_2_ID}" 2 --from alice
+run_tx "Set Player 3 rank to 5" tx structs player-update-guild-rank "${PLAYER_3_ID}" 5 --from alice
+
+run_tx "Player 2 (rank 2, <= 3) updates guild endpoint via combined guild-rank" \
+    tx structs guild-update-endpoint "${GUILD_ID}" "comb-action-test.energy" --from player_2
+GUILD_EP=$(query query structs guild "${GUILD_ID}" | jq -r '.Guild.endpoint // empty' 2>/dev/null || echo "")
+assert_eq "Guild endpoint updated by P2 via combined guild rank" "comb-action-test.energy" "${GUILD_EP}"
+
+run_tx_expect_permission_denied "Player 3 (rank 5, > 3) tries endpoint update via combined guild-rank" \
+    tx structs guild-update-endpoint "${GUILD_ID}" "hacked.energy" --from player_3
+
+# Restore endpoint
+run_tx "Restore guild endpoint" \
+    tx structs guild-update-endpoint "${GUILD_ID}" "perm-test.energy" --from alice
+
+# ── Combined mask revoke atomicity ──────────────────────────────────────────
+info "--- Combined mask revoke atomicity ---"
+
+# First set a 3-bit combined mask: PermUpdate|PermDelete|PermGuildEndpointUpdate = 4|8|16384 = 16396
+run_tx "Set 3-bit combined mask (16396, rank 3) on guild" \
+    tx structs permission-guild-rank-set "${GUILD_ID}" "${GUILD_ID}" 16396 3 --from alice
+
+GRANK_3BIT=$(get_guild_rank_permission_by_object_and_guild "${GUILD_ID}" "${GUILD_ID}")
+GRANK_3BIT_COUNT=$(echo "${GRANK_3BIT}" | jq -r '.guild_rank_permission_records | length' 2>/dev/null || echo "0")
+assert_eq "3-bit combined mask decomposed into 3 records" "3" "${GRANK_3BIT_COUNT}"
+
+# Revoke entire combined mask at once
+run_tx "Revoke combined mask (16396) atomically" \
+    tx structs permission-guild-rank-revoke "${GUILD_ID}" "${GUILD_ID}" 16396 --from alice
+
+GRANK_AFTER_ATOMIC=$(get_guild_rank_permission_by_object_and_guild "${GUILD_ID}" "${GUILD_ID}")
+GRANK_AFTER_ATOMIC_COUNT=$(echo "${GRANK_AFTER_ATOMIC}" | jq -r '.guild_rank_permission_records | length' 2>/dev/null || echo "0")
+assert_eq "All 3 bits revoked atomically" "0" "${GRANK_AFTER_ATOMIC_COUNT}"
+
+# Clean up player ranks
+run_tx "Reset Player 2 rank" tx structs player-update-guild-rank "${PLAYER_2_ID}" 0 --from alice
+run_tx "Reset Player 3 rank" tx structs player-update-guild-rank "${PLAYER_3_ID}" 0 --from alice
+
+# ═════════════════════════════════════════════════════════════════════════════
 #  PHASE 7: Player guild rank change (skip if command not implemented)
 # ═════════════════════════════════════════════════════════════════════════════
 

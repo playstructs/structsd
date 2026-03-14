@@ -126,6 +126,12 @@ var PermissionLabel = map[Permission]string{
 	PermAll:                        "all",
 }
 
+func init() {
+	if uint64(PermAll)>>PermissionBitCount != 0 {
+		panic("PermAll exceeds PermissionBitCount -- update PermissionBitCount in keys.go")
+	}
+}
+
 var Permission_enum = map[string]Permission{
 	"permissionless":                 Permissionless,
 	"play":                           PermPlay,

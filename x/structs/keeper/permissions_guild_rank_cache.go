@@ -4,37 +4,36 @@ import (
 	"structs/x/structs/types"
 )
 
-type PermissionsGuildRankCache struct {
-	CC                   *CurrentContext
-	PermissionGuildRankID string
-	ObjectId              string
-	GuildId               string
-	Permission            types.Permission
-	WorstAllowedRank      uint64
-	Loaded                bool
-	Changed               bool
-	Deleted               bool
-	Exists                bool // true if a record exists (from store or just set); false when not found or revoked
+type GuildRankRegisterCache struct {
+	CC       *CurrentContext
+	ObjectId string
+	GuildId  string
+	Original [types.PermissionBitCount]uint64
+	Register [types.PermissionBitCount]uint64
+	Loaded   bool
+	Changed  bool
 }
 
-
-func (cache *PermissionsGuildRankCache) IsChanged() bool {
-	return cache.Changed
+func (cache *GuildRankRegisterCache) ID() string {
+	return cache.ObjectId + "/" + cache.GuildId
 }
 
-func (cache *PermissionsGuildRankCache) ID() string {
-	return cache.PermissionGuildRankID
-}
+func (cache *GuildRankRegisterCache) Commit() {
+	if !cache.Loaded || !cache.Changed {
+		return
+	}
+	cache.Changed = false
 
-func (cache *PermissionsGuildRankCache) Commit() {
-    if cache.Loaded && cache.Changed {
-        cache.Changed = false
-    	cache.CC.k.logger.Info("Updating Guild Rank Permission From Cache", "PermissionsId", cache.ID(), "value", cache.WorstAllowedRank)
+	var changedBits types.Permission
+	for bit := 0; bit < types.PermissionBitCount; bit++ {
+		if cache.Register[bit] != cache.Original[bit] {
+			changedBits |= types.Permission(1 << bit)
+		}
+	}
+	if changedBits == 0 {
+		return
+	}
 
-        if cache.Deleted {
-            cache.CC.k.RemoveGuildRankPermission(cache.CC.ctx, cache.ObjectId, cache.GuildId, cache.Permission)
-        } else {
-            cache.CC.k.SetGuildRankPermission(cache.CC.ctx, cache.ObjectId, cache.GuildId, cache.Permission, cache.WorstAllowedRank)
-        }
-    }
+	cache.CC.k.SetGuildRankPermission(cache.CC.ctx, cache.ObjectId, cache.GuildId, cache.Register, changedBits)
+	cache.Original = cache.Register
 }

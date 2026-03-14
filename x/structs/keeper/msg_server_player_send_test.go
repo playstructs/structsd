@@ -45,7 +45,6 @@ func TestMsgPlayerSend(t *testing.T) {
 			name: "valid send",
 			input: &types.MsgPlayerSend{
 				Creator:     player.Creator,
-				PlayerId:    player.Id,
 				FromAddress: fromAddress,
 				ToAddress:   toAcc.String(),
 				Amount:      sdk.NewCoins(sdk.NewCoin("ualpha", math.NewInt(100))),
@@ -64,7 +63,6 @@ func TestMsgPlayerSend(t *testing.T) {
 			name: "invalid player id",
 			input: &types.MsgPlayerSend{
 				Creator:     player.Creator,
-				PlayerId:    "player-invalid-999999",
 				FromAddress: fromAddress,
 				ToAddress:   toAcc.String(),
 				Amount:      sdk.NewCoins(sdk.NewCoin("ualpha", math.NewInt(100))),
@@ -81,7 +79,6 @@ func TestMsgPlayerSend(t *testing.T) {
 			name: "invalid from address",
 			input: &types.MsgPlayerSend{
 				Creator:     player.Creator,
-				PlayerId:    player.Id,
 				FromAddress: "invalid-address-format",
 				ToAddress:   toAcc.String(),
 				Amount:      sdk.NewCoins(sdk.NewCoin("ualpha", math.NewInt(100))),
@@ -95,7 +92,6 @@ func TestMsgPlayerSend(t *testing.T) {
 			name: "from address not associated with player",
 			input: &types.MsgPlayerSend{
 				Creator:     player.Creator,
-				PlayerId:    player.Id,
 				FromAddress: sdk.AccAddress("notassociated123456789012345678901234567890").String(),
 				ToAddress:   toAcc.String(),
 				Amount:      sdk.NewCoins(sdk.NewCoin("ualpha", math.NewInt(100))),
@@ -111,7 +107,6 @@ func TestMsgPlayerSend(t *testing.T) {
 			name: "insufficient balance",
 			input: &types.MsgPlayerSend{
 				Creator:     player.Creator,
-				PlayerId:    player.Id,
 				FromAddress: fromAddress,
 				ToAddress:   toAcc.String(),
 				Amount:      sdk.NewCoins(sdk.NewCoin("ualpha", math.NewInt(10000))),

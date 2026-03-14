@@ -77,10 +77,10 @@ func (cc *CurrentContext) ClearPermissionsForObject(objectId string) {
 
 	cc.k.ClearPermissionGuildRankByObject(cc.ctx, objectId)
 
-	prefix := objectId + "/"
-	for id := range cc.permissionsGuildRank {
-		if strings.HasPrefix(id, prefix) {
-			delete(cc.permissionsGuildRank, id)
+	pfx := objectId + "/"
+	for id := range cc.guildRankRegisters {
+		if strings.HasPrefix(id, pfx) {
+			delete(cc.guildRankRegisters, id)
 		}
 	}
 }
@@ -109,64 +109,62 @@ func (cc *CurrentContext) PermissionHasOneOf(permissionId []byte, flag types.Per
 	return currentFlags&flag != 0
 }
 
-// GetPermissionsGuildRank returns (worstAllowedRank, exists). exists is false when no record is stored or after revoke.
+func (cc *CurrentContext) getGuildRankRegister(objectId string, guildId string) *GuildRankRegisterCache {
+	pairKey := objectId + "/" + guildId
+	if reg, ok := cc.guildRankRegisters[pairKey]; ok {
+		return reg
+	}
+	r := cc.k.ReadGuildRankRegister(cc.ctx, objectId, guildId)
+	reg := &GuildRankRegisterCache{
+		CC: cc, ObjectId: objectId, GuildId: guildId,
+		Original: r, Register: r, Loaded: true,
+	}
+	cc.guildRankRegisters[pairKey] = reg
+	return reg
+}
+
+// GetPermissionsGuildRank returns (worstAllowedRank, exists).
+// For combined masks, ALL requested bits must have a record; the most restrictive rank is returned.
 func (cc *CurrentContext) GetPermissionsGuildRank(object PermissionedObject, guild *GuildCache, permissionType types.Permission) (uint64, bool) {
-	id := GuildRankPermissionID(object.ID(), guild.ID(), permissionType)
+	reg := cc.getGuildRankRegister(object.ID(), guild.ID())
 
-	if c, exists := cc.permissionsGuildRank[id]; exists {
-		return c.WorstAllowedRank, c.Exists
+	var worstRank uint64
+	found := false
+	for bit := 0; bit < types.PermissionBitCount; bit++ {
+		if uint64(permissionType)&(1<<bit) != 0 {
+			slotRank := reg.Register[bit]
+			if slotRank == 0 {
+				return 0, false
+			}
+			if !found || slotRank < worstRank {
+				worstRank = slotRank
+			}
+			found = true
+		}
 	}
-
-	worstAllowedRank, ok := cc.k.GetGuildRankForPermission(cc.ctx, object.ID(), guild.ID(), permissionType)
-
-	cc.permissionsGuildRank[id] = &PermissionsGuildRankCache{
-		CC:                    cc,
-		PermissionGuildRankID: id,
-		ObjectId:              object.ID(),
-		GuildId:               guild.ID(),
-		Permission:            permissionType,
-		WorstAllowedRank:      worstAllowedRank,
-		Loaded:                true,
-		Exists:                ok,
-	}
-
-	return worstAllowedRank, ok
+	return worstRank, found
 }
 
-// SetPermissionsGuildRank caches the guild rank permission for commit.
-func (cc *CurrentContext) SetPermissionsGuildRank(object PermissionedObject, guild *GuildCache, permissionType types.Permission, worstAllowedRank uint64) *PermissionsGuildRankCache {
-	id := GuildRankPermissionID(object.ID(), guild.ID(), permissionType)
-
-	cc.permissionsGuildRank[id] = &PermissionsGuildRankCache{
-		CC:                    cc,
-		PermissionGuildRankID: id,
-		ObjectId:              object.ID(),
-		GuildId:               guild.ID(),
-		Permission:            permissionType,
-		WorstAllowedRank:      worstAllowedRank,
-		Loaded:                true,
-		Changed:               true,
-		Exists:                true,
+// SetPermissionsGuildRank decomposes the permission mask and sets each bit's rank in the register cache.
+func (cc *CurrentContext) SetPermissionsGuildRank(object PermissionedObject, guild *GuildCache, permissionType types.Permission, worstAllowedRank uint64) {
+	reg := cc.getGuildRankRegister(object.ID(), guild.ID())
+	for bit := 0; bit < types.PermissionBitCount; bit++ {
+		if uint64(permissionType)&(1<<bit) != 0 {
+			reg.Register[bit] = worstAllowedRank
+		}
 	}
-
-	return cc.permissionsGuildRank[id]
+	reg.Changed = true
 }
 
-// RemovePermissionsGuildRank marks the guild rank permission as deleted in the cache; Commit() will call RemoveGuildRankPermission.
+// RemovePermissionsGuildRank zeros the requested permission bits in the register cache.
 func (cc *CurrentContext) RemovePermissionsGuildRank(object PermissionedObject, guild *GuildCache, permissionType types.Permission) {
-	id := GuildRankPermissionID(object.ID(), guild.ID(), permissionType)
-
-	cc.permissionsGuildRank[id] = &PermissionsGuildRankCache{
-		CC:                    cc,
-		PermissionGuildRankID: id,
-		ObjectId:              object.ID(),
-		GuildId:               guild.ID(),
-		Permission:            permissionType,
-		Loaded:                true,
-		Changed:               true,
-		Deleted:               true,
-		Exists:                false,
+	reg := cc.getGuildRankRegister(object.ID(), guild.ID())
+	for bit := 0; bit < types.PermissionBitCount; bit++ {
+		if uint64(permissionType)&(1<<bit) != 0 {
+			reg.Register[bit] = 0
+		}
 	}
+	reg.Changed = true
 }
 
 func (cc *CurrentContext) GetPermissionedObject(objectId string) PermissionedObject {

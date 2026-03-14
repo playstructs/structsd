@@ -34,10 +34,9 @@ func TestMsgPermissionGuildRankRevoke(t *testing.T) {
 
 	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, owner)
 
-	k.SetGuildRankPermission(ctx, structObj.Id, guild.Id, types.Permission(1), 2)
-	rank, ok := k.GetGuildRankForPermission(ctx, structObj.Id, guild.Id, types.Permission(1))
-	require.True(t, ok)
-	require.Equal(t, uint64(2), rank)
+	k.SetGuildRankPermissionStoreOnly(ctx, structObj.Id, guild.Id, types.Permission(1), 2)
+	reg := k.ReadGuildRankRegister(ctx, structObj.Id, guild.Id)
+	require.Equal(t, uint64(2), reg[0])
 
 	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(owner.Creator)
 	testPermissionAdd(k, ctx, addressPermissionId, types.PermAdmin)
@@ -51,8 +50,8 @@ func TestMsgPermissionGuildRankRevoke(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, resp)
 
-	_, ok = k.GetGuildRankForPermission(ctx, structObj.Id, guild.Id, types.Permission(1))
-	require.False(t, ok)
+	reg = k.ReadGuildRankRegister(ctx, structObj.Id, guild.Id)
+	require.Equal(t, uint64(0), reg[0])
 
 	// Validation: empty object_id
 	_, err = ms.PermissionGuildRankRevoke(wctx, &types.MsgPermissionGuildRankRevoke{

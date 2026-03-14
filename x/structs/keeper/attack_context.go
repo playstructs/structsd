@@ -156,7 +156,8 @@ func (ac *AttackContext) ResolveRecoil() {
 }
 
 func (ac *AttackContext) ResolvePlanetaryDefense() {
-	if !ac.Attacker.IsDestroyed() && ac.TargetWasPlanetary {
+	weaponCounterable := ac.Attacker.GetStructType().AttackCounterable && ac.Attacker.GetStructType().GetWeaponCounterable(ac.WeaponSystem)
+	if !ac.Attacker.IsDestroyed() && ac.TargetWasPlanetary && weaponCounterable {
 		ac.TargetPlanet.AttemptDefenseCannon(ac.Attacker)
 	}
 }

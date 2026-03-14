@@ -503,6 +503,8 @@ recover_state() {
         EB_P6_BATTLESHIP_ID=$(find_struct_by_owner_type "${PLAYER_6_ID}" 2 1 "${SA}")
         EB_P6_TANK_ID=$(find_struct_by_owner_type "${PLAYER_6_ID}" 9 1 "${SA}")
         EB_P6_CRUISER_ID=$(find_struct_by_owner_type "${PLAYER_6_ID}" 11 1 "${SA}")
+        EB_P3_MOBILE_ART_ID=$(find_struct_by_owner_type "${PLAYER_3_ID}" 8 1 "${SA}")
+        EB_PDC_ID=$(find_struct_by_owner_type "${PLAYER_6_ID}" 19 1 "${SA}")
         echo "  P6: planet=${PLAYER_6_PLANET_ID:-?} fleet=${PLAYER_6_FLEET_ID:-?} CS=${P6_COMMAND_SHIP_ID:-?}"
     fi
 
@@ -1536,6 +1538,98 @@ assert_gt "Guild rank perm records exist on substation" 0 "${GRANK_SUB_COUNT}"
 # Revoke
 run_tx "Revoking guild rank PermAllocationConnection on substation" \
     tx structs permission-guild-rank-revoke "${SUBSTATION_ID}" "${GUILD_ID}" 2048 --from alice
+
+# ─── Combined bitmask guild rank permission tests ─────────────────────────────
+info "--- Combined Bitmask Guild Rank Permissions ---"
+
+# Permission constants: PermUpdate=4 (1<<2), PermGuildEndpointUpdate=16384 (1<<14)
+# Combined: 4 | 16384 = 16388
+
+# Set combined permission mask on guild, rank <= 3
+run_tx "Setting combined guild rank perm (PermUpdate|PermGuildEndpointUpdate = 16388, rank 3) on guild" \
+    tx structs permission-guild-rank-set "${GUILD_ID}" "${GUILD_ID}" 16388 3 --from alice
+
+# Query and verify decomposition into 2 individual records
+GRANK_COMBINED_JSON=$(query query structs guild-rank-permission-by-object-and-guild "${GUILD_ID}" "${GUILD_ID}" 2>/dev/null || echo '{}')
+GRANK_COMBINED_COUNT=$(echo "${GRANK_COMBINED_JSON}" | jq -r '.guild_rank_permission_records | length' 2>/dev/null || echo "0")
+assert_eq "Combined mask decomposed into 2 records" "2" "${GRANK_COMBINED_COUNT}"
+
+# Verify individual records have correct single-bit permission values
+GRANK_HAS_4=$(echo "${GRANK_COMBINED_JSON}" | jq -r '[.guild_rank_permission_records[]? | select(.permissions == "4")] | length' 2>/dev/null || echo "0")
+GRANK_HAS_16384=$(echo "${GRANK_COMBINED_JSON}" | jq -r '[.guild_rank_permission_records[]? | select(.permissions == "16384")] | length' 2>/dev/null || echo "0")
+assert_eq "Record for PermUpdate (4) exists" "1" "${GRANK_HAS_4}"
+assert_eq "Record for PermGuildEndpointUpdate (16384) exists" "1" "${GRANK_HAS_16384}"
+
+# Action test: Player 4 (rank 2 <= 3) can act, Player 5 (rank 5 > 3) cannot
+run_tx "Setting Player 4 rank to 2 for combined mask test" \
+    tx structs player-update-guild-rank "${PLAYER_4_ID}" 2 --from alice
+run_tx "Setting Player 5 rank to 5 for combined mask test" \
+    tx structs player-update-guild-rank "${PLAYER_5_ID}" 5 --from alice
+
+run_tx "Player 4 (rank 2) updates guild endpoint via combined guild rank permission" \
+    tx structs guild-update-endpoint "${GUILD_ID}" "combined-rank-test.energy" --from player_4
+
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+GUILD_EP_COMB=$(jqr "${GUILD_JSON}" '.Guild.endpoint')
+assert_eq "Guild endpoint updated by rank-2 player (combined mask)" "combined-rank-test.energy" "${GUILD_EP_COMB}"
+
+run_tx "Player 5 (rank 5) tries to update guild endpoint (should fail — combined mask, rank 3)" \
+    tx structs guild-update-endpoint "${GUILD_ID}" "hacked.energy" --from player_5
+
+GUILD_JSON=$(query query structs guild "${GUILD_ID}")
+GUILD_EP_COMB_NEG=$(jqr "${GUILD_JSON}" '.Guild.endpoint')
+assert_eq "Guild endpoint unchanged by rank-5 player (combined mask)" "combined-rank-test.energy" "${GUILD_EP_COMB_NEG}"
+
+run_tx "Resetting guild endpoint to oh.energy" \
+    tx structs guild-update-endpoint "${GUILD_ID}" "oh.energy" --from alice
+
+# Partial revoke: remove only PermGuildEndpointUpdate (16384), keep PermUpdate (4)
+run_tx "Revoking only PermGuildEndpointUpdate (16384) from combined mask" \
+    tx structs permission-guild-rank-revoke "${GUILD_ID}" "${GUILD_ID}" 16384 --from alice
+
+GRANK_PARTIAL_JSON=$(query query structs guild-rank-permission-by-object-and-guild "${GUILD_ID}" "${GUILD_ID}" 2>/dev/null || echo '{}')
+GRANK_PARTIAL_COUNT=$(echo "${GRANK_PARTIAL_JSON}" | jq -r '.guild_rank_permission_records | length' 2>/dev/null || echo "0")
+assert_eq "After partial revoke, 1 record remains" "1" "${GRANK_PARTIAL_COUNT}"
+
+GRANK_PARTIAL_PERM=$(echo "${GRANK_PARTIAL_JSON}" | jq -r '.guild_rank_permission_records[0].permissions // empty' 2>/dev/null || echo "")
+assert_eq "Remaining record is PermUpdate (4)" "4" "${GRANK_PARTIAL_PERM}"
+
+# Revoke remaining PermUpdate (4)
+run_tx "Revoking remaining PermUpdate (4) from guild rank" \
+    tx structs permission-guild-rank-revoke "${GUILD_ID}" "${GUILD_ID}" 4 --from alice
+
+GRANK_EMPTY_JSON=$(query query structs guild-rank-permission-by-object-and-guild "${GUILD_ID}" "${GUILD_ID}" 2>/dev/null || echo '{}')
+GRANK_EMPTY_COUNT=$(echo "${GRANK_EMPTY_JSON}" | jq -r '.guild_rank_permission_records | length' 2>/dev/null || echo "0")
+assert_eq "After full revoke, 0 records remain" "0" "${GRANK_EMPTY_COUNT}"
+
+# Different ranks per bit on substation
+info "--- Per-Bit Rank Independence ---"
+
+run_tx "Setting PermUpdate (4) rank 3 on substation" \
+    tx structs permission-guild-rank-set "${SUBSTATION_ID}" "${GUILD_ID}" 4 3 --from alice
+run_tx "Setting PermGuildEndpointUpdate (16384) rank 5 on substation" \
+    tx structs permission-guild-rank-set "${SUBSTATION_ID}" "${GUILD_ID}" 16384 5 --from alice
+
+GRANK_MULTI_JSON=$(query query structs guild-rank-permission-by-object-and-guild "${SUBSTATION_ID}" "${GUILD_ID}" 2>/dev/null || echo '{}')
+GRANK_MULTI_COUNT=$(echo "${GRANK_MULTI_JSON}" | jq -r '.guild_rank_permission_records | length' 2>/dev/null || echo "0")
+assert_eq "Two records with different ranks" "2" "${GRANK_MULTI_COUNT}"
+
+GRANK_RANK_FOR_4=$(echo "${GRANK_MULTI_JSON}" | jq -r '[.guild_rank_permission_records[]? | select(.permissions == "4")] | .[0].rank // empty' 2>/dev/null || echo "")
+GRANK_RANK_FOR_16384=$(echo "${GRANK_MULTI_JSON}" | jq -r '[.guild_rank_permission_records[]? | select(.permissions == "16384")] | .[0].rank // empty' 2>/dev/null || echo "")
+assert_eq "PermUpdate rank is 3" "3" "${GRANK_RANK_FOR_4}"
+assert_eq "PermGuildEndpointUpdate rank is 5" "5" "${GRANK_RANK_FOR_16384}"
+
+# Clean up per-bit test
+run_tx "Revoking PermUpdate on substation" \
+    tx structs permission-guild-rank-revoke "${SUBSTATION_ID}" "${GUILD_ID}" 4 --from alice
+run_tx "Revoking PermGuildEndpointUpdate on substation" \
+    tx structs permission-guild-rank-revoke "${SUBSTATION_ID}" "${GUILD_ID}" 16384 --from alice
+
+# Reset player ranks
+run_tx "Resetting Player 4 rank to 101" \
+    tx structs player-update-guild-rank "${PLAYER_4_ID}" 101 --from alice
+run_tx "Resetting Player 5 rank to 101" \
+    tx structs player-update-guild-rank "${PLAYER_5_ID}" 101 --from alice
 
 fi # phase 4e
 
@@ -3613,7 +3707,27 @@ EB_P6_CRUISER_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
 assert_not_empty "P6 Cruiser struct ID" "${EB_P6_CRUISER_ID}"
 echo "  P6 Cruiser ID: ${EB_P6_CRUISER_ID}"
 
-info "All 8 extended battle builds initiated. Computing now (difficulty decays with age)."
+# ─── P3: Mobile Artillery (type 8, land, slot 3) — for PDC immunity test ───
+wait_for_charge "${PLAYER_3_ID}" "${CHARGE_BUILD}"
+run_tx "Initiating P3 Mobile Artillery (type=8, land, slot=3) for P3" \
+    tx structs struct-build-initiate "${PLAYER_3_ID}" 8 land 3 --from player_3
+
+STRUCT_ALL_JSON=$(query query structs struct-all)
+EB_P3_MOBILE_ART_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
+assert_not_empty "P3 Mobile Artillery struct ID" "${EB_P3_MOBILE_ART_ID}"
+echo "  P3 Mobile Artillery ID: ${EB_P3_MOBILE_ART_ID}"
+
+# ─── P6: PDC (type 19, land, slot 2) — planetary struct for defense cannon test ───
+wait_for_charge "${PLAYER_6_ID}" "${CHARGE_BUILD}"
+run_tx "Initiating P6 PDC (type=19, land, slot=2) for PDC test" \
+    tx structs struct-build-initiate "${PLAYER_6_ID}" 19 land 2 --from player_6
+
+STRUCT_ALL_JSON=$(query query structs struct-all)
+EB_PDC_ID=$(get_newest_struct_id "${STRUCT_ALL_JSON}")
+assert_not_empty "P6 PDC struct ID" "${EB_PDC_ID}"
+echo "  P6 PDC ID: ${EB_PDC_ID}"
+
+info "All 10 extended battle builds initiated. Computing now (difficulty decays with age)."
 
 # ═══════════════════════════════════════════════════════════════
 # COMPUTE: Build all extended battle structs
@@ -3668,6 +3782,24 @@ run_compute "Building P6 Cruiser ${EB_P6_CRUISER_ID}" \
     tx structs struct-build-compute "${EB_P6_CRUISER_ID}" --from player_6
 
 assert_eq "P6 Cruiser built" "true" "$(query query structs struct "${EB_P6_CRUISER_ID}" | jq -r '.structAttributes.isBuilt')"
+
+# ─── Compute P3 Mobile Artillery ───
+run_compute "Building P3 Mobile Artillery ${EB_P3_MOBILE_ART_ID}" \
+    tx structs struct-build-compute "${EB_P3_MOBILE_ART_ID}" --from player_3
+
+assert_eq "P3 Mobile Artillery built" "true" "$(query query structs struct "${EB_P3_MOBILE_ART_ID}" | jq -r '.structAttributes.isBuilt')"
+
+# ─── Compute P6 PDC ───
+run_compute "Building P6 PDC ${EB_PDC_ID}" \
+    tx structs struct-build-compute "${EB_PDC_ID}" --from player_6
+
+assert_eq "P6 PDC built" "true" "$(query query structs struct "${EB_PDC_ID}" | jq -r '.structAttributes.isBuilt')"
+
+# Verify PDC added a defensive cannon to P6's planet
+P6_PLANET_JSON=$(query query structs planet "${PLAYER_6_PLANET_ID}" 2>/dev/null || echo '{}')
+P6_DEF_CANNON_QTY=$(jqr "${P6_PLANET_JSON}" '.planetAttributes.defensiveCannonQuantity' '0')
+assert_gt "P6 planet has defensive cannons" 0 "${P6_DEF_CANNON_QTY}"
+info "P6 planet defensive cannon quantity: ${P6_DEF_CANNON_QTY}"
 
 info "All 13 fleet-capable struct types now exist across P3 and P6"
 info "  Types 1-13: Command Ship, Battleship, Starfighter, Frigate, Pursuit Fighter,"
@@ -3733,8 +3865,14 @@ wait_for_charge "${PLAYER_6_ID}" "${CHARGE_MOVE}"
 run_tx "Moving P6 Cruiser to P6's fleet (water, slot 1)" \
     tx structs struct-move "${EB_P6_CRUISER_ID}" fleet water 1 --from player_6
 
+# P3 Mobile Artillery → land slot 3
+wait_for_charge "${PLAYER_3_ID}" "${CHARGE_MOVE}"
+run_tx "Moving P3 Mobile Artillery to P3's fleet (land, slot 3)" \
+    tx structs struct-move "${EB_P3_MOBILE_ART_ID}" fleet land 3 --from player_3
+
 info "P6 fleet assembled: CS(space), Starfighter(space/0), Frigate(space/1), Battleship(space/2),"
 info "  MobileArt(land/0), Tank(land/1), Destroyer(water/0), Cruiser(water/1)"
+info "P3 fleet now also has: Mobile Artillery(land/3) for PDC immunity test"
 
 # ─── Move P3's fleet to P6's planet for battle ───
 run_tx "Moving P3's fleet to P6's planet for battle" \
@@ -4065,6 +4203,55 @@ else
 fi
 
 # ─────────────────────────────────────────────────────────────────────────────
+# GROUP E: Planetary Defense Cannon (PDC) Tests
+# ─────────────────────────────────────────────────────────────────────────────
+
+info "── Group E: Planetary Defense Cannon Tests ──"
+info "P6's planet has a PDC (defensive cannon). Attacking planetary structs on P6's"
+info "planet should trigger the PDC against counterable attackers but NOT against"
+info "non-counterable attackers (e.g. Mobile Artillery with AttackCounterable=false)."
+
+# E1: Counterable attacker vs planetary target — PDC SHOULD fire
+# P3 Tank (type 9, AttackCounterable=true) attacks P6 PDC (type 19, Category=planet, land)
+PDC_HP=$(eb_health "${EB_PDC_ID}")
+TANK_ALIVE=$(eb_health "${DESTROYER_STRUCT_ID}")
+if [ "${PDC_HP}" != "0" ] && [ "${TANK_ALIVE}" != "0" ]; then
+    P3_TANK_HP_BEFORE=$(eb_health "${DESTROYER_STRUCT_ID}")
+
+    eb_attack "PDC test: P3 Tank(counterable) → P6 PDC(planetary)" \
+        "${DESTROYER_STRUCT_ID}" "${EB_PDC_ID}" primaryWeapon 3
+
+    P3_TANK_HP_AFTER=$(eb_health "${DESTROYER_STRUCT_ID}")
+
+    if [ "${P3_TANK_HP_AFTER}" -lt "${P3_TANK_HP_BEFORE}" ] 2>/dev/null; then
+        echo -e "  ${GREEN}PASS${NC}: Tank took PDC damage (HP ${P3_TANK_HP_BEFORE}→${P3_TANK_HP_AFTER})"
+        PASS_COUNT=$((PASS_COUNT + 1))
+    else
+        echo -e "  ${RED}FAIL${NC}: Tank should have taken PDC damage (HP ${P3_TANK_HP_BEFORE}→${P3_TANK_HP_AFTER})"
+        FAIL_COUNT=$((FAIL_COUNT + 1))
+    fi
+else
+    info "SKIP: Tank or PDC destroyed, cannot test PDC-fires-on-counterable"
+fi
+
+# E2: Non-counterable attacker vs planetary target — PDC should NOT fire
+# P3 Mobile Artillery (type 8, AttackCounterable=false) attacks P6 PDC (type 19, Category=planet)
+PDC_HP=$(eb_health "${EB_PDC_ID}")
+P3_MA_ALIVE=$(eb_health "${EB_P3_MOBILE_ART_ID}")
+if [ "${PDC_HP}" != "0" ] && [ "${P3_MA_ALIVE}" != "0" ]; then
+    P3_MA_HP_BEFORE=$(eb_health "${EB_P3_MOBILE_ART_ID}")
+
+    eb_attack "PDC immunity: P3 Mobile Art(non-counterable) → P6 PDC(planetary)" \
+        "${EB_P3_MOBILE_ART_ID}" "${EB_PDC_ID}" primaryWeapon 3
+
+    P3_MA_HP_AFTER=$(eb_health "${EB_P3_MOBILE_ART_ID}")
+
+    assert_eq "Mobile Artillery HP unchanged by PDC (non-counterable)" "${P3_MA_HP_BEFORE}" "${P3_MA_HP_AFTER}"
+else
+    info "SKIP: Mobile Artillery or PDC destroyed, cannot test PDC immunity"
+fi
+
+# ─────────────────────────────────────────────────────────────────────────────
 # GROUP D: Negative Targeting Tests (attacks that should fail)
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -4116,7 +4303,7 @@ echo ""
 echo "  ─── Player 3 Fleet Status ───"
 for SID in "${COMMAND_SHIP_ID}" "${DESTROYER_STRUCT_ID}" "${SAM_STRUCT_ID}" "${SUB_STRUCT_ID}" \
            "${BATTLESHIP_1_ID}" "${BATTLESHIP_2_ID}" "${STEALTH_BOMBER_ID}" "${CRUISER_ID}" \
-           "${EB_PURSUIT_FIGHTER_ID}"; do
+           "${EB_PURSUIT_FIGHTER_ID}" "${EB_P3_MOBILE_ART_ID}"; do
     S_JSON=$(query query structs struct "${SID}" 2>/dev/null || echo '{}')
     S_HP=$(echo "${S_JSON}" | jq -r '.structAttributes.health // "?"' 2>/dev/null || echo "?")
     S_TYPE=$(echo "${S_JSON}" | jq -r '.Struct.type // "?"' 2>/dev/null || echo "?")
@@ -4129,7 +4316,8 @@ done
 echo ""
 echo "  ─── Player 6 Fleet Status ───"
 for SID in "${P6_COMMAND_SHIP_ID}" "${EB_STARFIGHTER_ID}" "${EB_FRIGATE_ID}" "${EB_P6_BATTLESHIP_ID}" \
-           "${EB_MOBILE_ART_ID}" "${EB_P6_TANK_ID}" "${EB_DESTROYER_W_ID}" "${EB_P6_CRUISER_ID}"; do
+           "${EB_MOBILE_ART_ID}" "${EB_P6_TANK_ID}" "${EB_DESTROYER_W_ID}" "${EB_P6_CRUISER_ID}" \
+           "${EB_PDC_ID}"; do
     S_JSON=$(query query structs struct "${SID}" 2>/dev/null || echo '{}')
     S_HP=$(echo "${S_JSON}" | jq -r '.structAttributes.health // "?"' 2>/dev/null || echo "?")
     S_TYPE=$(echo "${S_JSON}" | jq -r '.Struct.type // "?"' 2>/dev/null || echo "?")
