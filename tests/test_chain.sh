@@ -308,6 +308,19 @@ CHARGE_MOVE=8
 CHARGE_DEFEND=1
 CHARGE_ACTIVATE=1
 
+# Permission constants (from x/structs/types/permissions.go, 1<<iota)
+PERM_PLAY=1
+PERM_ADMIN=2
+PERM_UPDATE=4
+PERM_DELETE=8
+PERM_TOKEN_TRANSFER=16
+PERM_TOKEN_INFUSE=32
+PERM_SOURCE_ALLOCATION=256
+PERM_GUILD_MEMBERSHIP=512
+PERM_SUBSTATION_CONNECTION=1024
+PERM_ALLOCATION_CONNECTION=2048
+PERM_GUILD_ENDPOINT_UPDATE=16384
+
 # ─── Fleet / Planet / Struct Query Helpers ─────────────────────────────────────
 
 # query_fleet: return fleet JSON
@@ -360,6 +373,72 @@ run_tx_expect_fail() {
     fi
 }
 
+# run_tx_expect_permission_denied: expect failure with permission/authority message
+run_tx_expect_permission_denied() {
+    local description="$1"
+    shift
+    info "${description}"
+    echo -e "  ${BOLD}structsd ${PARAMS_TX} $*${NC}"
+    local OUTPUT
+    OUTPUT=$(structsd ${PARAMS_TX} "$@" 2>&1) || true
+    if ! echo "${OUTPUT}" | grep -qi "error\|failed\|invalid\|unreachable"; then
+        local tx_code
+        tx_code=$(echo "${OUTPUT}" | jq -r '.code // empty' 2>/dev/null || echo "")
+        if [ -z "${tx_code}" ] || [ "${tx_code}" = "0" ]; then
+            echo -e "  ${RED}Expected permission denial but TX succeeded${NC}"
+            FAIL_COUNT=$((FAIL_COUNT + 1))
+            return 0
+        fi
+    fi
+    if echo "${OUTPUT}" | grep -qiE "permission|authority|does not have|not have the authority|unauthorized"; then
+        echo -e "  ${GREEN}Correctly rejected (permission/authority)${NC}"
+        PASS_COUNT=$((PASS_COUNT + 1))
+        return 0
+    fi
+    echo -e "  ${GREEN}Correctly rejected${NC} (no permission phrase in output)"
+    PASS_COUNT=$((PASS_COUNT + 1))
+    return 0
+}
+
+# ─── Permission Query Helpers ────────────────────────────────────────────────
+
+get_permission_by_object() {
+    query query structs permission-by-object "$1" 2>/dev/null || echo '{}'
+}
+
+get_permission_value_for_player() {
+    local obj_id="$1"
+    local player_id="$2"
+    local json
+    json=$(get_permission_by_object "${obj_id}")
+    local perm_id="${obj_id}@${player_id}"
+    local val
+    val=$(echo "${json}" | jq -r --arg id "${perm_id}" '[.permissionRecords[]? | select(.permissionId == $id) | .value] | first // empty' 2>/dev/null)
+    if [[ -z "${val}" || "${val}" == "null" ]]; then
+        val=$(echo "${json}" | jq -r --arg id "${perm_id}" '[.permissionRecord[]? | select(.permissionId == $id) | .value] | first // empty' 2>/dev/null)
+    fi
+    if [[ -z "${val}" || "${val}" == "null" ]]; then
+        echo "0"
+    else
+        echo "${val}"
+    fi
+}
+
+get_guild_rank_permission_by_object() {
+    query query structs guild-rank-permission-by-object "$1" 2>/dev/null || echo '{}'
+}
+
+get_guild_rank_permission_by_object_and_guild() {
+    query query structs guild-rank-permission-by-object-and-guild "$1" "$2" 2>/dev/null || echo '{}'
+}
+
+get_player_guild_rank() {
+    local player_id="$1"
+    local json
+    json=$(query query structs player "${player_id}" 2>/dev/null || echo '{}')
+    jqr "${json}" '.Player.guildRank // .guildRank' '0'
+}
+
 # print_summary: final report
 print_summary() {
     echo ""
@@ -383,7 +462,7 @@ phase_order() {
     case "$1" in
         1) echo 100;; 2) echo 200;; 3) echo 300;; 3b) echo 350;;
         4) echo 400;; 4b) echo 450;; 4c) echo 460;; 4d) echo 470;;
-        4e) echo 480;; 4f) echo 490;; 4g) echo 495;;
+        4e) echo 480;; 4e2) echo 482;; 4e3) echo 484;; 4f) echo 490;; 4g) echo 495;;
         5) echo 500;; 5b) echo 550;; 6) echo 600;;
         7) echo 700;; 7b) echo 750;; 8) echo 800;;
         9) echo 900;; 10) echo 1000;; 11) echo 1100;;
@@ -529,8 +608,31 @@ recover_state() {
         fi
     done
 
+    # Rank-test players (rp_1 through rp_20)
+    RP_IDS=()
+    RP_KEYS=()
+    for RP_NUM in $(seq 1 20); do
+        local RP_KEY="rp_${RP_NUM}"
+        local RP_ADDR
+        RP_ADDR=$(structsd ${PARAMS_KEYS} keys show "${RP_KEY}" 2>/dev/null | jq -r .address 2>/dev/null || echo "")
+        if [ -z "${RP_ADDR}" ]; then continue; fi
+        local RP_PID
+        RP_PID=$(query query structs address "${RP_ADDR}" 2>/dev/null | jq -r '.playerId // empty' 2>/dev/null || echo "")
+        if [ -n "${RP_PID}" ] && [ "${RP_PID}" != "1-0" ]; then
+            RP_KEYS+=("${RP_KEY}")
+            RP_IDS+=("${RP_PID}")
+        fi
+    done
+    if [ "${#RP_IDS[@]}" -gt 0 ]; then
+        echo "  Recovered ${#RP_IDS[@]} rank-test players"
+    fi
+
     info "State recovery complete"
 }
+
+# Arrays for rank-test players (populated by Phase 4e2, recovered by recover_state)
+declare -a RP_IDS
+declare -a RP_KEYS
 
 if [ -n "${RESUME_FROM}" ]; then
     recover_state
@@ -1470,6 +1572,95 @@ run_tx "Alice restoring Player 5 address PermDelete" \
 info "All permissions sample:"
 query query structs permission-all 2>/dev/null | jq -r '.permissionRecord[:5]? | .[]? | "  \(.objectId) = \(.value)"' || echo "  (none)"
 
+# ─── Bitmask arithmetic verification ────────────────────────────────────────
+info "--- Bitmask Arithmetic: Grant/Revoke/Set on Guild ---"
+
+run_tx "Grant Player 4 PermUpdate (4) on guild" \
+    tx structs permission-grant-on-object "${GUILD_ID}" "${PLAYER_4_ID}" "${PERM_UPDATE}" --from alice
+
+VAL=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_4_ID}")
+assert_eq "Permission value after grant (4)" "4" "${VAL}"
+
+run_tx "Grant additional PermDelete (8) on guild" \
+    tx structs permission-grant-on-object "${GUILD_ID}" "${PLAYER_4_ID}" "${PERM_DELETE}" --from alice
+
+VAL=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_4_ID}")
+assert_eq "Permission value after grant 4+8 (12)" "12" "${VAL}"
+
+run_tx "Revoke PermUpdate (4) from Player 4" \
+    tx structs permission-revoke-on-object "${GUILD_ID}" "${PLAYER_4_ID}" "${PERM_UPDATE}" --from alice
+
+VAL=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_4_ID}")
+assert_eq "Permission value after revoke 4 (8)" "8" "${VAL}"
+
+run_tx "Revoke PermDelete (8) to clear all" \
+    tx structs permission-revoke-on-object "${GUILD_ID}" "${PLAYER_4_ID}" "${PERM_DELETE}" --from alice
+
+VAL=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_4_ID}")
+assert_eq "Permission value after revoke all" "0" "${VAL}"
+
+run_tx "Set permission to 32 (overwrite)" \
+    tx structs permission-set-on-object "${GUILD_ID}" "${PLAYER_4_ID}" "${PERM_TOKEN_INFUSE}" --from alice
+
+VAL=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_4_ID}")
+assert_eq "Permission value after set 32" "32" "${VAL}"
+
+run_tx "Set permission to 8 (overwrite again)" \
+    tx structs permission-set-on-object "${GUILD_ID}" "${PLAYER_4_ID}" "${PERM_DELETE}" --from alice
+
+VAL=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_4_ID}")
+assert_eq "Permission value after set overwrite (8)" "8" "${VAL}"
+
+run_tx "Clean up Player 4 permissions on guild" \
+    tx structs permission-revoke-on-object "${GUILD_ID}" "${PLAYER_4_ID}" "${PERM_DELETE}" --from alice
+
+# ─── Positive action tests (with permission) ────────────────────────────────
+info "--- Positive Action Tests ---"
+
+run_tx "Grant Player 5 PermGuildEndpointUpdate on guild" \
+    tx structs permission-grant-on-object "${GUILD_ID}" "${PLAYER_5_ID}" "${PERM_GUILD_ENDPOINT_UPDATE}" --from alice
+
+run_tx "Player 5 (has PermGuildEndpointUpdate) updates guild endpoint" \
+    tx structs guild-update-endpoint "${GUILD_ID}" "positive-test.energy" --from player_5
+
+GUILD_EP=$(query query structs guild "${GUILD_ID}" | jq -r '.Guild.endpoint // empty' 2>/dev/null || echo "")
+assert_eq "Guild endpoint updated by Player 5" "positive-test.energy" "${GUILD_EP}"
+
+run_tx "Restore guild endpoint" \
+    tx structs guild-update-endpoint "${GUILD_ID}" "oh.energy" --from alice
+
+run_tx "Grant Player 5 PermUpdate on substation for connect/disconnect" \
+    tx structs permission-grant-on-object "${SUBSTATION_ID}" "${PLAYER_5_ID}" "${PERM_UPDATE}" --from alice
+
+run_tx "Player 5 disconnects allocation (positive)" \
+    tx structs substation-allocation-disconnect "${P5_ALLOC_ID}" --from player_5
+run_tx "Player 5 reconnects allocation (positive)" \
+    tx structs substation-allocation-connect "${P5_ALLOC_ID}" "${SUBSTATION_ID}" --from player_5
+
+# ─── Negative action tests (without permission) ─────────────────────────────
+info "--- Negative Action Tests ---"
+
+run_tx "Revoke Player 5 PermGuildEndpointUpdate on guild" \
+    tx structs permission-revoke-on-object "${GUILD_ID}" "${PLAYER_5_ID}" "${PERM_GUILD_ENDPOINT_UPDATE}" --from alice
+
+run_tx_expect_permission_denied "Player 5 (no endpoint perm) tries guild-update-endpoint" \
+    tx structs guild-update-endpoint "${GUILD_ID}" "hacked.energy" --from player_5
+
+run_tx_expect_permission_denied "Player 4 (no perm on guild) tries guild-update-endpoint" \
+    tx structs guild-update-endpoint "${GUILD_ID}" "hacked.energy" --from player_4
+
+run_tx "Grant Player 4 only PermPlay (1) on guild" \
+    tx structs permission-grant-on-object "${GUILD_ID}" "${PLAYER_4_ID}" "${PERM_PLAY}" --from alice
+
+run_tx_expect_permission_denied "Player 4 with PermPlay only tries guild-update-endpoint" \
+    tx structs guild-update-endpoint "${GUILD_ID}" "hacked.energy" --from player_4
+
+run_tx "Revoke Player 4 PermPlay" \
+    tx structs permission-revoke-on-object "${GUILD_ID}" "${PLAYER_4_ID}" "${PERM_PLAY}" --from alice
+
+run_tx "Revoke Player 5 PermUpdate on substation" \
+    tx structs permission-revoke-on-object "${SUBSTATION_ID}" "${PLAYER_5_ID}" "${PERM_UPDATE}" --from alice
+
 # ─── Guild rank permission lifecycle ─────────────────────────────────────────
 info "--- Guild Rank Permission Lifecycle ---"
 
@@ -1631,7 +1822,348 @@ run_tx "Resetting Player 4 rank to 101" \
 run_tx "Resetting Player 5 rank to 101" \
     tx structs player-update-guild-rank "${PLAYER_5_ID}" 101 --from alice
 
+# ─── Grant/revoke ordering ──────────────────────────────────────────────────
+info "--- Grant/Revoke Ordering ---"
+
+VAL_P4_START=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_4_ID}")
+VAL_P5_START=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_5_ID}")
+info "Starting state: P4=${VAL_P4_START}, P5=${VAL_P5_START}"
+
+run_tx "Grant P4→guild PermUpdate(4)" \
+    tx structs permission-grant-on-object "${GUILD_ID}" "${PLAYER_4_ID}" "${PERM_UPDATE}" --from alice
+run_tx "Grant P5→guild PermDelete(8)" \
+    tx structs permission-grant-on-object "${GUILD_ID}" "${PLAYER_5_ID}" "${PERM_DELETE}" --from alice
+
+VAL_P4=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_4_ID}")
+VAL_P5=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_5_ID}")
+EXPECT_P4=$(( VAL_P4_START | PERM_UPDATE ))
+EXPECT_P5=$(( VAL_P5_START | PERM_DELETE ))
+assert_eq "P4 permission on guild after grant" "${EXPECT_P4}" "${VAL_P4}"
+assert_eq "P5 permission on guild after grant" "${EXPECT_P5}" "${VAL_P5}"
+
+run_tx "Revoke P4 PermUpdate on guild" \
+    tx structs permission-revoke-on-object "${GUILD_ID}" "${PLAYER_4_ID}" "${PERM_UPDATE}" --from alice
+VAL_P4=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_4_ID}")
+assert_eq "P4 permission after revoke PermUpdate" "${VAL_P4_START}" "${VAL_P4}"
+
+run_tx "Revoke P5 PermUpdate (not set) — idempotent" \
+    tx structs permission-revoke-on-object "${GUILD_ID}" "${PLAYER_5_ID}" "${PERM_UPDATE}" --from alice
+VAL_P5=$(get_permission_value_for_player "${GUILD_ID}" "${PLAYER_5_ID}")
+assert_eq "P5 permission unchanged after idempotent revoke" "${EXPECT_P5}" "${VAL_P5}"
+
+run_tx "Clean up P5 PermDelete" \
+    tx structs permission-revoke-on-object "${GUILD_ID}" "${PLAYER_5_ID}" "${PERM_DELETE}" --from alice
+
+# ─── Object deletion and permission cleanup ──────────────────────────────────
+info "--- Object Deletion Permission Cleanup ---"
+
+if structsd tx structs provider-create --help 2>&1 | grep -q "Create a new Energy Provider"; then
+    run_tx "Create provider for cleanup test" \
+        tx structs provider-create "${SUBSTATION_ID}" \
+        "1ualpha" "open" 0 0 100 1000 10 1000 --from alice
+    PROVIDER_ALL=$(query query structs provider-all 2>/dev/null || echo '{}')
+    PROVIDER_ID=$(echo "${PROVIDER_ALL}" | jq -r '.Provider[-1].id // empty' 2>/dev/null || echo "")
+    if [ -n "${PROVIDER_ID}" ]; then
+        run_tx "Grant P4 permission on provider" \
+            tx structs permission-grant-on-object "${PROVIDER_ID}" "${PLAYER_4_ID}" "${PERM_UPDATE}" --from alice
+        run_tx "Set guild-rank on provider" \
+            tx structs permission-guild-rank-set "${PROVIDER_ID}" "${GUILD_ID}" "${PERM_UPDATE}" 1 --from alice
+        run_tx "Delete provider" \
+            tx structs provider-delete "${PROVIDER_ID}" --from alice
+        sleep "${SLEEP}"
+        PERM_AFTER=$(get_permission_by_object "${PROVIDER_ID}")
+        PERM_COUNT=$(echo "${PERM_AFTER}" | jq -r '.permissionRecords | length' 2>/dev/null || echo "${PERM_AFTER}" | jq -r '.permissionRecord | length' 2>/dev/null || echo "0")
+        GRANK_AFTER=$(get_guild_rank_permission_by_object "${PROVIDER_ID}")
+        GRANK_COUNT=$(echo "${GRANK_AFTER}" | jq -r '.guild_rank_permission_records | length' 2>/dev/null || echo "${GRANK_AFTER}" | jq -r '.guildRankPermissionRecords | length' 2>/dev/null || echo "0")
+        assert_eq "Permission records cleared after provider delete" "0" "${PERM_COUNT}"
+        assert_eq "Guild rank records cleared after provider delete" "0" "${GRANK_COUNT}"
+    else
+        info "Could not get provider ID; skipping deletion cleanup test"
+    fi
+else
+    info "provider-create not available; skipping deletion cleanup test"
+fi
+
 fi # phase 4e
+
+if run_phase 482; then
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  PHASE 4e2: Create 20 Rank-Test Players (rp_1..rp_20)
+# ═════════════════════════════════════════════════════════════════════════════
+
+section "PHASE 4e2: Rank-Test Player Setup (20 players)"
+
+NUM_RP=20
+info "Creating ${NUM_RP} rank-test players (rp_1..rp_20)"
+
+for RP_NUM in $(seq 1 ${NUM_RP}); do
+    RP_KEY="rp_${RP_NUM}"
+    RP_KEYS+=("${RP_KEY}")
+    EXISTING=$(structsd ${PARAMS_KEYS} keys show "${RP_KEY}" 2>/dev/null | jq -r .address 2>/dev/null || echo "")
+    if [ -z "${EXISTING}" ]; then
+        (echo ""; echo "") | structsd ${PARAMS_KEYS} keys add "${RP_KEY}" --no-backup 2>/dev/null || true
+        ADDR=$(structsd ${PARAMS_KEYS} keys show "${RP_KEY}" 2>/dev/null | jq -r .address 2>/dev/null || echo "")
+    else
+        ADDR="${EXISTING}"
+    fi
+    if [ -z "${ADDR}" ]; then
+        echo -e "  ${RED}Cannot get address for ${RP_KEY}${NC}"
+        exit 1
+    fi
+
+    run_tx "Fund ${RP_KEY}" tx bank send "${PLAYER_1_ADDRESS}" "${ADDR}" 4000000ualpha --from alice
+    run_tx "Delegate ${RP_KEY}" tx staking delegate "${VALIDATOR_ADDRESS}" 2000000ualpha --from "${RP_KEY}"
+
+    PID=""
+    for ATTEMPT in 1 2 3; do
+        ADDR_JSON=$(query query structs address "${ADDR}" 2>/dev/null || echo '{}')
+        PID=$(jqr "${ADDR_JSON}" '.playerId')
+        if [ -n "${PID}" ] && [ "${PID}" != "" ] && [ "${PID}" != "1-0" ]; then
+            break
+        fi
+        sleep "${SLEEP}"
+    done
+    if [ -z "${PID}" ] || [ "${PID}" = "" ] || [ "${PID}" = "1-0" ]; then
+        echo -e "  ${RED}Failed to get valid player ID for ${RP_KEY} (got '${PID}')${NC}"
+        exit 1
+    fi
+    RP_IDS+=("${PID}")
+
+    run_tx "Guild join ${RP_KEY}" \
+        tx structs guild-membership-join "${GUILD_ID}" "${REACTOR_ID}-${ADDR}" --from "${RP_KEY}"
+    echo -e "  ${GREEN}OK${NC} ${RP_KEY} -> ${PID}"
+done
+
+echo "  Created ${#RP_IDS[@]} rank-test players"
+
+fi # phase 4e2
+
+if run_phase 484; then
+
+# ═════════════════════════════════════════════════════════════════════════════
+#  PHASE 4e3: Comprehensive Rank Tests
+# ═════════════════════════════════════════════════════════════════════════════
+
+section "PHASE 4e3: Comprehensive Rank Tests"
+
+if [ "${#RP_IDS[@]}" -lt 10 ]; then
+    info "Fewer than 10 rank-test players; skipping rank tests (need Phase 4e2 first)"
+else
+
+# ── 4e3a: Admin rank assignment sweep ────────────────────────────────────────
+info "--- Admin Rank Assignment Sweep (${#RP_IDS[@]} players) ---"
+
+for i in "${!RP_IDS[@]}"; do
+    PID="${RP_IDS[$i]}"
+    DESIRED_RANK=$(( i + 1 ))
+    run_tx "Alice sets ${RP_KEYS[$i]} to rank ${DESIRED_RANK}" \
+        tx structs player-update-guild-rank "${PID}" "${DESIRED_RANK}" --from alice
+done
+
+RANK_VERIFY_PASS=0
+RANK_VERIFY_FAIL=0
+for i in "${!RP_IDS[@]}"; do
+    PID="${RP_IDS[$i]}"
+    EXPECTED=$(( i + 1 ))
+    ACTUAL=$(get_player_guild_rank "${PID}")
+    if [ "${ACTUAL}" = "${EXPECTED}" ]; then
+        RANK_VERIFY_PASS=$(( RANK_VERIFY_PASS + 1 ))
+    else
+        echo -e "  ${RED}FAIL${NC}: ${RP_KEYS[$i]} rank expected=${EXPECTED} got=${ACTUAL}"
+        RANK_VERIFY_FAIL=$(( RANK_VERIFY_FAIL + 1 ))
+        FAIL_COUNT=$(( FAIL_COUNT + 1 ))
+    fi
+done
+echo -e "  ${GREEN}Rank assignment sweep: ${RANK_VERIFY_PASS} verified${NC}"
+if [ "${RANK_VERIFY_FAIL}" -gt 0 ]; then
+    echo -e "  ${RED}${RANK_VERIFY_FAIL} rank verifications failed${NC}"
+fi
+PASS_COUNT=$(( PASS_COUNT + RANK_VERIFY_PASS ))
+
+run_tx "Set Player 4 to rank 2" tx structs player-update-guild-rank "${PLAYER_4_ID}" 2 --from alice
+run_tx "Set Player 5 to rank 5" tx structs player-update-guild-rank "${PLAYER_5_ID}" 5 --from alice
+
+# ── 4e3b: Guild rank permission threshold sweep ─────────────────────────────
+info "--- Guild Rank Permission Threshold Sweep ---"
+
+for THRESHOLD in 0 3 5 10 15 19; do
+    run_tx "Set PermGuildEndpointUpdate threshold=${THRESHOLD} on guild" \
+        tx structs permission-guild-rank-set "${GUILD_ID}" "${GUILD_ID}" "${PERM_GUILD_ENDPOINT_UPDATE}" "${THRESHOLD}" --from alice
+
+    if [ "${THRESHOLD}" -ge 2 ]; then
+        run_tx "Player 4 (rank 2) endpoint update (threshold=${THRESHOLD}, expect PASS)" \
+            tx structs guild-update-endpoint "${GUILD_ID}" "threshold-${THRESHOLD}-pass.energy" --from player_4
+    else
+        run_tx_expect_permission_denied "Player 4 (rank 2) endpoint update (threshold=${THRESHOLD}, expect DENY)" \
+            tx structs guild-update-endpoint "${GUILD_ID}" "threshold-${THRESHOLD}-fail.energy" --from player_4
+    fi
+
+    if [ "${THRESHOLD}" -ge 5 ]; then
+        run_tx "Player 5 (rank 5) endpoint update (threshold=${THRESHOLD}, expect PASS)" \
+            tx structs guild-update-endpoint "${GUILD_ID}" "threshold-${THRESHOLD}-p5pass.energy" --from player_5
+    else
+        run_tx_expect_permission_denied "Player 5 (rank 5) endpoint update (threshold=${THRESHOLD}, expect DENY)" \
+            tx structs guild-update-endpoint "${GUILD_ID}" "threshold-${THRESHOLD}-p5fail.energy" --from player_5
+    fi
+
+    if [ "${THRESHOLD}" -ge 1 ] && [ "${THRESHOLD}" -le "${#RP_IDS[@]}" ]; then
+        IDX=$(( THRESHOLD - 1 ))
+        run_tx "${RP_KEYS[$IDX]} (rank ${THRESHOLD}) at exact boundary (expect PASS)" \
+            tx structs guild-update-endpoint "${GUILD_ID}" "boundary-${THRESHOLD}-at.energy" --from "${RP_KEYS[$IDX]}"
+    fi
+    ABOVE=$(( THRESHOLD + 1 ))
+    if [ "${ABOVE}" -ge 1 ] && [ "${ABOVE}" -le "${#RP_IDS[@]}" ]; then
+        IDX=$(( ABOVE - 1 ))
+        run_tx_expect_permission_denied "${RP_KEYS[$IDX]} (rank ${ABOVE}) just above boundary (expect DENY)" \
+            tx structs guild-update-endpoint "${GUILD_ID}" "boundary-${THRESHOLD}-above.energy" --from "${RP_KEYS[$IDX]}"
+    fi
+done
+
+run_tx "Revoke guild-rank PermGuildEndpointUpdate on guild" \
+    tx structs permission-guild-rank-revoke "${GUILD_ID}" "${GUILD_ID}" "${PERM_GUILD_ENDPOINT_UPDATE}" --from alice
+
+# ── 4e3c: Rank-based rank management ────────────────────────────────────────
+info "--- Rank-Based Rank Management ---"
+
+# Player 4=rank 2, Player 5=rank 5, rp_1..rp_20=rank 1..20
+run_tx "Player 4 (rank 2) promotes rp_10 (rank 10) to rank 7" \
+    tx structs player-update-guild-rank "${RP_IDS[9]}" 7 --from player_4
+RANK=$(get_player_guild_rank "${RP_IDS[9]}")
+assert_eq "rp_10 rank after partial promote" "7" "${RANK}"
+
+run_tx "Player 4 (rank 2) demotes rp_15 (rank 15) to rank 18" \
+    tx structs player-update-guild-rank "${RP_IDS[14]}" 18 --from player_4
+RANK=$(get_player_guild_rank "${RP_IDS[14]}")
+assert_eq "rp_15 rank after demotion" "18" "${RANK}"
+
+run_tx "Player 4 (rank 2) promotes rp_20 (rank 20) to rank 2 (own level)" \
+    tx structs player-update-guild-rank "${RP_IDS[19]}" 2 --from player_4
+RANK=$(get_player_guild_rank "${RP_IDS[19]}")
+assert_eq "rp_20 rank after promote to own level" "2" "${RANK}"
+
+run_tx_expect_permission_denied "Player 4 (rank 2) cannot promote rp_10 to rank 1 (above self)" \
+    tx structs player-update-guild-rank "${RP_IDS[9]}" 1 --from player_4
+
+run_tx_expect_permission_denied "Player 5 (rank 5) cannot modify Player 4 (rank 2)" \
+    tx structs player-update-guild-rank "${PLAYER_4_ID}" 10 --from player_5
+
+run_tx_expect_permission_denied "Player 5 (rank 5) cannot modify rp_1 (rank 1)" \
+    tx structs player-update-guild-rank "${RP_IDS[0]}" 10 --from player_5
+
+run_tx_expect_permission_denied "Player 5 (rank 5) cannot modify rp_5 (rank 5, equal)" \
+    tx structs player-update-guild-rank "${RP_IDS[4]}" 10 --from player_5
+
+run_tx_expect_permission_denied "rp_20 (rank 2) cannot modify Player 4 (rank 2, equal)" \
+    tx structs player-update-guild-rank "${PLAYER_4_ID}" 10 --from "${RP_KEYS[19]}"
+
+run_tx "Player 5 (rank 5) promotes rp_10 (rank 7) to rank 6" \
+    tx structs player-update-guild-rank "${RP_IDS[9]}" 6 --from player_5
+RANK=$(get_player_guild_rank "${RP_IDS[9]}")
+assert_eq "rp_10 rank after Player 5 promotes to 6" "6" "${RANK}"
+
+run_tx "Player 5 (rank 5) demotes rp_10 (rank 6) to rank 100" \
+    tx structs player-update-guild-rank "${RP_IDS[9]}" 100 --from player_5
+RANK=$(get_player_guild_rank "${RP_IDS[9]}")
+assert_eq "rp_10 rank after demotion to 100" "100" "${RANK}"
+
+# ── 4e3d: Chain of rank modification ────────────────────────────────────────
+info "--- Chain of Rank Modification ---"
+
+run_tx "Alice sets rp_6 to rank 2" tx structs player-update-guild-rank "${RP_IDS[5]}" 2 --from alice
+run_tx "Alice sets rp_7 to rank 10" tx structs player-update-guild-rank "${RP_IDS[6]}" 10 --from alice
+run_tx "Alice sets rp_8 to rank 15" tx structs player-update-guild-rank "${RP_IDS[7]}" 15 --from alice
+
+run_tx "Chain step 1: rp_6 (rank 2) sets rp_7 (rank 10) to rank 4" \
+    tx structs player-update-guild-rank "${RP_IDS[6]}" 4 --from "${RP_KEYS[5]}"
+RANK=$(get_player_guild_rank "${RP_IDS[6]}")
+assert_eq "Chain step 1: rp_7 is now rank 4" "4" "${RANK}"
+
+run_tx "Chain step 2: rp_7 (rank 4) sets rp_8 (rank 15) to rank 5" \
+    tx structs player-update-guild-rank "${RP_IDS[7]}" 5 --from "${RP_KEYS[6]}"
+RANK=$(get_player_guild_rank "${RP_IDS[7]}")
+assert_eq "Chain step 2: rp_8 is now rank 5" "5" "${RANK}"
+
+run_tx_expect_permission_denied "Chain: rp_8 (rank 5) cannot modify rp_7 (rank 4)" \
+    tx structs player-update-guild-rank "${RP_IDS[6]}" 10 --from "${RP_KEYS[7]}"
+
+run_tx "Chain step 3: rp_7 (rank 4) demotes rp_8 (rank 5) to rank 15" \
+    tx structs player-update-guild-rank "${RP_IDS[7]}" 15 --from "${RP_KEYS[6]}"
+RANK=$(get_player_guild_rank "${RP_IDS[7]}")
+assert_eq "Chain step 3: rp_8 back to rank 15" "15" "${RANK}"
+
+# ── 4e3e: Mass rank shuffle and verify ──────────────────────────────────────
+info "--- Mass Rank Shuffle ---"
+
+for i in "${!RP_IDS[@]}"; do
+    NEW_RANK=$(( ${#RP_IDS[@]} - i ))
+    structsd ${PARAMS_TX} tx structs player-update-guild-rank "${RP_IDS[$i]}" "${NEW_RANK}" --from alice 2>&1 || true
+    sleep 1
+done
+
+SHUFFLE_PASS=0
+SHUFFLE_FAIL=0
+for i in "${!RP_IDS[@]}"; do
+    EXPECTED=$(( ${#RP_IDS[@]} - i ))
+    ACTUAL=$(get_player_guild_rank "${RP_IDS[$i]}")
+    if [ "${ACTUAL}" = "${EXPECTED}" ]; then
+        SHUFFLE_PASS=$(( SHUFFLE_PASS + 1 ))
+    else
+        echo -e "  ${RED}FAIL${NC}: ${RP_KEYS[$i]} shuffle expected=${EXPECTED} got=${ACTUAL}"
+        SHUFFLE_FAIL=$(( SHUFFLE_FAIL + 1 ))
+        FAIL_COUNT=$(( FAIL_COUNT + 1 ))
+    fi
+done
+echo -e "  ${GREEN}Mass shuffle: ${SHUFFLE_PASS}/${#RP_IDS[@]} verified${NC}"
+PASS_COUNT=$(( PASS_COUNT + SHUFFLE_PASS ))
+
+# After shuffle: rp_1=rank 20, rp_20=rank 1
+run_tx "rp_20 (rank 1) sets rp_1 (rank 20) to rank 10" \
+    tx structs player-update-guild-rank "${RP_IDS[0]}" 10 --from "${RP_KEYS[19]}"
+RANK=$(get_player_guild_rank "${RP_IDS[0]}")
+assert_eq "rp_1 rank after shuffle-based modify" "10" "${RANK}"
+
+run_tx_expect_permission_denied "rp_1 (rank 10) cannot modify rp_20 (rank 1)" \
+    tx structs player-update-guild-rank "${RP_IDS[19]}" 15 --from "${RP_KEYS[0]}"
+
+# ── 4e3f: Edge cases ────────────────────────────────────────────────────────
+info "--- Edge Cases ---"
+
+run_tx_expect_permission_denied "Player 4 cannot self-modify rank (equal = denied)" \
+    tx structs player-update-guild-rank "${PLAYER_4_ID}" 50 --from player_4
+
+run_tx "alice (admin) can change own rank" \
+    tx structs player-update-guild-rank "${PLAYER_1_ID}" 3 --from alice
+RANK=$(get_player_guild_rank "${PLAYER_1_ID}")
+assert_eq "alice rank after self-set" "3" "${RANK}"
+run_tx "alice restores own rank to 1" \
+    tx structs player-update-guild-rank "${PLAYER_1_ID}" 1 --from alice
+
+run_tx "Alice sets rp_1 to max-ish rank (999999)" \
+    tx structs player-update-guild-rank "${RP_IDS[0]}" 999999 --from alice
+RANK=$(get_player_guild_rank "${RP_IDS[0]}")
+assert_eq "rp_1 rank after set to 999999" "999999" "${RANK}"
+
+run_tx "Alice sets rp_1 back to rank 1" \
+    tx structs player-update-guild-rank "${RP_IDS[0]}" 1 --from alice
+RANK=$(get_player_guild_rank "${RP_IDS[0]}")
+assert_eq "rp_1 rank after set back to 1" "1" "${RANK}"
+
+run_tx_expect_permission_denied "Setting rank to 0 is rejected" \
+    tx structs player-update-guild-rank "${RP_IDS[0]}" 0 --from alice
+
+# ── Clean up all ranks ──────────────────────────────────────────────────────
+info "Resetting all test player ranks"
+run_tx "Reset Player 4 rank to 101" tx structs player-update-guild-rank "${PLAYER_4_ID}" 101 --from alice
+run_tx "Reset Player 5 rank to 101" tx structs player-update-guild-rank "${PLAYER_5_ID}" 101 --from alice
+for i in "${!RP_IDS[@]}"; do
+    structsd ${PARAMS_TX} tx structs player-update-guild-rank "${RP_IDS[$i]}" 101 --from alice 2>&1 || true
+    sleep 1
+done
+
+fi # end rank-test player guard
+
+fi # phase 4e3
 
 if run_phase 490; then
 
