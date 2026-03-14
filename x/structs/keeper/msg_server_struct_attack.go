@@ -84,7 +84,7 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 
 		evaded := ac.ResolveEvasion()
 
-		ac.ResolveDefenders()
+		ac.ResolveDefenders(evaded)
 		if !evaded {
 		    ac.ResolveAttackDamage()
 		}

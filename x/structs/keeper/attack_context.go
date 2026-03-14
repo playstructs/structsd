@@ -79,7 +79,7 @@ func (ac *AttackContext) ResolveEvasion() bool {
 	return false
 }
 
-func (ac *AttackContext) ResolveDefenders() {
+func (ac *AttackContext) ResolveDefenders(skipBlock bool) {
 	weaponBlockable := ac.Attacker.GetStructType().GetWeaponBlockable(ac.WeaponSystem)
 	weaponCounterable := ac.Attacker.GetStructType().AttackCounterable && ac.Attacker.GetStructType().GetWeaponCounterable(ac.WeaponSystem)
 
@@ -112,7 +112,7 @@ func (ac *AttackContext) ResolveDefenders() {
 				}
 			}
 
-			if !ac.Blocked && weaponBlockable {
+			if !ac.Blocked && !skipBlock && weaponBlockable {
 				ac.Attacker.CC.k.logger.Info("Defender to attempt a block!")
 				ac.Blocked = defender.AttemptBlock(ac.Attacker, ac.WeaponSystem, ac.Target)
 			}
