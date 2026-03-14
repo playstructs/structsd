@@ -24,7 +24,11 @@ func (k msgServer) GuildBankRedeem(goCtx context.Context, msg *types.MsgGuildBan
         return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "guild_bank_redeem")
     }
 
-    // TODO permission check on the address to look for Asset permissions
+    permissionErr := activePlayer.CanTransferTokensBy(activePlayer)
+    if permissionErr != nil {
+        return emptyResponse, permissionErr
+    }
+
     denomSlice := strings.Split(msg.AmountToken.Denom,".")
     if len(denomSlice) != 2 {
         return emptyResponse, types.NewParameterValidationError("denom", 0, "invalid_format")
