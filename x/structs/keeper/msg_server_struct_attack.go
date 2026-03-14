@@ -58,18 +58,11 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 	// Jump out of Stealth Mode for the attack
 	structure.StatusRemoveHidden()
 
-	var eventAttackDetail *types.EventAttackDetail
-	eventAttackDetail = structure.GetEventAttackDetail()
-	eventAttackDetail.SetBaseDetails(structure.GetOwnerId(), structure.GetStructId(), structure.GetTypeId(), structure.GetLocationType(), structure.GetLocationId(), structure.GetOperatingAmbit(), structure.GetSlot(), weaponSystem, structure.GetStructType().GetWeaponControl(weaponSystem), structure.GetStructType().GetWeapon(weaponSystem))
-
-	structure.ManualLoadEventAttackDetail(eventAttackDetail)
-
-	var targetWasPlanetary bool
-	var targetWasOnPlanet *PlanetCache
-
 	if uint64(len(msg.TargetStructId)) != structure.GetStructType().GetWeaponTargets(weaponSystem) {
 		return emptyResponse, types.NewCombatTargetingError(structure.GetStructId(), "", msg.WeaponSystem, "incomplete_targeting")
 	}
+
+	ac := NewAttackContext(cc, structure, weaponSystem)
 
 	// Begin taking shots. Most weapons only use a single shot but some perform multiple.
 	for shot := uint64(0); shot < (structure.GetStructType().GetWeaponTargets(weaponSystem)); shot++ {
@@ -80,98 +73,23 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 			return emptyResponse, types.NewObjectNotFoundError("struct", msg.TargetStructId[shot])
 		}
 
-		targetStructure.ManualLoadEventAttackDetail(eventAttackDetail)
-		eventAttackDetail.SetTargetPlayerId(targetStructure.GetOwnerId())
+		ac.BeginShot(targetStructure)
 
-		eventAttackShotDetail := targetStructure.GetEventAttackShotDetail()
-		structure.ManualLoadEventAttackShotDetail(eventAttackShotDetail)
-		structure.GetEventAttackShotDetail().SetTargetDetails(targetStructure.GetStructId(), targetStructure.GetTypeId(), targetStructure.GetLocationType(), targetStructure.GetLocationId(), targetStructure.GetOperatingAmbit(), targetStructure.GetSlot())
-
-		// Initialize target health - will be updated by TakeAttackDamage if hit
-		currentTargetHealth := targetStructure.GetHealth()
-		eventAttackShotDetail.SetTargetHealthBefore(currentTargetHealth)
-		eventAttackShotDetail.SetTargetHealthAfter(currentTargetHealth)
-
-		/* Can the attacker attack? */
-		// Check that the Structs are within attacking range of each other
-		// This includes both a weapon<->ambit check, and a fleet<->planet
-		targetingError := structure.CanAttack(targetStructure, weaponSystem)
+		targetingError := ac.ValidateTarget()
 		if targetingError != nil {
 			return emptyResponse, targetingError
 		}
 
 		k.logger.Info("Struct Targetable", "target", msg.TargetStructId[shot])
 
-		if targetStructure.CanEvade(structure, weaponSystem) {
-			k.logger.Info("Struct Evaded", "target", msg.TargetStructId[shot])
-			structure.GetEventAttackDetail().AppendShot(targetStructure.FlushEventAttackShotDetail())
-			continue
+		evaded := ac.ResolveEvasion()
+
+		ac.ResolveDefenders()
+		if !evaded {
+		    ac.ResolveAttackDamage()
 		}
-
-		attackBlocked := false
-
-		// Check to make sure the attack is either counterable, blockable, or both. Otherwise skip this section
-		k.logger.Info("Struct Attacker Status", "structId", structure.GetStructId(), "blockable", (structure.GetStructType().GetWeaponBlockable(weaponSystem)), "counterable", (structure.GetStructType().AttackCounterable && structure.GetStructType().GetWeaponCounterable(weaponSystem)))
-		if (structure.GetStructType().GetWeaponBlockable(weaponSystem)) || (structure.GetStructType().AttackCounterable && structure.GetStructType().GetWeaponCounterable(weaponSystem)) {
-
-			// Check the Defenders
-			defenders := targetStructure.GetDefenders()
-			for _, defender := range defenders {
-				k.logger.Info("Defender at Location", "defender", defender.GetStructId(), "locationId", defender.GetLocationId())
-
-				// Use CC for deduplication - if this struct was already loaded, reuse that instance
-				defender = cc.GetStruct(defender.GetStructId())
-
-				defender.Defender = true
-				defender.ManualLoadEventAttackDetail(eventAttackDetail)
-				defender.ManualLoadEventAttackShotDetail(eventAttackShotDetail)
-
-				defenderReadinessError := defender.ReadinessCheck()
-				if defenderReadinessError == nil {
-					k.logger.Info("Defender seems ready to defend")
-
-                    // Counter-Attack happens before Block to see if the shot kills
-                    if structure.GetStructType().AttackCounterable && structure.GetStructType().GetWeaponCounterable(weaponSystem) {
-                        k.logger.Info("Defender trying to counter!.. ")
-                        counterErrors := defender.CanCounterAttack(structure)
-                        if counterErrors == nil {
-                            k.logger.Info("Defender counter-attacking!")
-                            structure.TakeCounterAttackDamage(defender)
-                        }
-                    }
-
-					if !attackBlocked && (structure.GetStructType().GetWeaponBlockable(weaponSystem)) {
-						k.logger.Info("Defender to attempt a block!")
-						attackBlocked = defender.AttemptBlock(structure, weaponSystem, targetStructure)
-					}
-                }
-			}
-		}
-
-		// Fun story, I'd actually forgotten this code block after writing all the other function
-		// Turns out, my Struct wasn't attacking because I forgot the part of Attack that attacks.
-		if !attackBlocked && structure.IsOnline() {
-			k.logger.Info("Moving forward with the attack", "target", msg.TargetStructId[shot])
-			targetStructure.TakeAttackDamage(structure, weaponSystem)
-		} else {
-			k.logger.Info("Attack against target was blocked", "target", msg.TargetStructId[shot])
-		}
-
-		if structure.GetStructType().AttackCounterable && structure.GetStructType().GetWeaponCounterable(weaponSystem) {
-			k.logger.Info("Target trying to Counter now!")
-			counterErrors := targetStructure.CanCounterAttack(structure)
-			if counterErrors == nil {
-				k.logger.Info("Target Countering!")
-				structure.TakeCounterAttackDamage(targetStructure)
-			}
-		}
-
-		structure.GetEventAttackDetail().AppendShot(targetStructure.FlushEventAttackShotDetail())
-
-		if targetStructure.GetStructType().Category == types.ObjectType_planet {
-			targetWasPlanetary = true
-			targetWasOnPlanet = targetStructure.GetPlanet()
-		}
+		ac.ResolveTargetCounter()
+		ac.EndShot()
 
 		// If the attacker was destroyed during this shot (e.g. by counter-attacks),
 		// stop processing further targets immediately.
@@ -181,20 +99,9 @@ func (k msgServer) StructAttack(goCtx context.Context, msg *types.MsgStructAttac
 		}
 	}
 
-	// Recoil Damage - only if attacker survived all shots
-	if !structure.IsDestroyed() {
-		structure.TakeRecoilDamage(weaponSystem)
-	}
-
-	// Check for Planetary Damage, namely Defense Cannons - only if attacker survived
-	if !structure.IsDestroyed() && targetWasPlanetary {
-		targetWasOnPlanet.AttemptDefenseCannon(structure)
-	}
-
-	// Set attacker's final health after all damage sources have resolved
-	eventAttackDetail.SetAttackerHealthAfter(structure.GetHealth())
-
-	_ = ctx.EventManager().EmitTypedEvent(&types.EventAttack{EventAttackDetail: eventAttackDetail})
+	ac.ResolveRecoil()
+	ac.ResolvePlanetaryDefense()
+	ac.Finalize(ctx)
 
 	structure.GetOwner().Discharge()
 

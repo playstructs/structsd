@@ -31,16 +31,6 @@ type StructCache struct {
 	BlockStartOreRefineAttributeId string
 	ProtectedStructIndexAttributeId string
 	ReadyAttributeId string
-
-	Blocker  bool
-	Defender bool
-
-	// Event Tracking
-	EventAttackDetailLoaded bool
-	EventAttackDetail       *types.EventAttackDetail
-
-	EventAttackShotDetailLoaded bool
-	EventAttackShotDetail       *types.EventAttackShotDetail
 }
 
 
@@ -71,16 +61,6 @@ func (cache *StructCache) LoadStruct() bool {
 
 
 
-// Set the Event data manually
-// Used to manage the same event across objects
-func (cache *StructCache) ManualLoadEventAttackDetail(eventAttackDetail *types.EventAttackDetail) {
-	cache.EventAttackDetail = eventAttackDetail
-	cache.EventAttackDetailLoaded = true
-}
-func (cache *StructCache) ManualLoadEventAttackShotDetail(eventAttackShotDetail *types.EventAttackShotDetail) {
-	cache.EventAttackShotDetail = eventAttackShotDetail
-	cache.EventAttackShotDetailLoaded = true
-}
 
 /* Getters
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
@@ -196,20 +176,6 @@ func (cache *StructCache) GetDefenders() []*StructCache {
 	return cache.CC.GetAllStructDefender(cache.GetStructId())
 }
 
-func (cache *StructCache) GetEventAttackDetail() *types.EventAttackDetail {
-	if !cache.EventAttackDetailLoaded {
-		cache.EventAttackDetail = types.CreateEventAttackDetail()
-		cache.EventAttackDetailLoaded = true
-	}
-	return cache.EventAttackDetail
-}
-func (cache *StructCache) GetEventAttackShotDetail() *types.EventAttackShotDetail {
-	if !cache.EventAttackShotDetailLoaded {
-		cache.EventAttackShotDetail = types.CreateEventAttackShotDetail(cache.StructId)
-		cache.EventAttackShotDetailLoaded = true
-	}
-	return cache.EventAttackShotDetail
-}
 
 /* Setters - SET DOES NOT COMMIT()
  * These will always perform a Load first on the appropriate data if it hasn't occurred yet.
@@ -243,10 +209,6 @@ func (cache *StructCache) ClearBlockStartOreRefine() {
 	cache.CC.SetStructAttribute(cache.BlockStartOreRefineAttributeId, 0)
 }
 
-func (cache *StructCache) FlushEventAttackShotDetail() *types.EventAttackShotDetail {
-	cache.EventAttackShotDetailLoaded = false
-	return cache.EventAttackShotDetail
-}
 
 /* Flag Commands for the Status field */
 
@@ -677,7 +639,7 @@ func (cache *StructCache) CanEvade(attackerStruct *StructCache, weaponSystem typ
 		canEvade = cache.IsSuccessful(successRate)
 	}
 
-	cache.GetEventAttackShotDetail().SetEvade(canEvade, cache.GetStructType().UnitDefenses)
+	cache.CC.Attack.ShotDetail.SetEvade(canEvade, cache.GetStructType().UnitDefenses)
 
 	// If there has already been an successful evade then don't both evading harder
 	if !canEvade {
@@ -697,7 +659,7 @@ func (cache *StructCache) CanEvade(attackerStruct *StructCache, weaponSystem typ
 						// Only effective if the target is in the Water or on Land
 						if (cache.GetOperatingAmbit() == types.Ambit_water) || (cache.GetOperatingAmbit() == types.Ambit_land) {
 							canEvade = cache.IsSuccessful(successRate)
-							cache.GetEventAttackShotDetail().SetEvadeByPlanetaryDefenses(canEvade, types.TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork)
+							cache.CC.Attack.ShotDetail.SetEvadeByPlanetaryDefenses(canEvade, types.TechPlanetaryDefenses_lowOrbitBallisticInterceptorNetwork)
 						}
 					}
 				}
@@ -720,13 +682,13 @@ func (cache *StructCache) TakeAttackDamage(attackingStruct *StructCache, weaponS
 		}
 	}
 
-	cache.GetEventAttackShotDetail().SetDamageDealt(damage)
+	cache.CC.Attack.ShotDetail.SetDamageDealt(damage)
 
 	if damage != 0 {
 		damageReduction := cache.GetStructType().AttackReduction
 
 		if damageReduction > 0 {
-			cache.GetEventAttackShotDetail().SetDamageReduction(damageReduction, cache.GetStructType().UnitDefenses)
+			cache.CC.Attack.ShotDetail.SetDamageReduction(damageReduction, cache.GetStructType().UnitDefenses)
 		}
 
 		if damageReduction >= damage {
@@ -736,17 +698,17 @@ func (cache *StructCache) TakeAttackDamage(attackingStruct *StructCache, weaponS
 		}
 	}
 
-	cache.GetEventAttackShotDetail().SetDamage(damage)
+	cache.CC.Attack.ShotDetail.SetDamage(damage)
 
 	if damage != 0 {
 
         cache.CC.SetStructAttributeDecrement(cache.HealthAttributeId, damage)
 
 		if cache.GetHealth() == 0 {
-			if cache.Blocker {
-				cache.GetEventAttackShotDetail().SetBlockerDestroyed()
+			if cache.CC.Attack.Blocker == cache {
+				cache.CC.Attack.ShotDetail.SetBlockerDestroyed()
 			} else {
-				cache.GetEventAttackShotDetail().SetTargetDestroyed()
+				cache.CC.Attack.ShotDetail.SetTargetDestroyed()
 			}
 
 			// destruction damage from the grave
@@ -759,12 +721,10 @@ func (cache *StructCache) TakeAttackDamage(attackingStruct *StructCache, weaponS
 
 	}
 
-	// Always set final health (uses same Blocker pattern as SetBlockerDestroyed/SetTargetDestroyed)
-	if cache.Blocker {
-
-		cache.GetEventAttackShotDetail().SetBlockerHealthAfter(cache.GetHealth())
+	if cache.CC.Attack.Blocker == cache {
+		cache.CC.Attack.ShotDetail.SetBlockerHealthAfter(cache.GetHealth())
 	} else {
-		cache.GetEventAttackShotDetail().SetTargetHealthAfter(cache.GetHealth())
+		cache.CC.Attack.ShotDetail.SetTargetHealthAfter(cache.GetHealth())
 	}
 
 	return
@@ -785,7 +745,7 @@ func (cache *StructCache) TakeRecoilDamage(weaponSystem types.TechWeaponSystem) 
 		}
 	}
 
-	cache.GetEventAttackDetail().SetRecoilDamage(damage, cache.IsDestroyed())
+	cache.CC.Attack.AttackDetail.SetRecoilDamage(damage, cache.IsDestroyed())
 	return
 }
 
@@ -805,7 +765,7 @@ func (cache *StructCache) TakePostDestructionDamage(attackingStruct *StructCache
 
 	}
 
-	cache.GetEventAttackShotDetail().SetPostDestructionDamage(damage, cache.IsDestroyed(), attackingStruct.GetStructType().PassiveWeaponry)
+	cache.CC.Attack.ShotDetail.SetPostDestructionDamage(damage, cache.IsDestroyed(), attackingStruct.GetStructType().PassiveWeaponry)
 
 	return
 }
@@ -832,12 +792,12 @@ func (cache *StructCache) TakeCounterAttackDamage(counterStruct *StructCache) (d
 
 	}
 
-	if counterStruct.Defender {
+	if counterStruct != cache.CC.Attack.Target {
 		cache.CC.k.logger.Info("Generating a Defender Counter-Attack Record for the event")
-		cache.GetEventAttackShotDetail().AppendDefenderCounter(counterStruct.StructId, damage, cache.IsDestroyed(), counterStruct.GetTypeId(), counterStruct.GetLocationType(), counterStruct.GetLocationId(), counterStruct.GetOperatingAmbit(), counterStruct.GetSlot())
+		cache.CC.Attack.ShotDetail.AppendDefenderCounter(counterStruct.StructId, damage, cache.IsDestroyed(), counterStruct.GetTypeId(), counterStruct.GetLocationType(), counterStruct.GetLocationId(), counterStruct.GetOperatingAmbit(), counterStruct.GetSlot())
 	} else {
 		cache.CC.k.logger.Info("Generating a Target Counter-Attack Record for the event")
-		cache.GetEventAttackShotDetail().AppendTargetCounter(damage, cache.IsDestroyed(), counterStruct.GetStructType().PassiveWeaponry)
+		cache.CC.Attack.ShotDetail.AppendTargetCounter(damage, cache.IsDestroyed(), counterStruct.GetStructType().PassiveWeaponry)
 	}
 
 	return
@@ -856,7 +816,7 @@ func (cache *StructCache) TakePlanetaryDefenseCanonDamage(damage uint64) uint64 
 		}
 	}
 
-	cache.GetEventAttackDetail().SetPlanetaryDefenseCannonDamage(damage, cache.IsDestroyed())
+	cache.CC.Attack.AttackDetail.SetPlanetaryDefenseCannonDamage(damage, cache.IsDestroyed())
 
 	return damage
 }
@@ -865,8 +825,8 @@ func (cache *StructCache) AttemptBlock(attacker *StructCache, weaponSystem types
 	if cache.Ready && attacker.Ready {
 		if cache.GetOperatingAmbit() == target.GetOperatingAmbit() {
 			blocked = true
-			cache.Blocker = true
-			cache.GetEventAttackShotDetail().SetBlocker(cache.StructId, cache.GetTypeId(), cache.GetLocationType(), cache.GetLocationId(), cache.GetOperatingAmbit(), cache.GetSlot())
+			cache.CC.Attack.Blocker = cache
+			cache.CC.Attack.ShotDetail.SetBlocker(cache.StructId, cache.GetTypeId(), cache.GetLocationType(), cache.GetLocationId(), cache.GetOperatingAmbit(), cache.GetSlot())
 			cache.TakeAttackDamage(attacker, weaponSystem)
 		}
 	}

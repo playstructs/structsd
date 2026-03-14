@@ -94,6 +94,9 @@ type CurrentContext struct {
 	structTypes     map[uint64]*StructTypeCache // read-only, never committed
 
 
+	// Transient combat state (nil outside attack handler, not committed)
+	Attack *AttackContext
+
 	// State flags
 	committed bool
 }
