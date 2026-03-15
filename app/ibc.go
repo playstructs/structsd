@@ -29,8 +29,8 @@ import (
 	ibctm "github.com/cosmos/ibc-go/v10/modules/light-clients/07-tendermint"
 
 	// this line is used by starport scaffolding # ibc/app/import
-	structsmodule "structs/x/structs/module"
-	structsmoduletypes "structs/x/structs/types"
+	// structsmodule "structs/x/structs/module"
+	// structsmoduletypes "structs/x/structs/types"
 )
 
 // registerIBCModules register IBC keepers and non dependency inject modules.
@@ -115,8 +115,8 @@ func (app *App) registerIBCModules() {
 		AddRoute(icacontrollertypes.SubModuleName, icaControllerIBCModule).
 		AddRoute(icahosttypes.SubModuleName, icaHostIBCModule)
 
-	structsIBCModule := structsmodule.NewIBCModule(app.StructsKeeper)
-	ibcRouter.AddRoute(structsmoduletypes.ModuleName, structsIBCModule)
+	// structsIBCModule := structsmodule.NewIBCModule(app.StructsKeeper)
+	// ibcRouter.AddRoute(structsmoduletypes.ModuleName, structsIBCModule)
 	// this line is used by starport scaffolding # ibc/app/module
 
 	app.IBCKeeper.SetRouter(ibcRouter)

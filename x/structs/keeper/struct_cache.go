@@ -504,12 +504,15 @@ func (cache *StructCache) CanOreRefine() error {
 
 }
 
-func (cache *StructCache) OreRefine() {
+func (cache *StructCache) OreRefine() error {
 
 	cache.GetOwner().StoredOreDecrement(1)
-	cache.GetOwner().DepositRefinedAlpha()
+	if err := cache.GetOwner().DepositRefinedAlpha(); err != nil {
+		return err
+	}
 
 	cache.ResetBlockStartOreRefine()
+	return nil
 }
 
 func (cache *StructCache) CanAttack(targetStruct *StructCache, weaponSystem types.TechWeaponSystem) (err error) {

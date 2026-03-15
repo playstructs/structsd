@@ -2,12 +2,12 @@ package keeper
 
 import (
 	"context"
-    "strconv"
+	"strconv"
 
-    //"fmt"
-
-	sdk "github.com/cosmos/cosmos-sdk/types"
 	"structs/x/structs/types"
+
+	sdkerrors "cosmossdk.io/errors"
+	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
 func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.MsgStructOreRefineryComplete) (*types.MsgStructOreRefineryStatusResponse, error) {
@@ -47,13 +47,20 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
     activeOreRefiningSystemBlockString := strconv.FormatUint(structure.GetBlockStartOreRefine() , 10)
     hashInput := structure.StructId + "REFINE" + activeOreRefiningSystemBlockString + "NONCE" + msg.Nonce
 
-    currentAge := uint64(ctx.BlockHeight()) - structure.GetBlockStartOreRefine()
+    blockHeight := uint64(ctx.BlockHeight())
+    blockStart := structure.GetBlockStartOreRefine()
+    if blockHeight < blockStart {
+        return emptyResponse, sdkerrors.Wrapf(types.ErrInvalidParameters, "block height %d precedes start block %d", blockHeight, blockStart)
+    }
+    currentAge := blockHeight - blockStart
     valid, achievedDifficulty := types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().OreRefiningDifficulty)
     if !valid {
        return emptyResponse, types.NewWorkFailureError("refine", structure.StructId, hashInput)
     }
 
-    structure.OreRefine()
+    if err := structure.OreRefine(); err != nil {
+        return emptyResponse, err
+    }
 
     _ = ctx.EventManager().EmitTypedEvent(&types.EventAlphaRefine{&types.EventAlphaRefineDetail{PlayerId: structure.GetOwnerId(), PrimaryAddress: structure.GetOwner().GetPrimaryAddress(), Amount: 1}})
     _ = ctx.EventManager().EmitTypedEvent(&types.EventHashSuccess{&types.EventHashSuccessDetail{CallerAddress: msg.Creator, Category: "refine", Difficulty: achievedDifficulty, ObjectId: msg.StructId }})

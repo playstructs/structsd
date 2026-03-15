@@ -281,16 +281,16 @@ func (cache *PlayerCache) SetPrimaryAddress(address string) {
 	cache.Changed = true
 }
 
-// DepositRefinedAlpha()
-// Turn this into a delayed commit like the rest
-func (cache *PlayerCache) DepositRefinedAlpha() {
-	// Got this far, let's reward the player with some fresh Alpha
-	// Mint the new Alpha to the module
+func (cache *PlayerCache) DepositRefinedAlpha() error {
 	newAlpha, _ := sdk.ParseCoinsNormalized("1000000ualpha")
-	cache.CC.k.bankKeeper.MintCoins(cache.CC.ctx, types.ModuleName, newAlpha)
-	// Transfer the refined Alpha to the player
-	playerAcc, _ := sdk.AccAddressFromBech32(cache.GetPrimaryAddress())
-	cache.CC.k.bankKeeper.SendCoinsFromModuleToAccount(cache.CC.ctx, types.ModuleName, playerAcc, newAlpha)
+	if err := cache.CC.k.bankKeeper.MintCoins(cache.CC.ctx, types.ModuleName, newAlpha); err != nil {
+		return err
+	}
+	playerAcc, err := sdk.AccAddressFromBech32(cache.GetPrimaryAddress())
+	if err != nil {
+		return err
+	}
+	return cache.CC.k.bankKeeper.SendCoinsFromModuleToAccount(cache.CC.ctx, types.ModuleName, playerAcc, newAlpha)
 }
 
 func (cache *PlayerCache) IsOnline() (online bool) {

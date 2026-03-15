@@ -93,19 +93,31 @@ func (cache *AgreementCache) LoadCurrentBlock() bool {
 }
 
 func (cache *AgreementCache) LoadDurationRemaining() bool {
-	cache.DurationRemaining = cache.GetEndBlock() - cache.GetCurrentBlock()
+	if cache.GetEndBlock() >= cache.GetCurrentBlock() {
+		cache.DurationRemaining = cache.GetEndBlock() - cache.GetCurrentBlock()
+	} else {
+		cache.DurationRemaining = 0
+	}
 	cache.DurationRemainingLoaded = true
 	return cache.DurationRemainingLoaded
 }
 
 func (cache *AgreementCache) LoadDurationPast() bool {
-	cache.DurationPast = cache.GetCurrentBlock() - cache.GetStartBlock()
+	if cache.GetCurrentBlock() >= cache.GetStartBlock() {
+		cache.DurationPast = cache.GetCurrentBlock() - cache.GetStartBlock()
+	} else {
+		cache.DurationPast = 0
+	}
 	cache.DurationPastLoaded = true
 	return cache.DurationPastLoaded
 }
 
 func (cache *AgreementCache) LoadDuration() bool {
-	cache.Duration = cache.GetEndBlock() - cache.GetStartBlock()
+	if cache.GetEndBlock() >= cache.GetStartBlock() {
+		cache.Duration = cache.GetEndBlock() - cache.GetStartBlock()
+	} else {
+		cache.Duration = 0
+	}
 	cache.DurationLoaded = true
 	return cache.DurationLoaded
 }

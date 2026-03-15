@@ -76,7 +76,11 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
         return emptyResponse, decodeErr
     }
 
-    // Proof needs to only be 64 characters. Some systems provide a checksum bit on the end that ruins it all
+    if len(decodedProofSignature) < 64 {
+        return emptyResponse, types.NewAddressValidationError(msg.Address, "signature_too_short")
+    }
+
+    // Proof needs to only be 64 bytes. Some systems provide a checksum byte on the end that ruins it all
     if (!pubKey.VerifySignature([]byte(hashInput), decodedProofSignature[:64])) {
          return emptyResponse, types.NewAddressValidationError(msg.Address, "signature_invalid")
     }

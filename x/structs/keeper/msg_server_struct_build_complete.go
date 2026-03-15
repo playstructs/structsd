@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"structs/x/structs/types"
 
+	sdkerrors "cosmossdk.io/errors"
 	sdk "github.com/cosmos/cosmos-sdk/types"
 )
 
@@ -70,7 +71,12 @@ func (k msgServer) StructBuildComplete(goCtx context.Context, msg *types.MsgStru
 	buildStartBlockString := strconv.FormatUint(structure.GetBlockStartBuild(), 10)
 	hashInput := structure.GetStructId() + "BUILD" + buildStartBlockString + "NONCE" + msg.Nonce
 
-	currentAge := uint64(ctx.BlockHeight()) - structure.GetBlockStartBuild()
+	blockHeight := uint64(ctx.BlockHeight())
+	blockStart := structure.GetBlockStartBuild()
+	if blockHeight < blockStart {
+		return emptyResponse, sdkerrors.Wrapf(types.ErrInvalidParameters, "block height %d precedes start block %d", blockHeight, blockStart)
+	}
+	currentAge := blockHeight - blockStart
 
     valid, achievedDifficulty := types.HashBuildAndCheckDifficulty(hashInput, msg.Proof, currentAge, structure.GetStructType().BuildDifficulty)
 	if !valid {
