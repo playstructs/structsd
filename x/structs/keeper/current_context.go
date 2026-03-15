@@ -248,10 +248,4 @@ func (cc *CurrentContext) CommitAll() {
 	}
 
 	cc.committed = true
-    /*
-	TODO
-	cc.k.logger.Debug("CurrentContext committed",
-		"entity_cache_count", 0,
-	)
-	*/
 }

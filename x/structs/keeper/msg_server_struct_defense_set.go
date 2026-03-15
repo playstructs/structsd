@@ -67,8 +67,6 @@ func (k msgServer) StructDefenseSet(goCtx context.Context, msg *types.MsgStructD
     }
 
 
-    // TODO move this into the cache system directly. 
-
     //load target
     protectedStructure, protectedStructureFound := k.GetStruct(ctx,  msg.ProtectedStructId)
     if (!protectedStructureFound) {

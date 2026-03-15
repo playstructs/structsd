@@ -153,7 +153,7 @@ func (cache *FleetCache) HasCommandStruct() (bool) {
 func (cache *FleetCache) SetLocationToPlanet(destination *PlanetCache) {
     if (!cache.FleetLoaded) { cache.LoadFleet() }
 
-    // TODO/MVP
+    // Beyond MVP
     // One day it'll matter that the previous destination might not be a planet
     // Until that day, let's not complicate this further.
 

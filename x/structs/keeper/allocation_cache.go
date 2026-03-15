@@ -360,7 +360,6 @@ func (cache *AllocationCache) Destroy() (error) {
 }
 
 /* Permissions */
-//TODO
 func (cache *AllocationCache) CanSourceDetailsBeUpdatedBy(activePlayer *PlayerCache) error {
     return cache.CC.PermissionCheck(cache.GetSource(), activePlayer, types.PermSourceAllocation)
 }

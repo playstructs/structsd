@@ -44,7 +44,6 @@ func (k msgServer) GuildCreate(goCtx context.Context, msg *types.MsgGuildCreate)
         }
     }
 
-    // TODO Fix Guild Creation
     guild := k.AppendGuild(ctx, msg.Endpoint, msg.EntrySubstationId, reactor.GetReactor(), player.GetPlayer())
 
     player.SetGuild(guild.Id)
