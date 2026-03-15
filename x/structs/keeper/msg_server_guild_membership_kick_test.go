@@ -39,8 +39,10 @@ func TestMsgGuildMembershipKick(t *testing.T) {
 
 	guild := k.AppendGuild(ctx, "test-endpoint", "", reactor, guildOwner)
 	guildOwner.GuildId = guild.Id
+	guildOwner.GuildRank = 1
 	k.SetPlayer(ctx, guildOwner)
 	member.GuildId = guild.Id
+	member.GuildRank = 2
 	k.SetPlayer(ctx, member)
 
 	// Grant permissions
@@ -85,6 +87,7 @@ func TestMsgGuildMembershipKick(t *testing.T) {
 			// Re-add member if needed
 			if tc.name == "valid kick" {
 				member.GuildId = guild.Id
+				member.GuildRank = 2
 				k.SetPlayer(ctx, member)
 			}
 
