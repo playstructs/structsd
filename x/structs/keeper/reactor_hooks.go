@@ -126,10 +126,11 @@ func (k Keeper) ReactorInfusionUnbonding(ctx context.Context, unbondingId uint64
 	defer cc.CommitAll()
 
 	unbondingDelegation, err := k.stakingKeeper.GetUnbondingDelegationByUnbondingID(ctx, unbondingId)
-
-	k.logger.Info("Unbonding Request", "unbondingId", unbondingId, "delegator", unbondingDelegation.DelegatorAddress, "validator", unbondingDelegation.ValidatorAddress)
+    k.logger.Info("Unbonding Request", "unbondingId", unbondingId)
 
 	if err == nil {
+    	k.logger.Info("Delegation Found", "unbondingId", unbondingId, "delegator", unbondingDelegation.DelegatorAddress, "validator", unbondingDelegation.ValidatorAddress)
+
 		var playerAddress sdk.AccAddress
 		playerAddress, _ = sdk.AccAddressFromBech32(unbondingDelegation.DelegatorAddress)
 		var validatorAddress sdk.ValAddress
