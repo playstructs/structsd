@@ -749,12 +749,12 @@ func (cache *StructCache) TakeRecoilDamage(weaponSystem types.TechWeaponSystem) 
 	return
 }
 
-func (cache *StructCache) TakePostDestructionDamage(attackingStruct *StructCache) (damage uint64) {
+func (cache *StructCache) TakePostDestructionDamage(destroyedStruct *StructCache) (damage uint64) {
 	if cache.IsDestroyed() {
 		return 0
 	}
 
-	damage = cache.GetStructType().PostDestructionDamage
+	damage = destroyedStruct.GetStructType().PostDestructionDamage
 
 	if damage != 0 {
         cache.CC.SetStructAttributeDecrement(cache.HealthAttributeId, damage)
@@ -765,7 +765,7 @@ func (cache *StructCache) TakePostDestructionDamage(attackingStruct *StructCache
 
 	}
 
-	cache.CC.Attack.ShotDetail.SetPostDestructionDamage(damage, cache.IsDestroyed(), attackingStruct.GetStructType().PassiveWeaponry)
+	cache.CC.Attack.ShotDetail.SetPostDestructionDamage(damage, cache.IsDestroyed(), destroyedStruct.GetStructType().PassiveWeaponry)
 
 	return
 }
