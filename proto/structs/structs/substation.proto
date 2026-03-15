@@ -11,7 +11,7 @@ option go_package = "structs/x/structs/types";
 message Substation {
     string id                           = 1;
 
-    string owner                        = 2; // Deprecating as of 110b
+    string owner                        = 2;
     string creator                      = 3;
 }
 

@@ -1637,7 +1637,7 @@ type Provider struct {
 	ProviderCancellationPenalty string               `protobuf:"bytes,10,opt,name=providerCancellationPenalty,proto3" json:"providerCancellationPenalty,omitempty"`
 	ConsumerCancellationPenalty string               `protobuf:"bytes,11,opt,name=consumerCancellationPenalty,proto3" json:"consumerCancellationPenalty,omitempty"`
 	Creator                     string               `protobuf:"bytes,12,opt,name=creator,proto3" json:"creator,omitempty"`
-	Owner                       string               `protobuf:"bytes,13,opt,name=owner,proto3" json:"owner,omitempty"` // Deprecating as of 110b
+	Owner                       string               `protobuf:"bytes,13,opt,name=owner,proto3" json:"owner,omitempty"`
 }
 
 func (x *Provider) Reset() {

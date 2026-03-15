@@ -580,7 +580,7 @@ type Substation struct {
 	unknownFields protoimpl.UnknownFields
 
 	Id      string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Owner   string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"` // Deprecating as of 110b
+	Owner   string `protobuf:"bytes,2,opt,name=owner,proto3" json:"owner,omitempty"`
 	Creator string `protobuf:"bytes,3,opt,name=creator,proto3" json:"creator,omitempty"`
 }
 

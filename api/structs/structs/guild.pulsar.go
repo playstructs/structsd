@@ -1723,7 +1723,7 @@ type Guild struct {
 	Index                              uint64               `protobuf:"varint,2,opt,name=index,proto3" json:"index,omitempty"`
 	Endpoint                           string               `protobuf:"bytes,3,opt,name=endpoint,proto3" json:"endpoint,omitempty"`
 	Creator                            string               `protobuf:"bytes,4,opt,name=creator,proto3" json:"creator,omitempty"`
-	Owner                              string               `protobuf:"bytes,5,opt,name=owner,proto3" json:"owner,omitempty"` // Deprecating as of 110b
+	Owner                              string               `protobuf:"bytes,5,opt,name=owner,proto3" json:"owner,omitempty"`
 	JoinInfusionMinimum                uint64               `protobuf:"varint,6,opt,name=joinInfusionMinimum,proto3" json:"joinInfusionMinimum,omitempty"`
 	JoinInfusionMinimumBypassByRequest GuildJoinBypassLevel `protobuf:"varint,7,opt,name=joinInfusionMinimumBypassByRequest,proto3,enum=structs.structs.GuildJoinBypassLevel" json:"joinInfusionMinimumBypassByRequest,omitempty"`
 	JoinInfusionMinimumBypassByInvite  GuildJoinBypassLevel `protobuf:"varint,8,opt,name=joinInfusionMinimumBypassByInvite,proto3,enum=structs.structs.GuildJoinBypassLevel" json:"joinInfusionMinimumBypassByInvite,omitempty"`

@@ -860,7 +860,7 @@ type Agreement struct {
 	StartBlock   uint64 `protobuf:"varint,5,opt,name=startBlock,proto3" json:"startBlock,omitempty"`
 	EndBlock     uint64 `protobuf:"varint,6,opt,name=endBlock,proto3" json:"endBlock,omitempty"`
 	Creator      string `protobuf:"bytes,7,opt,name=creator,proto3" json:"creator,omitempty"`
-	Owner        string `protobuf:"bytes,8,opt,name=owner,proto3" json:"owner,omitempty"` // Deprecating as of 110b
+	Owner        string `protobuf:"bytes,8,opt,name=owner,proto3" json:"owner,omitempty"`
 }
 
 func (x *Agreement) Reset() {
