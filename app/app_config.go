@@ -87,7 +87,7 @@ var (
 		nft.ModuleName,
 		group.ModuleName,
 		consensustypes.ModuleName,
-		circuittypes.ModuleName,
+		//circuittypes.ModuleName,
 		// chain modules
 		structsmoduletypes.ModuleName,
 		// this line is used by starport scaffolding # stargate/app/initGenesis
