@@ -43,7 +43,9 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
     	msg.Controller,
     	msg.Power,
     )
-
+    if err != nil {
+        return emptyResponse, err
+    }
 
     var creatorPermissions types.Permission
     if allocation.IsAutomated() {
@@ -69,6 +71,6 @@ func (k msgServer) AllocationCreate(goCtx context.Context, msg *types.MsgAllocat
 	cc.CommitAll()
 	return &types.MsgAllocationCreateResponse{
 		AllocationId: allocation.GetAllocationId(),
-	}, err
+	}, nil
 
 }

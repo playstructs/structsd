@@ -31,6 +31,8 @@ type StructCache struct {
 	BlockStartOreRefineAttributeId string
 	ProtectedStructIndexAttributeId string
 	ReadyAttributeId string
+
+	structType *types.StructType
 }
 
 
@@ -107,9 +109,12 @@ func (cache *StructCache) GetBlockStartOreRefine() uint64 {
 }
 
 func (cache *StructCache) GetStructType() types.StructType {
-    structType, _ := cache.CC.GetStructType(cache.GetTypeId())
-    return structType.GetStructType()
-
+    if cache.structType == nil {
+        st, _ := cache.CC.GetStructType(cache.GetTypeId())
+        result := st.GetStructType()
+        cache.structType = &result
+    }
+    return *cache.structType
 }
 func (cache *StructCache) GetTypeId() uint64 {
 	if !cache.StructureLoaded {

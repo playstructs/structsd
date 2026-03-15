@@ -17,15 +17,17 @@ type AttackContext struct {
 	Blocked    bool
 	Blocker    *StructCache
 
-	TargetWasPlanetary bool
-	TargetPlanet       *PlanetCache
+	TargetedPlanets     []*PlanetCache
+	targetedPlanetsSeen map[string]bool
 }
 
 func NewAttackContext(cc *CurrentContext, attacker *StructCache, weaponSystem types.TechWeaponSystem) *AttackContext {
 	ac := &AttackContext{
-		Attacker:     attacker,
-		WeaponSystem: weaponSystem,
-		AttackDetail: types.CreateEventAttackDetail(),
+		Attacker:            attacker,
+		WeaponSystem:        weaponSystem,
+		AttackDetail:        types.CreateEventAttackDetail(),
+		TargetedPlanets:     make([]*PlanetCache, 0),
+		targetedPlanetsSeen: make(map[string]bool),
 	}
 
 	ac.AttackDetail.SetBaseDetails(
@@ -144,8 +146,12 @@ func (ac *AttackContext) EndShot() {
 	ac.AttackDetail.AppendShot(ac.ShotDetail)
 
 	if ac.Target.GetStructType().Category == types.ObjectType_planet {
-		ac.TargetWasPlanetary = true
-		ac.TargetPlanet = ac.Target.GetPlanet()
+		planet := ac.Target.GetPlanet()
+		planetId := planet.GetPlanetId()
+		if !ac.targetedPlanetsSeen[planetId] {
+			ac.targetedPlanetsSeen[planetId] = true
+			ac.TargetedPlanets = append(ac.TargetedPlanets, planet)
+		}
 	}
 }
 
@@ -157,8 +163,14 @@ func (ac *AttackContext) ResolveRecoil() {
 
 func (ac *AttackContext) ResolvePlanetaryDefense() {
 	weaponCounterable := ac.Attacker.GetStructType().AttackCounterable && ac.Attacker.GetStructType().GetWeaponCounterable(ac.WeaponSystem)
-	if !ac.Attacker.IsDestroyed() && ac.TargetWasPlanetary && weaponCounterable {
-		ac.TargetPlanet.AttemptDefenseCannon(ac.Attacker)
+	if ac.Attacker.IsDestroyed() || !weaponCounterable {
+		return
+	}
+	for _, planet := range ac.TargetedPlanets {
+		if ac.Attacker.IsDestroyed() {
+			break
+		}
+		planet.AttemptDefenseCannon(ac.Attacker)
 	}
 }
 
