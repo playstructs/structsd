@@ -54,6 +54,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     decodedProofPubKey, decodeErr := hex.DecodeString(msg.ProofPubKey)
     if decodeErr != nil {
         k.logger.Error("Address Register Public Key", "decodingError", decodeErr)
+        return emptyResponse, decodeErr
     }
     // Convert provided pub key into a bech32 string (i.e., an address)
 	address := types.PubKeyToBech32(decodedProofPubKey)

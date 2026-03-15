@@ -75,6 +75,7 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	decodedProofSignature, decodeErr := hex.DecodeString(msg.ProofSignature)
 	if decodeErr != nil {
 	    k.logger.Error("Guild Join Proxy Signature", "decodingError", decodeErr)
+        return emptyResponse, decodeErr
 	}
 
 	// Proof needs to only be 64 characters. Some systems provide a checksum bit on the end that ruins it all
@@ -142,6 +143,7 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 
 	// Add player to the guild
 	player.SetGuild(guild.GetGuildId())
+	player.SetGuildRank(guild.GetEntryRank())
 
 	// Connect player to the substation
 	// Now let's get the player some power
