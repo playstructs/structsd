@@ -40,7 +40,10 @@ func (k msgServer) GuildBankRedeem(goCtx context.Context, msg *types.MsgGuildBan
     }
 
     err := guild.BankRedeem(msg.AmountToken.Amount, activePlayer);
+    if err != nil {
+        return emptyResponse, err
+    }
 
 	cc.CommitAll()
-	return emptyResponse, err
+	return &types.MsgGuildBankRedeemResponse{}, nil
 }
