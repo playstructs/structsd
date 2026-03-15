@@ -73,6 +73,7 @@ func (k msgServer) AddressRegister(goCtx context.Context, msg *types.MsgAddressR
     decodedProofSignature, decodeErr := hex.DecodeString(msg.ProofSignature)
     if decodeErr != nil {
         k.logger.Error("Address Register Signature", "decodingError", decodeErr)
+        return emptyResponse, decodeErr
     }
 
     // Proof needs to only be 64 characters. Some systems provide a checksum bit on the end that ruins it all

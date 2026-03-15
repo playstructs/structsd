@@ -37,6 +37,7 @@ func (k msgServer) GuildMembershipJoinProxy(goCtx context.Context, msg *types.Ms
 	decodedProofPubKey, decodeErr := hex.DecodeString(msg.ProofPubKey)
 	if decodeErr != nil {
 	    k.logger.Error("Guild Join Proxy Public Key", "decodingError", decodeErr)
+        return emptyResponse, decodeErr
 	}
 
 	// Convert provided pub key into a bech32 string (i.e., an address)
