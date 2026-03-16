@@ -60,7 +60,7 @@ func TestProviderCRUD(t *testing.T) {
 func TestProviderCount(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 	initialCount := keeper.GetProviderCount(ctx)
-	require.Equal(t, types.KeeperStartValue, initialCount)
+	require.Equal(t, uint64(types.KeeperStartValue), initialCount)
 
 	// Create a provider and check count
 	provider := types.Provider{

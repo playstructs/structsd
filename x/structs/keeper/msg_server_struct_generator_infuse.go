@@ -19,7 +19,10 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 	// indexer for UI requirements
 	k.AddressEmitActivity(ctx, msg.Creator)
 
-	callingPlayer, _ := cc.GetPlayerByAddress(msg.Creator)
+	callingPlayer, playerErr := cc.GetPlayerByAddress(msg.Creator)
+	if playerErr != nil {
+		return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "struct_generator_infuse")
+	}
 	if callingPlayer.CheckPlayer() != nil {
 		return emptyResponse, types.NewPlayerRequiredError(msg.Creator, "struct_generator_infuse")
 	}
@@ -35,7 +38,7 @@ func (k msgServer) StructGeneratorInfuse(goCtx context.Context, msg *types.MsgSt
 	}
 
 	// Is the Struct online?
-	if structure.IsOnline() {
+	if !structure.IsOnline() {
 		return emptyResponse, types.NewStructStateError(msg.StructId, "offline", "online", "generator_infuse")
 	}
 

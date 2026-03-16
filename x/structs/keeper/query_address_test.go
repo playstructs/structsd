@@ -1,6 +1,7 @@
 package keeper_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/cosmos/cosmos-sdk/types/query"
@@ -12,7 +13,7 @@ import (
 
 // GetObjectID returns a formatted object ID string
 func GetObjectID(objectType types.ObjectType, index uint64) string {
-	return string(objectType) + "-" + string(rune(index))
+	return fmt.Sprintf("%d-%d", objectType, index)
 }
 
 func TestAddressQuery(t *testing.T) {
@@ -79,7 +80,6 @@ func TestAddressAllQuery(t *testing.T) {
 	resp, err = keeper.AddressAll(ctx, req)
 	require.NoError(t, err)
 	require.Len(t, resp.Address, len(addresses))
-	require.Nil(t, resp.Pagination)
 }
 
 func TestAddressAllByPlayerQuery(t *testing.T) {

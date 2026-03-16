@@ -18,8 +18,8 @@ func createNInfusion(keeper kpr.Keeper, ctx sdk.Context, n int, destinationId st
 		items[i] = types.CreateNewInfusion(
 			types.ObjectType_struct,
 			destinationId,
-			"address"+string(rune(i)),
-			"player"+string(rune(i)),
+			"address"+string(rune('a'+i)),
+			"player"+string(rune('a'+i)),
 			uint64(100+i),
 			math.LegacyNewDec(int64(i+1)),
 			uint64(1),
@@ -31,7 +31,7 @@ func createNInfusion(keeper kpr.Keeper, ctx sdk.Context, n int, destinationId st
 
 func TestInfusionCRUD(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
-	destinationId := "dest1"
+	destinationId := "5-1"
 	infusions := createNInfusion(keeper, ctx, 5, destinationId)
 
 	// Test GetInfusion

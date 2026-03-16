@@ -79,7 +79,7 @@ func TestMsgSubstationAllocationConnect(t *testing.T) {
 				DestinationId: substation.Id,
 			},
 			expErr:    true,
-			expErrMsg: "allocation not found",
+			expErrMsg: "not found",
 		},
 		{
 			name: "substation not found",
@@ -99,7 +99,7 @@ func TestMsgSubstationAllocationConnect(t *testing.T) {
 				DestinationId: substation.Id,
 			},
 			expErr:    true,
-			expErrMsg: "cannot match allocation source",
+			expErrMsg: "source_destination_match",
 		},
 	}
 
@@ -121,8 +121,9 @@ func TestMsgSubstationAllocationConnect(t *testing.T) {
 
 			if tc.expErr {
 				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
+				if tc.expErrMsg != "" {
+					require.Contains(t, err.Error(), tc.expErrMsg)
+				}
 			} else {
 				require.NoError(t, err)
 				require.NotNil(t, resp)

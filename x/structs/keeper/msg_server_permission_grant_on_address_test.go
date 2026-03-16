@@ -22,14 +22,15 @@ func TestMsgPermissionGrantOnAddress(t *testing.T) {
 	}
 	player = testAppendPlayer(k, ctx, player)
 
-	// Register another address for the player
 	secondaryAcc := sdk.AccAddress("secondary123456789012345678901234567890")
 	secondaryAddress := secondaryAcc.String()
 	k.SetPlayerIndexForAddress(ctx, secondaryAddress, player.Index)
 
-	// Grant creator address permissions
 	creatorPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	testPermissionAdd(k, ctx, creatorPermissionId, types.PermAll|types.PermAdmin)
+	testPermissionAdd(k, ctx, creatorPermissionId, types.PermAll)
+
+	secondaryPermissionId := keeperlib.GetAddressPermissionIDBytes(secondaryAddress)
+	testPermissionAdd(k, ctx, secondaryPermissionId, types.PermAll)
 
 	testCases := []struct {
 		name      string

@@ -136,27 +136,24 @@ func TestGuildBasicOperations(t *testing.T) {
 func TestGuildCache(t *testing.T) {
 	k, ctx := keepertest.StructsKeeper(t)
 
-	// Create test data
 	endpoint := "test-endpoint"
 	substationId := "substation1"
 	reactor := types.Reactor{
 		Id: "reactor1",
 	}
 	player := types.Player{
-		Id:      "player1",
-		Creator: "creator1",
+		Creator:        "creator1",
+		PrimaryAddress: "creator1",
 	}
+	player = testAppendPlayer(k, ctx, player)
 
-	// Create guild
 	guild := createTestGuild(k, ctx, endpoint, substationId, reactor, player)
 
-	// Test loading guild data directly
 	loadedGuild, found := k.GetGuild(ctx, guild.Id)
 	require.True(t, found)
 	require.Equal(t, guild.Id, loadedGuild.Id)
 	require.Equal(t, endpoint, loadedGuild.Endpoint)
 
-	// Test owner loading
 	owner, ownerFound := k.GetPlayer(ctx, player.Id)
 	require.True(t, ownerFound)
 	require.Equal(t, player.Id, owner.Id)

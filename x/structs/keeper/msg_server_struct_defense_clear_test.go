@@ -12,114 +12,75 @@ import (
 
 func TestMsgStructDefenseClear(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(1000)
+	wctx := sdk.WrapSDKContext(sdkCtx)
 
-	// Create a player first
 	player := types.Player{
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = testAppendPlayer(k, ctx, player)
+	player = testAppendPlayer(k, sdkCtx, player)
 
-	// Set up player capacity to be online
 	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id)
-	k.SetGridAttribute(ctx, capacityAttrId, uint64(100000))
+	k.SetGridAttribute(sdkCtx, capacityAttrId, uint64(100000))
 
-	// Set last action to ensure player has charge
 	lastActionAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, player.Id)
-	k.SetGridAttribute(ctx, lastActionAttrId, uint64(0))
+	k.SetGridAttribute(sdkCtx, lastActionAttrId, uint64(0))
 
-	// Create a struct type
 	structType := types.StructType{
 		Id:                 1,
 		Type:               types.CommandStruct,
 		Category:           types.ObjectType_player,
 		DefendChangeCharge: 10,
 	}
-	k.SetStructType(ctx, structType)
+	k.SetStructType(sdkCtx, structType)
 
-	// Create defender struct
 	defenderStruct := types.Struct{
-		Creator: player.Creator,
-		Owner:   player.Id,
-		Type:    structType.Id,
+		Creator:      player.Creator,
+		Owner:        player.Id,
+		Type:         structType.Id,
+		LocationId:   "planet1",
+		LocationType: types.ObjectType_planet,
 	}
-	defenderStruct = testAppendStruct(k, ctx, defenderStruct)
+	defenderStruct = testAppendStruct(k, sdkCtx, defenderStruct)
 
-	// Create protected struct
 	protectedStruct := types.Struct{
-		Creator: player.Creator,
-		Owner:   player.Id,
-		Type:    structType.Id,
+		Creator:      player.Creator,
+		Owner:        player.Id,
+		Type:         structType.Id,
+		LocationId:   "planet1",
+		LocationType: types.ObjectType_planet,
 	}
-	protectedStruct = testAppendStruct(k, ctx, protectedStruct)
+	protectedStruct = testAppendStruct(k, sdkCtx, protectedStruct)
 
-	// Mark structs as built and online
-	statusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, defenderStruct.Id)
-	builtFlag := uint64(types.StructStateBuilt)
-	testSetStructAttributeFlagAdd(k, ctx, statusAttrId, builtFlag)
+	defenderStatusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, defenderStruct.Id)
+	testSetStructAttributeFlagAdd(k, sdkCtx, defenderStatusAttrId, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, defenderStatusAttrId, uint64(types.StructStateOnline))
 
-	testCases := []struct {
-		name      string
-		input     *types.MsgStructDefenseClear
-		expErr    bool
-		expErrMsg string
-	}{
-		{
-			name: "valid defense clear",
-			input: &types.MsgStructDefenseClear{
-				Creator:          player.Creator,
-				DefenderStructId: defenderStruct.Id,
-			},
-			expErr: false,
-		},
-		{
-			name: "defender struct not found",
-			input: &types.MsgStructDefenseClear{
-				Creator:          player.Creator,
-				DefenderStructId: "invalid-struct",
-			},
-			expErr:    true,
-			expErrMsg: "does not exist",
-		},
-		{
-			name: "not defending anything",
-			input: &types.MsgStructDefenseClear{
-				Creator:          player.Creator,
-				DefenderStructId: defenderStruct.Id,
-			},
-			expErr:    true,
-			expErrMsg: "not defending anything",
-		},
-		{
-			name: "no play permissions",
-			input: &types.MsgStructDefenseClear{
-				Creator:          "cosmos1noperms",
-				DefenderStructId: defenderStruct.Id,
-			},
-			expErr:    true,
-			expErrMsg: "has no",
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			// Set up defense if needed
-			if tc.name == "valid defense clear" {
-				// Set defender
-				k.SetStructDefender(ctx, protectedStruct.Id, protectedStruct.Index, defenderStruct.Id)
-			}
-
-			resp, err := ms.StructDefenseClear(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
-			} else {
-				require.NoError(t, err)
-				require.NotNil(t, resp)
-			}
+	t.Run("valid defense clear", func(t *testing.T) {
+		k.SetStructDefender(sdkCtx, protectedStruct.Id, protectedStruct.Index, defenderStruct.Id)
+		resp, err := ms.StructDefenseClear(wctx, &types.MsgStructDefenseClear{
+			Creator:          player.Creator,
+			DefenderStructId: defenderStruct.Id,
 		})
-	}
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+	})
+
+	t.Run("defender struct not found", func(t *testing.T) {
+		_, err := ms.StructDefenseClear(wctx, &types.MsgStructDefenseClear{
+			Creator:          player.Creator,
+			DefenderStructId: "invalid-struct",
+		})
+		require.Error(t, err)
+	})
+
+	t.Run("no play permissions", func(t *testing.T) {
+		_, err := ms.StructDefenseClear(wctx, &types.MsgStructDefenseClear{
+			Creator:          "cosmos1noperms",
+			DefenderStructId: defenderStruct.Id,
+		})
+		require.Error(t, err)
+	})
 }

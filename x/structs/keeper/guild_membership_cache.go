@@ -53,7 +53,7 @@ func (cache *GuildMembershipApplicationCache) ID() string {
 }
 
 func (cache *GuildMembershipApplicationCache) LoadGuildMembershipApplication() bool {
-    	guildMembershipApplication, guildMembershipApplicationFound := cache.CC.k.GetGuildMembershipApplicationById(cache.CC.ctx, cache.ID())
+    	guildMembershipApplication, guildMembershipApplicationFound := cache.CC.k.GetGuildMembershipApplicationById(cache.CC.ctx, cache.GuildMembershipApplicationId)
 
     	if guildMembershipApplicationFound {
     		cache.GuildMembershipApplication = guildMembershipApplication

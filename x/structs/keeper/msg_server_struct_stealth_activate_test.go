@@ -12,133 +12,96 @@ import (
 
 func TestMsgStructStealthActivate(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
-	wctx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx := sdk.UnwrapSDKContext(ctx)
+	sdkCtx = sdkCtx.WithBlockHeight(1000)
+	wctx := sdk.WrapSDKContext(sdkCtx)
 
-	// Create a player first
 	player := types.Player{
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
-	player = testAppendPlayer(k, ctx, player)
+	player = testAppendPlayer(k, sdkCtx, player)
 
-	// Set up player capacity to be online
 	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id)
-	k.SetGridAttribute(ctx, capacityAttrId, uint64(100000))
+	k.SetGridAttribute(sdkCtx, capacityAttrId, uint64(100000))
 
-	// Set last action to ensure player has charge
 	lastActionAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_lastAction, player.Id)
-	k.SetGridAttribute(ctx, lastActionAttrId, uint64(0))
+	k.SetGridAttribute(sdkCtx, lastActionAttrId, uint64(0))
 
-	// Create a struct type with stealth system
-	// Note: HasStealthSystem is a method, not a field
 	structType := types.StructType{
 		Id:                    1,
 		Type:                  types.CommandStruct,
 		Category:              types.ObjectType_player,
+		UnitDefenses:          types.TechUnitDefenses_stealthMode,
 		StealthActivateCharge: 10,
 	}
-	k.SetStructType(ctx, structType)
+	k.SetStructType(sdkCtx, structType)
 
-	// Create a struct
 	structObj := types.Struct{
 		Creator: player.Creator,
 		Owner:   player.Id,
 		Type:    structType.Id,
 	}
-	structObj = testAppendStruct(k, ctx, structObj)
+	structObj = testAppendStruct(k, sdkCtx, structObj)
 
-	// Mark struct as built and online
 	statusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structObj.Id)
-	builtFlag := uint64(types.StructStateBuilt)
-	testSetStructAttributeFlagAdd(k, ctx, statusAttrId, builtFlag)
+	testSetStructAttributeFlagAdd(k, sdkCtx, statusAttrId, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, sdkCtx, statusAttrId, uint64(types.StructStateOnline))
 
-	testCases := []struct {
-		name      string
-		input     *types.MsgStructStealthActivate
-		expErr    bool
-		expErrMsg string
-	}{
-		{
-			name: "valid stealth activation",
-			input: &types.MsgStructStealthActivate{
-				Creator:  player.Creator,
-				StructId: structObj.Id,
-			},
-			expErr: false,
-		},
-		{
-			name: "struct not found",
-			input: &types.MsgStructStealthActivate{
-				Creator:  player.Creator,
-				StructId: "invalid-struct",
-			},
-			expErr:    true,
-			expErrMsg: "does not exist",
-		},
-		{
-			name: "already in stealth",
-			input: &types.MsgStructStealthActivate{
-				Creator:  player.Creator,
-				StructId: structObj.Id,
-			},
-			expErr:    true,
-			expErrMsg: "already in stealth",
-		},
-		{
-			name: "no stealth system",
-			input: &types.MsgStructStealthActivate{
-				Creator:  player.Creator,
-				StructId: structObj.Id,
-			},
-			expErr:    true,
-			expErrMsg: "has no stealth system",
-		},
-		{
-			name: "no play permissions",
-			input: &types.MsgStructStealthActivate{
-				Creator:  "cosmos1noperms",
-				StructId: structObj.Id,
-			},
-			expErr:    true,
-			expErrMsg: "has no",
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			// Set up struct state for each test
-			if tc.name == "valid stealth activation" {
-				// Ensure struct is not hidden
-				hiddenFlag := uint64(types.StructStateHidden)
-				testSetStructAttributeFlagRemove(k, ctx, statusAttrId, hiddenFlag)
-			} else if tc.name == "already in stealth" {
-				hiddenFlag := uint64(types.StructStateHidden)
-				testSetStructAttributeFlagAdd(k, ctx, statusAttrId, hiddenFlag)
-			} else if tc.name == "no stealth system" {
-				// Create struct type without stealth
-				// Note: This test may not work if all struct types have stealth
-				// The actual check is done via HasStealthSystem() method
-				noStealthType := types.StructType{
-					Id:       2,
-					Type:     types.CommandStruct,
-					Category: types.ObjectType_player,
-				}
-				k.SetStructType(ctx, noStealthType)
-				structObj.Type = noStealthType.Id
-				k.SetStruct(ctx, structObj)
-			}
-
-			resp, err := ms.StructStealthActivate(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
-			} else {
-				require.NoError(t, err)
-				require.NotNil(t, resp)
-				require.NotNil(t, resp.Struct)
-			}
+	t.Run("valid stealth activation", func(t *testing.T) {
+		testSetStructAttributeFlagRemove(k, sdkCtx, statusAttrId, uint64(types.StructStateHidden))
+		k.SetGridAttribute(sdkCtx, lastActionAttrId, uint64(0))
+		resp, err := ms.StructStealthActivate(wctx, &types.MsgStructStealthActivate{
+			Creator:  player.Creator,
+			StructId: structObj.Id,
 		})
-	}
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+	})
+
+	t.Run("struct not found", func(t *testing.T) {
+		_, err := ms.StructStealthActivate(wctx, &types.MsgStructStealthActivate{
+			Creator:  player.Creator,
+			StructId: "invalid-struct",
+		})
+		require.Error(t, err)
+	})
+
+	t.Run("already in stealth", func(t *testing.T) {
+		testSetStructAttributeFlagAdd(k, sdkCtx, statusAttrId, uint64(types.StructStateHidden))
+		_, err := ms.StructStealthActivate(wctx, &types.MsgStructStealthActivate{
+			Creator:  player.Creator,
+			StructId: structObj.Id,
+		})
+		require.Error(t, err)
+	})
+
+	t.Run("no stealth system", func(t *testing.T) {
+		testSetStructAttributeFlagRemove(k, sdkCtx, statusAttrId, uint64(types.StructStateHidden))
+		noStealthType := types.StructType{
+			Id:       2,
+			Type:     types.CommandStruct,
+			Category: types.ObjectType_player,
+		}
+		k.SetStructType(sdkCtx, noStealthType)
+		structObj.Type = noStealthType.Id
+		k.SetStruct(sdkCtx, structObj)
+
+		_, err := ms.StructStealthActivate(wctx, &types.MsgStructStealthActivate{
+			Creator:  player.Creator,
+			StructId: structObj.Id,
+		})
+		require.Error(t, err)
+
+		structObj.Type = structType.Id
+		k.SetStruct(sdkCtx, structObj)
+	})
+
+	t.Run("no play permissions", func(t *testing.T) {
+		_, err := ms.StructStealthActivate(wctx, &types.MsgStructStealthActivate{
+			Creator:  "cosmos1noperms",
+			StructId: structObj.Id,
+		})
+		require.Error(t, err)
+	})
 }

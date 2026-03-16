@@ -49,7 +49,7 @@ func TestPlanetCRUD(t *testing.T) {
 func TestPlanetCount(t *testing.T) {
 	keeper, ctx := keepertest.StructsKeeper(t)
 	initialCount := keeper.GetPlanetCount(ctx)
-	require.Equal(t, types.KeeperStartValue, initialCount)
+	require.Equal(t, uint64(types.KeeperStartValue), initialCount)
 
 	// Create a planet and check count
 	_ = testAppendPlanet(keeper, ctx, types.Planet{Creator: "address1", Owner: "player1"})
@@ -112,8 +112,8 @@ func TestPlanetCache(t *testing.T) {
 	cache.PlanetaryShieldDecrement(20)
 	require.Equal(t, uint64(types.PlanetaryShieldBase+30), cache.GetPlanetaryShield())
 
-	// Test commit
-	cache.Commit()
+	// CommitAll persists both planet struct and planet attributes
+	cc.CommitAll()
 	attributes := keeper.GetPlanetAttributesByObject(ctx, planet.Id)
 	require.Equal(t, uint64(types.PlanetaryShieldBase+30), attributes.PlanetaryShield)
 }

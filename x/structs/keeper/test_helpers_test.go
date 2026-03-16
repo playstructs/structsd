@@ -3,6 +3,7 @@ package keeper_test
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	keeperlib "structs/x/structs/keeper"
 	"structs/x/structs/types"
@@ -71,15 +72,37 @@ func testAppendStruct(k keeperlib.Keeper, ctx context.Context, structure types.S
 func testAppendPlanet(k keeperlib.Keeper, ctx context.Context, planet types.Planet) types.Planet {
 	count := k.GetPlanetCount(ctx)
 	planet.Id = fmt.Sprintf("%d-%d", types.ObjectType_planet, count)
+	if planet.Status == 0 {
+		planet.Status = types.PlanetStatus_active
+	}
 	k.SetPlanetCount(ctx, count+1)
 	k.SetPlanet(ctx, planet)
+
+	shieldAttrId := keeperlib.GetPlanetAttributeIDByObjectId(types.PlanetAttributeType_planetaryShield, planet.Id)
+	k.SetPlanetAttribute(ctx, shieldAttrId, types.PlanetaryShieldBase)
+
+	oreAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_ore, planet.Id)
+	k.SetGridAttribute(ctx, oreAttrId, types.PlanetStartingOre)
+
 	return planet
 }
 
 func testAppendFleet(k keeperlib.Keeper, ctx context.Context, fleet types.Fleet) types.Fleet {
-	fleet.Id = fmt.Sprintf("%d-fleet-%s", types.ObjectType_fleet, fleet.Owner)
+	ownerParts := strings.Split(fleet.Owner, "-")
+	index := "0"
+	if len(ownerParts) == 2 {
+		index = ownerParts[1]
+	}
+	fleet.Id = fmt.Sprintf("%d-%s", types.ObjectType_fleet, index)
 	k.SetFleet(ctx, fleet)
 	return fleet
+}
+
+func testAppendReactor(k keeperlib.Keeper, ctx context.Context, reactor types.Reactor) types.Reactor {
+	if reactor.RawAddress == nil {
+		reactor.RawAddress = []byte("test-validator")
+	}
+	return k.AppendReactor(ctx, reactor)
 }
 
 func testAppendInfusion(k keeperlib.Keeper, ctx context.Context, infusion types.Infusion) types.Infusion {

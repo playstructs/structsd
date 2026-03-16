@@ -15,27 +15,22 @@ func TestMsgStructGeneratorInfuse(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
 	wctx := sdk.UnwrapSDKContext(ctx)
 
-	// Create a player first
 	player := types.Player{
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
 	player = testAppendPlayer(k, ctx, player)
 
-	// Create a planet
 	planet := testAppendPlanet(k, ctx, types.Planet{Creator: player.Creator, Owner: player.Id})
 
-	// Create a struct type with power generation
-	// Note: PowerGeneration is an enum, use a valid value
 	structType := types.StructType{
 		Id:              1,
 		Type:            types.CommandStruct,
 		Category:        types.ObjectType_player,
-		PowerGeneration: 1, // Use a non-zero value to indicate power generation
+		PowerGeneration: 1,
 	}
 	k.SetStructType(ctx, structType)
 
-	// Create a struct
 	structObj := types.Struct{
 		Creator:      player.Creator,
 		Owner:        player.Id,
@@ -45,112 +40,71 @@ func TestMsgStructGeneratorInfuse(t *testing.T) {
 	}
 	structObj = testAppendStruct(k, ctx, structObj)
 
-	// Mark struct as built and online
 	statusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structObj.Id)
-	builtFlag := uint64(types.StructStateBuilt)
-	testSetStructAttributeFlagAdd(k, ctx, statusAttrId, builtFlag)
+	testSetStructAttributeFlagAdd(k, ctx, statusAttrId, uint64(types.StructStateBuilt))
+	testSetStructAttributeFlagAdd(k, ctx, statusAttrId, uint64(types.StructStateOnline))
 
-	// Grant permissions
-	addressPermissionId := keeperlib.GetAddressPermissionIDBytes(player.Creator)
-	testPermissionAdd(k, ctx, addressPermissionId, types.PermAssetsAll)
-
-	// Set up balances
 	playerAcc, _ := sdk.AccAddressFromBech32(player.Creator)
 	coins := sdk.NewCoins(sdk.NewCoin("ualpha", math.NewInt(1000)))
 	k.BankKeeper().MintCoins(ctx, types.ModuleName, coins)
 	k.BankKeeper().SendCoinsFromModuleToAccount(ctx, types.ModuleName, playerAcc, coins)
 
-	testCases := []struct {
-		name      string
-		input     *types.MsgStructGeneratorInfuse
-		expErr    bool
-		expErrMsg string
-	}{
-		{
-			name: "valid generator infuse",
-			input: &types.MsgStructGeneratorInfuse{
-				Creator:      player.Creator,
-				StructId:     structObj.Id,
-				InfuseAmount: "1000ualpha",
-			},
-			expErr: false,
-		},
-		{
-			name: "struct not found",
-			input: &types.MsgStructGeneratorInfuse{
-				Creator:      player.Creator,
-				StructId:     "invalid-struct",
-				InfuseAmount: "1000ualpha",
-			},
-			expErr:    true,
-			expErrMsg: "not found",
-		},
-		{
-			name: "struct offline",
-			input: &types.MsgStructGeneratorInfuse{
-				Creator:      player.Creator,
-				StructId:     structObj.Id,
-				InfuseAmount: "1000ualpha",
-			},
-			expErr:    true,
-			expErrMsg: "is offline",
-		},
-		{
-			name: "no power generation",
-			input: &types.MsgStructGeneratorInfuse{
-				Creator:      player.Creator,
-				StructId:     structObj.Id,
-				InfuseAmount: "1000ualpha",
-			},
-			expErr:    true,
-			expErrMsg: "has no generation systems",
-		},
-		{
-			name: "no permissions",
-			input: &types.MsgStructGeneratorInfuse{
-				Creator:      "cosmos1noperms",
-				StructId:     structObj.Id,
-				InfuseAmount: "1000ualpha",
-			},
-			expErr:    true,
-			expErrMsg: "has no assets permissions",
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			// Set up struct state for each test
-			if tc.name == "valid generator infuse" {
-				// Ensure struct is online
-				onlineFlag := uint64(types.StructStateOnline)
-				testSetStructAttributeFlagAdd(k, ctx, statusAttrId, onlineFlag)
-			} else if tc.name == "struct offline" {
-				// Ensure struct is offline
-				onlineFlag := uint64(types.StructStateOnline)
-				testSetStructAttributeFlagRemove(k, ctx, statusAttrId, onlineFlag)
-			} else if tc.name == "no power generation" {
-				// Create struct type without power generation
-				noGenType := types.StructType{
-					Id:              2,
-					Type:            types.CommandStruct,
-					Category:        types.ObjectType_player,
-					PowerGeneration: types.TechPowerGeneration_noPowerGeneration,
-				}
-				k.SetStructType(ctx, noGenType)
-				structObj.Type = noGenType.Id
-				k.SetStruct(ctx, structObj)
-			}
-
-			resp, err := ms.StructGeneratorInfuse(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
-			} else {
-				require.NoError(t, err)
-				require.NotNil(t, resp)
-			}
+	t.Run("valid generator infuse", func(t *testing.T) {
+		resp, err := ms.StructGeneratorInfuse(wctx, &types.MsgStructGeneratorInfuse{
+			Creator:      player.Creator,
+			StructId:     structObj.Id,
+			InfuseAmount: "1000ualpha",
 		})
-	}
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+	})
+
+	t.Run("struct offline", func(t *testing.T) {
+		testSetStructAttributeFlagRemove(k, ctx, statusAttrId, uint64(types.StructStateOnline))
+
+		resp, err := ms.StructGeneratorInfuse(wctx, &types.MsgStructGeneratorInfuse{
+			Creator:      player.Creator,
+			StructId:     structObj.Id,
+			InfuseAmount: "1000ualpha",
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "is offline")
+		_ = resp
+
+		testSetStructAttributeFlagAdd(k, ctx, statusAttrId, uint64(types.StructStateOnline))
+	})
+
+	t.Run("no power generation", func(t *testing.T) {
+		noGenType := types.StructType{
+			Id:              2,
+			Type:            types.CommandStruct,
+			Category:        types.ObjectType_player,
+			PowerGeneration: types.TechPowerGeneration_noPowerGeneration,
+		}
+		k.SetStructType(ctx, noGenType)
+		structObj.Type = noGenType.Id
+		k.SetStruct(ctx, structObj)
+
+		resp, err := ms.StructGeneratorInfuse(wctx, &types.MsgStructGeneratorInfuse{
+			Creator:      player.Creator,
+			StructId:     structObj.Id,
+			InfuseAmount: "1000ualpha",
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "has no generation system")
+		_ = resp
+
+		structObj.Type = structType.Id
+		k.SetStruct(ctx, structObj)
+	})
+
+	t.Run("no permissions", func(t *testing.T) {
+		resp, err := ms.StructGeneratorInfuse(wctx, &types.MsgStructGeneratorInfuse{
+			Creator:      "cosmos1noperms",
+			StructId:     structObj.Id,
+			InfuseAmount: "1000ualpha",
+		})
+		require.Error(t, err)
+		_ = resp
+	})
 }

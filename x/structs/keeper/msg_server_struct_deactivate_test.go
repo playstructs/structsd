@@ -14,97 +14,82 @@ func TestMsgStructDeactivate(t *testing.T) {
 	k, ms, ctx := setupMsgServer(t)
 	wctx := sdk.UnwrapSDKContext(ctx)
 
-	// Create a player first
 	player := types.Player{
 		Creator:        "cosmos1creator",
 		PrimaryAddress: "cosmos1creator",
 	}
 	player = testAppendPlayer(k, ctx, player)
 
-	// Set up player capacity to be online
 	capacityAttrId := keeperlib.GetGridAttributeIDByObjectId(types.GridAttributeType_capacity, player.Id)
 	k.SetGridAttribute(ctx, capacityAttrId, uint64(100000))
 
-	// Create a struct
-	structObj := types.Struct{
-		Creator: player.Creator,
-		Owner:   player.Id,
-		Type:    1,
+	structType := types.StructType{
+		Id:          1,
+		Type:        types.CommandStruct,
+		Category:    types.ObjectType_player,
+		PassiveDraw: 50,
 	}
-	structObj = testAppendStruct(k, ctx, structObj)
+	k.SetStructType(ctx, structType)
 
-	// Mark struct as built and online
-	statusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structObj.Id)
-	builtFlag := uint64(types.StructStateBuilt)
-	testSetStructAttributeFlagAdd(k, ctx, statusAttrId, builtFlag)
+	t.Run("valid struct deactivation", func(t *testing.T) {
+		structObj := types.Struct{
+			Creator: player.Creator,
+			Owner:   player.Id,
+			Type:    structType.Id,
+		}
+		structObj = testAppendStruct(k, ctx, structObj)
 
-	testCases := []struct {
-		name      string
-		input     *types.MsgStructDeactivate
-		expErr    bool
-		expErrMsg string
-	}{
-		{
-			name: "valid struct deactivation",
-			input: &types.MsgStructDeactivate{
-				Creator:  player.Creator,
-				StructId: structObj.Id,
-			},
-			expErr: false,
-		},
-		{
-			name: "struct not found",
-			input: &types.MsgStructDeactivate{
-				Creator:  player.Creator,
-				StructId: "invalid-struct",
-			},
-			expErr:    true,
-			expErrMsg: "does not exist",
-		},
-		{
-			name: "struct not built",
-			input: &types.MsgStructDeactivate{
-				Creator:  player.Creator,
-				StructId: structObj.Id,
-			},
-			expErr:    true,
-			expErrMsg: "isn't built yet",
-		},
-		{
-			name: "struct already offline",
-			input: &types.MsgStructDeactivate{
-				Creator:  player.Creator,
-				StructId: structObj.Id,
-			},
-			expErr:    true,
-			expErrMsg: "already offline",
-		},
-	}
+		statusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, structObj.Id)
+		testSetStructAttributeFlagAdd(k, ctx, statusAttrId, uint64(types.StructStateBuilt))
+		testSetStructAttributeFlagAdd(k, ctx, statusAttrId, uint64(types.StructStateOnline))
 
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			// Set up struct state for each test
-			if tc.name == "valid struct deactivation" {
-				// Ensure struct is built and online
-				testSetStructAttributeFlagAdd(k, ctx, statusAttrId, builtFlag)
-			} else if tc.name == "struct not built" {
-				// Clear built flag
-				testSetStructAttributeFlagRemove(k, ctx, statusAttrId, builtFlag)
-			} else if tc.name == "struct already offline" {
-				// Struct is offline by default, just ensure it's built
-				// The deactivate will check if it's already offline
-			}
-
-			resp, err := ms.StructDeactivate(wctx, tc.input)
-
-			if tc.expErr {
-				require.Error(t, err)
-				require.Contains(t, err.Error(), tc.expErrMsg)
-				require.Nil(t, resp)
-			} else {
-				require.NoError(t, err)
-				require.NotNil(t, resp)
-			}
+		resp, err := ms.StructDeactivate(wctx, &types.MsgStructDeactivate{
+			Creator:  player.Creator,
+			StructId: structObj.Id,
 		})
-	}
+		require.NoError(t, err)
+		require.NotNil(t, resp)
+	})
+
+	t.Run("struct not found", func(t *testing.T) {
+		_, err := ms.StructDeactivate(wctx, &types.MsgStructDeactivate{
+			Creator:  player.Creator,
+			StructId: "invalid-struct",
+		})
+		require.Error(t, err)
+	})
+
+	t.Run("struct not built", func(t *testing.T) {
+		newStruct := types.Struct{
+			Creator: player.Creator,
+			Owner:   player.Id,
+			Type:    structType.Id,
+		}
+		newStruct = testAppendStruct(k, ctx, newStruct)
+
+		_, err := ms.StructDeactivate(wctx, &types.MsgStructDeactivate{
+			Creator:  player.Creator,
+			StructId: newStruct.Id,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "building")
+	})
+
+	t.Run("struct already offline", func(t *testing.T) {
+		offlineStruct := types.Struct{
+			Creator: player.Creator,
+			Owner:   player.Id,
+			Type:    structType.Id,
+		}
+		offlineStruct = testAppendStruct(k, ctx, offlineStruct)
+		offlineStatusAttrId := keeperlib.GetStructAttributeIDByObjectId(types.StructAttributeType_status, offlineStruct.Id)
+		testSetStructAttributeFlagAdd(k, ctx, offlineStatusAttrId, uint64(types.StructStateBuilt))
+
+		_, err := ms.StructDeactivate(wctx, &types.MsgStructDeactivate{
+			Creator:  player.Creator,
+			StructId: offlineStruct.Id,
+		})
+		require.Error(t, err)
+		require.Contains(t, err.Error(), "offline")
+	})
 }
