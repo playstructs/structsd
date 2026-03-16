@@ -27,7 +27,7 @@ func (k msgServer) StructOreRefineryComplete(goCtx context.Context, msg *types.M
 	structure := cc.GetStruct(msg.StructId)
 
     // Check to see if the caller has permissions to proceed
-    permissionError := structure.CanBeHashedBy(callingPlayer)
+    permissionError := structure.GetOwner().CanRefineHashedBy(callingPlayer)
     if (permissionError != nil) {
         return emptyResponse, permissionError
     }

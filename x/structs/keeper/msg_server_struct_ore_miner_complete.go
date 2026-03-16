@@ -27,7 +27,7 @@ func (k msgServer) StructOreMinerComplete(goCtx context.Context, msg *types.MsgS
 	structure := cc.GetStruct(msg.StructId)
 
 	// Check to see if the caller has permissions to proceed
-    permissionError := structure.CanBeHashedBy(callingPlayer)
+    permissionError := structure.GetOwner().CanMineHashedBy(callingPlayer)
     if (permissionError != nil) {
        return emptyResponse, permissionError
     }

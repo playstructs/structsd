@@ -447,10 +447,6 @@ func (cache *StructCache) CanAllocateAsSourceBy(_ *PlayerCache) error {
     return types.NewAllocationError(cache.ID(), "unacceptable_source")
 }
 
-func (cache *StructCache) CanBeHashedBy(callingPlayer *PlayerCache) (error) {
-    return cache.CC.PermissionCheck(cache, callingPlayer, types.PermHashAll)
-}
-
 /* Game Functions */
 
 func (cache *StructCache) CanOreMinePlanet() error {
